@@ -34,15 +34,18 @@ public class Base32EncodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
 
   public Base32EncodeFunction() {
-    super("BASE32_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/base32_encode.html");
+    super(
+        "BASE32_ENCODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
+        "/docs/base32_encode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return BASE32.encodeToString(value);
   }

@@ -29,7 +29,6 @@ import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
-
 public class CloneRowData extends BaseTransformData implements ITransformData {
 
   protected IRowExpressionContext context;

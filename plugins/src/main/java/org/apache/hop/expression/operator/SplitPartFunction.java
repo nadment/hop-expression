@@ -24,42 +24,39 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-
 /**
  * Splits a string on the specified string delimiter and returns the part at the specified
- * position.
- * 
- * @See {@link StrtokFunction}
+ * position. @See {@link StrtokFunction}
  */
 @FunctionPlugin
 public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {
-    super("SPLIT_PART", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING_STRING_NUMERIC, OperatorCategory.STRING,
+    super(
+        "SPLIT_PART",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING_STRING_NUMERIC,
+        OperatorCategory.STRING,
         "/docs/split_part.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
-    if (str == null)
-      return null;
+    if (str == null) return null;
 
     String delimiter = operands[1].getValue(String.class);
-    if (delimiter == null)
-      return null;
+    if (delimiter == null) return null;
 
     Long v2 = operands[2].getValue(Long.class);
-    if (v2 == null)
-      return null;
+    if (v2 == null) return null;
 
     int index = v2.intValue();
 
     String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
 
     // If the part number is negative, the parts are counted backward from the end of the string.
-    if (index < 0)
-      index += parts.length + 1;
+    if (index < 0) index += parts.length + 1;
 
     // If the part index is out of range, the returned value is an empty string.
     if (index < 1 || index > parts.length) {

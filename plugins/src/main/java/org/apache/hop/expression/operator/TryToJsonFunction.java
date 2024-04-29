@@ -25,14 +25,17 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Converts a string expression to a JSON value.
- */
+/** Converts a string expression to a JSON value. */
 @FunctionPlugin
 public class TryToJsonFunction extends Function {
 
   public TryToJsonFunction() {
-    super("TRY_TO_JSON", ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION, "/docs/to_json.html");
+    super(
+        "TRY_TO_JSON",
+        ReturnTypes.JSON_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.CONVERSION,
+        "/docs/to_json.html");
   }
 
   @Override

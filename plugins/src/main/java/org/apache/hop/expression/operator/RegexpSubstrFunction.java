@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,22 +28,21 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-/**
- * Returns characters from a string by searching it for a regular expression pattern.
- */
+/** Returns characters from a string by searching it for a regular expression pattern. */
 @FunctionPlugin
 public class RegexpSubstrFunction extends Function {
 
   public RegexpSubstrFunction() {
-    super("REGEXP_SUBSTR", ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC)
+    super(
+        "REGEXP_SUBSTR",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING_STRING
+            .or(OperandTypes.STRING_STRING_NUMERIC)
             .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC)
             .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_STRING),
-        OperatorCategory.STRING, "/docs/regexp_substr.html");
+        OperatorCategory.STRING,
+        "/docs/regexp_substr.html");
   }
 
   @Override
@@ -56,8 +58,7 @@ public class RegexpSubstrFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (regexp.length() == 0)
-      return null;
+    if (regexp.length() == 0) return null;
 
     // Default position 1
     int position = 1;

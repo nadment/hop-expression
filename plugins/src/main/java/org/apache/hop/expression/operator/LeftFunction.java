@@ -30,9 +30,7 @@ import org.apache.hop.expression.type.TypeFamily;
 
 /**
  * The function extracts a number of characters from a string or bytes from binary starting from
- * left.
- * 
- * @See {@link RightFunction}
+ * left. @See {@link RightFunction}
  */
 @FunctionPlugin
 public class LeftFunction extends Function {
@@ -40,8 +38,12 @@ public class LeftFunction extends Function {
   public static final LeftFunction BinaryLeftFunction = new BinaryLeftFunction();
 
   public LeftFunction() {
-    super("LEFT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
-        OperatorCategory.STRING, "/docs/left.html");
+    super(
+        "LEFT",
+        ReturnTypes.ARG0_MAX_PRECISION,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+        OperatorCategory.STRING,
+        "/docs/left.html");
   }
 
   @Override
@@ -55,19 +57,15 @@ public class LeftFunction extends Function {
     return new Call(StringLeftFunction, call.getOperands());
   }
 
-  /**
-   * The function extracts a number of characters from a string starting from left.
-   */
+  /** The function extracts a number of characters from a string starting from left. */
   private static final class StringLeftFunction extends LeftFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
-      if (str == null)
-        return null;
+      if (str == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
-      if (v1 == null)
-        return null;
+      if (v1 == null) return null;
       int length = v1.intValue();
       if (length < 0) {
         length = 0;
@@ -80,19 +78,15 @@ public class LeftFunction extends Function {
     }
   }
 
-  /**
-   * The function extracts a number of characters from a binary starting from left.
-   */
+  /** The function extracts a number of characters from a binary starting from left. */
   private static final class BinaryLeftFunction extends LeftFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
-      if (bytes == null)
-        return null;
+      if (bytes == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
-      if (v1 == null)
-        return null;
+      if (v1 == null) return null;
       int length = v1.intValue();
       if (length < 0) {
         length = 0;
@@ -105,7 +99,6 @@ public class LeftFunction extends Function {
       byte[] result = new byte[length];
       System.arraycopy(bytes, 0, result, 0, length);
       return result;
-
     }
   }
 }

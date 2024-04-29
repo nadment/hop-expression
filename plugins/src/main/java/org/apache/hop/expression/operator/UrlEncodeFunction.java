@@ -16,14 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 /**
  * The function encode the string as a URL.
@@ -34,15 +34,18 @@ import java.nio.charset.StandardCharsets;
 public class UrlEncodeFunction extends Function {
 
   public UrlEncodeFunction() {
-    super("URL_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "URL_ENCODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/url_encode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return URLEncoder.encode(value, StandardCharsets.UTF_8);
   }
 }

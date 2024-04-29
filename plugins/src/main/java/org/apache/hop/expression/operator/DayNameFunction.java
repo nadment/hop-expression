@@ -16,35 +16,35 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
-import java.time.format.TextStyle;
-import java.util.Locale;
 
-/**
- * Returns the name of the weekday (in English).
- */
+/** Returns the name of the weekday (in English). */
 @FunctionPlugin
 public class DayNameFunction extends Function {
 
   public DayNameFunction() {
-    super("DAYNAME", ReturnTypes.STRING_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
+    super(
+        "DAYNAME",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/dayname.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     DayOfWeek weekday = value.getDayOfWeek();
     return weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
-
 }

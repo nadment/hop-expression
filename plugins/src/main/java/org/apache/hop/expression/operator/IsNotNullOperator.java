@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -26,20 +27,25 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * An operator describing the <code>IS NOT NULL</code> operator.
- * 
+ *
  * @see {@link IstNullOperator}
  */
 public class IsNotNullOperator extends Operator {
 
   public IsNotNullOperator() {
-    super("IS NOT NULL", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
+    super(
+        "IS NOT NULL",
+        140,
+        true,
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY,
+        OperatorCategory.COMPARISON,
         "/docs/is-null.html");
   }
-  
+
   @Override
   public Operator not() {
     return Operators.IS_NULL;
@@ -58,7 +64,7 @@ public class IsNotNullOperator extends Operator {
     if (!operand.getType().isNullable()) {
       return Literal.TRUE;
     }
-    
+
     return call;
   }
 

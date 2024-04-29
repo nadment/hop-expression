@@ -24,16 +24,17 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
 
-
-/**
- * Converts a string value to a hexadecimal string.
- */
+/** Converts a string value to a hexadecimal string. */
 @FunctionPlugin
 public class HexEncodeFunction extends Function {
 
   public HexEncodeFunction() {
-    super("HEX_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/hex_encode.html");
+    super(
+        "HEX_ENCODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.NUMERIC.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
+        "/docs/hex_encode.html");
   }
 
   @Override

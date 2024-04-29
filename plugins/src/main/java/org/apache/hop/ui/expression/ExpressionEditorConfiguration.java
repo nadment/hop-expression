@@ -15,6 +15,11 @@
 
 package org.apache.hop.ui.expression;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
@@ -54,11 +59,6 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
@@ -69,8 +69,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private ExpressionMode mode;
   private CompletableFuture<IRowMeta> futurRowMeta;
 
-  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> futurRowMeta,
-      ExpressionMode mode) {
+  public ExpressionEditorConfiguration(
+      IVariables variables, CompletableFuture<IRowMeta> futurRowMeta, ExpressionMode mode) {
     super();
     this.variables = variables;
     this.futurRowMeta = futurRowMeta;
@@ -79,8 +79,11 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-    return new String[] {IDocument.DEFAULT_CONTENT_TYPE, ExpressionPartitionScanner.COMMENT,
-        ExpressionPartitionScanner.STRING};
+    return new String[] {
+      IDocument.DEFAULT_CONTENT_TYPE,
+      ExpressionPartitionScanner.COMMENT,
+      ExpressionPartitionScanner.STRING
+    };
   }
 
   @Override
@@ -202,10 +205,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       rule.addWord(name, function);
     }
     for (String word : ExpressionParser.getReservedWords()) {
-      if (RESERVED_LITERALS.contains(word))
-        rule.addWord(word, extra);
-      else
-        rule.addWord(word, keyword);
+      if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
+      else rule.addWord(word, keyword);
     }
     for (TypeId type : TypeId.values()) {
       rule.addWord(type.name(), extra);
@@ -229,9 +230,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     Token variable = new Token(new TextAttribute(color, null, SWT.ITALIC | SWT.BOLD));
 
     IRule[] rules = {
-        // Add rule for variables
-        new PatternRule("${", "}", variable, (char) 0, false)// ,
-        // new LinkRule(link)
+      // Add rule for variables
+      new PatternRule("${", "}", variable, (char) 0, false) // ,
+      // new LinkRule(link)
     };
 
     RuleBasedScanner scanner = new RuleBasedScanner();
@@ -246,8 +247,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     Token variable = new Token(new TextAttribute(color, null, SWT.BOLD));
 
     IRule[] rules = {
-        // Add rule for variables
-        new PatternRule("${", "}", variable, (char) 0, false)};
+      // Add rule for variables
+      new PatternRule("${", "}", variable, (char) 0, false)
+    };
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
@@ -255,8 +257,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   }
 
   @Override
-  public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer,
-      String contentType) {
+  public ITextDoubleClickStrategy getDoubleClickStrategy(
+      ISourceViewer sourceViewer, String contentType) {
     return new DoubleClickStrategy();
   }
 

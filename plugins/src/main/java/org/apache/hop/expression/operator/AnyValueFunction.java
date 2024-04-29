@@ -22,9 +22,7 @@ import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Returns the any value over a group of rows.
- */
+/** Returns the any value over a group of rows. */
 @FunctionPlugin
 public class AnyValueFunction extends AggregateFunction {
 

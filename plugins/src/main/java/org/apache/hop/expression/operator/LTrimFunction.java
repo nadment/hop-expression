@@ -37,22 +37,24 @@ public class LTrimFunction extends Function {
   public static final LTrimFunction INSTANCE = new LTrimFunction();
 
   public LTrimFunction() {
-    super("LTRIM", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-        OperatorCategory.STRING, "/docs/ltrim.html");
+    super(
+        "LTRIM",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        OperatorCategory.STRING,
+        "/docs/ltrim.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     String stripChars = null;
 
     if (operands.length == 2) {
       stripChars = operands[1].getValue(String.class);
-      if (stripChars == null)
-        return null;
+      if (stripChars == null) return null;
     }
 
     return StringUtils.stripStart(value, stripChars);

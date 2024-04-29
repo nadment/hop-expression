@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,25 +25,24 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Calculates the base 10 logarithm of a numeric value.
- */
+/** Calculates the base 10 logarithm of a numeric value. */
 @FunctionPlugin
 public class Log10Function extends Function {
 
   public Log10Function() {
-    super("LOG10", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super(
+        "LOG10",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.TRIGONOMETRY,
         "/docs/log10.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     if (value.signum() <= 0)
       throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));

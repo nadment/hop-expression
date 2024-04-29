@@ -17,10 +17,10 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.hop.expression.ConversionException;
 
 public final class AnyType extends Type {
 
@@ -42,8 +42,8 @@ public final class AnyType extends Type {
   @Override
   public TypeComparability getComparability() {
     return TypeComparability.NONE;
-  } 
-  
+  }
+
   @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
 

@@ -46,8 +46,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
       // If hover function, display description
       Function function = FunctionRegistry.getFunction(text);
-      if (function != null)
-        return function.getDescription();
+      if (function != null) return function.getDescription();
 
       return null;
     } catch (BadLocationException e) {
@@ -67,8 +66,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
       char c;
       while (pos >= 0) {
         c = document.getChar(pos);
-        if (!Character.isUnicodeIdentifierPart(c))
-          break;
+        if (!Character.isUnicodeIdentifierPart(c)) break;
         --pos;
       }
       start = pos;
@@ -78,8 +76,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
       while (pos < length) {
         c = document.getChar(pos);
-        if (!Character.isUnicodeIdentifierPart(c))
-          break;
+        if (!Character.isUnicodeIdentifierPart(c)) break;
         ++pos;
       }
       end = pos;
@@ -89,12 +86,9 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
     // if a mouse is hovered over an invalid word
     if (start >= -1 && end > -1) {
       // if hovered over an one-letter identifier
-      if (start == offset && end == offset)
-        return new Region(offset, 0);
-      else if (start == offset)
-        return new Region(start, end - start);
-      else
-        return new Region(start + 1, end - start - 1);
+      if (start == offset && end == offset) return new Region(offset, 0);
+      else if (start == offset) return new Region(start, end - start);
+      else return new Region(start + 1, end - start - 1);
     }
 
     return null;
@@ -105,7 +99,6 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
     return new IInformationControlCreator() {
       public IInformationControl createInformationControl(Shell parent) {
         return new DefaultInformationControl(parent);
-
       }
     };
   }

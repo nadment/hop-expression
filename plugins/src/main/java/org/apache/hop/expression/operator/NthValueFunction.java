@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -21,14 +22,13 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * Returns the nth value over a group of rows.
- * <p>
- * <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code>
- * <p>
- * The default is RESPECT NULLS.
+ *
+ * <p><code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code>
+ *
+ * <p>The default is RESPECT NULLS.
  */
 @FunctionPlugin
 public class NthValueFunction extends AggregateFunction {
@@ -50,7 +50,8 @@ public class NthValueFunction extends AggregateFunction {
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     Long offset = operands[1].getValue(Long.class);
-    return (ignoreNulls) ? new NthValueIgnoreNullsProcessor(offset)
+    return (ignoreNulls)
+        ? new NthValueIgnoreNullsProcessor(offset)
         : new NthValueRespectNullsProcessor(offset);
   }
 

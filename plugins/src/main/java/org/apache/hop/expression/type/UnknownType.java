@@ -39,12 +39,11 @@ public final class UnknownType extends Type {
   @Override
   public TypeComparability getComparability() {
     return TypeComparability.NONE;
-  } 
-  
+  }
+
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
-    if (value == null)
-      return null;
+    if (value == null) return null;
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
     }

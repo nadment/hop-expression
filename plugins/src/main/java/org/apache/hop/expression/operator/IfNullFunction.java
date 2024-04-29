@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,20 +30,21 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The IFNULL function replace the null with value (Alias NVL).
- * 
+ *
  * @see {@link CoalesceFunction}
  */
 @FunctionPlugin(names = "NVL")
 public class IfNullFunction extends Function {
 
   public IfNullFunction() {
-    super("IFNULL", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.SAME_SAME, OperatorCategory.CONDITIONAL,
+    super(
+        "IFNULL",
+        ReturnTypes.LEAST_RESTRICTIVE,
+        OperandTypes.SAME_SAME,
+        OperatorCategory.CONDITIONAL,
         "/docs/ifnull.html");
   }
 
@@ -81,8 +85,7 @@ public class IfNullFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
-    if (value == null)
-      return operands[1].getValue();
+    if (value == null) return operands[1].getValue();
     return value;
   }
 }

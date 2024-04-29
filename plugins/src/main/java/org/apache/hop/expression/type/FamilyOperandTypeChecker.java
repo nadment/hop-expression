@@ -16,14 +16,12 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpression;
 import java.util.List;
 import java.util.function.Predicate;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
 
-/**
- * Operand type-checking strategy which checks operands for inclusion in type families.
- */
+/** Operand type-checking strategy which checks operands for inclusion in type families. */
 public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
 
   private final List<TypeFamily> families;
@@ -34,18 +32,16 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     this.optional = optional;
   }
 
-  /**
-   * Allows specified parameters to be optional.
-   */
+  /** Allows specified parameters to be optional. */
   public FamilyOperandTypeChecker optional(Predicate<Integer> optional) {
     return new FamilyOperandTypeChecker(families, optional);
   }
 
   @Override
   public boolean checkOperandTypes(final Call call) {
-    
+
     IOperandCountRange range = this.getOperandCountRange();
-    
+
     // Variadic
     if (families.size() != range.getMax()) {
       for (IExpression operand : call.getOperands()) {

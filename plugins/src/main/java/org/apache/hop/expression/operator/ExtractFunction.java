@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,6 +17,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -32,22 +34,24 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
-import java.io.StringWriter;
-import java.time.ZonedDateTime;
 
 /**
  * Extracts the specified time unit from a date, timestamp or interval.
- * 
- * Time unit: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
+ *
+ * <p>Time unit: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
   public static final DateExtractFunction DateExtractFunction = new DateExtractFunction();
-  public static final IntervalExtractFunction IntervalExtractFunction = new IntervalExtractFunction();
+  public static final IntervalExtractFunction IntervalExtractFunction =
+      new IntervalExtractFunction();
 
   public ExtractFunction() {
-    super("EXTRACT", ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL), OperatorCategory.DATE,
+    super(
+        "EXTRACT",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL),
+        OperatorCategory.DATE,
         "/docs/extract.html");
   }
 
@@ -69,9 +73,7 @@ public class ExtractFunction extends Function {
     writer.append(')');
   }
 
-  /**
-   * Extracts the specified date or time part from a date, time, or timestamp.
-   */
+  /** Extracts the specified date or time part from a date, time, or timestamp. */
   private static final class DateExtractFunction extends ExtractFunction {
 
     @Override
@@ -93,16 +95,13 @@ public class ExtractFunction extends Function {
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
       ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
-      if (datetime == null)
-        return null;
+      if (datetime == null) return null;
 
-       return unit.extract(datetime);
+      return unit.extract(datetime);
     }
   }
 
-  /**
-   * Extracts the specified time unit from a interval.
-   */
+  /** Extracts the specified time unit from a interval. */
   private static final class IntervalExtractFunction extends ExtractFunction {
 
     @Override
@@ -111,9 +110,8 @@ public class ExtractFunction extends Function {
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
       Interval interval = operands[1].getValue(Interval.class);
-      if (interval == null)
-        return null;
-      
+      if (interval == null) return null;
+
       return unit.extract(interval);
     }
   }

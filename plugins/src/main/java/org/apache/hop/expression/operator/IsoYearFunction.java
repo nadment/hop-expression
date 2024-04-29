@@ -16,32 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.IsoFields;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
-import java.time.temporal.IsoFields;
 
-/**
- * Year of the week ISO semantics
- */
+/** Year of the week ISO semantics */
 @FunctionPlugin
 public class IsoYearFunction extends Function {
 
   public IsoYearFunction() {
-    super("ISOYEAR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
+    super(
+        "ISOYEAR",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/isoyear.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return Long.valueOf(value.get(IsoFields.WEEK_BASED_YEAR));
   }
-
 }

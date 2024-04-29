@@ -25,14 +25,17 @@ public enum SetVariableScope implements IEnumHasCodeAndDescription {
   /** Java Virual Machine */
   JVM(BaseMessages.getString(SetVariableAction.PKG, "SetVariableAction.VariableScope.JVM")),
   /** Set in current workflow */
-  CURRENT_WORKFLOW(BaseMessages.getString(SetVariableAction.PKG,
-      "SetVariableAction.VariableScope.CurrentWorkflow")),
+  CURRENT_WORKFLOW(
+      BaseMessages.getString(
+          SetVariableAction.PKG, "SetVariableAction.VariableScope.CurrentWorkflow")),
   /** Set in parent workflow */
-  PARENT_WORKFLOW(BaseMessages.getString(SetVariableAction.PKG,
-      "SetVariableAction.VariableScope.ParentWorkflow")),
+  PARENT_WORKFLOW(
+      BaseMessages.getString(
+          SetVariableAction.PKG, "SetVariableAction.VariableScope.ParentWorkflow")),
   /** Set in root workflow */
-  ROOT_WORKFLOW(BaseMessages.getString(SetVariableAction.PKG,
-      "SetVariableAction.VariableScope.RootWorkflow"));
+  ROOT_WORKFLOW(
+      BaseMessages.getString(
+          SetVariableAction.PKG, "SetVariableAction.VariableScope.RootWorkflow"));
 
   private final String description;
 

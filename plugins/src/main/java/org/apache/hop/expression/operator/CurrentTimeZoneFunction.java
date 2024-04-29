@@ -29,14 +29,16 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 
-/**
- * The function return the current time zone
- */
+/** The function return the current time zone */
 @FunctionPlugin
 public class CurrentTimeZoneFunction extends Function {
 
   public CurrentTimeZoneFunction() {
-    super("CURRENT_TIMEZONE", ReturnTypes.STRING_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.DATE,
+    super(
+        "CURRENT_TIMEZONE",
+        ReturnTypes.STRING_NOT_NULL,
+        OperandTypes.NILADIC,
+        OperatorCategory.DATE,
         "/docs/current_timezone.html");
   }
 

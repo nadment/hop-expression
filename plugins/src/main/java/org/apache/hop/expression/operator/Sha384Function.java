@@ -29,14 +29,18 @@ import org.apache.hop.expression.type.ReturnTypes;
  * characters hex-encoded string.
  *
  * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha224Function}, {@link Sha256Function},
- *      {@link Sha512Function}
+ *     {@link Sha512Function}
  */
 @FunctionPlugin
 public class Sha384Function extends Function {
 
   public Sha384Function() {
-    super("SHA384", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha384.html");
+    super(
+        "SHA384",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.CRYPTOGRAPHIC,
+        "/docs/sha384.html");
   }
 
   @Override

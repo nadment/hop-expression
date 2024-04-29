@@ -30,8 +30,8 @@ import org.apache.hop.expression.util.Characters;
 /**
  * Trims white space from the beginning and end of the string, and replaces all other white space
  * with single blanks.
- * 
- * White space is defined as any sequence of blanks, null characters, newlines (line feeds),
+ *
+ * <p>White space is defined as any sequence of blanks, null characters, newlines (line feeds),
  * carriage returns, horizontal tabs and form feeds (vertical tabs).
  */
 @FunctionPlugin
@@ -40,7 +40,11 @@ public class SqueezeFunction extends Function {
   public static final SqueezeFunction INSTANCE = new SqueezeFunction();
 
   public SqueezeFunction() {
-    super("SQUEEZE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "SQUEEZE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/squeeze.html");
   }
 
@@ -59,8 +63,7 @@ public class SqueezeFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     char[] a = value.toCharArray();
 
@@ -73,8 +76,7 @@ public class SqueezeFunction extends Function {
       char c = a[i];
       if (Characters.isSpace(c)) {
         a[n] = ' ';
-        if (a[n - 1] != ' ')
-          n++;
+        if (a[n - 1] != ' ') n++;
       } else {
         a[n++] = c;
       }

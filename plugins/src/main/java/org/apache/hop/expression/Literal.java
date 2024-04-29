@@ -14,6 +14,14 @@
  */
 package org.apache.hop.expression;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;
@@ -23,44 +31,27 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Objects;
-import com.fasterxml.jackson.databind.JsonNode;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Constant value in a expression.
- */
+/** Constant value in a expression. */
 public final class Literal implements IExpression {
 
-  /**
-   * Literal null value without known data type
-   */
+  /** Literal null value without known data type */
   public static final Literal NULL = new Literal(null, Types.UNKNOWN);
-  /**
-   * Literal true value with boolean data type
-   */  
+
+  /** Literal true value with boolean data type */
   public static final Literal TRUE = new Literal(Boolean.TRUE, Types.BOOLEAN_NOT_NULL);
-  /**
-   * Literal false value with boolean data type
-   */  
+
+  /** Literal false value with boolean data type */
   public static final Literal FALSE = new Literal(Boolean.FALSE, Types.BOOLEAN_NOT_NULL);
-  /**
-   * Literal 0 value with integer data type
-   */  
+
+  /** Literal 0 value with integer data type */
   public static final Literal ZERO = new Literal(0L, IntegerType.of(1).withNullability(false));
-  /**
-   * Literal 1 value with integer data type
-   */  
+
+  /** Literal 1 value with integer data type */
   public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
 
   public static Literal of(final Object value) {
-    if (value == null)
-      return NULL;
+    if (value == null) return NULL;
 
     if (value instanceof Boolean) {
       return ((boolean) value) ? TRUE : FALSE;
@@ -75,7 +66,7 @@ public final class Literal implements IExpression {
         return ONE;
       }
       if (BigDecimalMath.isLongValue(number)) {
-        Long longValue = number.longValueExact();      
+        Long longValue = number.longValueExact();
         return new Literal(longValue, IntegerType.from(longValue));
       }
       return new Literal(number, NumberType.from(number));
@@ -83,19 +74,15 @@ public final class Literal implements IExpression {
 
     if (value instanceof Long) {
       Long number = (Long) value;
-      if (number == 0L)
-        return ZERO;
-      if (number == 1L)
-        return ONE;      
+      if (number == 0L) return ZERO;
+      if (number == 1L) return ONE;
       return new Literal(number, IntegerType.from(number));
     }
 
     if (value instanceof Integer) {
       Integer number = (Integer) value;
-      if (number == 0)
-        return ZERO;
-      if (number == 1)
-        return ONE;      
+      if (number == 0) return ZERO;
+      if (number == 1) return ONE;
       Long longValue = number.longValue();
       return new Literal(longValue, IntegerType.from(longValue));
     }
@@ -104,7 +91,7 @@ public final class Literal implements IExpression {
       return new Literal(value, StringType.from((String) value));
     }
 
-    if (value instanceof byte[]) {      
+    if (value instanceof byte[]) {
       return new Literal(value, BinaryType.from((byte[]) value));
     }
 
@@ -119,29 +106,24 @@ public final class Literal implements IExpression {
     if (value instanceof JsonNode) {
       return new Literal(value, Types.JSON_NOT_NULL);
     }
-    
+
     if (value instanceof InetAddress) {
       return new Literal(value, Types.INET_NOT_NULL);
     }
-    
 
     // Special internal case TimeUnit, DataType
     return new Literal(value, Types.UNKNOWN);
   }
 
-  /**
-   * The data type of this literal.
-   */
+  /** The data type of this literal. */
   private final Type type;
 
-  /**
-   * The value of this literal.
-   */
+  /** The value of this literal. */
   private final Object value;
 
   /**
    * Create a typed literal value
-   * 
+   *
    * @param type
    */
   public Literal(final Object value, final Type type) {
@@ -175,8 +157,7 @@ public final class Literal implements IExpression {
   }
 
   public Class<?> getJavaClass() {
-    if (value == null)
-      return Void.class;
+    if (value == null) return Void.class;
     return value.getClass();
   }
 
@@ -250,71 +231,73 @@ public final class Literal implements IExpression {
           }
           writer.append('\'');
           break;
-        case DATE: {
-          ZonedDateTime datetime = (ZonedDateTime) value;
-          int nano = datetime.getNano();
-          if (nano > 0) {
-            writer.append("TIMESTAMP '");
+        case DATE:
+          {
+            ZonedDateTime datetime = (ZonedDateTime) value;
+            int nano = datetime.getNano();
+            if (nano > 0) {
+              writer.append("TIMESTAMP '");
 
-            if (nano % 1000000 == 0)
-              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF3").format(datetime));
-            else if (nano % 1000 == 0)
-              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF6").format(datetime));
-            else
-              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9").format(datetime));
-            if (datetime.getOffset().getTotalSeconds() != 0) {
-              if (datetime.getZone() instanceof ZoneOffset) {
-                writer.append(' ');
-                writer.append(datetime.getZone().toString());
+              if (nano % 1000000 == 0)
+                writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF3").format(datetime));
+              else if (nano % 1000 == 0)
+                writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF6").format(datetime));
+              else writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9").format(datetime));
+              if (datetime.getOffset().getTotalSeconds() != 0) {
+                if (datetime.getZone() instanceof ZoneOffset) {
+                  writer.append(' ');
+                  writer.append(datetime.getZone().toString());
 
-              } else {
-                writer.append("' AT TIME ZONE '");
-                writer.append(datetime.getZone().getId());
+                } else {
+                  writer.append("' AT TIME ZONE '");
+                  writer.append(datetime.getZone().getId());
+                }
+              }
+
+            } else if (datetime.getHour() == 0
+                && datetime.getMinute() == 0
+                && datetime.getSecond() == 0) {
+              writer.append("DATE '");
+              writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
+            } else {
+              writer.append("TIMESTAMP '");
+              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
+              if (datetime.getOffset().getTotalSeconds() != 0) {
+                if (datetime.getZone() instanceof ZoneOffset) {
+                  writer.append(' ');
+                  writer.append(datetime.getZone().toString());
+
+                } else {
+                  writer.append("' AT TIME ZONE '");
+                  writer.append(datetime.getZone().getId());
+                }
               }
             }
+            writer.append('\'');
+            break;
+          }
+        case INTERVAL:
+          {
+            Interval interval = (Interval) value;
+            IntervalQualifier qualifier = IntervalQualifier.of(interval);
 
-          } else if (datetime.getHour() == 0 && datetime.getMinute() == 0
-              && datetime.getSecond() == 0) {
-            writer.append("DATE '");
-            writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
-          } else {
-            writer.append("TIMESTAMP '");
-            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
-            if (datetime.getOffset().getTotalSeconds() != 0) {
-              if (datetime.getZone() instanceof ZoneOffset) {
-                writer.append(' ');
-                writer.append(datetime.getZone().toString());
-
-              } else {
-                writer.append("' AT TIME ZONE '");
-                writer.append(datetime.getZone().getId());
-              }
+            if (qualifier == null) {
+              writer.append("INTERVAL '");
+              writer.append(interval.toString());
+              writer.append("'");
+            } else if (qualifier.getStartUnit() == qualifier.getEndUnit()) {
+              writer.append("INTERVAL ");
+              writer.append(interval.toString(qualifier));
+              writer.append(' ');
+              writer.append(qualifier.toString());
+            } else {
+              writer.append("INTERVAL '");
+              writer.append(interval.toString(qualifier));
+              writer.append("' ");
+              writer.append(qualifier.toString());
             }
+            break;
           }
-          writer.append('\'');
-          break;
-        }
-        case INTERVAL: {
-          Interval interval = (Interval) value;
-          IntervalQualifier qualifier = IntervalQualifier.of(interval);
-
-          if (qualifier == null) {
-            writer.append("INTERVAL '");
-            writer.append(interval.toString());
-            writer.append("'");
-          } else if (qualifier.getStartUnit() == qualifier.getEndUnit()) {
-            writer.append("INTERVAL ");
-            writer.append(interval.toString(qualifier));
-            writer.append(' ');
-            writer.append(qualifier.toString());
-          } else {
-            writer.append("INTERVAL '");
-            writer.append(interval.toString(qualifier));
-            writer.append("' ");
-            writer.append(qualifier.toString());
-          }
-          break;
-        }
         case JSON:
           writer.append("JSON '");
           writer.append(StringType.convertToString((JsonNode) value));
@@ -342,7 +325,7 @@ public final class Literal implements IExpression {
 
   /**
    * Validate a literal.
-   * 
+   *
    * @param context The context against which the expression will be validated.
    */
   @Override

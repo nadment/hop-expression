@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -23,7 +24,6 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
 
 /**
  * Build a interval from its separate year, month, day, hour, minute, second[.fractional]) fields.
@@ -32,36 +32,33 @@ import java.math.BigDecimal;
 public class MakeIntervalFunction extends Function {
 
   public MakeIntervalFunction() {
-    super("MAKE_INTERVAL", ReturnTypes.INTERVAL_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, OperatorCategory.DATE,
+    super(
+        "MAKE_INTERVAL",
+        ReturnTypes.INTERVAL_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC,
+        OperatorCategory.DATE,
         "/docs/make_interval.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
-    if (v0 == null)
-      return null;
+    if (v0 == null) return null;
 
     Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
-      return null;
+    if (v1 == null) return null;
 
     Long v2 = operands[2].getValue(Long.class);
-    if (v2 == null)
-      return null;
+    if (v2 == null) return null;
 
     Long v3 = operands[3].getValue(Long.class);
-    if (v3 == null)
-      return null;
+    if (v3 == null) return null;
 
     Long v4 = operands[4].getValue(Long.class);
-    if (v4 == null)
-      return null;
+    if (v4 == null) return null;
 
     BigDecimal v5 = operands[5].getValue(BigDecimal.class);
-    if (v5 == null)
-      return null;
+    if (v5 == null) return null;
 
     int years = v0.intValue();
     int months = v1.intValue();

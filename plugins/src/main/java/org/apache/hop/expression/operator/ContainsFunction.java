@@ -28,9 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
 
-/**
- * Contains function
- */
+/** Contains function */
 @FunctionPlugin
 public class ContainsFunction extends Function {
 
@@ -38,8 +36,11 @@ public class ContainsFunction extends Function {
   public static final ContainsFunction BinaryContainsFunction = new BinaryContainsFunction();
 
   public ContainsFunction() {
-    super("CONTAINS", ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), OperatorCategory.COMPARISON,
+    super(
+        "CONTAINS",
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
+        OperatorCategory.COMPARISON,
         "/docs/contains.html");
   }
 
@@ -54,46 +55,38 @@ public class ContainsFunction extends Function {
     return new Call(StringContainsFunction, call.getOperands());
   }
 
-  /**
-   * Contains string function
-   */
+  /** Contains string function */
   private static final class StringContainsFunction extends ContainsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       String search = operands[1].getValue(String.class);
-      if (search == null)
-        return null;
+      if (search == null) return null;
 
-      if (value.contains(search))
-        return Boolean.TRUE;
+      if (value.contains(search)) return Boolean.TRUE;
 
       return Boolean.FALSE;
     }
   }
 
-  /**
-   * Contains binary function
-   */
+  /** Contains binary function */
   private static final class BinaryContainsFunction extends ContainsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       byte[] search = operands[1].getValue(byte[].class);
-      if (search == null)
-        return null;
+      if (search == null) return null;
 
       if (search.length == 0) {
         return Boolean.FALSE;
       }
 
-      outer: for (int i = 0; i < value.length - search.length + 1; i++) {
+      outer:
+      for (int i = 0; i < value.length - search.length + 1; i++) {
         for (int j = 0; j < search.length; j++) {
           if (value[i + j] != search[j]) {
             continue outer;
@@ -104,5 +97,4 @@ public class ContainsFunction extends Function {
       return Boolean.FALSE;
     }
   }
-
 }

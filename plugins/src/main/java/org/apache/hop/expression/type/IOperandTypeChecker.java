@@ -18,9 +18,7 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 
-/**
- * Strategy interface to check for allowed operand types of an operator call.
- */
+/** Strategy interface to check for allowed operand types of an operator call. */
 public interface IOperandTypeChecker {
 
   /**
@@ -34,13 +32,11 @@ public interface IOperandTypeChecker {
   /** Returns the range of operand counts allowed in a call. */
   IOperandCountRange getOperandCountRange();
 
-  /**
-   * Returns whether the {@code i}th operand is optional.
-   */
+  /** Returns whether the {@code i}th operand is optional. */
   default boolean isOptional(int i) {
     return false;
   }
-  
+
   /** Composes this with another checker using AND. */
   default IOperandTypeChecker and(IOperandTypeChecker checker) {
     return OperandTypes.and(this, checker);

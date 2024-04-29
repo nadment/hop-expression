@@ -16,9 +16,6 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.util.Characters;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -26,76 +23,71 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.util.Characters;
 
-/**
- * A interval represents a duration of time which can be used in date/time arithmetic.
- */
+/** A interval represents a duration of time which can be used in date/time arithmetic. */
 @SuppressWarnings("serial")
 public class Interval implements Serializable, Comparable<Interval> {
 
-  private static final EnumSet<TimeUnit> UNITS = EnumSet.of(TimeUnit.YEAR, TimeUnit.QUARTER, TimeUnit.MONTH, TimeUnit.WEEK, TimeUnit.DAY,
-      TimeUnit.HOUR, TimeUnit.MINUTE, TimeUnit.SECOND);
+  private static final EnumSet<TimeUnit> UNITS =
+      EnumSet.of(
+          TimeUnit.YEAR,
+          TimeUnit.QUARTER,
+          TimeUnit.MONTH,
+          TimeUnit.WEEK,
+          TimeUnit.DAY,
+          TimeUnit.HOUR,
+          TimeUnit.MINUTE,
+          TimeUnit.SECOND);
 
-  private static final Pattern PATTERN_YTS = Pattern.compile("^([+-])?(\\d+)-(\\d+) (?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final Pattern PATTERN_YTS =
+      Pattern.compile("^([+-])?(\\d+)-(\\d+) (?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
   private static final Pattern PATTERN_YTM = Pattern.compile("^([+-])?(\\d+)-(\\d+)$");
-  private static final Pattern PATTERN_DTS = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final Pattern PATTERN_DTS =
+      Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
   private static final Pattern PATTERN_DTM = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+)$");
   private static final Pattern PATTERN_DTH = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+)$");
-  private static final Pattern PATTERN_HTS = Pattern.compile("^([+-])?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final Pattern PATTERN_HTS =
+      Pattern.compile("^([+-])?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
   private static final Pattern PATTERN_HTM = Pattern.compile("^([+-])?(\\d+):(\\d+)$");
-  private static final Pattern PATTERN_MTS = Pattern.compile("^([+-])?(\\d+):(\\d+)(?:\\.(\\d+))?$");
-  /**
-   * The number of months per year.
-   */
+  private static final Pattern PATTERN_MTS =
+      Pattern.compile("^([+-])?(\\d+):(\\d+)(?:\\.(\\d+))?$");
+
+  /** The number of months per year. */
   static final long MONTHS_PER_YEAR = 12;
-  /**
-   * The number of seconds per minute.
-   */
+
+  /** The number of seconds per minute. */
   static final long SECONDS_PER_MINUTE = 60;
 
-  /**
-   * The number of seconds per hour.
-   */
+  /** The number of seconds per hour. */
   static final long SECONDS_PER_HOUR = 60 * SECONDS_PER_MINUTE;
 
-  /**
-   * The number of seconds per day.
-   */
+  /** The number of seconds per day. */
   static final long SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
 
-  /**
-   * The number of milliseconds per day.
-   */
+  /** The number of milliseconds per day. */
   static final long MILLIS_PER_DAY = 1000 * SECONDS_PER_DAY;
 
-  /**
-   * The number of nanoseconds per second.
-   */
+  /** The number of nanoseconds per second. */
   static final long NANOS_PER_SECOND = 1_000_000_000L;
 
-  /**
-   * The number of nanoseconds per minute.
-   */
+  /** The number of nanoseconds per minute. */
   static final long NANOS_PER_MINUTE = 60 * NANOS_PER_SECOND;
 
-  /**
-   * The number of nanoseconds per hour.
-   */
+  /** The number of nanoseconds per hour. */
   static final long NANOS_PER_HOUR = 60 * NANOS_PER_MINUTE;
 
-  /**
-   * The number of nanoseconds per day.
-   */
+  /** The number of nanoseconds per day. */
   static final long NANOS_PER_DAY = MILLIS_PER_DAY * 1_000_000;
 
   /**
-   * Parse a standard SQL string representation of a
-   * <code>INTERVAL YEAR</code>.
+   * Parse a standard SQL string representation of a <code>INTERVAL YEAR</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][years]</code>
-   * @return The parsed <code>YEAR</code> object, or <code>null</code> if the
-   *         string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][years]</code>
+   * @return The parsed <code>YEAR</code> object, or <code>null</code> if the string could not be
+   *     parsed.
    */
   public static Interval year(final String string) {
     try {
@@ -106,13 +98,11 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
-   * Parse a standard SQL string representation of a
-   * <code>INTERVAL YEAR TO MONTH</code>.
+   * Parse a standard SQL string representation of a <code>INTERVAL YEAR TO MONTH</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][years]-[months]</code>
-   * @return The parsed <code>YEAR TO MONTH</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][years]-[months]</code>
+   * @return The parsed <code>YEAR TO MONTH</code> object, or <code>null</code> if the string could
+   *     not be parsed.
    */
   public static Interval yearToMonth(final String string) {
     if (string != null) {
@@ -132,10 +122,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL QUARTER</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][quarters]</code>
-   * @return The parsed <code>INTERVAL QUARTER</code> object, or <code>null</code>
-   *         if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][quarters]</code>
+   * @return The parsed <code>INTERVAL QUARTER</code> object, or <code>null</code> if the string
+   *     could not be parsed.
    */
   public static Interval quarter(final String string) {
     try {
@@ -147,13 +136,11 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
-   * Parse a standard SQL string representation of a
-   * <code>INTERVAL MONTH</code>.
+   * Parse a standard SQL string representation of a <code>INTERVAL MONTH</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][months]</code>
-   * @return The parsed <code>MONTH</code> object, or <code>null</code> if the
-   *         string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][months]</code>
+   * @return The parsed <code>MONTH</code> object, or <code>null</code> if the string could not be
+   *     parsed.
    */
   public static Interval month(final String string) {
     try {
@@ -166,10 +153,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL WEEK</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][weeks]</code>
-   * @return The parsed <code>INTERVAL WEEK</code> object, or <code>null</code>
-   *         if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][weeks]</code>
+   * @return The parsed <code>INTERVAL WEEK</code> object, or <code>null</code> if the string could
+   *     not be parsed.
    */
   public static Interval week(final String string) {
     try {
@@ -183,10 +169,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL DAY</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][days]</code>
-   * @return The parsed <code>INTERVAL DAY</code> object, or <code>null</code>
-   *         if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][days]</code>
+   * @return The parsed <code>INTERVAL DAY</code> object, or <code>null</code> if the string could
+   *     not be parsed.
    */
   public static Interval day(final String string) {
     try {
@@ -199,16 +184,15 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL DAY TO HOUR</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][days] [hours]</code>
-   * @return The parsed <code>INTERVAL DAY TO HOUR</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][days] [hours]</code>
+   * @return The parsed <code>INTERVAL DAY TO HOUR</code> object, or <code>null</code> if the string
+   *     could not be parsed.
    */
   public static Interval dayToHour(final String string) {
     if (string != null) {
       Matcher matcher = PATTERN_DTH.matcher(string);
 
-      if (matcher.find()) {        
+      if (matcher.find()) {
         boolean negative = "-".equals(matcher.group(1));
         int days = parseField(matcher.group(2));
         int hours = parseField(matcher.group(3));
@@ -223,10 +207,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL DAY TO MINUTE</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][days] [hours]:[minutes]</code>
-   * @return The parsed <code>INTERVAL DAY TO MINUTE</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][days] [hours]:[minutes]</code>
+   * @return The parsed <code>INTERVAL DAY TO MINUTE</code> object, or <code>null</code> if the
+   *     string could not be parsed.
    */
   public static Interval dayToMinute(final String string) {
     if (string != null) {
@@ -248,10 +231,10 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL DAY TO SECOND</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
-   * @return The parsed <code>INTERVAL DAY TO MINUTE</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>
+   *     [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
+   * @return The parsed <code>INTERVAL DAY TO MINUTE</code> object, or <code>null</code> if the
+   *     string could not be parsed.
    */
   public static Interval dayToSecond(final String string) {
     if (string != null) {
@@ -275,10 +258,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL HOUR</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][hours]</code>
-   * @return The parsed <code>INTERVAL HOUR</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][hours]</code>
+   * @return The parsed <code>INTERVAL HOUR</code> object, or <code>null</code> if the string could
+   *     not be parsed.
    */
   public static Interval hour(final String string) {
     try {
@@ -291,10 +273,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL HOUR TO MINUTE</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][hours]:[minutes]</code>
-   * @return The parsed <code>INTERVAL HOUR TO MINUTE</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][hours]:[minutes]</code>
+   * @return The parsed <code>INTERVAL HOUR TO MINUTE</code> object, or <code>null</code> if the
+   *     string could not be parsed.
    */
   public static Interval hourToMinute(final String string) {
     if (string != null) {
@@ -306,7 +287,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int hours = parseField(matcher.group(2));
         int minutes = parseField(matcher.group(3));
 
-        return new Interval(0, 0, 0, hours, minutes, 0, 0, negative);        
+        return new Interval(0, 0, 0, hours, minutes, 0, 0, negative);
       }
     }
 
@@ -316,10 +297,10 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL HOUR TO SECOND</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][hours]:[minutes]:[seconds].[fractional seconds]</code>
-   * @return The parsed <code>INTERVAL HOUR TO SECOND</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>
+   *     [+|-][hours]:[minutes]:[seconds].[fractional seconds]</code>
+   * @return The parsed <code>INTERVAL HOUR TO SECOND</code> object, or <code>null</code> if the
+   *     string could not be parsed.
    */
   public static Interval hourToSecond(final String string) {
     if (string != null) {
@@ -342,10 +323,9 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL MINUTE</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][minutes]</code>
-   * @return The parsed <code>INTERVAL MINUTE</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][minutes]</code>
+   * @return The parsed <code>INTERVAL MINUTE</code> object, or <code>null</code> if the string
+   *     could not be parsed.
    */
   public static Interval minute(final String string) {
     try {
@@ -358,10 +338,10 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL MINUTE TO SECOND</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][[minutes]:[seconds].[fractional seconds]</code>
-   * @return The parsed <code>INTERVAL MINUTE TO SECOND</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>
+   *     [+|-][[minutes]:[seconds].[fractional seconds]</code>
+   * @return The parsed <code>INTERVAL MINUTE TO SECOND</code> object, or <code>null</code> if the
+   *     string could not be parsed.
    */
   public static Interval minuteToSecond(final String string) {
     if (string != null) {
@@ -383,14 +363,13 @@ public class Interval implements Serializable, Comparable<Interval> {
   /**
    * Parse a string representation of a <code>INTERVAL SECOND</code>.
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][seconds].[fractional seconds]</code>
-   * @return The parsed <code>INTERVAL SECOND</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>[+|-][seconds].[fractional seconds]
+   *     </code>
+   * @return The parsed <code>INTERVAL SECOND</code> object, or <code>null</code> if the string
+   *     could not be parsed.
    */
   public static Interval second(final String string) {
-    if (string == null)
-      return null;
+    if (string == null) return null;
 
     try {
       double value = Double.parseDouble(string);
@@ -404,89 +383,70 @@ public class Interval implements Serializable, Comparable<Interval> {
     }
   }
 
-  /**
-   * Create a new year interval.
-   */
+  /** Create a new year interval. */
   public static Interval of(int years) {
     return new Interval(years, 0, 0, 0, 0, 0, 0, false);
   }
 
-  /**
-   * Create a new year-month interval.
-   */
+  /** Create a new year-month interval. */
   public static Interval of(int years, int months) {
     return new Interval(years, months, 0, 0, 0, 0, 0, false);
   }
 
-
-  /**
-   * Create a new year-day interval.
-   */
+  /** Create a new year-day interval. */
   public static Interval of(int years, int months, int days) {
     return new Interval(years, months, days, 0, 0, 0, 0, false);
   }
 
-  /**
-   * Create a new year-hour interval.
-   */
+  /** Create a new year-hour interval. */
   public static Interval of(int years, int months, int days, int hours) {
     return new Interval(years, months, days, hours, 0, 0, 0, false);
   }
 
-  /**
-   * Create a new year-minute interval.
-   */
+  /** Create a new year-minute interval. */
   public static Interval of(int years, int months, int days, int hours, int minutes) {
     return new Interval(years, months, days, hours, minutes, 0, 0, false);
   }
 
-
-  /**
-   * Create a new year-second interval.
-   */
+  /** Create a new year-second interval. */
   public static Interval of(int years, int months, int days, int hours, int minutes, int seconds) {
     return new Interval(years, months, days, hours, minutes, seconds, 0, false);
   }
 
-
-  /**
-   * Create a new year-second with nanoseconds interval.
-   */
-  public static Interval of(int years, int months, int days, int hours, int minutes, int seconds,
-      int nanos) {
+  /** Create a new year-second with nanoseconds interval. */
+  public static Interval of(
+      int years, int months, int days, int hours, int minutes, int seconds, int nanos) {
     return new Interval(years, months, days, hours, minutes, seconds, nanos, false);
   }
 
-  /**
-   * {@code false} for zero or positive intervals, {@code true} for negative
-   * intervals.
-   */
+  /** {@code false} for zero or positive intervals, {@code true} for negative intervals. */
   private final boolean negative;
+
   private final long months;
   private final long seconds;
   private final int nanos;
 
-  /**
-   * Create a new zero interval.
-   */
+  /** Create a new zero interval. */
   public Interval() {
     this(0, 0, 0, 0, 0, 0, 0, false);
   }
 
-
-  /**
-   * Create a new year-second interval.
-   */
+  /** Create a new year-second interval. */
   Interval(int years, int months, int days, int hours, int minutes, int seconds, int nanos) {
     this(years, months, days, hours, minutes, seconds, 0, false);
   }
 
-  Interval(int years, int months, int days, int hours, int minutes, int seconds, int nanos,
+  Interval(
+      int years,
+      int months,
+      int days,
+      int hours,
+      int minutes,
+      int seconds,
+      int nanos,
       boolean negative) {
 
-
     // All part must be positive
-
 
     this.months = years * MONTHS_PER_YEAR + months;
     this.seconds =
@@ -503,9 +463,8 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
-   * Load a {@link Double} representation of a
-   * <code>INTERVAL YEAR TO SECOND</code> by assuming standard 24 hour days and
-   * 60 second minutes.
+   * Load a {@link Double} representation of a <code>INTERVAL YEAR TO SECOND</code> by assuming
+   * standard 24 hour days and 60 second minutes.
    *
    * @param milli The number of milliseconds as a fractional number
    * @return The loaded <code>INTERVAL DAY TO SECOND</code> object
@@ -534,14 +493,13 @@ public class Interval implements Serializable, Comparable<Interval> {
   // return new Interval(0L, seconds, nanos, value.signum()<0);
   // }
 
-
   /**
    * Parse a string representation of a <code>INTERVAL YEAR TO SECOND</code>
    *
-   * @param string A string representation of the form
-   *        <code>[+|-][years]-[months] [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
-   * @return The parsed <code>YEAR TO SECOND</code> object, or
-   *         <code>null</code> if the string could not be parsed.
+   * @param string A string representation of the form <code>
+   *     [+|-][years]-[months] [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
+   * @return The parsed <code>YEAR TO SECOND</code> object, or <code>null</code> if the string could
+   *     not be parsed.
    */
   public static Interval valueOf(String string) {
     if (string != null) {
@@ -558,8 +516,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int nanos = parseField(StringUtils.rightPad(matcher.group(8), 9, "0"));
 
         return new Interval(years, months, days, hours, minutes, seconds, nanos, negative);
-      }
-      else {
+      } else {
         return parse(string);
       }
     }
@@ -567,84 +524,61 @@ public class Interval implements Serializable, Comparable<Interval> {
     return null;
   }
 
-
   // -------------------------------------------------------------------------
   // Interval API
   // -------------------------------------------------------------------------
 
-  /**
-   * Negate the interval (change its sign)
-   */
+  /** Negate the interval (change its sign) */
   public final Interval negate() {
     return new Interval(months, seconds, nanos, !negative);
   }
 
-  /**
-   * Abs the interval
-   */
+  /** Abs the interval */
   public final Interval abs() {
     return new Interval(months, seconds, nanos, false);
   }
-  
-  /**
-   * Get the absolute years part of the interval.
-   */
+
+  /** Get the absolute years part of the interval. */
   public final long getYears() {
     return months / MONTHS_PER_YEAR;
   }
 
-  /**
-   * Get the absolute months part of the interval.
-   */
+  /** Get the absolute months part of the interval. */
   public final long getMonths() {
     return months % MONTHS_PER_YEAR;
   }
 
-  /**
-   * Get the absolute days part of the interval.
-   */
+  /** Get the absolute days part of the interval. */
   public final long getDays() {
     return seconds / SECONDS_PER_DAY;
   }
 
-  /**
-   * Get the absolute hours part of the interval.
-   */
+  /** Get the absolute hours part of the interval. */
   public final long getHours() {
     return (seconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR;
   }
 
-  /**
-   * Get the absolute minutes part of the interval.
-   */
+  /** Get the absolute minutes part of the interval. */
   public final long getMinutes() {
     return (seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE;
   }
 
-  /**
-   * Get the absolute seconds part of the interval.
-   */
+  /** Get the absolute seconds part of the interval. */
   public final long getSeconds() {
     return seconds % SECONDS_PER_MINUTE;
   }
 
-  /**
-   * Get the absolute milliseconds part within seconds of the interval.
-   */
+  /** Get the absolute milliseconds part within seconds of the interval. */
   public final long getMilliseconds() {
     return nanos / 1000000;
   }
 
-  /**
-   * Get the absolute microseconds part within seconds of the interval.
-   */
+  /** Get the absolute microseconds part within seconds of the interval. */
   public final long getMicroseconds() {
     return nanos / 1000;
   }
 
-  /**
-   * Get the absolute nanoseconds part within seconds of the interval.
-   */
+  /** Get the absolute nanoseconds part within seconds of the interval. */
   public final long getNanoseconds() {
     return nanos;
   }
@@ -657,7 +591,6 @@ public class Interval implements Serializable, Comparable<Interval> {
   public final int getSign() {
     return negative ? -1 : 1;
   }
-
 
   // public final long toMonths() {
   // return months;
@@ -695,31 +628,23 @@ public class Interval implements Serializable, Comparable<Interval> {
 
   @Override
   public final boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
     if (getClass() == obj.getClass()) {
       Interval other = (Interval) obj;
-      if (months != other.months)
-        return false;
-      if (seconds != other.seconds)
-        return false;
-      if (nanos != other.nanos)
-        return false;
-      if (negative != other.negative && !isZero())
-        return false;
+      if (months != other.months) return false;
+      if (seconds != other.seconds) return false;
+      if (nanos != other.nanos) return false;
+      if (negative != other.negative && !isZero()) return false;
       return true;
-    } else
-      return false;
+    } else return false;
   }
 
   /**
    * Checks if this interval is zero length.
-   * <p>
-   * A {@code Interval} represents a directed distance between two points on
-   * the time-line and can therefore be positive, zero or negative.
-   * This method checks whether the length is zero.
+   *
+   * <p>A {@code Interval} represents a directed distance between two points on the time-line and
+   * can therefore be positive, zero or negative. This method checks whether the length is zero.
    *
    * @return true if this interval has a total length equal to zero
    */
@@ -765,8 +690,7 @@ public class Interval implements Serializable, Comparable<Interval> {
 
     switch (qualifier) {
       case YEAR:
-        if (negative)
-          sb.append('-');
+        if (negative) sb.append('-');
         sb.append(getYears());
         break;
 
@@ -778,26 +702,22 @@ public class Interval implements Serializable, Comparable<Interval> {
         break;
 
       case MONTH:
-        if (negative)
-          sb.append('-');
+        if (negative) sb.append('-');
         sb.append(getMonths());
         break;
 
       case DAY:
-        if (negative)
-          sb.append('-');
+        if (negative) sb.append('-');
         sb.append(getDays());
         break;
 
       case HOUR:
-        if (negative)
-          sb.append('-');
+        if (negative) sb.append('-');
         sb.append(getHours());
         break;
 
       case MINUTE:
-        if (negative)
-          sb.append('-');
+        if (negative) sb.append('-');
         sb.append(getMinutes());
         break;
 
@@ -843,8 +763,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         break;
 
       case SECOND:
-        if (negative)
-          sb.append('-');
+        if (negative) sb.append('-');
         toStringSecond(sb);
         break;
 
@@ -886,25 +805,25 @@ public class Interval implements Serializable, Comparable<Interval> {
 
   public Interval minus(Interval other) {
     if (other.negative) {
-      return new Interval(months + other.months, seconds + other.seconds, nanos + other.nanos,
-          negative);
+      return new Interval(
+          months + other.months, seconds + other.seconds, nanos + other.nanos, negative);
     }
-    return new Interval(months - other.months, seconds - other.seconds, nanos - other.nanos,
-        negative);
+    return new Interval(
+        months - other.months, seconds - other.seconds, nanos - other.nanos, negative);
   }
 
   public Interval plus(Interval other) {
     if (other.negative) {
-      return new Interval(months - other.months, seconds - other.seconds, nanos - other.nanos,
-          negative);
+      return new Interval(
+          months - other.months, seconds - other.seconds, nanos - other.nanos, negative);
     }
-    return new Interval(months + other.months, seconds + other.seconds, nanos + other.nanos,
-        negative);
+    return new Interval(
+        months + other.months, seconds + other.seconds, nanos + other.nanos, negative);
   }
 
   /**
    * Adds this interval to the specified temporal object.
-   * 
+   *
    * @param temporal the temporal object to adjust, not null
    */
   public ZonedDateTime addTo(ZonedDateTime temporal) {
@@ -935,7 +854,7 @@ public class Interval implements Serializable, Comparable<Interval> {
 
   /**
    * Subtracts this interval from the specified temporal object.
-   * 
+   *
    * @param temporal the temporal object to adjust, not null
    */
   public ZonedDateTime subtractFrom(ZonedDateTime temporal) {
@@ -965,8 +884,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   protected static int parseField(String str) {
-    if (str == null || str.length() == 0)
-      return 0;
+    if (str == null || str.length() == 0) return 0;
     return Integer.parseInt(str);
   }
 
@@ -1002,7 +920,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         quantity += digit;
       }
 
-      if (index == start) {     
+      if (index == start) {
         return null;
       }
 
@@ -1046,8 +964,7 @@ public class Interval implements Serializable, Comparable<Interval> {
           index += unit.name().length();
           if (index < length) {
             char ch = text.charAt(index);
-            if (ch == 's' || ch == 'S')
-              index++;
+            if (ch == 's' || ch == 'S') index++;
           }
 
           noMatch = false;
@@ -1055,8 +972,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         }
       }
 
-      if (noMatch)
-        return null;
+      if (noMatch) return null;
 
       if (index < length && text.charAt(index) == ',') {
         index++;

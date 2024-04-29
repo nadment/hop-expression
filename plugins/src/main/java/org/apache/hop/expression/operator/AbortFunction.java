@@ -24,14 +24,17 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * This function abort execution of the pipeline or workflow and log message.
- */
+/** This function abort execution of the pipeline or workflow and log message. */
 @FunctionPlugin
 public class AbortFunction extends Function {
 
   public AbortFunction() {
-    super("ABORT", ReturnTypes.ANY, OperandTypes.STRING, OperatorCategory.SPECIAL, "/docs/abort.html");
+    super(
+        "ABORT",
+        ReturnTypes.ANY,
+        OperandTypes.STRING,
+        OperatorCategory.SPECIAL,
+        "/docs/abort.html");
   }
 
   @Override

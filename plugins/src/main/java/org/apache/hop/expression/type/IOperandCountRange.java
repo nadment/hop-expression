@@ -16,22 +16,14 @@
  */
 package org.apache.hop.expression.type;
 
-/**
- * A class that describes how many operands an operator can take.
- */
+/** A class that describes how many operands an operator can take. */
 public interface IOperandCountRange {
-  /**
-   * Returns whether {@code count} is a valid number of operands.
-   */
+  /** Returns whether {@code count} is a valid number of operands. */
   boolean isValid(int count);
 
-  /**
-   * Returns an lower bound. -1 if there is no lower bound.
-   */
+  /** Returns an lower bound. -1 if there is no lower bound. */
   int getMin();
 
-  /**
-   * Returns an upper bound. -1 if there is no upper bound.
-   */
+  /** Returns an upper bound. -1 if there is no upper bound. */
   int getMax();
 }

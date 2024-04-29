@@ -16,24 +16,26 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.Call;
 import java.util.AbstractList;
 import java.util.List;
+import org.apache.hop.expression.Call;
 
-/**
- * Allows multiple {@link IOperandTypeChecker} rules to be combined into one rule.
- */
+/** Allows multiple {@link IOperandTypeChecker} rules to be combined into one rule. */
 public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
   public enum Composition {
-    AND, OR, SEQUENCE, REPEAT
+    AND,
+    OR,
+    SEQUENCE,
+    REPEAT
   }
 
   protected final Composition composition;
   protected final List<IOperandTypeChecker> rules;
   protected final IOperandCountRange repeatRange;
 
-  CompositeOperandTypeChecker(Composition composition, List<IOperandTypeChecker> rules, IOperandCountRange repeatRange) {
+  CompositeOperandTypeChecker(
+      Composition composition, List<IOperandTypeChecker> rules, IOperandCountRange repeatRange) {
     super();
     this.composition = composition;
     this.rules = rules;
@@ -43,7 +45,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
   @Override
   public boolean checkOperandTypes(Call call) {
     switch (composition) {
-      case REPEAT:      
+      case REPEAT:
         for (IOperandTypeChecker rule : rules) {
           ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
 
@@ -95,54 +97,55 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
       case AND:
       case OR:
       default:
-        final List<IOperandCountRange> ranges = new AbstractList<IOperandCountRange>() {
-          @Override
-          public IOperandCountRange get(int index) {
-            return rules.get(index).getOperandCountRange();
-          }
+        final List<IOperandCountRange> ranges =
+            new AbstractList<IOperandCountRange>() {
+              @Override
+              public IOperandCountRange get(int index) {
+                return rules.get(index).getOperandCountRange();
+              }
 
-          @Override
-          public int size() {
-            return rules.size();
-          }
-        };
+              @Override
+              public int size() {
+                return rules.size();
+              }
+            };
 
         final int min = min(ranges);
         final int max = max(ranges);
 
-        IOperandCountRange composite = new IOperandCountRange() {
-          @Override
-          public boolean isValid(int count) {
-            switch (composition) {
-              case AND:
-                for (IOperandCountRange range : ranges) {
-                  if (!range.isValid(count)) {
-                    return false;
-                  }
-                }
-                return true;
-              case OR:
-              default:
-                for (IOperandCountRange range : ranges) {
-                  if (range.isValid(count)) {
+        IOperandCountRange composite =
+            new IOperandCountRange() {
+              @Override
+              public boolean isValid(int count) {
+                switch (composition) {
+                  case AND:
+                    for (IOperandCountRange range : ranges) {
+                      if (!range.isValid(count)) {
+                        return false;
+                      }
+                    }
                     return true;
-                  }
+                  case OR:
+                  default:
+                    for (IOperandCountRange range : ranges) {
+                      if (range.isValid(count)) {
+                        return true;
+                      }
+                    }
+                    return false;
                 }
-                return false;
-            }
-          }
+              }
 
-          @Override
-          public int getMin() {
-            return min;
-          }
+              @Override
+              public int getMin() {
+                return min;
+              }
 
-          @Override
-          public int getMax() {
-            return max;
-          }
-        };
-
+              @Override
+              public int getMax() {
+                return max;
+              }
+            };
 
         if (max >= 0) {
           for (int i = min; i <= max; i++) {

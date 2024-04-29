@@ -16,14 +16,15 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import org.apache.hop.expression.Identifier;
-import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import org.apache.hop.expression.Identifier;
+import org.junit.Test;
 
 public class IdentifierTest extends ExpressionTest {
-   
+
   @Test
   public void test() throws Exception {
     Identifier identifier1 = new Identifier(0, "FIELD_STRING");
@@ -33,10 +34,10 @@ public class IdentifierTest extends ExpressionTest {
     assertEquals("FIELD_STRING", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());
-    assertNotEquals(identifier1,null);    
-    assertNotEquals(identifier1,identifier3);
+    assertNotEquals(identifier1, null);
+    assertNotEquals(identifier1, identifier3);
   }
-  
+
   @Test
   public void eval() throws Exception {
     evalEquals("FIELD_INTEGER%2", 0L);
@@ -44,13 +45,12 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
     evalEquals("\"IDENTIFIER_UNDERSCORE\"", "UNDERSCORE");
     evalEquals("\"IDENTIFIER lower\"", "lower");
-    
+
     evalFails("BIDON||'X'");
     evalFails("ABS(FIELD_STRING)");
     evalFails("SIN(FIELD_STRING)");
     evalFails("CAST(FIELD_STRING as INTEGER)");
-  }  
-  
+  }
 
   @Test
   public void coercionValueMetaBoolean() throws Exception {
@@ -68,18 +68,19 @@ public class IdentifierTest extends ExpressionTest {
     // From string value meta
     evalEquals("Upper(FIELD_STRING_BOOLEAN_TRUE)", "TRUE");
     evalEquals("Upper(FIELD_STRING_BOOLEAN_FALSE)", "FALSE");
-    evalEquals("ADD_YEARS(Date '2000-01-01',FIELD_STRING_INTEGER)", LocalDate.of(2025, Month.JANUARY, 1));
+    evalEquals(
+        "ADD_YEARS(Date '2000-01-01',FIELD_STRING_INTEGER)", LocalDate.of(2025, Month.JANUARY, 1));
     evalEquals("Abs(FIELD_STRING_NUMBER)", new BigDecimal("12.56"));
     evalEquals("LOWER(FIELD_STRING_JSON)", "{id:\"01\",name:\"john\",age:29}");
     evalEquals("Json_Value(FIELD_STRING_JSON, '$.age')", 29L);
-   // evalEquals("DECOMPRESS(FIELD_STRING)","");
+    // evalEquals("DECOMPRESS(FIELD_STRING)","");
   }
-  
+
   @Test
   public void coercionValueMetaInteger() throws Exception {
     // From integer value meta
     evalTrue("FIELD_INTEGER IS TRUE");
-    evalTrue("FIELD_INTEGER_ZERO IS FALSE");      
+    evalTrue("FIELD_INTEGER_ZERO IS FALSE");
     evalEquals("Upper(FIELD_INTEGER)", "40");
     evalEquals("ADD_YEARS(Date '2000-01-01',FIELD_INTEGER)", LocalDate.of(2040, Month.JANUARY, 1));
     evalFails("DECOMPRESS(FIELD_INTEGER)");
@@ -87,44 +88,44 @@ public class IdentifierTest extends ExpressionTest {
 
   @Test
   public void coercionValueMetaNumber() throws Exception {
-    // From number value meta 
-    evalEquals("Upper(FIELD_NUMBER)","-5.12");
+    // From number value meta
+    evalEquals("Upper(FIELD_NUMBER)", "-5.12");
     evalTrue("FIELD_NUMBER IS TRUE");
     evalTrue("FIELD_NUMBER_ZERO IS FALSE");
-    evalEquals("LEFT('ABCDEFG',ABS(FIELD_NUMBER))", "ABCDE");      
+    evalEquals("LEFT('ABCDEFG',ABS(FIELD_NUMBER))", "ABCDE");
     evalEquals("ADD_YEARS(Date '2020-01-01',FIELD_NUMBER)", LocalDate.of(2015, Month.JANUARY, 1));
-    evalFails("DECOMPRESS(FIELD_NUMBER)");    
+    evalFails("DECOMPRESS(FIELD_NUMBER)");
   }
 
   @Test
   public void coercionValueMetaBigNumber() throws Exception {
     // From bignumber value meta
-    evalEquals("Upper(FIELD_BIGNUMBER)","123456.789");
+    evalEquals("Upper(FIELD_BIGNUMBER)", "123456.789");
     evalTrue("FIELD_BIGNUMBER IS TRUE");
     evalTrue("FIELD_BIGNUMBER_ZERO IS FALSE");
-    evalEquals("LEFT('ABCDEFG',FIELD_BIGNUMBER)", "ABCDEFG");      
-    evalFails("DECOMPRESS(FIELD_BIGNUMBER)");    
+    evalEquals("LEFT('ABCDEFG',FIELD_BIGNUMBER)", "ABCDEFG");
+    evalFails("DECOMPRESS(FIELD_BIGNUMBER)");
   }
-  
+
   @Test
   public void coercionValueMetaBinary() throws Exception {
     // From binary value meta
     evalEquals("FIELD_BINARY::STRING", "TEST");
   }
-  
+
   @Test
   public void coercionValueMetaJson() throws Exception {
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
     evalEquals("LENGTH(FIELD_JSON::STRING)", 466L);
-    evalFails("FIELD_JSON IS TRUE");    
+    evalFails("FIELD_JSON IS TRUE");
   }
-  
+
   @Test
   public void coercionValueMetaInet() throws Exception {
-      // Unsupported value meta
-      evalFails("UPPER(FIELD_INET)");
+    // Unsupported value meta
+    evalFails("UPPER(FIELD_INET)");
   }
-  
+
   @Test
   public void escape() throws Exception {
     // Reserved word
@@ -132,7 +133,7 @@ public class IdentifierTest extends ExpressionTest {
     // Field name like a function name
     evalEquals("\"YEAR\"", 2020L);
   }
-  
+
   @Test
   public void write() throws Exception {
     optimize("FIELD_STRING");
@@ -144,10 +145,8 @@ public class IdentifierTest extends ExpressionTest {
     optimize("\"CENTURY\"");
     optimize("\"YEAR\"");
     // Function name
-    optimize("\"ASCII\"");    
+    optimize("\"ASCII\"");
     // Contains space
-    optimize("Trim(\"IDENTIFIER SPACE\")","TRIM(\"IDENTIFIER SPACE\")");
+    optimize("Trim(\"IDENTIFIER SPACE\")", "TRIM(\"IDENTIFIER SPACE\")");
   }
 }
-
-

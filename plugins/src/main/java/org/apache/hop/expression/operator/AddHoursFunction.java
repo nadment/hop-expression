@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,17 +27,18 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
-/**
- * Adds or subtracts a specified number of hours to a date or timestamp
- */
+/** Adds or subtracts a specified number of hours to a date or timestamp */
 @FunctionPlugin
 public class AddHoursFunction extends Function {
   public static final Function INSTANCE = new AddHoursFunction();
 
   public AddHoursFunction() {
-    super("ADD_HOURS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, OperatorCategory.DATE,
+    super(
+        "ADD_HOURS",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TEMPORAL_NUMERIC,
+        OperatorCategory.DATE,
         "/docs/add_hours.html");
   }
 
@@ -54,12 +56,10 @@ public class AddHoursFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     Long hours = operands[1].getValue(Long.class);
-    if (hours == null)
-      return null;
+    if (hours == null) return null;
 
     return value.plusHours(hours);
   }

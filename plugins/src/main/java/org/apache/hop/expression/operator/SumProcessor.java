@@ -14,9 +14,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import java.math.BigDecimal;
 
 /** Returns the sum of all values in the expression. Null values are ignored. */
 public class SumProcessor implements IExpressionProcessor {

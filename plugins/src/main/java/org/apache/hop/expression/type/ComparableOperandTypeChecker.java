@@ -22,8 +22,8 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
 
   private final TypeComparability requiredComparability;
 
-  public ComparableOperandTypeChecker(IOperandCountRange range,
-      TypeComparability requiredComparability) {
+  public ComparableOperandTypeChecker(
+      IOperandCountRange range, TypeComparability requiredComparability) {
     super(range);
     this.requiredComparability = requiredComparability;
   }
@@ -46,8 +46,7 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
       }
 
       // Ignore null
-      if (operand.isNull())
-        continue;
+      if (operand.isNull()) continue;
       if (firstFamily != null) {
         if (!type.getFamily().isCoercible(firstFamily)) {
           return false;
@@ -55,7 +54,6 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
       } else {
         firstFamily = type.getFamily();
       }
-
     }
 
     return true;

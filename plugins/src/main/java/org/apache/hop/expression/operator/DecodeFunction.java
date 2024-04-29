@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,18 +28,20 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Compares the select expression to each search expression in order. As soon as a search
- * expression matches the selection expression, the corresponding result expression is returned.
+ * Compares the select expression to each search expression in order. As soon as a search expression
+ * matches the selection expression, the corresponding result expression is returned.
  */
 @FunctionPlugin
 public class DecodeFunction extends Function {
 
   public DecodeFunction() {
-    super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, OperatorCategory.CONDITIONAL,
+    super(
+        "DECODE",
+        ReturnTypes.ARG2,
+        OperandTypes.DECODE_FUNCTION,
+        OperatorCategory.CONDITIONAL,
         "/docs/decode.html");
   }
 
@@ -80,7 +84,7 @@ public class DecodeFunction extends Function {
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
       Object search = operands[i].getValue();
       // DECODE use compare to handle NULL value
-      if (Comparison.compare(value, search)==0) {
+      if (Comparison.compare(value, search) == 0) {
         index = i + 1;
         break;
       }
@@ -88,8 +92,7 @@ public class DecodeFunction extends Function {
     if (index < 0 && operands.length % 2 == 0) {
       index = operands.length - 1;
     }
-    if (index < 0)
-      return null;
+    if (index < 0) return null;
 
     return operands[index].getValue();
   }

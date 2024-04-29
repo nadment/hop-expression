@@ -17,12 +17,12 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
+import java.util.List;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
-import java.util.List;
 
 public class RouteData extends BaseTransformData implements ITransformData {
 

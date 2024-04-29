@@ -16,34 +16,34 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Calculates the arc tangent (inverted tangent) of y / x in the range -pi to pi.
- */
+/** Calculates the arc tangent (inverted tangent) of y / x in the range -pi to pi. */
 @FunctionPlugin
 public class Atan2Function extends Function {
 
   public Atan2Function() {
-    super("ATAN2", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super(
+        "ATAN2",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.TRIGONOMETRY,
         "/docs/atan2.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value0 = operands[0].getValue(BigDecimal.class);
-    if (value0 == null)
-      return null;
+    if (value0 == null) return null;
     BigDecimal value1 = operands[1].getValue(BigDecimal.class);
-    if (value1 == null)
-      return null;
+    if (value1 == null) return null;
 
     return BigDecimalMath.atan2(value0, value1, MATH_CONTEXT);
   }

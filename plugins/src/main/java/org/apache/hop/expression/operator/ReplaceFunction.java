@@ -32,19 +32,20 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ReplaceFunction extends Function {
 
   public ReplaceFunction() {
-    super("REPLACE", ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), OperatorCategory.STRING,
+    super(
+        "REPLACE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
+        OperatorCategory.STRING,
         "/docs/replace.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
-    if (string == null)
-      return null;
+    if (string == null) return null;
     String search = operands[1].getValue(String.class);
-    if (search == null)
-      return null;
+    if (search == null) return null;
 
     if (operands.length == 3) {
       String replacement = operands[2].getValue(String.class);

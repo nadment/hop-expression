@@ -35,22 +35,25 @@ import org.apache.hop.expression.type.Types;
 public class GreatestFunction extends Function {
 
   public GreatestFunction() {
-    super("GREATEST", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.COMPARABLE_ORDERED_VARIADIC,
-        OperatorCategory.CONDITIONAL, "/docs/greatest.html");
+    super(
+        "GREATEST",
+        ReturnTypes.LEAST_RESTRICTIVE,
+        OperandTypes.COMPARABLE_ORDERED_VARIADIC,
+        OperatorCategory.CONDITIONAL,
+        "/docs/greatest.html");
   }
-  
+
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.getValue();
-      if (Comparison.compare(result, value) < 0)
-        result = value;
+      if (Comparison.compare(result, value) < 0) result = value;
     }
 
     return result;

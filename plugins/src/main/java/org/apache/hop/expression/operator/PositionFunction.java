@@ -16,13 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * Returns the position in the string that is the first character of a specified occurrence of the
@@ -32,7 +32,11 @@ import java.io.StringWriter;
 public class PositionFunction extends Function {
 
   public PositionFunction() {
-    super("POSITION", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING,
+    super(
+        "POSITION",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING,
+        OperatorCategory.STRING,
         "/docs/position.html");
   }
 

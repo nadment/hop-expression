@@ -18,18 +18,23 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
 import org.apache.hop.expression.FunctionRegistry;
 import org.junit.Test;
 
 public class FunctionRegistryTest extends ExpressionTest {
-  
+
   @Test
   public void test() throws Exception {
     assertNotNull(FunctionRegistry.getFunctions());
     assertNotNull(FunctionRegistry.getFunctionNames());
     assertNull(FunctionRegistry.getFunction(null));
-    assertEquals(FunctionRegistry.getFunction("CEIL").getId(), FunctionRegistry.getFunction("CEILING").getId());
-    assertEquals(FunctionRegistry.getFunction("CEIL").getName(), FunctionRegistry.getFunction("CEILING").getName());
+    assertEquals(
+        FunctionRegistry.getFunction("CEIL").getId(),
+        FunctionRegistry.getFunction("CEILING").getId());
+    assertEquals(
+        FunctionRegistry.getFunction("CEIL").getName(),
+        FunctionRegistry.getFunction("CEILING").getName());
     assertEquals(FunctionRegistry.getFunction("CEIL"), FunctionRegistry.getFunction("CEILING"));
   }
 }

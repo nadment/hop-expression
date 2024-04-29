@@ -31,8 +31,7 @@ public class CountValueProcessor implements IExpressionProcessor {
 
     Object result = operands[0].getValue();
 
-    if (result != null)
-      count++;
+    if (result != null) count++;
   }
 
   @Override

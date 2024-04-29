@@ -16,16 +16,14 @@ package org.apache.hop.expression;
 
 import org.apache.hop.i18n.BaseMessages;
 
-/**
- * Enumeration of the error which can be used in expression exception.
- */
+/** Enumeration of the error which can be used in expression exception. */
 public enum ErrorCode {
   /** Internal error {0} */
   INTERNAL_ERROR,
-  /** Expression source is null */  
+  /** Expression source is null */
   NULL_SOURCE_ERROR,
   /** Syntax error: {0} */
-  SYNTAX_ERROR, 
+  SYNTAX_ERROR,
   /** Incorrect syntax near keyword ''{0}'' */
   SYNTAX_ERROR_NEAR_KEYWORD,
   /** Incorrect syntax for function ''{0}'' */
@@ -45,7 +43,7 @@ public enum ErrorCode {
   /** Field not found ''{0}'' */
   UNRESOLVED_IDENTIFIER,
   /** Function ''{0}'' does not exist */
-  FUNCTION_DOES_NOT_EXIST,  
+  FUNCTION_DOES_NOT_EXIST,
   /** Not enough arguments to call function {0} */
   NOT_ENOUGH_ARGUMENT,
   /** Too many arguments to call function {0} */
@@ -64,7 +62,7 @@ public enum ErrorCode {
   MISSING_RIGHT_BRACKET,
   /** Missing right parenthesis */
   MISSING_RIGHT_PARENTHESIS,
-  /** Unbalanced parenthesis */ 
+  /** Unbalanced parenthesis */
   UNBALANCE_PARENTHESIS,
   /** Unexpected character ''{0}'' */
   UNEXPECTED_CHARACTER,
@@ -81,7 +79,7 @@ public enum ErrorCode {
   /** The scale of {0} must be within the range {1} to {2} */
   SCALE_OUT_OF_RANGE,
   /** The scale of {0} must be less than or equal to the precision */
-  SCALE_GREATER_THAN_PRECISION,  
+  SCALE_GREATER_THAN_PRECISION,
   /** The index ''{0}'' is out of bounds */
   INVALID_ARRAY_INDEX,
   /** Invalid Boolean ''{0}'' */
@@ -90,7 +88,7 @@ public enum ErrorCode {
   INVALID_DATE,
   /** Time unit ''{0}'' is not recognized */
   INVALID_TIMEUNIT,
-  /** Invalid date format ''{0}'' at position {1} */ 
+  /** Invalid date format ''{0}'' at position {1} */
   INVALID_DATE_FORMAT,
   /** Time value ''{0}'' is not recognized */
   INVALID_TIME,
@@ -126,9 +124,9 @@ public enum ErrorCode {
   JSON_PATH_NOT_FOUND,
   /** Error compile user defined function ''{0}'' */
   UDF_COMPILATION_ERROR,
-  /** Implicit conversion from {1} to {2} is not supported for value ''{0}'' */ 
+  /** Implicit conversion from {1} to {2} is not supported for value ''{0}'' */
   UNSUPPORTED_COERCION,
-  /* Conversion from {1} to {2} is not supported for value ''{0}'' */ 
+  /* Conversion from {1} to {2} is not supported for value ''{0}'' */
   UNSUPPORTED_CONVERSION,
   /** Field ''{0}'' of type ''{1}'' not supported */
   UNSUPPORTED_VALUEMETA,
@@ -155,6 +153,6 @@ public enum ErrorCode {
   }
 
   public String message(Object... objects) {
-    return BaseMessages.getString(ErrorCode.class, "Expression.ErrorCode."+name(), objects);
+    return BaseMessages.getString(ErrorCode.class, "Expression.ErrorCode." + name(), objects);
   }
 }

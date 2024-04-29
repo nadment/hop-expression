@@ -30,15 +30,16 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
 
-
-/**
- * Check if a string or a numeric is a valid number.
- */
+/** Check if a string or a numeric is a valid number. */
 @FunctionPlugin
 public class IsNumberFunction extends Function {
 
   public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
+    super(
+        "IS_NUMBER",
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY,
+        OperatorCategory.COMPARISON,
         "/docs/is_number.html");
   }
 
@@ -64,8 +65,7 @@ public class IsNumberFunction extends Function {
     String value = operands[0].getValue(String.class);
 
     // Return FALSE if a value is NULL.
-    if (value == null)
-      return Boolean.FALSE;
+    if (value == null) return Boolean.FALSE;
 
     try {
       NumberType.convertToNumber(value);

@@ -71,22 +71,20 @@ public final class IntervalType extends Type {
       return Interval.valueOf((String) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        TypeId.fromValue(value), this);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
   /**
    * Convert String value to Interval.
-   * 
+   *
    * @param str the string to convert
    * @return Interval
    */
   public static Interval convertToInterval(final String str) throws ConversionException {
-    if (str == null)
-      return null;
+    if (str == null) return null;
     Interval value = Interval.valueOf(str);
-    if (value == null)
-      throw new ConversionException(ErrorCode.INVALID_INTERVAL, str);
+    if (value == null) throw new ConversionException(ErrorCode.INVALID_INTERVAL, str);
     return value;
   }
 }

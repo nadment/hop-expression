@@ -24,21 +24,25 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Return the ASCII value of the first character in a string.
- * If the string is empty, a value of 0 is returned.
+ * Return the ASCII value of the first character in a string. If the string is empty, a value of 0
+ * is returned.
  */
 @FunctionPlugin
 public class AsciiFunction extends Function {
 
   public AsciiFunction() {
-    super("ASCII", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING, "/docs/ascii.html");
+    super(
+        "ASCII",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
+        "/docs/ascii.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return (value.isEmpty() ? 0L : Long.valueOf(value.charAt(0)));
   }

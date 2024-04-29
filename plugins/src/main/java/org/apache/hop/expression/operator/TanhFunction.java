@@ -16,31 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Calculates the hyperbolic tangent of its argument.
- */
+/** Calculates the hyperbolic tangent of its argument. */
 @FunctionPlugin
 public class TanhFunction extends Function {
 
   public TanhFunction() {
-    super("TANH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super(
+        "TANH",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.TRIGONOMETRY,
         "/docs/tanh.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return BigDecimalMath.tanh(value, MATH_CONTEXT);
   }
 }

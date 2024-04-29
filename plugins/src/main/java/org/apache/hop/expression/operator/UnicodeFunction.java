@@ -33,15 +33,18 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {
-    super("UNICODE", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "UNICODE",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/unicode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     int codePoint = 0;
     if (value.length() > 0) {

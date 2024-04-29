@@ -17,18 +17,16 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.ParseNumberException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.ParseNumberException;
 
-/**
- * Number type with an optional precision and scale:
- */
+/** Number type with an optional precision and scale: */
 public final class NumberType extends Type {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
@@ -37,9 +35,9 @@ public final class NumberType extends Type {
     int precision = number.precision();
     int scale = number.scale();
 
-    if (precision == scale) precision = scale+1;
+    if (precision == scale) precision = scale + 1;
     else if (precision < scale) precision += scale;
-    
+
     return new NumberType(precision, scale, false);
   }
 
@@ -53,21 +51,19 @@ public final class NumberType extends Type {
 
   /**
    * Create a number data type
-   * 
+   *
    * @param precision Total number of digits allowed.
    * @param scale Number of digits allowed to the right of the decimal point.
    * @param nullable
    * @return
    */
   public static NumberType of(int precision, int scale, boolean nullable) {
-    if (precision == PRECISION_NOT_SPECIFIED)
-      precision = TypeId.NUMBER.getMaxPrecision();
-    if (scale == SCALE_NOT_SPECIFIED)
-      scale = 0;
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeId.NUMBER.getMaxPrecision();
+    if (scale == SCALE_NOT_SPECIFIED) scale = 0;
 
-    if (precision == TypeId.NUMBER.getMaxPrecision() && scale == TypeId.NUMBER.getDefaultScale()
-        && nullable)
-      return Types.NUMBER;
+    if (precision == TypeId.NUMBER.getMaxPrecision()
+        && scale == TypeId.NUMBER.getDefaultScale()
+        && nullable) return Types.NUMBER;
 
     return new NumberType(precision, scale, nullable);
   }
@@ -125,7 +121,7 @@ public final class NumberType extends Type {
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
+   *     numeric, or null if none
    * @return the converted value
    */
   @Override
@@ -147,15 +143,12 @@ public final class NumberType extends Type {
     }
     if (value instanceof Long) {
       long v = (long) value;
-      if (v == 0L)
-        return BigDecimal.ZERO;
-      if (v == 1L)
-        return BigDecimal.ONE;
+      if (v == 0L) return BigDecimal.ZERO;
+      if (v == 1L) return BigDecimal.ONE;
       return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
       return convertToNumber((String) value);
-
     }
     if (value instanceof byte[]) {
       return convertToNumber((byte[]) value);
@@ -164,13 +157,13 @@ public final class NumberType extends Type {
       return convertToNumber((ZonedDateTime) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value),
-        this);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
   /**
    * Coerce value to data type {@link NumberType}
-   * 
+   *
    * @param value the value to coerce
    * @return BigDecimal
    */
@@ -187,24 +180,23 @@ public final class NumberType extends Type {
     if (value instanceof String) {
       return convertToNumber((String) value);
     }
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
-        TypeId.NUMBER);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.NUMBER);
   }
 
-  public static final BigDecimal convertToNumber(final String str)
-      throws ConversionException {
+  public static final BigDecimal convertToNumber(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
     } catch (ParseNumberException e) {
-      throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, str, TypeId.STRING,
-          TypeId.NUMBER);
+      throw new ConversionException(
+          ErrorCode.UNSUPPORTED_COERCION, str, TypeId.STRING, TypeId.NUMBER);
     }
   }
 
   public static final BigDecimal convertToNumber(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, bytes, TypeId.BINARY,
-          TypeId.NUMBER);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, bytes, TypeId.BINARY, TypeId.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -212,15 +204,16 @@ public final class NumberType extends Type {
     }
     return new BigDecimal(result);
   }
-  
-  public static final BigDecimal convertToNumber(final ZonedDateTime datetime) throws ConversionException {
-    
+
+  public static final BigDecimal convertToNumber(final ZonedDateTime datetime)
+      throws ConversionException {
+
     BigDecimal result = new BigDecimal(datetime.toEpochSecond());
     int nanos = datetime.getNano();
-    if ( nanos!=0 ) {
+    if (nanos != 0) {
       BigDecimal fraction = BigDecimal.valueOf(nanos).movePointLeft(9);
       result = result.add(fraction).stripTrailingZeros();
     }
     return result;
-  }  
+  }
 }

@@ -14,17 +14,17 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ErrorCode;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.ErrorCode;
 
 /**
- * Expression number format model for <code>TO_NUMBER(string, format)</code> and
- * <code>TO_CHAR(number, format)</code> functions.
+ * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
+ * TO_CHAR(number, format)</code> functions.
  *
  * <p>
  *
@@ -302,11 +302,9 @@ final class SimpleNumberFormat extends NumberFormat {
           this.precision++;
           this.separator++;
           c = format.charAt(index);
-          if (c != 'X' && c != 'x')
-            break;
+          if (c != 'X' && c != 'x') break;
         }
-      } else
-        break;
+      } else break;
     }
 
     if (startsWithIgnoreCase(format, index, "RN")) {
@@ -315,8 +313,7 @@ final class SimpleNumberFormat extends NumberFormat {
     } else if (startsWithIgnoreCase(format, index, "V")) {
       for (index++; index < length; index++, this.v++) {
         char c = format.charAt(index);
-        if (c != '0' && c != '9')
-          break;
+        if (c != '0' && c != '9') break;
       }
     } else if (startsWithIgnoreCase(format, index, ".", "D")) {
 
@@ -330,26 +327,20 @@ final class SimpleNumberFormat extends NumberFormat {
       }
       builder.append(c);
 
-
       int zero = index;
       for (int i = index; i < length; i++) {
         c = format.charAt(i);
-        if (c == '0')
-          zero = i;
-        else if (c != '9')
-          break;
+        if (c == '0') zero = i;
+        else if (c != '9') break;
       }
 
       for (; index < length; index++, this.scale++) {
         c = format.charAt(index);
         if (c == '9') {
-          if (index < zero)
-            c = '0';
-        } else if (c != '0')
-          break;
+          if (index < zero) c = '0';
+        } else if (c != '0') break;
         builder.append(c);
       }
-
 
       // for (index++; index < length; index++, this.scale++) {
       // c = format.charAt(index);
@@ -400,7 +391,6 @@ final class SimpleNumberFormat extends NumberFormat {
     // Pattern can be empty example: 'FMC'
     this.pattern = builder.toString();
   }
-
 
   public String toString() {
 
@@ -471,10 +461,9 @@ final class SimpleNumberFormat extends NumberFormat {
     return format.hashCode();
   }
 
-
   /**
    * Parses text from a string to produce a <code>Number</code>.
-   * 
+   *
    * @param text the string to be parsed
    * @return the parsed value
    * @throws ParseNumberException
@@ -489,12 +478,10 @@ final class SimpleNumberFormat extends NumberFormat {
       boolean isNegative = false;
 
       // Skip start space
-      while (start < end && Characters.isSpace(text.charAt(start)))
-        start++;
+      while (start < end && Characters.isSpace(text.charAt(start))) start++;
 
       // Skip end space
-      while (start < end && Characters.isSpace(text.charAt(end - 1)))
-        end--;
+      while (start < end && Characters.isSpace(text.charAt(end - 1))) end--;
 
       // Text-minimal number
       if ("TM".equals(pattern)) {
@@ -526,18 +513,15 @@ final class SimpleNumberFormat extends NumberFormat {
           isNegative = true;
 
           // Skip end space
-          while (start < end && Characters.isSpace(text.charAt(end - 1)))
-            end--;
+          while (start < end && Characters.isSpace(text.charAt(end - 1))) end--;
         }
       } else if (this.sign == SignMode.MI_LEADING) {
         char c = text.charAt(start);
         if (c == '-' || c == '+') {
           start++;
-          if (c == '-')
-            isNegative = true;
+          if (c == '-') isNegative = true;
           // Skip start space
-          while (start < end && Characters.isSpace(text.charAt(start)))
-            start++;
+          while (start < end && Characters.isSpace(text.charAt(start))) start++;
         }
       } else if (this.sign == SignMode.TRAILING_S) {
         char c = text.charAt(end - 1);
@@ -573,8 +557,7 @@ final class SimpleNumberFormat extends NumberFormat {
       switch (this.currency) {
         case LOCAL_LEADING:
           symbol = symbols.getCurrencySymbol();
-          if (text.regionMatches(start, symbol, 0, symbol.length()))
-            start += symbol.length();
+          if (text.regionMatches(start, symbol, 0, symbol.length())) start += symbol.length();
           break;
         case TRAILING_LOCAL:
           symbol = symbols.getCurrencySymbol();
@@ -583,8 +566,7 @@ final class SimpleNumberFormat extends NumberFormat {
           break;
         case ISO_LEADING:
           symbol = symbols.getCurrency().getCurrencyCode();
-          if (text.regionMatches(start, symbol, 0, symbol.length()))
-            start += symbol.length();
+          if (text.regionMatches(start, symbol, 0, symbol.length())) start += symbol.length();
           break;
         case TRAILING_ISO:
           symbol = symbols.getCurrency().getCurrencyCode();
@@ -593,8 +575,7 @@ final class SimpleNumberFormat extends NumberFormat {
           break;
         case DOLLARS:
           char c = text.charAt(start);
-          if (c == '$')
-            start++;
+          if (c == '$') start++;
           break;
         default:
           break;
@@ -622,12 +603,10 @@ final class SimpleNumberFormat extends NumberFormat {
       // integer part
       int pos = (dot < 0 ? end : dot);
       int j = this.pattern.length() - this.scale;
-      if (this.scale > 0)
-        j--;
+      if (this.scale > 0) j--;
       for (int i = pos - 1; i >= start; i--) {
         char c = text.charAt(i);
-        if (j > 0)
-          j--;
+        if (j > 0) j--;
         char p = pattern.charAt(j);
         if (p == '0' || p == '9') {
           if (Characters.isDigit(c)) {
@@ -635,13 +614,10 @@ final class SimpleNumberFormat extends NumberFormat {
             continue;
           }
         } else if (p == ',') {
-          if (c == ',')
-            continue;
+          if (c == ',') continue;
         } else if (p == 'G') {
-          if (c == symbols.getGroupingSeparator())
-            continue;
-          else if (!this.exactMode && c == ',')
-            continue;
+          if (c == symbols.getGroupingSeparator()) continue;
+          else if (!this.exactMode && c == ',') continue;
         }
 
         throw createUnparsableNumber(text, i);
@@ -705,8 +681,11 @@ final class SimpleNumberFormat extends NumberFormat {
       number = number.movePointLeft(power);
       // Case of exponent
       char e = pattern.charAt(2);
-      return number.toPlainString() + e + (power < 0 ? '-' : '+')
-          + (Math.abs(power) < 10 ? "0" : "") + Math.abs(power);
+      return number.toPlainString()
+          + e
+          + (power < 0 ? '-' : '+')
+          + (Math.abs(power) < 10 ? "0" : "")
+          + Math.abs(power);
     }
 
     // Roman numerals
@@ -762,7 +741,6 @@ final class SimpleNumberFormat extends NumberFormat {
     } else if (this.v > 0) {
       number = number.scaleByPowerOfTen(v);
     }
-
 
     String unscaled = number.unscaledValue().abs().toString();
 
@@ -911,58 +889,53 @@ final class SimpleNumberFormat extends NumberFormat {
     return output.toString();
   }
 
-
-
   private int addSign(StringBuilder output, int signum) {
     switch (this.sign) {
 
-      // Returns negative value with a leading minus sign (-) and positive value with
-      // a leading blank.
+        // Returns negative value with a leading minus sign (-) and positive value with
+        // a leading blank.
       case DEFAULT:
         if (signum < 0) {
           output.insert(0, '-');
         } else if (fillMode) {
           output.insert(0, ' ');
-        } else
-          return 0;
+        } else return 0;
         break;
 
-      // Returns negative value with a leading minus sign (-) and positive value with
-      // a leading plus sign (+).
+        // Returns negative value with a leading minus sign (-) and positive value with
+        // a leading plus sign (+).
       case S_LEADING:
         output.insert(0, (signum < 0) ? '-' : '+');
         break;
 
-      // Returns negative value with a trailing minus sign (-) and positive value with
-      // a trailing plus sign (+).
+        // Returns negative value with a trailing minus sign (-) and positive value with
+        // a trailing plus sign (+).
       case TRAILING_S:
         output.append((signum < 0) ? '-' : '+');
         break;
 
-      // Returns negative value with a leading minus sign (-) and positive value with
-      // a leading blank.
+        // Returns negative value with a leading minus sign (-) and positive value with
+        // a leading blank.
       case MI_LEADING:
         if (signum < 0) {
           output.insert(0, '-');
         } else if (fillMode) {
           output.insert(0, ' ');
-        } else
-          return 0;
+        } else return 0;
         break;
 
-      // Returns negative value with a trailing minus sign (-) and positive value with
-      // a trailing blank.
+        // Returns negative value with a trailing minus sign (-) and positive value with
+        // a trailing blank.
       case TRAILING_MI:
         if (signum < 0) {
           output.append('-');
         } else if (fillMode) {
           output.append(' ');
-        } else
-          return 0;
+        } else return 0;
         break;
 
-      // Returns negative value in <angle brackets> and positive value with a leading
-      // and trailing blank.
+        // Returns negative value in <angle brackets> and positive value with a leading
+        // and trailing blank.
       case PR:
         if (signum < 0) {
           output.insert(0, '<');
@@ -970,8 +943,7 @@ final class SimpleNumberFormat extends NumberFormat {
         } else if (fillMode) {
           output.insert(0, ' ');
           output.append(' ');
-        } else
-          return 0;
+        } else return 0;
         return 2;
     }
 
@@ -983,7 +955,6 @@ final class SimpleNumberFormat extends NumberFormat {
   }
 
   protected final ParseNumberException createUnparsableNumber(final String text, int index) {
-    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format,
-        index);
+    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
   }
 }

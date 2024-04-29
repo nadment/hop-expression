@@ -37,22 +37,24 @@ public class RTrimFunction extends Function {
   public static final RTrimFunction INSTANCE = new RTrimFunction();
 
   public RTrimFunction() {
-    super("RTRIM", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-        OperatorCategory.STRING, "/docs/rtrim.html");
+    super(
+        "RTRIM",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        OperatorCategory.STRING,
+        "/docs/rtrim.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     String stripChars = null;
 
     if (operands.length == 2) {
       stripChars = operands[1].getValue(String.class);
-      if (stripChars == null)
-        return null;
+      if (stripChars == null) return null;
     }
 
     return StringUtils.stripEnd(value, stripChars);

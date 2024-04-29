@@ -30,8 +30,7 @@ public class FirstValueIgnoreNullsProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (set)
-      return;
+    if (set) return;
 
     Object v = operands[0].getValue();
 

@@ -24,27 +24,27 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class DifferenceFunction extends Function {
   private static final Soundex SOUNDEX = new Soundex();
   private static final int SOUNDEX_LENGTH = 4;
 
   public DifferenceFunction() {
-    super("DIFFERENCE", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING,
+    super(
+        "DIFFERENCE",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING,
+        OperatorCategory.STRING,
         "/docs/difference.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
-    if (v0 == null)
-      return null;
+    if (v0 == null) return null;
     String v1 = operands[1].getValue(String.class);
-    if (v1 == null)
-      return null;
+    if (v1 == null) return null;
 
     return Long.valueOf(difference(v0, v1));
   }

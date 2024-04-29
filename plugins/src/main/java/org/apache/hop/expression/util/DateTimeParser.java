@@ -61,8 +61,7 @@ import java.time.format.DateTimeParseException;
 
   protected char parseChar() {
 
-    if (index == text.length())
-      return 0;
+    if (index == text.length()) return 0;
 
     return text.charAt(index++);
   }
@@ -86,8 +85,7 @@ import java.time.format.DateTimeParseException;
     }
 
     int result = 0;
-    if (index + length > end)
-      length = end - index;
+    if (index + length > end) length = end - index;
 
     int initialIndex = index;
 
@@ -114,8 +112,7 @@ import java.time.format.DateTimeParseException;
     int end = text.length();
 
     int result = 0;
-    if (index + length > end)
-      throw new DateTimeParseException("Invalid number", text, index);
+    if (index + length > end) throw new DateTimeParseException("Invalid number", text, index);
 
     for (int i = 0; i < length; i++, index++) {
       char ch = text.charAt(index);
@@ -153,8 +150,7 @@ import java.time.format.DateTimeParseException;
     }
 
     int result = 0;
-    if (index + length > end)
-      length = end - index;
+    if (index + length > end) length = end - index;
 
     char sign = text.charAt(index);
     if (sign == '-' || sign == '+') {

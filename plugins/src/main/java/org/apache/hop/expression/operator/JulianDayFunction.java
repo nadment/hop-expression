@@ -16,31 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.JulianFields;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
-import java.time.temporal.JulianFields;
 
-/**
- * Number of days from January 1, 4713 B.C. (the start of the Julian date calendar).
- */
+/** Number of days from January 1, 4713 B.C. (the start of the Julian date calendar). */
 @FunctionPlugin
 public class JulianDayFunction extends Function {
 
   public JulianDayFunction() {
-    super("JULIAN_DAY", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
+    super(
+        "JULIAN_DAY",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/julian_day.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return value.getLong(JulianFields.JULIAN_DAY);
   }

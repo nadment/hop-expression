@@ -16,9 +16,8 @@
  */
 package org.apache.hop.expression;
 
-
-import org.apache.hop.expression.type.Type;
 import java.io.StringWriter;
+import org.apache.hop.expression.type.Type;
 
 /**
  * An expression is a combination of one or more literal, identifiers, list of expressions or a call
@@ -45,9 +44,7 @@ public interface IExpression {
    */
   public Type getType();
 
-  /**
-   * Check if the expression is a call to this operator or an alias of this operator.
-   */
+  /** Check if the expression is a call to this operator or an alias of this operator. */
   public default boolean is(Operator operator) {
     return false;
   }
@@ -64,7 +61,7 @@ public interface IExpression {
   /**
    * Check if this expression will always return the same result when invoked and has no side
    * effect.
-   * 
+   *
    * @return {@code true} if this is a constant expression.
    */
   public default boolean isConstant() {
@@ -77,7 +74,7 @@ public interface IExpression {
    * @return the estimated cost
    */
   public int getCost();
-    
+
   /**
    * Evaluates the value of this expression.
    *
@@ -100,7 +97,7 @@ public interface IExpression {
 
   /**
    * Validate the expression
-   * 
+   *
    * @param context The context against which the expression will be validated.
    * @throws ExpressionException if an error occurs.
    */
@@ -138,7 +135,6 @@ public interface IExpression {
   public default Identifier asIdentifier() {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
-
 
   /**
    * Casts and returns this expression as a {@link Tuple} if it is of kind {@code TUPLE}

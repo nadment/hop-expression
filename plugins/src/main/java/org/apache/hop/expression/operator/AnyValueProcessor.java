@@ -28,8 +28,7 @@ public class AnyValueProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (value != null)
-      return;
+    if (value != null) return;
 
     value = operands[0].getValue();
   }

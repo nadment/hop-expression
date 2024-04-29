@@ -16,14 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.Base64;
-import java.util.Base64.Encoder;
 
 /**
  * The function encode the input (string or binary) using Base64 encoding.
@@ -35,15 +35,18 @@ public class Base64EncodeFunction extends Function {
   private static final Encoder ENCODER = Base64.getEncoder();
 
   public Base64EncodeFunction() {
-    super("BASE64_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/base64_encode.html");
+    super(
+        "BASE64_ENCODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
+        "/docs/base64_encode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return ENCODER.encodeToString(value);
   }

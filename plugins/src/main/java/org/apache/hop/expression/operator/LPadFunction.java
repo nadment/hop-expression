@@ -44,9 +44,14 @@ public class LPadFunction extends Function {
   protected static final int PAD_LIMIT = 8192;
 
   public LPadFunction() {
-    super("LPAD", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC
-        .or(OperandTypes.STRING_NUMERIC_STRING).or(OperandTypes.BINARY_NUMERIC_BINARY),
-        OperatorCategory.STRING, "/docs/lpad.html");
+    super(
+        "LPAD",
+        ReturnTypes.ARG0_MAX_PRECISION,
+        OperandTypes.STRING_NUMERIC
+            .or(OperandTypes.STRING_NUMERIC_STRING)
+            .or(OperandTypes.BINARY_NUMERIC_BINARY),
+        OperatorCategory.STRING,
+        "/docs/lpad.html");
   }
 
   @Override
@@ -60,15 +65,12 @@ public class LPadFunction extends Function {
     return new Call(LPadStringFunction, call.getOperands());
   }
 
-  /**
-   * The function left-pads a string with another string, to a certain length.
-   */
+  /** The function left-pads a string with another string, to a certain length. */
   private static final class LPadStringFunction extends LPadFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
       int length = v1.intValue();
@@ -85,8 +87,9 @@ public class LPadFunction extends Function {
       if (length < 0) {
         length = 0;
       } else if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT
-            .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+        throw new IllegalArgumentException(
+            ErrorCode.ILLEGAL_ARGUMENT.message(
+                "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
       final int size = pad.length();
@@ -111,12 +114,9 @@ public class LPadFunction extends Function {
 
       return value;
     }
-
   }
 
-  /**
-   * The function left-pads a binary with another binary, to a certain length.
-   */
+  /** The function left-pads a binary with another binary, to a certain length. */
   private static final class LPadBinaryFunction extends LPadFunction {
 
     private static final byte[] DEFAULT = new byte[] {0x00};
@@ -124,8 +124,7 @@ public class LPadFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
       int length = v1.intValue();
@@ -142,8 +141,9 @@ public class LPadFunction extends Function {
       if (length < 0) {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT
-            .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+        throw new IllegalArgumentException(
+            ErrorCode.ILLEGAL_ARGUMENT.message(
+                "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
       // nothing to pad

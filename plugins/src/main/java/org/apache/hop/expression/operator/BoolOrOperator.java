@@ -16,6 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
@@ -32,32 +39,28 @@ import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 
 /**
  * Logical disjunction <code>OR</code> operator.
- * 
- * <p>
- * If any of the arguments are true, result is true;
- * else if any arguments are null, result is null;
- * else false.
+ *
+ * <p>If any of the arguments are true, result is true; else if any arguments are null, result is
+ * null; else false.
  */
 public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
-    super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN_BOOLEAN,
-        OperatorCategory.LOGICAL, "/docs/boolor.html");
+    super(
+        "BOOLOR",
+        "OR",
+        180,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.BOOLEAN_BOOLEAN,
+        OperatorCategory.LOGICAL,
+        "/docs/boolor.html");
   }
 
-  /**
-   * Simplifies OR expressions whose answer can be determined without evaluating both sides.
-   */
+  /** Simplifies OR expressions whose answer can be determined without evaluating both sides. */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
@@ -88,8 +91,7 @@ public class BoolOrOperator extends Operator {
 
       if (predicate.is(Kind.IDENTIFIER)) {
         identifiers.add(predicate);
-      }
-      else if (predicate.is(Kind.CALL)) {
+      } else if (predicate.is(Kind.CALL)) {
         Call term = predicate.asCall();
 
         if (term.is(Operators.IS_NULL)) {
@@ -102,12 +104,10 @@ public class BoolOrOperator extends Operator {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
 
           if (term.getOperand(0).is(Kind.LITERAL)) {
-            equalsLiterals.put(term.getOperand(1),
-                Pair.of(term, term.getOperand(0).asLiteral()));
+            equalsLiterals.put(term.getOperand(1), Pair.of(term, term.getOperand(0).asLiteral()));
           }
           if (term.getOperand(1).is(Kind.LITERAL)) {
-            equalsLiterals.put(term.getOperand(0),
-                Pair.of(term, term.getOperand(1).asLiteral()));
+            equalsLiterals.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
           }
         }
         if (term.is(Operators.IN) && term.getOperand(1).isConstant()) {
@@ -122,10 +122,9 @@ public class BoolOrOperator extends Operator {
           lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
         if (term.is(Operators.GREATER_THAN)) {
-          greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)),
-              term);
+          greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
-        if (Operators.isStrong(term)) {          
+        if (Operators.isStrong(term)) {
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
@@ -188,17 +187,17 @@ public class BoolOrOperator extends Operator {
 
     // Simplify x OR NOT x → TRUE (if x is not nullable)
     // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
-    
+
     // Simplify x OR x IS NOT NULL → x IS NOT NULL
     for (IExpression identifier : identifiers) {
-      if ( isNotNullTerms.contains(identifier)  )  {
+      if (isNotNullTerms.contains(identifier)) {
         predicates.remove(identifier);
       }
-    }    
-    
+    }
+
     // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
     for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {
-      if ( isNotNullTerms.contains(pair.getLeft()) || isNotNullTerms.contains(pair.getRight()) )  {
+      if (isNotNullTerms.contains(pair.getLeft()) || isNotNullTerms.contains(pair.getRight())) {
         predicates.remove(strongTerms.get(pair));
       }
     }
@@ -223,13 +222,11 @@ public class BoolOrOperator extends Operator {
     Boolean right = operands[1].getValue(Boolean.class);
 
     if (left == null) {
-      if (!right)
-        return null;
+      if (!right) return null;
       return right;
     }
     if (right == null) {
-      if (!left)
-        return null;
+      if (!left) return null;
       return left;
     }
     return Boolean.logicalOr(left, right);

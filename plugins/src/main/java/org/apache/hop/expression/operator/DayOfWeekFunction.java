@@ -16,38 +16,37 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
 
-/**
- * Day of the week (Sunday=1 to Saturday=7).
- */
+/** Day of the week (Sunday=1 to Saturday=7). */
 @FunctionPlugin
 public class DayOfWeekFunction extends Function {
 
   public DayOfWeekFunction() {
-    super("DAYOFWEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
+    super(
+        "DAYOFWEEK",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/dayofweek.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     DayOfWeek dow = value.getDayOfWeek();
     int result = dow.getValue() + 1;
-    if (result == 8)
-      result = 1;
+    if (result == 8) result = 1;
 
     return Long.valueOf(result);
   }
-
 }

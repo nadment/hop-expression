@@ -14,6 +14,7 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
+import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.plugins.IPlugin;
@@ -46,7 +47,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import java.util.concurrent.CompletableFuture;
 
 public class WhereDialog extends BaseTransformDialog implements ITransformDialog {
 
@@ -55,7 +55,11 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
   private final WhereMeta input;
   private ExpressionEditor wEditor;
 
-  public WhereDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
+  public WhereDialog(
+      Shell parent,
+      IVariables variables,
+      Object in,
+      PipelineMeta pipelineMeta,
       String transformName) {
     super(parent, variables, (WhereMeta) in, pipelineMeta, transformName);
     this.input = (WhereMeta) in;
@@ -137,8 +141,12 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     Composite area = new Composite(parent, SWT.NONE);
     area.setLayout(new FormLayout());
-    area.setLayoutData(new FormDataBuilder().top(titleSeparator, PropsUi.getFormMargin())
-        .bottom(wOk, -PropsUi.getFormMargin()).fullWidth().result());
+    area.setLayoutData(
+        new FormDataBuilder()
+            .top(titleSeparator, PropsUi.getFormMargin())
+            .bottom(wOk, -PropsUi.getFormMargin())
+            .fullWidth()
+            .result());
     PropsUi.setLook(area);
 
     this.createDialogArea(area);
@@ -175,51 +183,61 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
     deco.setDescriptionText(BaseMessages.getString("System.TransformNameMissing.Msg"));
-    deco.setImage(FieldDecorationRegistry.getDefault()
-        .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).getImage());
+    deco.setImage(
+        FieldDecorationRegistry.getDefault()
+            .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR)
+            .getImage());
     deco.setShowOnlyOnFocus(true);
     deco.hide();
 
-    wTransformName.addListener(SWT.Modify, event -> {
-      if (wTransformName.getText().length() > 0) {
-        deco.hide();
-      } else {
-        deco.show();
-      }
-      baseTransformMeta.setChanged();
-      wOk.setEnabled(isValid());
-    });
+    wTransformName.addListener(
+        SWT.Modify,
+        event -> {
+          if (wTransformName.getText().length() > 0) {
+            deco.hide();
+          } else {
+            deco.show();
+          }
+          baseTransformMeta.setChanged();
+          wOk.setEnabled(isValid());
+        });
 
     return composite;
   }
 
   public Image getImage() {
 
-    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
-        this.transformMeta.getPluginId());
+    IPlugin plugin =
+        PluginRegistry.getInstance()
+            .getPlugin(TransformPluginType.class, this.transformMeta.getPluginId());
 
     if (plugin.getImageFile() != null) {
-      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
-          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
+      return SwtSvgImageUtil.getImage(
+          shell.getDisplay(),
+          getClass().getClassLoader(),
+          plugin.getImageFile(),
+          ConstUi.LARGE_ICON_SIZE,
+          ConstUi.LARGE_ICON_SIZE);
     }
 
     return GuiResource.getInstance().getImageError();
   }
 
   // Search the fields in the background
-  protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
-      PipelineMeta pipelineMeta, String transformName) {
-    return CompletableFuture.supplyAsync(() -> {
-      try {
-        TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
-        if (transformMeta != null) {
-          return pipelineMeta.getPrevTransformFields(variables, transformMeta);
-        }
-      } catch (HopException e) {
-        // Ignore
-      }
-      return null;
-    });
+  protected CompletableFuture<IRowMeta> getAsyncRowMeta(
+      IVariables variables, PipelineMeta pipelineMeta, String transformName) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
+            if (transformMeta != null) {
+              return pipelineMeta.getPrevTransformFields(variables, transformMeta);
+            }
+          } catch (HopException e) {
+            // Ignore
+          }
+          return null;
+        });
   }
 
   protected Control createDialogArea(final Composite parent) {
@@ -227,8 +245,9 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     CompletableFuture<IRowMeta> rowMetaProvider =
         getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
 
-    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), ExpressionMode.ROW,
-        rowMetaProvider);
+    wEditor =
+        new ExpressionEditor(
+            parent, SWT.BORDER, this.getVariables(), ExpressionMode.ROW, rowMetaProvider);
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     wEditor.addListener(SWT.Modify, e -> onChanged());
 

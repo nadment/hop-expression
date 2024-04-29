@@ -17,6 +17,7 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
+import java.util.ArrayList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
@@ -29,14 +30,18 @@ import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import java.util.ArrayList;
 
 /** Route input rows base on conditions. */
 public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
 
-  public RouteTransform(TransformMeta transformMeta, RouteMeta meta, RouteData data, int copyNr,
-      PipelineMeta pipelineMeta, Pipeline pipeline) {
+  public RouteTransform(
+      TransformMeta transformMeta,
+      RouteMeta meta,
+      RouteData data,
+      int copyNr,
+      PipelineMeta pipelineMeta,
+      Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
@@ -62,14 +67,16 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       for (Route route : meta.getRoutes()) {
 
         if (StringUtils.isEmpty(route.getTransformName())) {
-          throw new HopTransformException(BaseMessages.getString(PKG,
-              "Route.Exception.NoTargetTransformSpecified", route.getCondition()));
+          throw new HopTransformException(
+              BaseMessages.getString(
+                  PKG, "Route.Exception.NoTargetTransformSpecified", route.getCondition()));
         }
 
         IRowSet rowSet = findOutputRowSet(route.getTransformName());
         if (rowSet == null) {
-          throw new HopTransformException(BaseMessages.getString(PKG,
-              "Route.Exception.UnableToFindTargetTransform", route.getTransformName()));
+          throw new HopTransformException(
+              BaseMessages.getString(
+                  PKG, "Route.Exception.UnableToFindTargetTransform", route.getTransformName()));
         }
 
         // Compile expression
@@ -77,8 +84,13 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
           IExpression expression = data.context.createExpression(route.getCondition());
           data.targets.add(new RouteTarget(route, expression, rowSet));
         } catch (Exception e) {
-          String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
-              route.getTransformName(), route.getCondition(), e.getMessage());
+          String message =
+              BaseMessages.getString(
+                  PKG,
+                  "Route.Exception.ConditionError",
+                  route.getTransformName(),
+                  route.getCondition(),
+                  e.getMessage());
           logError(message);
           if (isDebug()) {
             logError(Const.getStackTracker(e));
@@ -112,8 +124,13 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
           break;
         }
       } catch (Exception e) {
-        String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
-            target.route.getTransformName(), target.route.getCondition(), e.getMessage());
+        String message =
+            BaseMessages.getString(
+                PKG,
+                "Route.Exception.ConditionError",
+                target.route.getTransformName(),
+                target.route.getCondition(),
+                e.getMessage());
         logError(message);
         if (isDebug()) {
           logError(Const.getStackTracker(e));

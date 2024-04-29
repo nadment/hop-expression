@@ -28,14 +28,16 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * The function return the current date and time
- */
+/** The function return the current date and time */
 @FunctionPlugin(names = {"NOW"})
 public class CurrentTimestampFunction extends Function {
 
   public CurrentTimestampFunction() {
-    super("CURRENT_TIMESTAMP", ReturnTypes.DATE_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.DATE,
+    super(
+        "CURRENT_TIMESTAMP",
+        ReturnTypes.DATE_NOT_NULL,
+        OperandTypes.NILADIC,
+        OperatorCategory.DATE,
         "/docs/current_timestamp.html");
   }
 

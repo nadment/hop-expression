@@ -16,13 +16,11 @@
  */
 package org.apache.hop.expression.type;
 
-/**
- * Strategy to transform one type to another.
- */
+/** Strategy to transform one type to another. */
 public interface ITypeTransform {
   /**
    * Transforms a {@link Type}.
-   * 
+   *
    * @param type to transform
    * @return type
    */

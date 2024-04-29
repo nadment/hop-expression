@@ -37,7 +37,11 @@ public class ReverseFunction extends Function {
   public static final ReverseFunction BinaryReverseFunction = new BinaryReverseFunction();
 
   public ReverseFunction() {
-    super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY), OperatorCategory.STRING,
+    super(
+        "REVERSE",
+        ReturnTypes.ARG0,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
         "/docs/reverse.html");
   }
 
@@ -53,30 +57,24 @@ public class ReverseFunction extends Function {
     return new Call(StringReverseFunction, call.getOperand(0));
   }
 
-  /**
-   * The function reverses the order of characters in a string value.
-   */
+  /** The function reverses the order of characters in a string value. */
   private static final class StringReverseFunction extends ReverseFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       StringBuilder builder = new StringBuilder(value);
       return builder.reverse().toString();
     }
   }
 
-  /**
-   * The function reverses the order of bytes in a binary value.
-   */
+  /** The function reverses the order of bytes in a binary value. */
   private static final class BinaryReverseFunction extends ReverseFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       final byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       final byte[] result = new byte[value.length];
       for (int i = value.length - 1, j = 0; i >= 0; i--, j++) {

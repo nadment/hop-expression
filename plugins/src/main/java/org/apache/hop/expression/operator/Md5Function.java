@@ -25,18 +25,22 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * The function calculate the MD5 hash of a data value.
- * The hash will be returned as a 32 characters hex-encoded string.
+ * The function calculate the MD5 hash of a data value. The hash will be returned as a 32 characters
+ * hex-encoded string.
  *
- * @see {@link Sha1Function}, {@link Sha224Function}, {@link Sha256Function},
- *      {@link Sha384Function}, {@link Sha512Function}
+ * @see {@link Sha1Function}, {@link Sha224Function}, {@link Sha256Function}, {@link
+ *     Sha384Function}, {@link Sha512Function}
  */
 @FunctionPlugin
 public class Md5Function extends Function {
 
   public Md5Function() {
-    super("MD5", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/md5.html");
+    super(
+        "MD5",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.CRYPTOGRAPHIC,
+        "/docs/md5.html");
   }
 
   @Override

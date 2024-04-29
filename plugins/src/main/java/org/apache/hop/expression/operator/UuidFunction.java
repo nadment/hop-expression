@@ -16,22 +16,25 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.UUID;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.UUID;
 
-/**
- * Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122)
- */
+/** Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122) */
 @FunctionPlugin
 public class UuidFunction extends Function {
 
   public UuidFunction() {
-    super("UUID", ReturnTypes.STRING_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.STRING, "/docs/uuid.html");
+    super(
+        "UUID",
+        ReturnTypes.STRING_NOT_NULL,
+        OperandTypes.NILADIC,
+        OperatorCategory.STRING,
+        "/docs/uuid.html");
   }
 
   @Override

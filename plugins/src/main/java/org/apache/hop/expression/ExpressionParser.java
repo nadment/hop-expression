@@ -14,6 +14,12 @@
  */
 package org.apache.hop.expression;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.operator.FirstValueFunction;
 import org.apache.hop.expression.operator.LastValueFunction;
@@ -30,28 +36,60 @@ import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
-      Set.of("AND", "ARRAY", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
-          "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "INET", "INTERVAL",
-          "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR",
-          "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
+      Set.of(
+          "AND",
+          "ARRAY",
+          "AS",
+          "ASYMMETRIC",
+          "AT",
+          "BETWEEN",
+          "BINARY",
+          "CASE",
+          "DATE",
+          "DISTINCT",
+          "ELSE",
+          "END",
+          "ESCAPE",
+          "FALSE",
+          "FORMAT",
+          "FROM",
+          "IGNORE",
+          "ILIKE",
+          "IN",
+          "INET",
+          "INTERVAL",
+          "IS",
+          "JSON",
+          "KEY",
+          "LIKE",
+          "NOT",
+          "NULL",
+          "NULLS",
+          "OR",
+          "RESPECT",
+          "RLIKE",
+          "SIMILAR",
+          "SYMMETRIC",
+          "THEN",
+          "TIME",
+          "TIMESTAMP",
+          "TO",
+          "TRUE",
+          "VALUE",
+          "WHEN",
+          "XOR",
+          "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
 
   public static boolean isReservedWord(final String name) {
-    if (name == null)
-      return false;
+    if (name == null) return false;
     return RESERVED_WORDS.contains(name.toUpperCase());
   }
 
@@ -76,8 +114,7 @@ public class ExpressionParser {
 
   protected int getPosition() {
 
-    if (index > 0 && index < tokens.size())
-      return tokens.get(index).start();
+    if (index > 0 && index < tokens.size()) return tokens.get(index).start();
 
     return source.length();
   }
@@ -135,15 +172,13 @@ public class ExpressionParser {
   /** Parse the expression */
   public IExpression parse() throws ExpressionException {
 
-    if (source == null)
-      throw new ExpressionException(0, ErrorCode.NULL_SOURCE_ERROR);
+    if (source == null) throw new ExpressionException(0, ErrorCode.NULL_SOURCE_ERROR);
 
     // Tokenize
     for (Token token = tokenize(); token != null; token = tokenize()) {
 
       // Ignore comment
-      if (token.is(Id.COMMENT))
-        continue;
+      if (token.is(Id.COMMENT)) continue;
 
       tokens.add(token);
     }
@@ -167,8 +202,7 @@ public class ExpressionParser {
   /**
    * Parse logical OR expression (Disjunction)
    *
-   * <p>
-   * LogicalXorExpression ( OR LogicalXorExpression )*
+   * <p>LogicalXorExpression ( OR LogicalXorExpression )*
    */
   private IExpression parseLogicalOr() throws ExpressionException {
     IExpression expression = this.parseLogicalXor();
@@ -179,12 +213,10 @@ public class ExpressionParser {
     return expression;
   }
 
-
   /**
    * Parse logical XOR expression (Exclusive disjunction)
    *
-   * <p>
-   * LogicalAndExpression ( XOR LogicalAndExpression )*
+   * <p>LogicalAndExpression ( XOR LogicalAndExpression )*
    */
   private IExpression parseLogicalXor() throws ExpressionException {
     IExpression expression = this.parseLogicalAnd();
@@ -194,12 +226,11 @@ public class ExpressionParser {
 
     return expression;
   }
-  
+
   /**
    * Parse logical AND expression (Conjunction)
    *
-   * <p>
-   * LogicalNotExpression ( AND LogicalNotExpression )*
+   * <p>LogicalNotExpression ( AND LogicalNotExpression )*
    *
    * @return Expression
    */
@@ -215,8 +246,7 @@ public class ExpressionParser {
   /**
    * Parse logical NOT expression
    *
-   * <p>
-   * [NOT] IdentityExpression
+   * <p>[NOT] IdentityExpression
    */
   private IExpression parseLogicalNot() throws ExpressionException {
     if (isThenNext(Id.NOT)) {
@@ -229,9 +259,8 @@ public class ExpressionParser {
   /**
    * Parse assertion IS expression
    *
-   * <p>
-   * RelationalExpression IS [NOT] TRUE|FALSE|NULL
-   * RelationalExpression IS [NOT] DISTINCT FROM RelationalExpression
+   * <p>RelationalExpression IS [NOT] TRUE|FALSE|NULL RelationalExpression IS [NOT] DISTINCT FROM
+   * RelationalExpression
    */
   private IExpression parseConditional() throws ExpressionException {
     IExpression expression = this.parseComparison();
@@ -253,8 +282,10 @@ public class ExpressionParser {
           return new Call(start, (not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
         case DISTINCT:
           if (isThenNext(Id.FROM)) {
-            return new Call(start,
-                (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM, expression,
+            return new Call(
+                start,
+                (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
+                expression,
                 parseLogicalNot());
           }
           throw new ExpressionException(start, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.DISTINCT);
@@ -268,8 +299,7 @@ public class ExpressionParser {
   /**
    * Parse IN, LIKE, BETWEEN, SIMILAR TO expression
    *
-   * <p>
-   * BitwiseOrExpression ( [NOT] | InClause | BetweenClause | LikeClause BitwiseOrExpression)
+   * <p>BitwiseOrExpression ( [NOT] | InClause | BetweenClause | LikeClause BitwiseOrExpression)
    */
   private IExpression parseRelational() throws ExpressionException {
     IExpression expression = this.parseBitwiseOr();
@@ -299,7 +329,8 @@ public class ExpressionParser {
         expression = new Call(getPosition(), Operators.ILIKE, expression, pattern);
       }
     } else if (isThenNext(Id.IN)) {
-      return new Call(getPosition(), not ? Operators.NOT_IN : Operators.IN, expression, this.parseTuple());
+      return new Call(
+          getPosition(), not ? Operators.NOT_IN : Operators.IN, expression, this.parseTuple());
     } else if (isThenNext(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN_ASYMMETRIC;
       if (isThenNext(Id.ASYMMETRIC)) {
@@ -310,8 +341,8 @@ public class ExpressionParser {
 
       IExpression start = this.parseBitwiseOr();
       if (isNotThenNext(Id.AND)) {
-        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-            Id.BETWEEN);
+        throw new ExpressionException(
+            getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.BETWEEN);
       }
       IExpression end = this.parseBitwiseOr();
 
@@ -320,11 +351,14 @@ public class ExpressionParser {
 
     if (isThenNext(Id.SIMILAR)) {
       if (isThenNext(Id.TO)) {
-        return new Call(getPosition(), not ? Operators.NOT_SIMILAR_TO : Operators.SIMILAR_TO, expression,
+        return new Call(
+            getPosition(),
+            not ? Operators.NOT_SIMILAR_TO : Operators.SIMILAR_TO,
+            expression,
             parseBitwiseOr());
       } else
-        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-            Id.SIMILAR);
+        throw new ExpressionException(
+            getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.SIMILAR);
     }
 
     if (not) {
@@ -352,8 +386,7 @@ public class ExpressionParser {
         expression = new Call(start, Operators.DIVIDE, expression, this.parseBitwiseNot());
       } else if (isThenNext(Id.MODULUS)) {
         expression = new Call(start, Operators.MODULUS, expression, this.parseBitwiseNot());
-      } else
-        break;
+      } else break;
     }
 
     return expression;
@@ -372,7 +405,7 @@ public class ExpressionParser {
 
   /** ConcatenationExpression ( & ConcatenationExpression)* */
   private IExpression parseBitwiseAnd() throws ExpressionException {
-    IExpression expression = this.parseConcatenation();    
+    IExpression expression = this.parseConcatenation();
     while (isThenNext(Id.BITWISE_AND)) {
       expression = new Call(getPosition(), Operators.BITAND, expression, parseConcatenation());
     }
@@ -417,34 +450,33 @@ public class ExpressionParser {
 
   /** Literal Json */
   private IExpression parseLiteralJson(Token token) throws ExpressionException {
-    return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
-        Literal.of(Types.JSON));
+    return new Call(
+        token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(Types.JSON));
   }
 
   /** Literal Json */
   private IExpression parseLiteralInet(Token token) throws ExpressionException {
-    return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
-        Literal.of(Types.INET));
+    return new Call(
+        token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(Types.INET));
   }
-  /**
-   * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>]
-   *
-   */
+
+  /** Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>] */
   private IExpression parsePrimary() throws ExpressionException {
     IExpression expression = this.parseTerm();
-    
+
     // Cast operator ::
     if (isThenNext(Id.CAST)) {
       IExpression type = parseLiteralDataType(next());
       return new Call(Operators.CAST, expression, type);
     }
-    
+
     // Array element at ARRAY[index]
     if (isThenNext(Id.LBRACKET)) {
       IExpression term = this.parseBitwiseOr();
       Call call = new Call(getPosition(), Operators.ELEMENT_AT, expression, term);
       if (isNotThenNext(Id.RBRACKET)) {
-        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.LBRACKET);
+        throw new ExpressionException(
+            getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.LBRACKET);
       }
       return call;
     }
@@ -487,28 +519,23 @@ public class ExpressionParser {
         return parseArray(token);
       case DATE:
         token = next();
-        if (token == null)
-          break;
+        if (token == null) break;
         return parseLiteralDate(token);
       case TIMESTAMP:
         token = next();
-        if (token == null)
-          break;
+        if (token == null) break;
         return parseLiteralTimestamp(token);
       case BINARY:
         token = next();
-        if (token == null)
-          break;
+        if (token == null) break;
         return parseLiteralBinary(token);
       case INET:
         token = next();
-        if (token == null)
-          break;
+        if (token == null) break;
         return parseLiteralInet(token);
       case JSON:
         token = next();
-        if (token == null)
-          break;
+        if (token == null) break;
         return parseLiteralJson(token);
       case INTERVAL:
         return parseLiteralInterval(token);
@@ -556,9 +583,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /**
-   * FactorExpression ( (+ | - ) FactorExpression )*
-   **/
+  /** FactorExpression ( (+ | - ) FactorExpression )* */
   private IExpression parseAdditive() throws ExpressionException {
     IExpression expression = this.parseFactor();
     while (hasNext()) {
@@ -570,25 +595,21 @@ public class ExpressionParser {
         expression = new Call(start, Operators.SUBTRACT, expression, this.parseFactor());
       } else if (isThenNext(Id.CONCAT)) {
         expression = new Call(start, Operators.CONCAT, expression, this.parseFactor());
-      } else
-        break;
+      } else break;
     }
 
     return expression;
   }
 
-  /**
-   * ARRAY[exp1, exp2...] *
-   **/
+  /** ARRAY[exp1, exp2...] * */
   private IExpression parseArray(Token token) throws ExpressionException {
-    
+
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LBRACKET)) {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_LEFT_BRACKET);
     }
 
-    
     // Empty array
     if (isThenNext(Id.RBRACKET)) {
       return new Tuple(operands);
@@ -603,17 +624,15 @@ public class ExpressionParser {
     if (isNotThenNext(Id.RBRACKET)) {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_BRACKET);
     }
-    
+
     return new Tuple(operands);
   }
-  
-  /**
-   * AdditiveExpression ( || AdditiveExpression )*
-   **/
+
+  /** AdditiveExpression ( || AdditiveExpression )* */
   private IExpression parseConcatenation() throws ExpressionException {
     IExpression expression = this.parseAdditive();
     while (isThenNext(Id.CONCAT)) {
-        expression = new Call(getPosition(), Operators.CONCAT, expression, this.parseAdditive());
+      expression = new Call(getPosition(), Operators.CONCAT, expression, this.parseAdditive());
     }
     return expression;
   }
@@ -630,8 +649,7 @@ public class ExpressionParser {
   private IExpression parseLiteralBinary(Token token) throws ExpressionException {
     try {
       String str = token.text();
-      if (str.length() % 2 > 0)
-        str = '0' + str;
+      if (str.length() % 2 > 0) str = '0' + str;
       byte[] bytes = new byte[str.length() / 2];
       for (int i = 0; i < bytes.length; i++) {
         int start = i * 2;
@@ -676,8 +694,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parses a date literal.
-   * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
+   * Parses a date literal. The parsing is strict and requires months to be between 1 and 12, days
+   * to be less than 31, etc.
    */
   private IExpression parseLiteralDate(Token token) throws ExpressionException {
     // Literal date use exact mode
@@ -686,15 +704,16 @@ public class ExpressionParser {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ExpressionException(token.start(), ErrorCode.UNPARSABLE_DATE_WITH_FORMAT,
-          token.text(), format);
+      throw new ExpressionException(
+          token.start(), ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, token.text(), format);
     }
   }
 
   /**
    * Parses a timestamp literal with ISO Formats.
-   * 
-   * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
+   *
+   * <p>The parsing is strict and requires months to be between 1 and 12, days to be less than 31,
+   * etc.
    */
   private IExpression parseLiteralTimestamp(Token token) throws ExpressionException {
     try {
@@ -709,10 +728,8 @@ public class ExpressionParser {
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZH:TZM";
           break;
         case 33: // 2021-01-01 5:28:59.123456789+0200
-          if (str.indexOf(':', 20) > 0)
-            pattern = "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM";
-          else
-            pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
+          if (str.indexOf(':', 20) > 0) pattern = "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM";
+          else pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
           break;
         case 34: // 2021-01-01 15:28:59.123456789+0200
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
@@ -725,26 +742,20 @@ public class ExpressionParser {
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
           break;
         case 26:
-          if (str.indexOf('.', 10) > 0)
-            pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
-          else
-            pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+          if (str.indexOf('.', 10) > 0) pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
+          else pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
           break;
         case 25: // 2021-01-01 15:28:59+02:00
           pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
           break;
         case 24: // 2021-01-01 15:28:59+0200
-                 // 2021-01-01 5:28:59+02:00
-          if (str.indexOf(':', 20) > 0)
-            pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
-          else
-            pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
+          // 2021-01-01 5:28:59+02:00
+          if (str.indexOf(':', 20) > 0) pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+          else pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
           break;
         case 23:
-          if (str.indexOf('.', 10) > 0)
-            pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
-          else
-            pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
+          if (str.indexOf('.', 10) > 0) pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
+          else pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
           break;
         case 21: // 2021-01-01 5:28+02:00
         case 22: // 2021-01-01 15:28+02:00 or 2021-01-01 5:28 +02:00
@@ -752,10 +763,8 @@ public class ExpressionParser {
           break;
         case 18:
         case 19: // 2021-04-28 20:57:48
-          if (str.indexOf('+') > 0 || str.indexOf('-', 15) > 0)
-            pattern = "YYYY-MM-DD HH24:MITZH";
-          else
-            pattern = "YYYY-MM-DD HH24:MI:SS";
+          if (str.indexOf('+') > 0 || str.indexOf('-', 15) > 0) pattern = "YYYY-MM-DD HH24:MITZH";
+          else pattern = "YYYY-MM-DD HH24:MI:SS";
           break;
         case 16: // 2021-02-25 03:59
           pattern = "YYYY-MM-DD HH24:MI";
@@ -776,10 +785,7 @@ public class ExpressionParser {
     }
   }
 
-  /**
-   * Parses a list of expressions separated by commas.
-   * (expression [,expression...] )
-   */
+  /** Parses a list of expressions separated by commas. (expression [,expression...] ) */
   private Tuple parseTuple() throws ExpressionException {
 
     List<IExpression> list = new ArrayList<>();
@@ -855,13 +861,16 @@ public class ExpressionParser {
       throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CASE);
     }
 
-    return new Call(start, simple ? Operators.CASE_SIMPLE : Operators.CASE_SEARCH, valueExpression,
-        new Tuple(whenList), new Tuple(thenList), elseExpression);
+    return new Call(
+        start,
+        simple ? Operators.CASE_SIMPLE : Operators.CASE_SEARCH,
+        valueExpression,
+        new Tuple(whenList),
+        new Tuple(thenList),
+        elseExpression);
   }
 
-  /**
-   * Cast function CAST(value AS type [FORMAT pattern])
-   */
+  /** Cast function CAST(value AS type [FORMAT pattern]) */
   private IExpression parseFunctionCast(Token token, Function function) throws ExpressionException {
     List<IExpression> operands = new ArrayList<>();
 
@@ -875,8 +884,7 @@ public class ExpressionParser {
 
     if (isThenNext(Id.FORMAT)) {
       token = next();
-      if (token.is(Id.LITERAL_STRING))
-        operands.add(this.parseLiteralString(token));
+      if (token.is(Id.LITERAL_STRING)) operands.add(this.parseLiteralString(token));
       else
         throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CAST);
     }
@@ -888,9 +896,7 @@ public class ExpressionParser {
     return new Call(function, operands);
   }
 
-  /**
-   * Parse POSITION(expression IN expression)
-   */
+  /** Parse POSITION(expression IN expression) */
   private IExpression parseFunctionPosition(final Token token, final Function function)
       throws ExpressionException {
 
@@ -898,8 +904,8 @@ public class ExpressionParser {
     operands.add(this.parseConcatenation());
 
     if (isNotThenNext(Id.IN)) {
-      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION,
-          function.getName());
+      throw new ExpressionException(
+          getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
     }
 
     operands.add(this.parseConcatenation());
@@ -911,9 +917,7 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /**
-   * Parse <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
-   */
+  /** Parse <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
   private IExpression parseFunctionFirstValue(Token token, Function function)
       throws ExpressionException {
 
@@ -933,9 +937,7 @@ public class ExpressionParser {
     return new Call(function, operand);
   }
 
-  /**
-   * Parse <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
-   */
+  /** Parse <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
   private IExpression parseFunctionLastValue(Token token, Function function)
       throws ExpressionException {
 
@@ -955,9 +957,7 @@ public class ExpressionParser {
     return new Call(function, operand);
   }
 
-  /**
-   * Parse <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code>
-   */
+  /** Parse <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code> */
   private IExpression parseFunctionNthValue(Token token, Function function)
       throws ExpressionException {
 
@@ -965,8 +965,8 @@ public class ExpressionParser {
     operands.add(this.parseLogicalOr());
 
     if (isNotThenNext(Id.COMMA)) {
-      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION,
-          function.getName());
+      throw new ExpressionException(
+          getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
     }
     operands.add(this.parseLogicalOr());
 
@@ -993,8 +993,8 @@ public class ExpressionParser {
     operands.add(this.parseLiteralTimeUnit(next()));
 
     if (isNotThenNext(Id.FROM)) {
-      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION,
-          function.getName());
+      throw new ExpressionException(
+          getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
     }
 
     operands.add(this.parseLogicalOr());
@@ -1006,9 +1006,7 @@ public class ExpressionParser {
     return new Call(function, operands);
   }
 
-  /**
-   * COUNT(*) | COUNT([DISTINCT] expression)
-   */
+  /** COUNT(*) | COUNT([DISTINCT] expression) */
   private IExpression parseFunctionCount(Token token, Function function)
       throws ExpressionException {
 
@@ -1032,9 +1030,7 @@ public class ExpressionParser {
     return new Call(aggregator, operands);
   }
 
-  /**
-   * LISTAGG([DISTINCT] expression [, delimiter] )
-   */
+  /** LISTAGG([DISTINCT] expression [, delimiter] ) */
   private IExpression parseFunctionListAgg(Token token, final Function function)
       throws ExpressionException {
 
@@ -1078,8 +1074,8 @@ public class ExpressionParser {
       if (isThenNext(Id.VALUE)) {
         operands.add(this.parsePrimary());
       } else {
-        throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-            function.getName());
+        throw new ExpressionException(
+            token.start(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, function.getName());
       }
 
       comma = false;
@@ -1164,13 +1160,11 @@ public class ExpressionParser {
 
     boolean negative = false;
     Token value = next();
-    if (value == null)
-      throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
+    if (value == null) throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
     if (value.is(Id.MINUS)) {
       negative = true;
       value = next();
-      if (value == null)
-        throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
+      if (value == null) throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
     }
 
     TimeUnit startUnit = null;
@@ -1189,14 +1183,12 @@ public class ExpressionParser {
 
     // Short format with qualifier
 
-
     String text = value.text();
     if (value.is(Id.LITERAL_STRING)) {
       Token end = null;
       if (this.isThenNext(Id.TO)) {
         end = next();
-        if (end == null)
-          throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
+        if (end == null) throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
         endUnit = TimeUnit.of(end.text());
       }
 
@@ -1207,15 +1199,12 @@ public class ExpressionParser {
     }
 
     IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
-    if (qualifier == null)
-      throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
+    if (qualifier == null) throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
 
     Interval interval = qualifier.parse(text);
-    if (interval == null)
-      throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
+    if (interval == null) throw new ExpressionException(token.start(), ErrorCode.INVALID_INTERVAL);
 
-    if (negative)
-      interval = interval.negate();
+    if (negative) interval = interval.negate();
 
     return Literal.of(interval);
   }
@@ -1248,11 +1237,11 @@ public class ExpressionParser {
         }
 
         if (!typeId.supportsPrecision())
-          throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE,
-              token.text());
+          throw new ExpressionException(
+              token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE, token.text());
         if (!typeId.supportsScale() && scaleFound)
-          throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE,
-              token.text());
+          throw new ExpressionException(
+              token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE, token.text());
       }
 
       switch (typeId) {
@@ -1302,34 +1291,35 @@ public class ExpressionParser {
 
         case ']':
           return new Token(Id.RBRACKET, position++);
-          
-        // Single-quoted literal text.
-        case '\'': {
-          StringBuilder text = new StringBuilder();
-          int start = position++;
-          while (position < source.length()) {
-            c = source.charAt(position++);
-            if (c == '\'') {
-              if (position < source.length()) {
-                char c2 = source.charAt(position);
-                // encountered consecutive single-quotes
-                if (c2 == '\'') {
-                  ++position;
-                  text.append(c);
-                  continue;
+
+          // Single-quoted literal text.
+        case '\'':
+          {
+            StringBuilder text = new StringBuilder();
+            int start = position++;
+            while (position < source.length()) {
+              c = source.charAt(position++);
+              if (c == '\'') {
+                if (position < source.length()) {
+                  char c2 = source.charAt(position);
+                  // encountered consecutive single-quotes
+                  if (c2 == '\'') {
+                    ++position;
+                    text.append(c);
+                    continue;
+                  }
                 }
+                break;
               }
-              break;
+              text.append(c);
             }
-            text.append(c);
-          }
 
-          if (c != '\'') {
-            throw new ExpressionException(start, ErrorCode.MISSING_END_SINGLE_QUOTED_STRING);
-          }
+            if (c != '\'') {
+              throw new ExpressionException(start, ErrorCode.MISSING_END_SINGLE_QUOTED_STRING);
+            }
 
-          return new Token(Id.LITERAL_STRING, start, position, text.toString());
-        }
+            return new Token(Id.LITERAL_STRING, start, position, text.toString());
+          }
 
         case '=':
           return new Token(Id.EQUAL, position++);
@@ -1337,23 +1327,23 @@ public class ExpressionParser {
         case '+':
           return new Token(Id.PLUS, position++);
 
-        case '-': {
-          // Single line comment --
-          if (position + 1 < source.length() && source.charAt(position + 1) == '-') {
-            int start = position;
-            position++;
-            while (position < source.length()) {
-              c = source.charAt(position);
-              if (c == '\r' || c == '\n')
-                break;
+        case '-':
+          {
+            // Single line comment --
+            if (position + 1 < source.length() && source.charAt(position + 1) == '-') {
+              int start = position;
               position++;
+              while (position < source.length()) {
+                c = source.charAt(position);
+                if (c == '\r' || c == '\n') break;
+                position++;
+              }
+              return new Token(Id.COMMENT, start, position, source.substring(start, position));
             }
-            return new Token(Id.COMMENT, start, position, source.substring(start, position));
-          }
 
-          // Minus sign
-          return new Token(Id.MINUS, position++);
-        }
+            // Minus sign
+            return new Token(Id.MINUS, position++);
+          }
 
         case '*':
           return new Token(Id.MULTIPLY, position++);
@@ -1361,109 +1351,111 @@ public class ExpressionParser {
         case '%':
           return new Token(Id.MODULUS, position++);
 
-        case '<': {
-          // parse less symbol
-          int start = position++;
-          if (position < source.length()) {
-            c = source.charAt(position);
-            if (c == '=') {
-              position++;
-              return new Token(Id.LTE, start);
-            }
-            if (c == '>') {
-              position++;
-              return new Token(Id.NOT_EQUAL, start);
-            }
-          }
-          return new Token(Id.LT, start);
-        }
-
-        // parse greater symbol
-        case '>': {
-          int start = position++;
-          if (position < source.length()) {
-            c = source.charAt(position);
-            if (c == '=') {
-              position++;
-              return new Token(Id.GTE, start);
-            }
-          }
-          return new Token(Id.GT, start);
-        }
-
-        // parse bang equal symbol "!="
-        case '!': {
-          int start = position++;
-          if (position < source.length()) {
-            c = source.charAt(position);
-            if (c == '=') {
-              position++;
-              return new Token(Id.NOT_EQUAL, start);
-            }
-          }
-          throw new ExpressionException(start, ErrorCode.UNEXPECTED_CHARACTER, c);
-        }
-
-
-        // cast operator
-        case ':': {
-          int start = position++;
-          if (position < source.length()) {
-            c = source.charAt(position);
-            if (c == ':') {
-              position++;
-              return new Token(Id.CAST, start);
-            }
-          }
-          throw new ExpressionException(start, ErrorCode.UNEXPECTED_CHARACTER, c);
-        }
-
-        // possible start of '/*' or '//' comment
-        case '/': {
-          int start = position++;
-          if (position < source.length()) {
-            char c1 = source.charAt(position);
-            // Block comment
-            if (c1 == '*') {
-              int level = 1;
-
-              while (level > 0) {
-                int end = source.indexOf('*', position + 1);
-                if (end > 0 && end < source.length() - 1) {
-                  // nested block comment
-                  if (source.charAt(end - 1) == '/') {
-                    level++;
-                    position = end;
-                    continue;
-                  }
-                  if (source.charAt(end + 1) == '/') {
-                    level--;
-                    position = end + 2;
-                  } else
-                    position++;
-                } else {
-                  throw new ExpressionException(start, ErrorCode.MISSING_END_BLOCK_COMMENT);
-                }
-              }
-
-              return new Token(Id.COMMENT, start, position, source.substring(start, position));
-            }
-            // Line comment
-            if (c1 == '/') {
-              position++;
-
-              while (position < source.length()) {
-                c = source.charAt(position);
-                if (c == '\r' || c == '\n')
-                  break;
+        case '<':
+          {
+            // parse less symbol
+            int start = position++;
+            if (position < source.length()) {
+              c = source.charAt(position);
+              if (c == '=') {
                 position++;
+                return new Token(Id.LTE, start);
               }
-
-              return new Token(Id.COMMENT, start, position, source.substring(start, position));
+              if (c == '>') {
+                position++;
+                return new Token(Id.NOT_EQUAL, start);
+              }
             }
+            return new Token(Id.LT, start);
           }
-          return new Token(Id.DIVIDE, start);
-        }
+
+          // parse greater symbol
+        case '>':
+          {
+            int start = position++;
+            if (position < source.length()) {
+              c = source.charAt(position);
+              if (c == '=') {
+                position++;
+                return new Token(Id.GTE, start);
+              }
+            }
+            return new Token(Id.GT, start);
+          }
+
+          // parse bang equal symbol "!="
+        case '!':
+          {
+            int start = position++;
+            if (position < source.length()) {
+              c = source.charAt(position);
+              if (c == '=') {
+                position++;
+                return new Token(Id.NOT_EQUAL, start);
+              }
+            }
+            throw new ExpressionException(start, ErrorCode.UNEXPECTED_CHARACTER, c);
+          }
+
+          // cast operator
+        case ':':
+          {
+            int start = position++;
+            if (position < source.length()) {
+              c = source.charAt(position);
+              if (c == ':') {
+                position++;
+                return new Token(Id.CAST, start);
+              }
+            }
+            throw new ExpressionException(start, ErrorCode.UNEXPECTED_CHARACTER, c);
+          }
+
+          // possible start of '/*' or '//' comment
+        case '/':
+          {
+            int start = position++;
+            if (position < source.length()) {
+              char c1 = source.charAt(position);
+              // Block comment
+              if (c1 == '*') {
+                int level = 1;
+
+                while (level > 0) {
+                  int end = source.indexOf('*', position + 1);
+                  if (end > 0 && end < source.length() - 1) {
+                    // nested block comment
+                    if (source.charAt(end - 1) == '/') {
+                      level++;
+                      position = end;
+                      continue;
+                    }
+                    if (source.charAt(end + 1) == '/') {
+                      level--;
+                      position = end + 2;
+                    } else position++;
+                  } else {
+                    throw new ExpressionException(start, ErrorCode.MISSING_END_BLOCK_COMMENT);
+                  }
+                }
+
+                return new Token(Id.COMMENT, start, position, source.substring(start, position));
+              }
+              // Line comment
+              if (c1 == '/') {
+                position++;
+
+                while (position < source.length()) {
+                  c = source.charAt(position);
+                  if (c == '\r' || c == '\n') break;
+                  position++;
+                }
+
+                return new Token(Id.COMMENT, start, position, source.substring(start, position));
+              }
+            }
+            return new Token(Id.DIVIDE, start);
+          }
 
         case '~':
           return new Token(Id.BITWISE_NOT, position++);
@@ -1474,31 +1466,33 @@ public class ExpressionParser {
         case '^':
           return new Token(Id.BITWISE_XOR, position++);
 
-        // Bitwise OR operator or concat symbol
-        case '|': {
-          int start = position++;
-          if (position < source.length()) {
-            c = source.charAt(position);
-            if (c == '|') {
-              position++;
-              return new Token(Id.CONCAT, start);
+          // Bitwise OR operator or concat symbol
+        case '|':
+          {
+            int start = position++;
+            if (position < source.length()) {
+              c = source.charAt(position);
+              if (c == '|') {
+                position++;
+                return new Token(Id.CONCAT, start);
+              }
             }
+            return new Token(Id.BITWISE_OR, start);
           }
-          return new Token(Id.BITWISE_OR, start);
-        }
 
-        // Quoted identifier matching reserved words or with white space
-        case '"': {
-          int start = position++;
-          while (position < source.length()) {
-            c = source.charAt(position++);
-            if (c == '"') {
-              String value = source.substring(start + 1, position - 1).toUpperCase();
-              return new Token(Id.IDENTIFIER, start, position, value);
+          // Quoted identifier matching reserved words or with white space
+        case '"':
+          {
+            int start = position++;
+            while (position < source.length()) {
+              c = source.charAt(position++);
+              if (c == '"') {
+                String value = source.substring(start + 1, position - 1).toUpperCase();
+                return new Token(Id.IDENTIFIER, start, position, value);
+              }
             }
+            throw new ExpressionException(start, ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
           }
-          throw new ExpressionException(start, ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
-        }
 
         case '0':
         case '1':
@@ -1511,173 +1505,166 @@ public class ExpressionParser {
         case '8':
         case '9':
         case '.': // Number without zero .1
-        {
-          int start = position;
-          char previous;
-          boolean error = false;
+          {
+            int start = position;
+            char previous;
+            boolean error = false;
 
-          if (c == '0' && position + 1 < source.length()) {
-            c = source.charAt(position + 1);
+            if (c == '0' && position + 1 < source.length()) {
+              c = source.charAt(position + 1);
 
-            // Literal hexadecimal number 0xABC_DEF
-            if (c == 'x' || c == 'X') {
-              position += 2;
-              previous = c;
-              while (position < source.length()) {
-                c = source.charAt(position);
-                if (Characters.isHexDigit(c) || c == '_') {
-                  position++;
-                  if (c == '_' && c == previous)
-                    error = true;
-                  previous = c;
-                } else {
-                  break;
+              // Literal hexadecimal number 0xABC_DEF
+              if (c == 'x' || c == 'X') {
+                position += 2;
+                previous = c;
+                while (position < source.length()) {
+                  c = source.charAt(position);
+                  if (Characters.isHexDigit(c) || c == '_') {
+                    position++;
+                    if (c == '_' && c == previous) error = true;
+                    previous = c;
+                  } else {
+                    break;
+                  }
                 }
-              }
 
-              String str = source.substring(start, position);
-              // Empty, consecutive underscore or last char is underscore
-              if (str.length() == 2 || previous == '_' || error) {
-                throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
-              }
-
-              return new Token(Id.LITERAL_NUMERIC_HEXA, start, position, str.replace("_", ""));
-            }
-
-            // Literal binary number 0b0110_1011
-            if (source.charAt(position + 1) == 'b' || source.charAt(position + 1) == 'B') {
-              position += 2;
-              previous = c;
-              while (position < source.length()) {
-                c = source.charAt(position);
-                if (Characters.isBitDigit(c) || c == '_') {
-                  position++;
-                  if (c == '_' && c == previous)
-                    error = true;
-                  previous = c;
-                } else {
-                  break;
+                String str = source.substring(start, position);
+                // Empty, consecutive underscore or last char is underscore
+                if (str.length() == 2 || previous == '_' || error) {
+                  throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
                 }
+
+                return new Token(Id.LITERAL_NUMERIC_HEXA, start, position, str.replace("_", ""));
               }
 
-              String str = source.substring(start, position);
-              // Empty, consecutive underscore or last char is underscore
-              if (str.length() == 2 || previous == '_' || error) {
-                throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
-              }
-
-              return new Token(Id.LITERAL_NUMERIC_BINARY, start, position, str.replace("_", ""));
-            }
-
-            // Literal octal number 0o1234567
-            if (source.charAt(position + 1) == 'o' || source.charAt(position + 1) == 'O') {
-              position += 2;
-              previous = c;
-              while (position < source.length()) {
-                c = source.charAt(position);
-                if (Characters.isOctDigit(c) || c == '_') {
-                  position++;
-                  if (c == '_' && c == previous)
-                    error = true;
-                  previous = c;
-                } else {
-                  break;
+              // Literal binary number 0b0110_1011
+              if (source.charAt(position + 1) == 'b' || source.charAt(position + 1) == 'B') {
+                position += 2;
+                previous = c;
+                while (position < source.length()) {
+                  c = source.charAt(position);
+                  if (Characters.isBitDigit(c) || c == '_') {
+                    position++;
+                    if (c == '_' && c == previous) error = true;
+                    previous = c;
+                  } else {
+                    break;
+                  }
                 }
+
+                String str = source.substring(start, position);
+                // Empty, consecutive underscore or last char is underscore
+                if (str.length() == 2 || previous == '_' || error) {
+                  throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
+                }
+
+                return new Token(Id.LITERAL_NUMERIC_BINARY, start, position, str.replace("_", ""));
               }
 
-              String str = source.substring(start, position);
-              // Empty, consecutive underscore or last char is underscore
-              if (str.length() == 2 || previous == '_' || error) {
-                throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
-              }
+              // Literal octal number 0o1234567
+              if (source.charAt(position + 1) == 'o' || source.charAt(position + 1) == 'O') {
+                position += 2;
+                previous = c;
+                while (position < source.length()) {
+                  c = source.charAt(position);
+                  if (Characters.isOctDigit(c) || c == '_') {
+                    position++;
+                    if (c == '_' && c == previous) error = true;
+                    previous = c;
+                  } else {
+                    break;
+                  }
+                }
 
-              return new Token(Id.LITERAL_NUMERIC_OCTAL, start, position, str.replace("_", ""));
-            }
-          }
+                String str = source.substring(start, position);
+                // Empty, consecutive underscore or last char is underscore
+                if (str.length() == 2 || previous == '_' || error) {
+                  throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
+                }
 
-          // Integer part
-          previous = c;
-          while (position < source.length()) {
-            c = source.charAt(position);
-            if (Characters.isDigit(c) || c == '_') {
-              position++;
-              if (c == '_' && c == previous)
-                error = true;
-              previous = c;
-            } else {
-              break;
-            }
-          }
-
-          // Last char should not be a underscore
-          if (previous == '_') {
-            error = true;
-          }
-
-          // Use dot for decimal separator
-          if (position < source.length() && c == '.') {
-            c = source.charAt(position++);
-            previous = '_';
-          }
-
-          // Decimal part
-          while (position < source.length()) {
-            c = source.charAt(position);
-            if (Characters.isDigit(c) || c == '_') {
-              position++;
-              if (c == '_' && c == previous)
-                error = true;
-              previous = c;
-            } else {
-              break;
-            }
-          }
-
-          // Last char should not be a underscore
-          if (previous == '_') {
-            error = true;
-          }
-
-          // Exponentiation part
-          if (position < source.length() && Characters.isExponent(c)) {
-            position++;
-            if (position < source.length()) {
-              c = source.charAt(position);
-              if (c == '+' || c == '-') {
-                position++;
+                return new Token(Id.LITERAL_NUMERIC_OCTAL, start, position, str.replace("_", ""));
               }
             }
 
-            previous = '_';
-            int digit = 0;
+            // Integer part
+            previous = c;
             while (position < source.length()) {
               c = source.charAt(position);
               if (Characters.isDigit(c) || c == '_') {
                 position++;
-                if (Characters.isDigit(c))
-                  digit++;
-                if (c == '_' && c == previous)
-                  error = true;
+                if (c == '_' && c == previous) error = true;
                 previous = c;
               } else {
                 break;
               }
             }
 
-            if (previous == '_' || digit == 0) {
+            // Last char should not be a underscore
+            if (previous == '_') {
               error = true;
             }
-          }
 
-          String str = source.substring(start, position);
-          // Empty, consecutive underscore or last char is underscore
-          if (str.length() == 0 || previous == '_' || error) {
-            throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
-          }
+            // Use dot for decimal separator
+            if (position < source.length() && c == '.') {
+              c = source.charAt(position++);
+              previous = '_';
+            }
 
-          // Literal decimal number
-          return new Token(Id.LITERAL_NUMERIC_DECIMAL, start, position, str.replace("_", ""));
-        }
+            // Decimal part
+            while (position < source.length()) {
+              c = source.charAt(position);
+              if (Characters.isDigit(c) || c == '_') {
+                position++;
+                if (c == '_' && c == previous) error = true;
+                previous = c;
+              } else {
+                break;
+              }
+            }
+
+            // Last char should not be a underscore
+            if (previous == '_') {
+              error = true;
+            }
+
+            // Exponentiation part
+            if (position < source.length() && Characters.isExponent(c)) {
+              position++;
+              if (position < source.length()) {
+                c = source.charAt(position);
+                if (c == '+' || c == '-') {
+                  position++;
+                }
+              }
+
+              previous = '_';
+              int digit = 0;
+              while (position < source.length()) {
+                c = source.charAt(position);
+                if (Characters.isDigit(c) || c == '_') {
+                  position++;
+                  if (Characters.isDigit(c)) digit++;
+                  if (c == '_' && c == previous) error = true;
+                  previous = c;
+                } else {
+                  break;
+                }
+              }
+
+              if (previous == '_' || digit == 0) {
+                error = true;
+              }
+            }
+
+            String str = source.substring(start, position);
+            // Empty, consecutive underscore or last char is underscore
+            if (str.length() == 0 || previous == '_' || error) {
+              throw new ExpressionException(position, ErrorCode.INVALID_NUMBER, str);
+            }
+
+            // Literal decimal number
+            return new Token(Id.LITERAL_NUMERIC_DECIMAL, start, position, str.replace("_", ""));
+          }
 
         default:
           if (Characters.isSpace(c) || c == '\n' || c == '\r') {
@@ -1691,8 +1678,7 @@ public class ExpressionParser {
           int start = position++;
           while (position < source.length()) {
             c = source.charAt(position);
-            if (Characters.isSpace(c) || "()/*%,^&><=~+-.!|$:[]\n\r".indexOf(c) >= 0)
-              break;
+            if (Characters.isSpace(c) || "()/*%,^&><=~+-.!|$:[]\n\r".indexOf(c) >= 0) break;
 
             position++;
           }
@@ -1728,6 +1714,4 @@ public class ExpressionParser {
     }
     return null;
   }
-
 }
-

@@ -14,37 +14,58 @@
  */
 package org.apache.hop.expression;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
-import java.io.StringWriter;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
-
 public abstract class Function extends Operator {
 
   /**
    * Creates an function.
    *
-   * Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
-   * 
+   * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
+   *
    * @param id The unique identifier of the function
    * @param name The name of function
    */
-  protected Function(String id, IReturnTypeInference returnTypeInference,
-      IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+  protected Function(
+      String id,
+      IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker,
+      String category,
+      String documentationUrl) {
     super(id, id, 10, true, returnTypeInference, operandTypeChecker, category, documentationUrl);
   }
 
-  protected Function(String id, String name, IReturnTypeInference returnTypeInference,
-      IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+  protected Function(
+      String id,
+      String name,
+      IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker,
+      String category,
+      String documentationUrl) {
     super(id, name, 10, true, returnTypeInference, operandTypeChecker, category, documentationUrl);
   }
 
-  protected Function(String id, String name, int precedence, boolean isLeftAssociative,
-      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
-      String category, String documentationUrl) {
-    super(id, name, precedence, isLeftAssociative, returnTypeInference, operandTypeChecker,
-        category, documentationUrl);
+  protected Function(
+      String id,
+      String name,
+      int precedence,
+      boolean isLeftAssociative,
+      IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker,
+      String category,
+      String documentationUrl) {
+    super(
+        id,
+        name,
+        precedence,
+        isLeftAssociative,
+        returnTypeInference,
+        operandTypeChecker,
+        category,
+        documentationUrl);
   }
 
   @Override
@@ -53,10 +74,8 @@ public abstract class Function extends Operator {
     writer.append('(');
     boolean first = true;
     for (IExpression operand : operands) {
-      if (!first)
-        writer.append(',');
-      else
-        first = false;
+      if (!first) writer.append(',');
+      else first = false;
       operand.unparse(writer);
     }
     writer.append(')');

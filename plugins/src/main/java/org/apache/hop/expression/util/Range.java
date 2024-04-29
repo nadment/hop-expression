@@ -40,24 +40,17 @@ public final class Range<T extends Comparable<? super T>> {
     }
   }
 
-  /**
-   * Get the lower value.
-   */
+  /** Get the lower value. */
   public T getLower() {
     return lowerBound;
   }
 
-  /**
-   * Get the upper value.
-   *
-   */
+  /** Get the upper value. */
   public T getUpper() {
     return upperBound;
   }
 
-  /**
-   * Checks if the {@code value} is within the bounds of this range.
-   */
+  /** Checks if the {@code value} is within the bounds of this range. */
   public boolean contains(T value) {
     Objects.requireNonNull(value, "value must not be null");
     boolean gteLower = value.compareTo(lowerBound) >= 0;
@@ -77,7 +70,6 @@ public final class Range<T extends Comparable<? super T>> {
       return new Range<T>(cmpLower <= 0 ? lowerBound : lower, cmpUpper >= 0 ? upperBound : upper);
     }
   }
-
 
   /**
    * Return the range as a string representation {@code "[lower, upper]"}.
@@ -106,5 +98,4 @@ public final class Range<T extends Comparable<? super T>> {
   public int hashCode() {
     return Objects.hash(lowerBound, upperBound);
   }
-
 }

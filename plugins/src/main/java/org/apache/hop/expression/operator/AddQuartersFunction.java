@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,17 +27,18 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
-/**
- * Adds or subtracts a specified number of quarters to a date or timestamp
- */
+/** Adds or subtracts a specified number of quarters to a date or timestamp */
 @FunctionPlugin
 public class AddQuartersFunction extends Function {
   public static final Function INSTANCE = new AddQuartersFunction();
 
   public AddQuartersFunction() {
-    super("ADD_QUARTERS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, OperatorCategory.DATE,
+    super(
+        "ADD_QUARTERS",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TEMPORAL_NUMERIC,
+        OperatorCategory.DATE,
         "/docs/add_quarters.html");
   }
 
@@ -54,12 +56,10 @@ public class AddQuartersFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     Long quarters = operands[1].getValue(Long.class);
-    if (quarters == null)
-      return null;
+    if (quarters == null) return null;
 
     return value.plusMonths(3 * quarters);
   }

@@ -16,6 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPInputStream;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -24,28 +28,26 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.GZIPInputStream;
 
 /**
- * Decompress an input value, using the GZIP algorithm.
- * The function returns a byte array of type.
+ * Decompress an input value, using the GZIP algorithm. The function returns a byte array of type.
  */
 @FunctionPlugin
 public class DecompressFunction extends Function {
 
   public DecompressFunction() {
-    super("DECOMPRESS", ReturnTypes.BINARY_NULLABLE, OperandTypes.BINARY, OperatorCategory.STRING,
+    super(
+        "DECOMPRESS",
+        ReturnTypes.BINARY_NULLABLE,
+        OperandTypes.BINARY,
+        OperatorCategory.STRING,
         "/docs/decompress.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
-    if (bytes == null)
-      return null;
+    if (bytes == null) return null;
 
     try {
       ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);

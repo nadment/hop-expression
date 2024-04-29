@@ -28,14 +28,16 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * The function return the current date at time 00:00
- */
+/** The function return the current date at time 00:00 */
 @FunctionPlugin(names = "TODAY")
 public class CurrentDateFunction extends Function {
 
   public CurrentDateFunction() {
-    super("CURRENT_DATE", ReturnTypes.DATE_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.DATE,
+    super(
+        "CURRENT_DATE",
+        ReturnTypes.DATE_NOT_NULL,
+        OperandTypes.NILADIC,
+        OperatorCategory.DATE,
         "/docs/current_date.html");
   }
 

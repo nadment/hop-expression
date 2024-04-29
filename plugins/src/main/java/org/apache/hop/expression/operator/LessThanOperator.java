@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -29,25 +30,30 @@ import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
 
 /**
- * Comparison less than operator.
- * <br>
+ * Comparison less than operator. <br>
  * <strong>Syntax:</strong> <code>x &lt; y</code>
  */
 public class LessThanOperator extends Operator {
 
   public LessThanOperator() {
-    super("LESS_THAN", "<", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
-        OperatorCategory.COMPARISON, "/docs/less_than.html");
+    super(
+        "LESS_THAN",
+        "<",
+        130,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
+        OperatorCategory.COMPARISON,
+        "/docs/less_than.html");
   }
 
   @Override
   public Operator not() {
     return Operators.GREATER_THAN_OR_EQUAL;
   }
-    
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
@@ -73,7 +79,8 @@ public class LessThanOperator extends Operator {
       return new Call(Operators.GREATER_THAN, right, left);
     }
     // Normalize the order of identifier by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+    if (left.is(Kind.IDENTIFIER)
+        && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(Operators.GREATER_THAN, right, left);
     }
@@ -89,19 +96,19 @@ public class LessThanOperator extends Operator {
     }
 
     // Simplify 3<X+1 → 3-1<X
-    if (left.isConstant() && right.is(Operators.ADD)
-        && right.asCall().getOperand(0).isConstant()) {
-      return new Call(call.getOperator(),
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+      return new Call(
+          call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
 
     return call;
   }
-  
+
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
 
   @Override

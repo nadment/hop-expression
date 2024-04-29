@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import java.util.List;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
@@ -23,15 +24,18 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
-import java.util.List;
 
 public class UserDefinedFunction extends Function {
 
   private final UserDefinedFunctionMeta meta;
 
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
-    super(meta.getName(), ReturnTypes.ANY, new UserDefinedFunctionOperandTypeChecker(meta),
-        OperatorCategory.UDF, "/docs/udf.html");
+    super(
+        meta.getName(),
+        ReturnTypes.ANY,
+        new UserDefinedFunctionOperandTypeChecker(meta),
+        OperatorCategory.UDF,
+        "/docs/udf.html");
     this.meta = meta;
   }
 
@@ -40,8 +44,9 @@ public class UserDefinedFunction extends Function {
       throws ExpressionException {
     try {
       // Create a context for arguments
-      IRowExpressionContext ctx = new RowExpressionContext(new Variables(),
-          createRowMetaFromArguments(meta.getArguments()));
+      IRowExpressionContext ctx =
+          new RowExpressionContext(
+              new Variables(), createRowMetaFromArguments(meta.getArguments()));
 
       // Parse function source
       ExpressionParser parser = new ExpressionParser(getSource());

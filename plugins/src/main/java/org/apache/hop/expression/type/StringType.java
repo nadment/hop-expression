@@ -17,40 +17,38 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.NumberFormat;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.NumberFormat;
 
 public final class StringType extends Type {
 
   public static StringType of(int precision) {
     return of(precision, true);
   }
-  
+
   public static StringType of(int precision, boolean nullable) {
-    if ( precision==PRECISION_NOT_SPECIFIED )
-      precision = TypeId.STRING.getMaxPrecision();
-    
-    if ( precision==TypeId.STRING.getMaxPrecision() && nullable)
-      return Types.STRING;  
-    
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeId.STRING.getMaxPrecision();
+
+    if (precision == TypeId.STRING.getMaxPrecision() && nullable) return Types.STRING;
+
     return new StringType(precision, nullable);
   }
-  
+
   public static StringType from(final String value) {
     int precision = value.length();
     // Empty string should return 1
-    if ( precision<1 ) precision = 1;
+    if (precision < 1) precision = 1;
     return StringType.of(precision).withNullability(false);
   }
-  
+
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
     this.signature = generateSignature();
@@ -109,11 +107,12 @@ public final class StringType extends Type {
   }
 
   /**
-   * Convert a value to the specified type {@link StringType} with optional pattern and adjust to precision.
+   * Convert a value to the specified type {@link StringType} with optional pattern and adjust to
+   * precision.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
+   *     numeric, or null if none
    * @return the converted value
    */
   @Override
@@ -124,62 +123,54 @@ public final class StringType extends Type {
     }
 
     String result = null;
-    
+
     if (value instanceof String) {
       result = (String) value;
-    }
-    else if (value instanceof Boolean) {
+    } else if (value instanceof Boolean) {
       result = convertToString((boolean) value);
-    } else if (value instanceof Number) {      
+    } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
       BigDecimal number;
-      if (value instanceof Long) {        
+      if (value instanceof Long) {
         number = BigDecimal.valueOf((Long) value);
-      }
-      else {
+      } else {
         number = (BigDecimal) value;
       }
       result = NumberFormat.of(pattern).format(number);
-    }
-    else if (value instanceof ZonedDateTime) {
-      if (pattern == null)
-        pattern = "YYYY-MM-DD";
+    } else if (value instanceof ZonedDateTime) {
+      if (pattern == null) pattern = "YYYY-MM-DD";
       result = DateTimeFormat.of(pattern).format((ZonedDateTime) value);
-    }
-    else if (value instanceof byte[]) {
-      result =  new String((byte[]) value, StandardCharsets.UTF_8);
-    }
-    else if (value instanceof JsonNode) {
+    } else if (value instanceof byte[]) {
+      result = new String((byte[]) value, StandardCharsets.UTF_8);
+    } else if (value instanceof JsonNode) {
       return convertToString((JsonNode) value);
-    }
-    else if (value instanceof InetAddress) {
+    } else if (value instanceof InetAddress) {
       return convertToString((InetAddress) value);
     }
-    
-    if (result==null ) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, this);
+
+    if (result == null) {
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, this);
     }
     // adjust length
     if (precision < result.length()) {
       result = result.substring(0, precision);
     }
-    
+
     return result;
   }
 
-
   protected boolean checkPrecision(final String result) {
-    if (result == null)
-      return true;
+    if (result == null) return true;
 
     return this.precision < 0 || this.precision >= result.length();
   }
 
   /**
    * Coerce value to data type STRING
-   * 
+   *
    * @param value the value to coerce
    * @return String
    */
@@ -219,10 +210,10 @@ public final class StringType extends Type {
   public static String convertToString(final InetAddress value) throws ConversionException {
     return value.getHostAddress();
   }
-  
+
   /**
    * Convert Json value to String.
-   * 
+   *
    * @param json the json to convert
    * @return String
    */

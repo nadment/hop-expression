@@ -14,20 +14,19 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Computes the statistical variance of a population of all values over a group of rows.
- * 
- * The population-based variance (s2) of numeric-expression (x) is computed according to the
- * following formula:
- * s2 = (1/N) * SUM( xI - mean( x ) )2
- * 
- * Null values are ignored.
+ *
+ * <p>The population-based variance (s2) of numeric-expression (x) is computed according to the
+ * following formula: s2 = (1/N) * SUM( xI - mean( x ) )2
+ *
+ * <p>Null values are ignored.
  */
 public class VariancePopProcessor implements IExpressionProcessor {
 

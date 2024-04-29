@@ -24,24 +24,26 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-
 /**
- * Converts an encoded string using the Java string literal encoding format. Special characters
- * are \b, \t, \n, \f, \r, \", \\, \\000, \\u0000
+ * Converts an encoded string using the Java string literal encoding format. Special characters are
+ * \b, \t, \n, \f, \r, \", \\, \\000, \\u0000
  */
 @FunctionPlugin
 public class StringDecodeFunction extends Function {
 
   public StringDecodeFunction() {
-    super("STRING_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "STRING_DECODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/string_decode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return StringEscapeUtils.unescapeJava(value);
   }

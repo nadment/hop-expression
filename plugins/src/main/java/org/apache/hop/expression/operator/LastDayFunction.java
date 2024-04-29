@@ -16,6 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -25,18 +30,13 @@ import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.LastDayOfQuarter;
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 
 /**
  * Returns the last day of the time unit.
- * 
- * The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH},
- * {@link TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
- * 
+ *
+ * <p>The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH}, {@link
+ * TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
+ *
  * @see {@link FirstDayFunction}
  */
 @FunctionPlugin
@@ -45,15 +45,18 @@ public class LastDayFunction extends Function {
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
   public LastDayFunction() {
-    super("LAST_DAY", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
-        OperatorCategory.DATE, "/docs/last_day.html");
+    super(
+        "LAST_DAY",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
+        OperatorCategory.DATE,
+        "/docs/last_day.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     // Default to last day of month
     TemporalAdjuster adjuster = TemporalAdjusters.lastDayOfMonth();

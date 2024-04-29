@@ -16,21 +16,26 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.util.regex.Pattern;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.io.StringWriter;
-import java.util.regex.Pattern;
 
 /** The ILIKE case-insensitive operator. */
 public class ILikeOperator extends Operator {
 
   public ILikeOperator() {
-    super("ILIKE", 120, true, ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), OperatorCategory.COMPARISON,
+    super(
+        "ILIKE",
+        120,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
+        OperatorCategory.COMPARISON,
         "/docs/ilike.html");
   }
 

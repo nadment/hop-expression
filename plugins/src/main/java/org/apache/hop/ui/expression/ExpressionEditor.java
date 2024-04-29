@@ -14,6 +14,15 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.Props;
 import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.gui.plugin.toolbar.GuiToolbarElement;
@@ -73,15 +82,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.CompletableFuture;
 
 @GuiPlugin
 public class ExpressionEditor extends Composite implements IDocumentListener {
@@ -93,7 +93,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public static final String ID_TOOLBAR_PASTE = "expression-editor-toolbar-10410-paste";
   public static final String ID_TOOLBAR_CUT = "expression-editor-toolbar-10420-cut";
   public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10420-simplify";
-  
+
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
   private ExpressionMode mode = ExpressionMode.NONE;
@@ -106,7 +106,11 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private GuiToolbarWidgets toolbarWidgets;
   private IRowMeta rowMeta;
 
-  public ExpressionEditor(Composite parent, int style, IVariables variables, ExpressionMode mode,
+  public ExpressionEditor(
+      Composite parent,
+      int style,
+      IVariables variables,
+      ExpressionMode mode,
       CompletableFuture<IRowMeta> rowMetaFutur) {
     super(parent, style);
     this.variables = variables;
@@ -147,81 +151,92 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     viewer =
         new SourceViewer(composite, createVerticalRuler(), SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
-    viewer.getControl()
+    viewer
+        .getControl()
         .setLayoutData(new FormDataBuilder().top(toolbar).bottom().fullWidth().result());
 
     final StyledText widget = viewer.getTextWidget();
 
     widget.setFont(GuiResource.getInstance().getFontFixed());
 
-
     // In Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
     // Use Ctrl-ALT-SPACE instead.
     final int modifierKeys =
         (System.getProperty("user.language").equals("zh")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
 
-    widget.addListener(SWT.KeyDown, event -> {
-      if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
-        viewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
-      } else if (event.keyCode == SWT.F1) {
-        // TODO: Help
-        event.doit = false;
-      }
-    });
+    widget.addListener(
+        SWT.KeyDown,
+        event -> {
+          if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
+            viewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
+          } else if (event.keyCode == SWT.F1) {
+            // TODO: Help
+            event.doit = false;
+          }
+        });
 
     Menu menu = new Menu(getShell(), SWT.POP_UP);
     MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
     undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Undo.Label"));
-    undoItem.setImage(GuiResource.getInstance().getImage("ui/images/undo.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    undoItem.setImage(
+        GuiResource.getInstance()
+            .getImage("ui/images/undo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
     undoItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.UNDO));
 
     MenuItem redoItem = new MenuItem(menu, SWT.PUSH);
     redoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Redo.Label"));
-    redoItem.setImage(GuiResource.getInstance().getImage("ui/images/redo.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    redoItem.setImage(
+        GuiResource.getInstance()
+            .getImage("ui/images/redo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
     redoItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.REDO));
     new MenuItem(menu, SWT.SEPARATOR);
     MenuItem cutItem = new MenuItem(menu, SWT.PUSH);
     cutItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Cut.Label"));
-    cutItem.setImage(GuiResource.getInstance().getImage("ui/images/cut.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    cutItem.setImage(
+        GuiResource.getInstance()
+            .getImage("ui/images/cut.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
     cutItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.CUT));
     MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
     copyItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Copy.Label"));
-    copyItem.setImage(GuiResource.getInstance().getImage("ui/images/copy.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    copyItem.setImage(
+        GuiResource.getInstance()
+            .getImage("ui/images/copy.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
     copyItem.addListener(SWT.Selection, e -> doCopy());
     MenuItem pasteItem = new MenuItem(menu, SWT.PUSH);
     pasteItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Paste.Label"));
-    pasteItem.setImage(GuiResource.getInstance().getImage("ui/images/paste.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    pasteItem.setImage(
+        GuiResource.getInstance()
+            .getImage("ui/images/paste.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
     pasteItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.PASTE));
     new MenuItem(menu, SWT.SEPARATOR);
     MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
     selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.SelectAll.Label"));
-    selectAllItem.setImage(GuiResource.getInstance().getImage("ui/images/select-all.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    selectAllItem.addListener(SWT.Selection,
-        e -> viewer.doOperation(ITextOperationTarget.SELECT_ALL));
+    selectAllItem.setImage(
+        GuiResource.getInstance()
+            .getImage(
+                "ui/images/select-all.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    selectAllItem.addListener(
+        SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.SELECT_ALL));
 
     widget.setMenu(menu);
-    widget.addListener(SWT.MenuDetect, event -> {
-      undoItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.UNDO));
-      redoItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.REDO));
-      cutItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.CUT));
-      copyItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.COPY));
-      pasteItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.PASTE));
-    });
+    widget.addListener(
+        SWT.MenuDetect,
+        event -> {
+          undoItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.UNDO));
+          redoItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.REDO));
+          cutItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.CUT));
+          copyItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.COPY));
+          pasteItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.PASTE));
+        });
 
     Document document = new Document();
     document.addDocumentListener(this);
 
-
     ExpressionEditorConfiguration configuration =
         new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
-    IDocumentPartitioner partitioner = new FastPartitioner(new ExpressionPartitionScanner(),
-        configuration.getConfiguredContentTypes(viewer));
+    IDocumentPartitioner partitioner =
+        new FastPartitioner(
+            new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(viewer));
     partitioner.connect(document);
     document.setDocumentPartitioner(partitioner);
 
@@ -259,29 +274,31 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     // Create the drag source on the tree
     DragSource ds = new DragSource(tree, DND.DROP_MOVE);
     ds.setTransfer(TextTransfer.getInstance());
-    ds.addDragListener(new DragSourceAdapter() {
-      @Override
-      public void dragStart(DragSourceEvent event) {
-        TreeItem item = tree.getSelection()[0];
+    ds.addDragListener(
+        new DragSourceAdapter() {
+          @Override
+          public void dragStart(DragSourceEvent event) {
+            TreeItem item = tree.getSelection()[0];
 
-        if (item != null && item.getData() != null) {
-          event.doit = true;
-        } else
-          event.doit = false;
-      }
+            if (item != null && item.getData() != null) {
+              event.doit = true;
+            } else event.doit = false;
+          }
 
-      @Override
-      public void dragSetData(DragSourceEvent event) {
-        // Set the data to be the first selected item's text
-        event.data = labelProvider.getText(tree.getSelection()[0].getData());
-      }
-    });
+          @Override
+          public void dragSetData(DragSourceEvent event) {
+            // Set the data to be the first selected item's text
+            event.data = labelProvider.getText(tree.getSelection()[0].getData());
+          }
+        });
 
     if (mode == ExpressionMode.ROW || mode == ExpressionMode.COLUMN || mode == ExpressionMode.UDF) {
       TreeItem item = new TreeItem(tree, SWT.NULL);
       item.setImage(GuiResource.getInstance().getImageFolder());
-      String text = (mode == ExpressionMode.UDF) ? "ExpressionEditor.Tree.Arguments.Label"
-          : "ExpressionEditor.Tree.Fields.Label";
+      String text =
+          (mode == ExpressionMode.UDF)
+              ? "ExpressionEditor.Tree.Arguments.Label"
+              : "ExpressionEditor.Tree.Fields.Label";
       item.setText(BaseMessages.getString(PKG, text));
     }
 
@@ -344,10 +361,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       TreeItem parentItem = items.get(operator.getCategory());
 
       TreeItem item;
-      if (parentItem == null)
-        item = new TreeItem(tree, SWT.NULL);
-      else
-        item = new TreeItem(parentItem, SWT.NULL);
+      if (parentItem == null) item = new TreeItem(tree, SWT.NULL);
+      else item = new TreeItem(parentItem, SWT.NULL);
       item.setImage(labelProvider.getImage(operator));
       item.setText(mapDisplay.get(operator.getId()));
       item.setData(operator);
@@ -383,7 +398,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   /**
    * Create the vertical ruler for the source viewer.
-   * 
+   *
    * @return the vertical ruler
    */
   protected IVerticalRuler createVerticalRuler() {
@@ -402,8 +417,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   }
 
   public void setText(String expression) {
-    if (expression == null)
-      return;
+    if (expression == null) return;
 
     viewer.getDocument().set(expression);
   }
@@ -412,48 +426,64 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     return viewer.getDocument().get();
   }
 
-  @GuiToolbarElement(root = ID_TOOLBAR, id = ID_TOOLBAR_COPY, image = "ui/images/copy.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Copy.ToolTip", separator = true)
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_COPY,
+      image = "ui/images/copy.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Copy.ToolTip",
+      separator = true)
   public void doCopy() {
     viewer.doOperation(ITextOperationTarget.COPY);
   }
 
-  @GuiToolbarElement(root = ID_TOOLBAR, id = ID_TOOLBAR_PASTE, image = "ui/images/paste.svg",
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_PASTE,
+      image = "ui/images/paste.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Paste.ToolTip")
   public void doPaste() {
     viewer.doOperation(ITextOperationTarget.PASTE);
   }
 
-  @GuiToolbarElement(root = ID_TOOLBAR, id = ID_TOOLBAR_CUT, image = "ui/images/cut.svg",
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_CUT,
+      image = "ui/images/cut.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Cut.ToolTip")
   public void doCut() {
     viewer.doOperation(ITextOperationTarget.CUT);
   }
 
-  @GuiToolbarElement(root = ID_TOOLBAR, id = ID_TOOLBAR_SELECT_ALL,
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_SELECT_ALL,
       image = "ui/images/select-all.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip", separator = true)
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip",
+      separator = true)
   public void doSelectAll() {
     viewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
 
-  @GuiToolbarElement(root = ID_TOOLBAR, id = ID_TOOLBAR_OPTIMIZE,
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_OPTIMIZE,
       image = "evaluate.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Evaluate.ToolTip", separator = true)
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Evaluate.ToolTip",
+      separator = true)
   public void doOptimize() {
-    
+
     String source = viewer.getTextWidget().getText();
-    
-    RowExpressionContext context =  new RowExpressionContext(variables, rowMeta);
-    
+
+    RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
+
     IExpression expression = context.createExpression(source);
-    
-    MessageBox dialog = new MessageBox(getShell());    
+
+    MessageBox dialog = new MessageBox(getShell());
     dialog.setText("Expression simplified");
-    dialog.setMessage(expression.toString());    
+    dialog.setMessage(expression.toString());
     dialog.open();
   }
-  
+
   protected void treeExpandCollapseAll(boolean expanded) {
     // Stop redraw until operation complete
     tree.setRedraw(false);
@@ -477,30 +507,32 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public void setRowMeta(final IRowMeta rowMeta) {
     this.rowMeta = rowMeta;
 
-    Display.getDefault().asyncExec(() -> {
-      // Remove existing fields
+    Display.getDefault()
+        .asyncExec(
+            () -> {
+              // Remove existing fields
 
-      TreeItem parentItem = tree.getItem(0);
+              TreeItem parentItem = tree.getItem(0);
 
-      parentItem.removeAll();
+              parentItem.removeAll();
 
-      if (rowMeta != null) {
-        for (int i = 0; i < rowMeta.size(); i++) {
-          IValueMeta valueMeta = rowMeta.getValueMeta(i);
+              if (rowMeta != null) {
+                for (int i = 0; i < rowMeta.size(); i++) {
+                  IValueMeta valueMeta = rowMeta.getValueMeta(i);
 
-          // Escape field name matching reserved words or function name
-          String name = valueMeta.getName();
-          if (ExpressionParser.isReservedWord(name) || FunctionRegistry.isFunction(name)) {
-            name = '[' + name + ']';
-          }
+                  // Escape field name matching reserved words or function name
+                  String name = valueMeta.getName();
+                  if (ExpressionParser.isReservedWord(name) || FunctionRegistry.isFunction(name)) {
+                    name = '[' + name + ']';
+                  }
 
-          TreeItem item = new TreeItem(parentItem, SWT.NULL);
-          item.setImage(labelProvider.getImage(valueMeta));
-          item.setText(valueMeta.getName());
-          item.setData(name);
-        }
-      }
-    });
+                  TreeItem item = new TreeItem(parentItem, SWT.NULL);
+                  item.setImage(labelProvider.getImage(valueMeta));
+                  item.setText(valueMeta.getName());
+                  item.setData(name);
+                }
+              }
+            });
   }
 
   @Override
@@ -523,13 +555,12 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     String expression = event.getDocument().get();
     try {
       IExpressionContext context;
-      if ( rowMeta==null) {
-        context = new ExpressionContext(variables);   
-      }
-      else {
+      if (rowMeta == null) {
+        context = new ExpressionContext(variables);
+      } else {
         context = new RowExpressionContext(variables, rowMeta);
       }
-      
+
       context.createExpression(expression);
     } catch (ExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());

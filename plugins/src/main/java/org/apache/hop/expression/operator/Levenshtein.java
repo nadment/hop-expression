@@ -24,26 +24,25 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-
-/**
- * The function compute Levenshtein distance.
- */
+/** The function compute Levenshtein distance. */
 @FunctionPlugin
 public class Levenshtein extends Function {
 
   public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING,
+    super(
+        "LEVENSHTEIN",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING,
+        OperatorCategory.STRING,
         "/docs/levenshtein.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String str1 = operands[0].getValue(String.class);
-    if (str1 == null)
-      return null;
+    if (str1 == null) return null;
     String str2 = operands[1].getValue(String.class);
-    if (str2 == null)
-      return null;
+    if (str2 == null) return null;
 
     return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
   }

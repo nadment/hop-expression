@@ -14,6 +14,9 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
@@ -56,9 +59,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class ExpressionDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = ExpressionMeta.class;
@@ -69,8 +69,12 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
   private TableView wTableFields;
   private ModifyListener lsMod;
 
-  public ExpressionDialog(Shell parent, IVariables variables, Object input,
-      PipelineMeta pipelineMeta, String transformName) {
+  public ExpressionDialog(
+      Shell parent,
+      IVariables variables,
+      Object input,
+      PipelineMeta pipelineMeta,
+      String transformName) {
     super(parent, variables, (ExpressionMeta) input, pipelineMeta, transformName);
     this.input = (ExpressionMeta) input;
   }
@@ -93,13 +97,13 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
     PropsUi.setLook(shell);
 
-
     // The ModifyListener used on all controls. It will update the meta object to
     // indicate that changes are being made.
-    lsMod = e -> {
-      baseTransformMeta.setChanged();
-      wOk.setEnabled(isValid());
-    };
+    lsMod =
+        e -> {
+          baseTransformMeta.setChanged();
+          wOk.setEnabled(isValid());
+        };
 
     this.createContents(shell);
 
@@ -193,8 +197,12 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
     Composite area = new Composite(parent, SWT.NONE);
     area.setLayout(new FormLayout());
-    area.setLayoutData(new FormDataBuilder().top(titleSeparator, PropsUi.getFormMargin())
-        .bottom(wOk, -PropsUi.getFormMargin()).fullWidth().result());
+    area.setLayoutData(
+        new FormDataBuilder()
+            .top(titleSeparator, PropsUi.getFormMargin())
+            .bottom(wOk, -PropsUi.getFormMargin())
+            .fullWidth()
+            .result());
     PropsUi.setLook(area);
 
     this.createDialogArea(area);
@@ -234,64 +242,82 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
   protected Control createDialogArea(final Composite parent) {
 
-    ColumnInfo[] columns = new ColumnInfo[] {
-        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Name.Label"),
-            ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Expression.Label"),
-            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Type.Label"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames()),
-        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Length.Label"),
-            ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Precision.Label"),
-            ColumnInfo.COLUMN_TYPE_TEXT, false)};
+    ColumnInfo[] columns =
+        new ColumnInfo[] {
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Name.Label"),
+              ColumnInfo.COLUMN_TYPE_TEXT,
+              false),
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Expression.Label"),
+              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
+              false),
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Type.Label"),
+              ColumnInfo.COLUMN_TYPE_CCOMBO,
+              ValueMetaFactory.getValueMetaNames()),
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Length.Label"),
+              ColumnInfo.COLUMN_TYPE_TEXT,
+              false),
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Precision.Label"),
+              ColumnInfo.COLUMN_TYPE_TEXT,
+              false)
+        };
 
     columns[1].setUsingVariables(true);
-    columns[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-        TableItem tableItem = wTableFields.getActiveTableItem();
-        ExpressionEditorDialog dialog = (ExpressionEditorDialog) tableItem.getData(DIALOG_KEY);
+    columns[1].setTextVarButtonSelectionListener(
+        new SelectionAdapter() {
+          @Override
+          public void widgetSelected(SelectionEvent e) {
+            TableItem tableItem = wTableFields.getActiveTableItem();
+            ExpressionEditorDialog dialog = (ExpressionEditorDialog) tableItem.getData(DIALOG_KEY);
 
-        // Expression editor already open, bring dialog to front
-        if (dialog != null) {
-          dialog.setActive();
-          return;
-        }
+            // Expression editor already open, bring dialog to front
+            if (dialog != null) {
+              dialog.setActive();
+              return;
+            }
 
-        final IRowMeta rowMeta = new RowMeta();
-        for (TableItem item : wTableFields.getNonEmptyItems()) {
-          // All expressions previously defined
-          if (item.equals(wTableFields.getActiveTableItem()))
-            break;
-          TypeId typeId = TypeId.of(item.getText(3));
-          if (typeId != null) {
-            String name = item.getText(1);
-            rowMeta.addValueMeta(Types.createValueMeta(name, typeId));
+            final IRowMeta rowMeta = new RowMeta();
+            for (TableItem item : wTableFields.getNonEmptyItems()) {
+              // All expressions previously defined
+              if (item.equals(wTableFields.getActiveTableItem())) break;
+              TypeId typeId = TypeId.of(item.getText(3));
+              if (typeId != null) {
+                String name = item.getText(1);
+                rowMeta.addValueMeta(Types.createValueMeta(name, typeId));
+              }
+            }
+
+            CompletableFuture<IRowMeta> rowMetaFutur =
+                getAsyncRowMeta(getVariables(), pipelineMeta, transformName, rowMeta);
+
+            dialog = new ExpressionEditorDialog(shell);
+            tableItem.setData(DIALOG_KEY, dialog);
+
+            String expression = tableItem.getText(wTableFields.getActiveTableColumn());
+            expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFutur);
+
+            if (!shell.isDisposed()) {
+              tableItem.setData(DIALOG_KEY, null);
+              if (expression != null) {
+                tableItem.setText(wTableFields.getActiveTableColumn(), expression);
+              }
+            }
           }
-        }
-
-        CompletableFuture<IRowMeta> rowMetaFutur =
-            getAsyncRowMeta(getVariables(), pipelineMeta, transformName, rowMeta);
-        
-        dialog = new ExpressionEditorDialog(shell);
-        tableItem.setData(DIALOG_KEY, dialog);
-
-        String expression = tableItem.getText(wTableFields.getActiveTableColumn());
-        expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFutur);
-
-        if (!shell.isDisposed()) {
-          tableItem.setData(DIALOG_KEY, null);
-          if (expression != null) {
-            tableItem.setText(wTableFields.getActiveTableColumn(), expression);
-          }
-        }
-      }
-    });
+        });
 
     wTableFields =
-        new TableView(this.getVariables(), parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            columns, this.input.getFields().size(), lsMod, props);
+        new TableView(
+            this.getVariables(),
+            parent,
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+            columns,
+            this.input.getFields().size(),
+            lsMod,
+            props);
     wTableFields.setLayoutData(new FormDataBuilder().top().bottom().left().right().result());
     wTableFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
 
@@ -299,30 +325,35 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
   }
 
   // Search the fields in the background
-  protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
-      PipelineMeta pipelineMeta, String transformName, IRowMeta rowMeta) {
-    return CompletableFuture.supplyAsync(() -> {
-      try {
-        TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
-        if (transformMeta != null) {
-          rowMeta.addRowMeta(pipelineMeta.getPrevTransformFields(variables, transformMeta));
-        }
-      } catch (HopException e) {
-        // Ignore
-      }
-      return rowMeta;
-    });
+  protected CompletableFuture<IRowMeta> getAsyncRowMeta(
+      IVariables variables, PipelineMeta pipelineMeta, String transformName, IRowMeta rowMeta) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
+            if (transformMeta != null) {
+              rowMeta.addRowMeta(pipelineMeta.getPrevTransformFields(variables, transformMeta));
+            }
+          } catch (HopException e) {
+            // Ignore
+          }
+          return rowMeta;
+        });
   }
-
 
   public Image getImage() {
 
-    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
-        this.transformMeta.getPluginId());
+    IPlugin plugin =
+        PluginRegistry.getInstance()
+            .getPlugin(TransformPluginType.class, this.transformMeta.getPluginId());
 
     if (plugin.getImageFile() != null) {
-      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
-          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
+      return SwtSvgImageUtil.getImage(
+          shell.getDisplay(),
+          getClass().getClassLoader(),
+          plugin.getImageFile(),
+          ConstUi.LARGE_ICON_SIZE,
+          ConstUi.LARGE_ICON_SIZE);
     }
 
     return GuiResource.getInstance().getImageError();

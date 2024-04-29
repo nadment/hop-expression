@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -26,30 +27,33 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * Logical negation <code>NOT</code> operator
  *
- * <p>
- * Syntax of the operator:
+ * <p>Syntax of the operator:
  *
  * <ul>
- * <li><code>NOT(field IS TRUE)</code></li>
- * <li><code>NOT(field IN (list of values))</code></li>
- * <li><code>NOT(field BETWEEN start AND end)</code></li>
+ *   <li><code>NOT(field IS TRUE)</code>
+ *   <li><code>NOT(field IN (list of values))</code>
+ *   <li><code>NOT(field BETWEEN start AND end)</code>
  * </ul>
  */
 public class BoolNotOperator extends Operator {
 
   public BoolNotOperator() {
-    super("BOOLNOT", "NOT", 150, false, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN, OperatorCategory.LOGICAL,
+    super(
+        "BOOLNOT",
+        "NOT",
+        150,
+        false,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.BOOLEAN,
+        OperatorCategory.LOGICAL,
         "/docs/boolnot.html");
   }
 
-  /**
-   * Simplifies by removing unnecessary `Not` operator
-   */
+  /** Simplifies by removing unnecessary `Not` operator */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
@@ -59,7 +63,7 @@ public class BoolNotOperator extends Operator {
     if (operand.is(Operators.BOOLNOT)) {
       return operand.asCall().getOperand(0);
     }
-    
+
     // If the operand is a call to a logical operator that can be inverted, then remove NOT
     // NOT(l=r) → l<>r
     // NOT(l<>r) → l=r
@@ -82,14 +86,14 @@ public class BoolNotOperator extends Operator {
     if (operand.is(Kind.CALL)) {
       Call callOperand = operand.asCall();
       Operator operator = callOperand.getOperator().not();
-      if ( operator!=null ) {
+      if (operator != null) {
         return new Call(operator, callOperand.getOperands());
       }
     }
-   
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);

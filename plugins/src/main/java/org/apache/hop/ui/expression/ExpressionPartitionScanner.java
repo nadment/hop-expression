@@ -33,15 +33,16 @@ public class ExpressionPartitionScanner extends RuleBasedPartitionScanner {
     IToken comment = new Token(COMMENT);
     IToken string = new Token(STRING);
 
-    setPredicateRules(new IPredicateRule[] {
-        // Add partition rule for single comment
-        new EndOfLineRule("//", comment),
-        // Add partition rule for single comment
-        new EndOfLineRule("--", comment),
-        // Add partition rule for comment
-        new MultiLineRule("/*", "*/", comment),
-        // Add partition rule for strings
-        new SingleLineRule("'", "'", string, (char) 0, true)
-     });  
+    setPredicateRules(
+        new IPredicateRule[] {
+          // Add partition rule for single comment
+          new EndOfLineRule("//", comment),
+          // Add partition rule for single comment
+          new EndOfLineRule("--", comment),
+          // Add partition rule for comment
+          new MultiLineRule("/*", "*/", comment),
+          // Add partition rule for strings
+          new SingleLineRule("'", "'", string, (char) 0, true)
+        });
   }
 }

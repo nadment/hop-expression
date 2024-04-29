@@ -23,26 +23,26 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-
-/**
- * Returns a string consisting of a the specified number of blank spaces.
- */
+/** Returns a string consisting of a the specified number of blank spaces. */
 @FunctionPlugin
 public class SpaceFunction extends Function {
 
   public SpaceFunction() {
-    super("SPACE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.STRING, "/docs/space.html");
+    super(
+        "SPACE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.STRING,
+        "/docs/space.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     int length = value.intValue();
-    if (length < 0)
-      return null;
+    if (length < 0) return null;
 
     char[] chars = new char[length];
     for (int i = length - 1; i >= 0; i--) {
@@ -51,5 +51,4 @@ public class SpaceFunction extends Function {
 
     return new String(chars);
   }
-
 }

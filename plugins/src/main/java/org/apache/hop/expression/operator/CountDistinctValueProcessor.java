@@ -14,10 +14,10 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionProcessor;
 
 /** Returns the number of distinct values. */
 public class CountDistinctValueProcessor implements IExpressionProcessor {

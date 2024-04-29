@@ -28,7 +28,9 @@ import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.metadata.api.IHopMetadata;
 
-@ExtensionPoint(id = "UdfCreatedExtensionPoint", extensionPointId = "HopGuiMetadataObjectCreated",
+@ExtensionPoint(
+    id = "UdfCreatedExtensionPoint",
+    extensionPointId = "HopGuiMetadataObjectCreated",
     description = "User Defined Function created")
 public class UdfCreatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override

@@ -14,9 +14,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import com.ibm.icu.math.BigDecimal;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import com.ibm.icu.math.BigDecimal;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null

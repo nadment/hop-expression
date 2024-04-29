@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -24,26 +25,31 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * Logical exclusive disjunction <code>XOR</code> operator.
+ *
  * <ul>
- *  <li>True if one expression is non-zero and the other expression is zero.</li>
- *  <li>False if both expressions are non-zero or both expressions are zero.</li>
- *  <li>NULL if one or both expressions are NULL.</li>
+ *   <li>True if one expression is non-zero and the other expression is zero.
+ *   <li>False if both expressions are non-zero or both expressions are zero.
+ *   <li>NULL if one or both expressions are NULL.
  * </ul>
  */
 public class BoolXorOperator extends Operator {
 
   public BoolXorOperator() {
-    super("BOOLXOR", "XOR", 170, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN_BOOLEAN,
-        OperatorCategory.LOGICAL, "/docs/boolxor.html");
-  } 
-  
-  /**
-   * Simplifies XOR expressions whose answer can be determined without evaluating both sides.
-   */
+    super(
+        "BOOLXOR",
+        "XOR",
+        170,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.BOOLEAN_BOOLEAN,
+        OperatorCategory.LOGICAL,
+        "/docs/boolxor.html");
+  }
+
+  /** Simplifies XOR expressions whose answer can be determined without evaluating both sides. */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return call;
@@ -58,7 +64,7 @@ public class BoolXorOperator extends Operator {
 
     Boolean right = operands[1].getValue(Boolean.class);
     if (right == null) {
-        return null;
+      return null;
     }
     return Boolean.logicalXor(left, right);
   }
@@ -67,7 +73,7 @@ public class BoolXorOperator extends Operator {
   public boolean isSymmetrical() {
     return true;
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

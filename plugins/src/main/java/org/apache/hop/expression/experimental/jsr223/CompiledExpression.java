@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.experimental.jsr223;
 
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.IExpression;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
 
 public class CompiledExpression extends CompiledScript {
 

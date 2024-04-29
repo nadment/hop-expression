@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -26,17 +27,22 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * An operator describing the <code>IS NULL</code> operator.
- * 
+ *
  * @see {@link IsNotNullOperator}
  */
 public class IsNullOperator extends Operator {
 
   public IsNullOperator() {
-    super("IS NULL", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
+    super(
+        "IS NULL",
+        140,
+        true,
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY,
+        OperatorCategory.COMPARISON,
         "/docs/is-null.html");
   }
 
@@ -44,7 +50,7 @@ public class IsNullOperator extends Operator {
   public Operator not() {
     return Operators.IS_NOT_NULL;
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
@@ -53,10 +59,10 @@ public class IsNullOperator extends Operator {
     if (!operand.getType().isNullable()) {
       return Literal.FALSE;
     }
-    
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();

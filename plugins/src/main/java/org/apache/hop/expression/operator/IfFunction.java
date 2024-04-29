@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import static org.apache.hop.expression.type.Types.coerceOperandType;
 import static org.apache.hop.expression.type.Types.getCommonTypeForComparison;
+
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -31,15 +32,16 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 
-/**
- * Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
- */
+/** Single-level if-then-else expression. Similar to CASE, but only allows a single condition. */
 @FunctionPlugin
 public class IfFunction extends Function {
 
   public IfFunction() {
-    super("IF", ReturnTypes.IF_FUNCTION,
-        OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME), OperatorCategory.CONDITIONAL,
+    super(
+        "IF",
+        ReturnTypes.IF_FUNCTION,
+        OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME),
+        OperatorCategory.CONDITIONAL,
         "/docs/if.html");
   }
 
@@ -49,7 +51,10 @@ public class IfFunction extends Function {
 
     // Normalize IF(condition,x) → IF(condition,x,NULL)
     if (call.getOperandCount() == 2) {
-      return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1),
+      return new Call(
+          call.getOperator(),
+          call.getOperand(0),
+          call.getOperand(1),
           new Literal(null, call.getType()));
     }
 
@@ -62,14 +67,14 @@ public class IfFunction extends Function {
       }
 
       // IF(x IS NULL,y,z) → NVL2(x, z, y)
-      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(2),
-          call.getOperand(1));
+      return new Call(
+          Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(2), call.getOperand(1));
     }
 
     if (condition.is(Operators.IS_NOT_NULL)) {
       // IF(x IS NOT NULL,y,z) → NVL2(x,y,z)
-      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(1),
-          call.getOperand(2));
+      return new Call(
+          Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(1), call.getOperand(2));
     }
 
     if (condition.is(Operators.EQUAL) && call.getOperand(1).isNull()) {
@@ -92,20 +97,19 @@ public class IfFunction extends Function {
   public boolean coerceOperandsType(Call call) {
     // Determine common type
     Type type = call.getOperand(1).getType();
-    if ( call.getOperandCount()==3 ) {
+    if (call.getOperandCount() == 3) {
       type = getCommonTypeForComparison(type, call.getOperand(2).getType());
     }
     boolean coerced = coerceOperandType(call, type, 1);
     coerced |= coerceOperandType(call, type, 2);
-    
+
     return coerced;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
-    if (value == null)
-      value = Boolean.FALSE;
+    if (value == null) value = Boolean.FALSE;
 
     return operands[value ? 1 : 2].getValue();
   }

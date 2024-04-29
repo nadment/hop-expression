@@ -16,23 +16,29 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
  * An operator describing the <code>IS NOT FALSE</code> operator.
- * 
+ *
  * @see {@link IsFalseOperator}
  */
 public class IsNotFalseOperator extends Operator {
 
   public IsNotFalseOperator() {
-    super("IS NOT FALSE", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.BOOLEAN, OperatorCategory.COMPARISON,
+    super(
+        "IS NOT FALSE",
+        140,
+        true,
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.BOOLEAN,
+        OperatorCategory.COMPARISON,
         "/docs/is-false.html");
   }
 
@@ -40,7 +46,7 @@ public class IsNotFalseOperator extends Operator {
   public Operator not() {
     return Operators.IS_FALSE;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);

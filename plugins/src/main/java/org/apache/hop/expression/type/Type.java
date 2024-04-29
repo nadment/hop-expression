@@ -16,15 +16,15 @@
  */
 package org.apache.hop.expression.type;
 
+import java.util.Objects;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import java.util.Objects;
 
 /**
  * Data type
- * <p>
- * Identity is based upon the {@link #signature} field, which each derived class
- * should set during construction.
+ *
+ * <p>Identity is based upon the {@link #signature} field, which each derived class should set
+ * during construction.
  */
 public abstract class Type {
 
@@ -44,7 +44,7 @@ public abstract class Type {
 
   /**
    * Generates a string representation of this type.
-   * 
+   *
    * @return string
    */
   protected String generateSignature() {
@@ -63,15 +63,14 @@ public abstract class Type {
     return builder.toString();
   }
 
-  /**
-   *  Check precision and scale.
-   */
+  /** Check precision and scale. */
   protected void checkPrecisionAndScale() {
     TypeId id = getId();
     if (id.supportsPrecision()
         && (precision < id.getMinPrecision() || precision > id.getMaxPrecision())) {
-      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature,
-          id.getMinPrecision(), id.getMaxPrecision()));
+      throw new IllegalArgumentException(
+          ErrorCode.PRECISION_OUT_OF_RANGE.message(
+              signature, id.getMinPrecision(), id.getMaxPrecision()));
     }
     if (id.supportsScale() && (scale < id.getMinScale() || scale > id.getMaxScale())) {
       throw new IllegalArgumentException(
@@ -106,9 +105,7 @@ public abstract class Type {
     return getId().isFamily(family);
   }
 
-  /**
-   * Returns whether this {@link Type} support implicit coercion to the specified {@link Type}.
-   */
+  /** Returns whether this {@link Type} support implicit coercion to the specified {@link Type}. */
   public boolean isCoercible(final Type type) {
     return getId().isCoercible(type.getId());
   }
@@ -134,26 +131,20 @@ public abstract class Type {
   /**
    * Gets the precision of this type.
    *
-   * <p>
-   * Returns {@link #PRECISION_NOT_SPECIFIED} (-1) if precision is not
-   * applicable for this type.
-   * </p>
+   * <p>Returns {@link #PRECISION_NOT_SPECIFIED} (-1) if precision is not applicable for this type.
    *
-   * @return number of decimal digits for exact numeric types;
-   *         number of decimal digits in mantissa for approximate numeric types;
-   *         number of decimal digits for fractional seconds of datetime types;
-   *         length in characters for String types;
-   *         length in bytes for Binary types;
-   *         1 for BOOLEAN;
-   *         -1 if precision is not valid for this type
+   * @return number of decimal digits for exact numeric types; number of decimal digits in mantissa
+   *     for approximate numeric types; number of decimal digits for fractional seconds of datetime
+   *     types; length in characters for String types; length in bytes for Binary types; 1 for
+   *     BOOLEAN; -1 if precision is not valid for this type
    */
   public final int getPrecision() {
     return precision;
   }
 
   /**
-   * Gets the scale of this type.
-   * Returns {@link #SCALE_NOT_SPECIFIED} (-1) if scale is not valid for this type.
+   * Gets the scale of this type. Returns {@link #SCALE_NOT_SPECIFIED} (-1) if scale is not valid
+   * for this type.
    *
    * @return number of digits of scale
    */
@@ -170,19 +161,17 @@ public abstract class Type {
     return null;
   }
 
-  /**
-   * Indicates whether that type are equal with each other by ignoring the nullability.
-   */
+  /** Indicates whether that type are equal with each other by ignoring the nullability. */
   public boolean equalsIgnoreNullability(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return this.signature.equals(type.signature);
   }
 
   @Override
   public final boolean equals(Object obj) {
     return this == obj
-        || obj instanceof Type && Objects.equals(this.signature, ((Type) obj).signature)
+        || obj instanceof Type
+            && Objects.equals(this.signature, ((Type) obj).signature)
             && nullable == ((Type) obj).nullable;
   }
 
@@ -200,7 +189,10 @@ public abstract class Type {
    * @throws ConversionException if the casting fail
    */
   public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_COERCION,
+        value,
+        TypeId.fromValue(value),
         TypeId.fromJavaClass(clazz));
   }
 
@@ -220,17 +212,16 @@ public abstract class Type {
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
+   *     numeric, or null if none
    * @return the converted value
    * @throws ConversionException if the casting fail
    */
   public Object cast(final Object value, final String pattern) throws ConversionException {
     throw new ConversionException(ErrorCode.INTERNAL_ERROR);
   }
-  
+
   @Override
   public String toString() {
     return signature;
   }
 }
-

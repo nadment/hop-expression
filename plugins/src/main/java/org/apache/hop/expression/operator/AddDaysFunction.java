@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,17 +27,18 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
-/**
- * Adds or subtracts a specified number of days to a date or timestamp
- */
+/** Adds or subtracts a specified number of days to a date or timestamp */
 @FunctionPlugin
 public class AddDaysFunction extends Function {
   public static final Function INSTANCE = new AddDaysFunction();
 
   public AddDaysFunction() {
-    super("ADD_DAYS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, OperatorCategory.DATE,
+    super(
+        "ADD_DAYS",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TEMPORAL_NUMERIC,
+        OperatorCategory.DATE,
         "/docs/add_days.html");
   }
 
@@ -54,12 +56,10 @@ public class AddDaysFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
-    if (datetime == null)
-      return null;
+    if (datetime == null) return null;
 
     Long days = operands[1].getValue(Long.class);
-    if (days == null)
-      return null;
+    if (days == null) return null;
 
     return datetime.plusDays(days);
   }

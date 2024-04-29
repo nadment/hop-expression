@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionContext;
@@ -28,17 +30,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
-/**
- * Converts the string expression to a binary value.
- */
+/** Converts the string expression to a binary value. */
 @FunctionPlugin
 public class TryToBinaryFunction extends Function {
 
-  private static final TryToBinaryFunction StringHexTryToBinaryFunction = new StringHexTryToBinaryFunction();
-  private static final TryToBinaryFunction StringUtf8TryToBinaryFunction = new StringUtf8TryToBinaryFunction();
+  private static final TryToBinaryFunction StringHexTryToBinaryFunction =
+      new StringHexTryToBinaryFunction();
+  private static final TryToBinaryFunction StringUtf8TryToBinaryFunction =
+      new StringUtf8TryToBinaryFunction();
   private static final TryToBinaryFunction StringBase64TryToBinaryFunction =
       new StringBase64TryToBinaryFunction();
 
@@ -69,7 +69,6 @@ public class TryToBinaryFunction extends Function {
       } catch (RuntimeException e) {
         return null;
       }
-
     }
   }
 
@@ -89,8 +88,11 @@ public class TryToBinaryFunction extends Function {
   }
 
   public TryToBinaryFunction() {
-    super("TRY_TO_BINARY", ReturnTypes.BINARY_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT), OperatorCategory.CONVERSION,
+    super(
+        "TRY_TO_BINARY",
+        ReturnTypes.BINARY_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperatorCategory.CONVERSION,
         "/docs/to_binary.html");
   }
 

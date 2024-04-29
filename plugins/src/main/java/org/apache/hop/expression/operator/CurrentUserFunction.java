@@ -28,14 +28,16 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * The function return the current user.
- */
+/** The function return the current user. */
 @FunctionPlugin
 public class CurrentUserFunction extends Function {
 
   public CurrentUserFunction() {
-    super("CURRENT_USER", ReturnTypes.STRING_NULLABLE, OperandTypes.NILADIC, OperatorCategory.SPECIAL,
+    super(
+        "CURRENT_USER",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.NILADIC,
+        OperatorCategory.SPECIAL,
         "/docs/current_user.html");
   }
 

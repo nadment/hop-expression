@@ -17,14 +17,13 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-
+import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.DateTimeFormat;
 
 public final class DateType extends Type {
 
@@ -79,7 +78,7 @@ public final class DateType extends Type {
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
+   *     numeric, or null if none
    * @return the converted value
    */
   @Override
@@ -102,13 +101,13 @@ public final class DateType extends Type {
       return convertToDate((BigDecimal) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value),
-        this);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
   /**
    * Coerce value to data type {@link DateType}.
-   * 
+   *
    * @param value the value to coerce
    * @return ZonedDateTime
    */
@@ -121,8 +120,8 @@ public final class DateType extends Type {
       return (ZonedDateTime) value;
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
-        TypeId.DATE);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.DATE);
   }
 
   public static final ZonedDateTime convertToDate(final String value) throws ConversionException {
@@ -131,8 +130,9 @@ public final class DateType extends Type {
 
   /**
    * Convert the epoch time value to a timestamp with UTC time zone.
-   * 
-   * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970)
+   *
+   * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
+   *     1970)
    * @return
    */
   public static final ZonedDateTime convertToDate(final Long seconds) {

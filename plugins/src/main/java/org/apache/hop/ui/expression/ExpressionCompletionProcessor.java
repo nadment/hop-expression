@@ -16,6 +16,11 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
@@ -40,11 +45,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
@@ -63,8 +63,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     this(variables, null, ExpressionMode.NONE);
   }
 
-  public ExpressionCompletionProcessor(IVariables variables, CompletableFuture<IRowMeta> rowMeta,
-      ExpressionMode mode) {
+  public ExpressionCompletionProcessor(
+      IVariables variables, CompletableFuture<IRowMeta> rowMeta, ExpressionMode mode) {
     this.variables = variables;
     this.rowMeta = rowMeta;
     this.mode = mode;
@@ -82,10 +82,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       char ch = 0;
       while (start > 0) {
         ch = document.getChar(start - 1);
-        if (Character.isJavaIdentifierPart(ch) || ch == '.')
-          start--;
-        else
-          break;
+        if (Character.isJavaIdentifierPart(ch) || ch == '.') start--;
+        else break;
       }
 
       boolean quoted = false;
@@ -95,13 +93,11 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       }
       if (ch == '{') {
         start--;
-        if (start > 0)
-          ch = document.getChar(start - 1);
+        if (start > 0) ch = document.getChar(start - 1);
       }
       if (ch == '$') {
         start--;
       }
-
 
       int end = offset;
       while (end < document.getLength()) {
@@ -112,14 +108,12 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           continue;
         }
 
-        if (!quoted)
-          break;
+        if (!quoted) break;
 
         if (ch == '\"') {
           end++;
           // If use another double quote to escape it
-          if (end < document.getLength() && document.getChar(end) != '\"')
-            break;
+          if (end < document.getLength() && document.getChar(end) != '\"') break;
         }
 
         // Reset to not erase to end of the expression
@@ -131,8 +125,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         end++;
       }
 
-      if (ch == '}')
-        end++;
+      if (ch == '}') end++;
 
       String prefix = document.get(start, offset - start);
 
@@ -166,15 +159,13 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     return null;
   }
 
-
-  protected void computeVariableProposals(List<ICompletionProposal> proposals, String prefix,
-      int start, int end) {
+  protected void computeVariableProposals(
+      List<ICompletionProposal> proposals, String prefix, int start, int end) {
     for (String variableName : variables.getVariableNames()) {
 
       // Add to proposal if variable name start with the qualifier
       if (variableName.length() >= prefix.length()
           && variableName.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
-
 
         boolean isDeprecated =
             VariableRegistry.getInstance().getDeprecatedVariableNames().contains(variableName);
@@ -192,16 +183,24 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           additionalInfo = variable.getDescription();
         }
 
-        CompletionProposal proposal = new CompletionProposal(content, start, end - start,
-            content.length(), image, variableName, contextInfo, additionalInfo);
+        CompletionProposal proposal =
+            new CompletionProposal(
+                content,
+                start,
+                end - start,
+                content.length(),
+                image,
+                variableName,
+                contextInfo,
+                additionalInfo);
 
         proposals.add(proposal);
       }
     }
   }
 
-  protected void computeReservedWordProposals(List<ICompletionProposal> proposals, String prefix,
-      int start, int end) {
+  protected void computeReservedWordProposals(
+      List<ICompletionProposal> proposals, String prefix, int start, int end) {
     // Keywords
     for (String word : ExpressionParser.getReservedWords()) {
       if (word.length() >= prefix.length()
@@ -228,21 +227,27 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         String replacement = name;
         // TODO: add function arguments to proposal
         String diplayName = name;
-        CompletionProposal proposal = new CompletionProposal(replacement, start, end - start,
-            replacement.length(), image, diplayName, null, function.getDescription());
+        CompletionProposal proposal =
+            new CompletionProposal(
+                replacement,
+                start,
+                end - start,
+                replacement.length(),
+                image,
+                diplayName,
+                null,
+                function.getDescription());
         proposals.add(proposal);
-
       }
     }
   }
 
-  protected void computeIdentifierProposals(List<ICompletionProposal> proposals, String prefix,
-      int start, int end, boolean quoted) {
+  protected void computeIdentifierProposals(
+      List<ICompletionProposal> proposals, String prefix, int start, int end, boolean quoted) {
     // Value meta
 
     try {
-      if (prefix.charAt(0) == '\"')
-        prefix = prefix.substring(1);
+      if (prefix.charAt(0) == '\"') prefix = prefix.substring(1);
       for (IValueMeta valueMeta : rowMeta.get().getValueMetaList()) {
         String name = valueMeta.getName();
         if (name.length() >= prefix.length()
@@ -251,8 +256,11 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           String content = name;
           // If identifier name contains space, is a reserved word or a function name must be
           // quoted
-          if (quoted || name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
-              || TypeId.of(name) != null || TimeUnit.of(name) != null
+          if (quoted
+              || name.indexOf(' ') >= 0
+              || ExpressionParser.isReservedWord(name)
+              || TypeId.of(name) != null
+              || TimeUnit.of(name) != null
               || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';
           }
@@ -266,8 +274,16 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           description.append("<br><b>Comment:</b> ");
           description.append(StringUtils.defaultString(valueMeta.getComments()));
 
-          CompletionProposal proposal = new CompletionProposal(content, start, end - start,
-              content.length(), image, name, null, description.toString());
+          CompletionProposal proposal =
+              new CompletionProposal(
+                  content,
+                  start,
+                  end - start,
+                  content.length(),
+                  image,
+                  name,
+                  null,
+                  description.toString());
           proposals.add(proposal);
         }
       }
@@ -302,5 +318,4 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   public String getErrorMessage() {
     return message;
   }
-
 }

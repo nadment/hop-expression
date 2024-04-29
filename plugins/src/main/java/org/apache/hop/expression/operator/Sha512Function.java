@@ -34,8 +34,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Sha512Function extends Function {
 
   public Sha512Function() {
-    super("SHA512", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha512.html");
+    super(
+        "SHA512",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.CRYPTOGRAPHIC,
+        "/docs/sha512.html");
   }
 
   @Override

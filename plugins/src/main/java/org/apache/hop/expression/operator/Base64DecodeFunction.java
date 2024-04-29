@@ -16,15 +16,15 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Base64.Decoder;
 
 /**
  * The function encode the input (string or binary) using Base64 encoding.
@@ -36,15 +36,18 @@ public class Base64DecodeFunction extends Function {
   private static final Decoder DECODER = Base64.getDecoder();
 
   public Base64DecodeFunction() {
-    super("BASE64_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/base64_decode.html");
+    super(
+        "BASE64_DECODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
+        "/docs/base64_decode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return new String(DECODER.decode(value), StandardCharsets.UTF_8);
   }

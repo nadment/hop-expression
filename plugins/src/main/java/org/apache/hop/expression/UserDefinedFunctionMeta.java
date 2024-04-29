@@ -16,25 +16,24 @@
  */
 package org.apache.hop.expression;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.metadata.api.HopMetadata;
 import org.apache.hop.metadata.api.HopMetadataBase;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadata;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * A user-defined function (UDF) is a function provided by the user
- */
-@HopMetadata(key = "udf", name = "User Defined Function",
-    description = "User defined function for expression", image = "function.svg")
+/** A user-defined function (UDF) is a function provided by the user */
+@HopMetadata(
+    key = "udf",
+    name = "User Defined Function",
+    description = "User defined function for expression",
+    image = "function.svg")
 public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMetadata {
 
-  @HopMetadataProperty
-  private String description;
+  @HopMetadataProperty private String description;
 
-  @HopMetadataProperty
-  private String source;
+  @HopMetadataProperty private String source;
 
   @HopMetadataProperty(key = "arguments")
   private List<FunctionArgument> arguments;
@@ -55,7 +54,7 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
 
   /**
    * Set the user-defined function description
-   * 
+   *
    * @param description The description to set
    */
   public void setDescription(String description) {

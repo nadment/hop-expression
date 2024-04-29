@@ -20,14 +20,13 @@ import org.apache.hop.core.variables.IVariables;
 
 public interface IExpressionContext extends IVariables {
 
-  public IExpression createExpression(String source) throws ExpressionException; 
-  
+  public IExpression createExpression(String source) throws ExpressionException;
+
   /**
    * Gets the value of an attribute.
    *
    * @param name The name of the attribute to retrieve.
    * @return The value of the given attribute or <code>null</code>.
-   *
    * @throws IllegalArgumentException if the name is empty.
    * @throws NullPointerException if the name is null.
    */
@@ -38,13 +37,11 @@ public interface IExpressionContext extends IVariables {
    *
    * @param name The name of the attribute to set
    * @param value The value of the attribute
-   *
-   * @throws IllegalArgumentException
-   *         if the name is empty or if the scope is invalid.
+   * @throws IllegalArgumentException if the name is empty or if the scope is invalid.
    * @throws NullPointerException if the name is null.
    */
   // public void setAttribute(String name, Object value);
-  
+
   /**
    * Get the value of a variable with a default in case the variable is not found.
    *
@@ -61,7 +58,7 @@ public interface IExpressionContext extends IVariables {
    * @return the String value of a variable or null in case the variable could not be found.
    */
   String getVariable(String name);
-  
+
   /**
    * Substitute the string using the current variable variables.
    *

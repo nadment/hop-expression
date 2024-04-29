@@ -14,22 +14,19 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.commons.collections4.SetUtils;
-import org.apache.hop.expression.type.Interval;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.util.Set;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.hop.expression.type.Interval;
 
 /**
- * Enumeration of time units.
- * <br>
+ * Enumeration of time units. <br>
  * A time unit can be used with functions such as {@code EXTRACT}, {@code FIRST_DAY}...
  */
 public enum TimeUnit {
-  /** 
-   * The epoch. The number of seconds since 1970-01-01 00:00:00.00
-   */
+  /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
   EPOCH {
     @Override
     public long extract(final ZonedDateTime datetime) {
@@ -37,9 +34,7 @@ public enum TimeUnit {
     }
   },
 
-  /** 
-   * The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd.
-   */
+  /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
   MILLENNIUM("MILLENNIUMS") {
     @Override
     public long extract(final ZonedDateTime datetime) {
@@ -130,8 +125,7 @@ public enum TimeUnit {
     @Override
     public long extract(final ZonedDateTime datetime) {
       int dow = datetime.getDayOfWeek().getValue() + 1;
-      if (dow == 8)
-        dow = 1;
+      if (dow == 8) dow = 1;
       return Long.valueOf(dow);
     }
   },
@@ -156,8 +150,8 @@ public enum TimeUnit {
   },
 
   /**
-   * The number (1 - 54) of the week of the year.
-   * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
+   * The number (1 - 54) of the week of the year. Weeks begin with Sunday, and dates prior to the
+   * first Sunday of the year are in week 0.
    */
   WEEK("WEEKS", "WEEKOFYEAR") {
     @Override
@@ -167,8 +161,8 @@ public enum TimeUnit {
   },
 
   /**
-   * The number (1 - 53) of the week of the year ISO 8601.
-   * The first week of the ISO year is the week that contains January 4.
+   * The number (1 - 53) of the week of the year ISO 8601. The first week of the ISO year is the
+   * week that contains January 4.
    */
   ISOWEEK("ISOWEEKOFYEAR") {
     @Override
@@ -329,9 +323,7 @@ public enum TimeUnit {
     throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
   }
 
-  /**
-   * Returns a list of name and alias.
-   */
+  /** Returns a list of name and alias. */
   public Set<String> names() {
     return names;
   }

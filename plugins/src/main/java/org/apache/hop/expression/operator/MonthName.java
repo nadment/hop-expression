@@ -16,36 +16,36 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.Month;
-import java.time.ZonedDateTime;
-import java.time.format.TextStyle;
-import java.util.Locale;
 
-/**
- * Returns the name of the month (in English).
- */
+/** Returns the name of the month (in English). */
 @FunctionPlugin
 public class MonthName extends Function {
 
   public MonthName() {
-    super("MONTHNAME", ReturnTypes.STRING_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
+    super(
+        "MONTHNAME",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/monthname.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     Month month = value.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
-
 }

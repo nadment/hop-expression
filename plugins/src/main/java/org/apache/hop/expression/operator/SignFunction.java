@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,27 +26,26 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
 
-/**
- * Returns the sign of a number.
- */
+/** Returns the sign of a number. */
 @FunctionPlugin
 public class SignFunction extends Function {
 
   public SignFunction() {
-    super("SIGN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "SIGN",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/sign.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return value;
+    if (value == null) return value;
 
-    if (value.signum() == 0)
-      return 0L;
+    if (value.signum() == 0) return 0L;
     return (value.signum() > 0L) ? 1L : -1L;
   }
 

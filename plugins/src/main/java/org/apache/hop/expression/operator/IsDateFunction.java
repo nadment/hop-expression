@@ -32,15 +32,16 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.util.DateTimeFormat;
 
-
-/**
- * Check if a value is a valid date.
- */
+/** Check if a value is a valid date. */
 @FunctionPlugin
 public class IsDateFunction extends Function {
 
   public IsDateFunction() {
-    super("IS_DATE", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_STRING, OperatorCategory.COMPARISON,
+    super(
+        "IS_DATE",
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY_STRING,
+        OperatorCategory.COMPARISON,
         "/docs/is_date.html");
   }
 
@@ -56,8 +57,9 @@ public class IsDateFunction extends Function {
       }
 
       String pattern = StringType.coerce(value);
-      int twoDigitYearStart = Integer
-          .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+      int twoDigitYearStart =
+          Integer.parseInt(
+              context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
       // Compile format to check it
       DateTimeFormat format = DateTimeFormat.of(pattern);
@@ -80,8 +82,7 @@ public class IsDateFunction extends Function {
     String value = operands[0].getValue(String.class);
 
     // Return FALSE if a value is NULL.
-    if (value == null)
-      return Boolean.FALSE;
+    if (value == null) return Boolean.FALSE;
 
     DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
 

@@ -34,16 +34,20 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
-/**
- * Clone input row.
- */
+/** Clone input row. */
 public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
   private static final Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by
-                                                          // Translator!!
 
-  public CloneRow(TransformMeta transformMeta, CloneRowMeta meta, CloneRowData data, int copyNr,
-      PipelineMeta pipelineMeta, Pipeline pipeline) {
+  // Translator!!
+
+  public CloneRow(
+      TransformMeta transformMeta,
+      CloneRowMeta meta,
+      CloneRowData data,
+      int copyNr,
+      PipelineMeta pipelineMeta,
+      Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
@@ -109,7 +113,6 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
         throw new HopException(
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),
             e);
-
       }
       if (log.isDebug()) {
         logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones", "" + data.numberOfClones));

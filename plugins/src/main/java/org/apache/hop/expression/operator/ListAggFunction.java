@@ -27,21 +27,25 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ListAggFunction extends AggregateFunction {
 
   public enum ListAgg {
-    ALL, DISTINCT
+    ALL,
+    DISTINCT
   }
 
   private ListAgg option;
 
   /**
-   * Default constructor to register function but not used.
-   * The different options are detected by parser.
+   * Default constructor to register function but not used. The different options are detected by
+   * parser.
    */
   public ListAggFunction() {
     this(ListAgg.ALL);
   }
 
   public ListAggFunction(ListAgg option) {
-    super("LISTAGG", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+    super(
+        "LISTAGG",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         "/docs/listagg.html");
     this.option = option;
   }

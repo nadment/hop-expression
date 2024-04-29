@@ -14,6 +14,13 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.sql.Timestamp;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Date;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
@@ -27,19 +34,17 @@ import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.sql.Timestamp;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class ExpressionTransform extends BaseTransform<ExpressionMeta, ExpressionData> {
   private static final Class<?> PKG = ExpressionMeta.class;
 
-  public ExpressionTransform(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data,
-      int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
+  public ExpressionTransform(
+      TransformMeta transformMeta,
+      ExpressionMeta meta,
+      ExpressionData data,
+      int copyNr,
+      PipelineMeta pipelineMeta,
+      Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
@@ -71,8 +76,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       data.outputRowMeta = getInputRowMeta().clone();
 
       // Use meta.getFields() to change it, so it reflects the output row structure
-      meta.getFields(data.outputRowMeta, this.getTransformName(), null, null, this,
-          metadataProvider);
+      meta.getFields(
+          data.outputRowMeta, this.getTransformName(), null, null, this, metadataProvider);
       data.expressions = new IExpression[data.outputRowMeta.size()];
 
       data.context = new RowExpressionContext(this, data.outputRowMeta);
@@ -94,8 +99,11 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           data.expressions[index] = data.context.createExpression(source);
         } catch (Exception e) {
           String message =
-              BaseMessages.getString(PKG, "ExpressionTransform.Exception.CompileExpression",
-                  field.getName(), e.getMessage());
+              BaseMessages.getString(
+                  PKG,
+                  "ExpressionTransform.Exception.CompileExpression",
+                  field.getName(),
+                  e.getMessage());
           logError(message);
           if (isDebug()) {
             logError(Const.getStackTracker(e));
@@ -131,8 +139,9 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       putRow(data.outputRowMeta, outputRowValues);
 
     } catch (Exception e) {
-      String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateExpression",
-          name, e.getMessage());
+      String message =
+          BaseMessages.getString(
+              PKG, "ExpressionTransform.Exception.EvaluateExpression", name, e.getMessage());
       logError(message, e);
       if (isDebug()) {
         logError(Const.getStackTracker(e));
@@ -162,20 +171,22 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         return number.doubleValue();
       case IValueMeta.TYPE_INTEGER:
         return expression.getValue(Long.class);
-      case IValueMeta.TYPE_DATE: {
-        ZonedDateTime date = expression.getValue(ZonedDateTime.class);
-        if (date == null) {
-          return null;
+      case IValueMeta.TYPE_DATE:
+        {
+          ZonedDateTime date = expression.getValue(ZonedDateTime.class);
+          if (date == null) {
+            return null;
+          }
+          return Date.from(date.toInstant());
         }
-        return Date.from(date.toInstant());
-      }
-      case IValueMeta.TYPE_TIMESTAMP: {
-        ZonedDateTime date = expression.getValue(ZonedDateTime.class);
-        if (date == null) {
-          return null;
+      case IValueMeta.TYPE_TIMESTAMP:
+        {
+          ZonedDateTime date = expression.getValue(ZonedDateTime.class);
+          if (date == null) {
+            return null;
+          }
+          return Timestamp.from(date.toInstant());
         }
-        return Timestamp.from(date.toInstant());
-      }
       case IValueMeta.TYPE_BIGNUMBER:
         return expression.getValue(BigDecimal.class);
       case IValueMeta.TYPE_BOOLEAN:
@@ -185,9 +196,14 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       case ValueMetaJson.TYPE_JSON:
         return expression.getValue(JsonNode.class);
       case IValueMeta.TYPE_INET:
-        return expression.getValue(InetAddress.class);        
+        return expression.getValue(InetAddress.class);
       default:
-        throw new HopValueException(BaseMessages.getString(PKG, "ExpressionTransform.Exception.ConversionError", meta.getName(), meta.getType()));
+        throw new HopValueException(
+            BaseMessages.getString(
+                PKG,
+                "ExpressionTransform.Exception.ConversionError",
+                meta.getName(),
+                meta.getType()));
     }
   }
 }

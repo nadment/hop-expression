@@ -25,10 +25,9 @@ import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.FunctionRegistry;
 
-/**
- * Reload User Defined Functions when the project changed
- */
-@ExtensionPoint(id = "UdfProjectChangedExtensionPoint",
+/** Reload User Defined Functions when the project changed */
+@ExtensionPoint(
+    id = "UdfProjectChangedExtensionPoint",
     extensionPointId = "HopGuiProjectAfterEnabled",
     description = "Reload User Defined Functions when a project is enabled")
 public class UdfProjectChangedExtensionPoint implements IExtensionPoint<Object> {

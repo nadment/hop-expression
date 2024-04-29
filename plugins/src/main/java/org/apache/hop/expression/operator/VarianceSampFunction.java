@@ -22,14 +22,16 @@ import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Returns the sample variance calculated from values of a group of row.
- */
+/** Returns the sample variance calculated from values of a group of row. */
 @FunctionPlugin(names = "VAR_SAMP")
 public class VarianceSampFunction extends AggregateFunction {
 
   public VarianceSampFunction() {
-    super("VARIANCE_SAMP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/variance_samp.html");
+    super(
+        "VARIANCE_SAMP",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        "/docs/variance_samp.html");
   }
 
   @Override

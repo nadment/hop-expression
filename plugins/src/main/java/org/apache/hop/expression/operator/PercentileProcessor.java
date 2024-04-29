@@ -14,12 +14,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionProcessor;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null

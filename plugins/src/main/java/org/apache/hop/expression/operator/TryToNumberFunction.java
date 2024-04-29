@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -31,18 +32,18 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.ParseNumberException;
-import java.time.ZonedDateTime;
 
-/**
- * Converts a string expression to a number value with optional format.
- */
+/** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
 public class TryToNumberFunction extends Function {
   private static final TryToNumberFunction DateTryToNumberFunction = new DateTryToNumberFunction();
 
   public TryToNumberFunction() {
-    super("TRY_TO_NUMBER", ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.TEMPORAL), OperatorCategory.CONVERSION,
+    super(
+        "TRY_TO_NUMBER",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.TEMPORAL),
+        OperatorCategory.CONVERSION,
         "/docs/to_number.html");
   }
 
@@ -51,7 +52,7 @@ public class TryToNumberFunction extends Function {
       throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.DATE) ) {
+    if (type.is(TypeId.DATE)) {
       return new Call(DateTryToNumberFunction, call.getOperands());
     }
 
@@ -66,7 +67,6 @@ public class TryToNumberFunction extends Function {
     return new Call(new StringTryToNumberFunction(format), call.getOperands());
   }
 
-
   private static final class StringTryToNumberFunction extends TryToNumberFunction {
     private final NumberFormat format;
 
@@ -78,8 +78,7 @@ public class TryToNumberFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       try {
         return format.parse(value);
@@ -93,8 +92,7 @@ public class TryToNumberFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       try {
         return NumberType.convertToNumber(value);
       } catch (RuntimeException e) {

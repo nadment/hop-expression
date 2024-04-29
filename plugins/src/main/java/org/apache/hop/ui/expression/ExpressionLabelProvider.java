@@ -32,8 +32,9 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   public ExpressionLabelProvider() {
     super();
-    imageVariable = GuiResource.getInstance().getImage("ui/images/variable.svg",
-        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
+    imageVariable =
+        GuiResource.getInstance()
+            .getImage("ui/images/variable.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
   }
 
   @Override
@@ -41,8 +42,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   @Override
   public void dispose() {
-    if (imageVariable != null)
-      imageVariable.dispose();
+    if (imageVariable != null) imageVariable.dispose();
   }
 
   @Override

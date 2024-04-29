@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -23,18 +25,17 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
-/**
- * Converts a timestamp to another time zone.
- */
+/** Converts a timestamp to another time zone. */
 @FunctionPlugin
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
-    super("CONVERT_TIMEZONE", ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING_STRING_TEMPORAL.or(OperandTypes.STRING_DATE), OperatorCategory.DATE,
+    super(
+        "CONVERT_TIMEZONE",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.STRING_STRING_TEMPORAL.or(OperandTypes.STRING_DATE),
+        OperatorCategory.DATE,
         "/docs/convert_timezone.html");
   }
 
@@ -45,16 +46,14 @@ public class ConvertTimezone extends Function {
       ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[1].getValue(String.class));
       ZonedDateTime value = operands[2].getValue(ZonedDateTime.class);
 
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
     } else {
       ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
       ZonedDateTime value = operands[1].getValue(ZonedDateTime.class);
 
-      if (value == null)
-        return null;
+      if (value == null) return null;
       return value.withZoneSameInstant(zoneTarget);
     }
   }

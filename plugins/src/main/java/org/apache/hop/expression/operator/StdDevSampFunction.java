@@ -30,7 +30,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class StdDevSampFunction extends AggregateFunction {
 
   public StdDevSampFunction() {
-    super("STDDEV_SAMP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/stddev_samp.html");
+    super(
+        "STDDEV_SAMP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/stddev_samp.html");
   }
 
   @Override

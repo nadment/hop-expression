@@ -14,22 +14,19 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
-/**
- * A tuple is a immutable ordered list of expressions.
- */
+/** A tuple is a immutable ordered list of expressions. */
 public final class Tuple implements IExpression, Iterable<IExpression> {
 
   /**
-   * Iterator implementation used to efficiently expose contents of an Tuple as read-only
-   * iterator.
+   * Iterator implementation used to efficiently expose contents of an Tuple as read-only iterator.
    */
   public class Iterator implements java.util.Iterator<IExpression> {
 
@@ -145,14 +142,13 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   /**
    * Format values with a comma separator <code>value1,value2,...</code>
-   * 
+   *
    * @param writer
    */
   public void unparseValues(StringWriter writer) {
     boolean first = true;
     for (IExpression expression : values) {
-      if (first)
-        first = false;
+      if (first) first = false;
       else {
         writer.append(',');
       }

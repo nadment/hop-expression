@@ -26,16 +26,20 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * The function encode special characters in a strings using HTML entities.
- * 
- * https://www.w3.org/TR/html401/charset.html#h-5.3
- * 
+ *
+ * <p>https://www.w3.org/TR/html401/charset.html#h-5.3
+ *
  * @see {@link HtmlDecodeFunction}
  */
 @FunctionPlugin
 public class HtmlEncodeFunction extends Function {
 
   public HtmlEncodeFunction() {
-    super("HTML_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "HTML_ENCODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/html_encode.html");
   }
 

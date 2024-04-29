@@ -28,14 +28,16 @@ import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * The function NULLIF
- */
+/** The function NULLIF */
 @FunctionPlugin
 public class NullIfFunction extends Function {
 
   public NullIfFunction() {
-    super("NULLIF", ReturnTypes.ARG0, OperandTypes.SAME_SAME, OperatorCategory.CONDITIONAL,
+    super(
+        "NULLIF",
+        ReturnTypes.ARG0,
+        OperandTypes.SAME_SAME,
+        OperatorCategory.CONDITIONAL,
         "/docs/nullif.html");
   }
 
@@ -44,8 +46,7 @@ public class NullIfFunction extends Function {
     Object value = operands[0].getValue();
     Object compare = operands[1].getValue();
 
-    if (Comparison.equals(value, compare) )
-      return null;
+    if (Comparison.equals(value, compare)) return null;
 
     return value;
   }

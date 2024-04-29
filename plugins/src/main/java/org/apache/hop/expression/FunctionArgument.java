@@ -19,11 +19,9 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class FunctionArgument {
 
-  @HopMetadataProperty
-  private String name;
+  @HopMetadataProperty private String name;
 
-  @HopMetadataProperty
-  private TypeId type;
+  @HopMetadataProperty private TypeId type;
 
   public FunctionArgument() {
     super();
@@ -58,12 +56,9 @@ public class FunctionArgument {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null)
-      return false;
-    if (getClass() != o.getClass())
-      return false;
+    if (this == o) return true;
+    if (o == null) return false;
+    if (getClass() != o.getClass()) return false;
 
     return name.equals(((FunctionArgument) o).name);
   }

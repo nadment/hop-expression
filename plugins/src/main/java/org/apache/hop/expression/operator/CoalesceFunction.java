@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,30 +30,30 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * The COALESCE function returns the first of its arguments that is not null.
- * Null is returned only if all arguments are null.
- * 
+ * The COALESCE function returns the first of its arguments that is not null. Null is returned only
+ * if all arguments are null.
+ *
  * @see {@link IfNullFunction}
  */
 @FunctionPlugin
 public class CoalesceFunction extends Function {
 
   public CoalesceFunction() {
-    super("COALESCE", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
-        OperatorCategory.CONDITIONAL, "/docs/coalesce.html");
+    super(
+        "COALESCE",
+        ReturnTypes.LEAST_RESTRICTIVE,
+        OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+        OperatorCategory.CONDITIONAL,
+        "/docs/coalesce.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     for (IExpression operand : operands) {
       Object value = operand.getValue();
-      if (value != null)
-        return value;
+      if (value != null) return value;
     }
 
     return null;

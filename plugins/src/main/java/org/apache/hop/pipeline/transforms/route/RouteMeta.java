@@ -17,6 +17,8 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
@@ -39,31 +41,43 @@ import org.apache.hop.pipeline.transform.stream.IStream;
 import org.apache.hop.pipeline.transform.stream.IStream.StreamType;
 import org.apache.hop.pipeline.transform.stream.Stream;
 import org.apache.hop.pipeline.transform.stream.StreamIcon;
-import java.util.ArrayList;
-import java.util.List;
 
-@Transform(id = "Route", image = "route.svg", name = "i18n::Route.Name",
+@Transform(
+    id = "Route",
+    image = "route.svg",
+    name = "i18n::Route.Name",
     description = "i18n::Route.Description",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
-    keywords = "i18n::Route.Keywords", documentationUrl = "/pipeline/transforms/route.html")
+    keywords = "i18n::Route.Keywords",
+    documentationUrl = "/pipeline/transforms/route.html")
 public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
 
-
-  private static IStream newDefaultStream = new Stream(StreamType.TARGET, null,
-      BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"), StreamIcon.TARGET,
-      null);
-  private static IStream newTargetStream = new Stream(StreamType.TARGET, null,
-      BaseMessages.getString(PKG, "RouteMeta.Route.NewTarget.Description"), StreamIcon.TARGET,
-      null);
+  private static IStream newDefaultStream =
+      new Stream(
+          StreamType.TARGET,
+          null,
+          BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"),
+          StreamIcon.TARGET,
+          null);
+  private static IStream newTargetStream =
+      new Stream(
+          StreamType.TARGET,
+          null,
+          BaseMessages.getString(PKG, "RouteMeta.Route.NewTarget.Description"),
+          StreamIcon.TARGET,
+          null);
 
   /** The targets to switch over */
-  @HopMetadataProperty(groupKey = "routes", key = "route",
+  @HopMetadataProperty(
+      groupKey = "routes",
+      key = "route",
       injectionGroupDescription = "RouteMeta.Injection.ROUTES")
   private List<Route> routes;
 
   /** The default target transform name (only used during serialization) */
-  @HopMetadataProperty(key = "default_target_transform",
+  @HopMetadataProperty(
+      key = "default_target_transform",
       injectionKey = "DEFAULT_TARGET_TRANSFORM_NAME",
       injectionKeyDescription = "RouteMeta.Injection.DEFAULT_TARGET_TRANSFORM_NAME")
   private String defaultTargetTransformName;
@@ -81,27 +95,46 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
   }
 
   @Override
-  public void getFields(IRowMeta rowMeta, String origin, IRowMeta[] info,
-      TransformMeta nextTransform, IVariables variables, IHopMetadataProvider metadataProvider)
+  public void getFields(
+      IRowMeta rowMeta,
+      String origin,
+      IRowMeta[] info,
+      TransformMeta nextTransform,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider)
       throws HopTransformException {
     // Default: nothing changes to rowMeta
   }
 
   @Override
-  public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta,
-      TransformMeta transformMeta, IRowMeta prev, String[] input, String[] output, IRowMeta info,
-      IVariables variables, IHopMetadataProvider metadataProvider) {
+  public void check(
+      List<ICheckResult> remarks,
+      PipelineMeta pipelineMeta,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      String[] input,
+      String[] output,
+      IRowMeta info,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
     CheckResult cr;
 
     // See if we have input streams leading to this transform!
     if (input.length > 0) {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "RouteMeta.CheckResult.TransformReceivingInfoFromOtherTransforms"), transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(
+                  PKG, "RouteMeta.CheckResult.TransformReceivingInfoFromOtherTransforms"),
+              transformMeta);
       remarks.add(cr);
     } else {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-          BaseMessages.getString(PKG, "RouteMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
-          transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "RouteMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
+              transformMeta);
       remarks.add(cr);
     }
 
@@ -111,25 +144,43 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     for (Route route : routes) {
 
       if (Utils.isEmpty(route.getCondition())) {
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-            "RouteMeta.CheckResult.NoConditionExpression", routeNumber, route.getTransformName()),
-            transformMeta);
+        cr =
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG,
+                    "RouteMeta.CheckResult.NoConditionExpression",
+                    routeNumber,
+                    route.getTransformName()),
+                transformMeta);
         remarks.add(cr);
       } else
         try {
           context.createExpression(route.getCondition());
         } catch (Exception e) {
-          remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(PKG, "RouteMeta.CheckResult.ConditionExpressionError",
-                  routeNumber, route.getTransformName(), e.getMessage()),
-              transformMeta));
+          remarks.add(
+              new CheckResult(
+                  ICheckResult.TYPE_RESULT_ERROR,
+                  BaseMessages.getString(
+                      PKG,
+                      "RouteMeta.CheckResult.ConditionExpressionError",
+                      routeNumber,
+                      route.getTransformName(),
+                      e.getMessage()),
+                  transformMeta));
         }
 
       TransformMeta check = pipelineMeta.findTransform(route.getTransformName());
       if (check == null) {
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-            "RouteMeta.CheckResult.TargetTransformInvalid", routeNumber, route.getTransformName()),
-            transformMeta);
+        cr =
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG,
+                    "RouteMeta.CheckResult.TargetTransformInvalid",
+                    routeNumber,
+                    route.getTransformName()),
+                transformMeta);
         remarks.add(cr);
       }
 
@@ -138,19 +189,25 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
 
     TransformMeta check = pipelineMeta.findTransform(this.getDefaultTargetTransformName());
     if (check == null) {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-          BaseMessages.getString(PKG, "RouteMeta.CheckResult.DefaultTargetTransformInvalid"),
-          transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "RouteMeta.CheckResult.DefaultTargetTransformInvalid"),
+              transformMeta);
       remarks.add(cr);
     }
   }
 
-  /** @return the defaultTargetTransformName */
+  /**
+   * @return the defaultTargetTransformName
+   */
   public String getDefaultTargetTransformName() {
     return defaultTargetTransformName;
   }
 
-  /** @param defaultTargetTransformName the defaultTargetTransformName to set */
+  /**
+   * @param defaultTargetTransformName the defaultTargetTransformName to set
+   */
   public void setDefaultTargetTransformName(String defaultTargetTransformName) {
     this.defaultTargetTransformName = defaultTargetTransformName;
   }
@@ -166,19 +223,29 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
       // Add the routes...
       //
       for (Route route : routes) {
-        IStream stream = new Stream(
-            StreamType.TARGET, null, BaseMessages.getString(PKG,
-                "RouteMeta.Route.SetTarget.Description", Const.NVL(route.getCondition(), "")),
-            StreamIcon.TARGET, route.getTransformName());
+        IStream stream =
+            new Stream(
+                StreamType.TARGET,
+                null,
+                BaseMessages.getString(
+                    PKG,
+                    "RouteMeta.Route.SetTarget.Description",
+                    Const.NVL(route.getCondition(), "")),
+                StreamIcon.TARGET,
+                route.getTransformName());
         ioMeta.addStream(stream);
       }
 
       // Add the default target transform
       //
       if (StringUtils.isNotEmpty(defaultTargetTransformName)) {
-        ioMeta.addStream(new Stream(StreamType.TARGET, null,
-            BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"),
-            StreamIcon.TARGET, defaultTargetTransformName));
+        ioMeta.addStream(
+            new Stream(
+                StreamType.TARGET,
+                null,
+                BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"),
+                StreamIcon.TARGET,
+                defaultTargetTransformName));
       }
       setTransformIOMeta(ioMeta);
     }
@@ -229,9 +296,13 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     if (stream == newDefaultStream) {
       defaultTargetTransformName = stream.getTransformMeta().getName();
 
-      IStream newStream = new Stream(StreamType.TARGET, stream.getTransformMeta(),
-          BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"),
-          StreamIcon.TARGET, stream.getTransformMeta().getName());
+      IStream newStream =
+          new Stream(
+              StreamType.TARGET,
+              stream.getTransformMeta(),
+              BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"),
+              StreamIcon.TARGET,
+              stream.getTransformMeta().getName());
       getTransformIOMeta().addStream(newStream);
     } else if (stream == newTargetStream) {
       // Add the target..
@@ -239,10 +310,16 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
       Route route = new Route();
       route.setTransformName(stream.getTransformMeta().getName());
       routes.add(route);
-      IStream newStream = new Stream(StreamType.TARGET, stream.getTransformMeta(),
-          BaseMessages.getString(PKG, "RouteMeta.Route.SetTarget.Description",
-              Const.NVL(route.getCondition(), "")),
-          StreamIcon.TARGET, stream.getTransformMeta().getName());
+      IStream newStream =
+          new Stream(
+              StreamType.TARGET,
+              stream.getTransformMeta(),
+              BaseMessages.getString(
+                  PKG,
+                  "RouteMeta.Route.SetTarget.Description",
+                  Const.NVL(route.getCondition(), "")),
+              StreamIcon.TARGET,
+              stream.getTransformMeta().getName());
       getTransformIOMeta().addStream(newStream);
     } else {
       // A target was selected...
@@ -260,12 +337,16 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     }
   }
 
-  /** @return the routes list */
+  /**
+   * @return the routes list
+   */
   public List<Route> getRoutes() {
     return routes;
   }
 
-  /** @param routes the routes list to set */
+  /**
+   * @param routes the routes list to set
+   */
   public void setRoutes(List<Route> routes) {
     this.routes = routes;
   }

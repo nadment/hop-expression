@@ -16,39 +16,38 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 
-/**
- * Build a date from its separate year, month and day fields.
- */
+/** Build a date from its separate year, month and day fields. */
 @FunctionPlugin
 public class MakeDateFunction extends Function {
 
   public MakeDateFunction() {
-    super("MAKE_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, OperatorCategory.DATE,
+    super(
+        "MAKE_DATE",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC_NUMERIC,
+        OperatorCategory.DATE,
         "/docs/make_date.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
-    if (v0 == null)
-      return null;
+    if (v0 == null) return null;
 
     Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
-      return null;
+    if (v1 == null) return null;
 
     Long v2 = operands[2].getValue(Long.class);
-    if (v2 == null)
-      return null;
+    if (v2 == null) return null;
 
     int year = v0.intValue();
     int month = v1.intValue();
@@ -67,12 +66,9 @@ public class MakeDateFunction extends Function {
     }
 
     LocalDate date = LocalDate.of(year, month, day);
-    if (monthsToAdd != 0)
-      date = date.plusMonths(monthsToAdd);
-    if (daysToAdd != 0)
-      date = date.plusDays(daysToAdd);
+    if (monthsToAdd != 0) date = date.plusMonths(monthsToAdd);
+    if (daysToAdd != 0) date = date.plusDays(daysToAdd);
 
     return date.atStartOfDay().atZone(ZoneOffset.UTC);
   }
-
 }

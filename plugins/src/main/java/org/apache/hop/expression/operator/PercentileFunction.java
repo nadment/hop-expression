@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
@@ -22,13 +23,16 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
 
 @FunctionPlugin
 public class PercentileFunction extends AggregateFunction {
 
   public PercentileFunction() {
-    super("PERCENTILE", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, "/docs/percentile.html");
+    super(
+        "PERCENTILE",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        "/docs/percentile.html");
   }
 
   @Override

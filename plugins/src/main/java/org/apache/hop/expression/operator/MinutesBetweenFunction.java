@@ -16,36 +16,35 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
-/**
- * Return the number of minutes between two timestamps
- */
+/** Return the number of minutes between two timestamps */
 @FunctionPlugin
 public class MinutesBetweenFunction extends Function {
 
   public MinutesBetweenFunction() {
-    super("MINUTES_BETWEEN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL_TEMPORAL, OperatorCategory.DATE,
+    super(
+        "MINUTES_BETWEEN",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL_TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/minutes_between.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
-    if (startDateTime == null)
-      return null;
+    if (startDateTime == null) return null;
     ZonedDateTime endDateTime = operands[1].getValue(ZonedDateTime.class);
-    if (endDateTime == null)
-      return null;
+    if (endDateTime == null) return null;
 
     return startDateTime.until(endDateTime, ChronoUnit.MINUTES);
   }
-
 }

@@ -34,19 +34,22 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ChrFunction extends Function {
 
   public ChrFunction() {
-    super("CHR", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.STRING, "/docs/chr.html");
+    super(
+        "CHR",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.STRING,
+        "/docs/chr.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     int codePoint = value.intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
-      throw new IllegalArgumentException(
-          ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, codePoint));
+      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, codePoint));
     }
     return new String(Character.toChars(codePoint));
   }

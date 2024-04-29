@@ -20,7 +20,7 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.Test;
 
-public class AggregateFunctionTest extends ExpressionTest { 
+public class AggregateFunctionTest extends ExpressionTest {
   @Test
   public void Avg() throws Exception {
     returnType("AVG(FIELD_NUMBER)", Types.NUMBER);
@@ -45,14 +45,14 @@ public class AggregateFunctionTest extends ExpressionTest {
     evalFails("CountIf(FIELD_DATE)");
     evalFails("CountIf(1,2)");
     returnType("CountIf(FIELD_INTEGER>=10)", Types.INTEGER);
-    optimize("COUNTIF(FIELD_INTEGER>=10)","COUNTIF(10<=FIELD_INTEGER)");
+    optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(10<=FIELD_INTEGER)");
   }
 
   @Test
   public void Sum() throws Exception {
     returnType("SUM(FIELD_INTEGER)", Types.NUMBER);
   }
-  
+
   @Test
   public void Max() throws Exception {
     returnType("MAX(FIELD_STRING)", StringType.of(1000));
@@ -68,7 +68,7 @@ public class AggregateFunctionTest extends ExpressionTest {
     returnType("MIN(FIELD_NUMBER)", Types.NUMBER);
     returnType("MIN(FIELD_DATE)", Types.DATE);
   }
-  
+
   @Test
   public void Median() throws Exception {
     returnType("MEDIAN(FIELD_INTEGER)", Types.NUMBER);
@@ -78,26 +78,26 @@ public class AggregateFunctionTest extends ExpressionTest {
   public void AnyValue() throws Exception {
     returnType("Any_Value(FIELD_DATE)", Types.DATE);
   }
-  
+
   @Test
   public void FirstValue() throws Exception {
     evalFails("FIRST_VALUE(FIELD_DATE) IGNORE");
     evalFails("FIRST_VALUE(FIELD_DATE) NULLS");
-    
+
     optimize("FIRST_VALUE(FIELD_DATE) RESPECT NULLS", "FIRST_VALUE(FIELD_DATE)");
     optimize("FIRST_VALUE(FIELD_DATE) IGNORE NULLS");
-    
+
     returnType("FIRST_VALUE(FIELD_DATE)", Types.DATE);
   }
-  
+
   @Test
   public void LastValue() throws Exception {
     evalFails("LAST_VALUE(FIELD_DATE) IGNORE");
     evalFails("LAST_VALUE(FIELD_DATE) NULLS");
-    
+
     optimize("LAST_VALUE(FIELD_DATE) RESPECT NULLS", "LAST_VALUE(FIELD_DATE)");
     optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS");
-    
+
     returnType("LAST_VALUE(FIELD_DATE)", Types.DATE);
   }
 
@@ -106,18 +106,18 @@ public class AggregateFunctionTest extends ExpressionTest {
     evalFails("NTH_VALUE(FIELD_DATE)");
     evalFails("NTH_VALUE(FIELD_DATE) IGNORE");
     evalFails("NTH_VALUE(FIELD_DATE) NULLS");
-    
+
     optimize("NTH_VALUE(FIELD_DATE,2) RESPECT NULLS", "NTH_VALUE(FIELD_DATE,2)");
     optimize("NTH_VALUE(FIELD_DATE,2) IGNORE NULLS");
-    
+
     returnType("NTH_VALUE(FIELD_DATE,3)", Types.DATE);
   }
-  
+
   @Test
   public void ListAgg() throws Exception {
     returnType("ListAGG(FIELD_STRING,',')", Types.STRING);
-  }  
-  
+  }
+
   @Test
   public void Percentile() throws Exception {
     returnType("Percentile(FIELD_INTEGER,0.75)", Types.NUMBER);
@@ -127,7 +127,7 @@ public class AggregateFunctionTest extends ExpressionTest {
   public void VarPop() throws Exception {
     returnType("Variance_Pop(FIELD_INTEGER)", Types.NUMBER);
   }
-  
+
   public void VarSamp() throws Exception {
     returnType("Variance_Samp(FIELD_INTEGER)", Types.NUMBER);
   }
@@ -136,7 +136,7 @@ public class AggregateFunctionTest extends ExpressionTest {
   public void StdDevPop() throws Exception {
     returnType("StdDev_Pop(FIELD_INTEGER)", Types.NUMBER);
   }
-  
+
   @Test
   public void StdDevSamp() throws Exception {
     returnType("StdDev_Samp(FIELD_INTEGER)", Types.NUMBER);

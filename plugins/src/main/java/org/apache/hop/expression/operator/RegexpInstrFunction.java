@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,23 +28,22 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class RegexpInstrFunction extends Function {
 
   public RegexpInstrFunction() {
-    super("REGEXP_INSTR", ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC)
+    super(
+        "REGEXP_INSTR",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING
+            .or(OperandTypes.STRING_STRING_NUMERIC)
             .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC)
             .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC)
             .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC_STRING),
-        OperatorCategory.STRING, "/docs/regexp_instr.html");
+        OperatorCategory.STRING,
+        "/docs/regexp_instr.html");
   }
 
   @Override
@@ -57,8 +59,7 @@ public class RegexpInstrFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (regexp.length() == 0)
-      return 0L;
+    if (regexp.length() == 0) return 0L;
 
     // Default position 1
     int position = 1;
@@ -112,7 +113,4 @@ public class RegexpInstrFunction extends Function {
       throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, regexp);
     }
   }
-
-
-
 }

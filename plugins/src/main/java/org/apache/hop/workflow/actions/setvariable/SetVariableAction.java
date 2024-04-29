@@ -17,6 +17,8 @@
 
 package org.apache.hop.workflow.actions.setvariable;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.Result;
 import org.apache.hop.core.annotations.Action;
@@ -37,12 +39,13 @@ import org.apache.hop.workflow.action.validator.ActionValidatorUtils;
 import org.apache.hop.workflow.action.validator.AndValidator;
 import org.apache.hop.workflow.action.validator.ValidatorContext;
 import org.apache.hop.workflow.engine.IWorkflowEngine;
-import java.util.ArrayList;
-import java.util.List;
 
 /** This defines a 'Set variables' action. */
-@Action(id = "SET_VARIABLE", name = "i18n::SetVariableAction.Name",
-    description = "i18n::SetVariableAction.Description", image = "setvariable.svg",
+@Action(
+    id = "SET_VARIABLE",
+    name = "i18n::SetVariableAction.Name",
+    description = "i18n::SetVariableAction.Description",
+    image = "setvariable.svg",
     categoryDescription = "i18n:org.apache.hop.workflow:ActionCategory.Category.Utility",
     keywords = "i18n::SetVariableAction.keywords",
     documentationUrl = "/workflow/actions/setvariable.html")
@@ -104,8 +107,6 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
           IExpression expression = context.createExpression(definition.getExpression());
           String value = expression.getValue(String.class);
 
-
-
           // OK, where do we set this value...
           switch (definition.getScope()) {
             case JVM:
@@ -143,7 +144,8 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
                 } else {
                   // if parameter, save the initial parameter value for use in reset/clear variables
                   // in future calls
-                  if (parameterValue != null && !parameterValue.equals(value)
+                  if (parameterValue != null
+                      && !parameterValue.equals(value)
                       && !entryTransformSetVariablesMap.containsKey(name)) {
                     setEntryTransformSetVariable(name, parameterValue);
                   }
@@ -151,8 +153,9 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
                 parentWorkflow.setVariable(name, value);
 
               } else {
-                throw new HopWorkflowException(BaseMessages.getString(PKG,
-                    "SetVariableAction.Error.UnableSetVariableCurrentWorkflow", name));
+                throw new HopWorkflowException(
+                    BaseMessages.getString(
+                        PKG, "SetVariableAction.Error.UnableSetVariableCurrentWorkflow", name));
               }
               break;
 
@@ -165,12 +168,14 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
                 if (gpWorkflow != null) {
                   gpWorkflow.setVariable(name, value);
                 } else {
-                  throw new HopWorkflowException(BaseMessages.getString(PKG,
-                      "SetVariableAction.Error.UnableSetVariableParentWorkflow", name));
+                  throw new HopWorkflowException(
+                      BaseMessages.getString(
+                          PKG, "SetVariableAction.Error.UnableSetVariableParentWorkflow", name));
                 }
               } else {
-                throw new HopWorkflowException(BaseMessages.getString(PKG,
-                    "SetVariableAction.Error.UnableSetVariableCurrentWorkflow", name));
+                throw new HopWorkflowException(
+                    BaseMessages.getString(
+                        PKG, "SetVariableAction.Error.UnableSetVariableCurrentWorkflow", name));
               }
               break;
 
@@ -180,15 +185,20 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
 
           // ok we can process this line
           if (log.isDetailed()) {
-            logDetailed(BaseMessages.getString(PKG, "SetVariableAction.Log.SetVariableToValue",
-                name, value));
+            logDetailed(
+                BaseMessages.getString(
+                    PKG, "SetVariableAction.Log.SetVariableToValue", name, value));
           }
         } catch (Exception e) {
           result.setResult(false);
           result.increaseErrors(1);
           logError(
-              BaseMessages.getString(PKG, "SetVariableAction.Error.UnableSetVariableWithExpression",
-                  name, definition.getExpression(), e.getMessage()));
+              BaseMessages.getString(
+                  PKG,
+                  "SetVariableAction.Error.UnableSetVariableWithExpression",
+                  name,
+                  definition.getExpression(),
+                  e.getMessage()));
         }
       }
     } catch (Exception e) {
@@ -215,10 +225,18 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
   }
 
   @Override
-  public void check(List<ICheckResult> remarks, WorkflowMeta workflowMeta, IVariables variables,
+  public void check(
+      List<ICheckResult> remarks,
+      WorkflowMeta workflowMeta,
+      IVariables variables,
       IHopMetadataProvider metadataProvider) {
-    boolean res = ActionValidatorUtils.andValidator().validate(this, "variableName", remarks,
-        AndValidator.putValidators(ActionValidatorUtils.notNullValidator()));
+    boolean res =
+        ActionValidatorUtils.andValidator()
+            .validate(
+                this,
+                "variableName",
+                remarks,
+                AndValidator.putValidators(ActionValidatorUtils.notNullValidator()));
 
     if (!res) {
       return;
@@ -226,7 +244,7 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
 
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace(ctx, getVariables());
-    AndValidator.putValidators(ctx, ActionValidatorUtils.notNullValidator(),
-        ActionValidatorUtils.fileExistsValidator());
+    AndValidator.putValidators(
+        ctx, ActionValidatorUtils.notNullValidator(), ActionValidatorUtils.fileExistsValidator());
   }
 }

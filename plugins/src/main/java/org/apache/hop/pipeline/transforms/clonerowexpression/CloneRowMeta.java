@@ -23,6 +23,7 @@
 
 package org.apache.hop.pipeline.transforms.clonerowexpression;
 
+import java.util.List;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
@@ -44,35 +45,43 @@ import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import java.util.List;
 
-@Transform(id = "CloneRowExpression", name = "CloneRow.Name", description = "CloneRow.Description",
+@Transform(
+    id = "CloneRowExpression",
+    name = "CloneRow.Name",
+    description = "CloneRow.Description",
     image = "clonerow.svg",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility")
 public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
 
-  private static final Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator!!
+  private static final Class<?> PKG =
+      CloneRowMeta.class; // for i18n purposes, needed by Translator!!
 
   /** nr of clone rows */
-  @HopMetadataProperty(key = "nrclones",
+  @HopMetadataProperty(
+      key = "nrclones",
       injectionKeyDescription = "CloneRowMeta.Injection.NrClones")
   private String nrClones;
 
   /** Flag: add clone flag */
-  @HopMetadataProperty(key = "addcloneflag",
+  @HopMetadataProperty(
+      key = "addcloneflag",
       injectionKeyDescription = "CloneRowMeta.Injection.AddCloneFlag")
   private boolean addCloneFlag;
 
   /** clone flag field */
-  @HopMetadataProperty(key = "cloneflagfield",
+  @HopMetadataProperty(
+      key = "cloneflagfield",
       injectionKeyDescription = "CloneRowMeta.Injection.CloneFlagField")
   private String cloneFlagField;
 
-  @HopMetadataProperty(key = "addclonenum",
+  @HopMetadataProperty(
+      key = "addclonenum",
       injectionKeyDescription = "CloneRowMeta.Injection.AddCloneNum")
   private boolean addCloneNum;
 
-  @HopMetadataProperty(key = "clonenumfield",
+  @HopMetadataProperty(
+      key = "clonenumfield",
       injectionKeyDescription = "CloneRowMeta.Injection.CloneNumField")
   private String cloneNumField;
 
@@ -149,8 +158,13 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
   }
 
   @Override
-  public void getFields(IRowMeta rowMeta, String origin, IRowMeta[] info,
-      TransformMeta nextTransform, IVariables variables, IHopMetadataProvider metadataProvider)
+  public void getFields(
+      IRowMeta rowMeta,
+      String origin,
+      IRowMeta[] info,
+      TransformMeta nextTransform,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider)
       throws HopTransformException {
     // Output field (boolean) ?
     if (addCloneFlag) {
@@ -173,9 +187,16 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
   }
 
   @Override
-  public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta,
-      TransformMeta transformMeta, IRowMeta prev, String[] input, String[] output, IRowMeta info,
-      IVariables variables, IHopMetadataProvider metadataProvider) {
+  public void check(
+      List<ICheckResult> remarks,
+      PipelineMeta pipelineMeta,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      String[] input,
+      String[] output,
+      IRowMeta info,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
     CheckResult cr;
     String error_message = "";
 
@@ -216,23 +237,35 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     }
 
     if (prev == null || prev.size() == 0) {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_WARNING,
-          BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NotReceivingFields"),
-          transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_WARNING,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NotReceivingFields"),
+              transformMeta);
     } else {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "CloneRowMeta.CheckResult.TransformRecevingData", prev.size() + ""), transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(
+                  PKG, "CloneRowMeta.CheckResult.TransformRecevingData", prev.size() + ""),
+              transformMeta);
     }
     remarks.add(cr);
 
     // See if we have input streams leading to this transform!
     if (input.length > 0) {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK,
-          BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.TransformRecevingData2"),
-          transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.TransformRecevingData2"),
+              transformMeta);
     } else {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "CloneRowMeta.CheckResult.NoInputReceivedFromOtherTransforms"), transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
+              transformMeta);
     }
     remarks.add(cr);
   }

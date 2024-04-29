@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
@@ -24,7 +25,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
 
 /**
  * Calculates the inverse cosine (arc cosine) of a number in radians; the result is a number in the
@@ -34,21 +34,25 @@ import java.math.BigDecimal;
 public class AcosFunction extends Function {
 
   public AcosFunction() {
-    super("ACOS", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super(
+        "ACOS",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.TRIGONOMETRY,
         "/docs/acos.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal number = operands[0].getValue(BigDecimal.class);
-    if (number == null)
-      return null;
+    if (number == null) return null;
 
     double value = number.doubleValue();
     if (value < -1.0 || value > 1.0) {
       throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
     }
-    // FIXME: Use BigDecimalMath when bug are fixed https://github.com/eobermuhlner/big-math/issues/66
+    // FIXME: Use BigDecimalMath when bug are fixed
+    // https://github.com/eobermuhlner/big-math/issues/66
     return BigDecimal.valueOf(FastMath.acos(value));
   }
 }

@@ -18,16 +18,12 @@ package org.apache.hop.expression.util;
 
 public class Characters {
 
-  /**
-   * Private constructor since this is a utility class.
-   */
+  /** Private constructor since this is a utility class. */
   private Characters() {}
 
   private static final byte[] FLAGS = new byte[256];
 
   private static final byte IS_DIGIT = 0x01;
-
-
 
   private static final byte IS_HEX_DIGIT = 0x02;
 
@@ -62,13 +58,13 @@ public class Characters {
       FLAGS[ch] |= IS_ALPHA;
     }
 
-    char[] delimiters =
-        {' ', '.', ',', ':', ';', '\t', '\'', '?', '!', '@', '"', '^', '#', '$', '&', '~', '_', '=',
-            '+', '-', '*', '%', '/', '|', '\\', '[', ']', '(', ')', '{', '}', '<', '>'};
+    char[] delimiters = {
+      ' ', '.', ',', ':', ';', '\t', '\'', '?', '!', '@', '"', '^', '#', '$', '&', '~', '_', '=',
+      '+', '-', '*', '%', '/', '|', '\\', '[', ']', '(', ')', '{', '}', '<', '>'
+    };
     for (int ch : delimiters) {
       FLAGS[ch] |= IS_DELIMITER;
     }
-
   }
 
   /**
@@ -90,7 +86,6 @@ public class Characters {
     }
     return (FLAGS[ch] & IS_BIT) != 0;
   }
-
 
   public static boolean isHexDigit(char ch) {
     if (ch > 255) {
@@ -134,9 +129,9 @@ public class Characters {
 
   /**
    * Is the character a word delimiter
-   * 
-   * ! ? @ " ^ # $ & ~ _ , . : ; = + - * % / | \ [ ] ( ) { } < >
-   * 
+   *
+   * <p>! ? @ " ^ # $ & ~ _ , . : ; = + - * % / | \ [ ] ( ) { } < >
+   *
    * @param ch the character to check
    * @return true if it is a delimiter
    */
@@ -149,9 +144,7 @@ public class Characters {
 
   /**
    * Determines if the specified character is space or tab
-   * 
-   * 
-   * 
+   *
    * @param ch
    * @return
    */

@@ -27,13 +27,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-/**
- * Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget.
- */
+/** Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget. */
 public class BrowserToolTip extends ToolTip {
-  /**
-   * Minimal size constraints.
-   */
+  /** Minimal size constraints. */
   private static final int MIN_WIDTH = 500;
 
   private static final int MIN_HEIGHT = 500;
@@ -66,8 +62,7 @@ public class BrowserToolTip extends ToolTip {
     browser.setMenu(new Menu(parent.getShell(), SWT.NONE));
 
     String doc = this.getText(event);
-    if (doc != null)
-      browser.setText(doc);
+    if (doc != null) browser.setText(doc);
 
     return browser;
   }

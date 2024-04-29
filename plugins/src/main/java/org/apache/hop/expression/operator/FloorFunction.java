@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,27 +28,28 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * Returns the values rounded to the nearest equal or smaller integer.
- * 
- * @see {@link CeilingOperator}, {@link RoundOperator}, {@link TruncateOperator} 
+ *
+ * @see {@link CeilingOperator}, {@link RoundOperator}, {@link TruncateOperator}
  */
 @FunctionPlugin
 public class FloorFunction extends Function {
 
   public FloorFunction() {
-    super("FLOOR", ReturnTypes.CEIL_FLOOR_FUNCTION, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "FLOOR",
+        ReturnTypes.CEIL_FLOOR_FUNCTION,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/floor.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return value.setScale(0, RoundingMode.FLOOR);
   }

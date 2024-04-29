@@ -17,6 +17,8 @@
 
 package org.apache.hop.workflow.actions.setvariable;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
@@ -47,8 +49,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import java.util.ArrayList;
-import java.util.List;
 
 /** This dialog allows you to edit the Set variables action settings. */
 public class SetVariableActionDialog extends ActionDialog implements IActionDialog {
@@ -62,8 +62,8 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
 
   private boolean changed;
 
-  public SetVariableActionDialog(Shell parent, IAction action, WorkflowMeta workflowMeta,
-      IVariables variables) {
+  public SetVariableActionDialog(
+      Shell parent, IAction action, WorkflowMeta workflowMeta, IVariables variables) {
     super(parent, workflowMeta, variables);
     this.action = (SetVariableAction) action;
 
@@ -122,7 +122,6 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     fdName.right = new FormAttachment(100, 0);
     wName.setLayoutData(fdName);
 
-
     Label wlFields = new Label(shell, SWT.NONE);
     wlFields.setText(BaseMessages.getString(PKG, "SetVariableAction.Variables.Label"));
     PropsUi.setLook(wlFields);
@@ -135,32 +134,49 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf = {
-        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Name"),
-            ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Expression"),
-            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Scope"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableScope.getDescriptions(), false),};
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Name"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Expression"),
+          ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Scope"),
+          ColumnInfo.COLUMN_TYPE_CCOMBO,
+          SetVariableScope.getDescriptions(),
+          false),
+    };
     colinf[0].setUsingVariables(true);
     colinf[1].setUsingVariables(true);
-    colinf[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
+    colinf[1].setTextVarButtonSelectionListener(
+        new SelectionAdapter() {
+          @Override
+          public void widgetSelected(SelectionEvent e) {
 
-        String expression = wFields.getActiveTableItem().getText(wFields.getActiveTableColumn());
+            String expression =
+                wFields.getActiveTableItem().getText(wFields.getActiveTableColumn());
 
-        if (!shell.isDisposed()) {
-          ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
-          expression = dialog.open(expression, action, ExpressionMode.NONE, null);
-          if (expression != null) {
-            wFields.getActiveTableItem().setText(wFields.getActiveTableColumn(), expression);
+            if (!shell.isDisposed()) {
+              ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
+              expression = dialog.open(expression, action, ExpressionMode.NONE, null);
+              if (expression != null) {
+                wFields.getActiveTableItem().setText(wFields.getActiveTableColumn(), expression);
+              }
+            }
           }
-        }
-      }
-    });
+        });
 
-    wFields = new TableView(variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
-        FieldsRows, lsMod, props);
+    wFields =
+        new TableView(
+            variables,
+            shell,
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+            colinf,
+            FieldsRows,
+            lsMod,
+            props);
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment(0, 0);
@@ -198,7 +214,6 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     wName.selectAll();
     wName.setFocus();
   }
-
 
   protected void getWidgetsContent(final SetVariableAction meta) {
     meta.setName(wName.getText());

@@ -14,6 +14,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -23,27 +26,26 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
- * 
  * Searches a string for a regular expression pattern and returns an integer that indicates the
- * number of times the pattern occurs in the string.
- * If no match is found, then the function returns 0.
- * 
- * REGEXP_COUNT ( source, pattern [, start [, parameters ] ] )
+ * number of times the pattern occurs in the string. If no match is found, then the function returns
+ * 0.
  *
+ * <p>REGEXP_COUNT ( source, pattern [, start [, parameters ] ] )
  */
 @FunctionPlugin
 public class RegexpCountFunction extends Function {
 
   public RegexpCountFunction() {
     super(
-        "REGEXP_COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING
-            .or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_STRING),
-        OperatorCategory.STRING, "/docs/regexp_count.html");
+        "REGEXP_COUNT",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING
+            .or(OperandTypes.STRING_STRING_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_STRING),
+        OperatorCategory.STRING,
+        "/docs/regexp_count.html");
   }
 
   @Override
@@ -62,8 +64,7 @@ public class RegexpCountFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (pattern.length() == 0)
-      return count;
+    if (pattern.length() == 0) return count;
 
     int start = 1;
     int parameters = Pattern.UNICODE_CASE;

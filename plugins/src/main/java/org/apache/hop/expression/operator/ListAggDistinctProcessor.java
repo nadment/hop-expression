@@ -14,10 +14,10 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import java.util.LinkedList;
 import java.util.Queue;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionProcessor;
 
 public class ListAggDistinctProcessor implements IExpressionProcessor {
   private String delimiter;
@@ -33,8 +33,7 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
 
     String value = operands[0].getValue(String.class);
 
-    if (value == null || values.contains(value))
-      return;
+    if (value == null || values.contains(value)) return;
 
     values.add(value);
   }
@@ -42,8 +41,7 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
   @Override
   public Object getValue() {
 
-    if (values.isEmpty())
-      return null;
+    if (values.isEmpty()) return null;
 
     StringBuilder builder = new StringBuilder();
     for (String str : values) {

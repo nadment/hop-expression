@@ -23,22 +23,23 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Returns the number of bits that are set
- */
+/** Returns the number of bits that are set */
 @FunctionPlugin
 public class BitCountFunction extends Function {
 
   public BitCountFunction() {
-    super("BIT_COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.BITWISE,
+    super(
+        "BIT_COUNT",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.BITWISE,
         "/docs/bit_count.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return Long.valueOf(Long.bitCount(value));
   }

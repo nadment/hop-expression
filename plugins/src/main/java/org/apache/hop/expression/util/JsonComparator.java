@@ -15,15 +15,16 @@
 
 package org.apache.hop.expression.util;
 
-import java.util.Comparator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
+import java.util.Comparator;
 
 /**
  * Compare Json Node
+ *
  * <ul>
- * <li>Ignores the order of attributes</li>
- * <li>Considers numeric values 5.0 and 5 as equals</li>
+ *   <li>Ignores the order of attributes
+ *   <li>Considers numeric values 5.0 and 5 as equals
  * </ul>
  */
 public class JsonComparator implements Comparator<JsonNode> {

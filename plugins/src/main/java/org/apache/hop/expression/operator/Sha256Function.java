@@ -24,20 +24,23 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-
 /**
  * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
  * characters hex-encoded string.
  *
  * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha224Function}, {@link Sha384Function},
- *      {@link Sha512Function}
+ *     {@link Sha512Function}
  */
 @FunctionPlugin
 public class Sha256Function extends Function {
 
   public Sha256Function() {
-    super("SHA256", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha256.html");
+    super(
+        "SHA256",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.CRYPTOGRAPHIC,
+        "/docs/sha256.html");
   }
 
   @Override

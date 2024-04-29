@@ -17,10 +17,10 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ErrorCode;
 
 public final class IntegerType extends Type {
 
@@ -35,13 +35,11 @@ public final class IntegerType extends Type {
   public static IntegerType of(int precision) {
     return of(precision, true);
   }
-  
+
   public static IntegerType of(int precision, boolean nullable) {
-    if ( precision==PRECISION_NOT_SPECIFIED )
-      precision = TypeId.INTEGER.getMaxPrecision();
-    
-    if ( precision==TypeId.INTEGER.getMaxPrecision() && nullable)
-      return Types.INTEGER;
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeId.INTEGER.getMaxPrecision();
+
+    if (precision == TypeId.INTEGER.getMaxPrecision() && nullable) return Types.INTEGER;
 
     return new IntegerType(precision, nullable);
   }
@@ -61,7 +59,7 @@ public final class IntegerType extends Type {
   public TypeId getId() {
     return TypeId.INTEGER;
   }
-  
+
   @Override
   public TypeComparability getComparability() {
     return TypeComparability.ALL;
@@ -69,7 +67,7 @@ public final class IntegerType extends Type {
 
   /**
    * Coerce value to data type INTEGER
-   * 
+   *
    * @param value the value to coerce
    * @return Long
    */
@@ -87,8 +85,8 @@ public final class IntegerType extends Type {
       return IntegerType.convertToInteger((String) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
-        TypeId.INTEGER);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.INTEGER);
   }
 
   @Override
@@ -143,9 +141,9 @@ public final class IntegerType extends Type {
     if (value instanceof ZonedDateTime) {
       return convertToInteger((ZonedDateTime) value);
     }
-    
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        TypeId.fromValue(value), this);
+
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
   public static final Long convertToInteger(final String str) throws ConversionException {
@@ -159,8 +157,8 @@ public final class IntegerType extends Type {
 
   public static final Long convertToInteger(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.BINARY, bytes,
-          TypeId.INTEGER);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeId.BINARY, bytes, TypeId.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -169,10 +167,11 @@ public final class IntegerType extends Type {
     return result;
   }
 
-  public static final Long convertToInteger(final ZonedDateTime datetime) throws ConversionException {
+  public static final Long convertToInteger(final ZonedDateTime datetime)
+      throws ConversionException {
     return datetime.toEpochSecond();
   }
-  
+
   protected static int numberOfDigit(int number) {
     if (number < 100000) {
       if (number < 100) {

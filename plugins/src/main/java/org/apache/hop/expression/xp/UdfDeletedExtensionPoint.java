@@ -27,7 +27,9 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.metadata.api.IHopMetadata;
 
-@ExtensionPoint(id = "UdfDeletedExtensionPoint", extensionPointId = "HopGuiMetadataObjectDeleted",
+@ExtensionPoint(
+    id = "UdfDeletedExtensionPoint",
+    extensionPointId = "HopGuiMetadataObjectDeleted",
     description = "User Defined Function deleted")
 public class UdfDeletedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override

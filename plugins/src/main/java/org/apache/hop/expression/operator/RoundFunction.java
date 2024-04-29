@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,41 +27,41 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * Returns the values rounded to the nearest integer or decimal.
- * 
+ *
  * @see {@link CeilingOperator}, {@link FloorOperator}, {@link TruncateOperator}
  */
 @FunctionPlugin
 public class RoundFunction extends Function {
 
   public RoundFunction() {
-    super("ROUND", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC), OperatorCategory.MATHEMATICAL,
+    super(
+        "ROUND",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
+        OperatorCategory.MATHEMATICAL,
         "/docs/round.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return value;
+    if (value == null) return value;
 
     int scale = 0;
     if (operands.length == 2) {
       Long l = operands[1].getValue(Long.class);
-      if (l == null)
-        return null;
+      if (l == null) return null;
       scale = l.intValue();
     }
 
     if (scale > value.scale()) {
       scale = value.scale();
     }
-    
-    if (scale==0) {
+
+    if (scale == 0) {
       return value.setScale(0, RoundingMode.HALF_UP);
     }
     return value.movePointRight(scale).setScale(0, RoundingMode.HALF_UP).movePointLeft(scale);

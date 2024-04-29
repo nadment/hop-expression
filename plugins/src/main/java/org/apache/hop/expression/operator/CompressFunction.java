@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -24,30 +27,31 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Compress the data using the GZIP algorithm.
- * 
- * TODO: Compress the data using the specified algorithm. If no algorithm is supplied, GZIP is used.
- * 
- * The function returns a byte array of type.
+ *
+ * <p>TODO: Compress the data using the specified algorithm. If no algorithm is supplied, GZIP is
+ * used.
+ *
+ * <p>The function returns a byte array of type.
  */
 @FunctionPlugin
 public class CompressFunction extends Function {
 
   public CompressFunction() {
-    super("COMPRESS", ReturnTypes.BINARY_NULLABLE, OperandTypes.BINARY, OperatorCategory.STRING,
+    super(
+        "COMPRESS",
+        ReturnTypes.BINARY_NULLABLE,
+        OperandTypes.BINARY,
+        OperatorCategory.STRING,
         "/docs/compress.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
-    if (bytes == null)
-      return null;
+    if (bytes == null) return null;
 
     try {
       ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);

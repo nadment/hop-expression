@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.util.regex.Pattern;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -27,21 +29,17 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.io.StringWriter;
-import java.util.regex.Pattern;
 
 /**
  * An operator describing the <code>LIKE</code> operator.
  *
- * <p>
- * Syntax of the operator:
+ * <p>Syntax of the operator:
  *
  * <ul>
- * <li><code>field [NOT] LIKE pattern ESCAPE char</code>
+ *   <li><code>field [NOT] LIKE pattern ESCAPE char</code>
  * </ul>
  *
- * <p>
- * <b>NOTE</b> If the <code>NOT</code> clause is present the parser will generate a equivalent to
+ * <p><b>NOTE</b> If the <code>NOT</code> clause is present the parser will generate a equivalent to
  * <code>
  * NOT (field LIKE pattern ...)</code>
  */
@@ -52,10 +50,14 @@ public class LikeOperator extends Operator {
   static final Pattern contains = Pattern.compile("^%([^_%]+)%$");
   static final Pattern equalTo = Pattern.compile("^[^_%]*$");
 
-
   public LikeOperator() {
-    super("LIKE", 120, true, ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), OperatorCategory.COMPARISON,
+    super(
+        "LIKE",
+        120,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
+        OperatorCategory.COMPARISON,
         "/docs/like.html");
   }
 
@@ -68,19 +70,16 @@ public class LikeOperator extends Operator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Optimize NULL LIKE FIELD to NULL
     IExpression value = call.getOperand(0);
-    if (value.isNull())
-      return value;
+    if (value.isNull()) return value;
 
     if (call.getOperand(1).isConstant()) {
       String pattern = call.getOperand(1).getValue(String.class);
 
       // FIELD LIKE NULL → NULL
-      if (pattern == null)
-        return new Literal(null, call.getType());
+      if (pattern == null) return new Literal(null, call.getType());
 
       if (call.getOperandCount() == 3) {
-        if (call.getOperand(2).isNull())
-          return Literal.NULL;
+        if (call.getOperand(2).isNull()) return Literal.NULL;
 
         // For now don't optimize if special escape char
         return call;
@@ -88,7 +87,7 @@ public class LikeOperator extends Operator {
 
       // field LIKE '%' → IFNULL(field,NULL,TRUE)
       if ("%".equals(pattern)) {
-        //return new Call(Operators.EQUAL, value, value);
+        // return new Call(Operators.EQUAL, value, value);
         return new Call(Operators.NVL2, value, Literal.TRUE, Literal.NULL);
       }
 

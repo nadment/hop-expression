@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,22 +30,28 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.util.Regexp;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class RegexpReplaceFunction extends Function {
 
   private static final IOperandTypeChecker OTC =
-      OperandTypes.family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.STRING,
-          TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING).optional(i -> i >= 2);
+      OperandTypes.family(
+              TypeFamily.STRING,
+              TypeFamily.STRING,
+              TypeFamily.STRING,
+              TypeFamily.NUMERIC,
+              TypeFamily.NUMERIC,
+              TypeFamily.STRING)
+          .optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", ReturnTypes.STRING_NULLABLE, OTC, OperatorCategory.STRING, "/docs/regexp_replace.html");
+    super(
+        "REGEXP_REPLACE",
+        ReturnTypes.STRING_NULLABLE,
+        OTC,
+        OperatorCategory.STRING,
+        "/docs/regexp_replace.html");
   }
 
   @Override
@@ -58,8 +67,7 @@ public class RegexpReplaceFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (pattern.length() == 0)
-      return input;
+    if (pattern.length() == 0) return input;
 
     // Default empty string
     String replacement = "";

@@ -18,6 +18,11 @@ package org.apache.hop.expression.operator;
 
 import static org.apache.hop.expression.type.Types.coerceOperandType;
 import static org.apache.hop.expression.type.Types.getCommonTypeForComparison;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -32,20 +37,15 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Logical <code>IN</code> operator tests for a value's membership in a list of values. The IN
  * operator is a shorthand for multiple OR conditions.
  *
- * <p>
- * Syntax of the operator:
+ * <p>Syntax of the operator:
  *
  * <ul>
- * <li><code>field [NOT] IN (list of values)</code>
+ *   <li><code>field [NOT] IN (list of values)</code>
  * </ul>
  */
 public class InOperator extends Operator {
@@ -53,22 +53,27 @@ public class InOperator extends Operator {
   private final boolean not;
 
   public InOperator(boolean not) {
-    super(not ? "NOT IN":"IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, null, OperatorCategory.COMPARISON,
+    super(
+        not ? "NOT IN" : "IN",
+        120,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        null,
+        OperatorCategory.COMPARISON,
         "/docs/in.html");
     this.not = not;
   }
 
-  
   @Override
   public Operator not() {
-    return not ? Operators.IN:Operators.NOT_IN;
+    return not ? Operators.IN : Operators.NOT_IN;
   }
-  
+
   @Override
   public boolean checkOperandTypes(final Call call) {
     Type type = call.getOperand(0).getType();
-    if ( type.is(TypeId.UNKNOWN)) return false;
-    
+    if (type.is(TypeId.UNKNOWN)) return false;
+
     Tuple tuple = call.getOperand(1).asTuple();
     for (IExpression operand : tuple) {
       if (!type.isCoercible(operand.getType())) {
@@ -80,9 +85,8 @@ public class InOperator extends Operator {
   }
 
   /**
-   * Simplifies IN expressions list of elements.
-   * 1. Remove duplicate expressions in list.
-   * 2. Sort expressions on cost.
+   * Simplifies IN expressions list of elements. 1. Remove duplicate expressions in list. 2. Sort
+   * expressions on cost.
    */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
@@ -106,7 +110,7 @@ public class InOperator extends Operator {
     // Remove null and duplicate element in list
     for (IExpression expression : tuple) {
 
-      if ( !not && expression.isNull()) {
+      if (!not && expression.isNull()) {
         continue;
       }
 
@@ -132,7 +136,7 @@ public class InOperator extends Operator {
     // Rebuild tuple
     call = new Call(this, call.getOperand(0), new Tuple(list));
     call.inferReturnType();
-    
+
     return call;
   }
 
@@ -182,8 +186,7 @@ public class InOperator extends Operator {
       Boolean result = Boolean.TRUE;
       for (IExpression expression : tuple) {
         Object value = expression.getValue();
-        if (value == null)
-          return null;
+        if (value == null) return null;
 
         if (Comparison.equals(left, value)) {
           result = Boolean.FALSE;
@@ -201,7 +204,7 @@ public class InOperator extends Operator {
     }
     return Boolean.FALSE;
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

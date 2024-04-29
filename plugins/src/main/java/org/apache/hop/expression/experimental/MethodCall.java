@@ -17,15 +17,16 @@
 package org.apache.hop.expression.experimental;
 
 import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.util.Arrays;
+import java.util.Objects;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.Type;
-import java.lang.invoke.MethodHandle;
-import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
@@ -68,15 +69,15 @@ public class MethodCall extends Call {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
+    if (this == o) return true;
 
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
 
     MethodCall call = (MethodCall) o;
-    return this.type.equals(call.type) && this.operator.equals(call.operator)
+    return this.type.equals(call.type)
+        && this.operator.equals(call.operator)
         && Arrays.equals(this.operands, call.operands);
   }
 
@@ -85,4 +86,3 @@ public class MethodCall extends Call {
     return Objects.hash(type, operator, operands);
   }
 }
-

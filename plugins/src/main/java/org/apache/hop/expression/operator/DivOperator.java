@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -28,21 +30,25 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
-import java.math.BigDecimal;
 
 /**
- * Arithmetic division operator.
- * <br>
+ * Arithmetic division operator. <br>
  * <strong>Syntax:</strong> <code>x / y</code>
- * 
+ *
  * @see {@link Div0Function}
  */
 public class DivOperator extends Operator {
 
   public DivOperator() {
-    super("DIV", "/", 50, true, ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/div.html");
+    super(
+        "DIV",
+        "/",
+        50,
+        true,
+        ReturnTypes.DIVIDE_OPERATOR,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.MATHEMATICAL,
+        "/docs/div.html");
   }
 
   @Override
@@ -65,21 +71,18 @@ public class DivOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionArithmeticOperator(call);    
+    return Types.coercionArithmeticOperator(call);
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     BigDecimal divisor = operands[1].getValue(BigDecimal.class);
-    if (divisor == null)
-      return null;
+    if (divisor == null) return null;
 
     // Prevent a division by zero ..
-    if (divisor.signum() == 0)
-      throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
+    if (divisor.signum() == 0) throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
 
     return value.divide(divisor, MATH_CONTEXT);
   }

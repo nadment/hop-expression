@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
@@ -30,10 +31,10 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.math.BigDecimal;
 
 /**
- * Converts a string expression to a date value with optional format or a Unix epoch numeric in second to a date.
+ * Converts a string expression to a date value with optional format or a Unix epoch numeric in
+ * second to a date.
  */
 @FunctionPlugin
 public class ToDateFunction extends Function {
@@ -41,8 +42,12 @@ public class ToDateFunction extends Function {
   private static final ToDateFunction NumberToDateFunction = new NumberToDateFunction();
 
   public ToDateFunction() {
-    super("TO_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMERIC),
-        OperatorCategory.CONVERSION, "/docs/to_date.html");
+    super(
+        "TO_DATE",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMERIC),
+        OperatorCategory.CONVERSION,
+        "/docs/to_date.html");
   }
 
   @Override
@@ -50,13 +55,13 @@ public class ToDateFunction extends Function {
       throws ExpressionException {
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeId.INTEGER) ) {
+    if (type.is(TypeId.INTEGER)) {
       return new Call(IntegerToDateFunction, call.getOperands());
     }
-    if (type.is(TypeId.NUMBER) ) {
+    if (type.is(TypeId.NUMBER)) {
       return new Call(NumberToDateFunction, call.getOperands());
     }
-    
+
     String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
 
     // With specified format
@@ -64,8 +69,9 @@ public class ToDateFunction extends Function {
       pattern = call.getOperand(1).getValue(String.class);
     }
 
-    int twoDigitYearStart = Integer
-        .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+    int twoDigitYearStart =
+        Integer.parseInt(
+            context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
     // Compile format to check it
     DateTimeFormat format = DateTimeFormat.of(pattern);
@@ -85,8 +91,7 @@ public class ToDateFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       return format.parse(value);
     }
   }
@@ -95,18 +100,16 @@ public class ToDateFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       return DateType.convertToDate(value);
     }
   }
-  
+
   private static final class NumberToDateFunction extends ToDateFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       return DateType.convertToDate(value);
     }
   }

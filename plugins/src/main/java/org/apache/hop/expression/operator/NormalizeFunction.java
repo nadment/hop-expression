@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,26 +25,24 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 
-/**
- * The function returns a string as a normalized string.
- */
+/** The function returns a string as a normalized string. */
 @FunctionPlugin
 public class NormalizeFunction extends Function {
 
-
   public NormalizeFunction() {
-    super("NORMALIZE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-        OperatorCategory.STRING, "/docs/normalize.html");
+    super(
+        "NORMALIZE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        OperatorCategory.STRING,
+        "/docs/normalize.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     Form form = Form.NFD;
 

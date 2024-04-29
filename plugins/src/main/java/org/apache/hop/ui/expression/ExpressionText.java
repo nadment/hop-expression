@@ -14,6 +14,7 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
@@ -40,7 +41,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A Widget that combines a Text widget with a Variable button that will insert an Environment
@@ -49,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class ExpressionText extends Composite {
   protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by
-                                                              // Translator!!
+  // Translator!!
 
   // protected String toolTipText;
 
@@ -74,7 +74,11 @@ public class ExpressionText extends Composite {
     this(variables, composite, flags, ExpressionMode.NONE, null);
   }
 
-  public ExpressionText(IVariables variables, Composite composite, int flags, ExpressionMode mode,
+  public ExpressionText(
+      IVariables variables,
+      Composite composite,
+      int flags,
+      ExpressionMode mode,
       CompletableFuture<IRowMeta> rowMetaFutur) {
     super(composite, SWT.NONE);
     initialize(variables, composite, flags, null, null, null, null);
@@ -82,10 +86,14 @@ public class ExpressionText extends Composite {
     this.rowMetaFutur = rowMetaFutur;
   }
 
-  protected void initialize(IVariables variables, Composite composite, int flags,
-      String toolTipText, IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface, SelectionListener selectionListener) {
-
+  protected void initialize(
+      IVariables variables,
+      Composite composite,
+      int flags,
+      String toolTipText,
+      IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface,
+      SelectionListener selectionListener) {
 
     this.getCaretPositionInterface = getCaretPositionInterface;
     this.insertTextInterface = insertTextInterface;
@@ -105,9 +113,13 @@ public class ExpressionText extends Composite {
     wText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
     // add button
-    Image image = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(),
-        "expression.svg", 14, // $NON-NLS-1$
-        14);
+    Image image =
+        SwtSvgImageUtil.getImage(
+            Display.getCurrent(),
+            getClass().getClassLoader(),
+            "expression.svg",
+            14, // $NON-NLS-1$
+            14);
 
     wToolBar = new ToolBar(this, SWT.FLAT);
     final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
@@ -121,13 +133,13 @@ public class ExpressionText extends Composite {
     modifyListenerTooltipText = getModifyListenerTooltipText(wText);
     wText.addModifyListener(modifyListenerTooltipText);
 
-    controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText, getCaretPositionInterface,
-        insertTextInterface);
+    controlSpaceKeyAdapter =
+        new ControlSpaceKeyAdapter(
+            variables, wText, getCaretPositionInterface, insertTextInterface);
     wText.addKeyListener(controlSpaceKeyAdapter);
 
     this.setToolTipText(toolTipText);
   }
-
 
   protected void openExpressionDialog() {
     ExpressionEditorDialog dialog = new ExpressionEditorDialog(this.getShell());
@@ -137,22 +149,30 @@ public class ExpressionText extends Composite {
     }
   }
 
-  /** @return the getCaretPositionInterface */
+  /**
+   * @return the getCaretPositionInterface
+   */
   public IGetCaretPosition getGetCaretPositionInterface() {
     return getCaretPositionInterface;
   }
 
-  /** @param getCaretPositionInterface the getCaretPositionInterface to set */
+  /**
+   * @param getCaretPositionInterface the getCaretPositionInterface to set
+   */
   public void setGetCaretPositionInterface(IGetCaretPosition getCaretPositionInterface) {
     this.getCaretPositionInterface = getCaretPositionInterface;
   }
 
-  /** @return the insertTextInterface */
+  /**
+   * @return the insertTextInterface
+   */
   public IInsertText getInsertTextInterface() {
     return insertTextInterface;
   }
 
-  /** @param insertTextInterface the insertTextInterface to set */
+  /**
+   * @param insertTextInterface the insertTextInterface to set
+   */
   public void setInsertTextInterface(IInsertText insertTextInterface) {
     this.insertTextInterface = insertTextInterface;
   }
@@ -177,12 +197,16 @@ public class ExpressionText extends Composite {
     };
   }
 
-  /** @return the text in the Text widget */
+  /**
+   * @return the text in the Text widget
+   */
   public String getText() {
     return wText.getText();
   }
 
-  /** @param text the text in the Text widget to set. */
+  /**
+   * @param text the text in the Text widget to set.
+   */
   public void setText(String text) {
     wText.setText(text);
     modifyListenerTooltipText.modifyText(null);

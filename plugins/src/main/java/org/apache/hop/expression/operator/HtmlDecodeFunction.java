@@ -33,7 +33,11 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class HtmlDecodeFunction extends Function {
 
   public HtmlDecodeFunction() {
-    super("HTML_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "HTML_DECODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/html_decode.html");
   }
 

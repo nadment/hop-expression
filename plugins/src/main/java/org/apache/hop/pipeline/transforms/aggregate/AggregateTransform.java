@@ -17,6 +17,9 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.HashMap;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.IValueMeta;
@@ -39,20 +42,20 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.pipeline.transforms.aggregate.AggregateData.AggregateKey;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashMap;
 
-/**
- * Aggregates information based on expression
- */
+/** Aggregates information based on expression */
 public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateData> {
   private static final Class<?> PKG = AggregateMeta.class; // For Translator
 
   private boolean allNullsAreZero = false;
 
-  public AggregateTransform(TransformMeta transformMeta, AggregateMeta meta, AggregateData data,
-      int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
+  public AggregateTransform(
+      TransformMeta transformMeta,
+      AggregateMeta meta,
+      AggregateData data,
+      int copyNr,
+      PipelineMeta pipelineMeta,
+      Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
@@ -66,7 +69,6 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     throw new IllegalArgumentException(
         ErrorCode.UNSUPPORTED_COERCION.message(value, TypeId.fromValue(value), Types.DATE));
   }
-
 
   @Override
   public boolean processRow() throws HopException {
@@ -111,8 +113,9 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         String fieldName = meta.getGroupFields().get(index).getName();
         data.groupIndex[index] = data.inputRowMeta.indexOfValue(fieldName);
         if (data.groupIndex[index] < 0) {
-          logError(BaseMessages.getString(PKG, "AggregateTransform.Exception.GroupFieldNotFound",
-              fieldName));
+          logError(
+              BaseMessages.getString(
+                  PKG, "AggregateTransform.Exception.GroupFieldNotFound", fieldName));
           setErrors(1);
           stopAll();
           return false;
@@ -149,8 +152,13 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           data.aggregates[index] = call;
           data.functions[index] = function;
         } catch (Exception e) {
-          String message = BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
-              field.getName(), field.getExpression(), e.getMessage());
+          String message =
+              BaseMessages.getString(
+                  PKG,
+                  "Aggregate.Exception.ExpressionError",
+                  field.getName(),
+                  field.getExpression(),
+                  e.getMessage());
           logError(message);
           if (isDebug()) {
             logError(Const.getStackTracker(e));
@@ -222,8 +230,6 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
       putRow(data.outputRowMeta, outputRow);
     }
-
-
 
     // If we need to give back one row ?
     // This means we give back 0 for COUNT function, null for everything else

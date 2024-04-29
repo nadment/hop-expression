@@ -16,31 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
 
-/**
- * Day of the week (Monday=1 to Sunday=7).
- */
+/** Day of the week (Monday=1 to Sunday=7). */
 @FunctionPlugin
 public class IsoDayOfWeekFunction extends Function {
 
   public IsoDayOfWeekFunction() {
-    super("ISODAYOFWEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
+    super(
+        "ISODAYOFWEEK",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/isodayofweek.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     DayOfWeek dow = value.getDayOfWeek();
     return Long.valueOf(dow.getValue());
   }

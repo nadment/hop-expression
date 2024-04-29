@@ -17,6 +17,8 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
@@ -39,22 +41,29 @@ import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import java.util.ArrayList;
-import java.util.List;
 
-@Transform(id = "Aggregate", image = "aggregate.svg", name = "i18n::Aggregate.Name",
+@Transform(
+    id = "Aggregate",
+    image = "aggregate.svg",
+    name = "i18n::Aggregate.Name",
     description = "i18n::Aggregate.Description",
-    categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Statistics",
-    keywords = "i18n::Aggregate.Keywords", documentationUrl = "/pipeline/transforms/aggregate.html")
+    categoryDescription =
+        "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Statistics",
+    keywords = "i18n::Aggregate.Keywords",
+    documentationUrl = "/pipeline/transforms/aggregate.html")
 public class AggregateMeta extends BaseTransformMeta<AggregateTransform, AggregateData> {
   private static final Class<?> PKG = AggregateMeta.class; // For Translator
 
   /** Fields to group over */
-  @HopMetadataProperty(groupKey = "groups", key = "field",
+  @HopMetadataProperty(
+      groupKey = "groups",
+      key = "field",
       injectionGroupDescription = "AggregateMeta.Injection.GROUPS")
   private List<GroupField> groupFields;
 
-  @HopMetadataProperty(groupKey = "aggregates", key = "field",
+  @HopMetadataProperty(
+      groupKey = "aggregates",
+      key = "field",
       injectionGroupDescription = "AggregateMeta.Injection.AGGREGATES")
   private List<AggregateField> aggregateFields;
 
@@ -81,7 +90,6 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       aggregateFields.add(new AggregateField(field));
     }
   }
-
 
   @Override
   public void setDefault() {
@@ -118,8 +126,13 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
   }
 
   @Override
-  public void getFields(IRowMeta rowMeta, String transformName, IRowMeta[] info,
-      TransformMeta nextTransform, IVariables variables, IHopMetadataProvider metadataProvider) {
+  public void getFields(
+      IRowMeta rowMeta,
+      String transformName,
+      IRowMeta[] info,
+      TransformMeta nextTransform,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
 
     // re-assemble a new row of metadata
     //
@@ -155,8 +168,13 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
         valueMeta.setStorageType(IValueMeta.STORAGE_TYPE_NORMAL);
         fields.addValueMeta(valueMeta);
       } catch (ExpressionException e) {
-        String message = BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
-            field.getName(), field.getExpression(), e.getMessage());
+        String message =
+            BaseMessages.getString(
+                PKG,
+                "Aggregate.Exception.ExpressionError",
+                field.getName(),
+                field.getExpression(),
+                e.getMessage());
         this.logError(message);
       }
     }
@@ -168,20 +186,32 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     rowMeta.addRowMeta(fields);
   }
 
-
   @Override
-  public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta,
-      TransformMeta transformMeta, IRowMeta prev, String[] input, String[] output, IRowMeta info,
-      IVariables variables, IHopMetadataProvider metadataProvider) {
+  public void check(
+      List<ICheckResult> remarks,
+      PipelineMeta pipelineMeta,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      String[] input,
+      String[] output,
+      IRowMeta info,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
     CheckResult cr;
 
     if (input.length > 0) {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK,
-          BaseMessages.getString(PKG, "AggregateMeta.CheckResult.ReceivingInfoOK"), transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(PKG, "AggregateMeta.CheckResult.ReceivingInfoOK"),
+              transformMeta);
       remarks.add(cr);
     } else {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-          BaseMessages.getString(PKG, "AggregateMeta.CheckResult.NoInputError"), transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "AggregateMeta.CheckResult.NoInputError"),
+              transformMeta);
       remarks.add(cr);
     }
   }

@@ -24,15 +24,16 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
 
-
-/**
- * Converts a encoded hexadecimal string to a string.
- */
+/** Converts a encoded hexadecimal string to a string. */
 @FunctionPlugin
 public class HexDecodeFunction extends Function {
 
   public HexDecodeFunction() {
-    super("HEX_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "HEX_DECODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/hex_decode.html");
   }
 

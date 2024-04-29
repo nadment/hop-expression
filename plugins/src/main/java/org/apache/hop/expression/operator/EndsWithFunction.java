@@ -28,7 +28,6 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
 
-
 /**
  * The function returns TRUE if the first value ends with second value. Both values must be data
  * type of string or binary.
@@ -41,8 +40,11 @@ public class EndsWithFunction extends Function {
   public static final EndsWithFunction BinaryEndsWithFunction = new BinaryEndsWithFunction();
 
   public EndsWithFunction() {
-    super("ENDSWITH", ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), OperatorCategory.COMPARISON,
+    super(
+        "ENDSWITH",
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
+        OperatorCategory.COMPARISON,
         "/docs/endswith.html");
   }
 
@@ -57,7 +59,6 @@ public class EndsWithFunction extends Function {
     return new Call(StringEndsWithFunction, call.getOperands());
   }
 
-
   /**
    * The function returns TRUE if the first value ends with second value. Both values must be data
    * type of string.
@@ -66,11 +67,9 @@ public class EndsWithFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       String suffix = operands[1].getValue(String.class);
-      if (suffix == null)
-        return null;
+      if (suffix == null) return null;
 
       return value.endsWith(suffix);
     }
@@ -85,11 +84,9 @@ public class EndsWithFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       byte[] suffix = operands[1].getValue(byte[].class);
-      if (suffix == null)
-        return null;
+      if (suffix == null) return null;
 
       int offset = value.length - suffix.length;
 

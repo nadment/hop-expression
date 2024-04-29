@@ -16,9 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
-/**
- * Represents a family of related types.
- */
+/** Represents a family of related types. */
 public enum TypeFamily {
   // -------------------------------------------
   // Primary
@@ -46,30 +44,26 @@ public enum TypeFamily {
   NONE,
   //
   ANY,
-  // 
+  //
   ARRAY,
   //
   SYMBOL;
 
-  /**
-   * Returns whether type are in same type family.
-   */
+  /** Returns whether type are in same type family. */
   public boolean isFamily(final TypeFamily... families) {
-    if (families == null)
-      return false;
+    if (families == null) return false;
     for (TypeFamily family : families) {
-      if (ANY == this || family == ANY || this == family)
-        return true;
+      if (ANY == this || family == ANY || this == family) return true;
     }
     return false;
   }
 
   /**
-   * Returns whether this {@link TypeFamily} support implicit coercion to the specified {@link TypeFamily}.
+   * Returns whether this {@link TypeFamily} support implicit coercion to the specified {@link
+   * TypeFamily}.
    */
   public boolean isCoercible(final TypeFamily family) {
-    if (family == null)
-      return false;
+    if (family == null) return false;
 
     switch (this) {
       case BOOLEAN:
@@ -88,7 +82,7 @@ public enum TypeFamily {
         return family.isFamily(INTERVAL);
       case INET:
         return family.isFamily(INET);
-      case ARRAY:        
+      case ARRAY:
         return family.isFamily(ARRAY);
       case ANY:
       case NONE:
@@ -98,13 +92,13 @@ public enum TypeFamily {
         return false;
     }
   }
-  
+
   /**
-   * Returns whether this {@link TypeFamily} support explicit cast to the specified {@link TypeFamily}.
+   * Returns whether this {@link TypeFamily} support explicit cast to the specified {@link
+   * TypeFamily}.
    */
   public boolean isCastable(final TypeFamily family) {
-    if (family == null)
-      return false;
+    if (family == null) return false;
 
     switch (this) {
       case BOOLEAN:
@@ -122,7 +116,7 @@ public enum TypeFamily {
       case INTERVAL:
         return family.isFamily(INTERVAL);
       case INET:
-        return family.isFamily(INET, STRING);        
+        return family.isFamily(INET, STRING);
       case ANY:
         return true;
       default:

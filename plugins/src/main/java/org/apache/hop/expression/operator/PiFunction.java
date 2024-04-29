@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -28,11 +29,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Returns the number of PI.
- */
+/** Returns the number of PI. */
 @FunctionPlugin
 public class PiFunction extends Function {
 
@@ -40,7 +38,12 @@ public class PiFunction extends Function {
       new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), Types.NUMBER_NOT_NULL);
 
   public PiFunction() {
-    super("PI", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.MATHEMATICAL, "/docs/pi.html");
+    super(
+        "PI",
+        ReturnTypes.NUMBER_NOT_NULL,
+        OperandTypes.NILADIC,
+        OperatorCategory.MATHEMATICAL,
+        "/docs/pi.html");
   }
 
   @Override

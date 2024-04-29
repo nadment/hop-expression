@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -30,16 +31,19 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
 
-/**
- * Comparison greater than or equal operator '<code>&gt;=</code>'.
- */
+/** Comparison greater than or equal operator '<code>&gt;=</code>'. */
 public class GreaterThanOrEqualOperator extends Operator {
 
   public GreaterThanOrEqualOperator() {
-    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED, OperatorCategory.COMPARISON,
+    super(
+        "GREATER_THAN_OR_EQUAL",
+        ">=",
+        130,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
+        OperatorCategory.COMPARISON,
         "/docs/greater_than_or_equal.html");
   }
 
@@ -74,7 +78,8 @@ public class GreaterThanOrEqualOperator extends Operator {
     }
 
     // Normalize the order of identifier by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+    if (left.is(Kind.IDENTIFIER)
+        && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(Operators.LESS_THAN_OR_EQUAL, right, left);
     }
@@ -100,9 +105,9 @@ public class GreaterThanOrEqualOperator extends Operator {
     }
 
     // Simplify 3>=X+1 → 3-1>= X
-    if (left.isConstant() && right.is(Operators.ADD)
-        && right.asCall().getOperand(0).isConstant()) {
-      return new Call(call.getOperator(),
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+      return new Call(
+          call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
@@ -112,7 +117,7 @@ public class GreaterThanOrEqualOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
 
   @Override

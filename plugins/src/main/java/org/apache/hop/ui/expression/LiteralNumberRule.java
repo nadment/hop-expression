@@ -14,12 +14,12 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.util.Objects;
 import org.apache.hop.expression.util.Characters;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
-import java.util.Objects;
 
 public class LiteralNumberRule implements IRule {
   private final IToken token;
@@ -70,8 +70,7 @@ public class LiteralNumberRule implements IRule {
         c = scanner.read();
         if (c == '+' || c == '-') {
           scanner.read();
-        } else
-          scanner.unread();
+        } else scanner.unread();
 
         do {
           c = scanner.read();

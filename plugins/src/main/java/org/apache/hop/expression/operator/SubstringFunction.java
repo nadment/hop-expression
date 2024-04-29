@@ -31,16 +31,18 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SubstringFunction extends Function {
 
   public SubstringFunction() {
-    super("SUBSTRING", ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.STRING_NUMERIC_NUMERIC), OperatorCategory.STRING,
+    super(
+        "SUBSTRING",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.STRING_NUMERIC_NUMERIC),
+        OperatorCategory.STRING,
         "/docs/substring.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
-    if (string == null)
-      return null;
+    if (string == null) return null;
 
     int length = string.length();
     int start = operands[1].getValue(Long.class).intValue();

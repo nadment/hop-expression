@@ -30,7 +30,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
     Type type = Types.UNKNOWN;
     for (IExpression operand : call.getOperands()) {
       type = Types.getLeastRestrictive(type, operand.getType());
-    }    
+    }
     return type;
   }
 }

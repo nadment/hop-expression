@@ -21,24 +21,21 @@ import java.util.Objects;
 
 public final class ArrayType extends Type {
 
-  /**
-   * The maximum allowed cardinality of array.
-   */
+  /** The maximum allowed cardinality of array. */
   public static final int MAX_ARRAY_CARDINALITY = Integer.MAX_VALUE;
-  
+
   private final Type elementType;
 
   /**
    * Create an ARRAY data type with the specified element type.
    *
-   * @param elementType
-   *            the type of elements
+   * @param elementType the type of elements
    * @return ARRAY data type
    */
-  public static ArrayType of(final Type type) {   
+  public static ArrayType of(final Type type) {
     return new ArrayType(type, true);
   }
-  
+
   protected ArrayType(Type elementType, boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
     this.elementType = Objects.requireNonNull(elementType);
@@ -58,13 +55,13 @@ public final class ArrayType extends Type {
   @Override
   public TypeComparability getComparability() {
     return elementType.getComparability();
-  } 
+  }
 
   @Override
   public Type getElementType() {
     return elementType;
   }
-  
+
   @Override
   protected String generateSignature() {
     StringBuilder builder = new StringBuilder();

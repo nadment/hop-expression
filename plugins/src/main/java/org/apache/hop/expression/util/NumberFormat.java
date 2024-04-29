@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Expression number format model for <code>TO_NUMBER(string, format)</code> and
- * <code>TO_CHAR(number, format)</code> functions.
+ * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
+ * TO_CHAR(number, format)</code> functions.
  *
  * <p>
  *
@@ -160,7 +160,7 @@ public abstract class NumberFormat extends BaseFormat {
 
   /**
    * Parses text from a string to produce a <code>Number</code>.
-   * 
+   *
    * @param text the string to be parsed
    * @return the parsed value
    * @throws ParseNumberException

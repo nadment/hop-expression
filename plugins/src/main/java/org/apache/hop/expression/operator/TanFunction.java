@@ -16,30 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Calculates the tangent of its argument, the argument should be expressed in radians.
- */
+/** Calculates the tangent of its argument, the argument should be expressed in radians. */
 @FunctionPlugin
 public class TanFunction extends Function {
 
   public TanFunction() {
-    super("TAN", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY, "/docs/tan.html");
+    super(
+        "TAN",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.TRIGONOMETRY,
+        "/docs/tan.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return BigDecimalMath.tan(value, MATH_CONTEXT);
   }
 }

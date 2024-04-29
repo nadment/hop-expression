@@ -16,13 +16,10 @@
  */
 
 package org.apache.hop.expression;
-/**
- * A collection of operator categories.
- */
+
+/** A collection of operator categories. */
 public final class OperatorCategory {
-  /**
-   * Private constructor since this is a utility class.
-   */
+  /** Private constructor since this is a utility class. */
   private OperatorCategory() {}
 
   public static final String ARRAY = "i18n::Expression.Operator.Category.Array";

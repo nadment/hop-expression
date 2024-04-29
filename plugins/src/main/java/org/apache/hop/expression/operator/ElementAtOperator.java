@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -25,37 +26,40 @@ import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
- * Returns an array element at the given an index
- * <br>
+ * Returns an array element at the given an index <br>
  * <strong>Syntax:</strong> <code>array[3]</code>
  */
 public class ElementAtOperator extends Operator {
 
   public ElementAtOperator() {
-    super("ELEMENT_AT", "[]", 200, true, ReturnTypes.ARRAY_ELEMENT, OperandTypes.ARRAY_NUMERIC,
-        OperatorCategory.ARRAY, "/docs/element_at.html");
+    super(
+        "ELEMENT_AT",
+        "[]",
+        200,
+        true,
+        ReturnTypes.ARRAY_ELEMENT,
+        OperandTypes.ARRAY_NUMERIC,
+        OperatorCategory.ARRAY,
+        "/docs/element_at.html");
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Tuple tuple = operands[0].asTuple();
     Long index = operands[1].getValue(Long.class);
-    if (index == null)
-      return null;
-    
+    if (index == null) return null;
+
     int i = index.intValue();
-    
-    if ( i<0 ) i = tuple.size()+i+1;
-    
-    
-    if ( i<1 || i>tuple.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
+
+    if (i < 0) i = tuple.size() + i + 1;
+
+    if (i < 1 || i > tuple.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
       throw new ExpressionException(ErrorCode.INVALID_ARRAY_INDEX, index);
     }
-    
-    return tuple.get(i-1).getValue();
+
+    return tuple.get(i - 1).getValue();
   }
 
   @Override

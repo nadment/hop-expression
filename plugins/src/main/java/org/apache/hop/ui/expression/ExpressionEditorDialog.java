@@ -16,6 +16,9 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
@@ -32,13 +35,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-/**
- * This dialogs allows you to edit expression.
- */
+/** This dialogs allows you to edit expression. */
 public class ExpressionEditorDialog extends Dialog {
   private static final Class<?> PKG = ExpressionEditorDialog.class;
 
@@ -54,13 +52,21 @@ public class ExpressionEditorDialog extends Dialog {
     return open(expression, variables, ExpressionMode.NONE, null);
   }
 
-  public String open(String expression, IVariables variables, ExpressionMode mode,
+  public String open(
+      String expression,
+      IVariables variables,
+      ExpressionMode mode,
       CompletableFuture<IRowMeta> rowMetaFutur) {
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     PropsUi.setLook(shell);
     shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
-    shell.setImage(SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(),
-        "expression.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    shell.setImage(
+        SwtSvgImageUtil.getImage(
+            Display.getCurrent(),
+            getClass().getClassLoader(),
+            "expression.svg",
+            ConstUi.SMALL_ICON_SIZE,
+            ConstUi.SMALL_ICON_SIZE));
 
     FormLayout layout = new FormLayout();
     layout.marginTop = PropsUi.getFormMargin();
@@ -77,14 +83,15 @@ public class ExpressionEditorDialog extends Dialog {
     btnOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     btnOK.addListener(SWT.Selection, event -> onOkPressed());
 
-    HelpUtils.createHelpButton(shell,
+    HelpUtils.createHelpButton(
+        shell,
         "https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc");
 
     List<Button> buttons = new ArrayList<>();
     buttons.add(btnOK);
     buttons.add(btnCancel);
-    BaseTransformDialog.positionBottomButtons(shell, buttons.toArray(new Button[0]),
-        PropsUi.getMargin(), null);
+    BaseTransformDialog.positionBottomButtons(
+        shell, buttons.toArray(new Button[0]), PropsUi.getMargin(), null);
 
     // ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
 
@@ -107,15 +114,13 @@ public class ExpressionEditorDialog extends Dialog {
     return this.expression;
   }
 
-  /**
-   * Brings the dialog to the front if the dialog is already open.
-   */
+  /** Brings the dialog to the front if the dialog is already open. */
   public void setActive() {
     if (shell != null && !shell.isDisposed()) {
       shell.setActive();
     }
   }
-  
+
   public void dispose() {
     WindowProperty winprop = new WindowProperty(shell);
     PropsUi.getInstance().setScreen(winprop);

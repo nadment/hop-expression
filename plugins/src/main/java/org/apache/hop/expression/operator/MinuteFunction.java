@@ -16,31 +16,31 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
-/**
- * The minute (0-59).
- * 
- * @See {@link HourFunction}, {@link SecondFunction}
- */
+/** The minute (0-59). @See {@link HourFunction}, {@link SecondFunction} */
 @FunctionPlugin
 public class MinuteFunction extends Function {
 
   public MinuteFunction() {
-    super("MINUTE", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE, "/docs/minute.html");
+    super(
+        "MINUTE",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
+        "/docs/minute.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
-    return Long.valueOf(value.getMinute());    
+    if (value == null) return null;
+    return Long.valueOf(value.getMinute());
   }
 }

@@ -23,30 +23,29 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class TranslateFunction extends Function {
 
   public TranslateFunction() {
-    super("TRANSLATE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING_STRING_STRING, OperatorCategory.STRING,
+    super(
+        "TRANSLATE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING_STRING_STRING,
+        OperatorCategory.STRING,
         "/docs/translate.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
-    if (string == null)
-      return null;
+    if (string == null) return null;
     String findChars = operands[1].getValue(String.class);
-    if (findChars == null)
-      return null;
+    if (findChars == null) return null;
     String replaceChars = operands[2].getValue(String.class);
     // if shorter than findChars, then characters are removed
     // (if null, we don't access replaceChars at all)
-    if (replaceChars == null)
-      replaceChars = "";
+    if (replaceChars == null) replaceChars = "";
     StringBuilder buffer = new StringBuilder(string.length());
 
     int replaceSize = replaceChars.length();

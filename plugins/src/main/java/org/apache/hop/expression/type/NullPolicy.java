@@ -20,10 +20,8 @@ package org.apache.hop.expression.type;
 /**
  * Describes when a function/operator will return null.
  *
- * <p>
- * STRICT and ANY are similar. STRICT says f(a0, a1) will NEVER return
- * null if a0 and a1 are not null. This means that we can check whether f
- * returns null just by checking its arguments.
+ * <p>STRICT and ANY are similar. STRICT says f(a0, a1) will NEVER return null if a0 and a1 are not
+ * null. This means that we can check whether f returns null just by checking its arguments.
  */
 public enum NullPolicy {
   /** Returns null if and only if all of the arguments are null. */
@@ -31,7 +29,7 @@ public enum NullPolicy {
   /** If any of the arguments are null, return null. */
   ANY,
   /** If the first argument is null, return null. */
-  ARG0, 
-  
+  ARG0,
+
   NONE
 }

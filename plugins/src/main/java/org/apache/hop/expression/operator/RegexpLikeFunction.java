@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,19 +28,17 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-/**
- * The REGEXP_LIKE function and RLIKE operator.
- */
+/** The REGEXP_LIKE function and RLIKE operator. */
 @FunctionPlugin
 public class RegexpLikeFunction extends Function {
 
   public RegexpLikeFunction() {
-    super("REGEXP_LIKE", ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), OperatorCategory.COMPARISON,
+    super(
+        "REGEXP_LIKE",
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
+        OperatorCategory.COMPARISON,
         "/docs/regexp_like.html");
   }
 
@@ -55,8 +56,7 @@ public class RegexpLikeFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (pattern.length() == 0)
-      return Boolean.FALSE;
+    if (pattern.length() == 0) return Boolean.FALSE;
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 3) {

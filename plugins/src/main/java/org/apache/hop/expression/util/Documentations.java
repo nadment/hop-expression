@@ -16,16 +16,14 @@
  */
 package org.apache.hop.expression.util;
 
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.expression.IExpression;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 
-/**
- * Utility methods called by operator or transformation.
- */
+/** Utility methods called by operator or transformation. */
 public class Documentations {
   private static final ILogChannel LOG = new LogChannel("Expression");
 

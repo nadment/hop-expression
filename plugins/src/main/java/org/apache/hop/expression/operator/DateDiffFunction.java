@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,12 +27,10 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Returns the difference in complete time unit between two date or timestamp.
- * 
+ *
  * @see DaysBetweenFunction
  * @see WeeksBetweenFunction
  * @see MonthsBetweenFunction
@@ -43,7 +43,11 @@ import java.time.temporal.ChronoUnit;
 public class DateDiffFunction extends Function {
 
   public DateDiffFunction() {
-    super("DATE_DIFF", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TIMEUNIT_TEMPORAL_TEMPORAL, OperatorCategory.DATE,
+    super(
+        "DATE_DIFF",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TIMEUNIT_TEMPORAL_TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/date_diff.html");
   }
 
@@ -53,11 +57,9 @@ public class DateDiffFunction extends Function {
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
     ZonedDateTime startDateTime = operands[1].getValue(ZonedDateTime.class);
-    if (startDateTime == null)
-      return null;
+    if (startDateTime == null) return null;
     ZonedDateTime endDateTime = operands[2].getValue(ZonedDateTime.class);
-    if (endDateTime == null)
-      return null;
+    if (endDateTime == null) return null;
 
     switch (unit) {
       case MILLENNIUM:

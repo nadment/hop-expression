@@ -20,67 +20,65 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.TimeUnit;
 
 public enum IntervalQualifier {
-  YEAR, YEAR_TO_MONTH, QUARTER, MONTH, WEEK, DAY, DAY_TO_HOUR, DAY_TO_MINUTE, DAY_TO_SECOND, HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND, MINUTE, MINUTE_TO_SECOND, SECOND;
+  YEAR,
+  YEAR_TO_MONTH,
+  QUARTER,
+  MONTH,
+  WEEK,
+  DAY,
+  DAY_TO_HOUR,
+  DAY_TO_MINUTE,
+  DAY_TO_SECOND,
+  HOUR,
+  HOUR_TO_MINUTE,
+  HOUR_TO_SECOND,
+  MINUTE,
+  MINUTE_TO_SECOND,
+  SECOND;
 
   /**
    * Returns a {@link IntervalQualifier} with a given start and end {@link TimeUnit}.
-   * 
+   *
    * @param startUnit The start time unit
    * @param endUnit The end time unit or null if not applicable
    * @return qualifier, or null if not valid
    */
   public static IntervalQualifier of(TimeUnit startUnit, TimeUnit endUnit) {
-    if (startUnit == null)
-      return null;
+    if (startUnit == null) return null;
 
     switch (startUnit) {
       case YEAR:
-        if (endUnit == null)
-          return YEAR;
-        if (endUnit == TimeUnit.MONTH)
-          return YEAR_TO_MONTH;
+        if (endUnit == null) return YEAR;
+        if (endUnit == TimeUnit.MONTH) return YEAR_TO_MONTH;
         break;
       case MONTH:
-        if (endUnit == null)
-          return MONTH;
+        if (endUnit == null) return MONTH;
         break;
       case QUARTER:
-        if (endUnit == null)
-          return QUARTER;
+        if (endUnit == null) return QUARTER;
         break;
       case WEEK:
-        if (endUnit == null)
-          return WEEK;
+        if (endUnit == null) return WEEK;
         break;
       case DAY:
-        if (endUnit == null)
-          return DAY;
-        if (endUnit == TimeUnit.HOUR)
-          return DAY_TO_HOUR;
-        if (endUnit == TimeUnit.MINUTE)
-          return DAY_TO_MINUTE;
-        if (endUnit == TimeUnit.SECOND)
-          return DAY_TO_SECOND;
+        if (endUnit == null) return DAY;
+        if (endUnit == TimeUnit.HOUR) return DAY_TO_HOUR;
+        if (endUnit == TimeUnit.MINUTE) return DAY_TO_MINUTE;
+        if (endUnit == TimeUnit.SECOND) return DAY_TO_SECOND;
         break;
       case HOUR:
-        if (endUnit == null)
-          return HOUR;
-        if (endUnit == TimeUnit.MINUTE)
-          return HOUR_TO_MINUTE;
-        if (endUnit == TimeUnit.SECOND)
-          return HOUR_TO_SECOND;
+        if (endUnit == null) return HOUR;
+        if (endUnit == TimeUnit.MINUTE) return HOUR_TO_MINUTE;
+        if (endUnit == TimeUnit.SECOND) return HOUR_TO_SECOND;
         break;
       case MINUTE:
-        if (endUnit == null)
-          return MINUTE;
-        if (endUnit == TimeUnit.SECOND)
-          return MINUTE_TO_SECOND;
+        if (endUnit == null) return MINUTE;
+        if (endUnit == TimeUnit.SECOND) return MINUTE_TO_SECOND;
         break;
       case SECOND:
-        if (endUnit == null)
-          return SECOND;
+        if (endUnit == null) return SECOND;
         break;
-        
+
       default:
     }
     return null;
@@ -89,34 +87,34 @@ public enum IntervalQualifier {
   public static IntervalQualifier of(final Interval interval) {
     TimeUnit start = null;
     TimeUnit end = null;
-    
-    if ( interval.getYears()!=0) {
-        start = TimeUnit.YEAR;        
+
+    if (interval.getYears() != 0) {
+      start = TimeUnit.YEAR;
     }
-    if ( interval.getMonths()!=0) {
-      if ( start==null) start = TimeUnit.MONTH;
+    if (interval.getMonths() != 0) {
+      if (start == null) start = TimeUnit.MONTH;
       else end = TimeUnit.MONTH;
     }
-    if ( interval.getDays()!=0) {
-      if ( start==null) start = TimeUnit.DAY;
+    if (interval.getDays() != 0) {
+      if (start == null) start = TimeUnit.DAY;
       else end = TimeUnit.DAY;
     }
-    if ( interval.getHours()!=0) {
-      if ( start==null) start = TimeUnit.HOUR;
+    if (interval.getHours() != 0) {
+      if (start == null) start = TimeUnit.HOUR;
       else end = TimeUnit.HOUR;
     }
-    if ( interval.getMinutes()!=0) {
-      if ( start==null) start = TimeUnit.MINUTE;
+    if (interval.getMinutes() != 0) {
+      if (start == null) start = TimeUnit.MINUTE;
       else end = TimeUnit.MINUTE;
     }
-    if ( interval.getSeconds()!=0) {
-      if ( start==null) start = TimeUnit.SECOND;
+    if (interval.getSeconds() != 0) {
+      if (start == null) start = TimeUnit.SECOND;
       else end = TimeUnit.SECOND;
     }
-    
-    return of(start,end);
+
+    return of(start, end);
   }
-  
+
   private final String string;
 
   private IntervalQualifier() {
@@ -124,8 +122,8 @@ public enum IntervalQualifier {
   }
 
   /**
-   * Returns {@code HOUR} for {@code HOUR TO SECOND} and{@code HOUR}, {@code SECOND} for
-   * {@code SECOND}.
+   * Returns {@code HOUR} for {@code HOUR TO SECOND} and{@code HOUR}, {@code SECOND} for {@code
+   * SECOND}.
    */
   public TimeUnit getStartUnit() {
     switch (this) {

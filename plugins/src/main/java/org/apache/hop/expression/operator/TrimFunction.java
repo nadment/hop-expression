@@ -37,21 +37,23 @@ public class TrimFunction extends Function {
   public static final TrimFunction INSTANCE = new TrimFunction();
 
   public TrimFunction() {
-    super("TRIM", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-        OperatorCategory.STRING, "/docs/trim.html");
+    super(
+        "TRIM",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        OperatorCategory.STRING,
+        "/docs/trim.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     String stripChars = null;
     if (operands.length == 2) {
       stripChars = operands[1].getValue(String.class);
-      if (stripChars == null)
-        return null;
+      if (stripChars == null) return null;
     }
 
     return StringUtils.strip(value, stripChars);
@@ -67,7 +69,8 @@ public class TrimFunction extends Function {
       // TRIM(TRIM(x)) → TRIM(x)
       // TRIM(RTRIM(x)) → TRIM(x)
       // TRIM(LTRIM(x)) → TRIM(x)
-      if (operand.is(call.getOperator()) || operand.is(LTrimFunction.INSTANCE)
+      if (operand.is(call.getOperator())
+          || operand.is(LTrimFunction.INSTANCE)
           || operand.is(RTrimFunction.INSTANCE)) {
         return new Call(call.getOperator(), operand.asCall().getOperand(0));
       }

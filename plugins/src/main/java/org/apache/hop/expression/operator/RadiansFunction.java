@@ -16,32 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-
-/**
- * The function converts degrees to radians.
- */
+/** The function converts degrees to radians. */
 @FunctionPlugin
 public class RadiansFunction extends Function {
 
   public RadiansFunction() {
-    super("RADIANS", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "RADIANS",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/radians.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return BigDecimalMath.toRadians(value, MATH_CONTEXT);
   }
 }

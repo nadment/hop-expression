@@ -18,9 +18,7 @@ package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * A collection of strategies for type transform.
- */
+/** A collection of strategies for type transform. */
 public final class TypeTransforms {
 
   private TypeTransforms() {
@@ -33,20 +31,21 @@ public final class TypeTransforms {
   public static final ITypeTransform TO_NOT_NULLABLE =
       typeToTransform -> typeToTransform.withNullability(false);
 
-  public static final ITypeTransform TO_MAX_PRECISION = typeToTransform -> {
-    switch (requireNonNull(typeToTransform).getId()) {
-      case STRING:
-        return Types.STRING;
-       case BINARY:
-        return Types.BINARY;
-      case INTEGER:
-        return Types.INTEGER;
-      case NUMBER:
-        return Types.NUMBER;
-      default:
-        break;
-    }
+  public static final ITypeTransform TO_MAX_PRECISION =
+      typeToTransform -> {
+        switch (requireNonNull(typeToTransform).getId()) {
+          case STRING:
+            return Types.STRING;
+          case BINARY:
+            return Types.BINARY;
+          case INTEGER:
+            return Types.INTEGER;
+          case NUMBER:
+            return Types.NUMBER;
+          default:
+            break;
+        }
 
-    return typeToTransform;
-  };
+        return typeToTransform;
+      };
 }

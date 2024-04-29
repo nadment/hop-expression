@@ -16,31 +16,31 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
-/**
- * The second (0-59).
- * 
- * @See {@link HourFunction}, {@link MinueFunction}
- */
+/** The second (0-59). @See {@link HourFunction}, {@link MinueFunction} */
 @FunctionPlugin
 public class SecondFunction extends Function {
 
   public SecondFunction() {
-    super("SECOND", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE, "/docs/second.html");
+    super(
+        "SECOND",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
+        "/docs/second.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return Long.valueOf(value.getSecond());
   }
 }

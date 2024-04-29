@@ -20,12 +20,11 @@ public class RomanNumeral {
 
   private static final int[] VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
 
-  private static final String[] NUMERALS =
-      {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+  private static final String[] NUMERALS = {
+    "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"
+  };
 
-  /**
-   * Private constructor since this is a utility class.
-   */
+  /** Private constructor since this is a utility class. */
   private RomanNumeral() {}
 
   /**
@@ -52,7 +51,7 @@ public class RomanNumeral {
 
   /**
    * Convert a roman numeral string into an arabic long value.
-   * 
+   *
    * @param str The roman numeral string
    * @param start the beginning index, inclusive.
    * @param end the ending index, exclusive.
@@ -83,9 +82,7 @@ public class RomanNumeral {
     return result;
   }
 
-  /**
-   * This function returns value of a Roman symbol
-   */
+  /** This function returns value of a Roman symbol */
   private static int parse(final char r) {
     switch (r) {
       case 'I':

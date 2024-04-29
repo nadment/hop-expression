@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -28,20 +29,22 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import java.math.BigDecimal;
 
 /**
- * Arithmetic division function.
- * <br>
+ * Arithmetic division function. <br>
  * <strong>Syntax:</strong> <code>DIV0(x,y)</code>
- * 
+ *
  * @see {@link DivOperator}
  */
 @FunctionPlugin
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "DIV0",
+        ReturnTypes.DIVIDE_OPERATOR,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/div0.html");
   }
 
@@ -57,8 +60,8 @@ public class Div0Function extends Function {
 
     // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
     if (left.is(Operators.NEGATE) && right.is(Operators.NEGATE)) {
-      return new Call(call.getOperator(), left.asCall().getOperand(0),
-          right.asCall().getOperand(0));
+      return new Call(
+          call.getOperator(), left.asCall().getOperand(0), right.asCall().getOperand(0));
     }
 
     return call;
@@ -66,21 +69,18 @@ public class Div0Function extends Function {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionArithmeticOperator(call);    
+    return Types.coercionArithmeticOperator(call);
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     BigDecimal divisor = operands[1].getValue(BigDecimal.class);
-    if (divisor == null)
-      return null;
+    if (divisor == null) return null;
 
     // Prevent a division by zero and return zero
-    if (divisor.signum() == 0)
-      return BigDecimal.ZERO;
+    if (divisor.signum() == 0) return BigDecimal.ZERO;
 
     return value.divide(divisor, MATH_CONTEXT);
   }

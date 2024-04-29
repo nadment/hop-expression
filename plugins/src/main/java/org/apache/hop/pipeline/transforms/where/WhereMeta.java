@@ -16,6 +16,8 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
+import java.util.List;
+import java.util.Optional;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
@@ -35,30 +37,35 @@ import org.apache.hop.pipeline.transform.stream.IStream;
 import org.apache.hop.pipeline.transform.stream.IStream.StreamType;
 import org.apache.hop.pipeline.transform.stream.Stream;
 import org.apache.hop.pipeline.transform.stream.StreamIcon;
-import java.util.List;
-import java.util.Optional;
 
-/**
- * This transform filter rows with expression and keeps only rows where this expression is
- * true.
- */
-@Transform(id = "Where", image = "where.svg", name = "i18n::Where.Name",
+/** This transform filter rows with expression and keeps only rows where this expression is true. */
+@Transform(
+    id = "Where",
+    image = "where.svg",
+    name = "i18n::Where.Name",
     description = "i18n::Where.Description",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
-    documentationUrl = "/pipeline/transforms/where.html", keywords = "i18n::Where.Keywords")
+    documentationUrl = "/pipeline/transforms/where.html",
+    keywords = "i18n::Where.Keywords")
 public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class; // for i18n purposes
 
-  @HopMetadataProperty(key = "send_true_to", injectionKey = "TRUE_TARGET_TRANSFORM_NAME",
+  @HopMetadataProperty(
+      key = "send_true_to",
+      injectionKey = "TRUE_TARGET_TRANSFORM_NAME",
       injectionKeyDescription = "WhereMeta.Injection.SEND_TRUE_TRANSFORM")
   private String trueTransformName;
 
-  @HopMetadataProperty(key = "send_false_to", injectionKey = "FALSE_TARGET_TRANSFORM_NAME",
+  @HopMetadataProperty(
+      key = "send_false_to",
+      injectionKey = "FALSE_TARGET_TRANSFORM_NAME",
       injectionKeyDescription = "WhereMeta.Injection.SEND_FALSE_TRANSFORM")
   private String falseTransformName;
 
-  @HopMetadataProperty(key = "condition", injectionKey = "CONDITION",
+  @HopMetadataProperty(
+      key = "condition",
+      injectionKey = "CONDITION",
       injectionKeyDescription = "WhereMeta.Injection.CONDITION")
   private String condition;
 
@@ -84,15 +91,24 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
   // }
 
   @Override
-  public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta,
-      TransformMeta transformMeta, IRowMeta prev, String[] input, String[] output, IRowMeta info,
-      IVariables variables, IHopMetadataProvider metadataProvider) {
+  public void check(
+      List<ICheckResult> remarks,
+      PipelineMeta pipelineMeta,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      String[] input,
+      String[] output,
+      IRowMeta info,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
 
     // See if there is a filter condition expression
     if (Utils.isEmpty(this.getCondition())) {
-      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_WARNING,
-          BaseMessages.getString(PKG, "WhereMeta.CheckResult.EmptyFilterCondition"),
-          transformMeta));
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_WARNING,
+              BaseMessages.getString(PKG, "WhereMeta.CheckResult.EmptyFilterCondition"),
+              transformMeta));
     }
 
     // TODO: check if Identifiers used in expression are available:
@@ -103,52 +119,68 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
     // Look up fields in the input stream <prev>
     if (prev != null && prev.size() > 0) {
-      remarks.add(new CheckResult(
-          ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-              "WhereMeta.CheckResult.ReceivingFieldsFromPreviousTransforms", prev.size() + ""),
-          transformMeta));
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(
+                  PKG,
+                  "WhereMeta.CheckResult.ReceivingFieldsFromPreviousTransforms",
+                  prev.size() + ""),
+              transformMeta));
     } else {
-      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "WhereMeta.CheckResult.CouldNotReadFieldsFromPreviousTransform"), transformMeta));
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "WhereMeta.CheckResult.CouldNotReadFieldsFromPreviousTransform"),
+              transformMeta));
     }
 
     // See if we have input streams leading to this transform!
     if (input.length > 0) {
-      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_OK,
-          BaseMessages.getString(PKG, "WhereMeta.CheckResult.ReceivingInfoFromOtherTransforms"),
-          transformMeta));
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(PKG, "WhereMeta.CheckResult.ReceivingInfoFromOtherTransforms"),
+              transformMeta));
 
     } else {
-      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-          BaseMessages.getString(PKG, "WhereMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
-          transformMeta));
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "WhereMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
+              transformMeta));
     }
   }
 
-  private Optional<ICheckResult> checkTarget(TransformMeta transformMeta, boolean target,
-      String targetTransformName, String[] output) {
+  private Optional<ICheckResult> checkTarget(
+      TransformMeta transformMeta, boolean target, String targetTransformName, String[] output) {
     if (targetTransformName != null) {
       int trueTargetIdx = Const.indexOfString(targetTransformName, output);
       if (trueTargetIdx < 0) {
-        return Optional.of(new CheckResult(
-            ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-                "WhereMeta.CheckResult.TargetTransformInvalid", target, targetTransformName),
-            transformMeta));
+        return Optional.of(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG,
+                    "WhereMeta.CheckResult.TargetTransformInvalid",
+                    target,
+                    targetTransformName),
+                transformMeta));
       }
     }
     return Optional.empty();
   }
 
-  /**
-   * Get the condition expression
-   */
+  /** Get the condition expression */
   public String getCondition() {
     return condition;
   }
 
   /**
    * Set the condition expression
-   * 
+   *
    * @param expression
    */
   public void setCondition(String expression) {
@@ -177,12 +209,20 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
       ioMeta = new TransformIOMeta(true, true, false, false, false, false);
 
-      ioMeta.addStream(new Stream(StreamType.TARGET, null,
-          BaseMessages.getString(PKG, "WhereMeta.TargetStream.True.Description"), StreamIcon.TRUE,
-          null));
-      ioMeta.addStream(new Stream(StreamType.TARGET, null,
-          BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"), StreamIcon.FALSE,
-          null));
+      ioMeta.addStream(
+          new Stream(
+              StreamType.TARGET,
+              null,
+              BaseMessages.getString(PKG, "WhereMeta.TargetStream.True.Description"),
+              StreamIcon.TRUE,
+              null));
+      ioMeta.addStream(
+          new Stream(
+              StreamType.TARGET,
+              null,
+              BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"),
+              StreamIcon.FALSE,
+              null));
       setTransformIOMeta(ioMeta);
     }
 

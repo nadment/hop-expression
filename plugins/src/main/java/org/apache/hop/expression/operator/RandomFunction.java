@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Random;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -26,25 +29,24 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Random;
 
-/**
- * Return a random number between 0 (inclusive) and 1 (exclusive).
- */
+/** Return a random number between 0 (inclusive) and 1 (exclusive). */
 @FunctionPlugin(names = "RAND")
 public class RandomFunction extends Function {
 
   private final Random random;
-  
+
   public RandomFunction() {
     this(null);
   }
 
   public RandomFunction(Random random) {
-    super("RANDOM", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.NILADIC.or(OperandTypes.NUMERIC),
-        OperatorCategory.MATHEMATICAL, "/docs/random.html");
+    super(
+        "RANDOM",
+        ReturnTypes.NUMBER_NOT_NULL,
+        OperandTypes.NILADIC.or(OperandTypes.NUMERIC),
+        OperatorCategory.MATHEMATICAL,
+        "/docs/random.html");
     this.random = random;
   }
 
@@ -86,8 +88,7 @@ public class RandomFunction extends Function {
       return false;
     }
 
-    if (random == null)
-      return super.equals(obj);
+    if (random == null) return super.equals(obj);
 
     RandomFunction other = (RandomFunction) obj;
     return super.equals(other) && this.random.equals(other.random);

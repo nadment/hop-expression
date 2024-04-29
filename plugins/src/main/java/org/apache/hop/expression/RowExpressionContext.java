@@ -14,9 +14,9 @@
  */
 package org.apache.hop.expression;
 
+import java.util.Objects;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
-import java.util.Objects;
 
 public class RowExpressionContext extends ExpressionContext implements IRowExpressionContext {
 
@@ -44,4 +44,3 @@ public class RowExpressionContext extends ExpressionContext implements IRowExpre
     this.row = row;
   }
 }
-

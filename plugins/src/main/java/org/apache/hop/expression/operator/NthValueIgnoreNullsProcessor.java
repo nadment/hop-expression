@@ -30,12 +30,10 @@ public class NthValueIgnoreNullsProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (offset == 0)
-      return;
+    if (offset == 0) return;
 
     Object v = operands[0].getValue();
-    if (v == null)
-      return;
+    if (v == null) return;
     if (--offset == 0) {
       value = v;
     }

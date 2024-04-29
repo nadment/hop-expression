@@ -16,6 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.EnumSet;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -28,16 +33,10 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.util.EnumSet;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Build a JSON object from a list of key=values pairs.
- * 
- * <code>JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)</code>
+ * Build a JSON object from a list of key=values pairs. <code>
+ * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)</code>
  */
 @FunctionPlugin
 public class JsonObjectFunction extends Function {
@@ -55,15 +54,14 @@ public class JsonObjectFunction extends Function {
 
     @Override
     public boolean checkOperandTypes(Call call) {
-      for (int i = 0; i < call.getOperandCount();) {
+      for (int i = 0; i < call.getOperandCount(); ) {
         // Key should be string
         if (call.getOperand(i++).getType().getFamily() != TypeFamily.STRING) {
           return false;
         }
 
         IExpression value = call.getOperand(i++);
-        if (value.isNull())
-          continue;
+        if (value.isNull()) continue;
         if (!VALUE_TYPES.contains(value.getType().getFamily())) {
           return false;
         }
@@ -78,9 +76,13 @@ public class JsonObjectFunction extends Function {
     }
   }
 
-
   public JsonObjectFunction() {
-    super("JSON_OBJECT", ReturnTypes.JSON_NULLABLE, OTC, OperatorCategory.JSON, "/docs/json_object.html");
+    super(
+        "JSON_OBJECT",
+        ReturnTypes.JSON_NULLABLE,
+        OTC,
+        OperatorCategory.JSON,
+        "/docs/json_object.html");
   }
 
   @Override

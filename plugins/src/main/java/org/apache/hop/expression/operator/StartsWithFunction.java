@@ -30,8 +30,7 @@ import org.apache.hop.expression.type.TypeFamily;
 
 /**
  * The function returns TRUE if the first value starts with second value. Both values must be the
- * same data
- * type string or binary.
+ * same data type string or binary.
  *
  * @see {@link EndsWithFunction}
  */
@@ -42,8 +41,11 @@ public class StartsWithFunction extends Function {
   public static final StartsWithFunction BinaryStartsWithFunction = new BinaryStartsWithFunction();
 
   public StartsWithFunction() {
-    super("STARTSWITH", ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), OperatorCategory.COMPARISON,
+    super(
+        "STARTSWITH",
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
+        OperatorCategory.COMPARISON,
         "/docs/startswith.html");
   }
 
@@ -67,11 +69,9 @@ public class StartsWithFunction extends Function {
     public Object eval(final IExpression[] operands) {
 
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       String prefix = operands[1].getValue(String.class);
-      if (prefix == null)
-        return null;
+      if (prefix == null) return null;
 
       return value.startsWith(prefix);
     }
@@ -86,11 +86,9 @@ public class StartsWithFunction extends Function {
     public Object eval(final IExpression[] operands) {
 
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       byte[] prefix = operands[1].getValue(byte[].class);
-      if (prefix == null)
-        return null;
+      if (prefix == null) return null;
 
       if (prefix.length > value.length) {
         return Boolean.TRUE;

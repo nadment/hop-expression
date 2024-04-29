@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -27,26 +28,32 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import java.io.StringWriter;
 
 /**
  * Converts a value of one data type into another data type <code>::</code>
- * 
+ *
  * @see CastFunction
- * @see TryCastFunction 
+ * @see TryCastFunction
  */
 public class CastOperator extends Operator {
 
   public CastOperator() {
-    super("CAST", "::", 40, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST,
-        OperatorCategory.CONVERSION, "/docs/cast.html");
+    super(
+        "CAST",
+        "::",
+        40,
+        true,
+        ReturnTypes.CAST_OPERATOR,
+        OperandTypes.CAST,
+        OperatorCategory.CONVERSION,
+        "/docs/cast.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return new Call(Operators.CAST_FUNCTION, call.getOperands());
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();

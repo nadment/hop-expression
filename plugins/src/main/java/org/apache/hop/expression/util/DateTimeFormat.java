@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.ErrorCode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -22,10 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.hop.expression.ErrorCode;
 
 /**
- * Expression date/time format model for <code>TO_DATE(string, format)</code> and
- * <code>TO_CHAR(datetime, format)</code> functions..
+ * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
+ * TO_CHAR(datetime, format)</code> functions..
  *
  * <p>
  *
@@ -264,7 +264,6 @@ public abstract class DateTimeFormat extends BaseFormat {
   public abstract ZonedDateTime parse(String text) throws DateTimeParseException;
 
   /**
-   * <p>
    * See also TO_CHAR(datetime) and datetime format models.
    *
    * @param value the date-time value to format
@@ -273,12 +272,10 @@ public abstract class DateTimeFormat extends BaseFormat {
   public abstract String format(ZonedDateTime value);
 
   /**
-   * Specifies the century start year for 2-digit years (Default is 1970).
-   * This parameter prevents year ambiguous dates when parsing date with the YY date format
-   * component.
+   * Specifies the century start year for 2-digit years (Default is 1970). This parameter prevents
+   * year ambiguous dates when parsing date with the YY date format component.
    */
   public abstract void setTwoDigitYearStart(int year);
-
 
   public static ZoneId toZoneId(final String zone) {
     try {

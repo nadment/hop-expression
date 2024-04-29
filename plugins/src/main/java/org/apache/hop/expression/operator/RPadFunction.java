@@ -44,9 +44,14 @@ public class RPadFunction extends Function {
   protected static final int PAD_LIMIT = 8192;
 
   public RPadFunction() {
-    super("RPAD", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC
-        .or(OperandTypes.STRING_NUMERIC_STRING).or(OperandTypes.BINARY_NUMERIC_BINARY),
-        OperatorCategory.STRING, "/docs/rpad.html");
+    super(
+        "RPAD",
+        ReturnTypes.ARG0_MAX_PRECISION,
+        OperandTypes.STRING_NUMERIC
+            .or(OperandTypes.STRING_NUMERIC_STRING)
+            .or(OperandTypes.BINARY_NUMERIC_BINARY),
+        OperatorCategory.STRING,
+        "/docs/rpad.html");
   }
 
   @Override
@@ -61,15 +66,12 @@ public class RPadFunction extends Function {
     return new Call(StringRPadFunction, call.getOperands());
   }
 
-  /**
-   * The function right-pads a string with another string, to a certain length.
-   */
+  /** The function right-pads a string with another string, to a certain length. */
   private static final class StringRPadFunction extends RPadFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
       int length = v1.intValue();
@@ -88,8 +90,9 @@ public class RPadFunction extends Function {
         return "";
       }
       if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT
-            .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+        throw new IllegalArgumentException(
+            ErrorCode.ILLEGAL_ARGUMENT.message(
+                "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
       final int size = pad.length();
@@ -116,17 +119,14 @@ public class RPadFunction extends Function {
     }
   }
 
-  /**
-   * The function right-pads a binary with another binary, to a certain length.
-   */
+  /** The function right-pads a binary with another binary, to a certain length. */
   private static final class BinaryRPadFunction extends RPadFunction {
     private static final byte[] DEFAULT = new byte[] {0x00};
 
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
       int length = v1.intValue();
@@ -143,8 +143,9 @@ public class RPadFunction extends Function {
       if (length < 0) {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT
-            .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+        throw new IllegalArgumentException(
+            ErrorCode.ILLEGAL_ARGUMENT.message(
+                "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
       // nothing to pad

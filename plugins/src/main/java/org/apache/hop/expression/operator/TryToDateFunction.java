@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
@@ -27,19 +28,20 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.time.DateTimeException;
 
-/**
- * Converts a string expression to a date value.
- */
+/** Converts a string expression to a date value. */
 @FunctionPlugin
 public class TryToDateFunction extends Function {
 
-  public  TryToDateFunction() {
-    super("TRY_TO_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
-        OperatorCategory.CONVERSION, "/docs/to_date.html");
+  public TryToDateFunction() {
+    super(
+        "TRY_TO_DATE",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperatorCategory.CONVERSION,
+        "/docs/to_date.html");
   }
-  
+
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
@@ -50,8 +52,9 @@ public class TryToDateFunction extends Function {
       pattern = call.getOperand(1).getValue(String.class);
     }
 
-    int twoDigitYearStart = Integer
-        .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+    int twoDigitYearStart =
+        Integer.parseInt(
+            context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
     // Compile format to check it
     DateTimeFormat format = DateTimeFormat.of(pattern);
@@ -59,7 +62,7 @@ public class TryToDateFunction extends Function {
 
     return new Call(new StringTryToDateFunction(format), call.getOperands());
   }
-    
+
   private static final class StringTryToDateFunction extends TryToDateFunction {
     private final DateTimeFormat format;
 
@@ -71,8 +74,7 @@ public class TryToDateFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       try {
         return format.parse(value);
       } catch (DateTimeException e) {

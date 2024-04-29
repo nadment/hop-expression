@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,17 +28,17 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Returns a number raised to the specified power exponent.
- */
+/** Returns a number raised to the specified power exponent. */
 @FunctionPlugin(names = "POW")
 public class PowerFunction extends Function {
 
   public PowerFunction() {
-    super("POWER", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "POWER",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/power.html");
   }
 

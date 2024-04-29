@@ -16,7 +16,7 @@
  */
 package org.apache.hop.core.expression;
 
-
+import java.util.Date;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
@@ -30,15 +30,13 @@ import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
-import java.util.Date;
 
 public class PerformanceTest {
 
-  @ClassRule
-  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-  
+  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+
   public void perf(String source) throws Exception {
-   
+
     IRowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta(new ValueMetaString("NOM"));
     rowMeta.addValueMeta(new ValueMetaString("SEXE"));
@@ -55,11 +53,11 @@ public class PerformanceTest {
     row[4] = true;
     row[5] = null;
 
-    RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);    
+    RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);
     IExpression expression = context.createExpression(source);
-    
+
     context.setRow(row);
-    
+
     long cycle = 1000000;
     long startTime = System.currentTimeMillis();
     try {
@@ -74,8 +72,8 @@ public class PerformanceTest {
     long endTime = System.currentTimeMillis();
     long duration = endTime - startTime;
 
-    System.out
-        .println("Performance(\"" + source + "\") Duration for " + cycle + " cycles = " + duration);
+    System.out.println(
+        "Performance(\"" + source + "\") Duration for " + cycle + " cycles = " + duration);
   }
 
   @Test

@@ -28,24 +28,26 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
 
-/**
- * The function returns the number of characters of the specified string or binary.
- */
-@FunctionPlugin(names ="LEN")
+/** The function returns the number of characters of the specified string or binary. */
+@FunctionPlugin(names = "LEN")
 public class LengthFunction extends Function {
   public static final LengthFunction StringLengthFunction = new StringLengthFunction();
   public static final LengthFunction BinaryLengthFunction = new BinaryLengthFunction();
 
   public LengthFunction() {
-    super("LENGTH", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/length.html");
+    super(
+        "LENGTH",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
+        "/docs/length.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    
+
     // Binary first
     if (type.isFamily(TypeFamily.BINARY)) {
       return new Call(BinaryLengthFunction, call.getOperands());
@@ -53,28 +55,22 @@ public class LengthFunction extends Function {
     return new Call(StringLengthFunction, call.getOperands());
   }
 
-  /**
-   * The function returns the number of characters of the specified string.
-   */
+  /** The function returns the number of characters of the specified string. */
   private static final class StringLengthFunction extends LengthFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return value;
+      if (value == null) return value;
       return Long.valueOf(value.length());
     }
   }
 
-  /**
-   * The function returns the number of characters of the specified binary.
-   */
+  /** The function returns the number of characters of the specified binary. */
   private static final class BinaryLengthFunction extends LengthFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return value;
+      if (value == null) return value;
       return Long.valueOf(value.length);
     }
   }

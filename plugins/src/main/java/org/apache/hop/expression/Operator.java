@@ -14,12 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.util.TranslateUtil;
-import org.apache.hop.expression.type.IOperandCountRange;
-import org.apache.hop.expression.type.IOperandTypeChecker;
-import org.apache.hop.expression.type.IReturnTypeInference;
-import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.util.Documentations;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -30,19 +24,25 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.function.Predicate;
+import org.apache.hop.core.util.TranslateUtil;
+import org.apache.hop.expression.type.IOperandCountRange;
+import org.apache.hop.expression.type.IOperandTypeChecker;
+import org.apache.hop.expression.type.IReturnTypeInference;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.util.Documentations;
 
 /**
  * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ...
  * END, or even internally generated constructs like implicit type conversions.
- * 
- * Operators have the precedence levels. An operator on higher levels is evaluated before an
+ *
+ * <p>Operators have the precedence levels. An operator on higher levels is evaluated before an
  * operator on a lower level
  */
 public abstract class Operator {
 
   /**
-   * A {@code MathContext} object with a precision 32 digits, and a rounding mode of
-   * {@link RoundingMode#HALF_EVEN}.
+   * A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link
+   * RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
@@ -59,8 +59,8 @@ public abstract class Operator {
   private final int leftPrecedence;
 
   /**
-   * The precedence with which this operator binds to the expression to the right. This is great than
-   * the left precedence if the operator is left-associative.
+   * The precedence with which this operator binds to the expression to the right. This is great
+   * than the left precedence if the operator is left-associative.
    */
   private final int rightPrecedence;
 
@@ -85,14 +85,20 @@ public abstract class Operator {
    * @param name The symbol of the operator or name of function
    * @param precedence The precedence value of the operator
    * @param isLeftAssociative Set to true if the operator is left associative, false if it is right
-   *        associative
+   *     associative
    * @param isDeterministic Set to true if the operator always returns the same result for the same
-   *        parameters
+   *     parameters
    * @param category The category to group operator
    */
-  protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
-      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
-      String category, String documentationUrl) {
+  protected Operator(
+      String id,
+      String name,
+      int precedence,
+      boolean isLeftAssociative,
+      IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker,
+      String category,
+      String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id");
     this.name = Objects.requireNonNull(name, "name");
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
@@ -105,10 +111,22 @@ public abstract class Operator {
     this.description = Documentations.findDocumentionDescription(documentation);
   }
 
-  protected Operator(String id, int precedence, boolean isLeftAssociative,
-      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
-      String category, String documentationUrl) {
-    this(id, id, precedence, isLeftAssociative, returnTypeInference, operandTypeChecker, category,
+  protected Operator(
+      String id,
+      int precedence,
+      boolean isLeftAssociative,
+      IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker,
+      String category,
+      String documentationUrl) {
+    this(
+        id,
+        id,
+        precedence,
+        isLeftAssociative,
+        returnTypeInference,
+        operandTypeChecker,
+        category,
         documentationUrl);
   }
 
@@ -126,16 +144,12 @@ public abstract class Operator {
     return precedence;
   }
 
-  /**
-   * The unique identifier of the operator
-   */
+  /** The unique identifier of the operator */
   public String getId() {
     return id;
   }
 
-  /**
-   * The name of the operator
-   */
+  /** The name of the operator */
   public String getName() {
     return name;
   }
@@ -158,8 +172,8 @@ public abstract class Operator {
   }
 
   /**
-   * Returns whether a call to this operator is not sensitive to the operands order.
-   * An operator is symmetrical if the call returns the same result when the operands are permuted.
+   * Returns whether a call to this operator is not sensitive to the operands order. An operator is
+   * symmetrical if the call returns the same result when the operands are permuted.
    */
   public boolean isSymmetrical() {
     return false;
@@ -167,7 +181,7 @@ public abstract class Operator {
 
   /**
    * Returns whether this function is an aggregate function.
-   * 
+   *
    * @return {@code true} if this is a aggregate function.
    */
   public boolean isAggregate() {
@@ -176,23 +190,21 @@ public abstract class Operator {
 
   /**
    * Return type inference strategy.
-   * 
+   *
    * @return
    */
   public final IReturnTypeInference getReturnTypeInference() {
     return this.returnTypeInference;
   }
 
-  /**
-   * Returns a strategy to validate operand types expected by this operator.
-   */
+  /** Returns a strategy to validate operand types expected by this operator. */
   public IOperandTypeChecker getOperandTypeChecker() {
     return operandTypeChecker;
   }
 
   /**
    * Returns a constraint on the number of operands expected by this operator.
-   * 
+   *
    * @return acceptable range
    */
   public IOperandCountRange getOperandCountRange() {
@@ -205,9 +217,9 @@ public abstract class Operator {
 
   @Override
   public boolean equals(Object obj) {
-    if ( obj==null ) {
+    if (obj == null) {
       return false;
-    }      
+    }
     if (!obj.getClass().equals(this.getClass())) {
       return false;
     }
@@ -218,13 +230,12 @@ public abstract class Operator {
 
   /**
    * Check if it's the same operator.
-   * 
+   *
    * @param other
    * @return
    */
   public boolean is(Operator other) {
-    if (other == null)
-      return false;
+    if (other == null) return false;
     return id.equals(other.id);
   }
 
@@ -236,11 +247,10 @@ public abstract class Operator {
   /**
    * Returns the operator that is the logical inverse of this operator.
    *
-   * <p>
-   * For example, {@code Operators.IS_TRUE} returns {@code Operators.IS_NOT_TRUE}, and vice versa.
+   * <p>For example, {@code Operators.IS_TRUE} returns {@code Operators.IS_NOT_TRUE}, and vice
+   * versa.
    *
-   * <p>
-   * By default, returns {@code null}, which means there is no inverse operator.
+   * <p>By default, returns {@code null}, which means there is no inverse operator.
    */
   public Operator not() {
     return null;
@@ -248,7 +258,7 @@ public abstract class Operator {
 
   /**
    * Get the category of this operator.
-   * 
+   *
    * @return
    */
   public String getCategory() {
@@ -257,7 +267,7 @@ public abstract class Operator {
 
   /**
    * Get the description of this operator.
-   * 
+   *
    * @return
    */
   public String getDescription() {
@@ -266,7 +276,7 @@ public abstract class Operator {
 
   /**
    * Evaluate the result of operator with operands.
-   * 
+   *
    * @return
    */
   public Object eval(final IExpression[] operands) {
@@ -275,12 +285,11 @@ public abstract class Operator {
 
   /**
    * Check the number of operands expected.
-   * 
+   *
    * @param call The call to check
    */
   public void checkOperandCount(final Call call) {
-    if (operandTypeChecker == null)
-      return;
+    if (operandTypeChecker == null) return;
 
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
@@ -295,9 +304,8 @@ public abstract class Operator {
 
   /**
    * Check operand types expected
-   * 
+   *
    * @param call The call to check
-   * 
    * @return whether check succeeded
    */
   public boolean checkOperandTypes(final Call call) {
@@ -309,11 +317,10 @@ public abstract class Operator {
 
   /**
    * Check operand types expected
-   * 
+   *
    * @param call The call to check
    * @param throwOnFailure whether to throw an exception if check fails(otherwise returns false in
-   *        that case)
-   * 
+   *     that case)
    * @return whether check succeeded
    */
   public boolean checkOperandTypes(final Call call, boolean throwOnFailure) {
@@ -331,9 +338,9 @@ public abstract class Operator {
   }
 
   /**
-   * Infers the return type of an invocation of this operator; only called
-   * after the number and types of operands have already been validated.
-   * 
+   * Infers the return type of an invocation of this operator; only called after the number and
+   * types of operands have already been validated.
+   *
    * @return inferred return type
    */
   public Type inferReturnType(Call call) {
@@ -342,7 +349,7 @@ public abstract class Operator {
 
   /**
    * Derives the operands type of a call for this operator.
-   * 
+   *
    * @param call The call to coerce
    */
   public boolean coerceOperandsType(Call call) {
@@ -355,7 +362,7 @@ public abstract class Operator {
 
   /**
    * Compile and optimize the call
-   * 
+   *
    * @param context The context against which the call will be compiled.
    * @param call The call to compile
    * @return compiled The compiled expression
@@ -381,8 +388,8 @@ public abstract class Operator {
     return getChainedOperands(call, new LinkedList<>(), predicate);
   }
 
-  private Deque<IExpression> getChainedOperands(Call call, Deque<IExpression> operands,
-      Predicate<IExpression> predicate) {
+  private Deque<IExpression> getChainedOperands(
+      Call call, Deque<IExpression> operands, Predicate<IExpression> predicate) {
     for (IExpression operand : call.getOperands()) {
       if (operand.is(call.getOperator())) {
         getChainedOperands(operand.asCall(), operands, predicate);
@@ -398,8 +405,8 @@ public abstract class Operator {
     return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
   }
 
-  private Deque<IExpression> getChainedOperands(Call call, Deque<IExpression> operands,
-      boolean allowDuplicate) {
+  private Deque<IExpression> getChainedOperands(
+      Call call, Deque<IExpression> operands, boolean allowDuplicate) {
     for (IExpression operand : call.getOperands()) {
       if (operand.is(call.getOperator())) {
         getChainedOperands(operand.asCall(), operands, allowDuplicate);
@@ -421,8 +428,8 @@ public abstract class Operator {
     }
   }
 
-  protected static MethodHandle findStaticMethodHandle(final Class<?> clazz,
-      final String methodName) {
+  protected static MethodHandle findStaticMethodHandle(
+      final Class<?> clazz, final String methodName) {
     try {
       MethodHandles.Lookup lookup = MethodHandles.publicLookup();
       MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);

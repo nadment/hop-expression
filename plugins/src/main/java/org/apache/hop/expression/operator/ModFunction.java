@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
@@ -25,48 +27,53 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
-import java.math.BigDecimal;
 
 /**
- * Arithmetic modulus operator.
- * <br>
+ * Arithmetic modulus operator. <br>
  * <strong>Syntax:</strong> <code>x % y</code>
  */
 @FunctionPlugin
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD", ReturnTypes.MOD_OPERATOR, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "MOD",
+        ReturnTypes.MOD_OPERATOR,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/mod.html");
   }
 
   public ModFunction(String name) {
-    super("MOD", name, 50, true, ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/mod.html");
+    super(
+        "MOD",
+        name,
+        50,
+        true,
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.MATHEMATICAL,
+        "/docs/mod.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     BigDecimal divisor = operands[1].getValue(BigDecimal.class);
-    if (divisor == null)
-      return null;
+    if (divisor == null) return null;
 
     // Prevent a division by zero ..
-    if (divisor.signum() == 0)
-      throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
+    if (divisor.signum() == 0) throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
 
     return value.remainder(divisor);
   }
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionArithmeticOperator(call);    
+    return Types.coercionArithmeticOperator(call);
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

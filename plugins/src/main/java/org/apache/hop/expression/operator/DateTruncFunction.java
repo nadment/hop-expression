@@ -16,6 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,19 +29,17 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 
-/**
- * Truncates a date or timestamp to the specified time unit.
- */
+/** Truncates a date or timestamp to the specified time unit. */
 @FunctionPlugin
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {
-    super("DATE_TRUNC", ReturnTypes.DATE_NULLABLE, OperandTypes.TIMEUNIT_TEMPORAL, OperatorCategory.DATE,
+    super(
+        "DATE_TRUNC",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TIMEUNIT_TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/date_trunc.html");
   }
 
@@ -47,8 +49,7 @@ public class DateTruncFunction extends Function {
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
     ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
-    if (datetime == null)
-      return null;
+    if (datetime == null) return null;
 
     switch (unit) {
       case MILLENNIUM:

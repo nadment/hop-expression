@@ -24,18 +24,17 @@ public class ExpressionComparator implements Comparator<IExpression> {
 
   @Override
   public int compare(IExpression e1, IExpression e2) {
-    
+
     // First order by cost
-    if ( e1.getCost() < e2.getCost() ) return -1;  
-    if ( e1.getCost() > e2.getCost() ) return 1;
-       
+    if (e1.getCost() < e2.getCost()) return -1;
+    if (e1.getCost() > e2.getCost()) return 1;
+
     // Order identifier by name (useful for test)
-    if ( e1.is(Kind.IDENTIFIER) && e2.is(Kind.IDENTIFIER) ) {
+    if (e1.is(Kind.IDENTIFIER) && e2.is(Kind.IDENTIFIER)) {
       return e1.asIdentifier().getName().compareTo(e2.asIdentifier().getName());
     }
-    
-    // If same cost order with textual representation    
+
+    // If same cost order with textual representation
     return e1.toString().compareTo(e2.toString());
   }
 }
-

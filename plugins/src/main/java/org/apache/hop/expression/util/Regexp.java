@@ -15,16 +15,14 @@
 
 package org.apache.hop.expression.util;
 
+import java.util.regex.Pattern;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
-import java.util.regex.Pattern;
 
 public class Regexp {
   private static final String JAVA_REGEXP_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
-  /**
-   * Private constructor since this is a utility class.
-   */
+  /** Private constructor since this is a utility class. */
   private Regexp() {}
 
   /** Translates a LIKE pattern to Java regexp pattern, with optional escape string. */
@@ -45,7 +43,8 @@ public class Regexp {
   }
 
   /** Translates a LIKE pattern to Java regex pattern. */
-  public static String toRegexLike(final String pattern, final char escapeChar) throws ExpressionException {
+  public static String toRegexLike(final String pattern, final char escapeChar)
+      throws ExpressionException {
     int i;
     final int len = pattern.length();
     final StringBuilder javaPattern = new StringBuilder(len + len);
@@ -80,25 +79,24 @@ public class Regexp {
     return javaPattern.toString();
   }
 
-
   public static int parseFlags(String str) {
     int flags = Pattern.UNICODE_CASE;
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {
         switch (str.charAt(i)) {
-          // Enables case-insensitive matching
+            // Enables case-insensitive matching
           case 'i':
             flags |= Pattern.CASE_INSENSITIVE;
             break;
-          // Enables case-sensitive matching
+            // Enables case-sensitive matching
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
-          // Enables dotall mode, that allows the period (.) to match the newline character.
+            // Enables dotall mode, that allows the period (.) to match the newline character.
           case 'n':
             flags |= Pattern.DOTALL;
             break;
-          // Enables multiline mode.
+            // Enables multiline mode.
           case 'm':
             flags |= Pattern.MULTILINE;
             break;
@@ -111,7 +109,8 @@ public class Regexp {
   }
 
   /** Translates a SIMILAR TO pattern to Java regex pattern. */
-  public static String toSimilarTo(final String pattern, final char escapeChar) throws ExpressionException {
+  public static String toSimilarTo(final String pattern, final char escapeChar)
+      throws ExpressionException {
     final int len = pattern.length();
     final StringBuilder javaPattern = new StringBuilder(len + len);
     for (int i = 0; i < len; i++) {
@@ -147,41 +146,29 @@ public class Regexp {
 
           String cls = pattern.substring(i + 2, end - 1).toLowerCase();
           // Alphabetic characters
-          if ("alpha".equals(cls))
-            javaPattern.append("\\p{Alpha}");
+          if ("alpha".equals(cls)) javaPattern.append("\\p{Alpha}");
           // Alphanumeric characters
-          else if ("alnum".equals(cls))
-            javaPattern.append("\\p{Alnum}");
-          else if ("cntrl".equals(cls))
-            javaPattern.append("\\p{Cntrl}");
+          else if ("alnum".equals(cls)) javaPattern.append("\\p{Alnum}");
+          else if ("cntrl".equals(cls)) javaPattern.append("\\p{Cntrl}");
           // Blank space and tab characters
-          else if ("blank".equals(cls))
-            javaPattern.append("\\h");
+          else if ("blank".equals(cls)) javaPattern.append("\\h");
           // Punctuation and symbols characters
-          else if ("punct".equals(cls))
-            javaPattern.append("\\p{Punct}");
+          else if ("punct".equals(cls)) javaPattern.append("\\p{Punct}");
           // Numeric digits
-          else if ("digit".equals(cls))
-            javaPattern.append("\\d");
+          else if ("digit".equals(cls)) javaPattern.append("\\d");
           // Hexadecimal digits
-          else if ("xdigit".equals(cls))
-            javaPattern.append("\\p{XDigit}");
+          else if ("xdigit".equals(cls)) javaPattern.append("\\p{XDigit}");
           // All whitespace characters, including line breaks
-          else if ("space".equals(cls))
-            javaPattern.append("\\s");
+          else if ("space".equals(cls)) javaPattern.append("\\s");
           // Uppercase letters
-          else if ("upper".equals(cls))
-            javaPattern.append("\\u");
+          else if ("upper".equals(cls)) javaPattern.append("\\u");
           // Lowercase letters
-          else if ("lower".equals(cls))
-            javaPattern.append("\\l");
+          else if ("lower".equals(cls)) javaPattern.append("\\l");
           // Word characters (letters, numbers and underscores)
-          else if ("word".equals(cls))
-            javaPattern.append("\\w");
+          else if ("word".equals(cls)) javaPattern.append("\\w");
 
           i = end;
-        } else
-          javaPattern.append(c);
+        } else javaPattern.append(c);
       } else {
         javaPattern.append(c);
       }
@@ -189,4 +176,3 @@ public class Regexp {
     return javaPattern.toString();
   }
 }
-

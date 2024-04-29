@@ -21,12 +21,16 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class AggregateField {
   /** The aggregate expression */
-  @HopMetadataProperty(key = "expression", injectionKey = "AGGREGATE.EXPRESSION",
+  @HopMetadataProperty(
+      key = "expression",
+      injectionKey = "AGGREGATE.EXPRESSION",
       injectionKeyDescription = "AggregateMeta.Injection.AGGREGATE.EXPRESSION")
   private String expression;
 
   /** The column name */
-  @HopMetadataProperty(key = "name", injectionKey = "AGGREGATE.NAME",
+  @HopMetadataProperty(
+      key = "name",
+      injectionKey = "AGGREGATE.NAME",
       injectionKeyDescription = "AggregateMeta.Injection.AGGREGATE.NAME")
   private String name;
 
@@ -46,7 +50,9 @@ public class AggregateField {
     return expression;
   }
 
-  /** @param aggregate The aggregate expression to set */
+  /**
+   * @param aggregate The aggregate expression to set
+   */
   public void setExpression(String expression) {
     this.expression = expression;
   }
@@ -60,7 +66,9 @@ public class AggregateField {
     return name;
   }
 
-  /** @param name The aggregate name to set */
+  /**
+   * @param name The aggregate name to set
+   */
   public void setName(String name) {
     this.name = name;
   }

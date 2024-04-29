@@ -16,9 +16,7 @@ package org.apache.hop.expression.util;
 
 import java.util.Objects;
 
-/**
- * Pair of objects.
- */
+/** Pair of objects. */
 public final class Pair<T1 extends Object, T2 extends Object> {
   private final T1 left;
   private final T2 right;
@@ -38,16 +36,12 @@ public final class Pair<T1 extends Object, T2 extends Object> {
     this.right = Objects.requireNonNull(right, "right must not be null");
   }
 
-  /**
-   * Get the left object.
-   */
+  /** Get the left object. */
   public T1 getLeft() {
     return left;
   }
 
-  /**
-   * Get the right object.
-   */
+  /** Get the right object. */
   public T2 getRight() {
     return right;
   }
@@ -64,11 +58,11 @@ public final class Pair<T1 extends Object, T2 extends Object> {
     return ((l << 4) | l) ^ r;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || (obj instanceof Pair) && Objects.equals(this.left, ((Pair<?, ?>) obj).left)
+        || (obj instanceof Pair)
+            && Objects.equals(this.left, ((Pair<?, ?>) obj).left)
             && Objects.equals(this.right, ((Pair<?, ?>) obj).right);
   }
 }

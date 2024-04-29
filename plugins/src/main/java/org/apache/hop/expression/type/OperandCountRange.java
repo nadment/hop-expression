@@ -16,9 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
-/**
- * A class that describes how many operands an operator can take.
- */
+/** A class that describes how many operands an operator can take. */
 public class OperandCountRange implements IOperandCountRange {
 
   public static IOperandCountRange of(int length) {

@@ -15,20 +15,19 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Returns the variance of a sample of all values in the expression over a group of rows.
- * 
- * The variance (s2) of numeric-expression (x) is computed according to the following formula, which
- * assumes a normal distribution:
- * s2 = (1/( N - 1 )) * SUM( xI - mean( x ) )2
- * 
- * Null values are ignored.
+ *
+ * <p>The variance (s2) of numeric-expression (x) is computed according to the following formula,
+ * which assumes a normal distribution: s2 = (1/( N - 1 )) * SUM( xI - mean( x ) )2
+ *
+ * <p>Null values are ignored.
  */
 public class VarianceSampProcessor implements IExpressionProcessor {
 

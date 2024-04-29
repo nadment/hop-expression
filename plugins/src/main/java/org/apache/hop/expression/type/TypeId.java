@@ -16,21 +16,19 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.Tuple;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.Set;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.hop.expression.Tuple;
 
 /**
  * Enumeration of the data type identifier which can be used to construct an expression.
  *
- * <p>
- * The order of enum declaration is important to be usable with <code>compareTo</code> method.
+ * <p>The order of enum declaration is important to be usable with <code>compareTo</code> method.
  *
- * <p>
- * If values need to be converted to match the other operands data type, the value with the lower
+ * <p>If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
 public enum TypeId {
@@ -52,9 +50,7 @@ public enum TypeId {
   /** Unlimited precision number */
   NUMBER(TypeFamily.NUMERIC, true, true, 38, 1, 37, 0, BigDecimal.class),
 
-  /** Date-time value with nanosecond precision and time zone 
-   * TODO: add precision for nanoseconds
-   * */
+  /** Date-time value with nanosecond precision and time zone TODO: add precision for nanoseconds */
   DATE(TypeFamily.TEMPORAL, false, false, -1, -1, -1, -1, ZonedDateTime.class),
 
   /** A Json type */
@@ -62,19 +58,16 @@ public enum TypeId {
 
   /** A INET type */
   INET(TypeFamily.INET, false, false, -1, -1, -1, -1, InetAddress.class),
-  
+
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
 
-  /** A interval type
-   * TODO: add precision for nanoseconds
-   */  
+  /** A interval type TODO: add precision for nanoseconds */
   INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class),
-  
+
   /** A Array type */
-  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Tuple.class)
-  ;
-  
+  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Tuple.class);
+
   protected static final Set<TypeId> STRING_TYPES = Set.of(STRING);
   protected static final Set<TypeId> BINARY_TYPES = Set.of(BINARY);
   protected static final Set<TypeId> BOOLEAN_TYPES = Set.of(BOOLEAN);
@@ -83,49 +76,47 @@ public enum TypeId {
   protected static final Set<TypeId> JSON_TYPES = Set.of(JSON);
   protected static final Set<TypeId> INTERVAL_TYPES = Set.of(INTERVAL);
 
-  protected static final Set<TypeId> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, INTERVAL, BINARY, JSON);
-  
-  /**
-   * If the precision parameter is supported.
-   */
+  protected static final Set<TypeId> ALL_TYPES =
+      Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, INTERVAL, BINARY, JSON);
+
+  /** If the precision parameter is supported. */
   private boolean supportsPrecision;
 
-  /**
-   * If the scale parameter is supported.
-   */
+  /** If the scale parameter is supported. */
   private boolean supportsScale;
 
-  /**
-   * The minimum supported precision.
-   */
+  /** The minimum supported precision. */
   private int minPrecision;
 
-  /**
-   * The maximum supported precision.
-   */
+  /** The maximum supported precision. */
   private int maxPrecision;
 
-  /**
-   * The lowest possible scale.
-   */
+  /** The lowest possible scale. */
   private int minScale;
 
-  /**
-   * The highest possible scale.
-   */
+  /** The highest possible scale. */
   private int maxScale;
-  
+
   private final TypeFamily family;
 
   private final Class<?> javaClass;
 
   public static final Set<String> ALL_NAMES =
-      Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
+      Set.of(
+          "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
 
-  private TypeId(TypeFamily family, boolean supportsPrecision, boolean supportsScale, int maxPrecision, int minPrecision, int maxScale, int minScale, Class<?> javaClass) {
+  private TypeId(
+      TypeFamily family,
+      boolean supportsPrecision,
+      boolean supportsScale,
+      int maxPrecision,
+      int minPrecision,
+      int maxScale,
+      int minScale,
+      Class<?> javaClass) {
     this.family = family;
     this.supportsPrecision = supportsPrecision;
-    this.supportsScale = supportsScale; 
+    this.supportsScale = supportsScale;
     this.maxPrecision = maxPrecision;
     this.minPrecision = minPrecision;
     this.maxScale = maxScale;
@@ -137,47 +128,43 @@ public enum TypeId {
     return javaClass;
   }
 
-  /**
-   * Gets the {@link TypeFamily} containing this {@link TypeId}.
-   */
+  /** Gets the {@link TypeFamily} containing this {@link TypeId}. */
   public TypeFamily getFamily() {
     return family;
   }
 
-  /**
-   * Returns whether type are in same type family.
-   */
+  /** Returns whether type are in same type family. */
   public boolean isFamily(TypeFamily family) {
     return this.family.isFamily(family);
   }
 
   /**
-   * Returns whether this {@link TypeId} support implicit coercion to the specified {@link TypeFamily}.
+   * Returns whether this {@link TypeId} support implicit coercion to the specified {@link
+   * TypeFamily}.
    */
   public boolean isCoercible(TypeFamily family) {
     return this.family.isCoercible(family);
   }
-  
+
   /**
    * Returns whether this {@link TypeId} support implicit coercion to the specified {@link TypeId}.
    */
   public boolean isCoercible(final TypeId id) {
-    if (id == null)
-      return false;    
-    return isCoercible(id.family);    
+    if (id == null) return false;
+    return isCoercible(id.family);
   }
- 
+
   public boolean supportsPrecision() {
     return this.supportsPrecision;
   }
-  
+
   public boolean supportsScale() {
     return this.supportsScale;
   }
-  
+
   /**
-   * Returns the minimum precision (or length) allowed for this type, or -1 if
-   * precision/length are not applicable for this type.
+   * Returns the minimum precision (or length) allowed for this type, or -1 if precision/length are
+   * not applicable for this type.
    *
    * @return Minimum allowed precision
    */
@@ -186,8 +173,8 @@ public enum TypeId {
   }
 
   /**
-   * Returns the maximum precision (or length) allowed for this type, or -1 if
-   * precision/length are not applicable for this type.
+   * Returns the maximum precision (or length) allowed for this type, or -1 if precision/length are
+   * not applicable for this type.
    *
    * @return Maximum allowed precision
    */
@@ -202,9 +189,9 @@ public enum TypeId {
   public int getMinScale() {
     return minScale;
   }
-  
+
   public int getDefaultScale() {
-    switch (this) {      
+    switch (this) {
       case NUMBER:
         return 9;
       case BOOLEAN:
@@ -213,7 +200,7 @@ public enum TypeId {
         return -1;
     }
   }
-  
+
   /**
    * Returns a {@link TypeId} with a given name (ignore case).
    *
@@ -235,14 +222,12 @@ public enum TypeId {
    * @return The {@link TypeId} or 'UNKNOWN' if not found
    */
   public static TypeId fromJavaClass(final Class<?> clazz) {
-    if (clazz == null)
-      return UNKNOWN;
+    if (clazz == null) return UNKNOWN;
 
     for (TypeId id : values()) {
 
       // Ignore ANY
-      if (id.equals(ANY))
-        continue;
+      if (id.equals(ANY)) continue;
 
       if (id.getJavaClass().isAssignableFrom(clazz)) {
         return id;
@@ -250,15 +235,14 @@ public enum TypeId {
     }
     return UNKNOWN;
   }
-  
+
   /**
    * Search a data type identifier from a value.
-   * 
+   *
    * @return The type id or 'UNKNOWN' if not found
    */
   public static TypeId fromValue(final Object value) {
-    if (value == null)
-      return UNKNOWN;
+    if (value == null) return UNKNOWN;
 
     if (value instanceof Integer) {
       return INTEGER;
@@ -266,7 +250,7 @@ public enum TypeId {
     if (value instanceof Double) {
       return NUMBER;
     }
-    
+
     return fromJavaClass(value.getClass());
   }
 }

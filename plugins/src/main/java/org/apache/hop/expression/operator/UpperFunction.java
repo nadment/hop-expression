@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.Locale;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,12 +26,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.Locale;
 
 /**
- * The function convert a string value to upper case.
- * 
- * @See {@link LowerFunction}, {@link InitCapFunction}
+ * The function convert a string value to upper case. @See {@link LowerFunction}, {@link
+ * InitCapFunction}
  */
 @FunctionPlugin
 public class UpperFunction extends Function {
@@ -38,14 +37,18 @@ public class UpperFunction extends Function {
   public static final UpperFunction INSTANCE = new UpperFunction();
 
   public UpperFunction() {
-    super("UPPER", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING, "/docs/upper.html");
+    super(
+        "UPPER",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
+        "/docs/upper.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return value.toUpperCase(Locale.getDefault());
   }
 
@@ -54,7 +57,8 @@ public class UpperFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator()) || operand.is(LowerFunction.INSTANCE)
+    if (operand.is(call.getOperator())
+        || operand.is(LowerFunction.INSTANCE)
         || operand.is(InitCapFunction.INSTANCE)) {
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }

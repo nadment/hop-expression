@@ -37,18 +37,22 @@ import org.apache.hop.expression.type.Types;
 public class LeastFunction extends Function {
 
   public LeastFunction() {
-    super("LEAST", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.COMPARABLE_ORDERED_VARIADIC,
-        OperatorCategory.CONDITIONAL, "/docs/least.html");
+    super(
+        "LEAST",
+        ReturnTypes.LEAST_RESTRICTIVE,
+        OperandTypes.COMPARABLE_ORDERED_VARIADIC,
+        OperatorCategory.CONDITIONAL,
+        "/docs/least.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return call;
   }
-  
+
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
 
   @Override
@@ -57,8 +61,7 @@ public class LeastFunction extends Function {
     for (IExpression operand : operands) {
       Object value = operand.getValue();
       // null is always smaller
-      if (value == null)
-        continue;
+      if (value == null) continue;
       if (result == null || Comparison.compare(value, result) < 0) {
         result = value;
       }

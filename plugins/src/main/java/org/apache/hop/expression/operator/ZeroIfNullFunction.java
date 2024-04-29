@@ -23,14 +23,16 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Returns 0 if its argument is null; otherwise, returns its argument.
- */
+/** Returns 0 if its argument is null; otherwise, returns its argument. */
 @FunctionPlugin
 public class ZeroIfNullFunction extends Function {
 
   public ZeroIfNullFunction() {
-    super("ZEROIFNULL", ReturnTypes.ARG0_NOT_NULL, OperandTypes.NUMERIC, OperatorCategory.CONDITIONAL,
+    super(
+        "ZEROIFNULL",
+        ReturnTypes.ARG0_NOT_NULL,
+        OperandTypes.NUMERIC,
+        OperatorCategory.CONDITIONAL,
         "/docs/zeroifnull.html");
   }
 
@@ -38,8 +40,7 @@ public class ZeroIfNullFunction extends Function {
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
 
-    if (value == null)
-      return 0L;
+    if (value == null) return 0L;
 
     return value;
   }

@@ -23,14 +23,17 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * This function returns the data type name of an expression.
- */
+/** This function returns the data type name of an expression. */
 @FunctionPlugin
 public class TypeOfFunction extends Function {
 
   public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING_NOT_NULL, OperandTypes.ANY, OperatorCategory.SPECIAL, "/docs/typeof.html");
+    super(
+        "TYPEOF",
+        ReturnTypes.STRING_NOT_NULL,
+        OperandTypes.ANY,
+        OperatorCategory.SPECIAL,
+        "/docs/typeof.html");
   }
 
   @Override

@@ -14,8 +14,8 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.IExpression;
 import java.text.ParsePosition;
+import org.apache.hop.expression.IExpression;
 
 public abstract class BaseFormat {
 
@@ -35,8 +35,7 @@ public abstract class BaseFormat {
 
   protected static boolean startsWithIgnoreCase(String str, int offset, String... substrings) {
     for (String substring : substrings) {
-      if (str.regionMatches(true, offset, substring, 0, substring.length()))
-        return true;
+      if (str.regionMatches(true, offset, substring, 0, substring.length())) return true;
     }
     return false;
   }
@@ -62,8 +61,7 @@ public abstract class BaseFormat {
       throws NumberFormatException {
     int index = position.getIndex();
     int result = 0;
-    if (index + length > value.length())
-      length = value.length() - index;
+    if (index + length > value.length()) length = value.length() - index;
 
     for (int i = 0; i < length; i++) {
       int digit = Character.digit(value.charAt(index), 10);
@@ -98,8 +96,7 @@ public abstract class BaseFormat {
       throws NumberFormatException {
     int index = position.getIndex();
     int result = 0;
-    if (index + length > value.length())
-      length = value.length() - index;
+    if (index + length > value.length()) length = value.length() - index;
 
     char sign = value.charAt(index);
     if (sign == '-' || sign == '+') {
@@ -150,7 +147,7 @@ public abstract class BaseFormat {
    * @param index the index to check at
    * @param substrings the substrings to check for within the string
    * @return a capitalization strategy if the specified string contains any of the specified
-   *         substrings at the specified index, <code>null</code> otherwise
+   *     substrings at the specified index, <code>null</code> otherwise
    */
   protected static Capitalization match(String s, int index, String... substrings) {
     for (String substring : substrings) {

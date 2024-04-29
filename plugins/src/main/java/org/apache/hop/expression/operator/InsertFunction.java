@@ -35,14 +35,17 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class InsertFunction extends Function {
-  
+
   public static final InsertFunction InsertStringFunction = new InsertStringFunction();
   public static final InsertFunction InsertBinaryFunction = new InsertBinaryFunction();
 
   public InsertFunction() {
-    super("INSERT", ReturnTypes.ARG0_MAX_PRECISION,
+    super(
+        "INSERT",
+        ReturnTypes.ARG0_MAX_PRECISION,
         OperandTypes.STRING_NUMERIC_NUMERIC_STRING.or(OperandTypes.BINARY_NUMERIC_NUMERIC_BINARY),
-        OperatorCategory.STRING, "/docs/insert.html");
+        OperatorCategory.STRING,
+        "/docs/insert.html");
   }
 
   @Override
@@ -59,7 +62,7 @@ public class InsertFunction extends Function {
 
     return call;
   }
-  
+
   /**
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * string value.
@@ -68,23 +71,20 @@ public class InsertFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String original = operands[0].getValue(String.class);
-      if (original == null)
-        return null;
+      if (original == null) return null;
       Long pos = operands[1].getValue(Long.class);
-      if (pos == null)
-        return null;
+      if (pos == null) return null;
       Long len = operands[2].getValue(Long.class);
-      if (len == null)
-        return null;
+      if (len == null) return null;
       String insert = operands[3].getValue(String.class);
-      if (insert == null)
-        return null;
+      if (insert == null) return null;
 
       // Valid values are between 1 and one more than the length of the string (inclusive).
       if (pos <= 0 || pos > original.length() + 1)
         throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(2, pos));
 
-      // Valid values range from 0 to the number of characters between pos and the end of the string.
+      // Valid values range from 0 to the number of characters between pos and the end of the
+      // string.
       if (len < 0 || len > original.length() - pos + 1)
         throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(3, len));
 
@@ -98,7 +98,7 @@ public class InsertFunction extends Function {
       return builder.toString();
     }
   }
-  
+
   /**
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * binary value.
@@ -107,17 +107,13 @@ public class InsertFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       Long pos = operands[1].getValue(Long.class);
-      if (pos == null)
-        return null;
+      if (pos == null) return null;
       Long len = operands[2].getValue(Long.class);
-      if (len == null)
-        return null;
+      if (len == null) return null;
       byte[] insert = operands[3].getValue(byte[].class);
-      if (insert == null)
-        return null;
+      if (insert == null) return null;
 
       // Valid values are between 1 and one more than the length of the binary (inclusive).
       if (pos <= 0 || pos > value.length + 1)
@@ -134,8 +130,8 @@ public class InsertFunction extends Function {
       byte[] result = new byte[value.length - length + insert.length];
       System.arraycopy(value, 0, result, 0, start);
       System.arraycopy(insert, 0, result, start, insert.length);
-      System.arraycopy(value, start + length, result, start + insert.length,
-          value.length - start - length);
+      System.arraycopy(
+          value, start + length, result, start + insert.length, value.length - start - length);
       return result;
     }
   }

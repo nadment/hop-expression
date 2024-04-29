@@ -16,19 +16,19 @@
  */
 package org.apache.hop.expression.type;
 
+/** Represents a family of related types. */
 /**
- * Represents a family of related types.
- */
-/**
- * TypeComparability is an enumeration of the categories of comparison operators which types may support.
+ * TypeComparability is an enumeration of the categories of comparison operators which types may
+ * support.
  *
- * <p>The order of values of this enumeration is* significant (from least inclusive to most inclusive) and should not be changed.
+ * <p>The order of values of this enumeration is* significant (from least inclusive to most
+ * inclusive) and should not be changed.
  */
 public enum TypeComparability {
   /** "No comparisons allowed */
   NONE,
-  /** Only equals/not-equals allowed (if the type supports <code>equalTo</code>)*/
+  /** Only equals/not-equals allowed (if the type supports <code>equalTo</code>) */
   UNORDERED,
-  /** All comparisons allowed (if the type supports <code>compareTo</code>)*/
+  /** All comparisons allowed (if the type supports <code>compareTo</code>) */
   ALL
 }

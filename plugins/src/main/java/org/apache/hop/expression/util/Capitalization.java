@@ -31,8 +31,8 @@ public enum Capitalization {
   CAPITALIZE;
 
   /**
-   * Returns the capitalization strategy which should be used when the first and second
-   * letters have the specified casing.
+   * Returns the capitalization strategy which should be used when the first and second letters have
+   * the specified casing.
    *
    * @param up1 whether or not the first letter is upper case
    * @param up2 whether or not the second letter is upper case

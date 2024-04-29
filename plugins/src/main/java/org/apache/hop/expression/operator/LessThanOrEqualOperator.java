@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -30,21 +31,27 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
 
 /** Comparison less than or equal operator '<code>&lt;=</code>'. */
 public class LessThanOrEqualOperator extends Operator {
 
   public LessThanOrEqualOperator() {
-    super("LESS_THAN_OR_EQUAL", "<=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
-        OperatorCategory.COMPARISON, "/docs/less_than_or_equal.html");
+    super(
+        "LESS_THAN_OR_EQUAL",
+        "<=",
+        130,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
+        OperatorCategory.COMPARISON,
+        "/docs/less_than_or_equal.html");
   }
 
   @Override
   public Operator not() {
     return Operators.GREATER_THAN;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
@@ -70,15 +77,16 @@ public class LessThanOrEqualOperator extends Operator {
       return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
     }
     // Normalize the order of identifier by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+    if (left.is(Kind.IDENTIFIER)
+        && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
     }
 
     // Simplify if not nullable x<=x → TRUE
-    if (left.equals(right) && !left.getType().isNullable() ) {
+    if (left.equals(right) && !left.getType().isNullable()) {
       return Literal.TRUE;
-    }    
+    }
     // Simplify x<=NULL → NULL
     if (left.isNull() || right.isNull()) {
       return Literal.NULL;
@@ -93,24 +101,24 @@ public class LessThanOrEqualOperator extends Operator {
       return new Call(Operators.IS_NOT_NULL, right);
     }
     // Simplify only if x is data type boolean x<=TRUE → x IS NOT NULL
-    if (right.equals(Literal.TRUE) && left.getType().is(TypeId.BOOLEAN) ) {
+    if (right.equals(Literal.TRUE) && left.getType().is(TypeId.BOOLEAN)) {
       return new Call(Operators.IS_NOT_NULL, left);
-    }    
+    }
 
     // Simplify 3<=X+1 → 3-1<=X
-    if (left.isConstant() && right.is(Operators.ADD)
-        && right.asCall().getOperand(0).isConstant()) {
-      return new Call(call.getOperator(),
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+      return new Call(
+          call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
 
     return call;
   }
-  
+
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
 
   @Override

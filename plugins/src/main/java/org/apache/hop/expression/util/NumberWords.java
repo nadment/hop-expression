@@ -18,11 +18,31 @@ public class NumberWords {
 
   private NumberWords() {}
 
-  private static final String[] UNITS = {"zero", "one", "two", "three", "four", "five", "six",
-      "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
-      "sixteen", "seventeen", "eighteen", "nineteen"};
-  private static final String[] TENS =
-      {"zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+  private static final String[] UNITS = {
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen"
+  };
+  private static final String[] TENS = {
+    "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"
+  };
 
   protected static String convertOrdinal(int number) {
     // variable to hold string representation of number
@@ -82,7 +102,6 @@ public class NumberWords {
 
     return words.toString();
   }
-
 
   private static StringBuilder convert(StringBuilder words, int number) {
     if (number > 0) {

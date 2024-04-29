@@ -15,6 +15,8 @@
 
 package org.apache.hop.expression.type;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBinary;
@@ -31,8 +33,6 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Types {
 
@@ -43,111 +43,72 @@ public class Types {
   public static final UnknownType UNKNOWN = new UnknownType(true);
 
   public static final ArrayType ARRAY = new ArrayType(UNKNOWN, true);
-  
+
   public static final AnyType ANY = new AnyType(true);
 
-  /**
-   * Default BINARY type with maximum precision.
-   */
+  /** Default BINARY type with maximum precision. */
   public static final BinaryType BINARY = new BinaryType(TypeId.BINARY.getMaxPrecision(), true);
 
-  /**
-   * Default BINARY NOT NULLtype with maximum precision.
-   */
+  /** Default BINARY NOT NULLtype with maximum precision. */
   public static final BinaryType BINARY_NOT_NULL =
       new BinaryType(TypeId.BINARY.getMaxPrecision(), false);
 
-  /**
-   * Default BOOLEAN type.
-   */
+  /** Default BOOLEAN type. */
   public static final BooleanType BOOLEAN = new BooleanType(true);
 
-  /**
-   * Default BOOLEAN NOT NULL type.
-   */
+  /** Default BOOLEAN NOT NULL type. */
   public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
 
-  /**
-   * Default STRING type with maximum precision.
-   */
+  /** Default STRING type with maximum precision. */
   public static final StringType STRING = new StringType(TypeId.STRING.getMaxPrecision(), true);
 
-  /**
-   * Default STRING NOT NULL type with maximum precision.
-   */
+  /** Default STRING NOT NULL type with maximum precision. */
   public static final StringType STRING_NOT_NULL =
       new StringType(TypeId.STRING.getMaxPrecision(), false);
 
-  /**
-   * Default INTEGER type with maximum precision.
-   */
+  /** Default INTEGER type with maximum precision. */
   public static final IntegerType INTEGER = new IntegerType(TypeId.INTEGER.getMaxPrecision(), true);
 
-  /**
-   * Default INTEGER NOT NULL type with maximum precision.
-   */
+  /** Default INTEGER NOT NULL type with maximum precision. */
   public static final IntegerType INTEGER_NOT_NULL =
       new IntegerType(TypeId.INTEGER.getMaxPrecision(), false);
 
-  /**
-   * Default NUMBER(38,9) type with max precision and default scale.
-   */
+  /** Default NUMBER(38,9) type with max precision and default scale. */
   public static final NumberType NUMBER =
       new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), true);
 
-  /**
-   * Default NUMBER(38,9) NOT NULL type with max precision and default scale.
-   */
+  /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
   public static final NumberType NUMBER_NOT_NULL =
       new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), false);
 
-  /**
-   * Default DATE type with default parameters.
-   */
+  /** Default DATE type with default parameters. */
   public static final DateType DATE = new DateType(true);
 
-  /**
-   * Default DATE NOT NULL type with default parameters.
-   */
+  /** Default DATE NOT NULL type with default parameters. */
   public static final DateType DATE_NOT_NULL = new DateType(false);
 
-  /**
-   * Default INTERVAL type with default parameters.
-   */
+  /** Default INTERVAL type with default parameters. */
   public static final IntervalType INTERVAL = new IntervalType(true);
 
-  /**
-   * Default INTERVAL NOT NULL type with default parameters.
-   */
+  /** Default INTERVAL NOT NULL type with default parameters. */
   public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
 
-  /**
-   * Default INET type.
-   */
+  /** Default INET type. */
   public static final InetType INET = new InetType(true);
 
-  /**
-   * Default INET NOT NULL type.
-   */  
+  /** Default INET NOT NULL type. */
   public static final InetType INET_NOT_NULL = new InetType(false);
-  
-  /**
-   * Default JSON type.
-   */
+
+  /** Default JSON type. */
   public static final JsonType JSON = new JsonType(true);
-  
-  /**
-   * Default JSON NOT NULL type.
-   */
+
+  /** Default JSON NOT NULL type. */
   public static final JsonType JSON_NOT_NULL = new JsonType(false);
 
-  /**
-   * Returns the most general of a set of types
-   */
+  /** Returns the most general of a set of types */
   public static Type getLeastRestrictive(List<Type> types) {
 
-    if (types.isEmpty())
-      return Types.UNKNOWN;
+    if (types.isEmpty()) return Types.UNKNOWN;
 
     Type result = null;
     for (Type type : types) {
@@ -169,14 +130,12 @@ public class Types {
   }
 
   public static Type getLeastRestrictive(final Type type1, final Type type2) {
-    if (type1 == null)
-      return type2;
-    if (type2 == null)
-      return type1;
+    if (type1 == null) return type2;
+    if (type2 == null) return type1;
     if (type1.getId().ordinal() > type2.getId().ordinal()
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
-    } 
+    }
     if (type1.isFamily(type2.getFamily())) {
       if (type1.getPrecision() > type2.getPrecision()
           || (type1.getPrecision() == type2.getPrecision()
@@ -208,8 +167,8 @@ public class Types {
 
   /**
    * Coerce the operand at the specified index to target {@code Type}.
-   * <p>
-   * If the operand is a {@code Tuple}, coercion of all its members
+   *
+   * <p>If the operand is a {@code Tuple}, coercion of all its members
    */
   public static boolean coerceOperandType(Call call, final Type type, int index) {
 
@@ -226,7 +185,6 @@ public class Types {
       return false;
     }
 
-
     // Check it early.
     if (!needToCast(operand, type)) {
       return false;
@@ -242,8 +200,7 @@ public class Types {
     for (IExpression operand : tuple) {
       if (operand.is(Kind.TUPLE)) {
         operand = coerceTupleOperandType(operand.asTuple(), type);
-      }
-      else if (needToCast(operand, type)) {
+      } else if (needToCast(operand, type)) {
         operand = cast(operand, type);
       }
       list.add(operand);
@@ -258,17 +215,13 @@ public class Types {
     return call;
   }
 
-  /**
-   * Determines common type for a comparison operator.
-   */
+  /** Determines common type for a comparison operator. */
   public static Type getCommonTypeForComparison(final Type type1, final Type type2) {
 
-    if (type1 == null || type2 == null)
-      return null;
+    if (type1 == null || type2 == null) return null;
 
-    if (type2.is(TypeId.UNKNOWN) )
-      return type1;
-    
+    if (type2.is(TypeId.UNKNOWN)) return type1;
+
     // DATE compare STRING -> DATE
     if (isDate(type1) && isString(type2)) {
       return type1;
@@ -297,23 +250,18 @@ public class Types {
     return getLeastRestrictive(type1, type2);
   }
 
-  /**
-   * Returns whether a IExpression should be cast to a target type.
-   */
+  /** Returns whether a IExpression should be cast to a target type. */
   public static boolean needToCast(IExpression expression, Type toType) {
     return expression.getType().getId().ordinal() < toType.getId().ordinal();
   }
 
-  /**
-   * Coerces operand of arithmetic expressions to Numeric type.
-   */
+  /** Coerces operand of arithmetic expressions to Numeric type. */
   public static boolean coercionArithmeticOperator(Call call) {
 
     Type left = call.getOperand(0).getType();
     Type right = call.getOperand(1).getType();
 
-    if (left.getId() == right.getId())
-      return false;
+    if (left.getId() == right.getId()) return false;
 
     // STRING <operator> numeric -> NUMBER
     if (isString(left) && isNumeric(right)) {
@@ -327,24 +275,20 @@ public class Types {
     return false;
   }
 
-  /**
-   * Coerces operands in comparison expressions.
-   */
+  /** Coerces operands in comparison expressions. */
   public static boolean coercionComparisonOperator(Call call) {
 
     Type type = call.getOperand(0).getType();
-    for (int index = 1; index < call.getOperandCount(); index++) {      
+    for (int index = 1; index < call.getOperandCount(); index++) {
       type = getCommonTypeForComparison(type, call.getOperand(index).getType());
     }
 
     return coerceOperandsType(call, type);
   }
 
-
   /**
-   * Returns whether the conversion from {@code source} to {@code target} type
-   * is a 'loss-less' cast, that is, a cast from which
-   * the original value of the field can be certainly recovered.
+   * Returns whether the conversion from {@code source} to {@code target} type is a 'loss-less'
+   * cast, that is, a cast from which the original value of the field can be certainly recovered.
    *
    * @param source source type
    * @param target target type
@@ -389,53 +333,47 @@ public class Types {
     // return true;
     // }
 
-
     return false;
   }
 
-
   /** Returns whether a type is atomic (date, numeric, string or BOOLEAN). */
   public static boolean isAtomic(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     TypeId id = type.getId();
-    return id == TypeId.STRING || id == TypeId.DATE || id == TypeId.INTEGER || id == TypeId.NUMBER
+    return id == TypeId.STRING
+        || id == TypeId.DATE
+        || id == TypeId.INTEGER
+        || id == TypeId.NUMBER
         || id == TypeId.BOOLEAN;
   }
 
   public static boolean isBoolean(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return type.is(TypeId.BOOLEAN);
   }
 
   public static boolean isNumeric(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return type.isFamily(TypeFamily.NUMERIC);
   }
 
   public static boolean isInteger(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return type.is(TypeId.INTEGER);
   }
 
   public static boolean isNumber(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return type.is(TypeId.NUMBER);
   }
 
   public static boolean isString(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return type.is(TypeId.STRING);
   }
 
   public static boolean isDate(final Type type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
     return type.is(TypeId.DATE);
   }
 
@@ -459,22 +397,21 @@ public class Types {
   // return null;
   // }
   // }
-  
+
   /**
    * Calculate return type precision and scale for x + y and x - y
-   * 
+   *
    * <ul>
-   * <li>Let p1, s1 be the precision and scale of the first operand</li>
-   * <li>Let p2, s2 be the precision and scale of the second operand</li>
-   * <li>Let p, s be the precision and scale of the result</li>
-   * <li>Let d be the number of whole digits in the result</li>
-   * <li>Then the result type is a decimal with:
-   * <ul>
-   * <li>s = max(s1, s2)</li>
-   * <li>p = max(p1 - s1, p2 - s2) + s + 1</li>
-   * </ul>
-   * </li>
-   * <li>p and s are capped at their maximum values</li>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>s = max(s1, s2)
+   *         <li>p = max(p1 - s1, p2 - s2) + s + 1
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
    * </ul>
    */
   public static Type deriveAdditiveType(final Type type1, final Type type2) {
@@ -486,7 +423,7 @@ public class Types {
       return type2;
     }
 
-    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
       return Types.NUMBER;
     }
 
@@ -494,11 +431,11 @@ public class Types {
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();
     int s2 = type2.getScale();
-    
+
     // Return type scale
     int s = Math.max(s1, s2);
     s = Math.min(s, TypeId.NUMBER.getMaxScale());
-    
+
     // Return type precision
     int p = Math.max(p1 - s1, p2 - s2) + s + 1;
     p = Math.min(p, TypeId.NUMBER.getMaxPrecision());
@@ -506,33 +443,34 @@ public class Types {
     Type type = NumberType.of(p, s);
 
     // Optimize to INTEGER type
-    if (!(type1.is(TypeId.NUMBER) || type2.is(TypeId.NUMBER)) && p <= TypeId.INTEGER.getMaxPrecision() && s == 0) {      
+    if (!(type1.is(TypeId.NUMBER) || type2.is(TypeId.NUMBER))
+        && p <= TypeId.INTEGER.getMaxPrecision()
+        && s == 0) {
       return IntegerType.of(p);
     }
-    
+
     return type;
   }
 
   /**
    * Calculate return type precision and scale for x * y
-   * 
+   *
    * <ul>
-   * <li>Let p1, s1 be the precision and scale of the first operand</li>
-   * <li>Let p2, s2 be the precision and scale of the second operand</li>
-   * <li>Let p, s be the precision and scale of the result</li>
-   * <li>Let d be the number of whole digits in the result</li>
-   * <li>Then the result type is a decimal with:
-   * <ul>
-   * <li>p = p1 + p2</li>
-   * <li>s = s1 + s2</li>
-   * </ul>
-   * </li>
-   * <li>p and s are capped at their maximum values</li>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>p = p1 + p2
+   *         <li>s = s1 + s2
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
    * </ul>
    */
   public static Type deriveMultiplyType(final Type type1, final Type type2) {
 
-    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
       return Types.NUMBER;
     }
 
@@ -540,44 +478,43 @@ public class Types {
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();
     int s2 = type2.getScale();
-    
+
     // Return type precision
-    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), p1+p2);
-    
+    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), p1 + p2);
+
     // Return type scale
-    int s = Math.min(TypeId.NUMBER.getMaxScale(), s1+s2);
-    
-    if ( s==0 && p<=TypeId.INTEGER.getMaxPrecision()) {
+    int s = Math.min(TypeId.NUMBER.getMaxScale(), s1 + s2);
+
+    if (s == 0 && p <= TypeId.INTEGER.getMaxPrecision()) {
       return IntegerType.of(p);
     }
-    
+
     return NumberType.of(p, s);
   }
 
   /**
    * Calculate return type precision and scale for x / y
-   * 
+   *
    * <ul>
-   * <li>Let p1, s1 be the precision and scale of the first operand</li>
-   * <li>Let p2, s2 be the precision and scale of the second operand</li>
-   * <li>Let p, s be the precision and scale of the result</li>
-   * <li>Let d be the number of whole digits in the result</li>
-   * <li>Then the result type is a decimal with:
-   * <ul>
-   * <li>d = p1 - s1 + s2</li>
-   * <li>s = max(6, s1 + p2 + 1)</li>
-   * <li>p = d + s</li>
-   * </ul>
-   * </li>
-   * <li>p and s are capped at their maximum values</li>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>d = p1 - s1 + s2
+   *         <li>s = max(6, s1 + p2 + 1)
+   *         <li>p = d + s
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
    * </ul>
    */
   public static Type deriveDivideType(final Type type1, final Type type2) {
-    
-    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
       return Types.NUMBER;
     }
-    
+
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();
@@ -588,37 +525,35 @@ public class Types {
     // Return type scale
     int s = Math.max(6, s1 + p2 + 1);
     s = Math.min(TypeId.NUMBER.getMaxScale(), s);
-    
+
     // Return type precision
     int p = Math.min(TypeId.NUMBER.getMaxPrecision(), d + s);
-        
+
     return NumberType.of(p, s);
   }
 
   /**
    * Calculate return type precision and scale for x % y
-   * 
+   *
    * <ul>
-   * <li>Let p1, s1 be the precision and scale of the first operand</li>
-   * <li>Let p2, s2 be the precision and scale of the second operand</li>
-   * <li>Let p, s be the precision and scale of the result</li>
-   * <li>Let d be the number of whole digits in the result</li>
-   * <li>Then the result type is a decimal with:
-   * <ul>
-   * <li>s = max(s1, s2)</li>
-   * <li>p = min(p1 - s1, p2 - s2) + max(s1, s2)</li>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>s = max(s1, s2)
+   *         <li>p = min(p1 - s1, p2 - s2) + max(s1, s2)
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
    * </ul>
-   * </li>
-   * <li>p and s are capped at their maximum values</li>
-   * </ul>
-   * 
    */
   public static Type deriveModType(final Type type1, final Type type2) {
-    
-    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
       return Types.NUMBER;
     }
-    
+
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();
@@ -634,7 +569,6 @@ public class Types {
 
     return NumberType.of(p, s);
   }
-
 
   public static IValueMeta createValueMeta(final String name, final TypeId typeId) {
 

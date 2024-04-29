@@ -15,11 +15,11 @@
 
 package org.apache.hop.ui.expression;
 
+import java.util.Objects;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
-import java.util.Objects;
 
 public class OperatorRule implements IRule {
   private final IToken token;

@@ -16,7 +16,10 @@
  */
 package org.apache.hop.core.expression;
 
-
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -39,10 +42,6 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class ExpressionBenchmark {
 
@@ -58,10 +57,17 @@ public class ExpressionBenchmark {
 
     context = createExpressionContext();
 
-    Options opt = new OptionsBuilder().include(ExpressionBenchmark.class.getSimpleName())
-        .warmupIterations(2).warmupTime(TimeValue.seconds(5)).measurementIterations(5)
-        .measurementTime(TimeValue.seconds(10)).mode(Mode.SampleTime).timeUnit(TimeUnit.NANOSECONDS)
-        .forks(1).build();
+    Options opt =
+        new OptionsBuilder()
+            .include(ExpressionBenchmark.class.getSimpleName())
+            .warmupIterations(2)
+            .warmupTime(TimeValue.seconds(5))
+            .measurementIterations(5)
+            .measurementTime(TimeValue.seconds(10))
+            .mode(Mode.SampleTime)
+            .timeUnit(TimeUnit.NANOSECONDS)
+            .forks(1)
+            .build();
     new Runner(opt).run();
   }
 

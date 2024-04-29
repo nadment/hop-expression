@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,12 +27,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.text.Normalizer;
-import java.util.regex.Pattern;
 
 /**
- * The function removes accents (diacritic marks) from a given string.
- * Note that ligatures will be left as is.
+ * The function removes accents (diacritic marks) from a given string. Note that ligatures will be
+ * left as is.
  */
 @FunctionPlugin
 public class UnaccentFunction extends Function {
@@ -39,7 +39,11 @@ public class UnaccentFunction extends Function {
       Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
   public UnaccentFunction() {
-    super("UNACCENT", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "UNACCENT",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/unaccent.html");
   }
 
@@ -58,8 +62,7 @@ public class UnaccentFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     final StringBuilder decomposed =
         new StringBuilder(Normalizer.normalize(value, Normalizer.Form.NFD));
@@ -77,5 +80,4 @@ public class UnaccentFunction extends Function {
     // Note that this doesn't correctly remove ligatures...
     return DIACRITICS.matcher(decomposed).replaceAll("");
   }
-
 }

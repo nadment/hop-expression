@@ -16,14 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 /**
  * The function decode the URL to a string.
@@ -34,15 +34,18 @@ import java.nio.charset.StandardCharsets;
 public class UrlDecodeFunction extends Function {
 
   public UrlDecodeFunction() {
-    super("URL_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "URL_DECODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/url_decode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return URLDecoder.decode(value, StandardCharsets.UTF_8);
   }

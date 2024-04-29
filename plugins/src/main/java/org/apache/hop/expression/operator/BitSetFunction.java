@@ -23,32 +23,29 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class BitSetFunction extends Function {
 
   public BitSetFunction() {
-    super("BIT_SET", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.BITWISE,
+    super(
+        "BIT_SET",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.BITWISE,
         "/docs/bit_set.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
-      return null;
+    if (v1 == null) return null;
 
     int position = v1.intValue();
-    if (position <= 0)
-      return null;
-    if (position > 64)
-      return value;
+    if (position <= 0) return null;
+    if (position > 64) return value;
     return value | (1L << position - 1);
   }
-
 }

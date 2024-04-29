@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -21,27 +22,32 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 @FunctionPlugin
 public class CountFunction extends AggregateFunction {
 
   public enum Count {
-    VALUE, DISTINCT, ALL
+    VALUE,
+    DISTINCT,
+    ALL
   }
 
   private Count count;
 
   /**
-   * Default constructor to register function but not used.
-   * The different count mode are detected by parser.
+   * Default constructor to register function but not used. The different count mode are detected by
+   * parser.
    */
   public CountFunction() {
     this(Count.VALUE);
   }
 
   public CountFunction(Count count) {
-    super("COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NILADIC.or(OperandTypes.ANY), "/docs/count.html");
+    super(
+        "COUNT",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NILADIC.or(OperandTypes.ANY),
+        "/docs/count.html");
     this.count = count;
   }
 

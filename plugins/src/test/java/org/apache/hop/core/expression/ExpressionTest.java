@@ -16,9 +16,22 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Charsets;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
+import java.util.Calendar;
+import java.util.Locale;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -38,29 +51,14 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.temporal.Temporal;
-import java.util.Calendar;
-import java.util.Locale;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Charsets;
 
 public class ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
@@ -75,8 +73,7 @@ public class ExpressionTest {
   protected static final String ANSI_CYAN = "\u001B[36m";
   protected static final String ANSI_WHITE = "\u001B[37m";
 
-  @ClassRule
-  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
   @ClassRule
   public static ExternalResource getResource() {
@@ -190,8 +187,9 @@ public class ExpressionTest {
       // row[11] = JsonType.convertToJson("{\"sstudent\": [{\"id\":\"01\",name:\"Tom\",\"lastname\":
       // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
-      row[11] = JsonType.convertToJson(
-          "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
+      row[11] =
+          JsonType.convertToJson(
+              "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
 
       // Null values
       row[12] = null;
@@ -311,7 +309,7 @@ public class ExpressionTest {
     assertEquals(expected, evaluator.eval(InetAddress.class));
     return evaluator;
   }
-  
+
   protected Evaluator evalEquals(IExpressionContext context, String source, Double expected)
       throws Exception {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
@@ -343,7 +341,7 @@ public class ExpressionTest {
   protected Evaluator evalEquals(String source, InetAddress expected) throws Exception {
     return evalEquals(createExpressionContext(true), source, expected);
   }
-  
+
   protected Evaluator evalEquals(IExpressionContext context, String source, Temporal expected)
       throws Exception {
 
@@ -375,10 +373,12 @@ public class ExpressionTest {
   }
 
   protected void evalFails(final String source) throws Exception {
-    assertThrows(ExpressionException.class, () -> {
-      Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
-      evaluator.eval(Object.class);
-    });
+    assertThrows(
+        ExpressionException.class,
+        () -> {
+          Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+          evaluator.eval(Object.class);
+        });
   }
 
   protected IExpression compile(String source) throws Exception {
@@ -390,8 +390,15 @@ public class ExpressionTest {
     if (expression.getType() == Types.UNKNOWN) {
       color = ANSI_RED;
     }
-    System.out.println(source + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color
-        + expression + ANSI_RESET);
+    System.out.println(
+        source
+            + ANSI_PURPLE
+            + " cost="
+            + expression.getCost()
+            + "  "
+            + color
+            + expression
+            + ANSI_RESET);
 
     return expression;
   }
@@ -399,7 +406,7 @@ public class ExpressionTest {
   protected void optimize(String source) throws Exception {
     assertEquals(source, compile(source).toString());
   }
-  
+
   protected void optimize(String source, String expected) throws Exception {
     assertEquals(expected, compile(source).toString());
   }
@@ -424,14 +431,12 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    //evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
+    // evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
     evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
-    
-    
+
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");
     // System.out.print(result);
   }
 }
-

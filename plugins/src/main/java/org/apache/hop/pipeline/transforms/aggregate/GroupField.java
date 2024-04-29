@@ -17,12 +17,13 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
-import org.apache.hop.metadata.api.HopMetadataProperty;
 import java.util.Objects;
+import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class GroupField {
 
-  @HopMetadataProperty(injectionKey = "GROUP_FIELD",
+  @HopMetadataProperty(
+      injectionKey = "GROUP_FIELD",
       injectionKeyDescription = "AggregateMeta.Injection.GROUP_FIELD")
   private String name;
 
@@ -42,10 +43,8 @@ public class GroupField {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
     GroupField that = (GroupField) o;
     return Objects.equals(name, that.name);
   }

@@ -16,30 +16,31 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.zip.CRC32C;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.util.zip.CRC32C;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class Crc32Function extends Function {
 
   public Crc32Function() {
-    super("CRC32", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/crc32.html");
+    super(
+        "CRC32",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.CRYPTOGRAPHIC,
+        "/docs/crc32.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
-    if (bytes == null)
-      return null;
+    if (bytes == null) return null;
     CRC32C crc = new CRC32C();
     crc.update(bytes, 0, bytes.length);
 

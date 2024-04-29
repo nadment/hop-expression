@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -27,33 +28,37 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
- * Comparison <code>IS DISTINCT FROM</code> operator.
- * <br>
+ * Comparison <code>IS DISTINCT FROM</code> operator. <br>
  * <strong>Syntax:</strong> <code>x IS DISTINCT FROM y</code>
- * 
+ *
  * @see {@link IsNotDistinctFromOperator}
  */
 public class IsDistinctFromOperator extends Operator {
 
   public IsDistinctFromOperator() {
-    super("IS DISTINCT FROM", 10, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY,
-        OperatorCategory.COMPARISON, "/docs/is-distinct-from.html");
+    super(
+        "IS DISTINCT FROM",
+        10,
+        true,
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY_ANY,
+        OperatorCategory.COMPARISON,
+        "/docs/is-distinct-from.html");
   }
 
   @Override
   public Operator not() {
     return Operators.IS_NOT_DISTINCT_FROM;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
     Object right = operands[1].getValue();
 
-    return ! Comparison.equals(left, right);
+    return !Comparison.equals(left, right);
   }
 
   @Override

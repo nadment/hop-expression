@@ -18,7 +18,7 @@ public interface IExpressionProcessor {
 
   /**
    * This method is called once for each row
-   * 
+   *
    * @param context
    * @param operands
    * @return
@@ -27,7 +27,7 @@ public interface IExpressionProcessor {
 
   /**
    * This method returns the computed aggregate value.
-   * 
+   *
    * @param context
    * @return
    */

@@ -24,14 +24,16 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Converts a string expression to a interval.
- */
+/** Converts a string expression to a interval. */
 @FunctionPlugin
 public class ToIntervalFunction extends Function {
 
   public ToIntervalFunction() {
-    super("TO_INTERVAL", ReturnTypes.INTERVAL_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION,
+    super(
+        "TO_INTERVAL",
+        ReturnTypes.INTERVAL_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.CONVERSION,
         "/docs/to_interval.html");
   }
 

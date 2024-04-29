@@ -14,13 +14,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class StdDevPopProcessor implements IExpressionProcessor {
 

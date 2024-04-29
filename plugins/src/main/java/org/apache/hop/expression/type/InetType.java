@@ -17,16 +17,16 @@
 
 package org.apache.hop.expression.type;
 
+import java.net.InetAddress;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import java.net.InetAddress;
 
 public final class InetType extends Type {
-  
+
   InetType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
-    this.signature = generateSignature();    
+    this.signature = generateSignature();
   }
 
   @Override
@@ -46,7 +46,7 @@ public final class InetType extends Type {
 
   /**
    * Coerce value to data type INET
-   * 
+   *
    * @param value the value to coerce
    * @return String
    */
@@ -58,10 +58,9 @@ public final class InetType extends Type {
       return (InetAddress) value;
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
-        TypeId.JSON);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.JSON);
   }
-
 
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
@@ -89,7 +88,7 @@ public final class InetType extends Type {
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
+   *     numeric, or null if none
    * @return the converted value
    */
   @Override
@@ -107,19 +106,18 @@ public final class InetType extends Type {
       return convertToInet((String) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        TypeId.fromValue(value), this);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
   /**
    * Convert String value to Inet.
-   * 
+   *
    * @param str the string to convert
    * @return InetAddress
    */
   public static InetAddress convertToInet(final String str) throws ConversionException {
-    if (str == null || Utils.isEmpty(str))
-      return null;
+    if (str == null || Utils.isEmpty(str)) return null;
 
     try {
       return InetAddress.getByName(str);

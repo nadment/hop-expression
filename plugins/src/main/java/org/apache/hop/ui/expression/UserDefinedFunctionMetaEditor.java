@@ -51,8 +51,10 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
   private TableView wArguments;
   private ExpressionEditor wExpression;
 
-  public UserDefinedFunctionMetaEditor(HopGui hopGui,
-      MetadataManager<UserDefinedFunctionMeta> manager, UserDefinedFunctionMeta udf) {
+  public UserDefinedFunctionMetaEditor(
+      HopGui hopGui,
+      MetadataManager<UserDefinedFunctionMeta> manager,
+      UserDefinedFunctionMeta udf) {
     super(hopGui, manager, udf);
   }
 
@@ -132,18 +134,32 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     fdlParams.top = new FormAttachment(wDescription, margin * 2);
     wlArguments.setLayoutData(fdlParams);
 
-    ColumnInfo[] columns = new ColumnInfo[] {
-        new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, TypeId.ALL_NAMES.toArray(new String[0]), false)};
+    ColumnInfo[] columns =
+        new ColumnInfo[] {
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
+              ColumnInfo.COLUMN_TYPE_CCOMBO,
+              new String[] {""},
+              false),
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
+              ColumnInfo.COLUMN_TYPE_CCOMBO,
+              TypeId.ALL_NAMES.toArray(new String[0]),
+              false)
+        };
 
-    wArguments = new TableView(new Variables(), parent,
-        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns,
-        getMetadata().getArguments().size(), e -> {
-          updateField();
-          setChanged();
-        }, props);
+    wArguments =
+        new TableView(
+            new Variables(),
+            parent,
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            columns,
+            getMetadata().getArguments().size(),
+            e -> {
+              updateField();
+              setChanged();
+            },
+            props);
 
     FormData fdArguments = new FormData();
     fdArguments.left = new FormAttachment(0, 0);
@@ -214,7 +230,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     for (int i = 0; i < nrFields; i++) {
       TableItem item = wArguments.getNonEmpty(i);
       String name = item.getText(1);
-      if ( StringUtils.isNotEmpty(name) ) {
+      if (StringUtils.isNotEmpty(name)) {
         TypeId dataType = TypeId.of(item.getText(2));
         FunctionArgument argument = new FunctionArgument(name, dataType);
         udf.getArguments().add(argument);

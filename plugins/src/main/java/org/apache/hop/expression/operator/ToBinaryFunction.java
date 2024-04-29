@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionContext;
@@ -28,18 +30,16 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
-/**
- * Converts the string expression to a binary value.
- */
+/** Converts the string expression to a binary value. */
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
 
   private static final ToBinaryFunction StringHexToBinaryFunction = new StringHexToBinaryFunction();
-  private static final ToBinaryFunction StringUtf8ToBinaryFunction = new StringUtf8ToBinaryFunction();
-  private static final ToBinaryFunction StringBase64ToBinaryFunction = new StringBase64ToBinaryFunction();
+  private static final ToBinaryFunction StringUtf8ToBinaryFunction =
+      new StringUtf8ToBinaryFunction();
+  private static final ToBinaryFunction StringBase64ToBinaryFunction =
+      new StringBase64ToBinaryFunction();
 
   private static final class StringHexToBinaryFunction extends ToBinaryFunction {
     @Override
@@ -75,8 +75,11 @@ public class ToBinaryFunction extends Function {
   }
 
   public ToBinaryFunction() {
-    super("TO_BINARY", ReturnTypes.BINARY_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT), OperatorCategory.CONVERSION,
+    super(
+        "TO_BINARY",
+        ReturnTypes.BINARY_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperatorCategory.CONVERSION,
         "/docs/to_binary.html");
   }
 

@@ -14,9 +14,7 @@
  */
 package org.apache.hop.expression;
 
-/**
- * Visitor pattern for traversing a tree of {@link IExpression} objects.
- */
+/** Visitor pattern for traversing a tree of {@link IExpression} objects. */
 public interface IExpressionVisitor<E> {
   public E visitIdentifier(Identifier identifier);
 

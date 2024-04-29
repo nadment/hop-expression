@@ -16,6 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -24,44 +31,40 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 /**
- * Extracts a JSON fragment from a JSON object or string representing a Json.
- * <code>JSON_QUERY( expression [, path] )</code>
+ * Extracts a JSON fragment from a JSON object or string representing a Json. <code>
+ * JSON_QUERY( expression [, path] )</code>
  */
 @FunctionPlugin
 public class JsonQueryFunction extends Function {
 
-  public static final Configuration JSONPATH_CONFIGURATION = Configuration.builder()
-      .mappingProvider(new JacksonMappingProvider(
-          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
-      .jsonProvider(new JacksonJsonNodeJsonProvider()).build();
-
+  public static final Configuration JSONPATH_CONFIGURATION =
+      Configuration.builder()
+          .mappingProvider(
+              new JacksonMappingProvider(
+                  JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
+          .jsonProvider(new JacksonJsonNodeJsonProvider())
+          .build();
 
   public JsonQueryFunction() {
-    super("JSON_QUERY", ReturnTypes.JSON_NULLABLE, OperandTypes.JSON.or(OperandTypes.JSON_STRING),
-        OperatorCategory.JSON, "/docs/json_query.html");
+    super(
+        "JSON_QUERY",
+        ReturnTypes.JSON_NULLABLE,
+        OperandTypes.JSON.or(OperandTypes.JSON_STRING),
+        OperatorCategory.JSON,
+        "/docs/json_query.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     JsonNode jsonNode = operands[0].getValue(JsonNode.class);
-    if (jsonNode == null)
-      return null;
+    if (jsonNode == null) return null;
 
-    if (operands.length == 1)
-      return jsonNode;
+    if (operands.length == 1) return jsonNode;
 
     String path = operands[1].getValue(String.class);
-    if (path == null)
-      throw new ExpressionException(ErrorCode.JSON_PATH_IS_NULL);
+    if (path == null) throw new ExpressionException(ErrorCode.JSON_PATH_IS_NULL);
 
     try {
       JsonPath jsonPath = JsonPath.compile(path);

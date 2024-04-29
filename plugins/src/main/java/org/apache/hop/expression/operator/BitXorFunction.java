@@ -16,40 +16,48 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
- * Bitwise XOR operator.
- * <br>
+ * Bitwise XOR operator. <br>
  * <strong>Syntax:</strong> <code>x ^ y</code>
  */
 @FunctionPlugin
 public class BitXorFunction extends Function {
 
   public BitXorFunction() {
-    super("BIT_XOR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.BITWISE,
+    super(
+        "BIT_XOR",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }
 
   public BitXorFunction(String name) {
-    super("BIT_XOR", name, 80, true, ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.BITWISE, "/docs/bit_xor.html");
+    super(
+        "BIT_XOR",
+        name,
+        80,
+        true,
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.BITWISE,
+        "/docs/bit_xor.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long left = operands[0].getValue(Long.class);
-    if (left == null)
-      return null;
+    if (left == null) return null;
     Long right = operands[1].getValue(Long.class);
-    if (right == null)
-      return null;
+    if (right == null) return null;
 
     return left ^ right;
   }

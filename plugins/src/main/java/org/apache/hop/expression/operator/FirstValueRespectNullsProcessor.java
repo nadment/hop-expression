@@ -29,8 +29,7 @@ public class FirstValueRespectNullsProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (set)
-      return;
+    if (set) return;
 
     value = operands[0].getValue();
     set = true;

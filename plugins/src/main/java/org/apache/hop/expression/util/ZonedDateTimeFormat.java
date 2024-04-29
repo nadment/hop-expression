@@ -14,9 +14,6 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ErrorCode;
 import java.text.DecimalFormatSymbols;
 import java.time.DateTimeException;
 import java.time.ZoneId;
@@ -32,10 +29,13 @@ import java.time.temporal.JulianFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.ErrorCode;
 
 /**
- * Expression date/time format model for <code>TO_DATE(string, format)</code> and
- * <code>TO_CHAR(datetime, format)</code> functions..
+ * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
+ * TO_CHAR(datetime, format)</code> functions..
  *
  * <p>
  *
@@ -248,12 +248,25 @@ import java.util.Locale;
  */
 /* package */ class ZonedDateTimeFormat extends DateTimeFormat {
 
-  private static final String[] SHORT_MONTHS =
-      {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-  private static final String[] MONTHS = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
-      "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
+  private static final String[] SHORT_MONTHS = {
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+  };
+  private static final String[] MONTHS = {
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER"
+  };
 
-  private static abstract class Format {
+  private abstract static class Format {
     protected final boolean fillMode;
     protected final boolean exactMode;
 
@@ -408,8 +421,9 @@ import java.util.Locale;
   }
 
   private static class RomanMonthFormat extends Format {
-    private static final String[] ROMAN_MONTHS =
-        {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
+    private static final String[] ROMAN_MONTHS = {
+      "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"
+    };
 
     private final Capitalization cap;
 
@@ -445,8 +459,8 @@ import java.util.Locale;
         }
       }
 
-      throw new DateTimeParseException("Invalid roman month when parsing date with format RM",
-          parser.text, index);
+      throw new DateTimeParseException(
+          "Invalid roman month when parsing date with format RM", parser.text, index);
     }
   }
 
@@ -472,8 +486,7 @@ import java.util.Locale;
     public void parse(final DateTimeParser parser) {
       String str = parser.parseString(AM_PM);
       if (str != null) {
-        if (str.charAt(0) == 'P')
-          parser.isPM = true;
+        if (str.charAt(0) == 'P') parser.isPM = true;
         parser.isHourFormat12 = true;
       }
     }
@@ -495,8 +508,7 @@ import java.util.Locale;
       char ch;
       while (i < parser.text.length()) {
         ch = parser.text.charAt(i);
-        if (!(Character.isLetter(ch) || ch == '/'))
-          break;
+        if (!(Character.isLetter(ch) || ch == '/')) break;
         i++;
       }
 
@@ -587,7 +599,8 @@ import java.util.Locale;
 
     public DateLongFormat() {
       super(true, true);
-      this.formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
+      this.formatter =
+          DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
     }
 
     @Override
@@ -602,7 +615,8 @@ import java.util.Locale;
 
     public DateShortFormat() {
       super(true, true);
-      formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
+      formatter =
+          DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
     }
 
     @Override
@@ -619,7 +633,8 @@ import java.util.Locale;
     public TimeFormat(Capitalization cap) {
       super(true, true);
       this.cap = cap;
-      this.formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
+      this.formatter =
+          DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
     }
 
     @Override
@@ -669,9 +684,7 @@ import java.util.Locale;
     }
   }
 
-  /**
-   * Inner class to output the twelve hour field.
-   */
+  /** Inner class to output the twelve hour field. */
   private static class Hour12Format extends Format {
     public Hour12Format() {
       super(true, true);
@@ -810,8 +823,8 @@ import java.util.Locale;
         month++;
       }
 
-      throw new DateTimeParseException(ErrorCode.INVALID_NAME_OF_MONTH.message(), parser.text,
-          index);
+      throw new DateTimeParseException(
+          ErrorCode.INVALID_NAME_OF_MONTH.message(), parser.text, index);
     }
   }
 
@@ -1015,6 +1028,7 @@ import java.util.Locale;
       parser.isEpochDay = false;
     }
   }
+
   private class RoundYearFormat extends Format {
     private final int length;
 
@@ -1050,11 +1064,9 @@ import java.util.Locale;
       int year = parser.parseInt(length);
 
       // Years between 00-49 will be given the 21st century (the year 2000)
-      if (year >= 0 && year <= 49)
-        year += 2000;
+      if (year >= 0 && year <= 49) year += 2000;
       // Years between 50-99 will be given the 20th century (the year 1900).
-      else if (year >= 50 && year <= 99)
-        year += 1900;
+      else if (year >= 50 && year <= 99) year += 1900;
 
       parser.year = year;
       parser.isEpochDay = false;
@@ -1174,8 +1186,8 @@ import java.util.Locale;
     private final Capitalization cap;
     private final TextStyle style;
 
-    public NameOfMonthFormat(Capitalization cap, boolean fillMode, boolean exactMode,
-        TextStyle style) {
+    public NameOfMonthFormat(
+        Capitalization cap, boolean fillMode, boolean exactMode, TextStyle style) {
       super(fillMode, exactMode);
       this.cap = cap;
       this.style = style;
@@ -1201,24 +1213,20 @@ import java.util.Locale;
 
   /** Minutes per hour. */
   private static final int MINUTES_PER_HOUR = 60;
+
   /** Seconds per minute. */
   private static final int SECONDS_PER_MINUTE = 60;
+
   /** Seconds per hour. */
   private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
-  /**
-   * The pattern.
-   */
+  /** The pattern. */
   private final String pattern;
 
-  /**
-   * The locale.
-   */
+  /** The locale. */
   private final Locale locale;
 
-  /**
-   * The parsed formats.
-   */
+  /** The parsed formats. */
   private transient Format[] formats;
 
   private int twoDigitYearStart = 1970;
@@ -1308,8 +1316,8 @@ import java.util.Locale;
       }
 
       // Fractional seconds
-      if (startsWithIgnoreCase(pattern, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7",
-          "FF8", "FF9")) {
+      if (startsWithIgnoreCase(
+          pattern, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9")) {
         int digit = pattern.charAt(index + 2) - '0';
         list.add(new NanoFormat(digit));
         index += 3;
@@ -1618,8 +1626,9 @@ import java.util.Locale;
 
       // Local radix character
       if (startsWithIgnoreCase(pattern, index, "X")) {
-        list.add(new CharFormat(exactMode,
-            DecimalFormatSymbols.getInstance(locale).getDecimalSeparator()));
+        list.add(
+            new CharFormat(
+                exactMode, DecimalFormatSymbols.getInstance(locale).getDecimalSeparator()));
         index += 1;
         continue;
       }
@@ -1642,8 +1651,8 @@ import java.util.Locale;
     }
 
     if (!parser.isAllCharParsed()) {
-      throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern),
-          text, parser.index);
+      throw new DateTimeParseException(
+          ErrorCode.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, parser.index);
     }
 
     // Build the date

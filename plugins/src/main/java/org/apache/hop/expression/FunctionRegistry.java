@@ -14,6 +14,9 @@
  */
 package org.apache.hop.expression;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Set;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
@@ -25,9 +28,6 @@ import org.apache.hop.metadata.util.HopMetadataUtil;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Set;
 
 public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
@@ -45,13 +45,12 @@ public class FunctionRegistry {
 
   /**
    * Get function by name or alias (ignore case)
-   * 
+   *
    * @param name
    * @return
    */
   public static Function getFunction(final String name) {
-    if (name == null)
-      return null;
+    if (name == null) return null;
 
     return functions.get(name.toUpperCase());
   }
@@ -60,9 +59,7 @@ public class FunctionRegistry {
     return functions.keySet();
   }
 
-  /**
-   * Initialize the registry, keep private to keep this a singleton
-   */
+  /** Initialize the registry, keep private to keep this a singleton */
   private FunctionRegistry() {}
 
   private static void register(final ClassInfo classInfo) {
@@ -84,9 +81,7 @@ public class FunctionRegistry {
     }
   }
 
-  /**
-   * Discovery and register built-in and plugin functions
-   */
+  /** Discovery and register built-in and plugin functions */
   public static void registerPluginFunctions() throws HopException {
     JarCache cache = JarCache.getInstance();
     try {
@@ -111,8 +106,7 @@ public class FunctionRegistry {
   }
 
   public static void register(final String name, final Function function) {
-    if (name == null)
-      return;
+    if (name == null) return;
 
     if (functions.containsKey(name)) {
       log.logError("Function '{0}' already registred", name);
@@ -127,8 +121,7 @@ public class FunctionRegistry {
   }
 
   public static Function unregister(final String name) {
-    if (name == null)
-      return null;
+    if (name == null) return null;
 
     Function function = functions.remove(name);
     if (function == null) {
@@ -160,8 +153,9 @@ public class FunctionRegistry {
       log.logError("Error registring User-defined functions", e);
     }
   }
-  
-  protected static void registerUserDefinedFunction(IHopMetadataSerializer<UserDefinedFunctionMeta> serializer, String name) {
+
+  protected static void registerUserDefinedFunction(
+      IHopMetadataSerializer<UserDefinedFunctionMeta> serializer, String name) {
     try {
       if (log.isDebug()) {
         log.logBasic("Register user defined function: " + name);

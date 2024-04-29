@@ -24,14 +24,16 @@ import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * The function returns the number of elements of an array.
- */
+/** The function returns the number of elements of an array. */
 @FunctionPlugin
 public class CardinalityFunction extends Function {
 
   public CardinalityFunction() {
-    super("CARDINALITY", ReturnTypes.INTEGER_NULLABLE, OperandTypes.ARRAY, OperatorCategory.ARRAY,
+    super(
+        "CARDINALITY",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.ARRAY,
+        OperatorCategory.ARRAY,
         "/docs/cardinality.html");
   }
 

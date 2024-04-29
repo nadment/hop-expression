@@ -19,16 +19,16 @@ package org.apache.hop.expression;
 public class ExpressionException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
-  
+
   /**
-   * The zero-based character offset into the string being parsed at which
-   * the error was found during parsing.
+   * The zero-based character offset into the string being parsed at which the error was found
+   * during parsing.
    */
   private final int position;
-  
+
   /**
    * Create a new expression exception.
-   * 
+   *
    * @param error a error message
    */
   public ExpressionException(String error) {
@@ -38,17 +38,17 @@ public class ExpressionException extends RuntimeException {
 
   /**
    * Construct a new expression exception.
-   * 
+   *
    * @param error a error message
    */
   public ExpressionException(int position, ErrorCode error) {
     super(error.message());
     this.position = position;
   }
-  
+
   /**
    * Create a new expression exception.
-   * 
+   *
    * @param error a error message
    */
   public ExpressionException(ErrorCode error) {
@@ -58,18 +58,18 @@ public class ExpressionException extends RuntimeException {
   public ExpressionException(ErrorCode error, Object... values) {
     this(0, error, values);
   }
-  
+
   public ExpressionException(int position, ErrorCode error, Object... values) {
     super(error.message(values));
     this.position = position;
   }
-  
+
   /**
    * Returns the position where the error was found.
    *
    * @return the position where the error was found
    */
   public int getPosition() {
-      return position;
+    return position;
   }
 }

@@ -17,16 +17,15 @@ package org.apache.hop.expression.util;
 
 public class Hex {
 
-  /**
-   * Used to build output as hex.
-   */
-  private static final char[] DIGITS_LOWER =
-      {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-  /**
-   * Used to build output as hex.
-   */
-  private static final char[] DIGITS_UPPER =
-      {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+  /** Used to build output as hex. */
+  private static final char[] DIGITS_LOWER = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+  };
+
+  /** Used to build output as hex. */
+  private static final char[] DIGITS_UPPER = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+  };
 
   private Hex() {
     // Utility class
@@ -49,33 +48,30 @@ public class Hex {
     return digit;
   }
 
-
   /**
    * Converts a String representing hexadecimal values into an array of bytes of those same values.
    * The returned array will be half the length of the passed String, as it takes two characters to
-   * represent any given
-   * byte. An exception is thrown if the passed String has an odd number of elements.
+   * represent any given byte. An exception is thrown if the passed String has an odd number of
+   * elements.
    *
    * @param data A String containing hexadecimal digits
    * @return A byte array containing binary data decoded from the supplied char array.
    * @throws IllegalArgumentException Thrown if an odd number of characters or illegal characters
-   *         are supplied
+   *     are supplied
    */
   public static byte[] decode(final String data) {
     return decode(data.toCharArray());
   }
 
-
   /**
    * Converts an array of characters representing hexadecimal values into an array of bytes of those
-   * same values. The
-   * returned array will be half the length of the passed array, as it takes two characters to
-   * represent any given
-   * byte. An exception is thrown if the passed char array has an odd number of elements.
+   * same values. The returned array will be half the length of the passed array, as it takes two
+   * characters to represent any given byte. An exception is thrown if the passed char array has an
+   * odd number of elements.
    *
    * @param data An array of characters containing hexadecimal digits
    * @throws IllegalArgumentException Thrown if an odd number of characters or illegal characters
-   *         are supplied
+   *     are supplied
    */
   public static byte[] decode(final char[] data) {
     final int length = data.length;
@@ -102,14 +98,11 @@ public class Hex {
   public static String encodeToString(final byte[] data) {
     return new String(encode(data, true));
   }
-  
-  
+
   /**
    * Converts an array of bytes into an array of characters representing the hexadecimal values of
-   * each byte in order.
-   * The returned array will be double the length of the passed array, as it takes two characters to
-   * represent any
-   * given byte.
+   * each byte in order. The returned array will be double the length of the passed array, as it
+   * takes two characters to represent any given byte.
    *
    * @param data a byte[] to convert to hex characters
    * @return A char[] containing lower-case hexadecimal characters
@@ -120,10 +113,8 @@ public class Hex {
 
   /**
    * Converts an array of bytes into an array of characters representing the hexadecimal values of
-   * each byte in order.
-   * The returned array will be double the length of the passed array, as it takes two characters to
-   * represent any
-   * given byte.
+   * each byte in order. The returned array will be double the length of the passed array, as it
+   * takes two characters to represent any given byte.
    *
    * @param data a byte[] to convert to Hex characters
    * @param toLowerCase {@code true} converts to lowercase, {@code false} to uppercase

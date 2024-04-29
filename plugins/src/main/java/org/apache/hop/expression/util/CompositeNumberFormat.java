@@ -16,8 +16,8 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.ErrorCode;
 import java.math.BigDecimal;
+import org.apache.hop.expression.ErrorCode;
 
 public class CompositeNumberFormat extends NumberFormat {
   private final String pattern;

@@ -16,31 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
 
-/**
- * Calculates the square of a numeric expression.
- */
+/** Calculates the square of a numeric expression. */
 @FunctionPlugin
 public class SquareFunction extends Function {
   public static final SquareFunction INSTANCE = new SquareFunction();
 
   public SquareFunction() {
-    super("SQUARE", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "SQUARE",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/square.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return value.multiply(value, MATH_CONTEXT);
   }

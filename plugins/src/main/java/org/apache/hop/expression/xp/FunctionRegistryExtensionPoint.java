@@ -26,15 +26,15 @@ import org.apache.hop.core.plugins.PluginRegistry;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.FunctionRegistry;
 
-/**
- * Initialize FunctionRegistry before JarCache is cleared
- */
-@ExtensionPoint(id = "FunctionRegistryExtensionPoint", extensionPointId = "HopEnvironmentAfterInit",
+/** Initialize FunctionRegistry before JarCache is cleared */
+@ExtensionPoint(
+    id = "FunctionRegistryExtensionPoint",
+    extensionPointId = "HopEnvironmentAfterInit",
     description = "Register the expression built-in and annoted functions")
 public class FunctionRegistryExtensionPoint implements IExtensionPoint<PluginRegistry> {
   @Override
-  public void callExtensionPoint(ILogChannel log, IVariables variables,
-      PluginRegistry pluginRegistry) throws HopException {
+  public void callExtensionPoint(
+      ILogChannel log, IVariables variables, PluginRegistry pluginRegistry) throws HopException {
     FunctionRegistry.registerPluginFunctions();
   }
 }

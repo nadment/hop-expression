@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
@@ -29,11 +30,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
-import java.math.BigDecimal;
 
-/**
- * Returns the absolute (positive) value of the numeric or interval value.
- */
+/** Returns the absolute (positive) value of the numeric or interval value. */
 @FunctionPlugin
 public class AbsFunction extends Function {
   public static final AbsFunction IntegerAbsFunction = new IntegerAbsFunction();
@@ -41,7 +39,11 @@ public class AbsFunction extends Function {
   public static final AbsFunction IntervalAbsFunction = new IntervalAbsFunction();
 
   public AbsFunction() {
-    super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL), OperatorCategory.MATHEMATICAL,
+    super(
+        "ABS",
+        ReturnTypes.ABS_FUNCTION,
+        OperandTypes.NUMERIC.or(OperandTypes.INTERVAL),
+        OperatorCategory.MATHEMATICAL,
         "/docs/abs.html");
   }
 
@@ -57,7 +59,7 @@ public class AbsFunction extends Function {
     if (type.is(TypeId.INTERVAL)) {
       return new Call(IntervalAbsFunction, call.getOperands());
     }
-    
+
     if (type.is(TypeId.INTEGER)) {
       return new Call(IntegerAbsFunction, call.getOperands());
     }
@@ -66,43 +68,34 @@ public class AbsFunction extends Function {
     return new Call(NumberAbsFunction, call.getOperands());
   }
 
-  /**
-   * Returns the absolute value of the integer value.
-   */
+  /** Returns the absolute value of the integer value. */
   private static final class IntegerAbsFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
-      if (value == null)
-        return value;
+      if (value == null) return value;
 
       return FastMath.abs(value);
     }
   }
 
-  /**
-   * Returns the absolute value of the number value.
-   */
+  /** Returns the absolute value of the number value. */
   private static final class NumberAbsFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
-      if (value == null)
-        return value;
+      if (value == null) return value;
 
       return value.abs();
     }
   }
-  
-  /**
-   * Returns the absolute value of the interval value.
-   */
+
+  /** Returns the absolute value of the interval value. */
   private static final class IntervalAbsFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       Interval value = operands[0].getValue(Interval.class);
-      if (value == null)
-        return value;
+      if (value == null) return value;
 
       return value.abs();
     }

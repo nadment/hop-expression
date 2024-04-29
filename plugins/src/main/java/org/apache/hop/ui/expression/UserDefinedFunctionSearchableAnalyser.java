@@ -17,6 +17,8 @@
 
 package org.apache.hop.ui.expression;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.core.search.BaseMetadataSearchableAnalyser;
 import org.apache.hop.core.search.ISearchQuery;
 import org.apache.hop.core.search.ISearchResult;
@@ -24,10 +26,9 @@ import org.apache.hop.core.search.ISearchable;
 import org.apache.hop.core.search.ISearchableAnalyser;
 import org.apache.hop.core.search.SearchableAnalyserPlugin;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
-import java.util.ArrayList;
-import java.util.List;
 
-@SearchableAnalyserPlugin(id = "UserDefinedFunctionSearchableAnalyser",
+@SearchableAnalyserPlugin(
+    id = "UserDefinedFunctionSearchableAnalyser",
     name = "Search in user defined function metadata")
 public class UserDefinedFunctionSearchableAnalyser
     extends BaseMetadataSearchableAnalyser<UserDefinedFunctionMeta>
@@ -39,8 +40,8 @@ public class UserDefinedFunctionSearchableAnalyser
   }
 
   @Override
-  public List<ISearchResult> search(ISearchable<UserDefinedFunctionMeta> searchable,
-      ISearchQuery searchQuery) {
+  public List<ISearchResult> search(
+      ISearchable<UserDefinedFunctionMeta> searchable, ISearchQuery searchQuery) {
     UserDefinedFunctionMeta meta = searchable.getSearchableObject();
     String component = getMetadataComponent();
 

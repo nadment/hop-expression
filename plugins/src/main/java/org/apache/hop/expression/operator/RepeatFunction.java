@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,12 +29,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
-/**
- * The function repeats a string or binary as many times as specified.
- */
+/** The function repeats a string or binary as many times as specified. */
 @FunctionPlugin
 public class RepeatFunction extends Function {
 
@@ -40,8 +38,12 @@ public class RepeatFunction extends Function {
   public static final RepeatFunction BinaryRepeatFunction = new BinaryRepeatFunction();
 
   public RepeatFunction() {
-    super("REPEAT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
-        OperatorCategory.STRING, "/docs/repeat.html");
+    super(
+        "REPEAT",
+        ReturnTypes.ARG0_MAX_PRECISION,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+        OperatorCategory.STRING,
+        "/docs/repeat.html");
   }
 
   @Override
@@ -55,18 +57,14 @@ public class RepeatFunction extends Function {
     return new Call(StringRepeatFunction, call.getOperands());
   }
 
-  /**
-   * The function repeats a string as many times as specified.
-   */
+  /** The function repeats a string as many times as specified. */
   private static final class StringRepeatFunction extends RepeatFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
-      if (repeat == null)
-        return null;
+      if (repeat == null) return null;
       int count = repeat.intValue();
 
       StringBuilder builder = new StringBuilder(value.length() * count);
@@ -77,18 +75,14 @@ public class RepeatFunction extends Function {
     }
   }
 
-  /**
-   * The function repeats a binary as many times as specified.
-   */
+  /** The function repeats a binary as many times as specified. */
   private static final class BinaryRepeatFunction extends RepeatFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
-      if (repeat == null)
-        return null;
+      if (repeat == null) return null;
       int count = repeat.intValue();
 
       try {

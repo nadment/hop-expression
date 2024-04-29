@@ -17,9 +17,9 @@
 
 package org.apache.hop.expression.type;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import java.math.BigDecimal;
 
 public final class BooleanType extends Type {
 
@@ -29,23 +29,23 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public BooleanType withNullability(final boolean nullable) {   
-    return (nullable) ? Types.BOOLEAN:Types.BOOLEAN_NOT_NULL;
+  public BooleanType withNullability(final boolean nullable) {
+    return (nullable) ? Types.BOOLEAN : Types.BOOLEAN_NOT_NULL;
   }
 
   @Override
   public TypeId getId() {
     return TypeId.BOOLEAN;
   }
-  
+
   @Override
   public TypeComparability getComparability() {
     return TypeComparability.ALL;
   }
-  
+
   /**
    * Coerce value to data type BOOLEAN
-   * 
+   *
    * @param value the value to coerce
    * @return Boolean
    */
@@ -59,15 +59,14 @@ public final class BooleanType extends Type {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
-        TypeId.BOOLEAN);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.BOOLEAN);
   }
 
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
-    if (value == null)
-      return null;
+    if (value == null) return null;
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
     }
@@ -94,7 +93,7 @@ public final class BooleanType extends Type {
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
+   *     numeric, or null if none
    * @return the converted value
    */
   @Override
@@ -118,8 +117,8 @@ public final class BooleanType extends Type {
       return convertToBoolean((String) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        TypeId.fromValue(value), this);
+    throw new ConversionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
   public static final Boolean convertToBoolean(final String str) throws ConversionException {

@@ -29,9 +29,7 @@ import org.apache.hop.expression.util.Characters;
 
 /**
  * Returns a string with the first letter of each word in uppercase and the subsequent letters in
- * lowercase.
- * 
- * @See {@link LowerFunction}, {@link UpperFunction}
+ * lowercase. @See {@link LowerFunction}, {@link UpperFunction}
  */
 @FunctionPlugin
 public class InitCapFunction extends Function {
@@ -39,7 +37,11 @@ public class InitCapFunction extends Function {
   public static final InitCapFunction INSTANCE = new InitCapFunction();
 
   public InitCapFunction() {
-    super("INITCAP", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "INITCAP",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/initcap.html");
   }
 
@@ -48,7 +50,8 @@ public class InitCapFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator()) || operand.is(UpperFunction.INSTANCE)
+    if (operand.is(call.getOperator())
+        || operand.is(UpperFunction.INSTANCE)
         || operand.is(LowerFunction.INSTANCE)) {
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }
@@ -59,8 +62,7 @@ public class InitCapFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     int length = value.length();
     StringBuilder builder = new StringBuilder(length);
@@ -80,5 +82,4 @@ public class InitCapFunction extends Function {
     }
     return builder.toString();
   }
-
 }

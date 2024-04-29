@@ -14,6 +14,8 @@
  */
 package org.apache.hop.expression;
 
+import java.util.Set;
+import java.util.TreeSet;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenOperator;
@@ -65,8 +67,6 @@ import org.apache.hop.expression.operator.NullIfFunction;
 import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class Operators {
   // -------------------------------------------------------------
@@ -131,7 +131,7 @@ public class Operators {
   public static final Operator NEGATE = new NegateOperator();
   public static final Operator MULTIPLY = new MultiplyOperator();
   public static final Operator DIVIDE = new DivOperator();
-  public static final Operator MODULUS = new ModFunction("%");  
+  public static final Operator MODULUS = new ModFunction("%");
 
   // -------------------------------------------------------------
   // DATE OPERATORS
@@ -162,10 +162,40 @@ public class Operators {
 
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> SET_OPERATORS =
-      Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, ELEMENT_AT, EQUAL,
-          GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
-          LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE_SEARCH, CONCAT, IN,
-          IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR, BOOLXOR);
+      Set.of(
+          ADD,
+          SUBTRACT,
+          MULTIPLY,
+          DIVIDE,
+          BITAND,
+          BITOR,
+          BITNOT,
+          BITXOR,
+          CAST,
+          MODULUS,
+          ELEMENT_AT,
+          EQUAL,
+          GREATER_THAN,
+          GREATER_THAN_OR_EQUAL,
+          ILIKE,
+          LESS_THAN,
+          LESS_THAN_OR_EQUAL,
+          LESS_THAN_OR_GREATER_THAN,
+          NOT_EQUAL,
+          BOOLAND,
+          BETWEEN_ASYMMETRIC,
+          CASE_SEARCH,
+          CONCAT,
+          IN,
+          IS_DISTINCT_FROM,
+          IS_NULL,
+          SIMILAR_TO,
+          IS_FALSE,
+          IS_TRUE,
+          LIKE,
+          BOOLNOT,
+          BOOLOR,
+          BOOLXOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(new OperatorComparator());
@@ -184,10 +214,18 @@ public class Operators {
   }
 
   public static boolean isStrong(IExpression expression) {
-    return is(expression, EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, GREATER_THAN, GREATER_THAN_OR_EQUAL);
+    return is(
+        expression,
+        EQUAL,
+        NOT_EQUAL,
+        LESS_THAN,
+        LESS_THAN_OR_EQUAL,
+        LESS_THAN_OR_GREATER_THAN,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL);
   }
-  
+
   private Operators() {
-    // Utility class    
+    // Utility class
   }
 }

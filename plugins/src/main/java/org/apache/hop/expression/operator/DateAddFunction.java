@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Adds or subtracts a specified number of time unit to a date or timestamp
- * 
+ *
  * @see AddDaysFunction
  * @see AddWeeksFunction
  * @see AddQuartersFunction
@@ -45,7 +45,11 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class DateAddFunction extends Function {
 
   public DateAddFunction() {
-    super("DATE_ADD", ReturnTypes.DATE_NULLABLE, OperandTypes.TIMEUNIT_NUMERIC_TEMPORAL, OperatorCategory.DATE,
+    super(
+        "DATE_ADD",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TIMEUNIT_NUMERIC_TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/date_add.html");
   }
 

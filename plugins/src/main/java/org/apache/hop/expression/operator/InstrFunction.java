@@ -33,9 +33,13 @@ public class InstrFunction extends Function {
 
   public InstrFunction() {
     super(
-        "INSTR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING
-            .or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC),
-        OperatorCategory.STRING, "/docs/instr.html");
+        "INSTR",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING
+            .or(OperandTypes.STRING_STRING_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC),
+        OperatorCategory.STRING,
+        "/docs/instr.html");
   }
 
   @Override
@@ -67,28 +71,24 @@ public class InstrFunction extends Function {
       if (operands.length == 4) {
         occurence = operands[3].getValue(Long.class).intValue();
         if (occurence < 1) {
-          throw new IllegalArgumentException(
-              ErrorCode.ARGUMENT_OUT_OF_RANGE.message(occurence));
+          throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(occurence));
         }
       }
     }
 
     if (start >= 0) {
       while ((result = str.indexOf(substr, start)) > 0) {
-        if (--occurence <= 0)
-          break;
+        if (--occurence <= 0) break;
         start = result + substr.length();
       }
     } else if (start < 0) {
       start = str.length() + start;
       while ((result = str.lastIndexOf(substr, start)) > 0) {
-        if (--occurence <= 0)
-          break;
+        if (--occurence <= 0) break;
         start = result - substr.length();
       }
     }
 
     return Long.valueOf(result + 1L);
   }
-
 }

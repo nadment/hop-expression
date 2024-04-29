@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,16 +27,17 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
 
-/**
- * Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
- */
+/** Returns NULL if the argument evaluates to 0; otherwise, returns the argument. */
 @FunctionPlugin
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {
-    super("NULLIFZERO", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.CONDITIONAL,
+    super(
+        "NULLIFZERO",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.CONDITIONAL,
         "/docs/nullifzero.html");
   }
 

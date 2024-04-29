@@ -14,15 +14,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Returns the median of all values in the expression over a group of rows.
- */
+/** Returns the median of all values in the expression over a group of rows. */
 public class MedianProcessor implements IExpressionProcessor {
 
   private static final Median MEDIAN = new Median();

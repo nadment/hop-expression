@@ -25,24 +25,25 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 
-/**
- * Converts a string or numeric expression to a boolean value.
- */
+/** Converts a string or numeric expression to a boolean value. */
 @FunctionPlugin
 public class TryToBooleanFunction extends Function {
-  
+
   public static final TryToBooleanFunction INSTANCE = new TryToBooleanFunction();
-  
+
   public TryToBooleanFunction() {
-    super("TRY_TO_BOOLEAN", ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING.or(OperandTypes.NUMERIC),
-        OperatorCategory.CONVERSION, "/docs/to_boolean.html");
+    super(
+        "TRY_TO_BOOLEAN",
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.NUMERIC),
+        OperatorCategory.CONVERSION,
+        "/docs/to_boolean.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     try {
       return Types.BOOLEAN.cast(value, null);

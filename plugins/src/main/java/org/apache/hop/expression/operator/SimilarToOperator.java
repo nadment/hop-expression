@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
@@ -24,28 +27,30 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
-import java.io.StringWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * Comparison SIMILAR TO operator.
- * <br>
+ * Comparison SIMILAR TO operator. <br>
  * <strong>Syntax:</strong> <code>'abc' SIMILAR TO 'regexp'</code>
  */
 public class SimilarToOperator extends Operator {
 
   private final boolean not;
-  
+
   public SimilarToOperator(boolean not) {
-    super(not ? "NOT SIMILAR TO":"SIMILAR TO", 10, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING_STRING,
-        OperatorCategory.COMPARISON, "/docs/similar-to.html");
+    super(
+        not ? "NOT SIMILAR TO" : "SIMILAR TO",
+        10,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.STRING_STRING,
+        OperatorCategory.COMPARISON,
+        "/docs/similar-to.html");
     this.not = not;
   }
-  
+
   @Override
   public Operator not() {
-    return not ? Operators.SIMILAR_TO:Operators.NOT_SIMILAR_TO;
+    return not ? Operators.SIMILAR_TO : Operators.NOT_SIMILAR_TO;
   }
 
   @Override
@@ -72,7 +77,7 @@ public class SimilarToOperator extends Operator {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append(not ? " NOT SIMILAR TO ":" SIMILAR TO ");
+    writer.append(not ? " NOT SIMILAR TO " : " SIMILAR TO ");
     operands[1].unparse(writer);
   }
 }

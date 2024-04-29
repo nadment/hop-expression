@@ -24,22 +24,23 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Encodes special characters in a string using the Java string literal encoding format.
- */
+/** Encodes special characters in a string using the Java string literal encoding format. */
 @FunctionPlugin
 public class StringEncodeFunction extends Function {
 
   public StringEncodeFunction() {
-    super("STRING_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "STRING_ENCODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/string_encode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return StringEscapeUtils.escapeJava(value);
   }

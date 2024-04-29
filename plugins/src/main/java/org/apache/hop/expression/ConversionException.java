@@ -22,7 +22,7 @@ public class ConversionException extends RuntimeException {
 
   /**
    * Construct a new expression exception.
-   * 
+   *
    * @param error a error message
    */
   public ConversionException(ErrorCode error) {

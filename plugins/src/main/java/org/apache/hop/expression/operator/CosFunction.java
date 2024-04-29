@@ -16,14 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  * Calculates the trigonometric cosine of the specified angle in radians in the specified number.
@@ -32,15 +32,18 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CosFunction extends Function {
 
   public CosFunction() {
-    super("COS", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY, "/docs/cos.html");
+    super(
+        "COS",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.TRIGONOMETRY,
+        "/docs/cos.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return BigDecimalMath.cos(value, MATH_CONTEXT);
   }
-
 }

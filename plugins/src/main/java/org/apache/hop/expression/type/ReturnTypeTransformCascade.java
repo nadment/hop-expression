@@ -17,12 +17,12 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
+
 import org.apache.hop.expression.Call;
 
 /**
- * Strategy to infer the type of an operator call from the type of the operands
- * by using one {@link IReturnTypeInference} rule and a combination of
- * {@link ITypeTransform}s.
+ * Strategy to infer the type of an operator call from the type of the operands by using one {@link
+ * IReturnTypeInference} rule and a combination of {@link ITypeTransform}s.
  */
 public class ReturnTypeTransformCascade implements IReturnTypeInference {
 

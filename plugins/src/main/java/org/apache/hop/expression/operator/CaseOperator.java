@@ -19,6 +19,11 @@ package org.apache.hop.expression.operator;
 
 import static org.apache.hop.expression.type.Types.coerceOperandType;
 import static org.apache.hop.expression.type.Types.getLeastRestrictive;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -34,14 +39,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-/**
- * An operator describing the <code>CASE</code> operator.
- */
+/** An operator describing the <code>CASE</code> operator. */
 public class CaseOperator extends Operator {
   public enum When {
     /** Simple switch case */
@@ -53,7 +52,13 @@ public class CaseOperator extends Operator {
   private final When when;
 
   public CaseOperator(When when) {
-    super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, null, OperatorCategory.CONDITIONAL,
+    super(
+        "CASE",
+        120,
+        true,
+        ReturnTypes.CASE_OPERATOR,
+        null,
+        OperatorCategory.CONDITIONAL,
         "/docs/case.html");
     this.when = when;
   }
@@ -111,8 +116,10 @@ public class CaseOperator extends Operator {
       if (whenTerm.size() == 1) {
 
         // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
-        return new Call(Operators.IF,
-            new Call(Operators.EQUAL, call.getOperand(0), whenTerm.get(0)), thenTerm.get(0),
+        return new Call(
+            Operators.IF,
+            new Call(Operators.EQUAL, call.getOperand(0), whenTerm.get(0)),
+            thenTerm.get(0),
             elseTerm);
       }
     } else {
@@ -129,8 +136,12 @@ public class CaseOperator extends Operator {
         thenTerm.forEach(thenOperands::add);
         elseTerm.asCall().getOperand(2).asTuple().forEach(thenOperands::add);
 
-        return new Call(Operators.CASE_SEARCH, Literal.NULL, new Tuple(whenOperands),
-            new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
+        return new Call(
+            Operators.CASE_SEARCH,
+            Literal.NULL,
+            new Tuple(whenOperands),
+            new Tuple(thenOperands),
+            elseTerm.asCall().getOperand(3));
       }
 
       // Search CASE expressions with one condition can be turned into COALESCE, NULLIF, NVL2 or
@@ -149,12 +160,16 @@ public class CaseOperator extends Operator {
         if (whenTerm0.is(Operators.EQUAL) && thenTerm0.isNull()) {
 
           if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
-            return new Call(Operators.NULLIF, whenTerm0.asCall().getOperand(0),
+            return new Call(
+                Operators.NULLIF,
+                whenTerm0.asCall().getOperand(0),
                 whenTerm0.asCall().getOperand(1));
           }
 
           if (whenTerm0.asCall().getOperand(1).equals(elseTerm)) {
-            return new Call(Operators.NULLIF, whenTerm0.asCall().getOperand(1),
+            return new Call(
+                Operators.NULLIF,
+                whenTerm0.asCall().getOperand(1),
                 whenTerm0.asCall().getOperand(0));
           }
         }
@@ -194,7 +209,6 @@ public class CaseOperator extends Operator {
     return Objects.hash(super.hashCode(), this.when);
   }
 
-
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("CASE");
@@ -210,10 +224,9 @@ public class CaseOperator extends Operator {
     Tuple thenTuple = operands[2].asTuple();
     for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
-      if ( whenOperand instanceof Tuple ) {
+      if (whenOperand instanceof Tuple) {
         whenOperand.asTuple().unparseValues(writer);
-      }
-      else whenOperand.unparse(writer);
+      } else whenOperand.unparse(writer);
       writer.append(" THEN ");
       IExpression thenOperand = thenTuple.get(index++);
       thenOperand.unparse(writer);
@@ -257,9 +270,8 @@ public class CaseOperator extends Operator {
     }
 
     // Determine common return type
-    Type returnType = getLeastRestrictive(getLeastRestrictive(thenTuple), elseOperand.getType());    
-    if ( returnType.is(TypeId.UNKNOWN)) 
-      return false;
+    Type returnType = getLeastRestrictive(getLeastRestrictive(thenTuple), elseOperand.getType());
+    if (returnType.is(TypeId.UNKNOWN)) return false;
 
     // Check then operands
     for (IExpression thenOperand : thenTuple) {
@@ -279,19 +291,19 @@ public class CaseOperator extends Operator {
   @Override
   public boolean coerceOperandsType(Call call) {
     boolean coerced = false;
-    
+
     // Simple case operator
     if (when == When.SIMPLE) {
-            
+
       Type type = getLeastRestrictive(call.getOperand(1).asTuple());
       type = getLeastRestrictive(type, call.getOperand(0).getType());
-      
+
       // Coerce value operand
       coerced |= coerceOperandType(call, type, 0);
       // Coerce WHEN operands
       coerced |= coerceOperandType(call, type, 1);
     }
-    
+
     // Coerce THEN and ELSE operands
     coerced |= coerceOperandType(call, call.getType(), 2);
     coerced |= coerceOperandType(call, call.getType(), 3);

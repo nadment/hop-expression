@@ -20,11 +20,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.IntervalQualifier;
 import org.junit.Test;
-
 
 public class IntervalTest extends ExpressionTest {
 
@@ -119,25 +119,28 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(Interval.of(0, 0, 5, 14), Interval.dayToHour("+5 14"));
     assertEquals(Interval.of(0, 0, 5, 14, 38), Interval.dayToMinute("+5 14:38"));
     assertEquals(Interval.of(0, 0, 5, 14, 38, 56), Interval.dayToSecond("5 14:38:56"));
-    assertEquals(Interval.of(0, 0, 5, 14, 38, 56, 987654321),
-        Interval.dayToSecond("5 14:38:56.987654321"));
-    assertEquals(Interval.of(0, 0, 5, 14, 38, 56, 987654321).negate(),
+    assertEquals(
+        Interval.of(0, 0, 5, 14, 38, 56, 987654321), Interval.dayToSecond("5 14:38:56.987654321"));
+    assertEquals(
+        Interval.of(0, 0, 5, 14, 38, 56, 987654321).negate(),
         Interval.dayToSecond("-5 14:38:56.987654321"));
     assertEquals(Interval.of(0, 0, 0, 14), Interval.hour("14"));
     assertEquals(Interval.of(0, 0, 0, 14, 38), Interval.hourToMinute("14:38"));
     assertEquals(Interval.of(0, 0, 0, 14, 38, 56), Interval.hourToSecond("14:38:56"));
     assertEquals(Interval.of(0, 0, 0, 0, 38), Interval.minute("38"));
     assertEquals(Interval.of(0, 0, 0, 0, 38, 56), Interval.minuteToSecond("38:56"));
-    assertEquals(Interval.of(0, 0, 0, 0, 38, 56, 123456789),
-        Interval.minuteToSecond("38:56.123456789"));
-    assertEquals(Interval.of(0, 0, 0, 0, 38, 56, 123456789).negate(),
+    assertEquals(
+        Interval.of(0, 0, 0, 0, 38, 56, 123456789), Interval.minuteToSecond("38:56.123456789"));
+    assertEquals(
+        Interval.of(0, 0, 0, 0, 38, 56, 123456789).negate(),
         Interval.minuteToSecond("-38:56.123456789"));
     assertEquals(Interval.of(0, 0, 0, 0, 0, 56, 123456789), Interval.second("56.123456789"));
-    assertEquals(Interval.of(0, 0, 0, 0, 0, 56, 123456789).negate(),
-        Interval.second("-56.123456789"));
+    assertEquals(
+        Interval.of(0, 0, 0, 0, 0, 56, 123456789).negate(), Interval.second("-56.123456789"));
 
     // Verbose format
-    assertEquals(Interval.of(5, 6, 30, 12, 30, 58, 999000000), Interval.valueOf("5-6 30 12:30:58.999"));
+    assertEquals(
+        Interval.of(5, 6, 30, 12, 30, 58, 999000000), Interval.valueOf("5-6 30 12:30:58.999"));
     assertEquals(Interval.of(4), Interval.valueOf(" 4 year"));
     assertEquals(Interval.of(4), Interval.valueOf(" 4 years "));
     assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months"));
@@ -155,8 +158,8 @@ public class IntervalTest extends ExpressionTest {
 
   @Test
   public void intervalFormat() throws Exception {
-    assertEquals("+7-1 44 22:30:58.123456789",
-        Interval.of(5, 25, 44, 22, 30, 58, 123456789).toString());
+    assertEquals(
+        "+7-1 44 22:30:58.123456789", Interval.of(5, 25, 44, 22, 30, 58, 123456789).toString());
   }
 
   @Test
@@ -188,11 +191,11 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(TimeUnit.HOUR, IntervalQualifier.HOUR_TO_SECOND.getStartUnit());
     assertEquals(TimeUnit.MINUTE, IntervalQualifier.MINUTE.getStartUnit());
     assertEquals(TimeUnit.MINUTE, IntervalQualifier.MINUTE_TO_SECOND.getStartUnit());
-    assertEquals(TimeUnit.SECOND, IntervalQualifier.SECOND.getStartUnit());    
+    assertEquals(TimeUnit.SECOND, IntervalQualifier.SECOND.getStartUnit());
   }
-  
+
   @Test
-  public void intervalQualifierEndUnit() throws Exception {    
+  public void intervalQualifierEndUnit() throws Exception {
     assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR.getEndUnit());
     assertEquals(TimeUnit.MONTH, IntervalQualifier.YEAR_TO_MONTH.getEndUnit());
     assertEquals(TimeUnit.QUARTER, IntervalQualifier.QUARTER.getEndUnit());
@@ -266,11 +269,9 @@ public class IntervalTest extends ExpressionTest {
     assertFalse(IntervalQualifier.SECOND.hasMinutes());
     assertTrue(IntervalQualifier.SECOND.hasSeconds());
   }
-  
+
   @Test
   public void intervalAbs() throws Exception {
-    assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months").negate().abs());  
+    assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months").negate().abs());
   }
-  
 }
-

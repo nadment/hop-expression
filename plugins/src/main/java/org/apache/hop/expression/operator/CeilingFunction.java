@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,27 +28,28 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * Returns the values rounded to the nearest equal or larger integer.
- * 
+ *
  * @see {@link FloorOperator}, {@link RoundOperator}, {@link TruncateOperator}
  */
 @FunctionPlugin(names = "CEIL")
 public class CeilingFunction extends Function {
 
   public CeilingFunction() {
-    super("CEILING", ReturnTypes.CEIL_FLOOR_FUNCTION, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "CEILING",
+        ReturnTypes.CEIL_FLOOR_FUNCTION,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/ceiling.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return value.setScale(0, RoundingMode.CEILING);
   }
@@ -63,7 +66,7 @@ public class CeilingFunction extends Function {
     if (call.getOperand(0).is(FunctionRegistry.getFunction("FLOOR"))) {
       return call.getOperand(0);
     }
-   
+
     return call;
   }
 }

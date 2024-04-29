@@ -24,29 +24,28 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * The function compute Jaro Winkler distance.
- */
+/** The function compute Jaro Winkler distance. */
 @FunctionPlugin
 public class JaroWinklerFunction extends Function {
 
   public JaroWinklerFunction() {
-    super("JAROWINKLER", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING,
+    super(
+        "JAROWINKLER",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING,
+        OperatorCategory.STRING,
         "/docs/jarowinkler.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
-    if (v0 == null)
-      return null;
+    if (v0 == null) return null;
     String v1 = operands[1].getValue(String.class);
-    if (v1 == null)
-      return null;
+    if (v1 == null) return null;
 
     HopJaroWinklerDistance jaro = new HopJaroWinklerDistance();
     jaro.apply(v0, v1);
     return Long.valueOf(Math.round(100 * jaro.getJaroDistance()));
   }
-
 }

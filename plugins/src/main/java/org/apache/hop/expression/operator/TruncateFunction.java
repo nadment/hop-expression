@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,28 +27,30 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * Round down numeric expressions or truncates.
- * 
+ *
  * @see {@link CeilingOperator}, {@link FloorOperator}, {@link RoundOperator}
  */
 @FunctionPlugin(names = "TRUNC")
 public class TruncateFunction extends Function {
 
   public TruncateFunction() {
-    super("TRUNCATE", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
-        OperatorCategory.MATHEMATICAL, "/docs/truncate.html");
+    super(
+        "TRUNCATE",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
+        OperatorCategory.MATHEMATICAL,
+        "/docs/truncate.html");
   }
-
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Idempotent function repetition
-    if (call.getOperandCount() == 1 && call.getOperand(0).is(call.getOperator())
+    if (call.getOperandCount() == 1
+        && call.getOperand(0).is(call.getOperator())
         && call.getOperand(0).asCall().getOperandCount() == 1) {
       return call.getOperand(0);
     }
@@ -56,25 +60,23 @@ public class TruncateFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     int scale = 0;
     if (operands.length == 2) {
       Long l = operands[1].getValue(Long.class);
-      if (l == null)
-        return null;
+      if (l == null) return null;
       scale = l.intValue();
     }
 
     if (scale > value.scale()) {
       scale = value.scale();
     }
-    
-    if (scale==0) {
+
+    if (scale == 0) {
       return value.setScale(0, RoundingMode.DOWN);
     }
-    
+
     return value.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
   }
 }

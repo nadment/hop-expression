@@ -39,10 +39,10 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
       expression = expression.accept(this);
       expressions.add(expression);
     }
-    
+
     Call resolved = new Call(call.getOperator(), expressions);
     resolved.inferReturnType();
-    
+
     return resolved;
   }
 

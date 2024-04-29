@@ -24,24 +24,25 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Returns a string that contains a phonetic representation of the input string.
- */
+/** Returns a string that contains a phonetic representation of the input string. */
 @FunctionPlugin
 public class SoundexFunction extends Function {
 
   private static final Soundex SOUNDEX = new Soundex();
 
   public SoundexFunction() {
-    super("SOUNDEX", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
+    super(
+        "SOUNDEX",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING,
+        OperatorCategory.STRING,
         "/docs/soundex.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return SOUNDEX.soundex(value);
   }
 }

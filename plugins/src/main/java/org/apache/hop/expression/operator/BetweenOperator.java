@@ -17,6 +17,8 @@
 
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.util.Objects;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -28,12 +30,8 @@ import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
-import java.util.Objects;
 
-/**
- * <code>BETWEEN</code> operator.
- */
+/** <code>BETWEEN</code> operator. */
 public class BetweenOperator extends Operator {
 
   public enum Between {
@@ -46,37 +44,44 @@ public class BetweenOperator extends Operator {
   private final Between between;
 
   public BetweenOperator(Between between) {
-    super("BETWEEN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BETWEEN,
-        OperatorCategory.COMPARISON, "/docs/between.html");
+    super(
+        "BETWEEN",
+        120,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.BETWEEN,
+        OperatorCategory.COMPARISON,
+        "/docs/between.html");
     this.between = between;
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression lowerBound = call.getOperand(1);
     IExpression upperBound = call.getOperand(2);
-    
+
     // Simplify SYMMETRIC qualifier if upper and lower bounds are constant
-    if ( between==Between.SYMMETRIC && lowerBound.isConstant() && upperBound.isConstant()) {
+    if (between == Between.SYMMETRIC && lowerBound.isConstant() && upperBound.isConstant()) {
       Object start = call.getOperand(1).getValue();
       Object end = call.getOperand(2).getValue();
 
-      if ( Comparison.compare(start, end) < 0 ) {
-        return new Call(Operators.BETWEEN_ASYMMETRIC, call.getOperands());      
+      if (Comparison.compare(start, end) < 0) {
+        return new Call(Operators.BETWEEN_ASYMMETRIC, call.getOperands());
       }
-      
+
       // Reorder upper and lower bounds
-      return new Call(Operators.BETWEEN_ASYMMETRIC, call.getOperand(0), call.getOperand(2), call.getOperand(1));    
+      return new Call(
+          Operators.BETWEEN_ASYMMETRIC, call.getOperand(0), call.getOperand(2), call.getOperand(1));
     }
-    
+
     return call;
   }
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();

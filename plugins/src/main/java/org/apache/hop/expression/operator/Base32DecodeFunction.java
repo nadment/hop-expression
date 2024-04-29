@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,7 +24,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.nio.charset.StandardCharsets;
 
 /**
  * The function encode the input (string or binary) using Base32 encoding.
@@ -35,15 +35,18 @@ public class Base32DecodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
 
   public Base32DecodeFunction() {
-    super("BASE32_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/base32_decode.html");
+    super(
+        "BASE32_DECODE",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING,
+        "/docs/base32_decode.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     return new String(BASE32.decode(value), StandardCharsets.UTF_8);
   }

@@ -17,6 +17,7 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
+import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.plugins.IPlugin;
@@ -55,7 +56,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import java.util.concurrent.CompletableFuture;
 
 public class RouteDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
@@ -66,7 +66,11 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
   private final RouteMeta input;
 
-  public RouteDialog(Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta,
+  public RouteDialog(
+      Shell parent,
+      IVariables variables,
+      Object input,
+      PipelineMeta pipelineMeta,
       String transformName) {
     super(parent, variables, (RouteMeta) input, pipelineMeta, transformName);
     this.input = (RouteMeta) input;
@@ -114,7 +118,6 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     return transformName;
   }
 
-
   protected final Control createContents(final Composite parent) {
 
     Control titleArea = this.createTitleArea(parent);
@@ -137,8 +140,12 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
     Composite area = new Composite(parent, SWT.NONE);
     area.setLayout(new FormLayout());
-    area.setLayoutData(new FormDataBuilder().top(titleSeparator, PropsUi.getFormMargin())
-        .bottom(wOk, -PropsUi.getFormMargin()).fullWidth().result());
+    area.setLayoutData(
+        new FormDataBuilder()
+            .top(titleSeparator, PropsUi.getFormMargin())
+            .bottom(wOk, -PropsUi.getFormMargin())
+            .fullWidth()
+            .result());
     PropsUi.setLook(area);
 
     this.createDialogArea(area);
@@ -195,31 +202,48 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wlRoutes.setLayoutData(fdlRoutes);
     PropsUi.setLook(wlRoutes);
 
-    ColumnInfo[] columns = new ColumnInfo[] {
-        new ColumnInfo(BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.Condition"),
-            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.TargetTransform"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, nextTransformNames, false),};
+    ColumnInfo[] columns =
+        new ColumnInfo[] {
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.Condition"),
+              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
+              false),
+          new ColumnInfo(
+              BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.TargetTransform"),
+              ColumnInfo.COLUMN_TYPE_CCOMBO,
+              nextTransformNames,
+              false),
+        };
 
-    wRoutes = new TableView(variables, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columns,
-        input.getRoutes().size(), null, props);
+    wRoutes =
+        new TableView(
+            variables,
+            parent,
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+            columns,
+            input.getRoutes().size(),
+            null,
+            props);
     PropsUi.setLook(wRoutes);
     columns[0].setUsingVariables(true);
-    columns[0].setTextVarButtonSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
+    columns[0].setTextVarButtonSelectionListener(
+        new SelectionAdapter() {
+          @Override
+          public void widgetSelected(SelectionEvent e) {
 
-        String expression = wRoutes.getActiveTableItem().getText(wRoutes.getActiveTableColumn());
+            String expression =
+                wRoutes.getActiveTableItem().getText(wRoutes.getActiveTableColumn());
 
-        if (!shell.isDisposed()) {
-          ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
-          expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaProvider);
-          if (expression != null) {
-            wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(), expression);
+            if (!shell.isDisposed()) {
+              ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
+              expression =
+                  dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaProvider);
+              if (expression != null) {
+                wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(), expression);
+              }
+            }
           }
-        }
-      }
-    });
+        });
     wRoutes.addListener(SWT.Modify, e -> onChanged());
 
     // The default target transform
@@ -254,29 +278,35 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
   }
 
   // Search the fields in the background
-  protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
-      PipelineMeta pipelineMeta, String transformName) {
-    return CompletableFuture.supplyAsync(() -> {
-      try {
-        TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
-        if (transformMeta != null) {
-          return pipelineMeta.getPrevTransformFields(variables, transformMeta);
-        }
-      } catch (HopException e) {
-        // Ignore
-      }
-      return null;
-    });
+  protected CompletableFuture<IRowMeta> getAsyncRowMeta(
+      IVariables variables, PipelineMeta pipelineMeta, String transformName) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
+            if (transformMeta != null) {
+              return pipelineMeta.getPrevTransformFields(variables, transformMeta);
+            }
+          } catch (HopException e) {
+            // Ignore
+          }
+          return null;
+        });
   }
 
   public Image getImage() {
 
-    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
-        this.transformMeta.getPluginId());
+    IPlugin plugin =
+        PluginRegistry.getInstance()
+            .getPlugin(TransformPluginType.class, this.transformMeta.getPluginId());
 
     if (plugin.getImageFile() != null) {
-      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
-          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
+      return SwtSvgImageUtil.getImage(
+          shell.getDisplay(),
+          getClass().getClassLoader(),
+          plugin.getImageFile(),
+          ConstUi.LARGE_ICON_SIZE,
+          ConstUi.LARGE_ICON_SIZE);
     }
 
     return GuiResource.getInstance().getImageError();
@@ -287,7 +317,6 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     baseTransformMeta.setChanged();
     wOk.setEnabled(isValid());
   }
-
 
   protected boolean isValid() {
     return !Utils.isEmpty(this.wTransformName.getText());

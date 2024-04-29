@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,21 +29,20 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
-/**
- * String or binary concatenation function with separator
- */
+/** String or binary concatenation function with separator */
 @FunctionPlugin
 public class ConcatWsFunction extends Function {
   public static final ConcatWsFunction StringConcatWsFunction = new StringConcatWsFunction();
   public static final ConcatWsFunction BinaryConcatWsFunction = new BinaryConcatWsFunction();
 
   public ConcatWsFunction() {
-    super("CONCAT_WS", ReturnTypes.CONCATWS_FUNCTION,
+    super(
+        "CONCAT_WS",
+        ReturnTypes.CONCATWS_FUNCTION,
         OperandTypes.STRING_STRING_VARIADIC.or(OperandTypes.BINARY_BINARY_VARIADIC),
-        OperatorCategory.STRING, "/docs/concat_ws.html");
+        OperatorCategory.STRING,
+        "/docs/concat_ws.html");
   }
 
   @Override
@@ -55,17 +56,14 @@ public class ConcatWsFunction extends Function {
     return new Call(StringConcatWsFunction, call.getOperands());
   }
 
-  /**
-   * String concatenation function with separator
-   */
+  /** String concatenation function with separator */
   private static final class StringConcatWsFunction extends ConcatWsFunction {
 
     @Override
     public Object eval(final IExpression[] operands) {
 
       String separator = operands[0].getValue(String.class);
-      if (separator == null)
-        return null;
+      if (separator == null) return null;
 
       StringBuilder builder = new StringBuilder();
       for (int i = 1; i < operands.length; i++) {
@@ -78,23 +76,19 @@ public class ConcatWsFunction extends Function {
         }
       }
 
-      if (builder.length() == 0)
-        return null;
+      if (builder.length() == 0) return null;
 
       return builder.toString();
     }
   }
 
-  /**
-   * Binary concatenation function with separator
-   */
+  /** Binary concatenation function with separator */
   private static final class BinaryConcatWsFunction extends ConcatWsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
 
       byte[] separator = operands[0].getValue(byte[].class);
-      if (separator == null)
-        return null;
+      if (separator == null) return null;
 
       boolean notFirstValue = false;
 
@@ -112,8 +106,7 @@ public class ConcatWsFunction extends Function {
           }
         }
 
-        if (output.size() == 0)
-          return null;
+        if (output.size() == 0) return null;
 
         return output.toByteArray();
       } catch (IOException e) {
@@ -121,5 +114,4 @@ public class ConcatWsFunction extends Function {
       }
     }
   }
-
 }

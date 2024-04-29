@@ -24,15 +24,13 @@ public class OperatorComparator implements Comparator<Operator> {
 
   @Override
   public int compare(Operator o1, Operator o2) {
-    
+
     // Compare with id
     int compare = o1.getId().compareTo(o2.getId());
-    if (compare != 0)
-      return compare;
+    if (compare != 0) return compare;
 
     // Primary operator first and alias last
-    if (o1.getId().equals(o1.getName()))
-      return 99;
+    if (o1.getId().equals(o1.getName())) return 99;
 
     return o1.getName().compareTo(o2.getName());
   }

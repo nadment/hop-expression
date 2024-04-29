@@ -16,37 +16,39 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Returns number of months between two date.
- * 
- * The difference is calculated based on 31 days per month.
+ *
+ * <p>The difference is calculated based on 31 days per month.
  */
 @FunctionPlugin
 public class MonthsBetweenFunction extends Function {
 
   public MonthsBetweenFunction() {
-    super("MONTHS_BETWEEN", ReturnTypes.NUMBER_NULLABLE, OperandTypes.TEMPORAL_TEMPORAL, OperatorCategory.DATE,
+    super(
+        "MONTHS_BETWEEN",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.TEMPORAL_TEMPORAL,
+        OperatorCategory.DATE,
         "/docs/months_between.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
-    if (startDateTime == null)
-      return null;
+    if (startDateTime == null) return null;
     ZonedDateTime endDateTime = operands[1].getValue(ZonedDateTime.class);
-    if (endDateTime == null)
-      return null;
+    if (endDateTime == null) return null;
 
     long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
 

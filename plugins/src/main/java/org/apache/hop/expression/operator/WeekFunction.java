@@ -16,30 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
 
-/**
- * Week of the year (number from 1-54).
- */
+/** Week of the year (number from 1-54). */
 @FunctionPlugin
 public class WeekFunction extends Function {
 
   public WeekFunction() {
-    super("WEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE, "/docs/week.html");
+    super(
+        "WEEK",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.TEMPORAL,
+        OperatorCategory.DATE,
+        "/docs/week.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return Long.valueOf(value.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
   }
 }

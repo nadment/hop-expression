@@ -16,35 +16,35 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAdjusters;
 
-/**
- * Returns the date of the first specified day of week that occurs after the input date.
- */
+/** Returns the date of the first specified day of week that occurs after the input date. */
 @FunctionPlugin
 public class NextDayFunction extends Function {
 
   public NextDayFunction() {
-    super("NEXT_DAY", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_STRING, OperatorCategory.DATE,
+    super(
+        "NEXT_DAY",
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TEMPORAL_STRING,
+        OperatorCategory.DATE,
         "/docs/next_day.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     String dow = operands[1].getValue(String.class);
-    if (dow == null)
-      return null;
+    if (dow == null) return null;
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toUpperCase());
 

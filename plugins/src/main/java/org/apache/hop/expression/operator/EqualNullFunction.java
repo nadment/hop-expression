@@ -34,16 +34,19 @@ import org.apache.hop.expression.type.Types;
 /**
  * Compares whether two expressions are equal.
  *
- * <p>
- * The function is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note
- * that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown
+ * <p>The function is NULL-safe, meaning it treats NULLs as known values for comparing equality.
+ * Note that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown
  * values.
  */
 @FunctionPlugin
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {
-    super("EQUAL_NULL", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY, OperatorCategory.COMPARISON,
+    super(
+        "EQUAL_NULL",
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY_ANY,
+        OperatorCategory.COMPARISON,
         "/docs/equal_null.html");
   }
 
@@ -51,18 +54,17 @@ public class EqualNullFunction extends Function {
   public boolean isSymmetrical() {
     return true;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
     Object v1 = operands[1].getValue();
-    if ( v0==null && v1==null) 
-      return Boolean.TRUE;
+    if (v0 == null && v1 == null) return Boolean.TRUE;
     return Comparison.equals(v0, v1);
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {    
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -70,13 +72,14 @@ public class EqualNullFunction extends Function {
     if (left.getCost() > right.getCost()) {
       return new Call(this, right, left);
     }
-        
+
     // Normalize symmetrical operator by ordering identifiers by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+    if (left.is(Kind.IDENTIFIER)
+        && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(this, right, left);
     }
-    
+
     // Simplify same expressions.
     if (left.equals(right)) {
       return Literal.TRUE;
@@ -101,9 +104,9 @@ public class EqualNullFunction extends Function {
 
     return call;
   }
-  
+
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
 }

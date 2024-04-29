@@ -18,11 +18,12 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+
 import org.apache.hop.expression.TimeUnit;
 import org.junit.Test;
 
 public class TimeUnitTest extends ExpressionTest {
-     
+
   @Test
   public void of() throws Exception {
     assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUM"));
@@ -39,7 +40,7 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.DAY, TimeUnit.of("day"));
     assertEquals(TimeUnit.DAY, TimeUnit.of("dayS"));
     assertEquals(TimeUnit.DAY, TimeUnit.of("dayofmonth"));
-    assertEquals(TimeUnit.DAYOFWEEK, TimeUnit.of("DayOfWeek"));  
+    assertEquals(TimeUnit.DAYOFWEEK, TimeUnit.of("DayOfWeek"));
     assertEquals(TimeUnit.HOUR, TimeUnit.of("HOUR"));
     assertEquals(TimeUnit.HOUR, TimeUnit.of("hours"));
     assertEquals(TimeUnit.MINUTE, TimeUnit.of("minute"));
@@ -51,12 +52,12 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.MILLISECOND, TimeUnit.of("millisecond"));
     assertEquals(TimeUnit.MILLISECOND, TimeUnit.of("millisecondS"));
     assertEquals(TimeUnit.NANOSECOND, TimeUnit.of("nanosecond"));
-    assertEquals(TimeUnit.NANOSECOND, TimeUnit.of("nanosecondS"));    
+    assertEquals(TimeUnit.NANOSECOND, TimeUnit.of("nanosecondS"));
     assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeek"));
-    assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeekOFYEAR"));    
+    assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeekOFYEAR"));
     assertEquals(TimeUnit.ISODAYOFWEEK, TimeUnit.of("IsoDayOfWeek"));
     assertEquals(TimeUnit.ISOYEAR, TimeUnit.of("IsoYEAR"));
-    
+
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
     assertNotEquals(TimeUnit.of("HOUR"), null);
     assertNull(TimeUnit.of("NOP"));

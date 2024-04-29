@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -29,19 +30,24 @@ import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
 
 /**
- * Comparison equals operator.
- * <br>
+ * Comparison equals operator. <br>
  * <strong>Syntax:</strong> <code>x = y</code>
- * <p>
- * NULL is not equal ( = ) to anything—not even to another NULL.
+ *
+ * <p>NULL is not equal ( = ) to anything—not even to another NULL.
  */
 public class EqualOperator extends Operator {
 
   public EqualOperator() {
-    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED, OperatorCategory.COMPARISON,
+    super(
+        "EQUAL",
+        "=",
+        130,
+        true,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
+        OperatorCategory.COMPARISON,
         "/docs/equal.html");
   }
 
@@ -54,7 +60,7 @@ public class EqualOperator extends Operator {
   public Operator not() {
     return Operators.NOT_EQUAL;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
@@ -78,15 +84,16 @@ public class EqualOperator extends Operator {
     if (left.getCost() > right.getCost()) {
       return new Call(this, right, left);
     }
-    
+
     // Normalize symmetrical operator by ordering identifiers by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+    if (left.is(Kind.IDENTIFIER)
+        && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(this, right, left);
     }
-    
+
     // Simplify if not nullable x=x → TRUE
-    if (left.equals(right) && !left.getType().isNullable() ) {
+    if (left.equals(right) && !left.getType().isNullable()) {
       return Literal.TRUE;
     }
 
@@ -96,21 +103,21 @@ public class EqualOperator extends Operator {
     }
 
     // Simplify 3=X+1 → 3-1=X
-    if (left.isConstant() && right.is(Operators.ADD)
-        && right.asCall().getOperand(0).isConstant()) {
-      return new Call(call.getOperator(),
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+      return new Call(
+          call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
-    
+
     return call;
   }
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionComparisonOperator(call);    
+    return Types.coercionComparisonOperator(call);
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

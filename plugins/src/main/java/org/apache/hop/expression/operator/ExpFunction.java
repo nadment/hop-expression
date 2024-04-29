@@ -16,30 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
-/**
- * Returns the exponential value of a numeric expression.
- */
+/** Returns the exponential value of a numeric expression. */
 @FunctionPlugin
 public class ExpFunction extends Function {
 
   public ExpFunction() {
-    super("EXP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/exp.html");
+    super(
+        "EXP",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
+        "/docs/exp.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return BigDecimalMath.exp(value, MATH_CONTEXT);
   }
 }

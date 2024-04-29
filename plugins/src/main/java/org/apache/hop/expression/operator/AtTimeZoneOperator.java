@@ -17,14 +17,14 @@
 
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.io.StringWriter;
-import java.time.ZonedDateTime;
 
 /**
  * Converts a value of one time zone into another time zone.
@@ -34,15 +34,21 @@ import java.time.ZonedDateTime;
 public class AtTimeZoneOperator extends Operator {
 
   public AtTimeZoneOperator() {
-    super("TIMEZONE", "AT TIME ZONE", 10, true, ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_STRING,
-        OperatorCategory.CONVERSION, "/docs/attimezone.html");
+    super(
+        "TIMEZONE",
+        "AT TIME ZONE",
+        10,
+        true,
+        ReturnTypes.DATE_NULLABLE,
+        OperandTypes.TEMPORAL_STRING,
+        OperatorCategory.CONVERSION,
+        "/docs/attimezone.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     String zone = operands[1].getValue(String.class);
     return value.withZoneSameLocal(DateTimeFormat.toZoneId(zone));

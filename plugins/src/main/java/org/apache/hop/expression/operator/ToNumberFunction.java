@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -29,18 +30,19 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.util.NumberFormat;
-import java.time.ZonedDateTime;
 
-/**
- * Converts a string expression to a number value with optional format.
- */
+/** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
 public class ToNumberFunction extends Function {
   private static final ToNumberFunction DateToNumberFunction = new DateToNumberFunction();
 
   public ToNumberFunction() {
-    super("TO_NUMBER", ReturnTypes.NUMBER_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.TEMPORAL),
-        OperatorCategory.CONVERSION, "/docs/to_number.html");
+    super(
+        "TO_NUMBER",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.TEMPORAL),
+        OperatorCategory.CONVERSION,
+        "/docs/to_number.html");
   }
 
   @Override
@@ -48,10 +50,10 @@ public class ToNumberFunction extends Function {
       throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.DATE) ) {
+    if (type.is(TypeId.DATE)) {
       return new Call(DateToNumberFunction, call.getOperands());
     }
-    
+
     String pattern = "TM";
     // Format specified
     if (call.getOperandCount() == 2) {
@@ -62,7 +64,7 @@ public class ToNumberFunction extends Function {
     NumberFormat format = NumberFormat.of(pattern);
     return new Call(new StringToNumberFunction(format), call.getOperands());
   }
-  
+
   private static final class StringToNumberFunction extends ToNumberFunction {
     private final NumberFormat format;
 
@@ -74,18 +76,16 @@ public class ToNumberFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       return format.parse(value);
     }
   }
-  
+
   private static final class DateToNumberFunction extends ToNumberFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-      if (value == null)
-        return null;
+      if (value == null) return null;
       return NumberType.convertToNumber(value);
     }
   }

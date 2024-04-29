@@ -30,14 +30,16 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
 
-/**
- * Check if a string is a valid JSON.
- */
+/** Check if a string is a valid JSON. */
 @FunctionPlugin
 public class IsJsonFunction extends Function {
 
   public IsJsonFunction() {
-    super("IS_JSON", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
+    super(
+        "IS_JSON",
+        ReturnTypes.BOOLEAN_NOT_NULL,
+        OperandTypes.ANY,
+        OperatorCategory.COMPARISON,
         "/docs/is_json.html");
   }
 
@@ -63,8 +65,7 @@ public class IsJsonFunction extends Function {
     String value = operands[0].getValue(String.class);
 
     // Return FALSE if a value is NULL.
-    if (value == null)
-      return Boolean.FALSE;
+    if (value == null) return Boolean.FALSE;
 
     try {
       JsonType.convertToJson(value);

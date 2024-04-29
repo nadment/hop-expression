@@ -17,12 +17,13 @@
 package org.apache.hop.expression;
 
 import static java.util.Objects.requireNonNull;
-import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.Types;
+
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
@@ -72,9 +73,7 @@ public class Call implements IExpression {
     return cost;
   }
 
-  /**
-   * Data type is unknown before validation.
-   */
+  /** Data type is unknown before validation. */
   @Override
   public Type getType() {
     return type;
@@ -99,8 +98,7 @@ public class Call implements IExpression {
   }
 
   /**
-   * Get array of operands.
-   * An empty array is returned if no operands
+   * Get array of operands. An empty array is returned if no operands
    *
    * @return the operands
    */
@@ -126,9 +124,7 @@ public class Call implements IExpression {
     operands[index] = operand;
   }
 
-  /**
-   * Returns a count of operands of this expression.
-   */
+  /** Returns a count of operands of this expression. */
   public int getOperandCount() {
     return operands.length;
   }
@@ -154,7 +150,7 @@ public class Call implements IExpression {
 
   /**
    * Validates the operands of the call, inferring the return type.
-   * 
+   *
    * @param context The context against which the expression will be validated.
    */
   @Override
@@ -175,9 +171,7 @@ public class Call implements IExpression {
     type = operator.inferReturnType(this);
   }
 
-  /**
-   * Inferring the return type.
-   */
+  /** Inferring the return type. */
   public Type inferReturnType() {
     type = operator.inferReturnType(this);
     return type;
@@ -200,15 +194,15 @@ public class Call implements IExpression {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
+    if (this == o) return true;
 
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
 
     Call call = (Call) o;
-    return this.type.equals(call.type) && this.operator.equals(call.operator)
+    return this.type.equals(call.type)
+        && this.operator.equals(call.operator)
         && Arrays.equals(this.operands, call.operands);
   }
 

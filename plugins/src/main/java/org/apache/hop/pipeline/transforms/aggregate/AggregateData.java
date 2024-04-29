@@ -17,6 +17,8 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
@@ -26,8 +28,6 @@ import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AggregateData extends BaseTransformData implements ITransformData {
   public class AggregateKey {
@@ -43,11 +43,9 @@ public class AggregateData extends BaseTransformData implements ITransformData {
 
     @Override
     public boolean equals(Object obj) {
-      if (obj == null)
-        return false;
+      if (obj == null) return false;
 
-      if (this.getClass() != obj.getClass())
-        return false;
+      if (this.getClass() != obj.getClass()) return false;
 
       AggregateKey entry = (AggregateKey) obj;
 

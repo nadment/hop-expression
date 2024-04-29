@@ -24,9 +24,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-/**
- * Implements the Expression ScriptEngine for JSR-223.
- */
+/** Implements the Expression ScriptEngine for JSR-223. */
 public final class ExpressionScriptEngine extends AbstractScriptEngine implements Compilable {
 
   private ExpressionScriptEngineFactory factory;

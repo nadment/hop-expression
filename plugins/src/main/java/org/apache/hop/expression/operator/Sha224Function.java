@@ -29,14 +29,18 @@ import org.apache.hop.expression.type.ReturnTypes;
  * characters hex-encoded string.
  *
  * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha256Function}, {@link Sha384Function},
- *      {@link Sha512Function}
+ *     {@link Sha512Function}
  */
 @FunctionPlugin
 public class Sha224Function extends Function {
 
   public Sha224Function() {
-    super("SHA224", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha224.html");
+    super(
+        "SHA224",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.CRYPTOGRAPHIC,
+        "/docs/sha224.html");
   }
 
   @Override
@@ -47,5 +51,4 @@ public class Sha224Function extends Function {
     }
     return DigestUtils.sha512_224Hex(value);
   }
-
 }

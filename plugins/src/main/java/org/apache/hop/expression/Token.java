@@ -76,7 +76,7 @@ public class Token {
     JSON,
     /** The "INET" word for literal INET. */
     INET,
-    /** The "INTERVAL" word for literal INTERVAL '...' YEAR TO MONTH.*/
+    /** The "INTERVAL" word for literal INTERVAL '...' YEAR TO MONTH. */
     INTERVAL,
     /** The BETWEEN ASYMMETRIC operator */
     ASYMMETRIC,
@@ -155,16 +155,17 @@ public class Token {
     /** The literal value "TRUE". */
     TRUE,
     /** The literal value "FALSE". */
-    FALSE, ELSE, THEN, END, WHEN, TRY,
+    FALSE,
+    ELSE,
+    THEN,
+    END,
+    WHEN,
+    TRY,
     /** The "SIMILAR TO" operator or INTERVAL '...' YEAR TO MONTH */
     TO,
     /** The "SIMILAR TO" operator. */
     SIMILAR,
-    /**
-     * Used by functions:
-     * COUNT([DISTINCT] numeric),
-     * LISTAGG( [DISTINCT] string [, delimiter])
-     */
+    /** Used by functions: COUNT([DISTINCT] numeric), LISTAGG( [DISTINCT] string [, delimiter]) */
     DISTINCT,
     /** Data type element DATE, NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
@@ -183,8 +184,7 @@ public class Token {
 
     @Override
     public String toString() {
-      if (this.source.equals(this.name()))
-        return source;
+      if (this.source.equals(this.name())) return source;
       return this.name() + '(' + source + ')';
     }
   }
@@ -213,23 +213,17 @@ public class Token {
     return id;
   }
 
-  /**
-   * Returns the start index of the token in the original source.
-   */
+  /** Returns the start index of the token in the original source. */
   public int start() {
     return start;
   }
 
-  /**
-   * Returns the end index of the token in the original source.
-   */
+  /** Returns the end index of the token in the original source. */
   public int end() {
     return end;
   }
 
-  /**
-   * Returns the length of the token.
-   */
+  /** Returns the length of the token. */
   public int length() {
     return end - start;
   }

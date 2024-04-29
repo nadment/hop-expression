@@ -16,6 +16,18 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Locale;
+import java.util.TimeZone;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
@@ -29,17 +41,6 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.Test;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Locale;
-import java.util.TimeZone;
-import ch.obermuhlner.math.big.BigDecimalMath;
 
 public class ScalarFunctionTest extends ExpressionTest {
 
@@ -95,8 +96,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TRY_TO_BINARY(BASE64_ENCODE('Apache Hop'),'BASE64')", "Apache Hop".getBytes());
     evalEquals("TRY_TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
 
-    evalEquals("TRY_TO_BINARY('Apache Hop','UtF-8')",
-        "Apache Hop".getBytes(StandardCharsets.UTF_8));
+    evalEquals(
+        "TRY_TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
 
     evalNull("TRY_TO_BINARY(NULL_STRING)");
 
@@ -132,7 +133,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Date to Epoch
     evalEquals("TRY_TO_NUMBER(Date '1970-01-01')", 0L);
     evalEquals("TRY_TO_NUMBER(Date '2019-02-25')", 1551052800L);
-    evalEquals("TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
+    evalEquals(
+        "TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
         new BigDecimal("1284352323.123456789"));
     evalNull("TRY_TO_NUMBER(NULL_DATE)");
   }
@@ -157,8 +159,10 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Try_To_Json() throws Exception {
 
-    evalEquals("Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
-        JsonType.convertToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(Types.JSON);
+    evalEquals(
+            "Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
+            JsonType.convertToJson("{\"name\":\"Smith\",\"age\":29}"))
+        .returnType(Types.JSON);
     evalEquals("Try_To_Json('true')", JsonType.convertToJson("true"));
     evalEquals("Try_To_Json('null')", JsonType.convertToJson("null"));
 
@@ -169,7 +173,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Try_To_Json()");
     evalFails("Try_To_Json(BOOLEAN_FIELD)");
   }
-
 
   @Test
   public void Coalesce() throws Exception {
@@ -190,12 +193,19 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Duplicate coalesce
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
-    optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)", "IFNULL(FIELD_INTEGER,FIELD_NUMBER)");
-    optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, 5, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER,5)");
-    
+    optimize(
+        "COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)",
+        "IFNULL(FIELD_INTEGER,FIELD_NUMBER)");
+    optimize(
+        "COALESCE(FIELD_INTEGER, FIELD_NUMBER, 5, FIELD_NUMBER)",
+        "COALESCE(FIELD_INTEGER,FIELD_NUMBER,5)");
+
     // Flatten chained IFNULL or COALESCE
-    optimize("COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,IFNULL(FIELD_NUMBER,2)))", "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
-    optimize("COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,COALESCE(FIELD_NUMBER,2)))",
+    optimize(
+        "COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,IFNULL(FIELD_NUMBER,2)))",
+        "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
+    optimize(
+        "COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,COALESCE(FIELD_NUMBER,2)))",
         "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
 
     // First not null is literal
@@ -209,8 +219,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
     evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(Types.INTEGER);
     evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", 2L).returnType(Types.NUMBER);
-    evalEquals("If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')",
-        LocalDate.of(2023, 1, 1)).returnType(Types.DATE);
+    evalEquals(
+            "If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1))
+        .returnType(Types.DATE);
 
     // If condition is NULL then return false value
     evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(Types.STRING);
@@ -221,7 +232,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("If(false,1)");
     evalNull("If(false,Date '2023-01-01')");
 
-
     evalFails("If()");
     evalFails("If(true)");
     evalFails("If(true,2,'2')");
@@ -230,10 +240,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");
     // Simplify IF(x IS NULL,y,z) → NVL2(x, z, y)
-    optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",NULL_INTEGER)",
+    optimize(
+        "IF(FIELD_INTEGER IS NULL,\"YEAR\",NULL_INTEGER)",
         "NVL2(FIELD_INTEGER,NULL_INTEGER,\"YEAR\")");
     // Simplify IF(x IS NOT NULL,y,z) → NVL2(x, y, z)
-    optimize("IF(FIELD_INTEGER IS NOT NULL,\"YEAR\",NULL_INTEGER)",
+    optimize(
+        "IF(FIELD_INTEGER IS NOT NULL,\"YEAR\",NULL_INTEGER)",
         "NVL2(FIELD_INTEGER,\"YEAR\",NULL_INTEGER)");
     // Simplify IF(x=y,NULL,x) → NULLIF(x, y)
     optimize("IF(FIELD_NUMBER=0,NULL,FIELD_NUMBER)", "NULLIF(FIELD_NUMBER,0)");
@@ -273,11 +285,17 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("IfNull(1,2,3)");
 
     // Flatten chained IFNULL or COALESCE
-    optimize("IFNULL(IFNULL(NULL_STRING,FIELD_STRING),FIELD_STRING)", "IFNULL(NULL_STRING,FIELD_STRING)"); 
-    optimize("COALESCE(IFNULL(NULL_STRING, FIELD_STRING), 'X')", "COALESCE(NULL_STRING,FIELD_STRING,'X')");
-    optimize("IFNULL(IFNULL(NULL_STRING, FIELD_STRING), 'X')", "COALESCE(NULL_STRING,FIELD_STRING,'X')");
-    optimize("IFNULL(NULL_STRING,IFNULL(FIELD_STRING, 'X'))", "COALESCE(NULL_STRING,FIELD_STRING,'X')");
-    
+    optimize(
+        "IFNULL(IFNULL(NULL_STRING,FIELD_STRING),FIELD_STRING)",
+        "IFNULL(NULL_STRING,FIELD_STRING)");
+    optimize(
+        "COALESCE(IFNULL(NULL_STRING, FIELD_STRING), 'X')",
+        "COALESCE(NULL_STRING,FIELD_STRING,'X')");
+    optimize(
+        "IFNULL(IFNULL(NULL_STRING, FIELD_STRING), 'X')", "COALESCE(NULL_STRING,FIELD_STRING,'X')");
+    optimize(
+        "IFNULL(NULL_STRING,IFNULL(FIELD_STRING, 'X'))", "COALESCE(NULL_STRING,FIELD_STRING,'X')");
+
     // Alias
     evalEquals("NVL(NULL_INTEGER,1)", 1L);
   }
@@ -340,7 +358,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "other");
 
     // Support ABORT as default
-    evalEquals("Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',ABORT('Error generated with ABORT'))",
+    evalEquals(
+        "Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',ABORT('Error generated with ABORT'))",
         "Flag 2");
 
     evalNull("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>')");
@@ -354,9 +373,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Decode(AGE,1,'baby',20,false,true)");
 
     // Simplify unreachable DECODE clauses
-    optimize("DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,FIELD_INTEGER,3)",
+    optimize(
+        "DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,FIELD_INTEGER,3)",
         "DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2)");
-    optimize("DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,FIELD_INTEGER,3,4)",
+    optimize(
+        "DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,FIELD_INTEGER,3,4)",
         "DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,4)");
   }
 
@@ -400,13 +421,17 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void ConvertTimeZone() throws Exception {
     evalEquals(
-        "CONVERT_TIMEZONE('America/Los_Angeles', 'America/New_York', TIMESTAMP '2023-01-01 14:00:00')",
-        LocalDateTime.of(2023, Month.JANUARY, 1, 17, 00, 00)).returnType(Types.DATE);
-    evalEquals("CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')",
+            "CONVERT_TIMEZONE('America/Los_Angeles', 'America/New_York', TIMESTAMP '2023-01-01 14:00:00')",
+            LocalDateTime.of(2023, Month.JANUARY, 1, 17, 00, 00))
+        .returnType(Types.DATE);
+    evalEquals(
+        "CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 04, 00, 00));
-    evalEquals("CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00')",
+    evalEquals(
+        "CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 23, 00, 00));
-    evalEquals("CONVERT_TIMEZONE('+00:00','+10:00', TIMESTAMP '2023-01-01 12:00:00')",
+    evalEquals(
+        "CONVERT_TIMEZONE('+00:00','+10:00', TIMESTAMP '2023-01-01 12:00:00')",
         ZonedDateTime.of(2023, 1, 1, 22, 00, 00, 00000000, ZoneOffset.ofHoursMinutes(10, 0)));
 
     evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)").returnType(Types.DATE);
@@ -446,21 +471,27 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void MakeTimestamp() throws Exception {
-    evalEquals("MAKE_TIMESTAMP(2019,01,1,23,15,59)",
-        LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59)).returnType(Types.DATE);
-    evalEquals("MAKE_TIMESTAMP(2020,-6,1,23,15,59)",
-        LocalDateTime.of(2019, Month.JUNE, 1, 23, 15, 59));
-    evalEquals("MAKE_TIMESTAMP(2020,0,1,23,15,59)",
-        LocalDateTime.of(2019, Month.DECEMBER, 1, 23, 15, 59));
-    evalEquals("MAKE_TIMESTAMP(2020,-1,1,23,15,59)",
+    evalEquals(
+            "MAKE_TIMESTAMP(2019,01,1,23,15,59)",
+            LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59))
+        .returnType(Types.DATE);
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,-6,1,23,15,59)", LocalDateTime.of(2019, Month.JUNE, 1, 23, 15, 59));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,0,1,23,15,59)", LocalDateTime.of(2019, Month.DECEMBER, 1, 23, 15, 59));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,-1,1,23,15,59)",
         LocalDateTime.of(2019, Month.NOVEMBER, 1, 23, 15, 59));
-    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59)",
-        LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59));
-    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59.123)",
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,6,50,23,15,59)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,6,50,23,15,59.123)",
         LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123000000));
-    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59.123456)",
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,6,50,23,15,59.123456)",
         LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456000));
-    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59.123456789)",
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,6,50,23,15,59.123456789)",
         LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456789));
 
     evalNull("MAKE_TIMESTAMP(NULL_INTEGER,-1,1,23,15,59)").returnType(Types.DATE);
@@ -501,10 +532,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("First_Day(FIELD_TIMESTAMP, YEAR)", LocalDate.of(2023, Month.JANUARY, 1));
 
     // Remove time
-    evalEquals("First_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)",
-        LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)",
-        LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals(
+        "First_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals(
+        "First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
 
     evalNull("First_Day(NULL_DATE)").returnType(Types.DATE);
     evalNull("First_day(NULL_DATE, MONTH)");
@@ -532,8 +563,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Remove time
     evalEquals("Last_Day(TIMESTAMP '2020-02-27 23:59:12')", LocalDate.of(2020, Month.FEBRUARY, 29));
-    evalEquals("Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)",
-        LocalDate.of(2020, Month.DECEMBER, 31));
+    evalEquals(
+        "Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.DECEMBER, 31));
 
     evalNull("Last_Day(NULL_DATE)").returnType(Types.DATE);
     evalNull("Last_Day(NULL_DATE, MONTH)");
@@ -695,11 +726,12 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.BINARY);
     evalEquals("RPad(BINARY '1A2B3C',3,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C});
     evalEquals("RPad(BINARY '1A2B3C',4,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D});
-    evalEquals("RPad(BINARY '1A2B3C',5,BINARY '4D5E6F')",
-        new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E});
-    evalEquals("RPad(BINARY '1A2B3C',6,BINARY '4D5E6F')",
-        new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F});
-    evalEquals("RPad(BINARY '1A2B3C',7,BINARY '4D5E6F')",
+    evalEquals(
+        "RPad(BINARY '1A2B3C',5,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E});
+    evalEquals(
+        "RPad(BINARY '1A2B3C',6,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F});
+    evalEquals(
+        "RPad(BINARY '1A2B3C',7,BINARY '4D5E6F')",
         new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F, 0x4D});
 
     // Empty padding
@@ -737,11 +769,12 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.BINARY);
     evalEquals("LPad(BINARY '1A2B3C',3,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C});
     evalEquals("LPad(BINARY '1A2B3C',4,BINARY '4D5E6F')", new byte[] {0x4D, 0x1A, 0x2B, 0x3C});
-    evalEquals("LPad(BINARY '1A2B3C',5,BINARY '4D5E6F')",
-        new byte[] {0x4D, 0x5E, 0x1A, 0x2B, 0x3C});
-    evalEquals("LPad(BINARY '1A2B3C',6,BINARY '4D5E6F')",
-        new byte[] {0x4D, 0x5E, 0x6F, 0x1A, 0x2B, 0x3C});
-    evalEquals("LPad(BINARY '1A2B3C',7,BINARY '4D5E6F')",
+    evalEquals(
+        "LPad(BINARY '1A2B3C',5,BINARY '4D5E6F')", new byte[] {0x4D, 0x5E, 0x1A, 0x2B, 0x3C});
+    evalEquals(
+        "LPad(BINARY '1A2B3C',6,BINARY '4D5E6F')", new byte[] {0x4D, 0x5E, 0x6F, 0x1A, 0x2B, 0x3C});
+    evalEquals(
+        "LPad(BINARY '1A2B3C',7,BINARY '4D5E6F')",
         new byte[] {0x4D, 0x5E, 0x6F, 0x4D, 0x1A, 0x2B, 0x3C});
 
     // Empty padding
@@ -807,11 +840,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Date_Diff(MONTH, TIMESTAMP '2001-01-01 12:00:00',DATE '2000-01-01')", -12L);
     evalEquals("Date_Diff(WEEK, TIMESTAMP '2001-01-01 12:00:00',DATE '2000-01-01')", -52L);
     evalEquals("Date_Diff(DAY, DATE '2021-11-09',DATE '2020-12-28')", -316L);
-    evalEquals("Date_Diff(HOUR, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
-        24L);
-    evalEquals("Date_Diff(MINUTE, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
+    evalEquals(
+        "Date_Diff(HOUR, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 24L);
+    evalEquals(
+        "Date_Diff(MINUTE, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
         1440L);
-    evalEquals("Date_Diff(SECOND, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
+    evalEquals(
+        "Date_Diff(SECOND, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
         86400L);
     evalEquals(
         "Date_Diff(MILLISECOND, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:02:00')",
@@ -832,8 +867,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Years_Between() throws Exception {
-    evalEquals("Years_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')",
-        -1L);
+    evalEquals(
+        "Years_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')", -1L);
     evalNull("Years_Between(NULL_DATE, DATE '2007-11-09')");
     evalNull("Years_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Years_Between(NULL_DATE, NULL_DATE)");
@@ -874,10 +909,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Hours_Between() throws Exception {
-    evalEquals("Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')",
-        0L);
-    evalEquals("Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
-        24L);
+    evalEquals(
+        "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 0L);
+    evalEquals(
+        "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 24L);
     evalNull("Hours_Between(NULL_TIMESTAMP, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Hours_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_TIMESTAMP)");
     evalFails("Hours_Between(DATE '2007-11-09')");
@@ -885,10 +920,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Minutes_Between() throws Exception {
-    evalEquals("Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')",
-        28L);
-    evalEquals("Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
-        1440L);
+    evalEquals(
+        "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 28L);
+    evalEquals(
+        "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 1440L);
     evalNull("Minutes_Between(NULL_DATE, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Minutes_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
     evalFails("Minutes_Between(DATE '2007-11-09')");
@@ -896,10 +931,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Seconds_Between() throws Exception {
-    evalEquals("Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')",
+    evalEquals(
+        "Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')",
         28L * 60L);
-    evalEquals("Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')",
-        86400L);
+    evalEquals(
+        "Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 86400L);
     evalNull("Seconds_Between(NULL_DATE, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Seconds_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
     evalFails("Seconds_Between(DATE '2007-11-09')");
@@ -1058,7 +1094,8 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Add_Days() throws Exception {
     evalEquals("Add_Days(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(DATE '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
-    evalEquals("Add_Days(TIMESTAMP '2021-01-01 15:28:59+0200',20)",
+    evalEquals(
+        "Add_Days(TIMESTAMP '2021-01-01 15:28:59+0200',20)",
         ZonedDateTime.of(2021, 1, 21, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
 
     evalNull("Add_Days(NULL_DATE,140)");
@@ -1070,9 +1107,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Add_Hours() throws Exception {
-    evalEquals("Add_Hours(DATE '2019-01-15',1)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
-    evalEquals("Add_Hours(TIMESTAMP '2021-01-01 15:28:59+0200',2)",
+    evalEquals(
+        "Add_Hours(DATE '2019-01-15',1)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
+    evalEquals(
+        "Add_Hours(TIMESTAMP '2021-01-01 15:28:59+0200',2)",
         ZonedDateTime.of(2021, 1, 1, 17, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
     evalNull("Add_Hours(NULL_DATE,140)");
     evalNull("Add_Hours(DATE '2019-01-15',NULL_INTEGER)");
@@ -1083,7 +1121,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Add_Minutes() throws Exception {
-    evalEquals("Add_Minutes(DATE '2019-01-15',20)",
+    evalEquals(
+        "Add_Minutes(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
     evalNull("Add_Minutes(NULL_DATE,140)");
     evalNull("Add_Minutes(DATE '2019-01-15',NULL_INTEGER)");
@@ -1093,10 +1132,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Add_Seconds() throws Exception {
-    evalEquals("Add_Seconds(DATE '2019-01-15',20)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
-    evalEquals("Add_Seconds(DATE '2019-01-15',140)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20));
+    evalEquals(
+        "Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
+    evalEquals(
+        "Add_Seconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20));
     evalNull("Add_Seconds(NULL_DATE,140)");
     evalNull("Add_Seconds(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Seconds(DATE '2019-01-15')");
@@ -1104,9 +1143,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Add_Nanoseconds() throws Exception {
-    evalEquals("Add_NanoSeconds(DATE '2019-01-15',20)",
+    evalEquals(
+        "Add_NanoSeconds(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
-    evalEquals("Add_NanoSeconds(DATE '2019-01-15',140)",
+    evalEquals(
+        "Add_NanoSeconds(DATE '2019-01-15',140)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140));
     evalNull("Add_NanoSeconds(NULL_DATE,140)");
     evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
@@ -1121,13 +1162,17 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("DATE_ADD(MONTH,3,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
     evalEquals("DATE_ADD(WEEK,-3,DATE '2019-01-15')", LocalDate.of(2018, Month.DECEMBER, 25));
     evalEquals("DATE_ADD(DAY,-20,DATE '2019-01-15')", LocalDate.of(2018, Month.DECEMBER, 26));
-    evalEquals("DATE_ADD(HOUR,1,DATE '2019-01-15')",
+    evalEquals(
+        "DATE_ADD(HOUR,1,DATE '2019-01-15')",
         LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
-    evalEquals("DATE_ADD(MINUTE,20,DATE '2019-01-15')",
+    evalEquals(
+        "DATE_ADD(MINUTE,20,DATE '2019-01-15')",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
-    evalEquals("DATE_ADD(SECOND,140,DATE '2019-01-15')",
+    evalEquals(
+        "DATE_ADD(SECOND,140,DATE '2019-01-15')",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
-    evalEquals("DATE_ADD(NANOSECOND,23,DATE '2019-01-15')",
+    evalEquals(
+        "DATE_ADD(NANOSECOND,23,DATE '2019-01-15')",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 23));
 
     optimize("DATE_ADD(YEAR,1,FIELD_DATE)", "ADD_YEARS(FIELD_DATE,1)");
@@ -1283,7 +1328,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Abs(FIELD_STRING_NUMBER)", 12.56D).returnType(Types.NUMBER);
     evalEquals("Abs(-1::INTEGER)", 1L);
     evalEquals("Abs(-1.12345679)", 1.12345679D);
-    evalEquals("Abs(-1.1234567912345679123456791234567912345)",
+    evalEquals(
+        "Abs(-1.1234567912345679123456791234567912345)",
         new BigDecimal("1.1234567912345679123456791234567912345"));
 
     evalNull("Abs(NULL_INTEGER)");
@@ -1468,7 +1514,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Sec(1,0)");
   }
 
-
   @Test
   public void Sech() throws Exception {
     evalEquals("Sech(0)", 1L).returnType(Types.NUMBER);
@@ -1479,7 +1524,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Sech(FIELD_STRING)");
     evalFails("Sech(1,0)");
   }
-
 
   @Test
   public void Tan() throws Exception {
@@ -1669,12 +1713,15 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.BINARY);
 
     // Date
-    evalEquals("Greatest(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
-        LocalDate.of(2021, 12, 6)).returnType(Types.DATE);
+    evalEquals(
+            "Greatest(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
+            LocalDate.of(2021, 12, 6))
+        .returnType(Types.DATE);
 
     // Date with String coercion
-    evalEquals("Greatest(DATE '2020-01-01','2021-12-06',DATE '1990-12-08')",
-        LocalDate.of(2021, 12, 6)).returnType(Types.DATE);
+    evalEquals(
+            "Greatest(DATE '2020-01-01','2021-12-06',DATE '1990-12-08')", LocalDate.of(2021, 12, 6))
+        .returnType(Types.DATE);
 
     // 1 argument only
     evalEquals("Greatest(5)", 5L);
@@ -1718,8 +1765,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.BINARY);
 
     // Date
-    evalEquals("Least(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
-        LocalDate.of(1990, 12, 8)).returnType(Types.DATE);
+    evalEquals(
+            "Least(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
+            LocalDate.of(1990, 12, 8))
+        .returnType(Types.DATE);
 
     // Date with String coercion
     evalEquals("Least(DATE '2020-01-01','2021-12-06',DATE '1990-12-08')", LocalDate.of(1990, 12, 8))
@@ -1754,8 +1803,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Length(BINARY '0F0FA')", 3L).returnType(Types.INTEGER);
     evalNull("Length(NULL_BINARY)");
 
-
-    
     // Implicit conversion from Boolean to String
     evalEquals("Length(true)", 4L);
     evalEquals("Length(FALSE)", 5L);
@@ -1776,7 +1823,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Cardinality() throws Exception {
     evalEquals("Cardinality(Array[1,4,8+2])", 3L).returnType(Types.INTEGER);
   }
-  
+
   @Test
   public void Left() throws Exception {
     // String
@@ -1934,7 +1981,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("IS_DATE('2023-02-31','YYYY-MM-DD')");
     evalFalse("IS_DATE('2023-02-31','YYYY.MM.DD')");
     evalFalse("IS_DATE(NULL_STRING,'YYYY.MM.DD')");
-
 
     // Date or Timestamp
     evalTrue("IS_DATE(FIELD_DATE,'YYYY-MM-DD')").returnType(Types.BOOLEAN);
@@ -2111,9 +2157,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER(Date '2019-02-25')", 1551052800L);
     evalEquals("TO_NUMBER(Date '1800-01-01')", -5364662400L);
     evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123')", new BigDecimal("1284352323.123"));
-    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123000000')",
-        new BigDecimal("1284352323.123"));
-    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
+    evalEquals(
+        "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123000000')", new BigDecimal("1284352323.123"));
+    evalEquals(
+        "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
         new BigDecimal("1284352323.123456789"));
     evalNull("TO_NUMBER(NULL_DATE)");
 
@@ -2197,7 +2244,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     // FM affect the trailing blank added by the MI suffix.
     evalEquals("TO_CHAR(485,'FMMI999')", "485");
     evalEquals("TO_CHAR(485,'FM999MI')", "485");
-
 
     evalEquals("TO_CHAR(7,'9999pr')", "    7 ");
     evalEquals("TO_CHAR(-7,'9999PR')", "   <7>");
@@ -2354,25 +2400,35 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Aligned week of year and ISO Week of year (The first week of the ISO year is the week that
     // contains January 4.)
-    evalEquals("To_Char(DATE '2015-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2015-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2015-12-31 thu IYYY=2015 IW=53 WW=53");
-    evalEquals("To_Char(DATE '2016-01-01','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-01','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-01 fri IYYY=2015 IW=53 WW=01");
-    evalEquals("To_Char(DATE '2016-01-02','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-02','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-02 sat IYYY=2015 IW=53 WW=01");
-    evalEquals("To_Char(DATE '2016-01-03','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-03','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-03 sun IYYY=2015 IW=53 WW=01");
-    evalEquals("To_Char(DATE '2016-01-04','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-04','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-04 mon IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(DATE '2016-01-05','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-05','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-05 tue IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(DATE '2016-01-06','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-06','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-06 wed IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(DATE '2016-01-07','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-07','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-07 thu IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(DATE '2016-01-08','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2016-01-08','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2016-01-08 fri IYYY=2016 IW=01 WW=02");
-    evalEquals("To_Char(DATE '2042-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+    evalEquals(
+        "To_Char(DATE '2042-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2042-12-31 wed IYYY=2043 IW=01 WW=53");
     evalEquals("To_Char(DATE '2016-01-04','FM\"IW=\"IW \"WW=\"WW')", "IW=1 WW=1"); // Compact
 
@@ -2440,9 +2496,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Time fraction
     evalEquals("To_Char(TIMESTAMP '2019-02-13 15:34:56.123','HH24:MI:SS.FF3')", "15:34:56.123");
-    evalEquals("To_Char(TIMESTAMP '2019-02-13 15:34:56.123456','HH24:MI:SS.FF6')",
-        "15:34:56.123456");
-    evalEquals("To_Char(TIMESTAMP '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')",
+    evalEquals(
+        "To_Char(TIMESTAMP '2019-02-13 15:34:56.123456','HH24:MI:SS.FF6')", "15:34:56.123456");
+    evalEquals(
+        "To_Char(TIMESTAMP '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')",
         "15:34:56.123456789");
 
     // Seconds of day
@@ -2462,7 +2519,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Long date
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')",
+    evalEquals(
+        "To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')",
         "mardi 23 juillet 2019 à 14 h 52 min 00 s Z");
 
     // Local radix character
@@ -2478,7 +2536,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("To_Char(DATE '2019-07-23','{}[]')");
 
     // Full case
-    evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456','yyyy-mm-dd hh:mi:ss.FF')",
+    evalEquals(
+        "To_Char(TIMESTAMP '2020-12-03 01:02:03.123456','yyyy-mm-dd hh:mi:ss.FF')",
         "2020-12-03 01:02:03.123456");
 
     // Boolean
@@ -2502,17 +2561,22 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
     evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, Month.MARCH, 1));
     evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, Month.FEBRUARY, 25));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
 
     // Separator T
-    evalEquals("To_Date('2019-02-13T15:34:56','YYYY-MM-DD HH24:MI:SS')",
+    evalEquals(
+        "To_Date('2019-02-13T15:34:56','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
-    evalEquals("To_Date('2019-02-13T15:34:56','YYYY-MM-DD\"T\"HH24:MI:SS')",
+    evalEquals(
+        "To_Date('2019-02-13T15:34:56','YYYY-MM-DD\"T\"HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
 
     evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
@@ -2542,17 +2606,22 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
 
     // Time zone offset
-    evalEquals("To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)));
-    evalEquals("To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)));
-    evalEquals("To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(-4)));
 
     // Time zone region
-    evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
-    evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
+    evalEquals(
+        "To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
 
     // Trailing space
@@ -2570,19 +2639,23 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Date('2020-12','YYYY-MM')", LocalDate.of(2020, Month.DECEMBER, 1));
     evalEquals("To_Date('2020-02','YYYY-DD')", LocalDate.of(2020, Month.JANUARY, 2));
     evalEquals("To_Date('12-02','MM-DD')", LocalDate.of(1970, Month.DECEMBER, 2));
-    evalEquals("To_Date('2019-02-13','YYYY-MM-DD HH24:MI:SS')",
+    evalEquals(
+        "To_Date('2019-02-13','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 0, 0));
 
     // Fractional seconds FF3 (milliseconds), FF or FF6 (microseconds), FF9 (nanoseconds).
-    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF')",
+    evalEquals(
+        "To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
-    evalEquals("To_Date('2019-02-13 19:34:56.123','YYYY-MM-DD HH24:MI:SS.FF3')",
+    evalEquals(
+        "To_Date('2019-02-13 19:34:56.123','YYYY-MM-DD HH24:MI:SS.FF3')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123000000));
-    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF6')",
+    evalEquals(
+        "To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF6')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
-    evalEquals("To_Date('2019-02-13 19:34:56.123456789','YYYY-MM-DD HH24:MI:SS.FF9')",
+    evalEquals(
+        "To_Date('2019-02-13 19:34:56.123456789','YYYY-MM-DD HH24:MI:SS.FF9')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456789));
-
 
     // Rule to try alternate format MM -> MON and MONTH
     evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
@@ -2608,17 +2681,21 @@ public class ScalarFunctionTest extends ExpressionTest {
     // evalEquals("To_Date('06-2003-MON','WW-YYYY-DY')", LocalDate.of(2003, 2, 10));
 
     // Is interpreted as 31 December 2003, 12:59:33
-    evalEquals("To_Date('12:59:33 365-2003', 'HH24:MI:SS DDD-YYYY')",
+    evalEquals(
+        "To_Date('12:59:33 365-2003', 'HH24:MI:SS DDD-YYYY')",
         LocalDateTime.of(2003, 12, 31, 12, 59, 33));
 
     // Is interpreted as 24 December 2009, 23:00:00
-    evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH:MI:SS AM')",
+    evalEquals(
+        "To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
-    evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
+    evalEquals(
+        "To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
     // Is interpreted as 12 May 2003, 00:00:10.123
-    evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3')",
+    evalEquals(
+        "To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3')",
         LocalDateTime.of(2000, 5, 12, 0, 0, 10, 123000000));
 
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
@@ -2645,8 +2722,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_INTERVAL('0-0 45 22:30:58')", Interval.of(0, 0, 45, 22, 30, 58))
         .returnType(Types.INTERVAL);
     evalEquals("TO_INTERVAL('+0-0 45 22:30:58')", Interval.of(0, 0, 45, 22, 30, 58));
-    evalEquals("TO_INTERVAL('45 days 22 hours 30 minutes 58 seconds')",
-        Interval.of(0, 0, 45, 22, 30, 58));
+    evalEquals(
+        "TO_INTERVAL('45 days 22 hours 30 minutes 58 seconds')", Interval.of(0, 0, 45, 22, 30, 58));
     evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", Interval.of(0, 0, 45, 22, 30, 58).negate());
     evalNull("TO_INTERVAL(NULL_STRING)");
 
@@ -2656,8 +2733,10 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void To_Json() throws Exception {
 
-    evalEquals("To_Json('{\"name\":\"Smith\", \"age\":29}')",
-        JsonType.convertToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(Types.JSON);
+    evalEquals(
+            "To_Json('{\"name\":\"Smith\", \"age\":29}')",
+            JsonType.convertToJson("{\"name\":\"Smith\",\"age\":29}"))
+        .returnType(Types.JSON);
     evalEquals("To_Json('true')", JsonType.convertToJson("true"));
     evalEquals("To_Json('null')", JsonType.convertToJson("null"));
 
@@ -2672,26 +2751,26 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Json_Value() throws Exception {
     // dot–notation
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
-    
+
     // TODO: bracket–notation
-    //evalEquals("Json_Value(FIELD_JSON, '$['store']['book'][0]['title']')", "Sayings of the Century");
+    // evalEquals("Json_Value(FIELD_JSON, '$['store']['book'][0]['title']')", "Sayings of the
+    // Century");
 
     // boolean type
     evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]')");
     evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]')");
-    
+
     // numeric type
     evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", 29L);
     evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]')", 15L);
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].price')", 8.95);
-    
+
     // TODO: Syntax of the special characters $[01] or $[6F,FF,00,1F] in variable resolution not
     // compatible with JsonPath array
     // evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$[''a''][2]')", 15L);
     // evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
     // evalEquals("Json_Value('[0, 1, 2, 3]', '$[1]')", 1L);
     // evalEquals("Json_Value('[{\"a\":100}, {\"a\":200}, {\"a\":300}]', '$[1].a')", 200L);
-
 
     // Json 'null' should return a NULL value
     evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29, \"department\":null}','$.department')");
@@ -2701,46 +2780,63 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Support Json function
     evalEquals("Json_Value(FIELD_JSON, '$..book.length()')", 4L);
-    
+
     // Return NULL from NULL value
     evalNull("Json_Value(NULL_STRING,'$.name')");
     evalNull("Json_Value(NULL_JSON,'$.name')");
 
     // Return NULL if JsonPath does not match a value
     evalNull("Json_Value(FIELD_JSON,'$.notexist')");
-    
+
     evalFails("Json_Value(FIELD_JSON,NULL_STRING)");
   }
 
   @Test
   public void Json_Query() throws Exception {
     // No Json path
-    evalEquals("Json_Query('{name:\"Smith\",age:29}'::JSON)",
-        JsonType.convertToJson("{name:\"Smith\",age:29}")).returnType(Types.JSON);
-    
+    evalEquals(
+            "Json_Query('{name:\"Smith\",age:29}'::JSON)",
+            JsonType.convertToJson("{name:\"Smith\",age:29}"))
+        .returnType(Types.JSON);
+
     // Root Json path
     evalEquals(
         "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}'::JSON,'$.Suspect.Hobbies')",
         JsonType.convertToJson("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
     evalEquals("Json_Query('null'::JSON,'$')", JsonType.convertToJson("null"));
 
-    // Wildcard all elements    
-    evalEquals("Json_Query(FIELD_JSON, '$.store.book[*].author')", JsonType.convertToJson("[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
-    
+    // Wildcard all elements
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$.store.book[*].author')",
+        JsonType.convertToJson(
+            "[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
+
     // Child property at any level deeper
-    evalEquals("Json_Query(FIELD_JSON, '$..author')", JsonType.convertToJson("[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
-    
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$..author')",
+        JsonType.convertToJson(
+            "[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
+
     // Array indexes
-    evalEquals("Json_Query(FIELD_JSON, '$.store.book[2].title')", JsonType.convertToJson("\"Moby Dick\""));
-    evalEquals("Json_Query(FIELD_JSON, '$.store.book[0,1,2].title')", JsonType.convertToJson("[\"Sayings of the Century\",\"Sword of Honour\",\"Moby Dick\"]"));
-       
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$.store.book[2].title')", JsonType.convertToJson("\"Moby Dick\""));
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$.store.book[0,1,2].title')",
+        JsonType.convertToJson("[\"Sayings of the Century\",\"Sword of Honour\",\"Moby Dick\"]"));
+
     // Array slice
-    evalEquals("Json_Query(FIELD_JSON, '$.store.book[0:2].title')", JsonType.convertToJson("[\"Sayings of the Century\",\"Sword of Honour\"]"));
-       
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$.store.book[0:2].title')",
+        JsonType.convertToJson("[\"Sayings of the Century\",\"Sword of Honour\"]"));
+
     // Filter predicate
-    evalEquals("Json_Query(FIELD_JSON, '$..book[?(@.isbn)].title')", JsonType.convertToJson("[\"Moby Dick\",\"The Lord of the Rings\"]"));
-    evalEquals("Json_Query(FIELD_JSON, '$..book[?(@.price<10)].price')", JsonType.convertToJson("[8.95,8.99]"));        
-    
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$..book[?(@.isbn)].title')",
+        JsonType.convertToJson("[\"Moby Dick\",\"The Lord of the Rings\"]"));
+    evalEquals(
+        "Json_Query(FIELD_JSON, '$..book[?(@.price<10)].price')",
+        JsonType.convertToJson("[8.95,8.99]"));
+
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 
     evalFails("Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)");
@@ -2749,17 +2845,21 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Json_Object() throws Exception {
-    evalEquals("Json_Object(KEY 'name' VALUE 'Smith')",
-        JsonType.convertToJson("{\"name\":\"Smith\"}")).returnType(Types.JSON);
-    evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')",
+    evalEquals(
+            "Json_Object(KEY 'name' VALUE 'Smith')", JsonType.convertToJson("{\"name\":\"Smith\"}"))
+        .returnType(Types.JSON);
+    evalEquals(
+        "Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')",
         JsonType.convertToJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
 
     // Support null
-    evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'empty' VALUE null)",
+    evalEquals(
+        "Json_Object(KEY 'name' VALUE 'Smith', KEY 'empty' VALUE null)",
         JsonType.convertToJson("{\"name\":\"Smith\",\"empty\":null}"));
 
     // Support duplicate key
-    evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'John')",
+    evalEquals(
+        "Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'John')",
         JsonType.convertToJson("{\"name\":\"Smith\", \"name\":\"John\"}"));
 
     // Accept missing KEY
@@ -2769,7 +2869,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Json_Object(KEY VALUE 'Smith')");
     evalFails("Json_Object(KEY 'name' VALUE 'Smith'");
 
-    optimize("JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')","JSON '{\"name\":\"Smith\",\"langue\":\"english\"}'");
+    optimize(
+        "JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')",
+        "JSON '{\"name\":\"Smith\",\"langue\":\"english\"}'");
     optimize("JSON_OBJECT(KEY 'name' VALUE FIELD_STRING,KEY 'langue' VALUE 'english')");
   }
 
@@ -2835,7 +2937,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Translate('Hello, world!','eo',NULL_STRING)", "Hll, wrld!");
     evalNull("Translate(NULL_STRING,'eo','EO')");
     evalNull("Translate('Hello, world!',NULL_STRING,'EO')");
-
   }
 
   @Test
@@ -2882,19 +2983,25 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Date_Trunc('xxx', DATE '2020-05-25')");
 
     // Truncate timestamp
-    evalEquals("Date_Trunc(DAY, TIMESTAMP '2020-05-25 23:59:59')",
-        LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Date_Trunc(HOUR, TIMESTAMP '2020-05-25 23:59:59')",
+    evalEquals(
+        "Date_Trunc(DAY, TIMESTAMP '2020-05-25 23:59:59')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals(
+        "Date_Trunc(HOUR, TIMESTAMP '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-    evalEquals("Date_Trunc(MINUTE, TIMESTAMP '2020-05-25 23:59:59')",
+    evalEquals(
+        "Date_Trunc(MINUTE, TIMESTAMP '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-    evalEquals("Date_Trunc(SECOND, TIMESTAMP '2020-05-25 23:59:59')",
+    evalEquals(
+        "Date_Trunc(SECOND, TIMESTAMP '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
-    evalEquals("Date_Trunc(MILLISECOND, TIMESTAMP '2020-05-25 23:59:59.123456789')",
+    evalEquals(
+        "Date_Trunc(MILLISECOND, TIMESTAMP '2020-05-25 23:59:59.123456789')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123000000));
-    evalEquals("Date_Trunc(MICROSECOND, TIMESTAMP '2020-05-25 23:59:59.123456789')",
+    evalEquals(
+        "Date_Trunc(MICROSECOND, TIMESTAMP '2020-05-25 23:59:59.123456789')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123456000));
-    evalEquals("Date_Trunc(NANOSECOND, TIMESTAMP '2020-05-25 23:59:59.123456789')",
+    evalEquals(
+        "Date_Trunc(NANOSECOND, TIMESTAMP '2020-05-25 23:59:59.123456789')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123456789));
   }
 
@@ -2990,12 +3097,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Replace('abc', '(.*)c', '\\1e')", "abe");
     evalEquals("Regexp_Replace('abc', '(a)(b)', '\\2\\1')", "bac");
 
-
     // An empty pattern matches nothing
     evalEquals("Regexp_Replace('ABCDEEEEEEFG', '','E')", "ABCDEEEEEEFG");
 
     // Back reference
-    evalEquals("Regexp_Replace('FIRSTNAME MIDDLENAME LASTNAME','(.*) (.*) (.*)','\\3, \\1 \\2')",
+    evalEquals(
+        "Regexp_Replace('FIRSTNAME MIDDLENAME LASTNAME','(.*) (.*) (.*)','\\3, \\1 \\2')",
         "LASTNAME, FIRSTNAME MIDDLENAME");
 
     evalNull("Regexp_Replace(NULL_STRING,'A')").returnType(Types.STRING);
@@ -3009,8 +3116,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+')", 2L)
         .returnType(Types.INTEGER);
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', 20)", 1L);
-    evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', 'CENTS', 1, 'i')",
-        2L);
+    evalEquals(
+        "Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', 'CENTS', 1, 'i')", 2L);
   }
 
   @Test
@@ -3028,8 +3135,8 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Regexp_Substr() throws Exception {
     evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache").returnType(Types.STRING);
-    evalEquals("regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)",
-        "regexp_substr");
+    evalEquals(
+        "regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)", "regexp_substr");
 
     evalEquals(
         "regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 1)",
@@ -3085,8 +3192,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Concat('a',NULL_STRING)", "a").returnType(Types.STRING);
     evalEquals("4 || 2", "42").returnType(StringType.of(2));
     evalEquals("4 || '2'", "42").returnType(StringType.of(2));
-    evalEquals("concat(cast('a' as string(2)), cast('b' as string(3)),cast('c' as string(2)))",
-        "abc").returnType(StringType.of(7));
+    evalEquals(
+            "concat(cast('a' as string(2)), cast('b' as string(3)),cast('c' as string(2)))", "abc")
+        .returnType(StringType.of(7));
     evalNull("NULL_STRING||NULL_STRING").returnType(Types.STRING);
 
     // Binary
@@ -3103,12 +3211,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Concat()");
 
     // Mix String and Binary
-    //evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
+    // evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
 
-    // Array    
+    // Array
     evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
     optimize("ARRAY[1,2,3] || ARRAY[4,5] || ARRAY[6,7]", "ARRAY[1,2,3,4,5,6,7]");
-    
+
     // Check operands type
     evalFails("Concat(FIELD_STRING, FIELD_DATE)");
     evalFails("Concat(FIELD_STRING, FIELD_STRING, FIELD_DATE)");
@@ -3124,7 +3232,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Combine and flatten concats (Same syntax but cost reduced)
     optimize("'A'||FIELD_STRING||FIELD_STRING||'C'", "'A'||FIELD_STRING||FIELD_STRING||'C'");
     optimize("'A'||FIELD_STRING||NULL_STRING||'C'", "'A'||FIELD_STRING||NULL_STRING||'C'");
-    optimize("CONCAT('A',CONCAT(FIELD_STRING,CONCAT(FIELD_STRING,'C')||'D'))",
+    optimize(
+        "CONCAT('A',CONCAT(FIELD_STRING,CONCAT(FIELD_STRING,'C')||'D'))",
         "'A'||FIELD_STRING||FIELD_STRING||'C'||'D'");
   }
 
@@ -3138,8 +3247,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("CONCAT_WS(',','a',NULL_STRING,'b')", "a,b");
 
     // Binary
-    evalEquals("CONCAT_WS(BINARY '1F',BINARY '2A3B',BINARY '4D',BINARY '5E')",
-        new byte[] {0x2A, 0x3B, 0x1F, 0x4D, 0x1F, 0x5E}).returnType(BinaryType.of(6));
+    evalEquals(
+            "CONCAT_WS(BINARY '1F',BINARY '2A3B',BINARY '4D',BINARY '5E')",
+            new byte[] {0x2A, 0x3B, 0x1F, 0x4D, 0x1F, 0x5E})
+        .returnType(BinaryType.of(6));
 
     // Number
     evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(3));
@@ -3184,7 +3295,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Unicode() throws Exception {
-    evalEquals("Unicode('SSSS')", 83L).returnType(Types.INTEGER);;
+    evalEquals("Unicode('SSSS')", 83L).returnType(Types.INTEGER);
+    ;
     evalEquals("Unicode('é')", 233L);
     evalEquals("Unicode('€')", 8364L);
     evalEquals("Unicode('')", 0L);
@@ -3423,8 +3535,10 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void MD5() throws Exception {
     evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b").returnType(Types.STRING);
-    evalEquals("MD5(BINARY '123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF')",
-        "99c415050a2cddbeb525670345ff0aee").returnType(Types.STRING);
+    evalEquals(
+            "MD5(BINARY '123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF')",
+            "99c415050a2cddbeb525670345ff0aee")
+        .returnType(Types.STRING);
     evalNull("MD5(NULL_STRING)").returnType(Types.STRING);
     evalFails("MD5()");
   }
@@ -3454,18 +3568,20 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Sha384() throws Exception {
-    evalEquals("SHA384('Test')",
-        "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3")
-            .returnType(Types.STRING);
+    evalEquals(
+            "SHA384('Test')",
+            "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3")
+        .returnType(Types.STRING);
     evalNull("SHA384(NULL_STRING)").returnType(Types.STRING);
     evalFails("SHA384()");
   }
 
   @Test
   public void Sha512() throws Exception {
-    evalEquals("SHA512('Test')",
-        "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31")
-            .returnType(Types.STRING);
+    evalEquals(
+            "SHA512('Test')",
+            "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31")
+        .returnType(Types.STRING);
     evalNull("SHA512(NULL_STRING)").returnType(Types.STRING);
   }
 
@@ -3495,7 +3611,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Optimize should do nothing
     optimize("RANDOM()", "RANDOM()");
   }
-
 
   @Test
   public void Uuid() throws Exception {
@@ -3605,7 +3720,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Underflow
     evalEquals("Bit_Shift(1,-1)", 0L);
 
-
     evalNull("Bit_Shift(NULL_INTEGER,3)").returnType(Types.INTEGER);
     evalNull("Bit_Shift(123, NULL_INTEGER)");
 
@@ -3713,7 +3827,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Extract(MILLISECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987L);
     evalEquals("Extract(MICROSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654L);
     evalEquals("Extract(NANOSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654321L);
-
 
     evalFails("Extract(");
     evalFails("Extract()");

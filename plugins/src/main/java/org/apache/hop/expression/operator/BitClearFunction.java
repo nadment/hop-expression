@@ -23,31 +23,28 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * 
- */
+/** */
 @FunctionPlugin
 public class BitClearFunction extends Function {
 
   public BitClearFunction() {
-    super("BIT_CLEAR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.BITWISE,
+    super(
+        "BIT_CLEAR",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.BITWISE,
         "/docs/bit_clear.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
     Long position = operands[1].getValue(Long.class);
-    if (position == null)
-      return null;
-    if (position <= 0)
-      return null;
-    if (position > 64)
-      return value;
+    if (position == null) return null;
+    if (position <= 0) return null;
+    if (position > 64) return value;
 
     return value & ~(1L << position.intValue() - 1);
   }
-
 }

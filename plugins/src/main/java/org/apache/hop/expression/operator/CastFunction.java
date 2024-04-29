@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -30,12 +31,11 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
-import java.io.StringWriter;
 
 /**
- * Converts a value of one data type into another data type
- * <code>CAST(value AS type [FORMAT format])</code>.
- * 
+ * Converts a value of one data type into another data type <code>
+ * CAST(value AS type [FORMAT format])</code>.
+ *
  * @see CastOperator
  * @see TryCastFunction
  */
@@ -47,7 +47,11 @@ public class CastFunction extends Function {
   }
 
   public CastFunction(String id) {
-    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST, OperatorCategory.CONVERSION,
+    super(
+        id,
+        ReturnTypes.CAST_OPERATOR,
+        OperandTypes.CAST,
+        OperatorCategory.CONVERSION,
         "/docs/cast.html");
   }
 
@@ -72,7 +76,7 @@ public class CastFunction extends Function {
     if (call.getOperand(0).isNull()) {
       return new Literal(null, call.getType());
     }
-    
+
     // When cast without format
     if (call.getOperandCount() == 2) {
 
@@ -86,17 +90,18 @@ public class CastFunction extends Function {
         Type toType = call.getType();
         Type fromType = call.getOperand(0).getType();
         if (Types.isLosslessCast(toType, fromType)) {
-          return new Call(call.getOperator(), call.getOperand(0).asCall().getOperand(0), Literal.of(toType));
+          return new Call(
+              call.getOperator(), call.getOperand(0).asCall().getOperand(0), Literal.of(toType));
         }
-      }      
+      }
 
       // Remove loss-less cast
       else if (Types.isLosslessCast(call.getOperand(0).getType(), call.getType())) {
         return call.getOperand(0);
       }
     }
-    
-    // TODO: the CAST function and the :: operator should call the appropriate conversion function. 
+
+    // TODO: the CAST function and the :: operator should call the appropriate conversion function.
 
     return call;
   }

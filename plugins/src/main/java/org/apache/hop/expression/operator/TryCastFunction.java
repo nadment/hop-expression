@@ -17,16 +17,16 @@
 
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.Type;
-import java.time.DateTimeException;
 
 /**
- * Converts a value of one data type into another data type
- * <code>TRY_CAST(value AS type [FORMAT format])</code>.
- * 
+ * Converts a value of one data type into another data type <code>
+ * TRY_CAST(value AS type [FORMAT format])</code>.
+ *
  * @see CastFunction
  * @see CastOperator
  */
@@ -40,8 +40,7 @@ public class TryCastFunction extends CastFunction {
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     Type type = operands[1].getValue(Type.class);
 
@@ -56,5 +55,4 @@ public class TryCastFunction extends CastFunction {
       return null;
     }
   }
-
 }

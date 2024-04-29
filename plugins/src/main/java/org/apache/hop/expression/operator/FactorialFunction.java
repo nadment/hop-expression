@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,25 +25,24 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
-/**
- * Calculates the factorial value of a numeric expression.
- */
+/** Calculates the factorial value of a numeric expression. */
 @FunctionPlugin
 public class FactorialFunction extends Function {
 
   public FactorialFunction() {
-    super("FACTORIAL", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super(
+        "FACTORIAL",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMERIC,
+        OperatorCategory.MATHEMATICAL,
         "/docs/factorial.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
-    if (value == null)
-      return null;
+    if (value == null) return null;
 
     int n = value.intValue();
 

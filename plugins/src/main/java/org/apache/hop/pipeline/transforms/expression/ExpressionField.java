@@ -16,13 +16,11 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
+import java.util.Objects;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.metadata.api.HopMetadataProperty;
-import java.util.Objects;
 
-/**
- * Contains the properties of the fields to set with expression.
- */
+/** Contains the properties of the fields to set with expression. */
 public class ExpressionField {
 
   public ExpressionField() {
@@ -40,11 +38,13 @@ public class ExpressionField {
   }
 
   /** The target field name */
-  @HopMetadataProperty(key = "name",
+  @HopMetadataProperty(
+      key = "name",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
   private String name;
 
-  @HopMetadataProperty(key = "expression",
+  @HopMetadataProperty(
+      key = "expression",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
   private String expression;
 
