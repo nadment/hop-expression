@@ -17,6 +17,7 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Literal;
 
 public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
@@ -54,7 +55,7 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
     for (int i = 2; i < operands.length; i += 2) {
       if (!operands[i].isNull()) return operands[i];
     }
-    return operands[2];
+    return Literal.NULL;
   }
 
   @Override
