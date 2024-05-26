@@ -39,7 +39,7 @@
 		<org.eclipse.jface.version>3.29.0</org.eclipse.jface.version>
 		<org.eclipse.jface.text.version>3.23.0</org.eclipse.jface.text.version>
 		<!-- Build dependencies -->
-		<asciidoctor.version>2.2.4</asciidoctor.version>
+		<asciidoctor.version>2.2.6</asciidoctor.version>
 		<jmh.version>1.37</jmh.version>
 	</properties>
 
