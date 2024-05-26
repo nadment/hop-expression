@@ -197,7 +197,7 @@ Interval constants can also be expressed using the following formats:
 	INTERVAL 'D H:M:S.FFFFFFFFF' DAY TO SECOND
 	INTERVAL 'H:M' HOUR TO MINUTE
 
-===== Short format:
+==== Short format:
 ----
 { + | - } INTERVAL '<format>' [ <qualifier> ]
 ----
@@ -216,7 +216,7 @@ INTERVAL '15 04:30' DAY TO MINUTE
 INTERVAL '-1-3 10 23:30:58.999'
 ----
 
-===== Verbose format:
+==== Verbose format:
 
 ----
 { + | - } INTERVAL '<quantity> [ <unit> ] [, <quantity> [ <unit> ] ... ]'

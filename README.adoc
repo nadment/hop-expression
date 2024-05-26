@@ -22,7 +22,7 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 ## Overview
 
-This plugin provides 4 transformations and 1 action that use the power of an expression language.
+This plugin provides 4 transformations and 2 actions that use the power of an expression language.
 
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression,24,24,role=text-center]
 `Expression` transformation calculate fields with expression.
@@ -39,6 +39,9 @@ image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/sr
 
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/setvariable.svg[Set variable,24,24,role=left]
 `Set variable` action provide the possibility to set variables or modify existing variables using expressions.
+
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/loop.svg[Loop,24,24,role=left]
+`Loop` action provide the possibility to execute a workflow in a loop while a condition expression is true.
 
 
 ## Expression language
