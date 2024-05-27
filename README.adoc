@@ -41,7 +41,7 @@ image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/sr
 `Set variable` action provide the possibility to set variables or modify existing variables using expressions.
 
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/loop.svg[Loop,24,24,role=left]
-`Loop` action provide the possibility to execute a workflow in a loop while a condition expression is true.
+`Loop (experimental)` action provide the possibility to execute a workflow in a loop while a condition expression is true.
 
 
 ## Expression language

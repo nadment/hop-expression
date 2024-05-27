@@ -18,15 +18,12 @@
 package org.apache.hop.workflow.actions.loop;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.core.variables.Variables;
 import org.apache.hop.i18n.BaseMessages;
-import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.dialog.MessageBox;
@@ -36,7 +33,6 @@ import org.apache.hop.ui.core.widget.MetaSelectionLine;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.core.widget.TextVar;
 import org.apache.hop.ui.expression.ExpressionText;
-import org.apache.hop.ui.hopgui.file.pipeline.HopPipelineFileType;
 import org.apache.hop.ui.hopgui.file.workflow.HopWorkflowFileType;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.workflow.action.ActionDialog;
@@ -265,41 +261,14 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     return action;
   }
 
-  private IVariables getVariablesAndParametersDELETE() {
-    Variables variablesAndParameters = new Variables();
-    variablesAndParameters.initializeFrom(variables);
-    for (Parameter parameter : action.getParameters()) {
-      variablesAndParameters.setVariable(parameter.getName(), parameter.getValue());
-    }
-    return variablesAndParameters;
-  }
-
   private void browseForFile() {
-    HopPipelineFileType<PipelineMeta> pipelineFileType = new HopPipelineFileType<>();
     HopWorkflowFileType<WorkflowMeta> workflowFileType = new HopWorkflowFileType<>();
-
-    List<String> filterExtensions = new ArrayList<>();
-    filterExtensions.add(
-        pipelineFileType.getFilterExtensions()[0]
-            + ";"
-            + workflowFileType.getFilterExtensions()[0]);
-    filterExtensions.addAll(Arrays.asList(pipelineFileType.getFilterExtensions()));
-    filterExtensions.addAll(Arrays.asList(workflowFileType.getFilterExtensions()));
-    filterExtensions.add("*.*");
-
-    List<String> filterNames = new ArrayList<>();
-    filterNames.add(
-        pipelineFileType.getFilterNames()[0] + " and " + workflowFileType.getFilterNames()[0]);
-    filterNames.addAll(Arrays.asList(pipelineFileType.getFilterNames()));
-    filterNames.addAll(Arrays.asList(workflowFileType.getFilterNames()));
-    filterNames.add(BaseMessages.getString(PKG, "System.FileType.AllFiles"));
-
     BaseDialog.presentFileDialog(
         shell,
         wFilename,
         variables,
-        filterExtensions.toArray(new String[0]),
-        filterNames.toArray(new String[0]),
+        workflowFileType.getFilterExtensions(),
+        workflowFileType.getFilterNames(),
         true);
   }
 
