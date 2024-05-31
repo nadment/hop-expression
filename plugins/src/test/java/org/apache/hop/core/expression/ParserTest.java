@@ -168,6 +168,16 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
+  public void OperatorSymmetrical() throws Exception {
+    assertTrue(Operators.BOOLAND.isSymmetrical());
+    assertTrue(Operators.BOOLOR.isSymmetrical());
+    assertTrue(Operators.BOOLXOR.isSymmetrical());
+    assertTrue(Operators.MULTIPLY.isSymmetrical());
+    assertTrue(Operators.EQUAL.isSymmetrical());
+    assertTrue(Operators.NOT_EQUAL.isSymmetrical());
+  }
+
+  @Test
   public void as() throws Exception {
     assertTrue(compile("ABS(FIELD_INTEGER)").asCall() instanceof Call);
     assertTrue(compile("FIELD_INTEGER").asIdentifier() instanceof Identifier);

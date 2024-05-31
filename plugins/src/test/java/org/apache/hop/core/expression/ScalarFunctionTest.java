@@ -352,10 +352,13 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Decode() throws Exception {
-    evalEquals("Decode(1,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "one");
+    evalEquals("Decode(1,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "one")
+        .returnType(StringType.of(3));
     evalEquals("Decode(2,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "two");
     evalEquals("Decode(NULL_INTEGER,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "<NULL>");
     evalEquals("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "other");
+
+    evalEquals("Decode('A','B',2,'C',3,0)", 0L).returnType(IntegerType.of(1));
 
     // Support ABORT as default
     evalEquals(
