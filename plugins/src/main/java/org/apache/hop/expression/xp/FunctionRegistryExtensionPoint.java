@@ -35,6 +35,6 @@ public class FunctionRegistryExtensionPoint implements IExtensionPoint<PluginReg
   @Override
   public void callExtensionPoint(
       ILogChannel log, IVariables variables, PluginRegistry pluginRegistry) throws HopException {
-    FunctionRegistry.registerPluginFunctions();
+    FunctionRegistry.registerFunctions();
   }
 }

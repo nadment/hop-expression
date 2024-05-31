@@ -15,12 +15,13 @@
 
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.apache.hop.expression.FunctionRegistry;
-import org.junit.Test;
+import org.apache.hop.expression.operator.CoalesceFunction;
+import org.junit.jupiter.api.Test;
 
 public class FunctionRegistryTest extends ExpressionTest {
 
@@ -36,5 +37,10 @@ public class FunctionRegistryTest extends ExpressionTest {
         FunctionRegistry.getFunction("CEIL").getName(),
         FunctionRegistry.getFunction("CEILING").getName());
     assertEquals(FunctionRegistry.getFunction("CEIL"), FunctionRegistry.getFunction("CEILING"));
+  }
+
+  @Test
+  public void failOnAlreadyRegistredFucntion() throws Exception {
+    FunctionRegistry.register("COALESCE", new CoalesceFunction());
   }
 }

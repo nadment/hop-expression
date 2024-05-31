@@ -26,7 +26,8 @@ import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
-import org.junit.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 public class OperatorTest extends ExpressionTest {
 
@@ -886,62 +887,86 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER-(-FIELD_NUMBER)", "FIELD_INTEGER+FIELD_NUMBER");
   }
 
-  @Test
-  public void Between() throws Exception {
-    evalTrue("3 between 1 and 5").returnType(Types.BOOLEAN);
-    evalTrue("3 between 3 and 5");
-    evalTrue("5 between 3 and 5");
-    evalFalse("1 between 3 and 5");
-    evalFalse("5 between asymmetric 5 and 3");
-    evalTrue("FIELD_INTEGER between symmetric 30 and 50");
-    evalTrue("FIELD_INTEGER between symmetric 50 and 30");
-    evalTrue("FIELD_INTEGER between -3+27 and 50");
-    evalTrue("FIELD_INTEGER between 39.999 and 40.0001");
+  @Nested
+  class Between {
+    @Test
+    void number() throws Exception {
+      evalTrue("3 between 1 and 5").returnType(Types.BOOLEAN);
+      evalTrue("3 between 3 and 5");
+      evalTrue("5 between 3 and 5");
+      evalFalse("1 between 3 and 5");
+      evalFalse("5 between asymmetric 5 and 3");
+      evalTrue("FIELD_INTEGER between symmetric 30 and 50");
+      evalTrue("FIELD_INTEGER between symmetric 50 and 30");
+      evalTrue("FIELD_INTEGER between -3+27 and 50");
+      evalTrue("FIELD_INTEGER between 39.999 and 40.0001");
+    }
 
-    // Not between
-    evalTrue("FIELD_INTEGER not between 10 and 20");
-    evalTrue("FIELD_INTEGER not between 10.5 and 20");
-    evalTrue("FIELD_INTEGER not between 10 and 20");
-    evalTrue("FIELD_INTEGER not between 10 and 20 and 'Test' is not null");
+    @Test
+    void string() throws Exception {
+      evalTrue("'the' between 'that' and 'then'");
+      evalFalse("'ti' between 'to' and 'tu'");
+    }
 
-    // Integer with string coercion
-    evalTrue("FIELD_INTEGER not between '10' and 20");
-    evalTrue("FIELD_INTEGER not between 10.5 and '20'");
+    @Test
+    void date() throws Exception {
+      // Date
+      evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
+    }
 
-    // Date
-    evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
+    @Test
+    void not() throws Exception {
+      // Not between
+      evalTrue("FIELD_INTEGER not between 10 and 20");
+      evalTrue("FIELD_INTEGER not between 10.5 and 20");
+      evalFalse("FIELD_INTEGER not between 10 and 50");
+      evalTrue("FIELD_INTEGER not between 10 and 20 and 'Test' is not null");
+    }
 
-    // Date with String coercion
-    evalTrue("DATE '2019-02-28' between '2019-01-01' and DATE '2019-12-31'");
-    evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and '2019-12-31'");
+    @Test
+    void coercion() throws Exception {
+      // Integer with string coercion
+      evalTrue("FIELD_INTEGER not between '10' and 20");
+      evalTrue("FIELD_INTEGER not between 10.5 and '20'");
 
-    // String
-    evalTrue("'the' between 'that' and 'then'");
+      // Date with String coercion
+      evalTrue("DATE '2019-02-28' between '2019-01-01' and DATE '2019-12-31'");
+      evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and '2019-12-31'");
+    }
 
-    evalNull("NULL_INTEGER between -10 and 20").returnType(Types.BOOLEAN);
-    evalNull("NULL_INTEGER between symmetric -10 and 20");
-    evalNull("1 between NULL_INTEGER and 20");
-    evalNull("1 between symmetric NULL_INTEGER and 20");
-    evalNull("1 between -10 and NULL_INTEGER");
-    evalNull("1 between symmetric -10 and NULL_INTEGER");
+    @Test
+    void withNull() throws Exception {
+      evalNull("NULL_INTEGER between -10 and 20").returnType(Types.BOOLEAN);
+      evalNull("NULL_INTEGER between symmetric -10 and 20");
+      evalNull("1 between NULL_INTEGER and 20");
+      evalNull("1 between symmetric NULL_INTEGER and 20");
+      evalNull("1 between -10 and NULL_INTEGER");
+      evalNull("1 between symmetric -10 and NULL_INTEGER");
+    }
 
-    evalFails("'the' between 1 and 2");
-    evalFails("FIELD_INTEGER between 10 and");
-    evalFails("FIELD_INTEGER between and 10");
-    evalFails("FIELD_INTEGER between and ");
-    evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING");
-    evalFails("FIELD_INTEGER BETWEEN 4 AND");
-    evalFails("FIELD_INTEGER BETWEEN  AND 7");
-    evalFails("FIELD_INTEGER BETWEEN 4 OR 6");
+    @Test
+    void syntax() throws Exception {
+      evalFails("'the' between 1 and 2");
+      evalFails("FIELD_INTEGER between 10 and");
+      evalFails("FIELD_INTEGER between and 10");
+      evalFails("FIELD_INTEGER between and ");
+      evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING");
+      evalFails("FIELD_INTEGER BETWEEN 4 AND");
+      evalFails("FIELD_INTEGER BETWEEN  AND 7");
+      evalFails("FIELD_INTEGER BETWEEN 4 OR 6");
+    }
 
-    optimize("FIELD_INTEGER BETWEEN 10 AND 20");
-    optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
-    optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
-    optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
-    optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
-    optimizeFalse("2 between 3 and (5+1)");
-    optimizeTrue("25.8 between 18 and 32");
-    optimizeTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
+    @Test
+    void compile() throws Exception {
+      optimize("FIELD_INTEGER BETWEEN 10 AND 20");
+      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
+      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
+      optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
+      optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
+      optimizeFalse("2 between 3 and (5+1)");
+      optimizeTrue("25.8 between 18 and 32");
+      optimizeTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
+    }
   }
 
   @Test
@@ -1309,37 +1334,45 @@ public class OperatorTest extends ExpressionTest {
     evalFails("CAST('xyz' as INET");
   }
 
-  @Test
-  public void Cast() throws Exception {
+  @Nested
+  class Cast {
+    @Test
+    public void Cast() throws Exception {
+      evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(NumberType.of(20));
 
-    evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(NumberType.of(20));
+      // Accept data type quoted like a String
+      evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(Types.INTEGER);
+      evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
+    }
 
-    // Accept data type quoted like a String
-    evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(Types.INTEGER);
-    evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
+    @Test
+    public void syntax() throws Exception {
+      // Error syntax
+      evalFails("'1234':");
+      evalFails("'1234':NUMBER");
+      evalFails("'1234'::");
+      evalFails("CAST('bad' AS)");
+      evalFails("CAST('2020-01-01' AS NULL)");
+      evalFails("CAST(1234 AS STRING FORMAT )");
+      evalFails("CAST(DATE '2019-02-25' AS String FORMAT )");
+      evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)");
+      evalFails("CAST 3 as BOOLEAN)");
+      evalFails("CAST(3 as BOOLEAN");
+      evalFails("CAST(3 as NILL)");
+      evalFails("CAST(3 as )");
+      evalFails("CAST(3 as");
+      evalFails("CAST(3 STRING");
+    }
 
-    // Error syntax
-    evalFails("'1234':");
-    evalFails("'1234':NUMBER");
-    evalFails("'1234'::");
-    evalFails("CAST('bad' AS)");
-    evalFails("CAST('2020-01-01' AS NULL)");
-    evalFails("CAST(1234 AS STRING FORMAT )");
-    evalFails("CAST(DATE '2019-02-25' AS String FORMAT )");
-    evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)");
-    evalFails("CAST 3 as BOOLEAN)");
-    evalFails("CAST(3 as BOOLEAN");
-    evalFails("CAST(3 as NILL)");
-    evalFails("CAST(3 as )");
-    evalFails("CAST(3 as");
-    evalFails("CAST(3 STRING");
-
-    // Unknown data type
-    evalFails("Cast(123 as Nill)");
-    evalFails("Cast(123 as 1)");
-    evalFails("Cast(123 as TRUE)");
-    evalFails("CAST('bad' AS NULL)");
-    evalFails("Cast(123 as 'Text')");
+    @Test
+    public void unknownType() throws Exception {
+      // Unknown data type
+      evalFails("Cast(123 as Nill)");
+      evalFails("Cast(123 as 1)");
+      evalFails("Cast(123 as TRUE)");
+      evalFails("CAST('bad' AS NULL)");
+      evalFails("Cast(123 as 'Text')");
+    }
   }
 
   @Test

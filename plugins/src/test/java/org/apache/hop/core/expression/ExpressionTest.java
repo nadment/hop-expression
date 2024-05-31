@@ -14,10 +14,10 @@
  */
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Locale;
+import org.apache.hop.core.HopClientEnvironment;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -56,9 +57,9 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
@@ -73,16 +74,21 @@ public class ExpressionTest {
   protected static final String ANSI_CYAN = "\u001B[36m";
   protected static final String ANSI_WHITE = "\u001B[37m";
 
-  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  public static RestoreHopEnvironment env;
 
-  @ClassRule
-  public static ExternalResource getResource() {
-    return new ExternalResource() {
-      @Override
-      protected void before() throws Throwable {
-        FunctionRegistry.registerPluginFunctions();
-      }
-    };
+  @BeforeAll
+  static void setup() throws Throwable {
+    // Can't use RestoreHopEnvironment because it' for Junit 4
+    // RestoreHopEnvironment env = new RestoreHopEnvironment();
+
+    HopClientEnvironment.init();
+    FunctionRegistry.registerFunctions();
+  }
+
+  @AfterAll
+  static void clean() throws Throwable {
+    FunctionRegistry.unregisterFunctions();
+    HopClientEnvironment.reset();
   }
 
   public static class Evaluator {

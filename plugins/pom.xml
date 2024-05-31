@@ -40,6 +40,7 @@
 		<org.eclipse.jface.text.version>3.23.0</org.eclipse.jface.text.version>
 		<!-- Build dependencies -->
 		<asciidoctor.version>2.2.6</asciidoctor.version>
+		<junit-jupiter.version>5.9.2</junit-jupiter.version>
 		<jmh.version>1.37</jmh.version>
 	</properties>
 
@@ -56,29 +57,25 @@
 			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-engine</artifactId>
 			<version>${hop.version}</version>
-			<scope>
-				compile</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-ui</artifactId>
-			<version>
-				${hop.version}</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.hop</groupId>
-			<artifactId>
-				hop-plugins-valuetypes-json</artifactId>
 			<version>${hop.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				commons-lang</groupId>
+			<groupId>org.apache.hop</groupId>
+			<artifactId>hop-plugins-valuetypes-json</artifactId>
+			<version>${hop.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>	commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>${commons-lang.version}</version>
 		</dependency>
@@ -93,14 +90,12 @@
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>
-				commons-vfs2</artifactId>
+			<artifactId>commons-vfs2</artifactId>
 			<version>${commons-vfs2.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				com.jayway.jsonpath</groupId>
+			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 			<version>${json-path.version}</version>
 		</dependency>
@@ -113,77 +108,63 @@
 
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
-			<artifactId>
-				org.eclipse.osgi</artifactId>
+			<artifactId>org.eclipse.osgi</artifactId>
 			<version>${org.eclipse.osgi.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.eclipse.platform</groupId>
+			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.runtime</artifactId>
 			<version>
 				${org.eclipse.core.runtime.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.eclipse.platform</groupId>
+			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.text</artifactId>
-			<version>
-				${org.eclipse.text.version}</version>
+			<version>${org.eclipse.text.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.eclipse.platform</groupId>
+			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.jface</artifactId>
-			<version>
-				${org.eclipse.jface.version}</version>
+			<version>${org.eclipse.jface.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.eclipse.platform</groupId>
+			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.jface.text</artifactId>
-			<version>
-				${org.eclipse.jface.text.version}</version>
+			<version>${org.eclipse.jface.text.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
-			<groupId>
-				org.apache.hop</groupId>
+			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-core</artifactId>
 			<version>${hop.version}</version>
-			<classifier>
-				tests</classifier>
+			<classifier>tests</classifier>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.apache.hop</groupId>
+			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-engine</artifactId>
 			<version>${hop.version}</version>
-			<classifier>
-				tests</classifier>
+			<classifier>tests</classifier>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>
-				junit</artifactId>
-			<version>${junit.version}</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit-jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.openjdk.jmh</groupId>
+			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-core</artifactId>
 			<version>${jmh.version}</version>
 			<scope>
@@ -192,8 +173,7 @@
 
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>
-				jmh-generator-annprocess</artifactId>
+			<artifactId>jmh-generator-annprocess</artifactId>
 			<version>${jmh.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -204,8 +184,7 @@
 		<plugins>
 
 			<plugin>
-				<groupId>
-					org.asciidoctor</groupId>
+				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>${asciidoctor.version}</version>
 				<executions>
@@ -217,13 +196,11 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>src/main/doc</sourceDirectory>
-							<backend>
-								html5</backend>
+							<backend>html5</backend>
 							<preserveDirectories>true</preserveDirectories>
 							<attributes>
 								<stylesheet>asciidoctor.css</stylesheet>
-								<linkcss>
-									false</linkcss>
+								<linkcss>false</linkcss>
 								<nofooter>true</nofooter>
 								<icons>font</icons>
 							</attributes>
@@ -233,25 +210,21 @@
 			</plugin>
 
 			<plugin>
-				<groupId>
-					org.apache.maven.plugins</groupId>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>
-							copy-resources</id>
+						<id>copy-resources</id>
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>
-								${project.build.outputDirectory}/docs
+							<outputDirectory>${project.build.outputDirectory}/docs
 							</outputDirectory>
 							<resources>
 								<resource>
-									<directory>
-										${project.build.directory}/generated-docs
+									<directory>${project.build.directory}/generated-docs
 									</directory>
 								</resource>
 							</resources>

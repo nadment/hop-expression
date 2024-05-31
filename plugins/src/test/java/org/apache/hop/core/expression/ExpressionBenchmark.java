@@ -32,6 +32,7 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -45,7 +46,9 @@ import org.openjdk.jmh.runner.options.TimeValue;
 
 public class ExpressionBenchmark {
 
-  static ExpressionContext context;
+  public ExpressionBenchmark() {
+    super();
+  }
 
   /**
    * @param args
@@ -54,8 +57,6 @@ public class ExpressionBenchmark {
    */
   public static void main(String[] args) throws RunnerException {
     RestoreHopEnvironment env = new RestoreHopEnvironment();
-
-    context = createExpressionContext();
 
     Options opt =
         new OptionsBuilder()
@@ -71,7 +72,7 @@ public class ExpressionBenchmark {
     new Runner(opt).run();
   }
 
-  protected static ExpressionContext createExpressionContext() {
+  public ExpressionContext createExpressionContext() {
 
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
@@ -118,7 +119,7 @@ public class ExpressionBenchmark {
   }
 
   protected Object eval(String source) throws Exception {
-    context = createExpressionContext();
+    IExpressionContext context = createExpressionContext();
     IExpression expression = context.createExpression(source);
     return expression.getValue();
   }

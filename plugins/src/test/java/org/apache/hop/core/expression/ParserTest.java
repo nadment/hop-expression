@@ -15,13 +15,13 @@
 
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
@@ -35,7 +35,7 @@ import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ParserTest extends ExpressionTest {
 

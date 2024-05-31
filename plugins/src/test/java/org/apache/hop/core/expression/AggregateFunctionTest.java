@@ -18,7 +18,7 @@ package org.apache.hop.core.expression;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AggregateFunctionTest extends ExpressionTest {
   @Test

@@ -82,7 +82,7 @@ public class FunctionRegistry {
   }
 
   /** Discovery and register built-in and plugin functions */
-  public static void registerPluginFunctions() throws HopException {
+  public static void registerFunctions() throws HopException {
     JarCache cache = JarCache.getInstance();
     try {
       // Search annotation in native jar
@@ -103,6 +103,10 @@ public class FunctionRegistry {
     } catch (Exception e) {
       throw new HopException("Error discovering annoted functions", e);
     }
+  }
+
+  public static void unregisterFunctions() throws HopException {
+    functions.clear();
   }
 
   public static void register(final String name, final Function function) {

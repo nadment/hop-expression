@@ -14,14 +14,14 @@
  */
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import org.apache.hop.expression.Identifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IdentifierTest extends ExpressionTest {
 
