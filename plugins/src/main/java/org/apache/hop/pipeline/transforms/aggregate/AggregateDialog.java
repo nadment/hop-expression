@@ -190,9 +190,8 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     PropsUi.setLook(icon);
 
     Label label = new Label(composite, SWT.NONE);
-    label.setText(BaseMessages.getString("System.Label.TransformName"));
-    // label.setText(BaseMessages.getString(PKG, "System.TransformName.Label"));
-    // label.setToolTipText(BaseMessages.getString(PKG, "System.TransformName.Tooltip"));
+    label.setText(BaseMessages.getString(PKG, "System.TransformName.Label"));
+    label.setToolTipText(BaseMessages.getString(PKG, "System.TransformName.Tooltip"));
     label.setLayoutData(new FormDataBuilder().top().left().right(icon, 100).result());
     PropsUi.setLook(label);
 
