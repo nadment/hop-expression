@@ -1220,6 +1220,10 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Squeeze() throws Exception {
     evalEquals("SQUEEZE('   Tes T      ')", "Tes T").returnType(Types.STRING);
+    evalEquals("SQUEEZE('')", "");
+    evalEquals("SQUEEZE('  ')", "");
+    evalEquals("SQUEEZE(' T')", "T");
+    evalEquals("SQUEEZE('T ')", "T");
     evalEquals("SQUEEZE(' T  es T ')", "T es T");
     evalEquals("SQUEEZE('T\t es T ')", "T es T");
     evalEquals("SQUEEZE('T \t es T')", "T es T");

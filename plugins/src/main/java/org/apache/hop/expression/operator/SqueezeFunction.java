@@ -64,26 +64,27 @@ public class SqueezeFunction extends Function {
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
-
-    char[] a = value.toCharArray();
-
-    int i = 0;
-    while (Characters.isSpace(a[i])) {
-      i++;
-    }
-    int n = 0;
-    for (; i < a.length; i++) {
-      char c = a[i];
+    final int size = value.length();
+    final char[] newChars = new char[size];
+    int count = 0;
+    int whitespacesCount = 0;
+    boolean startWhitespaces = true;
+    for (int i = 0; i < size; i++) {
+      final char c = value.charAt(i);
       if (Characters.isSpace(c)) {
-        a[n] = ' ';
-        if (a[n - 1] != ' ') n++;
+        if (whitespacesCount == 0 && !startWhitespaces) {
+          newChars[count++] = ' ';
+        }
+        whitespacesCount++;
       } else {
-        a[n++] = c;
+        startWhitespaces = false;
+        newChars[count++] = c;
+        whitespacesCount = 0;
       }
     }
-    if (Characters.isSpace(a[n - 1])) {
-      n--;
+    if (startWhitespaces) {
+      return "";
     }
-    return new String(a, 0, n);
+    return new String(newChars, 0, count - (whitespacesCount > 0 ? 1 : 0));
   }
 }
