@@ -36,12 +36,12 @@
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <license.licenseName>apache_v2</license.licenseName>
         <maven.compiler.source>11</maven.compiler.source>
-        <org.eclipse.core.runtime.version>3.26.100</org.eclipse.core.runtime.version>
-        <org.eclipse.jface.text.version>3.23.0</org.eclipse.jface.text.version>
-        <org.eclipse.jface.version>3.29.0</org.eclipse.jface.version>
+        <org.eclipse.core.runtime.version>3.29.0</org.eclipse.core.runtime.version>
+        <org.eclipse.jface.text.version>3.25.0</org.eclipse.jface.text.version>
+        <org.eclipse.jface.version>3.33.0</org.eclipse.jface.version>
         <!-- Third-party UI dependencies -->
-        <org.eclipse.osgi.version>3.18.300</org.eclipse.osgi.version>
-        <org.eclipse.text.version>3.12.300</org.eclipse.text.version>
+        <org.eclipse.osgi.version>3.19.0</org.eclipse.osgi.version>
+        <org.eclipse.text.version>3.14.0</org.eclipse.text.version>
     </properties>
 
     <dependencies>
