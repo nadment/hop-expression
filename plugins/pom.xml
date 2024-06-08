@@ -36,7 +36,7 @@
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <license.licenseName>apache_v2</license.licenseName>
         <maven.compiler.source>11</maven.compiler.source>
-        <org.eclipse.core.runtime.version>3.26.100</org.eclipse.core.runtime.version>
+        <org.eclipse.core.runtime.version>3.29.0</org.eclipse.core.runtime.version>
         <org.eclipse.jface.text.version>3.23.0</org.eclipse.jface.text.version>
         <org.eclipse.jface.version>3.29.0</org.eclipse.jface.version>
         <!-- Third-party UI dependencies -->
