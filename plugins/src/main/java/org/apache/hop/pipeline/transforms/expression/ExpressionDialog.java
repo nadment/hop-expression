@@ -70,13 +70,9 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
   private ModifyListener lsMod;
 
   public ExpressionDialog(
-      Shell parent,
-      IVariables variables,
-      Object input,
-      PipelineMeta pipelineMeta,
-      String transformName) {
-    super(parent, variables, (ExpressionMeta) input, pipelineMeta, transformName);
-    this.input = (ExpressionMeta) input;
+      Shell parent, IVariables variables, ExpressionMeta transformMeta, PipelineMeta pipelineMeta) {
+    super(parent, variables, transformMeta, pipelineMeta);
+    this.input = transformMeta;
   }
 
   @Override

@@ -115,11 +115,7 @@ public class ExpressionText extends Composite {
     // add button
     Image image =
         SwtSvgImageUtil.getImage(
-            Display.getCurrent(),
-            getClass().getClassLoader(),
-            "expression.svg",
-            14, // $NON-NLS-1$
-            14);
+            Display.getCurrent(), getClass().getClassLoader(), "expression.svg", 14, 14);
 
     wToolBar = new ToolBar(this, SWT.FLAT);
     final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
@@ -128,7 +124,7 @@ public class ExpressionText extends Composite {
     toolItem.addListener(SWT.Selection, e -> openExpressionDialog());
 
     wToolBar.setLayoutData(
-        new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.HORIZONTAL_ALIGN_CENTER));
+        new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_CENTER));
 
     modifyListenerTooltipText = getModifyListenerTooltipText(wText);
     wText.addModifyListener(modifyListenerTooltipText);

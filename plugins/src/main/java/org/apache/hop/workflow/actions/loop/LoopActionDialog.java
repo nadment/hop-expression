@@ -67,9 +67,9 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
   private MetaSelectionLine<WorkflowRunConfiguration> wRunConfiguration;
 
   public LoopActionDialog(
-      Shell parent, IAction action, WorkflowMeta workflowMeta, IVariables variables) {
+      Shell parent, LoopAction action, WorkflowMeta workflowMeta, IVariables variables) {
     super(parent, workflowMeta, variables);
-    this.action = (LoopAction) action;
+    this.action = action;
 
     if (this.action.getName() == null) {
       this.action.setName(BaseMessages.getString(PKG, "LoopAction.Name"));

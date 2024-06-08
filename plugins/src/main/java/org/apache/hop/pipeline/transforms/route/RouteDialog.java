@@ -67,13 +67,9 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
   private final RouteMeta input;
 
   public RouteDialog(
-      Shell parent,
-      IVariables variables,
-      Object input,
-      PipelineMeta pipelineMeta,
-      String transformName) {
-    super(parent, variables, (RouteMeta) input, pipelineMeta, transformName);
-    this.input = (RouteMeta) input;
+      Shell parent, IVariables variables, RouteMeta transformMeta, PipelineMeta pipelineMeta) {
+    super(parent, variables, transformMeta, pipelineMeta);
+    this.input = transformMeta;
   }
 
   @Override

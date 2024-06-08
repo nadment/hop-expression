@@ -63,9 +63,9 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
   private boolean changed;
 
   public SetVariableActionDialog(
-      Shell parent, IAction action, WorkflowMeta workflowMeta, IVariables variables) {
+      Shell parent, SetVariableAction action, WorkflowMeta workflowMeta, IVariables variables) {
     super(parent, workflowMeta, variables);
-    this.action = (SetVariableAction) action;
+    this.action = action;
 
     if (this.action.getName() == null) {
       this.action.setName(BaseMessages.getString(PKG, "SetVariableAction.Name.Default"));

@@ -72,13 +72,9 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
   private final AggregateMeta input;
 
   public AggregateDialog(
-      Shell parent,
-      IVariables variables,
-      Object in,
-      PipelineMeta pipelineMeta,
-      String transformName) {
-    super(parent, variables, (AggregateMeta) in, pipelineMeta, transformName);
-    this.input = (AggregateMeta) in;
+      Shell parent, IVariables variables, AggregateMeta transformMeta, PipelineMeta pipelineMeta) {
+    super(parent, variables, transformMeta, pipelineMeta);
+    this.input = transformMeta;
   }
 
   @Override
