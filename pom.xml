@@ -10,106 +10,103 @@
 	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ~ See the 
 	License for the specific language governing permissions and ~ limitations 
 	under the License. ~ -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.apache.hop</groupId>
-		<artifactId>hop</artifactId>
-		<version>2.10.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.hop</groupId>
+        <artifactId>hop</artifactId>
+        <version>2.10.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>hop-expression</artifactId>
-	<packaging>pom</packaging>
-	<name>Hop Expression</name>
-	<version>0.7.0-SNAPSHOT</version>
+    <artifactId>hop-expression</artifactId>
+    <version>0.7.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Hop Expression</name>
 
-	<properties>
-		<license.licenseName>apache_v2</license.licenseName>
-		<hop.home>C:\hop</hop.home>
-	  <hop.version>2.10.0-SNAPSHOT</hop.version>
-		<jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-		<sonar.projectKey>${project.artifactId}</sonar.projectKey>
-		<sonar.organization>nadment</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
-	</properties>
+    <modules>
+        <module>assemblies</module>
+        <module>plugins</module>
+    </modules>
 
-	<modules>
-		<module>plugins</module>
-		<module>assemblies</module>
-	</modules>
+    <properties>
+        <hop.home>C:\hop</hop.home>
+        <hop.version>2.10.0-SNAPSHOT</hop.version>
+        <license.licenseName>apache_v2</license.licenseName>
+        <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>nadment</sonar.organization>
+        <sonar.projectKey>${project.artifactId}</sonar.projectKey>
+    </properties>
 
-	<build>
+    <repositories>
+        <repository>
+            <id>snapshots.apache.org</id>
+            <url>https://repository.apache.org/snapshots</url>
+        </repository>
+        <repository>
+            <id>maven.org</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+    </repositories>
 
-		<pluginManagement>
-			<plugins>
+    <build>
 
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<executions>
-						<execution>
-							<id>report</id>
-							<goals>
-								<goal>report-aggregate</goal>
-							</goals>
-							<phase>test</phase>
-						</execution>
-					</executions>
-				</plugin>
+        <pluginManagement>
+            <plugins>
 
-				<plugin>
-					<groupId>org.sonarsource.scanner.maven</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.10.0.2594</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>report</id>
+                            <goals>
+                                <goal>report-aggregate</goal>
+                            </goals>
+                            <phase>test</phase>
+                        </execution>
+                    </executions>
+                </plugin>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.rat</groupId>
-				<artifactId>apache-rat-plugin</artifactId>
-				<configuration>
-					<excludeSubProjects>false</excludeSubProjects>
-					<consoleOutput>true</consoleOutput>
-					<excludes>
-						<exclude>**/target/**</exclude>
-						<exclude>**/*.classpath</exclude>
-						<exclude>**/*.project</exclude>
-						<exclude>**/*.svg</exclude>
-						<exclude>**/*.prefs</exclude>
-						<exclude>**/*.hpl</exclude>
-						<exclude>**/*.hwf</exclude>
-						<exclude>**/*.ebnf</exclude>
-						<exclude>**/*.yml</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.10.0.2594</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
-		</plugins>
-	</build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <configuration>
+                    <excludeSubProjects>false</excludeSubProjects>
+                    <consoleOutput>true</consoleOutput>
+                    <excludes>
+                        <exclude>**/target/**</exclude>
+                        <exclude>**/*.classpath</exclude>
+                        <exclude>**/*.project</exclude>
+                        <exclude>**/*.svg</exclude>
+                        <exclude>**/*.prefs</exclude>
+                        <exclude>**/*.hpl</exclude>
+                        <exclude>**/*.hwf</exclude>
+                        <exclude>**/*.ebnf</exclude>
+                        <exclude>**/*.yml</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
 
-	<repositories>
-		<repository>
-			<id>snapshots.apache.org</id>
-			<url>https://repository.apache.org/snapshots</url>
-		</repository>
-		<repository>
-			<id>maven.org</id>
-			<url>https://repo1.maven.org/maven2</url>
-		</repository>		
-	</repositories>
-	
+        </plugins>
+    </build>
+
 </project>
