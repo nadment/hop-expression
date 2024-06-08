@@ -435,7 +435,7 @@ import org.apache.hop.expression.ErrorCode;
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime)
         throws DateTimeException {
-      output.append(cap.apply(RomanNumeral.format(datetime.getMonthValue())));
+      output.append(cap.apply(RomanNumeral.format(datetime.getMonthValue(), false)));
     }
 
     @Override

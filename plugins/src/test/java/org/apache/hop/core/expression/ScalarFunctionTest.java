@@ -2073,10 +2073,17 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void To_Number() throws Exception {
 
     // No precision/scale and no format
+    evalEquals("TO_NUMBER('1000')", 1000L);
     evalEquals("TO_NUMBER('12.3456')", 12.3456);
     evalEquals("TO_NUMBER('98.76546')", 98.76546);
     evalEquals("TO_NUMBER('1.2E3')", 1200L);
     evalEquals("TO_NUMBER('1.2E-3')", 0.0012D);
+
+    // Underscore
+    evalEquals("TO_NUMBER('1_000')", 1000L);
+    evalEquals("TO_NUMBER('1_000.000_1')", 1000.0001);
+    evalEquals("TO_NUMBER('1_2.3_4E1_0')", 12.34E10D);
+    evalEquals("TO_NUMBER('1_234.2E-3')", 1.2342D);
 
     // Format with Decimals
     evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);

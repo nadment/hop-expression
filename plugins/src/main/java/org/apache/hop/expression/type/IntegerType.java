@@ -21,8 +21,11 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.NumberFormat;
 
 public final class IntegerType extends Type {
+
+  private static NumberFormat numberFormat = NumberFormat.of("TM");
 
   public static IntegerType from(final Long value) {
     return of(numberOfDigit(value), false);
@@ -148,7 +151,7 @@ public final class IntegerType extends Type {
 
   public static final Long convertToInteger(final String str) throws ConversionException {
     try {
-      Double number = Double.parseDouble(str);
+      BigDecimal number = numberFormat.parse(str);
       return number.longValue();
     } catch (Exception e) {
       throw new ConversionException(ErrorCode.INVALID_INTEGER, str);

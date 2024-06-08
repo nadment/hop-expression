@@ -438,8 +438,9 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
     // evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
-    evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
-
+    // evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
+    // evalEquals("CAST('1_234' as Integer)", 1234L);
+    evalEquals("CAST('1234.567' as Integer)", 1234L);
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

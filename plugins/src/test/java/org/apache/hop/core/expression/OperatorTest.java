@@ -1068,6 +1068,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('1234' as Integer)", 1234L).returnType(Types.INTEGER);
     evalEquals("'1234'::Integer+5", 1239L);
     evalEquals("CAST('1234.567' as Integer)", 1234L);
+    evalEquals("CAST('1_234' as Integer)", 1234L);
 
     // Binary
     evalEquals("CAST(BINARY '123' as Integer)", 291L);
@@ -1156,10 +1157,12 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST(' -1e-37 ' as Number(38,37))", -1e-37d);
     evalEquals("CAST('1234' as Number)", 1234L);
     evalEquals("CAST('1234.567' as Number(10,5))", 1234.567d);
+    evalEquals("CAST('1_234.567_000' as Number(10,5))", 1234.567d);
     evalEquals("CAST('  -1e-37  ' as Number(38,37))", -1e-37d);
     evalEquals("'1'::Number", 1L);
     evalEquals("'1234'::Number", 1234L);
     evalEquals("' -1e-3 '::Number(10,3)", new BigDecimal("-1e-3"));
+    evalEquals("CAST('1_2.3_4E1_0' as NUMBER)", 12.34E10D);
 
     // Date to Unix Epoch
     evalEquals("CAST(DATE '1970-01-01' as Number)", 0L).returnType(Types.NUMBER);

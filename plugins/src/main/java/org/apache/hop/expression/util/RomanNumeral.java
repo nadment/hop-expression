@@ -20,8 +20,12 @@ public class RomanNumeral {
 
   private static final int[] VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
 
-  private static final String[] NUMERALS = {
+  private static final String[] UPPER_NUMERALS = {
     "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"
+  };
+
+  private static final String[] LOWER_NUMERALS = {
+    "m", "cm", "d", "cd", "c", "xc", "l", "xl", "x", "ix", "v", "iv", "i"
   };
 
   /** Private constructor since this is a utility class. */
@@ -33,20 +37,32 @@ public class RomanNumeral {
    * @param n The arabic integer value
    * @return The roman numeral string
    */
-  public static String format(int number) {
+  public static String format(int number, boolean lowerCase) {
     if ((number < 1) || (number > 3999))
       throw new IllegalArgumentException("Roman numbers can only be 1 - 3999, provided: " + number);
+
+    String[] numerals = (lowerCase) ? LOWER_NUMERALS : UPPER_NUMERALS;
 
     StringBuilder result = new StringBuilder();
     for (int i = 0; i < VALUES.length; i++) {
       int value = VALUES[i];
-      String numeral = NUMERALS[i];
+      String numeral = numerals[i];
       while (number >= value) {
         result.append(numeral);
         number -= value;
       }
     }
     return result.toString();
+  }
+
+  /**
+   * Convert a roman numeral string into an arabic long value.
+   *
+   * @param str The roman numeral string
+   * @return The arabic long value
+   */
+  public static long parse(final String str) {
+    return parse(str, 0, str.length());
   }
 
   /**
@@ -82,25 +98,17 @@ public class RomanNumeral {
     return result;
   }
 
-  /** This function returns value of a Roman symbol */
+  /** This function returns value of a Roman symbol. */
   private static int parse(final char r) {
-    switch (r) {
-      case 'I':
-        return 1;
-      case 'V':
-        return 5;
-      case 'X':
-        return 10;
-      case 'L':
-        return 50;
-      case 'C':
-        return 100;
-      case 'D':
-        return 500;
-      case 'M':
-        return 1000;
-      default:
-        return -1;
-    }
+    return switch (r) {
+      case 'I' -> 1;
+      case 'V' -> 5;
+      case 'X' -> 10;
+      case 'L' -> 50;
+      case 'C' -> 100;
+      case 'D' -> 500;
+      case 'M' -> 1000;
+      default -> -1;
+    };
   }
 }

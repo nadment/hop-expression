@@ -20,7 +20,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ErrorCode;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
@@ -134,7 +133,7 @@ import org.apache.hop.expression.ErrorCode;
  * </tr>
  * </table>
  */
-final class SimpleNumberFormat extends NumberFormat {
+final class DecimalNumberFormat extends NumberFormat {
 
   public enum SignMode {
     DEFAULT,
@@ -194,26 +193,9 @@ final class SimpleNumberFormat extends NumberFormat {
   private String pattern = "";
   private int v = 0;
 
-  protected SimpleNumberFormat(final String format) {
-
-    if (format == null || format.length() == 0) {
-      throw createInvalidFormat(format);
-    }
+  protected DecimalNumberFormat(final String format) {
 
     this.format = format;
-
-    // short-circuit logic for formats that don't follow common logic below
-    if (format.equalsIgnoreCase("TM") || format.equalsIgnoreCase("TM9")) {
-      this.pattern = "TM";
-      return;
-    }
-
-    // Preserve case for exponent case 'E' or 'e'
-    if (format.equalsIgnoreCase("TME")) {
-      this.pattern = format;
-      return;
-    }
-
     int index = 0;
     int length = format.length();
 
@@ -307,10 +289,11 @@ final class SimpleNumberFormat extends NumberFormat {
       } else break;
     }
 
-    if (startsWithIgnoreCase(format, index, "RN")) {
-      builder.append(format.substring(index, index + 2));
-      index += 2;
-    } else if (startsWithIgnoreCase(format, index, "V")) {
+    //    if (startsWithIgnoreCase(format, index, "RN")) {
+    //      builder.append(format.substring(index, index + 2));
+    //      index += 2;
+    //    } else
+    if (startsWithIgnoreCase(format, index, "V")) {
       for (index++; index < length; index++, this.v++) {
         char c = format.charAt(index);
         if (c != '0' && c != '9') break;
@@ -392,53 +375,54 @@ final class SimpleNumberFormat extends NumberFormat {
     this.pattern = builder.toString();
   }
 
+  @Override
   public String toString() {
 
-    StringBuilder s = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
     if (sign == SignMode.S_LEADING) {
-      s.append('S');
+      builder.append('S');
     } else if (sign == SignMode.MI_LEADING) {
-      s.append("MI");
+      builder.append("MI");
     }
 
     if (!fillMode) {
-      s.append("FM");
+      builder.append("FM");
     }
 
     if (blank) {
-      s.append('B');
+      builder.append('B');
     }
 
     if (currency == CurrencyMode.DOLLARS) {
-      s.append('$');
+      builder.append('$');
     } else if (currency == CurrencyMode.LOCAL_LEADING) {
-      s.append("L");
+      builder.append("L");
     } else if (currency == CurrencyMode.ISO_LEADING) {
-      s.append("C");
+      builder.append("C");
     }
 
-    s.append(pattern);
+    builder.append(pattern);
 
     if (scientific > 0) {
-      s.append("EEEE");
+      builder.append("EEEE");
     }
 
     // Currency
     if (currency == CurrencyMode.TRAILING_LOCAL) {
-      s.append("L");
+      builder.append("L");
     } else if (currency == CurrencyMode.TRAILING_ISO) {
-      s.append("C");
+      builder.append("C");
     }
 
     // Sign
     if (sign == SignMode.TRAILING_S) {
-      s.append('S');
+      builder.append('S');
     } else if (sign == SignMode.TRAILING_MI) {
-      s.append("MI");
+      builder.append("MI");
     } else if (sign == SignMode.PR) {
-      s.append("PR");
+      builder.append("PR");
     }
-    return s.toString();
+    return builder.toString();
   }
 
   @Override
@@ -452,7 +436,7 @@ final class SimpleNumberFormat extends NumberFormat {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    SimpleNumberFormat other = (SimpleNumberFormat) obj;
+    DecimalNumberFormat other = (DecimalNumberFormat) obj;
     return format.equals(other.format);
   }
 
@@ -470,8 +454,6 @@ final class SimpleNumberFormat extends NumberFormat {
    */
   public BigDecimal parse(String text) throws ParseNumberException {
 
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
-
     int start = 0; // first not white space symbol
     try {
       int end = text.length(); // length of parsed string
@@ -482,23 +464,6 @@ final class SimpleNumberFormat extends NumberFormat {
 
       // Skip end space
       while (start < end && Characters.isSpace(text.charAt(end - 1))) end--;
-
-      // Text-minimal number
-      if ("TM".equals(pattern)) {
-        String s = text.substring(start, end);
-        return new BigDecimal(s);
-      }
-
-      // Text-minimal number in scientific notation
-      if ("TME".equalsIgnoreCase(pattern)) {
-        String s = text.substring(start, end);
-        return new BigDecimal(s);
-      }
-
-      // Parse roman numeral
-      if ("RN".equalsIgnoreCase(pattern)) {
-        return BigDecimal.valueOf(RomanNumeral.parse(text, start, end));
-      }
 
       // Detect sign
       if (this.sign == SignMode.PR) {
@@ -531,7 +496,7 @@ final class SimpleNumberFormat extends NumberFormat {
         } else if (c == '+') {
           end--;
         } else {
-          throw createUnparsableNumber(text, start);
+          throw createUnparsableNumber(format, text, start);
         }
       } else if (this.sign == SignMode.S_LEADING) {
         char c = text.charAt(start);
@@ -541,7 +506,7 @@ final class SimpleNumberFormat extends NumberFormat {
         } else if (c == '+') {
           start++;
         } else {
-          throw createUnparsableNumber(text, start);
+          throw createUnparsableNumber(format, text, start);
         }
       } else if (this.sign == SignMode.DEFAULT) {
         char c = text.charAt(start);
@@ -553,6 +518,7 @@ final class SimpleNumberFormat extends NumberFormat {
         }
       }
 
+      DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
       String symbol;
       switch (this.currency) {
         case LOCAL_LEADING:
@@ -620,7 +586,7 @@ final class SimpleNumberFormat extends NumberFormat {
           else if (!this.exactMode && c == ',') continue;
         }
 
-        throw createUnparsableNumber(text, i);
+        throw createUnparsableNumber(format, text, i);
       }
 
       // fraction part
@@ -632,7 +598,7 @@ final class SimpleNumberFormat extends NumberFormat {
             digits.append(c);
             fraction++;
           } else {
-            throw createUnparsableNumber(text, i);
+            throw createUnparsableNumber(format, text, i);
           }
         }
       }
@@ -644,7 +610,7 @@ final class SimpleNumberFormat extends NumberFormat {
 
       return new BigDecimal(new BigInteger(str), fraction);
     } catch (Exception exception) {
-      throw createUnparsableNumber(text, start);
+      throw createUnparsableNumber(format, text, start);
     }
   }
 
@@ -656,47 +622,6 @@ final class SimpleNumberFormat extends NumberFormat {
    * @return the formatted number
    */
   public String format(BigDecimal number) {
-
-    // Short-circuit logic for formats that don't follow common logic below
-
-    // Text-minimal number
-    if (pattern == null || pattern.equals("TM")) {
-      String s = number.stripTrailingZeros().toPlainString();
-
-      // TODO: To be compatible with SQL
-      // if (s.startsWith("0.")) {
-      // we want ".1" not "0.1"
-      // return s.substring(1);
-      // } else if (s.startsWith("-0.")) {
-      // we want "-.1" not "-0.1"
-      // return "-" + s.substring(2);
-      // }
-
-      return s;
-    }
-
-    // Text-minimal number in scientific notation
-    if (pattern.equalsIgnoreCase("TME")) {
-      int power = number.precision() - number.scale() - 1;
-      number = number.movePointLeft(power);
-      // Case of exponent
-      char e = pattern.charAt(2);
-      return number.toPlainString()
-          + e
-          + (power < 0 ? '-' : '+')
-          + (Math.abs(power) < 10 ? "0" : "")
-          + Math.abs(power);
-    }
-
-    // Roman numerals
-    if (pattern.equalsIgnoreCase("RN")) {
-      String rn = RomanNumeral.format(number.intValue());
-      if (this.fillMode) {
-        rn = StringUtils.leftPad(rn, 15, " ");
-      }
-      boolean lowercase = pattern.charAt(0) == 'r';
-      return lowercase ? rn.toLowerCase() : rn;
-    }
 
     // Hexadecimal
     int index = pattern.indexOf('X');
@@ -727,8 +652,6 @@ final class SimpleNumberFormat extends NumberFormat {
       return hex;
     }
 
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
-
     // Adjust number scale to format scale
     if (this.scale < number.scale()) {
       number = number.setScale(this.scale, RoundingMode.DOWN);
@@ -749,6 +672,8 @@ final class SimpleNumberFormat extends NumberFormat {
 
     dot = number.precision() - number.scale();
     int length = 0;
+
+    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
 
     StringBuilder output = new StringBuilder();
     if (this.precision > 0) {
@@ -948,13 +873,5 @@ final class SimpleNumberFormat extends NumberFormat {
     }
 
     return 1;
-  }
-
-  protected final NumberFormatException createInvalidFormat(final String pattern) {
-    return new NumberFormatException(ErrorCode.INVALID_NUMBER_FORMAT.message(pattern));
-  }
-
-  protected final ParseNumberException createUnparsableNumber(final String text, int index) {
-    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
   }
 }

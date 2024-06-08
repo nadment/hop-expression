@@ -19,23 +19,23 @@ package org.apache.hop.expression.util;
 import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 
-public class CompositeNumberFormat extends NumberFormat {
+final class CompositeNumberFormat extends NumberFormat {
   private final String pattern;
-  private final SimpleNumberFormat[] formats;
+  private final NumberFormat[] formats;
 
-  public CompositeNumberFormat(String pattern, SimpleNumberFormat[] formats) {
+  public CompositeNumberFormat(String pattern, NumberFormat[] formats) {
     this.pattern = pattern;
     this.formats = formats;
   }
 
   @Override
-  public String format(BigDecimal value) {
+  public String format(final BigDecimal value) {
     return formats[0].format(value);
   }
 
   @Override
-  public BigDecimal parse(String text) throws ParseNumberException {
-    for (SimpleNumberFormat format : formats) {
+  public BigDecimal parse(final String text) throws ParseNumberException {
+    for (NumberFormat format : formats) {
       try {
         return format.parse(text);
       } catch (Exception e) {

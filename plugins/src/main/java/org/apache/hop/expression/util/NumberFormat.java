@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.hop.expression.ErrorCode;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
@@ -137,25 +138,41 @@ public abstract class NumberFormat extends BaseFormat {
   private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
   public static NumberFormat of(final String pattern) {
-    if (pattern == null) {
-      throw new NumberFormatException("Paterrn is null");
+
+    if (pattern == null || pattern.length() == 0) {
+      throw new NumberFormatException("Pattern is null or empty");
     }
 
     return cache.computeIfAbsent(pattern, NumberFormat::create);
   }
 
-  private static NumberFormat create(String pattern) {
+  private static NumberFormat create(final String pattern) {
 
+    // Composite format
     if (pattern.indexOf('|') >= 0) {
       List<NumberFormat> formats = new ArrayList<>();
       for (String p : pattern.split("\\|")) {
-        NumberFormat format = new SimpleNumberFormat(p);
+        NumberFormat format = new DecimalNumberFormat(p);
         formats.add(format);
       }
-      return new CompositeNumberFormat(pattern, formats.toArray(new SimpleNumberFormat[0]));
+      return new CompositeNumberFormat(pattern, formats.toArray(new NumberFormat[0]));
     }
 
-    return new SimpleNumberFormat(pattern);
+    // Short-circuit logic for formats that don't follow decimal logic below
+
+    // Text minimal format
+    if (pattern.equalsIgnoreCase("TM")
+        || pattern.equalsIgnoreCase("TME")
+        || pattern.equalsIgnoreCase("TM9")) {
+      return new TextMinimalNumberFormat(pattern);
+    }
+
+    // Roman numerals
+    if (pattern.equalsIgnoreCase("RN") || pattern.equalsIgnoreCase("fmRN")) {
+      return new RomanNumberFormat(pattern);
+    }
+
+    return new DecimalNumberFormat(pattern);
   }
 
   /**
@@ -175,4 +192,13 @@ public abstract class NumberFormat extends BaseFormat {
    * @return the formatted number
    */
   public abstract String format(BigDecimal number);
+
+  protected final NumberFormatException createInvalidFormat(final String format) {
+    return new NumberFormatException(ErrorCode.INVALID_NUMBER_FORMAT.message(format));
+  }
+
+  protected final ParseNumberException createUnparsableNumber(
+      final String format, final String text, int index) {
+    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
+  }
 }
