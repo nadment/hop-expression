@@ -80,8 +80,8 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           Object constantValue = expression.getValue();
           Type constantType = expression.getType();
 
-          if (constantValue instanceof Tuple) {
-            return (Tuple) constantValue;
+          if (constantValue instanceof Tuple tuple) {
+            return tuple;
           }
 
           // Some operator don't known return type like JSON_VALUE.

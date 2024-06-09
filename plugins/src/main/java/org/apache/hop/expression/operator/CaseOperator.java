@@ -197,8 +197,7 @@ public class CaseOperator extends Operator {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof CaseOperator) {
-      CaseOperator other = (CaseOperator) obj;
+    if (obj instanceof CaseOperator other) {
       return when.equals(other.when);
     }
     return false;
@@ -224,8 +223,8 @@ public class CaseOperator extends Operator {
     Tuple thenTuple = operands[2].asTuple();
     for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
-      if (whenOperand instanceof Tuple) {
-        whenOperand.asTuple().unparseValues(writer);
+      if (whenOperand instanceof Tuple tuple) {
+        tuple.unparseValues(writer);
       } else whenOperand.unparse(writer);
       writer.append(" THEN ");
       IExpression thenOperand = thenTuple.get(index++);

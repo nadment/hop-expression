@@ -54,8 +54,8 @@ public final class InetType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof InetAddress) {
-      return (InetAddress) value;
+    if (value instanceof InetAddress inet) {
+      return inet;
     }
 
     throw new ConversionException(
@@ -98,12 +98,12 @@ public final class InetType extends Type {
       return null;
     }
 
-    if (value instanceof InetAddress) {
-      return (InetAddress) value;
+    if (value instanceof InetAddress inet) {
+      return inet;
     }
 
-    if (value instanceof String) {
-      return convertToInet((String) value);
+    if (value instanceof String str) {
+      return convertToInet(str);
     }
 
     throw new ConversionException(

@@ -56,8 +56,8 @@ public final class JsonType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof JsonNode) {
-      return (JsonNode) value;
+    if (value instanceof JsonNode json) {
+      return json;
     }
     //    if (value instanceof String) {
     //      return JsonType.convertStringToJson((String) value);
@@ -103,12 +103,12 @@ public final class JsonType extends Type {
       return null;
     }
 
-    if (value instanceof JsonNode) {
-      return (JsonNode) value;
+    if (value instanceof JsonNode json) {
+      return json;
     }
 
-    if (value instanceof String) {
-      return convertToJson((String) value);
+    if (value instanceof String str) {
+      return convertToJson(str);
     }
 
     throw new ConversionException(

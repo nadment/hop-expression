@@ -78,14 +78,14 @@ public final class IntegerType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof Long) {
-      return (Long) value;
+    if (value instanceof Long number) {
+      return number;
     }
-    if (value instanceof Number) {
-      return ((Number) value).longValue();
+    if (value instanceof Number number) {
+      return number.longValue();
     }
-    if (value instanceof String) {
-      return IntegerType.convertToInteger((String) value);
+    if (value instanceof String str) {
+      return IntegerType.convertToInteger(str);
     }
 
     throw new ConversionException(
@@ -125,24 +125,23 @@ public final class IntegerType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof Long) {
-      return (Long) value;
+    if (value instanceof Long number) {
+      return number;
     }
-    if (value instanceof BigDecimal) {
-      BigDecimal number = (BigDecimal) value;
+    if (value instanceof BigDecimal number) {
       return number.longValue();
     }
-    if (value instanceof Boolean) {
-      return ((boolean) value) ? 1L : 0L;
+    if (value instanceof Boolean bool) {
+      return (bool) ? 1L : 0L;
     }
-    if (value instanceof String) {
-      return convertToInteger((String) value);
+    if (value instanceof String str) {
+      return convertToInteger(str);
     }
-    if (value instanceof byte[]) {
-      return convertToInteger((byte[]) value);
+    if (value instanceof byte[] bytes) {
+      return convertToInteger(bytes);
     }
-    if (value instanceof ZonedDateTime) {
-      return convertToInteger((ZonedDateTime) value);
+    if (value instanceof ZonedDateTime datetime) {
+      return convertToInteger(datetime);
     }
 
     throw new ConversionException(

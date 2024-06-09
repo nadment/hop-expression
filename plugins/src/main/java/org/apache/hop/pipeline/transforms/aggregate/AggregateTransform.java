@@ -63,8 +63,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (value == null) {
       return null;
     }
-    if (value instanceof ZonedDateTime) {
-      return Date.from(((ZonedDateTime) value).toInstant());
+    if (value instanceof ZonedDateTime dt) {
+      return Date.from(dt.toInstant());
     }
     throw new IllegalArgumentException(
         ErrorCode.UNSUPPORTED_COERCION.message(value, TypeId.fromValue(value), Types.DATE));
@@ -142,8 +142,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           AggregateFunction function = null;
           if (expression.is(Kind.CALL)) {
             call = (Call) expression;
-            if (call.getOperator() instanceof AggregateFunction) {
-              function = (AggregateFunction) call.getOperator();
+            if (call.getOperator() instanceof AggregateFunction operator) {
+              function = operator;
             }
           }
           if (function == null) {

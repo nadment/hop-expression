@@ -95,14 +95,14 @@ public class JsonObjectFunction extends Function {
       Object value = operands[i + 1].getValue();
       if (value == null) {
         node.putNull(key);
-      } else if (value instanceof String) {
-        node.put(key, (String) value);
-      } else if (value instanceof Boolean) {
-        node.put(key, (Boolean) value);
-      } else if (value instanceof Long) {
-        node.put(key, (Long) value);
-      } else if (value instanceof BigDecimal) {
-        node.put(key, (BigDecimal) value);
+      } else if (value instanceof String str) {
+        node.put(key, str);
+      } else if (value instanceof Boolean bool) {
+        node.put(key, bool);
+      } else if (value instanceof Long number) {
+        node.put(key, number);
+      } else if (value instanceof BigDecimal number) {
+        node.put(key, number);
       }
       // TODO: Support Json Date
       else {

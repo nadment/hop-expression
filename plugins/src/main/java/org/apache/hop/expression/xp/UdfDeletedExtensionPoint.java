@@ -38,8 +38,7 @@ public class UdfDeletedExtensionPoint implements IExtensionPoint<IHopMetadata> {
 
     log.logBasic("MetadataObjectDeleted");
 
-    if (object instanceof UserDefinedFunctionMeta) {
-      UserDefinedFunctionMeta meta = (UserDefinedFunctionMeta) object;
+    if (object instanceof UserDefinedFunctionMeta meta) {
       log.logBasic("User Defined Function deleted " + meta.getName());
       FunctionRegistry.unregister(meta.getName());
     }

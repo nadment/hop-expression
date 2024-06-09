@@ -116,8 +116,8 @@ public final class DateType extends Type {
       return null;
     }
 
-    if (value instanceof ZonedDateTime) {
-      return (ZonedDateTime) value;
+    if (value instanceof ZonedDateTime datetime) {
+      return datetime;
     }
 
     throw new ConversionException(

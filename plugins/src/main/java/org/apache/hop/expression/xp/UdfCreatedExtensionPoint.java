@@ -37,8 +37,7 @@ public class UdfCreatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object)
       throws HopException {
 
-    if (object instanceof UserDefinedFunctionMeta) {
-      UserDefinedFunctionMeta meta = (UserDefinedFunctionMeta) object;
+    if (object instanceof UserDefinedFunctionMeta meta) {
       log.logBasic("User Defined Function created " + meta.getName());
       FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
     }

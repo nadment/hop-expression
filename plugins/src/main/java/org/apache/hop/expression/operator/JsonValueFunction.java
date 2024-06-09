@@ -68,19 +68,18 @@ public class JsonValueFunction extends Function {
     try {
       JsonPath jsonPath = JsonPath.compile(path);
       value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-      if (value instanceof JsonNode) {
-        JsonNode result = (JsonNode) value;
+      if (value instanceof JsonNode result) {
         if (result.isNull()) return null;
         if (result.isTextual()) return result.textValue();
         if (result.isNumber()) return result.decimalValue();
         if (result.isBoolean()) return result.booleanValue();
         if (result.isArray()) throw new ExpressionException(ErrorCode.UNSUPPORTED_ARRAY_TYPE, path);
       }
-      if (value instanceof Integer) {
-        return Long.valueOf((Integer) value);
+      if (value instanceof Integer number) {
+        return Long.valueOf(number);
       }
-      if (value instanceof Double) {
-        return BigDecimal.valueOf((Double) value);
+      if (value instanceof Double number) {
+        return BigDecimal.valueOf(number);
       }
 
       return value;

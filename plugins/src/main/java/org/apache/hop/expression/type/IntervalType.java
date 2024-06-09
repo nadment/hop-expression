@@ -67,8 +67,8 @@ public final class IntervalType extends Type {
       return null;
     }
 
-    if (value instanceof String) {
-      return Interval.valueOf((String) value);
+    if (value instanceof String str) {
+      return Interval.valueOf(str);
     }
 
     throw new ConversionException(

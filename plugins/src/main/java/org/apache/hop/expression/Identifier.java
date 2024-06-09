@@ -257,8 +257,8 @@ public class Identifier implements IExpression {
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
-    if (context instanceof IRowExpressionContext) {
-      this.context = (IRowExpressionContext) context;
+    if (context instanceof IRowExpressionContext rowContext) {
+      this.context = rowContext;
       IRowMeta rowMeta = this.context.getRowMeta();
       this.ordinal = rowMeta.indexOfValue(name);
       if (ordinal >= 0) {

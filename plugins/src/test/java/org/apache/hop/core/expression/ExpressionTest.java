@@ -354,9 +354,7 @@ public class ExpressionTest {
     Evaluator evaluator = new Evaluator(context, source);
     Object result = evaluator.eval(Object.class);
 
-    if (result instanceof LocalDateTime) {
-      LocalDateTime value = (LocalDateTime) result;
-
+    if (result instanceof LocalDateTime value) {
       if (expected instanceof LocalDate) {
         result = value.toLocalDate();
       } else if (expected instanceof ZonedDateTime) {
@@ -364,9 +362,7 @@ public class ExpressionTest {
       }
     }
 
-    if (result instanceof ZonedDateTime) {
-      ZonedDateTime value = (ZonedDateTime) result;
-
+    if (result instanceof ZonedDateTime value) {
       if (expected instanceof LocalDate) {
         result = value.toLocalDate();
       } else if (expected instanceof LocalDateTime) {

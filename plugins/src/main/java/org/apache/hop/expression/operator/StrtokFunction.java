@@ -56,8 +56,8 @@ public class StrtokFunction extends Function {
       Object v1 = operands[1].getValue();
       if (v1 == null) return null;
 
-      if (v1 instanceof Number) {
-        index = ((Number) v1).intValue();
+      if (v1 instanceof Number number) {
+        index = number.intValue();
       } else {
         delimiter = StringType.coerce(v1);
       }

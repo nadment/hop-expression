@@ -64,8 +64,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
       return GuiResource.getInstance().getImageFunction();
     }
 
-    if (element instanceof IValueMeta) {
-      IValueMeta valueMeta = (IValueMeta) element;
+    if (element instanceof IValueMeta valueMeta) {
       return GuiResource.getInstance().getImage(valueMeta);
     }
 
@@ -74,12 +73,12 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   @Override
   public String getText(Object element) {
-    if (element instanceof Operator) {
-      return ((Operator) element).getName();
+    if (element instanceof Operator operator) {
+      return operator.getName();
     }
 
-    if (element instanceof IValueMeta) {
-      return ((IValueMeta) element).getName();
+    if (element instanceof IValueMeta valueMeta) {
+      return valueMeta.getName();
     }
 
     return String.valueOf(element);
@@ -87,8 +86,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   @Override
   public String getToolTipText(Object element) {
-    if (element instanceof Operator) {
-      Operator operator = (Operator) element;
+    if (element instanceof Operator operator) {
       return operator.getDocumentation();
     }
 

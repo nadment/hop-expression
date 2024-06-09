@@ -70,8 +70,8 @@ public final class BinaryType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof byte[]) {
-      return (byte[]) value;
+    if (value instanceof byte[] bytes) {
+      return bytes;
     }
 
     throw new ConversionException(
@@ -111,11 +111,11 @@ public final class BinaryType extends Type {
       return null;
     }
 
-    if (value instanceof byte[]) {
-      return (byte[]) value;
+    if (value instanceof byte[] bytes) {
+      return bytes;
     }
-    if (value instanceof String) {
-      return ((String) value).getBytes(StandardCharsets.UTF_8);
+    if (value instanceof String str) {
+      return str.getBytes(StandardCharsets.UTF_8);
     }
 
     throw new ConversionException(

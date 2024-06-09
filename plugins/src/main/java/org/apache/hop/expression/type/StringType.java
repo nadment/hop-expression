@@ -124,17 +124,17 @@ public final class StringType extends Type {
 
     String result = null;
 
-    if (value instanceof String) {
-      result = (String) value;
-    } else if (value instanceof Boolean) {
-      result = convertToString((boolean) value);
+    if (value instanceof String str) {
+      result = str;
+    } else if (value instanceof Boolean bool) {
+      result = convertToString(bool);
     } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
       BigDecimal number;
-      if (value instanceof Long) {
-        number = BigDecimal.valueOf((Long) value);
+      if (value instanceof Long l) {
+        number = BigDecimal.valueOf(l);
       } else {
         number = (BigDecimal) value;
       }
@@ -142,12 +142,12 @@ public final class StringType extends Type {
     } else if (value instanceof ZonedDateTime) {
       if (pattern == null) pattern = "YYYY-MM-DD";
       result = DateTimeFormat.of(pattern).format((ZonedDateTime) value);
-    } else if (value instanceof byte[]) {
-      result = new String((byte[]) value, StandardCharsets.UTF_8);
-    } else if (value instanceof JsonNode) {
-      return convertToString((JsonNode) value);
-    } else if (value instanceof InetAddress) {
-      return convertToString((InetAddress) value);
+    } else if (value instanceof byte[] bytes) {
+      result = new String(bytes, StandardCharsets.UTF_8);
+    } else if (value instanceof JsonNode json) {
+      return convertToString(json);
+    } else if (value instanceof InetAddress inet) {
+      return convertToString(inet);
     }
 
     if (result == null) {
@@ -178,14 +178,14 @@ public final class StringType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof String) {
-      return (String) value;
+    if (value instanceof String str) {
+      return str;
     }
-    if (value instanceof Boolean) {
-      return convertToString((boolean) value);
+    if (value instanceof Boolean bool) {
+      return convertToString(bool);
     }
-    if (value instanceof BigDecimal) {
-      return convertToString((BigDecimal) value);
+    if (value instanceof BigDecimal number) {
+      return convertToString(number);
     }
 
     return String.valueOf(value);

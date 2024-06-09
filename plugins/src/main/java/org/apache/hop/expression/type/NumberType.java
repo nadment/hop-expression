@@ -138,23 +138,22 @@ public final class NumberType extends Type {
       }
       return number;
     }
-    if (value instanceof Boolean) {
-      return ((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO;
+    if (value instanceof Boolean bool) {
+      return (bool) ? BigDecimal.ONE : BigDecimal.ZERO;
     }
-    if (value instanceof Long) {
-      long v = (long) value;
-      if (v == 0L) return BigDecimal.ZERO;
-      if (v == 1L) return BigDecimal.ONE;
-      return BigDecimal.valueOf(v);
+    if (value instanceof Long l) {
+      if (l == 0L) return BigDecimal.ZERO;
+      if (l == 1L) return BigDecimal.ONE;
+      return BigDecimal.valueOf(l);
     }
-    if (value instanceof String) {
-      return convertToNumber((String) value);
+    if (value instanceof String str) {
+      return convertToNumber(str);
     }
-    if (value instanceof byte[]) {
-      return convertToNumber((byte[]) value);
+    if (value instanceof byte[] bytes) {
+      return convertToNumber(bytes);
     }
-    if (value instanceof ZonedDateTime) {
-      return convertToNumber((ZonedDateTime) value);
+    if (value instanceof ZonedDateTime dt) {
+      return convertToNumber(dt);
     }
 
     throw new ConversionException(
@@ -171,14 +170,14 @@ public final class NumberType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof BigDecimal) {
-      return (BigDecimal) value;
+    if (value instanceof BigDecimal number) {
+      return number;
     }
-    if (value instanceof Long) {
-      return BigDecimal.valueOf((long) value);
+    if (value instanceof Long number) {
+      return BigDecimal.valueOf(number);
     }
-    if (value instanceof String) {
-      return convertToNumber((String) value);
+    if (value instanceof String str) {
+      return convertToNumber(str);
     }
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.NUMBER);

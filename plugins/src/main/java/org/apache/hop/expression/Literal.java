@@ -53,12 +53,11 @@ public final class Literal implements IExpression {
   public static Literal of(final Object value) {
     if (value == null) return NULL;
 
-    if (value instanceof Boolean) {
-      return ((boolean) value) ? TRUE : FALSE;
+    if (value instanceof Boolean bool) {
+      return bool ? TRUE : FALSE;
     }
 
-    if (value instanceof BigDecimal) {
-      BigDecimal number = (BigDecimal) value;
+    if (value instanceof BigDecimal number) {
       if (BigDecimal.ZERO.compareTo(number) == 0) {
         return ZERO;
       }
@@ -72,27 +71,25 @@ public final class Literal implements IExpression {
       return new Literal(number, NumberType.from(number));
     }
 
-    if (value instanceof Long) {
-      Long number = (Long) value;
+    if (value instanceof Long number) {
       if (number == 0L) return ZERO;
       if (number == 1L) return ONE;
       return new Literal(number, IntegerType.from(number));
     }
 
-    if (value instanceof Integer) {
-      Integer number = (Integer) value;
+    if (value instanceof Integer number) {
       if (number == 0) return ZERO;
       if (number == 1) return ONE;
       Long longValue = number.longValue();
       return new Literal(longValue, IntegerType.from(longValue));
     }
 
-    if (value instanceof String) {
-      return new Literal(value, StringType.from((String) value));
+    if (value instanceof String str) {
+      return new Literal(value, StringType.from(str));
     }
 
-    if (value instanceof byte[]) {
-      return new Literal(value, BinaryType.from((byte[]) value));
+    if (value instanceof byte[] bytes) {
+      return new Literal(value, BinaryType.from(bytes));
     }
 
     if (value instanceof ZonedDateTime) {
@@ -173,8 +170,7 @@ public final class Literal implements IExpression {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof Literal) {
-      Literal o = (Literal) other;
+    if (other instanceof Literal o) {
       if (value == null) {
         return (o.value == null);
       }

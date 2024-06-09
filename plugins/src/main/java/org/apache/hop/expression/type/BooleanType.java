@@ -53,11 +53,11 @@ public final class BooleanType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof Boolean) {
-      return (Boolean) value;
+    if (value instanceof Boolean bool) {
+      return bool;
     }
-    if (value instanceof Number) {
-      return ((Number) value).intValue() != 0;
+    if (value instanceof Number number) {
+      return number.intValue() != 0;
     }
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.BOOLEAN);
@@ -102,19 +102,17 @@ public final class BooleanType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof Boolean) {
-      return (Boolean) value;
+    if (value instanceof Boolean bool) {
+      return bool;
     }
-    if (value instanceof Long) {
-      Long number = (Long) value;
+    if (value instanceof Long number) {
       return number != 0;
     }
-    if (value instanceof BigDecimal) {
-      BigDecimal number = (BigDecimal) value;
+    if (value instanceof BigDecimal number) {
       return number.signum() != 0;
     }
-    if (value instanceof String) {
-      return convertToBoolean((String) value);
+    if (value instanceof String str) {
+      return convertToBoolean(str);
     }
 
     throw new ConversionException(

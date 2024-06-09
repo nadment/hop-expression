@@ -102,8 +102,7 @@ public class BetweenOperator extends Operator {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof BetweenOperator) {
-      BetweenOperator other = (BetweenOperator) obj;
+    if (obj instanceof BetweenOperator other) {
       return between.equals(other.between);
     }
     return false;

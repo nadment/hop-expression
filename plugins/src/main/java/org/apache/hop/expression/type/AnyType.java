@@ -55,21 +55,21 @@ public final class AnyType extends Type {
     }
 
     // JSon function return type ANY
-    if (value instanceof String) {
+    if (value instanceof String str) {
       if (clazz == Boolean.class) {
-        return clazz.cast(BooleanType.convertToBoolean((String) value));
+        return clazz.cast(BooleanType.convertToBoolean(str));
       }
       if (clazz == Long.class) {
-        return clazz.cast(IntegerType.convertToInteger((String) value));
+        return clazz.cast(IntegerType.convertToInteger(str));
       }
       if (clazz == BigDecimal.class) {
-        return clazz.cast(NumberType.convertToNumber((String) value));
+        return clazz.cast(NumberType.convertToNumber(str));
       }
       if (clazz == byte[].class) {
-        return clazz.cast(BinaryType.convertToBinary((String) value));
+        return clazz.cast(BinaryType.convertToBinary(str));
       }
       if (clazz == JsonNode.class) {
-        return clazz.cast(JsonType.convertToJson((String) value));
+        return clazz.cast(JsonType.convertToJson(str));
       }
     }
     if (value instanceof BigDecimal) {
@@ -83,15 +83,15 @@ public final class AnyType extends Type {
         return clazz.cast(StringType.convertToString((BigDecimal) value));
       }
     }
-    if (value instanceof Boolean) {
+    if (value instanceof Boolean bool) {
       if (clazz == String.class) {
-        return clazz.cast(String.valueOf(value));
+        return clazz.cast(String.valueOf(bool));
       }
       if (clazz == Long.class) {
-        return clazz.cast(((boolean) value) ? 1L : 0L);
+        return clazz.cast(bool ? 1L : 0L);
       }
       if (clazz == BigDecimal.class) {
-        return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+        return clazz.cast(bool ? BigDecimal.ONE : BigDecimal.ZERO);
       }
     }
     return super.convert(value, clazz);
