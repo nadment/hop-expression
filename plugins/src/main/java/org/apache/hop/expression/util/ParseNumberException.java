@@ -17,8 +17,9 @@
 package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
-public class ParseNumberException extends RuntimeException {
+public class ParseNumberException extends ExpressionException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 

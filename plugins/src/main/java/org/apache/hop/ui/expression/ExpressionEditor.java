@@ -28,12 +28,14 @@ import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.gui.plugin.toolbar.GuiToolbarElement;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.variables.DescribedVariable;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -72,9 +74,11 @@ import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -101,8 +105,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private IVariables variables;
   private CompletableFuture<IRowMeta> rowMetaFutur;
   private SourceViewer viewer;
-  private SashForm sashForm;
-  private Tree tree;
+  private SashForm wSashForm;
+  private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
   private IRowMeta rowMeta;
 
@@ -121,17 +125,17 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     PropsUi.setLook(this);
 
     this.setLayout(new FormLayout());
-    this.sashForm = new SashForm(this, SWT.HORIZONTAL);
-    this.sashForm.setLayoutData(new FormDataBuilder().fullSize().result());
-    this.createTree(sashForm);
-    this.createEditor(sashForm);
+    this.wSashForm = new SashForm(this, SWT.HORIZONTAL);
+    this.wSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
+    this.createTree(wSashForm);
+    this.createEditor(wSashForm);
 
     // When IRowMeta is ready
     if (rowMetaFutur != null) {
       rowMetaFutur.thenAccept(this::setRowMeta);
     }
 
-    sashForm.setWeights(25, 75);
+    wSashForm.setWeights(25, 75);
   }
 
   protected void createEditor(final Composite parent) {
@@ -267,18 +271,19 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     toolbar.pack();
 
     // Tree widget
-    tree = new Tree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
-    tree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
-    PropsUi.setLook(tree);
+    wTree = new Tree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
+    wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
+    PropsUi.setLook(wTree);
+    wTree.addListener(SWT.MouseDoubleClick, e -> onTreeDoubleClick(e));
 
     // Create the drag source on the tree
-    DragSource ds = new DragSource(tree, DND.DROP_MOVE);
+    DragSource ds = new DragSource(wTree, DND.DROP_MOVE);
     ds.setTransfer(TextTransfer.getInstance());
     ds.addDragListener(
         new DragSourceAdapter() {
           @Override
           public void dragStart(DragSourceEvent event) {
-            TreeItem item = tree.getSelection()[0];
+            TreeItem item = wTree.getSelection()[0];
 
             if (item != null && item.getData() != null) {
               event.doit = true;
@@ -288,12 +293,12 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           @Override
           public void dragSetData(DragSourceEvent event) {
             // Set the data to be the first selected item's text
-            event.data = labelProvider.getText(tree.getSelection()[0].getData());
+            event.data = labelProvider.getText(wTree.getSelection()[0].getData());
           }
         });
 
     if (mode == ExpressionMode.ROW || mode == ExpressionMode.COLUMN || mode == ExpressionMode.UDF) {
-      TreeItem item = new TreeItem(tree, SWT.NULL);
+      TreeItem item = new TreeItem(wTree, SWT.NULL);
       item.setImage(GuiResource.getInstance().getImageFolder());
       String text =
           (mode == ExpressionMode.UDF)
@@ -302,7 +307,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       item.setText(BaseMessages.getString(PKG, text));
     }
 
-    TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
+    TreeItem treeItemOperator = new TreeItem(wTree, SWT.NULL);
     treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
     treeItemOperator.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Operators.Label"));
 
@@ -355,20 +360,21 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       items.put(category, item);
     }
 
-    // Create tree item operator
+    // Create tree item for operators
     for (Operator operator : primaryOperators) {
 
       TreeItem parentItem = items.get(operator.getCategory());
 
       TreeItem item;
-      if (parentItem == null) item = new TreeItem(tree, SWT.NULL);
+      if (parentItem == null) item = new TreeItem(wTree, SWT.NULL);
       else item = new TreeItem(parentItem, SWT.NULL);
       item.setImage(labelProvider.getImage(operator));
       item.setText(mapDisplay.get(operator.getId()));
       item.setData(operator);
     }
 
-    TreeItem treeItemVariable = new TreeItem(tree, SWT.NULL);
+    // Create tree item for variables
+    TreeItem treeItemVariable = new TreeItem(wTree, SWT.NULL);
     treeItemVariable.setImage(GuiResource.getInstance().getImageFolder());
     treeItemVariable.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Variables.Label"));
 
@@ -376,23 +382,27 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       String[] names = this.variables.getVariableNames();
       Arrays.sort(names);
 
+      VariableRegistry variableRegistry = VariableRegistry.getInstance();
       treeItemVariable.removeAll();
       for (String name : names) {
-        boolean isDeprecated =
-            VariableRegistry.getInstance().getDeprecatedVariableNames().contains(name);
+        boolean isDeprecated = variableRegistry.getDeprecatedVariableNames().contains(name);
 
-        String data = "${" + name + '}';
+        DescribedVariable variable = variableRegistry.findDescribedVariable(name);
+        if (variable == null) {
+          variable = new DescribedVariable(name, null, null);
+        }
+        variable.setValue("${" + name + '}');
 
         TreeItem item = new TreeItem(treeItemVariable, SWT.NULL);
-        item.setImage(labelProvider.getImage(name));
+        item.setImage(GuiResource.getInstance().getImageVariable());
         item.setText(name);
         item.setGrayed(isDeprecated);
-        item.setData(data);
+        item.setData(variable);
       }
     }
 
     // Tooltip for syntax and help
-    BrowserToolTip toolTip = new BrowserToolTip(tree, labelProvider);
+    BrowserToolTip toolTip = new BrowserToolTip(wTree, labelProvider);
     toolTip.activate();
   }
 
@@ -414,6 +424,40 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     ruler.addDecorator(1, annotationRulerColumn);
 
     return ruler;
+  }
+
+  // Adds the Current item to the current Position
+  private void onTreeDoubleClick(Event event) {
+    Point point = new Point(event.x, event.y);
+    TreeItem item = wTree.getItem(point);
+
+    if (item != null && item.getData() != null) {
+      StyledText styledText = viewer.getTextWidget();
+
+      // When a selection is already there we need to subtract the position
+      int start = styledText.getCaretOffset() - styledText.getSelectionCount();
+      if (start < 0) {
+        start = 0;
+      }
+
+      String str = item.getText();
+      if (item.getData() instanceof Function function) {
+        str = function.getName() + "()";
+      }
+
+      if (item.getData() instanceof DescribedVariable variable) {
+        str = "${" + variable.getName() + '}';
+      }
+
+      if (item.getData() instanceof IValueMeta meta) {
+        str = meta.getName();
+      }
+
+      if (str != null) {
+        styledText.insert(str);
+        styledText.setSelection(start, start + str.length());
+      }
+    }
   }
 
   public void setText(String expression) {
@@ -486,8 +530,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   protected void treeExpandCollapseAll(boolean expanded) {
     // Stop redraw until operation complete
-    tree.setRedraw(false);
-    for (TreeItem item : tree.getItems()) {
+    wTree.setRedraw(false);
+    for (TreeItem item : wTree.getItems()) {
       item.setExpanded(expanded);
       if (item.getItemCount() > 0) {
         for (TreeItem i : item.getItems()) {
@@ -495,7 +539,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         }
       }
     }
-    tree.setRedraw(true);
+    wTree.setRedraw(true);
   }
 
   @Override
@@ -512,7 +556,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
             () -> {
               // Remove existing fields
 
-              TreeItem parentItem = tree.getItem(0);
+              TreeItem parentItem = wTree.getItem(0);
 
               parentItem.removeAll();
 

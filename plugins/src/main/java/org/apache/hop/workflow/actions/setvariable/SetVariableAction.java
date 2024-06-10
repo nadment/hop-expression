@@ -45,7 +45,7 @@ import org.apache.hop.workflow.engine.IWorkflowEngine;
     id = "SET_VARIABLE",
     name = "i18n::SetVariableAction.Name",
     description = "i18n::SetVariableAction.Description",
-    image = "setvariable.svg",
+    image = "set-variable.svg",
     categoryDescription = "i18n:org.apache.hop.workflow:ActionCategory.Category.Utility",
     keywords = "i18n::SetVariableAction.keywords",
     documentationUrl = "/workflow/actions/setvariable.html")

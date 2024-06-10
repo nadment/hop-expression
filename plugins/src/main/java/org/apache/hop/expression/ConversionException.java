@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression;
 
-public class ConversionException extends RuntimeException {
+public class ConversionException extends ExpressionException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 
