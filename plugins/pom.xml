@@ -26,7 +26,7 @@
 
     <properties>
         <!-- Build dependencies -->
-        <asciidoctor.version>2.2.6</asciidoctor.version>
+        <asciidoctor.version>3.0.0</asciidoctor.version>
         <!-- Third-party Core dependencies -->
         <commons-lang.version>2.6</commons-lang.version>
         <commons-math3.version>3.6.1</commons-math3.version>
