@@ -39,6 +39,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.RowExpressionContext;
@@ -73,7 +74,11 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -179,6 +184,51 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           }
         });
 
+    // Allow data to be copied or moved to the drop target
+    DropTarget dropTarget = new DropTarget(widget, DND.DROP_MOVE | DND.DROP_COPY);
+
+    // Receive data in Text or File format
+    final TextTransfer textTransfer = TextTransfer.getInstance();
+    dropTarget.setTransfer(new Transfer[] {textTransfer});
+
+    dropTarget.addDropListener(
+        new DropTargetListener() {
+          public void dragEnter(DropTargetEvent event) {
+            if (event.detail == DND.DROP_DEFAULT) {
+              if ((event.operations & DND.DROP_COPY) != 0) {
+                event.detail = DND.DROP_COPY;
+              } else {
+                event.detail = DND.DROP_NONE;
+              }
+            }
+          }
+
+          public void dragOver(DropTargetEvent event) {
+
+            event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+            if (textTransfer.isSupportedType(event.currentDataType)) {
+              // NOTE: on unsupported platforms this will return null
+              String str = (String) textTransfer.nativeToJava(event.currentDataType);
+
+              // if (t != null) System.out.println(t);
+            }
+          }
+
+          public void dragOperationChanged(DropTargetEvent event) {}
+
+          public void dragLeave(DropTargetEvent event) {}
+
+          public void dropAccept(DropTargetEvent event) {}
+
+          public void drop(DropTargetEvent event) {
+            if (textTransfer.isSupportedType(event.currentDataType)) {
+              String str = (String) event.data;
+              StyledText styledText = viewer.getTextWidget();
+              styledText.insert(str);
+            }
+          }
+        });
+
     Menu menu = new Menu(getShell(), SWT.POP_UP);
     MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
     undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Undo.Label"));
@@ -277,9 +327,9 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wTree.addListener(SWT.MouseDoubleClick, e -> onTreeDoubleClick(e));
 
     // Create the drag source on the tree
-    DragSource ds = new DragSource(wTree, DND.DROP_MOVE);
-    ds.setTransfer(TextTransfer.getInstance());
-    ds.addDragListener(
+    DragSource dragSource = new DragSource(wTree, DND.DROP_MOVE | DND.DROP_COPY);
+    dragSource.setTransfer(TextTransfer.getInstance());
+    dragSource.addDragListener(
         new DragSourceAdapter() {
           @Override
           public void dragStart(DragSourceEvent event) {
@@ -292,8 +342,22 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
           @Override
           public void dragSetData(DragSourceEvent event) {
+            TreeItem item = wTree.getSelection()[0];
+            String str = String.valueOf(item.getData());
+            if (item.getData() instanceof Operator operator) {
+              str = operator.getName();
+              if (operator instanceof Function) {
+                str += "()";
+              }
+            }
+            if (item.getData() instanceof DescribedVariable variable) {
+              str = "${" + variable.getName() + '}';
+            }
+            if (item.getData() instanceof IValueMeta meta) {
+              str = Identifier.quoteIfNeeded(meta.getName());
+            }
             // Set the data to be the first selected item's text
-            event.data = labelProvider.getText(wTree.getSelection()[0].getData());
+            event.data = labelProvider.getText(str);
           }
         });
 
@@ -444,19 +508,14 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       if (item.getData() instanceof Function function) {
         str = function.getName() + "()";
       }
-
       if (item.getData() instanceof DescribedVariable variable) {
         str = "${" + variable.getName() + '}';
       }
-
       if (item.getData() instanceof IValueMeta meta) {
-        str = meta.getName();
+        str = Identifier.quoteIfNeeded(meta.getName());
       }
-
-      if (str != null) {
-        styledText.insert(str);
-        styledText.setSelection(start, start + str.length());
-      }
+      styledText.insert(str);
+      styledText.setSelection(start, start + str.length());
     }
   }
 
@@ -573,7 +632,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
                   TreeItem item = new TreeItem(parentItem, SWT.NULL);
                   item.setImage(labelProvider.getImage(valueMeta));
                   item.setText(valueMeta.getName());
-                  item.setData(name);
+                  item.setData(valueMeta);
                 }
               }
             });

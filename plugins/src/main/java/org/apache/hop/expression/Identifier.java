@@ -50,6 +50,25 @@ public class Identifier implements IExpression {
   // The IValueMeta when resolved or null if unresolved.
   private IValueMeta valueMeta;
 
+  /**
+   * If identifier name contains space, is a reserved word or a function name must be quoted.
+   *
+   * @param name
+   * @return
+   */
+  public static String quoteIfNeeded(String name) {
+
+    if (name.indexOf(' ') >= 0
+        || ExpressionParser.isReservedWord(name)
+        || TypeId.of(name) != null
+        || TimeUnit.of(name) != null
+        || FunctionRegistry.isFunction(name)) {
+      return '\"' + name + '\"';
+    }
+
+    return name;
+  }
+
   public Identifier(final String name) {
     this(0, name);
   }
