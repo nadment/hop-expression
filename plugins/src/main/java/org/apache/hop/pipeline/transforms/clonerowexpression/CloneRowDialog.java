@@ -71,12 +71,8 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
   private ExpressionText wCloneNumField;
 
   public CloneRowDialog(
-      Shell parent,
-      IVariables variables,
-      CloneRowMeta transformMeta,
-      PipelineMeta pipelineMeta,
-      String transformName) {
-    super(parent, variables, transformMeta, pipelineMeta, transformName);
+      Shell parent, IVariables variables, CloneRowMeta transformMeta, PipelineMeta pipelineMeta) {
+    super(parent, variables, transformMeta, pipelineMeta);
     input = transformMeta;
   }
 
