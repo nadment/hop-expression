@@ -34,9 +34,7 @@ import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
@@ -357,7 +355,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
               str = Identifier.quoteIfNeeded(meta.getName());
             }
             // Set the data to be the first selected item's text
-            event.data = labelProvider.getText(str);
+            event.data = str;
           }
         });
 
@@ -603,7 +601,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   @Override
   public void dispose() {
-    this.labelProvider.dispose();
     super.dispose();
   }
 
@@ -623,14 +620,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
                 for (int i = 0; i < rowMeta.size(); i++) {
                   IValueMeta valueMeta = rowMeta.getValueMeta(i);
 
-                  // Escape field name matching reserved words or function name
-                  String name = valueMeta.getName();
-                  if (ExpressionParser.isReservedWord(name) || FunctionRegistry.isFunction(name)) {
-                    name = '[' + name + ']';
-                  }
-
                   TreeItem item = new TreeItem(parentItem, SWT.NULL);
-                  item.setImage(labelProvider.getImage(valueMeta));
+                  item.setImage(GuiResource.getInstance().getImage(valueMeta));
                   item.setText(valueMeta.getName());
                   item.setData(valueMeta);
                 }

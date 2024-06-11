@@ -37,7 +37,7 @@ image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/sr
 `Aggregate` transformation uses aggregation functions to calculate values on groups of rows.
 
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/setvariable.svg[Set variable,24,24,role=left]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/set-variable.svg[Set variable,24,24,role=left]
 `Set variable` action provide the possibility to set variables or modify existing variables using expressions.
 
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/loop.svg[Loop,24,24,role=left]

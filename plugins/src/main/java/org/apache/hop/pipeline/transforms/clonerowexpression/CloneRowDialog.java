@@ -115,6 +115,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     wlTransformName.setLayoutData(fdlTransformName);
     wTransformName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     wTransformName.setText(transformName);
+    PropsUi.setLook(wTransformName);
 
     wTransformName.addModifyListener(lsMod);
     fdTransformName = new FormData();

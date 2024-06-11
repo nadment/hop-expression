@@ -56,7 +56,7 @@ public class Identifier implements IExpression {
    * @param name
    * @return
    */
-  public static String quoteIfNeeded(String name) {
+  public static String quoteIfNeeded(final String name) {
 
     if (name.indexOf(' ') >= 0
         || ExpressionParser.isReservedWord(name)

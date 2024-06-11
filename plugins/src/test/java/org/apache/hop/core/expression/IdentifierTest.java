@@ -39,6 +39,14 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
+  public void quoteIfNeeded() throws Exception {
+    assertEquals(Identifier.quoteIfNeeded("NORMAL"), "NORMAL");
+    assertEquals(Identifier.quoteIfNeeded("TRIM"), "\"TRIM\"");
+    assertEquals(Identifier.quoteIfNeeded("OR"), "\"OR\"");
+    assertEquals(Identifier.quoteIfNeeded("FIELD WITH SPACE"), "\"FIELD WITH SPACE\"");
+  }
+
+  @Test
   public void eval() throws Exception {
     evalEquals("FIELD_INTEGER%2", 0L);
     evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0L);
