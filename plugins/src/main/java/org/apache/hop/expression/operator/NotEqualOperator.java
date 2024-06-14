@@ -101,12 +101,13 @@ public class NotEqualOperator extends Operator {
 
     // Simplify x!=NULL → NULL
     if (left.isNull() || right.isNull()) {
-      return Literal.NULL;
+      return new Literal(null, Types.BOOLEAN);
     }
 
     // Simplify x!=x → NULL AND x IS NULL
     if (left.equals(right)) {
-      return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
+      return new Call(
+          Operators.BOOLAND, new Literal(null, Types.BOOLEAN), new Call(Operators.IS_NULL, left));
     }
 
     // Simplify 3!=X+1 → 3-1!=X

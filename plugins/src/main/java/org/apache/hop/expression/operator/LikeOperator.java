@@ -28,6 +28,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Regexp;
 
 /**
@@ -79,7 +80,9 @@ public class LikeOperator extends Operator {
       if (pattern == null) return new Literal(null, call.getType());
 
       if (call.getOperandCount() == 3) {
-        if (call.getOperand(2).isNull()) return Literal.NULL;
+        if (call.getOperand(2).isNull()) {
+          return new Literal(null, Types.BOOLEAN);
+        }
 
         // For now don't optimize if special escape char
         return call;

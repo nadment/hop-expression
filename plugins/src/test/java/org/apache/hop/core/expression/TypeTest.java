@@ -27,7 +27,6 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -422,8 +421,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(15L), type.cast(new byte[] {0xF}));
     assertEquals(
         Long.valueOf(1672185600L),
-        type.cast(
-            LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault())));
+        type.cast(LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC)));
   }
 
   @Test

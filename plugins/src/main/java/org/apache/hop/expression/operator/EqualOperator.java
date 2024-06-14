@@ -112,7 +112,7 @@ public class EqualOperator extends Operator {
 
     // Simplify x=NULL → NULL
     if (left.isNull() || right.isNull()) {
-      return Literal.NULL;
+      return new Literal(null, Types.BOOLEAN);
     }
 
     // Simplify 3=X+1 → 3-1=X

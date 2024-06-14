@@ -85,8 +85,12 @@ public class InOperator extends Operator {
   }
 
   /**
-   * Simplifies IN expressions list of elements. 1. Remove duplicate expressions in list. 2. Sort
-   * expressions on cost.
+   * Simplifies IN expressions list of elements.
+   *
+   * <ul>
+   *   <li>1. Remove duplicate expressions in list.*
+   *   <li>2. Sort expressions on cost.
+   * </ul>
    */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

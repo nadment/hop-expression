@@ -30,6 +30,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Bitwise AND operator. <br>
@@ -81,7 +82,7 @@ public class BitAndFunction extends Function {
 
     // Simplify NULL & A → NULL
     if (left.isNull()) {
-      return Literal.NULL;
+      return new Literal(null, Types.INTEGER);
     }
 
     // Simplify 0 & A -> 0 (if A not nullable)
