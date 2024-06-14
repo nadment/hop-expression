@@ -20,9 +20,12 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -54,6 +57,29 @@ public class ModFunction extends Function {
         OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL,
         "/docs/mod.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Simplify A % NULL → NULL
+    if (right.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify NULL % A → NULL
+    if (left.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify arithmetic A % 1 → A
+    if (Literal.ONE.equals(right)) {
+      return call.getOperand(0);
+    }
+
+    return call;
   }
 
   @Override

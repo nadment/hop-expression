@@ -87,14 +87,21 @@ public class NotEqualOperator extends Operator {
       return new Call(this, right, left);
     }
 
-    // Simplify only if x is data type boolean TRUE<>x → X IS NOT TRUE
-    if (left.equals(Literal.TRUE) && right.getType().is(TypeId.BOOLEAN)) {
-      return new Call(Operators.IS_NOT_TRUE, right);
+    // Simplify comparison when operands is of boolean type
+    // TRUE<>x → x
+    // FALSE<>x → NOT x
+    if (right.getType().is(TypeId.BOOLEAN)) {
+      if (left == Literal.TRUE) {
+        return new Call(Operators.BOOLNOT, right);
+      }
+      if (left == Literal.FALSE) {
+        return right;
+      }
     }
 
-    // Simplify only if x is data type boolean FALSE<>x → X IS NOT FALSE
-    if (left.equals(Literal.FALSE) && right.getType().is(TypeId.BOOLEAN)) {
-      return new Call(Operators.IS_NOT_FALSE, right);
+    // Simplify x!=NULL → NULL
+    if (left.isNull() || right.isNull()) {
+      return Literal.NULL;
     }
 
     // Simplify x!=x → NULL AND x IS NULL

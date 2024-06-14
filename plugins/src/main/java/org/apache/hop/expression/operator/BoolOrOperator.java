@@ -187,6 +187,7 @@ public class BoolOrOperator extends Operator {
 
     // Simplify x OR NOT x → TRUE (if x is not nullable)
     // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
+    // Simplify x OR (x AND y) → x (if x not nullable)
 
     // Simplify x OR x IS NOT NULL → x IS NOT NULL
     for (IExpression identifier : identifiers) {

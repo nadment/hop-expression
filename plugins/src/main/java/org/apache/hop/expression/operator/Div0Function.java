@@ -53,6 +53,21 @@ public class Div0Function extends Function {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Simplify DIV0(x,NULL) → NULL
+    if (right.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify DIV0(NULL,x) → NULL
+    if (left.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify arithmetic DIV0(A,0) → 0 if x is not nullable
+    if (Literal.ZERO.equals(right) && !left.getType().isNullable()) {
+      return Literal.ZERO;
+    }
+
     // Simplify arithmetic DIV0(A,1) → A
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);

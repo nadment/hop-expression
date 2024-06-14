@@ -56,12 +56,22 @@ public class DivOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic A/1 → A
+    // Simplify x / NULL → NULL
+    if (right.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify NULL / x → NULL
+    if (left.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify arithmetic A / 1 → A
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);
     }
 
-    // Simplify arithmetic (-A)/(-B) → A/B
+    // Simplify arithmetic (-A) / (-B) → A / B
     if (left.is(Operators.NEGATE) && right.is(Operators.NEGATE)) {
       return new Call(Operators.DIVIDE, left.asCall().getOperand(0), right.asCall().getOperand(0));
     }

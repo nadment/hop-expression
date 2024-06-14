@@ -29,6 +29,7 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -92,7 +93,19 @@ public class EqualOperator extends Operator {
       return new Call(this, right, left);
     }
 
-    // Simplify if not nullable x=x → TRUE
+    // Simplify comparison when operands is of boolean type
+    // TRUE=x → x
+    // FALSE=x → NOT x
+    if (right.getType().is(TypeId.BOOLEAN)) {
+      if (left == Literal.TRUE) {
+        return right;
+      }
+      if (left == Literal.FALSE) {
+        return new Call(Operators.BOOLNOT, right);
+      }
+    }
+
+    // Simplify x=x → TRUE (if x is not nullable)
     if (left.equals(right) && !left.getType().isNullable()) {
       return Literal.TRUE;
     }

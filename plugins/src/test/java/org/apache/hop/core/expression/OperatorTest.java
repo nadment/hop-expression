@@ -129,15 +129,27 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER=");
     evalFails(" = FIELD_INTEGER ");
 
+    // Normalize
+    optimize("10=FIELD_INTEGER");
+    optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
+
+    // Simplify comparison with literals
     optimizeTrue("'a' = 'a'");
     optimizeFalse("'a' = 'b'");
     optimizeFalse("10151082135029368 = 10151082135029369");
-    optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
+    optimizeNull("NULL::STRING=FIELD_STRING");
+    optimizeNull("FIELD_STRING=NULL::STRING");
 
-    // Simplify arithmetic comparisons
+    // Simplify comparison when operands is of boolean type
+    optimize("FIELD_BOOLEAN_TRUE=TRUE", "FIELD_BOOLEAN_TRUE");
+    optimize("TRUE=FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE=FALSE", "NOT FIELD_BOOLEAN_TRUE");
+    optimize("FALSE=FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
+
+    // Simplify comparison with arithmetic
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
 
-    // Simplify comparison with same term if not nullable
+    // Simplify comparison with the same term when it is not nullable
     optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
     optimize("PI()=PI()", "TRUE");
   }
@@ -205,14 +217,28 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER ! ");
     evalFails("<>FIELD_INTEGER");
 
-    optimize("FIELD_BOOLEAN_TRUE<>TRUE", "FIELD_BOOLEAN_TRUE IS NOT TRUE");
-    optimize("TRUE<>FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT TRUE");
-    optimize("FIELD_BOOLEAN_TRUE<>FALSE", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
-    optimize("FALSE<>FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
+    // Normalize
     optimize("10!=FIELD_INTEGER");
+    optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
+
+    // Simplify comparison with literals
+    optimizeFalse("'a' <> 'a'");
+    optimizeTrue("'a' <> 'b'");
+    optimizeFalse("10151082135029368 <> 10151082135029368");
+    optimizeTrue("10151082135029368 <> 10151082135029369");
+    optimizeNull("NULL::STRING<>FIELD_STRING");
+    optimizeNull("FIELD_STRING<>NULL::STRING");
+
+    // Simplify comparison with the same term
     optimize("FIELD_STRING!=FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
 
-    // Simplify arithmetic comparisons
+    // Simplify comparison when operands is of boolean type
+    optimize("FIELD_BOOLEAN_TRUE<>FALSE", "FIELD_BOOLEAN_TRUE");
+    optimize("FALSE<>FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE<>TRUE", "NOT FIELD_BOOLEAN_TRUE");
+    optimize("TRUE<>FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
+
+    // Simplify comparison with arithmetic
     optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");
   }
 
@@ -1479,14 +1505,25 @@ public class OperatorTest extends ExpressionTest {
     evalFails("'TEST'%5");
     evalFails("Mod()");
     evalFails("Mod(3)");
+
     // Division by 0
     evalFails("Mod(9,0)");
 
+    // Normalize
+    optimize("0%0");
     optimize("FIELD_INTEGER%4");
+
+    // Simplify arithmetic with NULL
+    optimizeNull("NULL::INTEGER%FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER%NULL::INTEGER");
+
+    // Simplify arithmetic A%1 → A
+    optimize("FIELD_INTEGER%1", "FIELD_INTEGER");
+    optimize("FIELD_INTEGER%1.0", "FIELD_INTEGER");
   }
 
   @Test
-  public void Multiplication() throws Exception {
+  public void Multiply() throws Exception {
     evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2));
     evalEquals("4*10", 40D).returnType(IntegerType.of(3));
     evalEquals("-4*-1", 4D).returnType(IntegerType.of(2));
@@ -1516,21 +1553,30 @@ public class OperatorTest extends ExpressionTest {
     optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
     optimize("4*FIELD_INTEGER*0.5", "2*FIELD_INTEGER");
 
-    // Simplify arithmetic 0*A → 0
-    optimize("FIELD_INTEGER*0", "0");
-    optimize("0*FIELD_INTEGER", "0");
+    // Normalize
+    optimize("0*FIELD_INTEGER");
+    optimize("10*FIELD_INTEGER");
+    optimize("FIELD_INTEGER*0", "0*FIELD_INTEGER");
 
-    // Simplify arithmetic 1*A → A
+    // Simplify arithmetic with NULL
+    optimizeNull("NULL::INTEGER*FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER*NULL::INTEGER");
+
+    // Simplify arithmetic 0 * A → 0
+    optimize("PI()*0", "0");
+    optimize("0*PI()", "0");
+
+    // Simplify arithmetic 1 * A → A
     optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
     optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
 
-    // Simplify arithmetic (-A)*(-B) → A*B
+    // Simplify arithmetic (-A) * (-B) → A*B
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
 
-    // Simplify arithmetic A*A → SQUARE(A)
+    // Simplify arithmetic A * A → SQUARE(A)
     optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
 
-    // Simplify arithmetic 1/A*B → B/A
+    // Simplify arithmetic 1 / A * B → B / A
     optimize("1/FIELD_INTEGER*4", "4/FIELD_INTEGER");
   }
 
@@ -1556,14 +1602,19 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("'8'/2", 4L).returnType(NumberType.of(38, 37));
     evalEquals("5/'2'", 2.5).returnType(NumberType.of(38, 37));
 
-    optimize("0/0", "0/0");
+    // Normalize
+    optimize("0/0");
     optimize("FIELD_INTEGER/4");
 
-    // Simplify arithmetic A/1 → A
+    // Simplify arithmetic with NULL
+    optimizeNull("NULL::INTEGER/FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER/NULL::INTEGER");
+
+    // Simplify arithmetic A / 1 → A
     optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
     optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
 
-    // Simplify arithmetic (-A)/(-B) → A/B
+    // Simplify arithmetic (-A) / (-B) → A / B
     optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
   }
 
@@ -1581,7 +1632,21 @@ public class OperatorTest extends ExpressionTest {
     evalFails("Div0(40)");
     evalFails("Div0(40,1,2)");
 
+    // Normalize
+    optimize("DIV0(FIELD_INTEGER,4)");
+
+    // Simplify arithmetic DIV0(A,0) → 0 when A is not nullable
+    optimize("DIV0(0,0)", "0");
+    optimize("DIV0(PI(),0)", "0");
+
+    // Simplify arithmetic with NULL
+    optimizeNull("DIV0(NULL::INTEGER,FIELD_INTEGER)");
+    optimizeNull("DIV0(FIELD_INTEGER,NULL::INTEGER)");
+
+    // Simplify arithmetic DIV0(A,1) → A
     optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
+
+    // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
   }
 
@@ -1616,7 +1681,19 @@ public class OperatorTest extends ExpressionTest {
     // Alias function
     evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER);
 
-    optimize("FIELD_INTEGER&4");
+    // Nothing to simplify
+    optimize("4&FIELD_INTEGER");
+    optimize("FIELD_INTEGER&4", "4&FIELD_INTEGER");
+
+    // Simplify NULL & A → NULL
+    optimizeNull("NULL&FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER&NULL");
+
+    // Simplify 0 & A -> 0 (if A not nullable)
+    optimize("FIELD_INTEGER&0", "0&FIELD_INTEGER");
+    optimize("0&FIELD_INTEGER");
+    optimize("123&0", "0");
+    optimize("0&123", "0");
   }
 
   @Test
@@ -1631,8 +1708,15 @@ public class OperatorTest extends ExpressionTest {
     // Alias function
     evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER);
 
+    // Nothing to simplify
     optimize("FIELD_INTEGER|4", "4|FIELD_INTEGER");
     optimize("1|FIELD_INTEGER|4", "5|FIELD_INTEGER");
+
+    // Simplify NULL | A → NULL
+    optimizeNull("NULL|FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER|NULL");
+
+    // Simplify 0 | A → A (even if A is null)
     optimize("FIELD_INTEGER|0", "FIELD_INTEGER");
     optimize("0|FIELD_INTEGER", "FIELD_INTEGER");
   }
@@ -1648,7 +1732,16 @@ public class OperatorTest extends ExpressionTest {
     evalFails("100^");
     evalFails("100 ^ ");
 
+    // Nothing to simplify
     optimize("FIELD_INTEGER^4");
+
+    // Simplify NULL ^ A → NULL
+    optimizeNull("NULL^FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER^NULL");
+
+    // Simplify 0 ^ A → A (even if A is null)
+    optimize("0^FIELD_INTEGER", "FIELD_INTEGER");
+    optimize("FIELD_INTEGER^0", "FIELD_INTEGER");
   }
 
   @Test

@@ -18,9 +18,15 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.PriorityQueue;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionComparator;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -51,6 +57,39 @@ public class BitAndFunction extends Function {
         OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
+  }
+
+  @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Reorder chained symmetric operator and simplify A & (..A..) --> (..A..)
+    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+    operands.addAll(this.getChainedOperands(call, true));
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {
+      call = new Call(this, operand, operands.poll());
+      call.inferReturnType();
+      operand = call;
+    }
+    call = operand.asCall();
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Simplify NULL & A → NULL
+    if (left.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify 0 & A -> 0 (if A not nullable)
+    if (Literal.ZERO.equals(left) && !right.getType().isNullable()) {
+      return Literal.ZERO;
+    }
+
+    return call;
   }
 
   @Override

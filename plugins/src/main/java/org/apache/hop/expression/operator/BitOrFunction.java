@@ -65,7 +65,7 @@ public class BitOrFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    // Reorder chained symmetric operator
+    // Reorder chained symmetric operator and simplify A | (..A..) --> (..A..)
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
     operands.addAll(this.getChainedOperands(call, true));
     IExpression operand = operands.poll();
@@ -75,11 +75,20 @@ public class BitOrFunction extends Function {
       operand = call;
     }
     call = operand.asCall();
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
 
-    // Simplify 0|A → A
-    if (Literal.ZERO.equals(call.getOperand(0))) {
-      return call.getOperand(1);
+    // Simplify NULL | A → NULL
+    if (left.isNull()) {
+      return Literal.NULL;
     }
+
+    // Simplify 0 | A → A (even if A is null)
+    if (Literal.ZERO.equals(left)) {
+      return right;
+    }
+
+    // TODO: Simplify A | !A → -1 (if A is not nullable)
 
     return call;
   }

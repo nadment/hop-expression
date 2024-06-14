@@ -17,9 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -50,6 +54,31 @@ public class BitXorFunction extends Function {
         OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Simplify A ^ NULL → NULL
+    // Simplify NULL ^ A → NULL
+    if (left.isNull() || right.isNull()) {
+      return Literal.NULL;
+    }
+
+    // Simplify 0 ^ A → A (even if A is not nullable)
+    if (Literal.ZERO.equals(left)) {
+      return right;
+    }
+    if (Literal.ZERO.equals(right)) {
+      return left;
+    }
+
+    // TODO: Simplify A ^ (..A..) → (the expression without A, if number of A is odd, otherwise
+    // one A)
+
+    return call;
   }
 
   @Override
