@@ -71,7 +71,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
   }
 
   @Override
-  public BigDecimal parse(String text) throws ParseNumberException {
+  public BigDecimal parse(String text) throws NumberParseException {
 
     int start = 0; // first not white space symbol
     int position = 0; // first not white space symbol

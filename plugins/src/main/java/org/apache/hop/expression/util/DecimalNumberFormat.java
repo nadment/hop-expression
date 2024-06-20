@@ -450,9 +450,9 @@ final class DecimalNumberFormat extends NumberFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws ParseNumberException
+   * @throws NumberParseException
    */
-  public BigDecimal parse(String text) throws ParseNumberException {
+  public BigDecimal parse(String text) throws NumberParseException {
 
     int start = 0; // first not white space symbol
     try {

@@ -18,24 +18,35 @@ package org.apache.hop.expression.util;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.expression.ErrorCode;
 
 public class CompositeDateTimeFormat extends DateTimeFormat {
   private final String pattern;
-  private final ZonedDateTimeFormat[] formats;
+  private final List<DateTimeFormat> formats;
 
-  public CompositeDateTimeFormat(String pattern, ZonedDateTimeFormat[] formats) {
+  public CompositeDateTimeFormat(final String pattern) {
     this.pattern = pattern;
-    this.formats = formats;
+    this.formats = new ArrayList<>();
+
+    for (String p : pattern.split("\\|")) {
+      // Text minimal format
+      if (p.equalsIgnoreCase("AUTO")) {
+        formats.add(new AutoDateTimeFormat());
+      } else {
+        formats.add(new PatternDateTimeFormat(p));
+      }
+    }
   }
 
   @Override
-  public String format(ZonedDateTime value) {
-    return formats[0].format(value);
+  public String format(final ZonedDateTime value) {
+    return formats.get(0).format(value);
   }
 
   @Override
-  public ZonedDateTime parse(String text) {
+  public ZonedDateTime parse(final String text) {
     for (DateTimeFormat format : formats) {
       try {
         return format.parse(text);
@@ -50,8 +61,13 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
 
   @Override
   public void setTwoDigitYearStart(int year) {
-    for (ZonedDateTimeFormat format : formats) {
+    for (DateTimeFormat format : formats) {
       format.setTwoDigitYearStart(year);
     }
+  }
+
+  @Override
+  public String toString() {
+    return pattern;
   }
 }

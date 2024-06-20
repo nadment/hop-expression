@@ -17,8 +17,7 @@
 package org.apache.hop.expression;
 
 public class ExpressionException extends RuntimeException {
-
-  private static final long serialVersionUID = 1L;
+  @java.io.Serial private static final long serialVersionUID = 1L;
 
   /**
    * The zero-based character offset into the string being parsed at which the error was found

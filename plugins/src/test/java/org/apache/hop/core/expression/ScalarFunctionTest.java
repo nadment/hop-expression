@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -1098,7 +1099,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Add_Days(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(DATE '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
     evalEquals(
-        "Add_Days(TIMESTAMP '2021-01-01 15:28:59+0200',20)",
+        "Add_Days(TIMESTAMP '2021-01-01 15:28:59+02:00',20)",
         ZonedDateTime.of(2021, 1, 21, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
 
     evalNull("Add_Days(NULL_DATE,140)");
@@ -1113,7 +1114,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals(
         "Add_Hours(DATE '2019-01-15',1)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
     evalEquals(
-        "Add_Hours(TIMESTAMP '2021-01-01 15:28:59+0200',2)",
+        "Add_Hours(TIMESTAMP '2021-01-01 15:28:59+02:00',2)",
         ZonedDateTime.of(2021, 1, 1, 17, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
     evalNull("Add_Hours(NULL_DATE,140)");
     evalNull("Add_Hours(DATE '2019-01-15',NULL_INTEGER)");
@@ -2727,6 +2728,97 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
     evalEquals("TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
     evalEquals("TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+
+    // Explicit AUTO format ISO 8601
+    evalEquals(
+        "TO_DATE('2024-12-01 3:05:06.123456789','AUTO')",
+        LocalDateTime.of(2024, 12, 1, 3, 5, 6, 123456789));
+    evalEquals(
+        "TO_DATE('2024-12-01 12:05:06.123456789','AUTO')",
+        LocalDateTime.of(2024, 12, 1, 12, 5, 6, 123456789));
+    evalEquals(
+        "TO_DATE('2024-12-01 3:05:06.123456789+02:00','AUTO')",
+        LocalDateTime.of(2024, 12, 1, 3, 5, 6, 123456789));
+    evalEquals(
+        "TO_DATE('2024-12-01 3:05:06.123456789 +02:00','AUTO')",
+        LocalDateTime.of(2024, 12, 1, 3, 5, 6, 123456789));
+
+    evalEquals("TO_DATE('2024-12-01 23:05','AUTO')", LocalDateTime.of(2024, 12, 1, 23, 5, 0));
+
+    // AUTO format date only
+    evalEquals("TO_DATE(' 2024-02-25 ')", LocalDate.of(2024, 2, 25));
+    evalEquals("TO_DATE('  2024-02-25  ')", LocalDate.of(2024, 2, 25));
+    evalEquals("TO_DATE('2024-02-25')", LocalDate.of(2024, 2, 25));
+    evalEquals("TO_DATE('2024-2-25')", LocalDate.of(2024, 2, 25));
+    evalEquals("TO_DATE('2024-2-5')", LocalDate.of(2024, 2, 5));
+    evalEquals("TO_DATE('2024-02-5')", LocalDate.of(2024, 2, 5));
+
+    // AUTO format date with time part
+    evalEquals("TO_DATE('2024-2-5 3')", LocalDateTime.of(2024, 2, 5, 3, 0, 0));
+    evalEquals("TO_DATE('2024-2-5 13')", LocalDateTime.of(2024, 2, 5, 13, 0, 0));
+    evalEquals("TO_DATE('2024-2-5 13:5')", LocalDateTime.of(2024, 2, 5, 13, 5, 0));
+    evalEquals("TO_DATE('2024-2-5 13:05')", LocalDateTime.of(2024, 2, 5, 13, 5, 0));
+    evalEquals("TO_DATE('2024-2-5T13:05')", LocalDateTime.of(2024, 2, 5, 13, 5, 0));
+    evalEquals("TO_DATE('2024-2-5 13:05:59')", LocalDateTime.of(2024, 2, 5, 13, 5, 59));
+    evalEquals("TO_DATE('2024-2-5 13:5:9')", LocalDateTime.of(2024, 2, 5, 13, 5, 9));
+
+    // AUTO format date with time part and optional nanosecond
+    evalEquals("TO_DATE('2024-2-5 13:5:9.123')", LocalDateTime.of(2024, 2, 5, 13, 5, 9, 123000000));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:5:9.123456')", LocalDateTime.of(2024, 2, 5, 13, 5, 9, 123456000));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:5:9.123456789')", LocalDateTime.of(2024, 2, 5, 13, 5, 9, 123456789));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:5:9,123456789')", LocalDateTime.of(2024, 2, 5, 13, 5, 9, 123456789));
+
+    // AUTO format date with time part and time zone offset
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05+02:00')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05+0200')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05+02')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05-02:00')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05-0200')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05-02')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05 -4:00')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-4)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:05Z')", OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.UTC));
+
+    evalEquals(
+        "TO_DATE('2024-2-5 13:5:9.123456789+02:00')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 9, 123456789, ZoneOffset.ofHours(2)));
+    evalEquals(
+        "TO_DATE('2024-2-5 13:5:9.123456789 +02:00')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 9, 123456789, ZoneOffset.ofHours(2)));
+
+    // AUTO format short date and time
+    evalEquals("TO_DATE('20240205')", LocalDate.of(2024, 2, 5));
+    evalEquals("TO_DATE('20240205T13')", LocalDateTime.of(2024, 2, 5, 13, 0));
+    evalEquals("TO_DATE('20240205T1305')", LocalDateTime.of(2024, 2, 5, 13, 5));
+    evalEquals("TO_DATE('20240205T130510')", LocalDateTime.of(2024, 2, 5, 13, 5, 10));
+    evalEquals(
+        "TO_DATE('20240205T130510,123')", LocalDateTime.of(2024, 2, 5, 13, 5, 10, 123000000));
+    evalEquals(
+        "TO_DATE('20240205T130510.123')", LocalDateTime.of(2024, 2, 5, 13, 5, 10, 123000000));
+    evalEquals(
+        "TO_DATE('20240205T130510.123456')", LocalDateTime.of(2024, 2, 5, 13, 5, 10, 123456000));
+    evalEquals(
+        "TO_DATE('20240205T130510.123456789')", LocalDateTime.of(2024, 2, 5, 13, 5, 10, 123456789));
+    evalEquals(
+        "TO_DATE('20240205T130510.123456789-0200')",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 10, 123456789, ZoneOffset.ofHours(-2)));
 
     evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
   }

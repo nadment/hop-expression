@@ -602,7 +602,7 @@ public class ExpressionParser {
   }
 
   /** ARRAY[exp1, exp2...] * */
-  private IExpression parseArray(Token token) throws ExpressionException {
+  private IExpression parseArray(final Token token) throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
 
@@ -637,7 +637,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  private IExpression parseLiteralNumericDecimal(Token token) throws ExpressionException {
+  private IExpression parseLiteralNumericDecimal(final Token token) throws ExpressionException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
     try {
       return Literal.of(number.longValueExact());
@@ -646,7 +646,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralBinary(Token token) throws ExpressionException {
+  private IExpression parseLiteralBinary(final Token token) throws ExpressionException {
     try {
       String str = token.text();
       if (str.length() % 2 > 0) str = '0' + str;
@@ -663,7 +663,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralNumericHexa(Token token) {
+  private IExpression parseLiteralNumericHexa(final Token token) {
     String str = token.text().substring(2);
     BigInteger value = new BigInteger(str, 16);
     try {
@@ -673,7 +673,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralNumericOctal(Token token) {
+  private IExpression parseLiteralNumericOctal(final Token token) {
     String str = token.text().substring(2);
     BigInteger value = new BigInteger(str, 8);
     try {
@@ -683,7 +683,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralNumericBinary(Token token) {
+  private IExpression parseLiteralNumericBinary(final Token token) {
     String str = token.text().substring(2);
     BigInteger value = new BigInteger(str, 2);
     try {
@@ -697,8 +697,8 @@ public class ExpressionParser {
    * Parses a date literal. The parsing is strict and requires months to be between 1 and 12, days
    * to be less than 31, etc.
    */
-  private IExpression parseLiteralDate(Token token) throws ExpressionException {
-    // Literal date use exact mode
+  private IExpression parseLiteralDate(final Token token) throws ExpressionException {
+    // Literal date use exact mode ISO 8601
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
     try {
       ZonedDateTime datetime = format.parse(token.text());
@@ -715,68 +715,9 @@ public class ExpressionParser {
    * <p>The parsing is strict and requires months to be between 1 and 12, days to be less than 31,
    * etc.
    */
-  private IExpression parseLiteralTimestamp(Token token) throws ExpressionException {
+  private IExpression parseLiteralTimestamp(final Token token) throws ExpressionException {
     try {
-      String pattern;
-      String str = token.text();
-
-      // TODO: Move to an AUTO format
-      int length = str.length();
-      switch (length) {
-        case 36: // 2021-01-01 15:28:59.123456789 +02:00
-        case 35: // 2021-01-01 15:28:59.123456789+02:00
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZH:TZM";
-          break;
-        case 33: // 2021-01-01 5:28:59.123456789+0200
-          if (str.indexOf(':', 20) > 0) pattern = "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM";
-          else pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
-          break;
-        case 34: // 2021-01-01 15:28:59.123456789+0200
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
-          break;
-        case 30: // 2021-01-01 15:28:59.123 +02:00
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF3 TZH:TZM";
-          break;
-        case 28: // 2021-12-01 2:01:01.123456789
-        case 29: // 2021-12-01 12:01:01.123456789
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
-          break;
-        case 26:
-          if (str.indexOf('.', 10) > 0) pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
-          else pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
-          break;
-        case 25: // 2021-01-01 15:28:59+02:00
-          pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
-          break;
-        case 24: // 2021-01-01 15:28:59+0200
-          // 2021-01-01 5:28:59+02:00
-          if (str.indexOf(':', 20) > 0) pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
-          else pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
-          break;
-        case 23:
-          if (str.indexOf('.', 10) > 0) pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
-          else pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
-          break;
-        case 21: // 2021-01-01 5:28+02:00
-        case 22: // 2021-01-01 15:28+02:00 or 2021-01-01 5:28 +02:00
-          pattern = "YYYY-MM-DD HH24:MITZH:TZM";
-          break;
-        case 18:
-        case 19: // 2021-04-28 20:57:48
-          if (str.indexOf('+') > 0 || str.indexOf('-', 15) > 0) pattern = "YYYY-MM-DD HH24:MITZH";
-          else pattern = "YYYY-MM-DD HH24:MI:SS";
-          break;
-        case 16: // 2021-02-25 03:59
-          pattern = "YYYY-MM-DD HH24:MI";
-          break;
-        case 13: // 2021-02-25T23
-          pattern = "YYYY-MM-DD HH24";
-          break;
-        default:
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF";
-      }
-
-      DateTimeFormat format = DateTimeFormat.of(pattern);
+      DateTimeFormat format = DateTimeFormat.of("AUTO");
       ZonedDateTime datetime = format.parse(token.text());
 
       return Literal.of(datetime);

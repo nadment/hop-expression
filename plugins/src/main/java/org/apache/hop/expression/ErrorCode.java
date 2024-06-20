@@ -30,8 +30,10 @@ public enum ErrorCode {
   SYNTAX_ERROR_FUNCTION,
   /** Syntax error: Invalid data type ''{0}'' */
   SYNTAX_ERROR_DATATYPE,
-  /** {0} {1} */
-  OPERATOR_ERROR,
+  /** Operator call {0} error: {1} */
+  CALL_OPERATOR_ERROR,
+  /** Function call {0} error: {1} */
+  CALL_FUNCTION_ERROR,
   /** Context error */
   CONTEXT_ERROR,
   /** Division by zero */

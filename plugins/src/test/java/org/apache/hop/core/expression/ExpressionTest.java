@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
@@ -367,6 +368,8 @@ public class ExpressionTest {
         result = value.toLocalDate();
       } else if (expected instanceof LocalDateTime) {
         result = value.toLocalDateTime();
+      } else if (expected instanceof OffsetDateTime) {
+        result = value.toOffsetDateTime();
       }
     }
 
@@ -433,10 +436,11 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    // evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
-    // evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
-    // evalEquals("CAST('1_234' as Integer)", 1234L);
-    evalEquals("CAST('1234.567' as Integer)", 1234L);
+    evalEquals("'2021-02-25'::DATE", LocalDate.of(2021, 2, 25));
+
+    // evalEquals("TO_DATE('2024-2-5 3','AUTO')", LocalDateTime.of(2024, 2, 5, 3, 0, 0));
+    // evalEquals("TO_DATE('2024-2-5 13:05+02:00','AUTO')", LocalDateTime.of(2024, 2, 5, 13, 5, 0));
+
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

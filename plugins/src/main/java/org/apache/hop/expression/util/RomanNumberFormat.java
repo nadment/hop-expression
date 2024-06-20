@@ -52,7 +52,7 @@ final class RomanNumberFormat extends NumberFormat {
   }
 
   @Override
-  public BigDecimal parse(String str) throws ParseNumberException {
+  public BigDecimal parse(String str) throws NumberParseException {
     long value = RomanNumeral.parse(str);
     return BigDecimal.valueOf(value);
   }

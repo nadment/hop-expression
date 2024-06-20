@@ -180,9 +180,9 @@ public abstract class NumberFormat extends BaseFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws ParseNumberException
+   * @throws NumberParseException
    */
-  public abstract BigDecimal parse(String text) throws ParseNumberException;
+  public abstract BigDecimal parse(String text) throws NumberParseException;
 
   /**
    * Format number with number format.
@@ -197,8 +197,8 @@ public abstract class NumberFormat extends BaseFormat {
     return new NumberFormatException(ErrorCode.INVALID_NUMBER_FORMAT.message(format));
   }
 
-  protected final ParseNumberException createUnparsableNumber(
+  protected final NumberParseException createUnparsableNumber(
       final String format, final String text, int index) {
-    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
+    return new NumberParseException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
   }
 }

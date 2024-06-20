@@ -34,7 +34,7 @@ final class CompositeNumberFormat extends NumberFormat {
   }
 
   @Override
-  public BigDecimal parse(final String text) throws ParseNumberException {
+  public BigDecimal parse(final String text) throws NumberParseException {
     for (NumberFormat format : formats) {
       try {
         return format.parse(text);
@@ -43,7 +43,7 @@ final class CompositeNumberFormat extends NumberFormat {
       }
     }
 
-    throw new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, pattern, 0);
+    throw new NumberParseException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, pattern, 0);
   }
 
   @Override
