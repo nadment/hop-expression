@@ -16,9 +16,6 @@ package org.apache.hop.expression.util;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hop.expression.ErrorCode;
@@ -33,7 +30,7 @@ import org.apache.hop.expression.ErrorCode;
  * <th>
  * <td>Input</td>
  * <td>Output</td>
- * <td>Closest {@link ZonedDateTimeFormat} Equivalent</td></th>
+ * <td>Closest {@link PatternDateTimeFormat} Equivalent</td></th>
  * <tr>
  * <td>- / , . ; : "text"</td>
  * <td>Reproduced verbatim.</td>
@@ -240,25 +237,26 @@ public abstract class DateTimeFormat extends BaseFormat {
 
   private static final Map<String, DateTimeFormat> cache = new ConcurrentHashMap<>();
 
+  protected int twoDigitYearStart = 1970;
+
   public static DateTimeFormat of(String pattern) {
     if (pattern == null) {
-      pattern = "YYYY-MM-DD";
+      pattern = "AUTO";
     }
 
     return cache.computeIfAbsent(pattern, DateTimeFormat::create);
   }
 
   private static DateTimeFormat create(String pattern) {
+
     if (pattern.indexOf('|') >= 0) {
-      List<DateTimeFormat> formats = new ArrayList<>();
-      for (String p : pattern.split("\\|")) {
-        DateTimeFormat format = new ZonedDateTimeFormat(p);
-        formats.add(format);
-      }
-      return new CompositeDateTimeFormat(pattern, formats.toArray(new ZonedDateTimeFormat[0]));
+      return new CompositeDateTimeFormat(pattern);
     }
 
-    return new ZonedDateTimeFormat(pattern);
+    if (pattern.equalsIgnoreCase("AUTO")) {
+      return new AutoDateTimeFormat();
+    }
+    return new PatternDateTimeFormat(pattern);
   }
 
   public abstract ZonedDateTime parse(String text) throws DateTimeParseException;
@@ -275,7 +273,9 @@ public abstract class DateTimeFormat extends BaseFormat {
    * Specifies the century start year for 2-digit years (Default is 1970). This parameter prevents
    * year ambiguous dates when parsing date with the YY date format component.
    */
-  public abstract void setTwoDigitYearStart(int year);
+  public void setTwoDigitYearStart(int year) {
+    this.twoDigitYearStart = year;
+  }
 
   public static ZoneId toZoneId(final String zone) {
     try {

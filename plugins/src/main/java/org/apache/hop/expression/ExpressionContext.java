@@ -53,15 +53,14 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   /** The date format used for conversions between dates and strings. */
   @Variable(
       value = "YYYY-MM-DD",
-      description =
-          "The default date format used by expression for conversions between dates and strings")
+      description = "The default date format used by expression for conversions strings to dates")
   public static final String EXPRESSION_DATE_FORMAT = "EXPRESSION_DATE_FORMAT";
 
   /** The timestamp format used for conversions between timestamps and strings */
   @Variable(
       value = "YYYY-MM-DD H24:MI:SS",
       description =
-          "The default timestamp format used by expression for conversions between timestamps and strings")
+          "The default timestamp format used by expression for conversions strings to timestamps")
   public static final String EXPRESSION_TIMESTAMP_FORMAT = "EXPRESSION_TIMESTAMP_FORMAT";
 
   /**

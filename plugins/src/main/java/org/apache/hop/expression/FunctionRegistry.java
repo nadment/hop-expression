@@ -113,12 +113,12 @@ public class FunctionRegistry {
     if (name == null) return;
 
     if (functions.containsKey(name)) {
-      log.logError("Function '{0}' already registred", name);
+      log.logError("Function ''{0}'' already registred", name);
       return;
     }
 
     if (log.isDebug()) {
-      log.logDebug("Register function '{0}'", name);
+      log.logDebug("Register function ''{0}''", name);
     }
 
     functions.put(name, function);
@@ -129,7 +129,7 @@ public class FunctionRegistry {
 
     Function function = functions.remove(name);
     if (function == null) {
-      log.logError("Function '{0}' not registred", name);
+      log.logError("Function ''{0}'' not registred", name);
     }
 
     return function;

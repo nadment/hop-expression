@@ -70,7 +70,7 @@ public final class DateType extends Type {
 
   @Override
   public ZonedDateTime cast(final Object value) throws ConversionException {
-    return cast(value, null);
+    return cast(value, "FXYYYY-MM-DD");
   }
 
   /**
@@ -82,7 +82,7 @@ public final class DateType extends Type {
    * @return the converted value
    */
   @Override
-  public ZonedDateTime cast(final Object value, String pattern) throws ConversionException {
+  public ZonedDateTime cast(final Object value, final String pattern) throws ConversionException {
 
     if (value == null) {
       return null;

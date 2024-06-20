@@ -279,7 +279,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         aggregators[i].process(data.aggregates[i].getOperands());
       }
     } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, e.getMessage());
+      throw new ExpressionException(ErrorCode.CALL_FUNCTION_ERROR, e.getMessage());
     }
   }
 
@@ -316,7 +316,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         result[i] = value;
       }
     } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, e.getMessage());
+      throw new ExpressionException(ErrorCode.CALL_FUNCTION_ERROR, e.getMessage());
     }
     return result;
   }

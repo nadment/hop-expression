@@ -99,6 +99,27 @@ public class CastFunction extends Function {
       else if (Types.isLosslessCast(call.getOperand(0).getType(), call.getType())) {
         return call.getOperand(0);
       }
+
+      // Use default format
+      //      switch (call.getType().getId()) {
+      //        case BINARY:
+      //          String defaultBinaryFormat =
+      //              context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
+      //          return new Call(
+      //              call.getOperator(),
+      //              call.getOperand(0),
+      //              call.getOperand(1),
+      //              Literal.of(defaultBinaryFormat));
+      //
+      //        case DATE:
+      //          String defaultDateFormat =
+      // context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+      //          return new Call(
+      //              call.getOperator(),
+      //              call.getOperand(0),
+      //              call.getOperand(1),
+      //              Literal.of(defaultDateFormat));
+      //      }
     }
 
     // TODO: the CAST function and the :: operator should call the appropriate conversion function.

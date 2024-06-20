@@ -19,16 +19,15 @@ package org.apache.hop.expression.util;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 
-public class ParseNumberException extends ExpressionException {
-
-  private static final long serialVersionUID = 8634955627375465878L;
+public class DateTimeParseException extends ExpressionException {
+  @java.io.Serial private static final long serialVersionUID = 1L;
 
   /**
    * Construct a new expression exception.
    *
    * @param error a error message
    */
-  public ParseNumberException(ErrorCode error, Object... values) {
+  public DateTimeParseException(ErrorCode error, Object... values) {
     super(error.message(values));
   }
 }

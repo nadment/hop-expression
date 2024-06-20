@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.time.DateTimeException;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
@@ -45,12 +44,12 @@ public class TryToDateFunction extends Function {
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-    String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
 
-    // With specified format
-    if (call.getOperandCount() == 2) {
-      pattern = call.getOperand(1).getValue(String.class);
-    }
+    // TODO: Add support TRY_DATE_DATE with numeric
+
+    // String with specified format
+    String pattern =
+        (call.getOperandCount() == 1) ? "AUTO" : call.getOperand(1).getValue(String.class);
 
     int twoDigitYearStart =
         Integer.parseInt(
@@ -77,7 +76,7 @@ public class TryToDateFunction extends Function {
       if (value == null) return null;
       try {
         return format.parse(value);
-      } catch (DateTimeException e) {
+      } catch (ExpressionException e) {
         return null;
       }
     }

@@ -62,12 +62,9 @@ public class ToDateFunction extends Function {
       return new Call(NumberToDateFunction, call.getOperands());
     }
 
-    String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
-
-    // With specified format
-    if (call.getOperandCount() == 2) {
-      pattern = call.getOperand(1).getValue(String.class);
-    }
+    // String with specified format
+    String pattern =
+        (call.getOperandCount() == 1) ? "AUTO" : call.getOperand(1).getValue(String.class);
 
     int twoDigitYearStart =
         Integer.parseInt(

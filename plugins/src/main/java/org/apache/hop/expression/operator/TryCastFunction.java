@@ -17,8 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
-import java.time.DateTimeException;
-import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.Type;
@@ -51,7 +50,7 @@ public class TryCastFunction extends CastFunction {
 
     try {
       return type.cast(value, format);
-    } catch (ConversionException | DateTimeException e) {
+    } catch (ExpressionException e) {
       return null;
     }
   }

@@ -24,7 +24,7 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.ParseNumberException;
+import org.apache.hop.expression.util.NumberParseException;
 
 /** Number type with an optional precision and scale: */
 public final class NumberType extends Type {
@@ -186,7 +186,7 @@ public final class NumberType extends Type {
   public static final BigDecimal convertToNumber(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
-    } catch (ParseNumberException e) {
+    } catch (NumberParseException e) {
       throw new ConversionException(
           ErrorCode.UNSUPPORTED_COERCION, str, TypeId.STRING, TypeId.NUMBER);
     }

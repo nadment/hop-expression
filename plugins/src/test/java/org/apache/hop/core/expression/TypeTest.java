@@ -29,7 +29,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.Random;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.TimeUnit;
@@ -48,6 +47,7 @@ import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
+import org.apache.hop.expression.util.DateTimeParseException;
 import org.junit.jupiter.api.Test;
 
 public class TypeTest extends ExpressionTest {

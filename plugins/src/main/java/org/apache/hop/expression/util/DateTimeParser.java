@@ -20,16 +20,21 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.ErrorCode;
 
 /* package */ class DateTimeParser {
 
-  public DateTimeParser(String text) {
+  public DateTimeParser(final DateTimeFormat format, final String text) {
+    this.format = format;
     this.text = text;
+    this.length = text.length();
     this.index = 0;
   }
 
+  public final DateTimeFormat format;
   public final String text;
+  public final int length;
   public int index;
 
   public boolean bc = false;
@@ -56,14 +61,75 @@ import java.time.format.DateTimeParseException;
   public ZoneId zoneId = ZoneOffset.UTC;
 
   protected boolean isAllCharParsed() {
-    return index == text.length();
+    return index == length;
+  }
+
+  protected boolean isChar(final char c) {
+    if (index == length) return false;
+    return text.charAt(index) == c;
+  }
+
+  protected boolean isSign() {
+    if (index == length) return false;
+    char c = text.charAt(index);
+    return c == '+' || c == '-';
+  }
+
+  protected boolean isSpace() {
+    if (index == length) return false;
+    char c = text.charAt(index);
+    return Characters.isSpace(c);
+  }
+
+  protected boolean isDigit() {
+    if (index == length) return false;
+    char c = text.charAt(index);
+    return Characters.isDigit(c);
+  }
+
+  protected char charAt(final int i) {
+    if (i >= length) return 0;
+    return text.charAt(i);
   }
 
   protected char parseChar() {
-
-    if (index == text.length()) return 0;
-
+    if (index == length) return 0;
     return text.charAt(index++);
+  }
+
+  protected char parseChar(char expectedChar) throws DateTimeParseException {
+    if (index == length) return 0;
+    char c = text.charAt(index);
+    if (c != expectedChar) {
+      throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, index);
+    }
+    index++;
+
+    return c;
+  }
+
+  protected int parseNano() throws DateTimeParseException {
+    int result = 0;
+    int initialIndex = index;
+    int scale = 0;
+
+    for (; scale < 9 && index < length; scale++, index++) {
+      char ch = text.charAt(index);
+      int digit = Character.digit(ch, 10);
+      if (digit < 0) {
+        if (index == initialIndex) {
+          throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
+        }
+        break;
+      }
+
+      result *= 10;
+      result += digit;
+    }
+
+    result *= (int) FastMath.pow(10d, 9 - scale);
+
+    return result;
   }
 
   /**
@@ -73,29 +139,26 @@ import java.time.format.DateTimeParseException;
    * @return the int
    * @throws DateTimeParseException if the value is not a number
    */
-  protected int parseInt(int length) throws DateTimeParseException {
-
-    int end = text.length();
-
+  protected int parseInt(int len) throws DateTimeParseException {
     // start at the first not white space symbol
-    for (; index < end; index++) {
+    for (; index < length; index++) {
       if (!Characters.isSpace(text.charAt(index))) {
         break;
       }
     }
 
     int result = 0;
-    if (index + length > end) length = end - index;
+    if (index + len > length) len = length - index;
 
     int initialIndex = index;
 
-    for (int i = 0; i < length; i++, index++) {
+    for (int i = 0; i < len; i++, index++) {
       char ch = text.charAt(index);
 
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
         if (index == initialIndex) {
-          throw new DateTimeParseException("Invalid number", text, index);
+          throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
         }
         break;
       }
@@ -107,19 +170,17 @@ import java.time.format.DateTimeParseException;
     return result;
   }
 
-  protected int parseExactInt(int length) throws NumberFormatException {
-
-    int end = text.length();
-
+  protected int parseExactInt(final int len) throws DateTimeParseException {
     int result = 0;
-    if (index + length > end) throw new DateTimeParseException("Invalid number", text, index);
+    if (index + len > length)
+      throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
 
-    for (int i = 0; i < length; i++, index++) {
+    for (int i = 0; i < len; i++, index++) {
       char ch = text.charAt(index);
 
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
-        throw new DateTimeParseException("Invalid number", text, index);
+        throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
       }
 
       result *= 10;
@@ -129,45 +190,51 @@ import java.time.format.DateTimeParseException;
     return result;
   }
 
+  /** Skip white space symbol */
+  protected void skipSpace() {
+    for (; index < length; index++) {
+      char c = text.charAt(index);
+      if (!Characters.isSpace(c)) {
+        return;
+      }
+    }
+  }
+
   /**
    * Parse an integer at the given position in a string
    *
    * @param value the string to parse
    * @param position the start index for the integer in the string
-   * @param lenght number of digits to parse in the string
+   * @param len number of digits to parse in the string
    * @return the signed int
    * @throws NumberFormatException if the value is not a number
    */
-  protected int parseSignedInt(int length) throws NumberFormatException {
-
-    int end = text.length();
+  protected int parseSignedInt(int len) throws NumberFormatException {
 
     // start at the first not white space symbol
-    for (; index < end; index++) {
+    for (; index < length; index++) {
       if (!Characters.isSpace(text.charAt(index))) {
         break;
       }
     }
-
     int result = 0;
-    if (index + length > end) length = end - index;
+    if (index + len > length) len = length - index;
 
     char sign = text.charAt(index);
     if (sign == '-' || sign == '+') {
       index++;
-      length--;
+      len--;
     } else {
       sign = '+';
     }
 
-    for (int i = 0; i < length; i++) {
-      int digit = Character.digit(text.charAt(index++), 10);
+    for (int i = 0; i < len; i++) {
+      char c = text.charAt(index);
+      int digit = Character.digit(c, 10);
       if (digit < 0) {
         break;
-        // position.setErrorIndex(index);
-        // throw new NumberFormatException(
-        // "Invalid number: " + value.substring(position.getIndex(), position.getIndex() + i));
       }
+      index++;
       result *= 10;
       result += digit;
     }
@@ -187,33 +254,36 @@ import java.time.format.DateTimeParseException;
   }
 
   public ZonedDateTime build() {
-
-    // Build the date
-    LocalDate date = null;
-    if (isEpochDay) {
-      date = LocalDate.ofEpochDay(epochDay);
-    } else {
-      if (bc) {
-        year = 1 - year;
-      }
-      if (isDayOfYear) {
-        date = LocalDate.ofYearDay(year, dayOfYear);
+    try {
+      // Build the date
+      LocalDate date = null;
+      if (isEpochDay) {
+        date = LocalDate.ofEpochDay(epochDay);
       } else {
-        date = LocalDate.of(year, month, day);
+        if (bc) {
+          year = 1 - year;
+        }
+        if (isDayOfYear) {
+          date = LocalDate.ofYearDay(year, dayOfYear);
+        } else {
+          date = LocalDate.of(year, month, day);
+        }
       }
-    }
 
-    if (isHourFormat12) {
-      hour = hour % 12;
-      if (isPM) {
-        hour += 12;
+      if (isHourFormat12) {
+        hour = hour % 12;
+        if (isPM) {
+          hour += 12;
+        }
       }
+      LocalTime time = LocalTime.of(hour, minute, second, nano);
+      LocalDateTime localDatetime = LocalDateTime.of(date, time);
+      if (isTimeZoneOffset) {
+        zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
+      }
+      return ZonedDateTime.of(localDatetime, zoneId);
+    } catch (Exception e) {
+      throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
     }
-    LocalTime time = LocalTime.of(hour, minute, second, nano);
-    LocalDateTime localDatetime = LocalDateTime.of(date, time);
-    if (isTimeZoneOffset) {
-      zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
-    }
-    return ZonedDateTime.of(localDatetime, zoneId);
   }
 }

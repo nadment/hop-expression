@@ -152,7 +152,7 @@ public abstract class NumberFormat extends BaseFormat {
     if (pattern.indexOf('|') >= 0) {
       List<NumberFormat> formats = new ArrayList<>();
       for (String p : pattern.split("\\|")) {
-        NumberFormat format = new DecimalNumberFormat(p);
+        NumberFormat format = new PatternNumberFormat(p);
         formats.add(format);
       }
       return new CompositeNumberFormat(pattern, formats.toArray(new NumberFormat[0]));
@@ -172,7 +172,7 @@ public abstract class NumberFormat extends BaseFormat {
       return new RomanNumberFormat(pattern);
     }
 
-    return new DecimalNumberFormat(pattern);
+    return new PatternNumberFormat(pattern);
   }
 
   /**
@@ -180,9 +180,9 @@ public abstract class NumberFormat extends BaseFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws ParseNumberException
+   * @throws NumberParseException
    */
-  public abstract BigDecimal parse(String text) throws ParseNumberException;
+  public abstract BigDecimal parse(String text) throws NumberParseException;
 
   /**
    * Format number with number format.
@@ -197,8 +197,8 @@ public abstract class NumberFormat extends BaseFormat {
     return new NumberFormatException(ErrorCode.INVALID_NUMBER_FORMAT.message(format));
   }
 
-  protected final ParseNumberException createUnparsableNumber(
+  protected final NumberParseException createUnparsableNumber(
       final String format, final String text, int index) {
-    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
+    return new NumberParseException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
   }
 }

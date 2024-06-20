@@ -134,7 +134,11 @@ public class Call implements IExpression {
     try {
       return operator.eval(operands);
     } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
+      ErrorCode error =
+          (operator instanceof Function)
+              ? ErrorCode.CALL_FUNCTION_ERROR
+              : ErrorCode.CALL_OPERATOR_ERROR;
+      throw new ExpressionException(error, operator, e.getMessage());
     }
   }
 
@@ -144,7 +148,11 @@ public class Call implements IExpression {
       Object value = operator.eval(operands);
       return type.convert(value, clazz);
     } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
+      ErrorCode error =
+          (operator instanceof Function)
+              ? ErrorCode.CALL_FUNCTION_ERROR
+              : ErrorCode.CALL_OPERATOR_ERROR;
+      throw new ExpressionException(error, operator, e.getMessage());
     }
   }
 

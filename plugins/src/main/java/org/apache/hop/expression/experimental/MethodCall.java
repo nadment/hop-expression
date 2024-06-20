@@ -54,7 +54,7 @@ public class MethodCall extends Call {
     try {
       return method.invokeExact(operator, operands);
     } catch (Throwable e) {
-      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
+      throw new ExpressionException(ErrorCode.CALL_FUNCTION_ERROR, operator, e.getMessage());
     }
   }
 
@@ -63,7 +63,7 @@ public class MethodCall extends Call {
       Object value = method.invokeExact(operator, operands);
       return type.convert(value, clazz);
     } catch (Throwable e) {
-      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
+      throw new ExpressionException(ErrorCode.CALL_FUNCTION_ERROR, operator, e.getMessage());
     }
   }
 

@@ -133,7 +133,7 @@ import org.apache.commons.lang.StringUtils;
  * </tr>
  * </table>
  */
-final class DecimalNumberFormat extends NumberFormat {
+final class PatternNumberFormat extends NumberFormat {
 
   public enum SignMode {
     DEFAULT,
@@ -193,7 +193,7 @@ final class DecimalNumberFormat extends NumberFormat {
   private String pattern = "";
   private int v = 0;
 
-  protected DecimalNumberFormat(final String format) {
+  protected PatternNumberFormat(final String format) {
 
     this.format = format;
     int index = 0;
@@ -436,7 +436,7 @@ final class DecimalNumberFormat extends NumberFormat {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    DecimalNumberFormat other = (DecimalNumberFormat) obj;
+    PatternNumberFormat other = (PatternNumberFormat) obj;
     return format.equals(other.format);
   }
 
@@ -450,9 +450,9 @@ final class DecimalNumberFormat extends NumberFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws ParseNumberException
+   * @throws NumberParseException
    */
-  public BigDecimal parse(String text) throws ParseNumberException {
+  public BigDecimal parse(String text) throws NumberParseException {
 
     int start = 0; // first not white space symbol
     try {

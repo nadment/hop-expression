@@ -19,7 +19,6 @@ package org.apache.hop.expression.type;
 
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
@@ -124,9 +123,9 @@ public final class JsonType extends Type {
   public static JsonNode convertToJson(final String str) throws ConversionException {
     if (str == null) return null;
     try {
-      ObjectMapper objectMapper =
+      JsonMapper mapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
-      return objectMapper.readTree(str);
+      return mapper.readTree(str);
     } catch (Exception e) {
       throw new ConversionException(ErrorCode.INVALID_JSON, str);
     }

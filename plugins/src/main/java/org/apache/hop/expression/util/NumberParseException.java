@@ -14,9 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.util;
 
-public class ConversionException extends ExpressionException {
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
+
+public class NumberParseException extends ExpressionException {
   @java.io.Serial private static final long serialVersionUID = 1L;
 
   /**
@@ -24,11 +27,7 @@ public class ConversionException extends ExpressionException {
    *
    * @param error a error message
    */
-  public ConversionException(ErrorCode error) {
-    super(error.message());
-  }
-
-  public ConversionException(ErrorCode error, Object... values) {
+  public NumberParseException(ErrorCode error, Object... values) {
     super(error.message(values));
   }
 }
