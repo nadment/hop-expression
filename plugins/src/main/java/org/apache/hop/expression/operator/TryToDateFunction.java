@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
@@ -24,19 +25,24 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /** Converts a string expression to a date value. */
 @FunctionPlugin
 public class TryToDateFunction extends Function {
+  private static final TryToDateFunction IntegerTryToDateFunction = new IntegerTryToDateFunction();
+  private static final TryToDateFunction NumberTryToDateFunction = new NumberTryToDateFunction();
 
   public TryToDateFunction() {
     super(
         "TRY_TO_DATE",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMERIC),
         OperatorCategory.CONVERSION,
         "/docs/to_date.html");
   }
@@ -45,7 +51,14 @@ public class TryToDateFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    // TODO: Add support TRY_DATE_DATE with numeric
+    Type type = call.getOperand(0).getType();
+
+    if (type.is(TypeId.INTEGER)) {
+      return new Call(IntegerTryToDateFunction, call.getOperands());
+    }
+    if (type.is(TypeId.NUMBER)) {
+      return new Call(NumberTryToDateFunction, call.getOperands());
+    }
 
     // String with specified format
     String pattern =
@@ -79,6 +92,24 @@ public class TryToDateFunction extends Function {
       } catch (ExpressionException e) {
         return null;
       }
+    }
+  }
+
+  private static final class IntegerTryToDateFunction extends TryToDateFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long value = operands[0].getValue(Long.class);
+      if (value == null) return null;
+      return DateType.convertToDate(value);
+    }
+  }
+
+  private static final class NumberTryToDateFunction extends TryToDateFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      BigDecimal value = operands[0].getValue(BigDecimal.class);
+      if (value == null) return null;
+      return DateType.convertToDate(value);
     }
   }
 }

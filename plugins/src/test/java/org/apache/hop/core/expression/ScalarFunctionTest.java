@@ -155,6 +155,21 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Failed if format is bad
     evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
+
+    // Integer Unix Epoch in seconds
+    evalEquals("TRY_TO_DATE(0)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
+    evalEquals("TRY_TO_DATE(1551052800)", LocalDate.of(2019, 2, 25));
+    evalEquals("TRY_TO_DATE(-5364662400)", LocalDate.of(1800, 1, 1));
+    evalEquals("TRY_TO_DATE(1284352323)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
+
+    // Number Unix Epoch in seconds with fractional
+    evalEquals("TRY_TO_DATE(1551052800.000000000)", LocalDate.of(2019, 2, 25));
+    evalEquals("TRY_TO_DATE(-5364662400.000000000)", LocalDate.of(1800, 1, 1));
+    evalEquals("TRY_TO_DATE(1284352323.1)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 100000000));
+    evalEquals("TRY_TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
+    evalEquals("TRY_TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
+    evalEquals(
+        "TRY_TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
   }
 
   @Test
