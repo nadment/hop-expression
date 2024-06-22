@@ -51,7 +51,7 @@ import org.apache.hop.workflow.engine.WorkflowEngineFactory;
     keywords = "i18n::LoopAction.Keywords",
     image = "loop.svg",
     documentationUrl = "/workflow/actions/loop.html")
-public class LoopAction extends ActionBase implements IAction, Cloneable {
+public class LoopAction extends ActionBase implements IAction {
 
   @HopMetadataProperty(key = "filename")
   private String filename;
@@ -82,11 +82,6 @@ public class LoopAction extends ActionBase implements IAction, Cloneable {
 
   public LoopAction() {
     this("", "");
-  }
-
-  @Override
-  public LoopAction clone() {
-    return (LoopAction) super.clone();
   }
 
   @Override

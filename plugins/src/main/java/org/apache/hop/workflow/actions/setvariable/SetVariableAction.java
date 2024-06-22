@@ -49,7 +49,7 @@ import org.apache.hop.workflow.engine.IWorkflowEngine;
     categoryDescription = "i18n:org.apache.hop.workflow:ActionCategory.Category.Utility",
     keywords = "i18n::SetVariableAction.keywords",
     documentationUrl = "/workflow/actions/setvariable.html")
-public class SetVariableAction extends ActionBase implements Cloneable, IAction {
+public class SetVariableAction extends ActionBase implements IAction {
   static final Class<?> PKG = SetVariableAction.class; // For Translator
 
   @HopMetadataProperty(groupKey = "variables", key = "variable")
@@ -67,11 +67,6 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
   public SetVariableAction(SetVariableAction other) {
     super(other.getName(), other.getDescription(), other.getPluginId());
     this.variableDefinitions = other.getVariableDefinitions();
-  }
-
-  @Override
-  public Object clone() {
-    return new SetVariableAction(this);
   }
 
   @Override
