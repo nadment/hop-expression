@@ -20,9 +20,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
@@ -71,15 +73,17 @@ public class BoolOrOperator extends Operator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(this.getChainedOperands(call, false));
 
-    final List<IExpression> isNullTerms = new ArrayList<>();
-    final List<IExpression> isNotNullTerms = new ArrayList<>();
+    final List<IExpression> nullTerms = new ArrayList<>();
+    final List<IExpression> notNullTerms = new ArrayList<>();
     final List<IExpression> identifiers = new ArrayList<>();
     final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> lessThanTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> greaterThanTerms = new HashMap<>();
-    final MultiValuedMap<IExpression, Pair<Call, Literal>> equalsLiterals =
+    final MultiValuedMap<IExpression, Pair<Call, IExpression>> inTerms =
+        new ArrayListValuedHashMap<>();
+    final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
         new ArrayListValuedHashMap<>();
 
     for (IExpression predicate : predicates) {
@@ -95,28 +99,28 @@ public class BoolOrOperator extends Operator {
         Call term = predicate.asCall();
 
         if (term.is(Operators.IS_NULL)) {
-          isNullTerms.add(term.getOperand(0));
+          nullTerms.add(term.getOperand(0));
         }
         if (term.is(Operators.IS_NOT_NULL)) {
-          isNotNullTerms.add(term.getOperand(0));
+          notNullTerms.add(term.getOperand(0));
         }
         if (term.is(Operators.EQUAL)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-
-          if (term.getOperand(0).is(Kind.LITERAL)) {
-            equalsLiterals.put(term.getOperand(1), Pair.of(term, term.getOperand(0).asLiteral()));
-          }
           if (term.getOperand(1).is(Kind.LITERAL)) {
-            equalsLiterals.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
+            inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
           }
         }
         if (term.is(Operators.IN) && term.getOperand(1).isConstant()) {
           for (IExpression operand : term.getOperand(1).asTuple()) {
-            equalsLiterals.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
+            inTerms.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
           }
+        }
+        if (term.is(Operators.NOT_IN)) {
+          notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.is(Operators.NOT_EQUAL)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
+          notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.is(Operators.LESS_THAN)) {
           lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
@@ -169,13 +173,49 @@ public class BoolOrOperator extends Operator {
       }
     }
 
-    // Simplify X=1 OR X=2 → X IN (1,2)
-    // Simplify X=1 OR X IN (2,3) → X IN (1,2,3)
-    for (IExpression reference : equalsLiterals.keySet()) {
-      Collection<Pair<Call, Literal>> pairs = equalsLiterals.get(reference);
+    // Simplify intersection NOT IN
+    // X NOT IN (1,2,3) OR X NOT IN (2,3,4,5,6) → X NOT IN (2,3)
+    for (IExpression reference : notInTerms.keySet()) {
+      Collection<IExpression> values = new LinkedList<>();
+      for (Pair<Call, IExpression> pair : notInTerms.get(reference)) {
+        IExpression term = pair.getRight();
+        if (values.isEmpty()) {
+          if (term.is(Kind.TUPLE)) {
+            term.asTuple().forEach(values::add);
+          } else values.add(term);
+        } else {
+          if (term.is(Kind.TUPLE)) {
+            values = CollectionUtils.intersection(values, term.asTuple());
+          } else {
+            values = CollectionUtils.intersection(values, List.of(term));
+          }
+        }
+        predicates.remove(pair.getLeft());
+      }
+
+      if (values.isEmpty()) {
+        return Literal.FALSE;
+      }
+
+      if (values.size() == 1) {
+        Call predicate = new Call(Operators.NOT_EQUAL, reference, values.iterator().next());
+        predicate.inferReturnType();
+        predicates.add(predicate);
+      } else {
+        Call predicate = new Call(Operators.NOT_IN, reference, new Tuple(values));
+        predicate.inferReturnType();
+        predicates.add(predicate);
+      }
+    }
+
+    // Simplify union
+    // X=1 OR X=2 → X IN (1,2)
+    // X=1 OR X IN (2,3) → X IN (1,2,3)
+    for (IExpression reference : inTerms.keySet()) {
+      Collection<Pair<Call, IExpression>> pairs = inTerms.get(reference);
       if (pairs.size() > 1) {
         List<IExpression> values = new ArrayList<>();
-        for (Pair<Call, Literal> pair : pairs) {
+        for (Pair<Call, IExpression> pair : pairs) {
           values.add(pair.getRight());
           predicates.remove(pair.getLeft());
         }
@@ -191,14 +231,14 @@ public class BoolOrOperator extends Operator {
 
     // Simplify x OR x IS NOT NULL → x IS NOT NULL
     for (IExpression identifier : identifiers) {
-      if (isNotNullTerms.contains(identifier)) {
+      if (notNullTerms.contains(identifier)) {
         predicates.remove(identifier);
       }
     }
 
     // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
     for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {
-      if (isNotNullTerms.contains(pair.getLeft()) || isNotNullTerms.contains(pair.getRight())) {
+      if (notNullTerms.contains(pair.getLeft()) || notNullTerms.contains(pair.getRight())) {
         predicates.remove(strongTerms.get(pair));
       }
     }

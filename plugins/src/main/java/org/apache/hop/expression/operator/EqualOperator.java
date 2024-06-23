@@ -21,7 +21,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -78,30 +77,21 @@ public class EqualOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Normalize
+    call = normalizeSymmetricalPredicate(call);
+
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Normalize symmetrical operator by moving the low-cost operand to the left
-    if (left.getCost() > right.getCost()) {
-      return new Call(this, right, left);
-    }
-
-    // Normalize symmetrical operator by ordering identifiers by name
-    if (left.is(Kind.IDENTIFIER)
-        && right.is(Kind.IDENTIFIER)
-        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-      return new Call(this, right, left);
-    }
-
     // Simplify comparison when operands is of boolean type
-    // TRUE=x → x
-    // FALSE=x → NOT x
-    if (right.getType().is(TypeId.BOOLEAN)) {
-      if (left == Literal.TRUE) {
-        return right;
+    // x=TRUE → x
+    // x=FALSE → NOT x
+    if (left.getType().is(TypeId.BOOLEAN)) {
+      if (right == Literal.TRUE) {
+        return left;
       }
-      if (left == Literal.FALSE) {
-        return new Call(Operators.BOOLNOT, right);
+      if (right == Literal.FALSE) {
+        return new Call(Operators.BOOLNOT, left);
       }
     }
 

@@ -33,10 +33,17 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   public IExpression compile(IExpression expression) throws ExpressionException {
+
+    int loop = 0;
     do {
       changed = false;
       // System.out.println(expression);
       expression = expression.accept(this);
+
+      // Check a maximum loop to avoid infinite loop
+      if (loop++ > 1000) {
+        throw new ExpressionException(ErrorCode.INTERNAL_ERROR, expression);
+      }
     } while (changed);
 
     return expression;
@@ -107,6 +114,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   @Override
   public IExpression visitTuple(final Tuple tuple) {
     int size = tuple.size();
+
     List<IExpression> expressions = new ArrayList<>(size);
     List<Type> types = new ArrayList<>(size);
     for (IExpression expression : tuple) {
@@ -116,6 +124,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     }
 
     Type type = Types.getLeastRestrictive(types);
+
     return new Tuple(ArrayType.of(type), expressions);
   }
 

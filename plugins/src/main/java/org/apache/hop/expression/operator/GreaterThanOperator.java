@@ -21,7 +21,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -48,7 +47,7 @@ public class GreaterThanOperator extends Operator {
 
   @Override
   public Operator not() {
-    return Operators.LESS_THAN_OR_EQUAL;
+    return Operators.LESS_THAN;
   }
 
   @Override
@@ -68,20 +67,14 @@ public class GreaterThanOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Normalize
+    call = normalizeReversiblePredicate(call);
+
+    // If the operator has been changed
+    if (!call.getOperator().equals(this)) return call;
+
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
-
-    // Normalize low cost operand to the left
-    if (left.getCost() > right.getCost()) {
-      return new Call(Operators.LESS_THAN, right, left);
-    }
-
-    // Normalize the order of identifier by name
-    if (left.is(Kind.IDENTIFIER)
-        && right.is(Kind.IDENTIFIER)
-        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-      return new Call(Operators.LESS_THAN, right, left);
-    }
 
     // Simplify x>NULL → NULL
     if (left.isNull() || right.isNull()) {

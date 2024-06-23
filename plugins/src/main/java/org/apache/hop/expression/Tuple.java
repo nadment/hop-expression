@@ -187,4 +187,31 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     }
     return true;
   }
+
+  /** Returns {@code true} if this tuple contains the specified elements. */
+  public boolean contains(IExpression element) {
+    for (int i = 0; i < values.length; i++) {
+      if (element.equals(values[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns {@code true} if this tuple contains all of the elements of the specified collection.
+   *
+   * @param c collection to be checked for containment in this tuple
+   * @return {@code true} if this tuple contains all of the elements of the specified collection
+   * @see #contains(Object)
+   */
+  public boolean containsAll(Collection<IExpression> collection) {
+    Iterator it = (Iterator) collection.iterator();
+    while (it.hasNext()) {
+      if (contains(it.next()) == false) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

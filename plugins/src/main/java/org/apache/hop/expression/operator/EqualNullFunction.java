@@ -22,7 +22,6 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
@@ -65,20 +64,12 @@ public class EqualNullFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Normalize
+    call = normalizeSymmetricalPredicate(call);
+
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
-
-    // Normalize symmetrical operator by moving the low-cost operand to the left
-    if (left.getCost() > right.getCost()) {
-      return new Call(this, right, left);
-    }
-
-    // Normalize symmetrical operator by ordering identifiers by name
-    if (left.is(Kind.IDENTIFIER)
-        && right.is(Kind.IDENTIFIER)
-        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-      return new Call(this, right, left);
-    }
 
     // Simplify same expressions.
     if (left.equals(right)) {
@@ -93,13 +84,13 @@ public class EqualNullFunction extends Function {
       return new Call(Operators.IS_NULL, left);
     }
 
-    // Simplify EQUAL_NULL(TRUE,x) → x IS TRUE
-    if (left.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, right);
+    // Simplify EQUAL_NULL(x,TRUE) → x IS TRUE
+    if (right.equals(Literal.TRUE)) {
+      return new Call(Operators.IS_TRUE, left);
     }
-    // Simplify EQUAL_NULL(FALSE,x) → x IS FALSE
-    if (left.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, right);
+    // Simplify EQUAL_NULL(x,FALSE) → x IS FALSE
+    if (right.equals(Literal.FALSE)) {
+      return new Call(Operators.IS_FALSE, left);
     }
 
     return call;

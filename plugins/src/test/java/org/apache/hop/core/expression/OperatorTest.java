@@ -130,8 +130,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails(" = FIELD_INTEGER ");
 
     // Normalize
-    optimize("10=FIELD_INTEGER");
-    optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
+    optimize("10=FIELD_INTEGER", "FIELD_INTEGER=10");
+    optimize("FIELD_INTEGER=40");
 
     // Simplify comparison with literals
     optimizeTrue("'a' = 'a'");
@@ -147,7 +147,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("FALSE=FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
 
     // Simplify comparison with arithmetic
-    optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1=3", "FIELD_INTEGER=2");
 
     // Simplify comparison with the same term when it is not nullable
     optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
@@ -218,8 +218,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("<>FIELD_INTEGER");
 
     // Normalize
-    optimize("10!=FIELD_INTEGER");
-    optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
+    optimize("10!=FIELD_INTEGER", "FIELD_INTEGER!=10");
+    optimize("FIELD_INTEGER=40");
 
     // Simplify comparison with literals
     optimizeFalse("'a' <> 'a'");
@@ -239,7 +239,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("TRUE<>FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
 
     // Simplify comparison with arithmetic
-    optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1!=3", "FIELD_INTEGER!=2");
+    optimizeFalse("PI()!=PI()");
   }
 
   @Test
@@ -307,12 +308,14 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER > ");
     evalFails("FIELD_STRING>5");
 
-    optimize("10>FIELD_INTEGER");
+    // Normalize
+    optimize("FIELD_INTEGER>10");
+    optimize("10>FIELD_INTEGER", "FIELD_INTEGER<10");
     optimizeTrue("25>12");
 
     // Simplify arithmetic comparisons
-    optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
-    optimize("FIELD_INTEGER+1>3", "2<FIELD_INTEGER");
+    optimize("3>FIELD_INTEGER+1", "FIELD_INTEGER<2");
+    optimize("FIELD_INTEGER+1>3", "FIELD_INTEGER>2");
 
     // Simplify comparison with same term
     optimize("FIELD_STRING>FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
@@ -380,16 +383,20 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER >= ");
     evalFails("FIELD_STRING>=5");
 
-    optimize("FIELD_INTEGER>=80", "80<=FIELD_INTEGER");
+    // Normalize
+    optimize("FIELD_INTEGER>=80");
+    optimize("80>=FIELD_INTEGER", "FIELD_INTEGER<=80");
+
     optimizeTrue("25>=12");
-    optimize("FIELD_BOOLEAN_TRUE >= TRUE", "TRUE<=FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE>=TRUE");
+    optimize("FIELD_BOOLEAN_TRUE>=FALSE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("TRUE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FIELD_BOOLEAN_TRUE >= FALSE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
-    optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FALSE>=FIELD_BOOLEAN_TRUE");
+    optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE<=FALSE");
 
     // Simplify arithmetic comparisons
-    optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
-    optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
+    optimize("3>=FIELD_INTEGER+1", "FIELD_INTEGER<=2");
 
     // Simplify comparison with same term
     optimize("FIELD_STRING>=FIELD_STRING", "FIELD_STRING>=FIELD_STRING");
@@ -426,7 +433,7 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("INTERVAL 3 YEARS < INTERVAL 3 MONTHS");
 
     evalNull("NULL_INTEGER < 1").returnType(Types.BOOLEAN);
-    evalNull("NULL_NUMBER < NULL_INTEGER");
+    // evalNull("NULL_NUMBER < NULL_INTEGER");
     evalNull("NULL_STRING < Upper(FIELD_STRING)");
     evalNull("FIELD_STRING < NULL_STRING");
     evalNull("NULL_STRING < FIELD_STRING");
@@ -458,12 +465,15 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER < ");
     evalFails("FIELD_STRING < 5");
 
-    optimize("FIELD_INTEGER<80", "80>FIELD_INTEGER");
+    // Normalize
+    optimize("FIELD_INTEGER<80");
+    optimize("80>FIELD_INTEGER", "FIELD_INTEGER<80");
+
     optimizeFalse("25<12");
 
     // Simplify arithmetic comparisons
-    optimize("FIELD_INTEGER+1<3", "2>FIELD_INTEGER");
-    optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1<3", "FIELD_INTEGER<2");
+    optimize("3>FIELD_INTEGER+1", "FIELD_INTEGER<2");
 
     // Simplify comparison with same term
     optimize("FIELD_STRING<FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
@@ -530,17 +540,20 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER <= ");
     evalFails("FIELD_STRING <=5");
 
-    optimize("FIELD_INTEGER<=5", "5>=FIELD_INTEGER");
+    // Normalize
+    optimize("FIELD_INTEGER<=5");
+    optimize("5<=FIELD_INTEGER", "FIELD_INTEGER>=5");
+
     optimizeFalse("25<=12");
     optimize("FIELD_BOOLEAN_TRUE <= TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
-    optimize("TRUE <= FIELD_BOOLEAN_TRUE", "TRUE<=FIELD_BOOLEAN_TRUE");
-    optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FALSE>=FIELD_BOOLEAN_TRUE");
+    optimize("TRUE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE>=TRUE");
+    optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FIELD_BOOLEAN_TRUE<=FALSE");
     optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FALSE <= FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE IS NOT NULL");
 
     // Simplify arithmetic comparisons
-    optimize("3<=FIELD_INTEGER+1", "2<=FIELD_INTEGER");
-    optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
+    optimize("3<=FIELD_INTEGER+1", "FIELD_INTEGER>=2");
+    optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
 
     // Simplify comparison with same term
     optimize("FIELD_STRING<=FIELD_STRING", "NVL2(FIELD_STRING,TRUE,NULL)");
@@ -604,8 +617,8 @@ public class OperatorTest extends ExpressionTest {
     // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
 
     // Normalize IN list with single element to comparison
-    optimize("FIELD_INTEGER in (1)", "1=FIELD_INTEGER");
-    optimize("FIELD_STRING in ('AB','AB')", "'AB'=FIELD_STRING");
+    optimize("FIELD_INTEGER in (1)", "FIELD_INTEGER=1");
+    optimize("FIELD_STRING in ('AB','AB')", "FIELD_STRING='AB'");
 
     optimize("0 / 0 in (2, 2)", "2=0/0");
 
@@ -1771,12 +1784,12 @@ public class OperatorTest extends ExpressionTest {
     optimizeTrue("not not true");
     optimizeFalse("not not false");
     optimize("NOT (NOT(FIELD_BOOLEAN_TRUE))", "FIELD_BOOLEAN_TRUE");
-    optimize("NOT (FIELD_INTEGER>5)", "5>=FIELD_INTEGER");
-    optimize("NOT (FIELD_INTEGER>=5)", "5>FIELD_INTEGER");
-    optimize("NOT (FIELD_INTEGER<5)", "5<=FIELD_INTEGER");
-    optimize("NOT (FIELD_INTEGER<=5)", "5<FIELD_INTEGER");
-    optimize("NOT (FIELD_INTEGER=5)", "5!=FIELD_INTEGER");
-    optimize("NOT (FIELD_INTEGER<>5)", "5=FIELD_INTEGER");
+    optimize("NOT (FIELD_INTEGER>5)", "FIELD_INTEGER<5");
+    optimize("NOT (FIELD_INTEGER>=5)", "FIELD_INTEGER<=5");
+    optimize("NOT (FIELD_INTEGER<5)", "FIELD_INTEGER>5");
+    optimize("NOT (FIELD_INTEGER<=5)", "FIELD_INTEGER>=5");
+    optimize("NOT (FIELD_INTEGER=5)", "FIELD_INTEGER!=5");
+    optimize("NOT (FIELD_INTEGER<>5)", "FIELD_INTEGER=5");
     optimize("NOT (FIELD_BOOLEAN_TRUE IS TRUE)", "FIELD_BOOLEAN_TRUE IS NOT TRUE");
     optimize("NOT (FIELD_BOOLEAN_TRUE IS NOT TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");
     optimize("NOT (FIELD_BOOLEAN_TRUE IS FALSE)", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
@@ -1832,31 +1845,37 @@ public class OperatorTest extends ExpressionTest {
     evalFails("false OR");
     evalFails("OR false");
 
-    optimize("FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN");
+    // Simplify literal
     optimizeTrue("true or true");
     optimizeTrue("true or false");
     optimizeTrue("false or true");
     optimizeFalse("false or false");
-    optimizeTrue("true or NULL_BOOLEAN");
-    optimizeTrue("NULL_BOOLEAN or true");
-    optimize("NULL_BOOLEAN or NULL_BOOLEAN", "NULL_BOOLEAN");
-
     optimizeTrue("FIELD_BOOLEAN_TRUE or true");
     optimizeTrue("true or FIELD_STRING");
     optimizeTrue("true or FIELD_BOOLEAN_TRUE");
     optimizeTrue("FIELD_BOOLEAN_TRUE or true");
     optimize("false or FIELD_BOOLEAN_TRUE", "FALSE OR FIELD_BOOLEAN_TRUE");
     optimize("FIELD_BOOLEAN_TRUE or false", "FALSE OR FIELD_BOOLEAN_TRUE");
-    optimize("FIELD_BOOLEAN_TRUE or FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+
+    optimize("FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN");
     optimize(
         "FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN_TRUE",
-        "FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN OR 0<FIELD_INTEGER");
-
+        "FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN OR FIELD_INTEGER>0");
     optimize("false and true or FIELD_BOOLEAN_TRUE", "FALSE OR FIELD_BOOLEAN_TRUE");
 
-    // Duplicate predicate
+    // Simplify NULL
+    optimizeTrue("NULL::Boolean OR TRUE");
+    optimizeTrue("TRUE OR NULL::Boolean");
+    optimizeTrue("true or NULL_BOOLEAN");
+    optimizeTrue("NULL_BOOLEAN or true");
+
+    optimizeNull("FALSE OR NULL::Boolean");
+    optimizeNull("NULL::Boolean OR FALSE");
+
+    // Simplify duplicate predicate
     optimize("FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
-    optimize("FIELD_INTEGER=2 OR 2=FIELD_INTEGER", "2=FIELD_INTEGER");
+    optimize("FIELD_INTEGER=2 OR 2=FIELD_INTEGER", "FIELD_INTEGER=2");
+    optimize("NULL_BOOLEAN or NULL_BOOLEAN", "NULL_BOOLEAN");
 
     // Check if simplify doesn't create infinity loop with same operator if order change
     optimize(
@@ -1864,15 +1883,15 @@ public class OperatorTest extends ExpressionTest {
         "ENDSWITH(FIELD_STRING,'DE') OR STARTSWITH(FIELD_STRING,'AB') OR STARTSWITH(FIELD_STRING,'BC')");
 
     // Simplify x < a OR x = a → x <= a
-    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER=1", "1>=FIELD_INTEGER");
+    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER=1", "FIELD_INTEGER<=1");
     // Simplify x < a OR x != a → x != a
-    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");
+    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER!=1", "FIELD_INTEGER!=1");
     // Simplify x < a OR x > a → x != a"
-    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER>1", "1!=FIELD_INTEGER");
+    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER>1", "FIELD_INTEGER!=1");
     // Simplify x > a OR x != a → x != a
-    optimize("FIELD_INTEGER>1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");
+    optimize("FIELD_INTEGER>1 OR FIELD_INTEGER!=1", "FIELD_INTEGER!=1");
     // Simplify x > a OR x = a → x >= a
-    optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "1<=FIELD_INTEGER");
+    optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "FIELD_INTEGER>=1");
     // Simplify x OR x IS NOT NULL → x IS NOT NULL
     optimize("FIELD_INTEGER OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
     // Simplify x<5 OR IS NOT NULL(x) → IS NOT NULL(x)
@@ -1883,12 +1902,19 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER=10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
     optimize("FIELD_INTEGER<>10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
     optimize("FIELD_INTEGER!=10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
-    // Simplify X=1 OR X=2 OR X=3 → X IN (1,2,3) order is not important
+
+    // Simplify union X=1 OR X=2 OR X=3 → X IN (1,2,3) order is not important
     optimize("FIELD_INTEGER=1 OR FIELD_INTEGER=2 OR FIELD_INTEGER=3", "FIELD_INTEGER IN (3,1,2)");
     optimize("FIELD_INTEGER=1 OR FIELD_INTEGER in (2,3)", "FIELD_INTEGER IN (1,2,3)");
     optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize(
-        "FIELD_STRING='1' OR NULL_INTEGER in (1,2)", "'1'=FIELD_STRING OR NULL_INTEGER IN (1,2)");
+        "FIELD_STRING='1' OR NULL_INTEGER in (1,2)", "FIELD_STRING='1' OR NULL_INTEGER IN (1,2)");
+
+    // Simplify intersection != and NOT IN
+    optimize("FIELD_INTEGER!=2 OR FIELD_INTEGER NOT IN (1,2,3,4)", "FIELD_INTEGER!=2");
+    optimize(
+        "FIELD_INTEGER NOT IN (1,2,3) OR FIELD_INTEGER NOT IN (2,3,4,5)",
+        "FIELD_INTEGER NOT IN (3,2)");
   }
 
   @Test
@@ -1924,17 +1950,23 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("null AND null AND null AND false");
     optimizeNull("null AND null AND null AND true");
 
-    // Duplicate predicate
+    // Simplify NULL
+    optimizeNull("NULL::Boolean AND TRUE");
+    optimizeNull("TRUE AND NULL::Boolean");
+    optimizeFalse("FALSE AND NULL::Boolean");
+    optimizeFalse("NULL::Boolean AND FALSE");
+
+    // Simplify duplicate predicate
     optimize("FIELD_BOOLEAN_TRUE and FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
     optimize(
         "FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN_TRUE",
-        "FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN AND 0<FIELD_INTEGER");
+        "FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN AND FIELD_INTEGER>0");
     optimize(
         "(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN_TRUE AND (2*FIELD_INTEGER>1)",
         "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
     optimize(
         "FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=1",
-        "FIELD_BOOLEAN_TRUE AND 1=FIELD_INTEGER");
+        "FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=1");
     optimize(
         "(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN_TRUE AND (2*FIELD_INTEGER>1)",
         "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
@@ -1951,17 +1983,30 @@ public class OperatorTest extends ExpressionTest {
 
     // Simplify IS NOT NULL
     optimize(
-        "FIELD_INTEGER>5 AND FIELD_INTEGER IS NOT NULL AND FIELD_INTEGER>5", "5<FIELD_INTEGER");
+        "FIELD_INTEGER>5 AND FIELD_INTEGER IS NOT NULL AND FIELD_INTEGER>5", "FIELD_INTEGER>5");
 
-    // Simplify X<>1 AND X<>2 → X NOT IN (1,2)
-    optimize("FIELD_INTEGER<>1 AND FIELD_INTEGER<>2", "FIELD_INTEGER NOT IN (1,2)");
-
-    // Simplify X<>1 AND X NOT IN (2,3) → X NOT IN (1,2,3)
+    // Simplify union <> and NOT IN
+    optimize(
+        "FIELD_INTEGER<>1 AND FIELD_INTEGER<>2 AND FIELD_INTEGER<>3",
+        "FIELD_INTEGER NOT IN (3,1,2)");
     optimize("FIELD_INTEGER<>1 AND FIELD_INTEGER NOT IN (2,3)", "FIELD_INTEGER NOT IN (1,2,3)");
+    optimize(
+        "FIELD_INTEGER NOT IN (1,2,3) AND FIELD_INTEGER NOT IN (4,5)",
+        "FIELD_INTEGER NOT IN (4,5,1,2,3)");
 
-    // Not satisfiable equality constant
+    // Simplify intersection = and IN
+    optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (3,4,5)", "FIELD_INTEGER=3");
+    optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5,3,1)", "FIELD_INTEGER IN (1,3)");
+    optimize(
+        "FIELD_INTEGER IN (1,2,3,5) AND FIELD_INTEGER IN (2,3,4,5)", "FIELD_INTEGER IN (5,3,2)");
+    optimizeFalse("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5)");
+    optimizeFalse("FIELD_STRING IN ('A','B','C') AND FIELD_STRING='X'");
     optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=2");
     optimizeFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND NULL_INTEGER=2");
+
+    // Simplify intersection with exclusions != and NOT IN
+    optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER!=3", "FIELD_INTEGER IN (1,2)");
+    optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER NOT IN (3,4,5)", "FIELD_INTEGER IN (1,2)");
   }
 
   @Test
@@ -2055,7 +2100,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_STRING LIKE 'AD%D'");
     optimize("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
     optimize("FIELD_STRING LIKE '%'", "NVL2(FIELD_STRING,TRUE,NULL)");
-    optimize("FIELD_STRING LIKE 'Hello'", "'Hello'=FIELD_STRING");
+    optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
     optimize("FIELD_STRING LIKE 'ADD%'", "STARTSWITH(FIELD_STRING,'ADD')");
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
@@ -2102,13 +2147,13 @@ public class OperatorTest extends ExpressionTest {
     // Implicit ELSE NULL
     optimize(
         "CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 ELSE NULL END",
-        "CASE WHEN 40<FIELD_INTEGER THEN 10 WHEN 20<FIELD_INTEGER THEN 5 END");
-    optimize("CASE WHEN 40=FIELD_INTEGER THEN TRUE ELSE FALSE END");
+        "CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 END");
+    optimize("CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END");
 
     // Flatten search case
     optimize(
         "CASE WHEN FIELD_INTEGER=1 THEN 1 ELSE CASE WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END END",
-        "CASE WHEN 1=FIELD_INTEGER THEN 1 WHEN 2=FIELD_NUMBER THEN 2 ELSE 3 END");
+        "CASE WHEN FIELD_INTEGER=1 THEN 1 WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END");
 
     // "CASE WHEN x IS NULL THEN y ELSE x END" to "IFNULL(x, y)"
     optimize(

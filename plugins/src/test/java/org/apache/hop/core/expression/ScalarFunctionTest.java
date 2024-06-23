@@ -268,7 +268,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Simplify IF(x=y,NULL,y) → NULLIF(y, x)
     optimize("IF(0=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,0)");
     // No simplify
-    optimize("IF(FIELD_INTEGER=10,NULL,FIELD_NUMBER)", "IF(10=FIELD_INTEGER,NULL,FIELD_NUMBER)");
+    optimize("IF(FIELD_INTEGER=10,NULL,FIELD_NUMBER)");
   }
 
   @Test
@@ -3284,9 +3284,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("Equal_Null(1,NULL_INTEGER)").returnType(Types.BOOLEAN);
     evalTrue("Equal_Null(NULL_STRING,NULL_STRING)").returnType(Types.BOOLEAN);
     evalTrue("Equal_Null(NULL_INTEGER,NULL_NUMBER)");
-    evalFails("Equal_Null(NOM)");
     evalTrue("Equal_Null(DATE '2019-01-01',DATE '2019-01-01')");
     evalFalse("Equal_Null(DATE '2019-01-01',DATE '2018-01-01')").returnType(Types.BOOLEAN);
+
+    evalFails("Equal_Null(NOM)");
 
     // Same operands always true
     optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
@@ -3296,6 +3297,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     optimize("EQUAL_NULL(FIELD_INTEGER,NULL)", "FIELD_INTEGER IS NULL");
     optimize("EQUAL_NULL(NULL,FIELD_INTEGER)", "FIELD_INTEGER IS NULL");
+    // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
     optimize("EQUAL_NULL(TRUE,FIELD_BOOLEAN_TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");
     optimize("EQUAL_NULL(FIELD_BOOLEAN_TRUE,TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");
     optimize("EQUAL_NULL(FALSE,FIELD_BOOLEAN_TRUE)", "FIELD_BOOLEAN_TRUE IS FALSE");

@@ -45,7 +45,7 @@ public class AggregateFunctionTest extends ExpressionTest {
     evalFails("CountIf(FIELD_DATE)");
     evalFails("CountIf(1,2)");
     returnType("CountIf(FIELD_INTEGER>=10)", Types.INTEGER);
-    optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(10<=FIELD_INTEGER)");
+    optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(FIELD_INTEGER>=10)");
   }
 
   @Test

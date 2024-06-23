@@ -17,6 +17,9 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -26,6 +29,8 @@ import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Returns an array element at the given an index <br>
@@ -43,6 +48,30 @@ public class ElementAtOperator extends Operator {
         OperandTypes.ARRAY_NUMERIC,
         OperatorCategory.ARRAY,
         "/docs/element_at.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    Tuple tuple = call.getOperand(0).asTuple();
+    Type type = Types.getLeastRestrictive(tuple);
+
+    // Coerce tuple values
+    boolean coerced = false;
+    List<IExpression> list = new ArrayList<>();
+    for (IExpression operand : tuple) {
+      if (Types.needToCast(operand, type)) {
+        operand = Types.cast(operand, type);
+        coerced = true;
+      }
+      list.add(operand);
+    }
+
+    if (coerced) {
+      call.setOperand(0, new Tuple(ArrayType.of(type), list));
+      call.inferReturnType();
+    }
+
+    return coerced;
   }
 
   @Override

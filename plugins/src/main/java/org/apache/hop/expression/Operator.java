@@ -384,6 +384,140 @@ public abstract class Operator {
     return id;
   }
 
+  /**
+   * Normalize symmetrical operator
+   *
+   * <ul>
+   *   <li>swap term to identifier operator literal 1=A → A=1
+   *   <li>ordering identifiers by name with case sensitive B=A → A=B
+   *   <li>ordering the low-cost operand to the left
+   * </ul>
+   *
+   * @param call The call to normalize
+   * @return normalized call
+   */
+  protected Call normalizeSymmetricalPredicate(Call call) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Nothing to normalize
+    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
+      return call;
+    }
+
+    if (right.is(Kind.IDENTIFIER)) {
+
+      // Swap terms 1=A → A=1
+      if (left.is(Kind.LITERAL)) {
+        System.out.println("Swap literal to right");
+        return swap(call);
+      }
+      // Swap terms B=A → A=B
+      if (left.is(Kind.IDENTIFIER)
+          && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+        System.out.println("Swap identifier by name");
+        return swap(call);
+      }
+    }
+
+    // Normalize operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      System.out.println("Swap term by cost");
+      return swap(call);
+    }
+
+    // If same cost order with textual representation
+    //    if (left.toString().compareTo(right.toString()) > 0) {
+    //      System.out.println("Swap term by textual");
+    //      return swap(call);
+    //    }
+
+    return call;
+  }
+
+  /**
+   * Normalize reversible operator
+   *
+   * <ul>
+   *   <li>swap term to identifier operator literal 1>A → A<1
+   *   <li>ordering identifiers by name with case sensitive B>A → A<B
+   *   <li>ordering the low-cost operand to the left
+   * </ul>
+   *
+   * @param call The call to normalize
+   * @return normalized call
+   */
+  protected Call normalizeReversiblePredicate(Call call) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Nothing to normalize
+    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
+      return call;
+    }
+
+    // Normalize identifier to the left
+    if (right.is(Kind.IDENTIFIER)) {
+      // Swap terms and reverse operator 1>A → A<1
+      if (left.is(Kind.LITERAL)) {
+        System.out.println("Reverse literal to right");
+        return reverse(call);
+      }
+      // Swap terms and reverse operator B>A → A<B
+      if (left.is(Kind.IDENTIFIER)
+          && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+        System.out.println("Reverse identifier by name");
+        return reverse(call);
+      }
+    }
+
+    // Normalize operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      System.out.println("Reverse term by cost");
+      return reverse(call);
+    }
+
+    // If same cost order with textual representation
+    //    if (left.toString().compareTo(right.toString()) > 0) {
+    //      System.out.println("Reverse term by textual");
+    //      return reverse(call);
+    //    }
+
+    return call;
+  }
+
+  /**
+   * Swap the first and second operands and preserve type.
+   *
+   * @param call
+   * @return call
+   */
+  protected Call swap(final Call call) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    Call swaped = new Call(call.getOperator(), right, left);
+    swaped.inferReturnType();
+
+    return swaped;
+  }
+
+  /**
+   * Swap the first and second operands, reverse the operator and preserve type.
+   *
+   * @param call
+   * @return call
+   */
+  protected Call reverse(final Call call) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    Call reversed = new Call(call.getOperator().not(), right, left);
+    reversed.inferReturnType();
+
+    return reversed;
+  }
+
   protected Deque<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
     return getChainedOperands(call, new LinkedList<>(), predicate);
   }

@@ -209,8 +209,8 @@ public class Call implements IExpression {
     }
 
     Call call = (Call) o;
-    return this.type.equals(call.type)
-        && this.operator.equals(call.operator)
+    return this.operator.equals(call.operator)
+        && this.type.equals(call.type)
         && Arrays.equals(this.operands, call.operands);
   }
 

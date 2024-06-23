@@ -138,7 +138,7 @@ public class InOperator extends Operator {
     list.sort(Comparator.comparing(IExpression::getCost));
 
     // Rebuild tuple
-    call = new Call(this, call.getOperand(0), new Tuple(list));
+    call = new Call(this, call.getOperand(0), new Tuple(tuple.getType(), list));
     call.inferReturnType();
 
     return call;
