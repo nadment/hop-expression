@@ -106,7 +106,7 @@ public class EqualOperator extends BinaryOperator {
 
     // Simplify x=NULL → NULL
     if (left.isNull() || right.isNull()) {
-      return new Literal(null, Types.BOOLEAN);
+      return Literal.NULL_BOOLEAN;
     }
 
     // Simplify 3=X+1 → 3-1=X

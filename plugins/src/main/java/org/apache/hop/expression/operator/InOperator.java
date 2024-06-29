@@ -101,7 +101,7 @@ public class InOperator extends Operator {
 
     // NULL if left side expression is always NULL
     if (reference.isNull()) {
-      return new Literal(null, Types.BOOLEAN);
+      return Literal.NULL_BOOLEAN;
     }
 
     // Try to evaluate all operands to detect error like division by zero X IN (1,2,3/0)

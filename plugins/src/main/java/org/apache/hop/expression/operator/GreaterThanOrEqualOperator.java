@@ -83,7 +83,7 @@ public class GreaterThanOrEqualOperator extends BinaryOperator {
 
     // Simplify x>=NULL → NULL
     if (left.isNull() || right.isNull()) {
-      return new Literal(null, call.getType());
+      return Literal.NULL_BOOLEAN;
     }
 
     // Simplify if not nullable x>=x → TRUE

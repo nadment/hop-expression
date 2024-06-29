@@ -96,9 +96,7 @@ public class BoolAndOperator extends BinaryOperator {
         return Literal.FALSE;
       }
 
-      if (predicate.is(Kind.CALL)) {
-        Call term = predicate.asCall();
-
+      if (predicate instanceof Call term) {
         if (term.is(Operators.IS_NULL)) {
           nullTerms.add(term.getOperand(0));
         }

@@ -121,8 +121,8 @@ public class Types {
     Type result = null;
     for (IExpression operand : array) {
       Type type = operand.getType();
-      if (operand.is(Kind.ARRAY)) {
-        type = Types.getLeastRestrictive(operand.asArray());
+      if (operand instanceof Array child) {
+        type = Types.getLeastRestrictive(child);
       }
       result = Types.getLeastRestrictive(result, type);
     }
@@ -198,8 +198,8 @@ public class Types {
   public static Array coerceOperandType(final Array array, final Type type) {
     List<IExpression> list = new ArrayList<>();
     for (IExpression operand : array) {
-      if (operand.is(Kind.ARRAY)) {
-        operand = coerceOperandType(operand.asArray(), type);
+      if (operand instanceof Array child) {
+        operand = coerceOperandType(child, type);
       } else if (needToCast(operand, type)) {
         operand = cast(operand, type);
       }

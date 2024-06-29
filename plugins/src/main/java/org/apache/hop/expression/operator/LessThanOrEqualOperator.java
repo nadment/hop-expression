@@ -87,11 +87,11 @@ public class LessThanOrEqualOperator extends BinaryOperator {
     }
     // Simplify x<=NULL → NULL
     if (left.isNull() || right.isNull()) {
-      return new Literal(null, Types.BOOLEAN);
+      return Literal.NULL_BOOLEAN;
     }
     // Simplify x<=x → NVL2(x,TRUE,NULL)
     if (left.equals(right)) {
-      return new Call(Nvl2Function.INSTANCE, left, Literal.TRUE, new Literal(null, Types.BOOLEAN));
+      return new Call(Nvl2Function.INSTANCE, left, Literal.TRUE, Literal.NULL_BOOLEAN);
     }
 
     // Simplify only if x is data type boolean FALSE<=x → x IS NOT NULL

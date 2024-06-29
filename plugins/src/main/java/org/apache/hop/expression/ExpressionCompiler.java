@@ -16,9 +16,13 @@
  */
 package org.apache.hop.expression;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.type.ArrayType;
+import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
@@ -86,25 +90,50 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       // Evaluate if constant
       if (expression.isConstant()) {
         try {
-          Object constantValue = expression.getValue();
           Type constantType = expression.getType();
+          Object value = expression.getValue();
 
-          if (constantValue instanceof Array array) {
+          if (value instanceof Array array) {
             return array;
           }
 
           // Some operator don't known return type like JSON_VALUE.
           if (TypeId.ANY.equals(constantType.getId())) {
-            return Literal.of(constantValue);
+            if (value instanceof Boolean bool) {
+              return Literal.of(bool);
+            }
+            if (value instanceof Long number) {
+              return Literal.of(number);
+            }
+            if (value instanceof BigDecimal number) {
+              return Literal.of(number);
+            }
+            if (value instanceof String str) {
+              return Literal.of(str);
+            }
+            if (value instanceof ZonedDateTime datetime) {
+              return Literal.of(datetime);
+            }
+            if (value instanceof Interval interval) {
+              return Literal.of(interval);
+            }
+            if (value instanceof JsonNode json) {
+              return Literal.of(json);
+            }
+            if (value instanceof byte[] bytes) {
+              return Literal.of(bytes);
+            }
+
+            return call;
           } else
           // For CAST operator, it's important to return type
           if (expression.is(Operators.CAST)) {
-            constantValue = constantType.cast(constantValue);
+            value = constantType.cast(value);
           }
 
           changed = true;
 
-          return new Literal(constantValue, constantType);
+          return new Literal(value, constantType);
         } catch (Exception e) {
           // Ignore error like division by zero "X IN (1,3/0)" and continue
         }

@@ -467,7 +467,7 @@ public class ExpressionParser {
         token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(Types.JSON));
   }
 
-  /** Literal Json */
+  /** Literal Inet */
   private IExpression parseLiteralInet(Token token) throws ExpressionException {
     return new Call(
         token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(Types.INET));

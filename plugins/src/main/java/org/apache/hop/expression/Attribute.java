@@ -17,6 +17,7 @@ package org.apache.hop.expression;
 import java.time.ZonedDateTime;
 
 public enum Attribute {
+  //
   CURRENT_USER(String.class),
   //
   CURRENT_TIMEZONE(String.class),
@@ -32,9 +33,11 @@ public enum Attribute {
   }
 
   /** Returns the value of this attribute in a given context. */
-  @SuppressWarnings("unchecked")
-  public <T> T get(IExpressionContext context) {
-    // noinspection unchecked
-    return (T) clazz.cast(context.getAttribute(name()));
+  public String getString(IExpressionContext context) {
+    return (String) context.getAttribute(name());
+  }
+
+  public ZonedDateTime getDate(IExpressionContext context) {
+    return (ZonedDateTime) context.getAttribute(name());
   }
 }

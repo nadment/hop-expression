@@ -30,13 +30,24 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.BaseFormat;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /** Constant value in a expression. */
-public final class Literal implements IExpression {
+public class Literal implements IExpression {
 
   /** Literal null value without known data type */
   public static final Literal NULL = new Literal(null, Types.UNKNOWN);
+
+  public static final Literal NULL_BINARY = new Literal(null, Types.BINARY);
+  public static final Literal NULL_BOOLEAN = new Literal(null, Types.BOOLEAN);
+  public static final Literal NULL_STRING = new Literal(null, Types.STRING);
+  public static final Literal NULL_INTEGER = new Literal(null, Types.INTEGER);
+  public static final Literal NULL_NUMBER = new Literal(null, Types.NUMBER);
+  public static final Literal NULL_DATE = new Literal(null, Types.DATE);
+  public static final Literal NULL_JSON = new Literal(null, Types.JSON);
+  public static final Literal NULL_INET = new Literal(null, Types.INET);
+  public static final Literal NULL_INTERVAL = new Literal(null, Types.INTERVAL);
 
   /** Literal true value with boolean data type */
   public static final Literal TRUE = new Literal(Boolean.TRUE, Types.BOOLEAN_NOT_NULL);
@@ -50,65 +61,85 @@ public final class Literal implements IExpression {
   /** Literal 1 value with integer data type */
   public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
 
-  public static Literal of(final Object value) {
+  public static Literal of(final Boolean value) {
     if (value == null) return NULL;
+    return value ? TRUE : FALSE;
+  }
 
-    if (value instanceof Boolean bool) {
-      return bool ? TRUE : FALSE;
+  public static Literal of(final byte[] value) {
+    if (value == null) return NULL_BINARY;
+    return new Literal(value, BinaryType.from(value));
+  }
+
+  public static Literal of(final String value) {
+    if (value == null) return NULL_STRING;
+    return new Literal(value, StringType.from(value));
+  }
+
+  public static Literal of(final Integer value) {
+    if (value == null) return NULL_INTEGER;
+    if (value == 0) return ZERO;
+    if (value == 1) return ONE;
+    Long longValue = value.longValue();
+    return new Literal(longValue, IntegerType.from(longValue));
+  }
+
+  public static Literal of(final Long value) {
+    if (value == null) return NULL_INTEGER;
+    if (value == 0L) return ZERO;
+    if (value == 1L) return ONE;
+    return new Literal(value, IntegerType.from(value));
+  }
+
+  public static Literal of(final BigDecimal number) {
+    if (number == null) return NULL_BOOLEAN;
+
+    if (BigDecimal.ZERO.compareTo(number) == 0) {
+      return ZERO;
     }
-
-    if (value instanceof BigDecimal number) {
-      if (BigDecimal.ZERO.compareTo(number) == 0) {
-        return ZERO;
-      }
-      if (BigDecimal.ONE.compareTo(number) == 0) {
-        return ONE;
-      }
-      if (BigDecimalMath.isLongValue(number)) {
-        Long longValue = number.longValueExact();
-        return new Literal(longValue, IntegerType.from(longValue));
-      }
-      return new Literal(number, NumberType.from(number));
+    if (BigDecimal.ONE.compareTo(number) == 0) {
+      return ONE;
     }
-
-    if (value instanceof Long number) {
-      if (number == 0L) return ZERO;
-      if (number == 1L) return ONE;
-      return new Literal(number, IntegerType.from(number));
-    }
-
-    if (value instanceof Integer number) {
-      if (number == 0) return ZERO;
-      if (number == 1) return ONE;
-      Long longValue = number.longValue();
+    if (BigDecimalMath.isLongValue(number)) {
+      Long longValue = number.longValueExact();
       return new Literal(longValue, IntegerType.from(longValue));
     }
 
-    if (value instanceof String str) {
-      return new Literal(value, StringType.from(str));
-    }
+    return new Literal(number, NumberType.from(number));
+  }
 
-    if (value instanceof byte[] bytes) {
-      return new Literal(value, BinaryType.from(bytes));
-    }
+  public static Literal of(final Interval value) {
+    if (value == null) return NULL_INTERVAL;
+    return new Literal(value, Types.INTERVAL_NOT_NULL);
+  }
 
-    if (value instanceof ZonedDateTime) {
-      return new Literal(value, Types.DATE_NOT_NULL);
-    }
+  public static Literal of(final ZonedDateTime value) {
+    if (value == null) return NULL_DATE;
+    return new Literal(value, Types.DATE_NOT_NULL);
+  }
 
-    if (value instanceof Interval) {
-      return new Literal(value, Types.INTERVAL_NOT_NULL);
-    }
+  public static Literal of(final JsonNode value) {
+    if (value == null) return NULL_JSON;
+    return new Literal(value, Types.JSON_NOT_NULL);
+  }
 
-    if (value instanceof JsonNode) {
-      return new Literal(value, Types.JSON_NOT_NULL);
-    }
+  public static Literal of(final InetAddress value) {
+    if (value == null) return NULL_INET;
+    return new Literal(value, Types.INET_NOT_NULL);
+  }
 
-    if (value instanceof InetAddress) {
-      return new Literal(value, Types.INET_NOT_NULL);
-    }
+  public static Literal of(final Type value) {
+    if (value == null) return NULL;
+    return new Literal(value, Types.UNKNOWN);
+  }
 
-    // Special internal case TimeUnit, DataType
+  public static Literal of(final TimeUnit value) {
+    if (value == null) return NULL;
+    return new Literal(value, Types.UNKNOWN);
+  }
+
+  public static Literal of(final BaseFormat value) {
+    if (value == null) return NULL;
     return new Literal(value, Types.UNKNOWN);
   }
 

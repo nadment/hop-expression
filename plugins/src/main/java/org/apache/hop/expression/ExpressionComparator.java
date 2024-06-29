@@ -23,7 +23,7 @@ public class ExpressionComparator implements Comparator<IExpression> {
   }
 
   @Override
-  public int compare(IExpression e1, IExpression e2) {
+  public int compare(final IExpression e1, final IExpression e2) {
 
     // First order by cost
     if (e1.getCost() < e2.getCost()) return -1;

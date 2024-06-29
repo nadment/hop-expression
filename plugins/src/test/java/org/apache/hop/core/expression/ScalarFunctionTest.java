@@ -411,7 +411,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Current_Date() throws Exception {
     IExpressionContext context = createExpressionContext();
-    ZonedDateTime today = Attribute.CURRENT_DATE.get(context);
+    ZonedDateTime today = Attribute.CURRENT_DATE.getDate(context);
     evalEquals(context, "Today()", today).returnType(Types.DATE);
     evalEquals(context, "Current_Date()", today);
 
@@ -421,7 +421,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Current_Timestamp() throws Exception {
     IExpressionContext context = createExpressionContext();
-    ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.get(context);
+    ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.getDate(context);
     evalEquals(context, "Now()", today).returnType(Types.DATE);
     evalEquals(context, "Current_Timestamp()", today);
 
@@ -431,9 +431,9 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Current_TimeZone() throws Exception {
     TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
-    evalEquals("Current_Timezone()", "Europe/Paris").returnType(Types.STRING);
+    evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12));
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    evalEquals("Current_Timezone()", "UTC").returnType(Types.STRING);
+    evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3));
     evalFails("Current_Timezone(Null)");
   }
 

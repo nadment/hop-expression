@@ -27,7 +27,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.Types;
 
 /**
  * Bitwise XOR operator. <br>
@@ -70,7 +69,7 @@ public class BitXorFunction extends Function {
     // Simplify A ^ NULL → NULL
     // Simplify NULL ^ A → NULL
     if (left.isNull() || right.isNull()) {
-      return new Literal(null, Types.INTEGER);
+      return Literal.NULL_INTEGER;
     }
 
     // Simplify 0 ^ A → A (even if A is not nullable)

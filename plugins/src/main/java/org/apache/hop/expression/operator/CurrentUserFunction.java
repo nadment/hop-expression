@@ -43,6 +43,6 @@ public class CurrentUserFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return Literal.of(Attribute.CURRENT_USER.get(context));
+    return Literal.of(Attribute.CURRENT_USER.getString(context));
   }
 }

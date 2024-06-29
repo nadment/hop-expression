@@ -43,6 +43,6 @@ public class CurrentTimestampFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return Literal.of(Attribute.CURRENT_TIMESTAMP.get(context));
+    return Literal.of(Attribute.CURRENT_TIMESTAMP.getDate(context));
   }
 }
