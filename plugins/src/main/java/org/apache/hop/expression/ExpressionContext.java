@@ -29,10 +29,6 @@ public class ExpressionContext extends Variables implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
-  @Deprecated
-  @Variable(value = "1970", description = "Just to test deprecated")
-  public static final String EXPRESSION_TEST = "EXPRESSION_TEST";
-
   /**
    * This parameter prevents ambiguous dates when importing or converting data with the YY date
    * format.

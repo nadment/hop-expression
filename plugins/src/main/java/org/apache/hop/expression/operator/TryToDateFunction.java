@@ -35,8 +35,6 @@ import org.apache.hop.expression.util.DateTimeFormat;
 /** Converts a string expression to a date value. */
 @FunctionPlugin
 public class TryToDateFunction extends Function {
-  private static final TryToDateFunction IntegerTryToDateFunction = new IntegerTryToDateFunction();
-  private static final TryToDateFunction NumberTryToDateFunction = new NumberTryToDateFunction();
 
   public TryToDateFunction() {
     super(
@@ -54,10 +52,10 @@ public class TryToDateFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.is(TypeId.INTEGER)) {
-      return new Call(IntegerTryToDateFunction, call.getOperands());
+      return new Call(TryToDateInteger.INSTANCE, call.getOperands());
     }
     if (type.is(TypeId.NUMBER)) {
-      return new Call(NumberTryToDateFunction, call.getOperands());
+      return new Call(TryToDateNumber.INSTANCE, call.getOperands());
     }
 
     // String with specified format
@@ -72,13 +70,13 @@ public class TryToDateFunction extends Function {
     DateTimeFormat format = DateTimeFormat.of(pattern);
     format.setTwoDigitYearStart(twoDigitYearStart);
 
-    return new Call(new StringTryToDateFunction(format), call.getOperands());
+    return new Call(new TryToDateString(format), call.getOperands());
   }
 
-  private static final class StringTryToDateFunction extends TryToDateFunction {
+  private static final class TryToDateString extends TryToDateFunction {
     private final DateTimeFormat format;
 
-    public StringTryToDateFunction(DateTimeFormat format) {
+    public TryToDateString(DateTimeFormat format) {
       super();
       this.format = format;
     }
@@ -95,7 +93,9 @@ public class TryToDateFunction extends Function {
     }
   }
 
-  private static final class IntegerTryToDateFunction extends TryToDateFunction {
+  private static final class TryToDateInteger extends TryToDateFunction {
+    private static final TryToDateFunction INSTANCE = new TryToDateInteger();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -104,7 +104,9 @@ public class TryToDateFunction extends Function {
     }
   }
 
-  private static final class NumberTryToDateFunction extends TryToDateFunction {
+  private static final class TryToDateNumber extends TryToDateFunction {
+    private static final TryToDateFunction INSTANCE = new TryToDateNumber();
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);

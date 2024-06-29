@@ -68,12 +68,12 @@ public class ILikeOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, 0, 0);
     writer.append(" ILIKE ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, 0, 0);
     if (operands.length == 3) {
       writer.append(" ESCAPE ");
-      operands[2].unparse(writer);
+      operands[2].unparse(writer, 0, 0);
     }
   }
 }

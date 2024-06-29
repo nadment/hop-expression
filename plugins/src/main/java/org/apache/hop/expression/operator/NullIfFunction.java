@@ -31,6 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /** The function NULLIF */
 @FunctionPlugin
 public class NullIfFunction extends Function {
+  public static final Function INSTANCE = new NullIfFunction();
 
   public NullIfFunction() {
     super(

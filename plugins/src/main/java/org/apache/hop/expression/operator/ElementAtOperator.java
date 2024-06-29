@@ -93,9 +93,9 @@ public class ElementAtOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, 0, 0);
     writer.append('[');
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, 0, 0);
     writer.append(']');
   }
 }

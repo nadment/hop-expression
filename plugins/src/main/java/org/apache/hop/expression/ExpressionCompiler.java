@@ -42,7 +42,9 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
       // Check a maximum loop to avoid infinite loop
       if (loop++ > 1000) {
-        throw new ExpressionException(ErrorCode.INTERNAL_ERROR, expression);
+        throw new ExpressionException(
+            ErrorCode.INTERNAL_ERROR,
+            "compilation: Too many try for expression %1$s".formatted(expression));
       }
     } while (changed);
 

@@ -323,7 +323,7 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public void unparse(StringWriter writer) {
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0
         || ExpressionParser.isReservedWord(name)
@@ -363,7 +363,7 @@ public class Identifier implements IExpression {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    unparse(writer);
+    unparse(writer, 0, 0);
     return writer.toString();
   }
 }

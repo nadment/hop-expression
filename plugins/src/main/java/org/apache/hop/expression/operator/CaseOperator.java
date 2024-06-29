@@ -117,7 +117,7 @@ public class CaseOperator extends Operator {
 
         // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
         return new Call(
-            Operators.IF,
+            IfFunction.INSTANCE,
             new Call(Operators.EQUAL, call.getOperand(0), whenTerm.get(0)),
             thenTerm.get(0),
             elseTerm);
@@ -153,7 +153,7 @@ public class CaseOperator extends Operator {
 
         // CASE WHEN x IS NULL THEN y ELSE x END → IFNULL(x,y)
         if (whenTerm0.is(Operators.IS_NULL) && whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
-          return new Call(Operators.IFNULL, whenTerm0.asCall().getOperand(0), thenTerm0);
+          return new Call(IfNullFunction.INSTANCE, whenTerm0.asCall().getOperand(0), thenTerm0);
         }
 
         // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
@@ -161,14 +161,14 @@ public class CaseOperator extends Operator {
 
           if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
             return new Call(
-                Operators.NULLIF,
+                NullIfFunction.INSTANCE,
                 whenTerm0.asCall().getOperand(0),
                 whenTerm0.asCall().getOperand(1));
           }
 
           if (whenTerm0.asCall().getOperand(1).equals(elseTerm)) {
             return new Call(
-                Operators.NULLIF,
+                NullIfFunction.INSTANCE,
                 whenTerm0.asCall().getOperand(1),
                 whenTerm0.asCall().getOperand(0));
           }
@@ -176,12 +176,14 @@ public class CaseOperator extends Operator {
 
         // CASE WHEN x IS NOT NULL THEN y ELSE z END → NVL2(x,y,z)
         if (whenTerm0.is(Operators.IS_NOT_NULL)) {
-          return new Call(Operators.NVL2, whenTerm0.asCall().getOperand(0), thenTerm0, elseTerm);
+          return new Call(
+              Nvl2Function.INSTANCE, whenTerm0.asCall().getOperand(0), thenTerm0, elseTerm);
         }
 
         // CASE WHEN x IS NULL THEN y ELSE z END → NVL2(x,z,y)
         if (whenTerm0.is(Operators.IS_NULL)) {
-          return new Call(Operators.NVL2, whenTerm0.asCall().getOperand(0), elseTerm, thenTerm0);
+          return new Call(
+              Nvl2Function.INSTANCE, whenTerm0.asCall().getOperand(0), elseTerm, thenTerm0);
         }
 
         // CASE WHEN a=b THEN 1 END to CASE a WHEN b THEN 1 END
@@ -215,7 +217,7 @@ public class CaseOperator extends Operator {
     // Simple case
     if (when == When.SIMPLE) {
       writer.append(' ');
-      operands[0].unparse(writer);
+      operands[0].unparse(writer, 0, 0);
     }
 
     int index = 0;
@@ -225,16 +227,16 @@ public class CaseOperator extends Operator {
       writer.append(" WHEN ");
       if (whenOperand instanceof Tuple tuple) {
         tuple.unparseValues(writer);
-      } else whenOperand.unparse(writer);
+      } else whenOperand.unparse(writer, 0, 0);
       writer.append(" THEN ");
       IExpression thenOperand = thenTuple.get(index++);
-      thenOperand.unparse(writer);
+      thenOperand.unparse(writer, 0, 0);
     }
 
     IExpression elseOperand = operands[3];
     if (!elseOperand.isNull()) {
       writer.append(" ELSE ");
-      elseOperand.unparse(writer);
+      elseOperand.unparse(writer, 0, 0);
     }
     writer.append(" END");
   }

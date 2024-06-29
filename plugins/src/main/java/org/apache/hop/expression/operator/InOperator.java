@@ -211,7 +211,7 @@ public class InOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(not ? " NOT IN (" : " IN (");
     operands[1].asTuple().unparseValues(writer);
     writer.append(')');

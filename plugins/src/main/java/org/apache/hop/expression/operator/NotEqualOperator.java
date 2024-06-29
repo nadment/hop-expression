@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +31,7 @@ import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /** Comparison not equals operator '<code>!=</code>' or '<code><></code>'. */
-public class NotEqualOperator extends Operator {
+public class NotEqualOperator extends BinaryOperator {
 
   public NotEqualOperator(final String name) {
     super(
@@ -54,6 +53,11 @@ public class NotEqualOperator extends Operator {
   @Override
   public Operator not() {
     return Operators.EQUAL;
+  }
+
+  @Override
+  public Operator reverse() {
+    return Operators.NOT_EQUAL;
   }
 
   @Override
@@ -118,12 +122,5 @@ public class NotEqualOperator extends Operator {
   @Override
   public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append(getName());
-    operands[1].unparse(writer);
   }
 }

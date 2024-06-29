@@ -39,7 +39,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *   <li><code>NOT(field BETWEEN start AND end)</code>
  * </ul>
  */
-public class BoolNotOperator extends Operator {
+public class BoolNotOperator extends PrefixUnaryOperator {
 
   public BoolNotOperator() {
     super(
@@ -106,6 +106,6 @@ public class BoolNotOperator extends Operator {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("NOT ");
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

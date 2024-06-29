@@ -56,13 +56,13 @@ public abstract class Operator {
    * The precedence with which this operator binds to the expression to the left. This is less than
    * the right precedence if the operator is left-associative.
    */
-  private final int leftPrecedence;
+  private final int leftPrec;
 
   /**
    * The precedence with which this operator binds to the expression to the right. This is great
    * than the left precedence if the operator is left-associative.
    */
-  private final int rightPrecedence;
+  private final int rightPrec;
 
   /** Used to infer the return type of a call to this operator. */
   private final IReturnTypeInference returnTypeInference;
@@ -101,8 +101,8 @@ public abstract class Operator {
       String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id");
     this.name = Objects.requireNonNull(name, "name");
-    this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
-    this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
+    this.leftPrec = leftPrecedence(precedence, isLeftAssociative);
+    this.rightPrec = rightPrecedence(precedence, isLeftAssociative);
     this.returnTypeInference = Objects.requireNonNull(returnTypeInference, "return type inference");
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
@@ -154,12 +154,12 @@ public abstract class Operator {
     return name;
   }
 
-  public int getLeftPrecedence() {
-    return leftPrecedence;
+  public int getLeftPrec() {
+    return leftPrec;
   }
 
-  public int getRightPrecedence() {
-    return rightPrecedence;
+  public int getRightPrec() {
+    return rightPrec;
   }
 
   /**
@@ -253,6 +253,15 @@ public abstract class Operator {
    * <p>By default, returns {@code null}, which means there is no inverse operator.
    */
   public Operator not() {
+    return null;
+  }
+
+  /**
+   * Returns the operator that has the same effect as this operator if its arguments are reversed.
+   *
+   * <p>By default, returns {@code null}, which means there is no inverse operator.
+   */
+  public Operator reverse() {
     return null;
   }
 
@@ -364,7 +373,7 @@ public abstract class Operator {
    * Compile and optimize the call
    *
    * @param context The context against which the call will be compiled.
-   * @param call The call to compile
+   * @param call The call to compiled
    * @return compiled The compiled expression
    * @throws ExpressionException if an error occurs.
    */
@@ -384,12 +393,46 @@ public abstract class Operator {
     return id;
   }
 
+  protected Deque<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
+    return getChainedOperands(call, new LinkedList<>(), predicate);
+  }
+
+  private Deque<IExpression> getChainedOperands(
+      Call call, Deque<IExpression> operands, Predicate<IExpression> predicate) {
+    for (IExpression operand : call.getOperands()) {
+      if (operand.is(call.getOperator())) {
+        getChainedOperands(operand.asCall(), operands, predicate);
+      } else if (predicate.test(operand)) {
+        operands.push(operand);
+      }
+    }
+
+    return operands;
+  }
+
+  protected Deque<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
+    return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
+  }
+
+  private Deque<IExpression> getChainedOperands(
+      Call call, Deque<IExpression> operands, boolean allowDuplicate) {
+    for (IExpression operand : call.getOperands()) {
+      if (operand.is(call.getOperator())) {
+        getChainedOperands(operand.asCall(), operands, allowDuplicate);
+      } else if (allowDuplicate || !operands.contains(operand)) {
+        operands.push(operand);
+      }
+    }
+
+    return operands;
+  }
+
   /**
    * Normalize symmetrical operator
    *
    * <ul>
    *   <li>swap term to identifier operator literal 1=A → A=1
-   *   <li>ordering identifiers by name with case sensitive B=A → A=B
+   *   <li>ordering identifiers by name (case sensitive) B=A → A=B
    *   <li>ordering the low-cost operand to the left
    * </ul>
    *
@@ -460,20 +503,17 @@ public abstract class Operator {
     if (right.is(Kind.IDENTIFIER)) {
       // Swap terms and reverse operator 1>A → A<1
       if (left.is(Kind.LITERAL)) {
-        System.out.println("Reverse literal to right");
         return reverse(call);
       }
       // Swap terms and reverse operator B>A → A<B
       if (left.is(Kind.IDENTIFIER)
           && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-        System.out.println("Reverse identifier by name");
         return reverse(call);
       }
     }
 
     // Normalize operator by moving the low-cost operand to the left
     if (left.getCost() > right.getCost()) {
-      System.out.println("Reverse term by cost");
       return reverse(call);
     }
 
@@ -493,12 +533,8 @@ public abstract class Operator {
    * @return call
    */
   protected Call swap(final Call call) {
-    IExpression left = call.getOperand(0);
-    IExpression right = call.getOperand(1);
-
-    Call swaped = new Call(call.getOperator(), right, left);
+    Call swaped = new Call(call.getOperator(), call.getOperand(1), call.getOperand(0));
     swaped.inferReturnType();
-
     return swaped;
   }
 
@@ -509,47 +545,9 @@ public abstract class Operator {
    * @return call
    */
   protected Call reverse(final Call call) {
-    IExpression left = call.getOperand(0);
-    IExpression right = call.getOperand(1);
-
-    Call reversed = new Call(call.getOperator().not(), right, left);
-    reversed.inferReturnType();
-
-    return reversed;
-  }
-
-  protected Deque<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
-    return getChainedOperands(call, new LinkedList<>(), predicate);
-  }
-
-  private Deque<IExpression> getChainedOperands(
-      Call call, Deque<IExpression> operands, Predicate<IExpression> predicate) {
-    for (IExpression operand : call.getOperands()) {
-      if (operand.is(call.getOperator())) {
-        getChainedOperands(operand.asCall(), operands, predicate);
-      } else if (predicate.test(operand)) {
-        operands.push(operand);
-      }
-    }
-
-    return operands;
-  }
-
-  protected Deque<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
-    return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
-  }
-
-  private Deque<IExpression> getChainedOperands(
-      Call call, Deque<IExpression> operands, boolean allowDuplicate) {
-    for (IExpression operand : call.getOperands()) {
-      if (operand.is(call.getOperator())) {
-        getChainedOperands(operand.asCall(), operands, allowDuplicate);
-      } else if (allowDuplicate || !operands.contains(operand)) {
-        operands.push(operand);
-      }
-    }
-
-    return operands;
+    Call reverse = new Call(call.getOperator().reverse(), call.getOperand(1), call.getOperand(0));
+    reverse.inferReturnType();
+    return reverse;
   }
 
   protected static MethodHandle findMethodHandle(final Class<?> clazz, final String methodName) {

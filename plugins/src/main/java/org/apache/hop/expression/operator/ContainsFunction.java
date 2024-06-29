@@ -31,9 +31,7 @@ import org.apache.hop.expression.type.TypeFamily;
 /** Contains function */
 @FunctionPlugin
 public class ContainsFunction extends Function {
-
-  public static final ContainsFunction StringContainsFunction = new StringContainsFunction();
-  public static final ContainsFunction BinaryContainsFunction = new BinaryContainsFunction();
+  public static final Function INSTANCE = new ContainsFunction();
 
   public ContainsFunction() {
     super(
@@ -49,14 +47,16 @@ public class ContainsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(BinaryContainsFunction, call.getOperands());
+      return new Call(ContainsBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(StringContainsFunction, call.getOperands());
+    return new Call(ContainsString.INSTANCE, call.getOperands());
   }
 
   /** Contains string function */
-  private static final class StringContainsFunction extends ContainsFunction {
+  private static final class ContainsString extends ContainsFunction {
+    public static final ContainsFunction INSTANCE = new ContainsString();
+
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -72,7 +72,9 @@ public class ContainsFunction extends Function {
   }
 
   /** Contains binary function */
-  private static final class BinaryContainsFunction extends ContainsFunction {
+  private static final class ContainsBinary extends ContainsFunction {
+    public static final ContainsFunction INSTANCE = new ContainsBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);

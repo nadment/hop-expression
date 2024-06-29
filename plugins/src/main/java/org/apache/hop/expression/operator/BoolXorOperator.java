@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *   <li>NULL if one or both expressions are NULL.
  * </ul>
  */
-public class BoolXorOperator extends Operator {
+public class BoolXorOperator extends BinaryOperator {
 
   public BoolXorOperator() {
     super(
@@ -47,6 +47,11 @@ public class BoolXorOperator extends Operator {
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,
         "/docs/boolxor.html");
+  }
+
+  @Override
+  public Operator reverse() {
+    return this;
   }
 
   /** Simplifies XOR expressions whose answer can be determined without evaluating both sides. */
@@ -76,8 +81,8 @@ public class BoolXorOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" XOR ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

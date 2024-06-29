@@ -48,7 +48,7 @@ import org.apache.hop.expression.util.Pair;
  * <p>If any of the arguments are true, result is true; else if any arguments are null, result is
  * null; else false.
  */
-public class BoolOrOperator extends Operator {
+public class BoolOrOperator extends BinaryOperator {
 
   public BoolOrOperator() {
     super(
@@ -60,6 +60,11 @@ public class BoolOrOperator extends Operator {
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,
         "/docs/boolor.html");
+  }
+
+  @Override
+  public Operator reverse() {
+    return this;
   }
 
   /** Simplifies OR expressions whose answer can be determined without evaluating both sides. */
@@ -91,6 +96,11 @@ public class BoolOrOperator extends Operator {
       // TRUE as soon as any predicate is TRUE
       if (predicate == Literal.TRUE) {
         return Literal.TRUE;
+      }
+
+      // Simplify x OR FALSE → x
+      if (predicate == Literal.FALSE && predicates.size() > 1) {
+        predicates.remove(predicate);
       }
 
       if (predicate.is(Kind.IDENTIFIER)) {
@@ -280,8 +290,8 @@ public class BoolOrOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" OR ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

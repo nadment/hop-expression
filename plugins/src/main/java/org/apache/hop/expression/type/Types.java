@@ -153,7 +153,7 @@ public class Types {
    * @param call the call
    * @param commonType common type to coerce to
    */
-  protected static boolean coerceOperandsType(final Call call, final Type type) {
+  public static boolean coerceOperandsType(final Call call, final Type type) {
     boolean coerced = false;
     for (int index = 0; index < call.getOperandCount(); index++) {
       coerced |= coerceOperandType(call, type, index);
@@ -170,7 +170,7 @@ public class Types {
    *
    * <p>If the operand is a {@code Tuple}, coercion of all its members
    */
-  public static boolean coerceOperandType(Call call, final Type type, int index) {
+  public static boolean coerceOperandType(final Call call, final Type type, int index) {
 
     IExpression operand = call.getOperand(index);
 
@@ -195,7 +195,7 @@ public class Types {
     return true;
   }
 
-  public static Tuple coerceTupleOperandType(Tuple tuple, final Type type) {
+  public static Tuple coerceTupleOperandType(final Tuple tuple, final Type type) {
     List<IExpression> list = new ArrayList<>();
     for (IExpression operand : tuple) {
       if (operand.is(Kind.TUPLE)) {
@@ -255,7 +255,7 @@ public class Types {
     return expression.getType().getId().ordinal() < toType.getId().ordinal();
   }
 
-  /** Coerces operand of arithmetic expressions to Numeric type. */
+  /** Coerces the operands of a addition or subtract expression into numeric type. */
   public static boolean coercionArithmeticOperator(Call call) {
 
     Type left = call.getOperand(0).getType();
@@ -271,6 +271,42 @@ public class Types {
     if (isNumeric(left) && isString(right)) {
       return coerceOperandsType(call, NUMBER);
     }
+    // NUMBER <operator> INTEGER -> NUMBER
+    //    if (Types.isNumber(left) && Types.isInteger(right)) {
+    //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
+    //    }
+    //    // INTEGER <operator> NUMBER -> NUMBER
+    //    if (Types.isInteger(left) && Types.isNumber(right)) {
+    //      return Types.coerceOperandType(call, NumberType.of(left.getPrecision(), 0), 0);
+    //    }
+
+    return false;
+  }
+
+  /** Coerces the operands of a multiplication, division or modulo expression into numeric type. */
+  public static boolean coercionMultiplyOperator(Call call) {
+
+    Type left = call.getOperand(0).getType();
+    Type right = call.getOperand(1).getType();
+
+    if (left.getId() == right.getId()) return false;
+
+    // STRING <operator> numeric -> NUMBER
+    if (isString(left) && isNumeric(right)) {
+      return Types.coerceOperandType(call, NUMBER, 0);
+    }
+    // Numeric <operator> STRING -> NUMBER
+    if (isNumeric(left) && isString(right)) {
+      return Types.coerceOperandType(call, NUMBER, 1);
+    }
+    // NUMBER <operator> INTEGER -> NUMBER
+    //    if (Types.isNumber(left) && Types.isInteger(right)) {
+    //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
+    //    }
+    // INTEGER <operator> NUMBER -> NUMBER
+    //    if (Types.isInteger(left) && Types.isNumber(right)) {
+    //      return Types.coerceOperandType(call, NumberType.of(left.getPrecision(), 0), 0);
+    //    }
 
     return false;
   }

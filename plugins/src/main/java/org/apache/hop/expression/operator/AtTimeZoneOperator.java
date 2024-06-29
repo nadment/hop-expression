@@ -56,8 +56,8 @@ public class AtTimeZoneOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" AT TIME ZONE ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

@@ -29,15 +29,15 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
 
 /**
- * Comparison SIMILAR TO operator. <br>
- * <strong>Syntax:</strong> <code>'abc' SIMILAR TO 'regexp'</code>
+ * Comparison NOT SIMILAR TO operator. <br>
+ * <strong>Syntax:</strong> <code>'abc' NOT SIMILAR TO 'regexp'</code>
  */
-public class SimilarToOperator extends BinaryOperator {
+public class NotSimilarToOperator extends BinaryOperator {
 
-  public SimilarToOperator() {
+  public NotSimilarToOperator() {
     super(
-        "SIMILAR TO",
-        "SIMILAR TO",
+        "NOT SIMILAR TO",
+        "NOT SIMILAR TO",
         10,
         true,
         ReturnTypes.BOOLEAN_NULLABLE,
@@ -48,7 +48,7 @@ public class SimilarToOperator extends BinaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.NOT_SIMILAR_TO;
+    return Operators.SIMILAR_TO;
   }
 
   @Override
@@ -69,13 +69,13 @@ public class SimilarToOperator extends BinaryOperator {
 
     pattern = Regexp.toSimilarTo(pattern, '\\');
     Matcher matcher = Pattern.compile(pattern, Pattern.UNICODE_CASE).matcher(value);
-    return matcher.matches();
+    return !matcher.matches();
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
-    writer.append(" SIMILAR TO ");
+    writer.append(" NOT SIMILAR TO ");
     operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

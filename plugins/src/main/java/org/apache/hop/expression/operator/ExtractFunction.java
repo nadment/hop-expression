@@ -42,9 +42,6 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
-  public static final DateExtractFunction DateExtractFunction = new DateExtractFunction();
-  public static final IntervalExtractFunction IntervalExtractFunction =
-      new IntervalExtractFunction();
 
   public ExtractFunction() {
     super(
@@ -59,22 +56,23 @@ public class ExtractFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(1).getType();
     if (type.isFamily(TypeFamily.INTERVAL)) {
-      return new Call(IntervalExtractFunction, call.getOperands());
+      return new Call(ExtractInterval.INSTANCE, call.getOperands());
     }
-    return new Call(DateExtractFunction, call.getOperands());
+    return new Call(ExtractDate.INSTANCE, call.getOperands());
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("EXTRACT(");
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, 0, 0);
     writer.append(" FROM ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, 0, 0);
     writer.append(')');
   }
 
   /** Extracts the specified date or time part from a date, time, or timestamp. */
-  private static final class DateExtractFunction extends ExtractFunction {
+  private static final class ExtractDate extends ExtractFunction {
+    public static final ExtractDate INSTANCE = new ExtractDate();
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
@@ -102,7 +100,8 @@ public class ExtractFunction extends Function {
   }
 
   /** Extracts the specified time unit from a interval. */
-  private static final class IntervalExtractFunction extends ExtractFunction {
+  private static final class ExtractInterval extends ExtractFunction {
+    public static final ExtractInterval INSTANCE = new ExtractInterval();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -29,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *
  * @see {@link IsNotTrueOperator}
  */
-public class IsTrueOperator extends Operator {
+public class IsTrueOperator extends PostfixUnaryOperator {
 
   public IsTrueOperator() {
     super(
@@ -53,11 +52,5 @@ public class IsTrueOperator extends Operator {
 
     // NULL is never TRUE
     return value == Boolean.TRUE;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append(" IS TRUE");
   }
 }

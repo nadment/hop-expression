@@ -33,8 +33,6 @@ import org.apache.hop.expression.type.TypeFamily;
 /** String or binary concatenation function with separator */
 @FunctionPlugin
 public class ConcatWsFunction extends Function {
-  public static final ConcatWsFunction StringConcatWsFunction = new StringConcatWsFunction();
-  public static final ConcatWsFunction BinaryConcatWsFunction = new BinaryConcatWsFunction();
 
   public ConcatWsFunction() {
     super(
@@ -50,14 +48,15 @@ public class ConcatWsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(BinaryConcatWsFunction, call.getOperands());
+      return new Call(ConcatWsBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(StringConcatWsFunction, call.getOperands());
+    return new Call(ConcatWsString.INSTANCE, call.getOperands());
   }
 
   /** String concatenation function with separator */
-  private static final class StringConcatWsFunction extends ConcatWsFunction {
+  private static final class ConcatWsString extends ConcatWsFunction {
+    public static final ConcatWsFunction INSTANCE = new ConcatWsString();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -83,7 +82,9 @@ public class ConcatWsFunction extends Function {
   }
 
   /** Binary concatenation function with separator */
-  private static final class BinaryConcatWsFunction extends ConcatWsFunction {
+  private static final class ConcatWsBinary extends ConcatWsFunction {
+    public static final ConcatWsFunction INSTANCE = new ConcatWsBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
 

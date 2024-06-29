@@ -73,10 +73,10 @@ public class CountFunction extends AggregateFunction {
         break;
       case DISTINCT:
         writer.append("DISTINCT ");
-        operands[0].unparse(writer);
+        operands[0].unparse(writer, 0, 0);
         break;
       case VALUE:
-        operands[0].unparse(writer);
+        operands[0].unparse(writer, 0, 0);
         break;
     }
     writer.append(')');

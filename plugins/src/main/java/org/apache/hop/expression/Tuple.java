@@ -129,12 +129,12 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    unparse(writer);
+    unparse(writer, 0, 0);
     return writer.toString();
   }
 
   @Override
-  public void unparse(StringWriter writer) {
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append("ARRAY[");
     this.unparseValues(writer);
     writer.append(']');
@@ -152,7 +152,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
       else {
         writer.append(',');
       }
-      expression.unparse(writer);
+      expression.unparse(writer, 0, 0);
     }
   }
 

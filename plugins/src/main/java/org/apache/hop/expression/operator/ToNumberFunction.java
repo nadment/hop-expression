@@ -34,7 +34,6 @@ import org.apache.hop.expression.util.NumberFormat;
 /** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
 public class ToNumberFunction extends Function {
-  private static final ToNumberFunction DateToNumberFunction = new DateToNumberFunction();
 
   public ToNumberFunction() {
     super(
@@ -51,7 +50,7 @@ public class ToNumberFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeId.DATE)) {
-      return new Call(DateToNumberFunction, call.getOperands());
+      return new Call(ToNumberDate.INSTANCE, call.getOperands());
     }
 
     String pattern = "TM";
@@ -62,13 +61,13 @@ public class ToNumberFunction extends Function {
 
     // Compile format to check it
     NumberFormat format = NumberFormat.of(pattern);
-    return new Call(new StringToNumberFunction(format), call.getOperands());
+    return new Call(new ToNumberString(format), call.getOperands());
   }
 
-  private static final class StringToNumberFunction extends ToNumberFunction {
+  private static final class ToNumberString extends ToNumberFunction {
     private final NumberFormat format;
 
-    public StringToNumberFunction(NumberFormat format) {
+    public ToNumberString(NumberFormat format) {
       super();
       this.format = format;
     }
@@ -81,7 +80,9 @@ public class ToNumberFunction extends Function {
     }
   }
 
-  private static final class DateToNumberFunction extends ToNumberFunction {
+  private static final class ToNumberDate extends ToNumberFunction {
+    private static final ToNumberFunction INSTANCE = new ToNumberDate();
+
     @Override
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);

@@ -34,9 +34,6 @@ import org.apache.hop.expression.type.TypeId;
 /** Returns the absolute (positive) value of the numeric or interval value. */
 @FunctionPlugin
 public class AbsFunction extends Function {
-  public static final AbsFunction IntegerAbsFunction = new IntegerAbsFunction();
-  public static final AbsFunction NumberAbsFunction = new NumberAbsFunction();
-  public static final AbsFunction IntervalAbsFunction = new IntervalAbsFunction();
 
   public AbsFunction() {
     super(
@@ -57,19 +54,21 @@ public class AbsFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.is(TypeId.INTERVAL)) {
-      return new Call(IntervalAbsFunction, call.getOperands());
+      return new Call(AbsInterval.INSTANCE, call.getOperands());
     }
 
     if (type.is(TypeId.INTEGER)) {
-      return new Call(IntegerAbsFunction, call.getOperands());
+      return new Call(AbsInteger.INSTANCE, call.getOperands());
     }
 
     // If type Number or String
-    return new Call(NumberAbsFunction, call.getOperands());
+    return new Call(AbsNumber.INSTANCE, call.getOperands());
   }
 
   /** Returns the absolute value of the integer value. */
-  private static final class IntegerAbsFunction extends AbsFunction {
+  private static final class AbsInteger extends AbsFunction {
+    public static final AbsFunction INSTANCE = new AbsInteger();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -80,7 +79,9 @@ public class AbsFunction extends Function {
   }
 
   /** Returns the absolute value of the number value. */
-  private static final class NumberAbsFunction extends AbsFunction {
+  private static final class AbsNumber extends AbsFunction {
+    public static final AbsFunction INSTANCE = new AbsNumber();
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
@@ -91,7 +92,9 @@ public class AbsFunction extends Function {
   }
 
   /** Returns the absolute value of the interval value. */
-  private static final class IntervalAbsFunction extends AbsFunction {
+  private static final class AbsInterval extends AbsFunction {
+    public static final AbsFunction INSTANCE = new AbsInterval();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Interval value = operands[0].getValue(Interval.class);

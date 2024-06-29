@@ -36,7 +36,6 @@ import org.apache.hop.expression.util.NumberParseException;
 /** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
 public class TryToNumberFunction extends Function {
-  private static final TryToNumberFunction DateTryToNumberFunction = new DateTryToNumberFunction();
 
   public TryToNumberFunction() {
     super(
@@ -53,7 +52,7 @@ public class TryToNumberFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeId.DATE)) {
-      return new Call(DateTryToNumberFunction, call.getOperands());
+      return new Call(TryToNumberDate.INSTANCE, call.getOperands());
     }
 
     String pattern = "TM";
@@ -64,13 +63,13 @@ public class TryToNumberFunction extends Function {
 
     // Compile format to check it
     NumberFormat format = NumberFormat.of(pattern);
-    return new Call(new StringTryToNumberFunction(format), call.getOperands());
+    return new Call(new TryToNumberString(format), call.getOperands());
   }
 
-  private static final class StringTryToNumberFunction extends TryToNumberFunction {
+  private static final class TryToNumberString extends TryToNumberFunction {
     private final NumberFormat format;
 
-    public StringTryToNumberFunction(NumberFormat format) {
+    public TryToNumberString(NumberFormat format) {
       super();
       this.format = format;
     }
@@ -88,7 +87,9 @@ public class TryToNumberFunction extends Function {
     }
   }
 
-  private static final class DateTryToNumberFunction extends TryToNumberFunction {
+  private static final class TryToNumberDate extends TryToNumberFunction {
+    private static final TryToNumberFunction INSTANCE = new TryToNumberDate();
+
     @Override
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);

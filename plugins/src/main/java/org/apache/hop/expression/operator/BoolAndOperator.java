@@ -50,7 +50,7 @@ import org.apache.hop.expression.util.Pair;
  * <p>If any of the arguments are false, result is false; else if any arguments are null, result is
  * null; else true.
  */
-public class BoolAndOperator extends Operator {
+public class BoolAndOperator extends BinaryOperator {
 
   public BoolAndOperator() {
     super(
@@ -62,6 +62,11 @@ public class BoolAndOperator extends Operator {
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,
         "/docs/booland.html");
+  }
+
+  @Override
+  public Operator reverse() {
+    return this;
   }
 
   /** Simplifies AND expressions whose answer can be determined without evaluating both sides. */
@@ -253,8 +258,8 @@ public class BoolAndOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" AND ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

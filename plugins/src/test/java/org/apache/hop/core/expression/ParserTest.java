@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 public class ParserTest extends ExpressionTest {
 
   @Test
-  public void ReservedWords() throws Exception {
+  public void reservedWords() throws Exception {
     assertTrue(ExpressionParser.isReservedWord("BETWEEN"));
     assertFalse(ExpressionParser.isReservedWord("XXX"));
     assertFalse(ExpressionParser.isReservedWord(null));
@@ -48,13 +48,13 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void NullSource() throws Exception {
+  public void sourceNullSource() throws Exception {
     ExpressionParser parser = new ExpressionParser(null);
     assertNull(parser.getSource());
   }
 
   @Test
-  public void EmptyOrNull() throws Exception {
+  public void sourceEmptyOrNull() throws Exception {
     // Empty source return NULL
     evalNull("");
     evalNull(" ");
@@ -65,7 +65,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void Comment() throws Exception {
+  public void sourceComment() throws Exception {
     evalTrue(" // Test line comment \n  true ");
     evalTrue(" /* Test block comment */  true ");
     evalTrue(" true /* Test block comment */");
@@ -102,20 +102,20 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void Tab() throws Exception {
+  public void sourceTab() throws Exception {
     evalTrue(" \n\tTrue");
     evalTrue(" \nTrue\t\r");
   }
 
   @Test
-  public void CarriageReturnAndLineFeed() throws Exception {
+  public void sourceCarriageReturnAndLineFeed() throws Exception {
     evalTrue(" \rTrue");
     evalTrue(" \n\tTrue");
     evalTrue(" \nTrue\n\r");
   }
 
   @Test
-  public void Array() throws Exception {
+  public void array() throws Exception {
     // Empty array
     optimize("ARRAY[]");
 
@@ -132,24 +132,24 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void ArrayElementAt() throws Exception {
+  public void arrayElementAt() throws Exception {
     evalEquals("ARRAY['A','B','C'][1]", "A").returnType(StringType.of(1));
     evalEquals("ARRAY[1,4,8][2]", 4L).returnType(IntegerType.of(1));
   }
 
   @Test
-  public void OperatorComparator() throws Exception {
+  public void operatorComparator() throws Exception {
     // Primary operator first and alias last
     OperatorComparator comparator = new OperatorComparator();
     assertTrue(comparator.compare(Operators.CONCAT, new ConcatFunction()) > 0);
   }
 
   @Test
-  public void Operator() throws Exception {
+  public void operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
     assertEquals(Operators.CONCAT, new ConcatFunction("||"));
-    assertEquals(51, Operators.MULTIPLY.getLeftPrecedence());
-    assertEquals(50, Operators.MULTIPLY.getRightPrecedence());
+    assertEquals(51, Operators.MULTIPLY.getLeftPrec());
+    assertEquals(50, Operators.MULTIPLY.getRightPrec());
     assertEquals("CONCAT", Operators.CONCAT.toString());
     assertNotEquals(Operators.CONCAT, Operators.EQUAL);
     assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
@@ -162,19 +162,62 @@ public class ParserTest extends ExpressionTest {
     assertNotNull(Operators.CONCAT.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
-
     assertNotEquals(Operators.IN, Operators.NOT_IN);
     assertNotEquals(Operators.SIMILAR_TO, Operators.NOT_SIMILAR_TO);
   }
 
   @Test
-  public void OperatorSymmetrical() throws Exception {
+  public void operatorNot() throws Exception {
+    assertEquals(Operators.IS_NOT_NULL, Operators.IS_NULL.not());
+    assertEquals(Operators.IS_NULL, Operators.IS_NOT_NULL.not());
+    assertEquals(Operators.IS_NOT_TRUE, Operators.IS_TRUE.not());
+    assertEquals(Operators.IS_TRUE, Operators.IS_NOT_TRUE.not());
+    assertEquals(Operators.IS_NOT_FALSE, Operators.IS_FALSE.not());
+    assertEquals(Operators.IS_FALSE, Operators.IS_NOT_FALSE.not());
+    assertEquals(Operators.EQUAL, Operators.NOT_EQUAL.not());
+    assertEquals(Operators.NOT_EQUAL, Operators.EQUAL.not());
+    assertEquals(Operators.LESS_THAN, Operators.GREATER_THAN_OR_EQUAL.not());
+    assertEquals(Operators.LESS_THAN_OR_EQUAL, Operators.GREATER_THAN.not());
+    assertEquals(Operators.GREATER_THAN, Operators.LESS_THAN_OR_EQUAL.not());
+    assertEquals(Operators.GREATER_THAN_OR_EQUAL, Operators.LESS_THAN.not());
+    assertEquals(Operators.IS_DISTINCT_FROM, Operators.IS_NOT_DISTINCT_FROM.not());
+    assertEquals(Operators.IS_NOT_DISTINCT_FROM, Operators.IS_DISTINCT_FROM.not());
+    assertEquals(Operators.SIMILAR_TO, Operators.NOT_SIMILAR_TO.not());
+    assertEquals(Operators.NOT_SIMILAR_TO, Operators.SIMILAR_TO.not());
+  }
+
+  @Test
+  public void operatorReverse() throws Exception {
+    assertEquals(Operators.EQUAL, Operators.EQUAL.reverse());
+    assertEquals(Operators.NOT_EQUAL, Operators.NOT_EQUAL.reverse());
+    assertEquals(Operators.LESS_THAN_OR_EQUAL, Operators.GREATER_THAN_OR_EQUAL.reverse());
+    assertEquals(Operators.LESS_THAN, Operators.GREATER_THAN.reverse());
+    assertEquals(Operators.GREATER_THAN_OR_EQUAL, Operators.LESS_THAN_OR_EQUAL.reverse());
+    assertEquals(Operators.GREATER_THAN, Operators.LESS_THAN.reverse());
+    assertEquals(Operators.IS_DISTINCT_FROM, Operators.IS_DISTINCT_FROM.reverse());
+    assertEquals(Operators.IS_NOT_DISTINCT_FROM, Operators.IS_NOT_DISTINCT_FROM.reverse());
+    assertEquals(Operators.MULTIPLY, Operators.MULTIPLY.reverse());
+    assertEquals(Operators.BOOLAND, Operators.BOOLAND.reverse());
+    assertEquals(Operators.BOOLOR, Operators.BOOLOR.reverse());
+    assertEquals(Operators.BOOLXOR, Operators.BOOLXOR.reverse());
+  }
+
+  @Test
+  public void operatorSymmetrical() throws Exception {
     assertTrue(Operators.BOOLAND.isSymmetrical());
     assertTrue(Operators.BOOLOR.isSymmetrical());
     assertTrue(Operators.BOOLXOR.isSymmetrical());
     assertTrue(Operators.MULTIPLY.isSymmetrical());
     assertTrue(Operators.EQUAL.isSymmetrical());
     assertTrue(Operators.NOT_EQUAL.isSymmetrical());
+    assertTrue(Operators.IS_DISTINCT_FROM.isSymmetrical());
+    assertTrue(Operators.IS_NOT_DISTINCT_FROM.isSymmetrical());
+    assertTrue(FunctionRegistry.getFunction("EQUAL_NULL").isSymmetrical());
+    assertTrue(FunctionRegistry.getFunction("BIT_AND").isSymmetrical());
+    assertTrue(FunctionRegistry.getFunction("BIT_OR").isSymmetrical());
+    assertTrue(FunctionRegistry.getFunction("BIT_XOR").isSymmetrical());
+    assertTrue(FunctionRegistry.getFunction("GREATEST").isSymmetrical());
+    assertTrue(FunctionRegistry.getFunction("LEAST").isSymmetrical());
   }
 
   @Test
@@ -192,11 +235,9 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void precedenceAndAssociativity() throws Exception {
+  public void operatorPrecedenceAndAssociativity() throws Exception {
 
     // Arithmetic
-    evalEquals("3*5/2", 3 * 5 / 2d);
-    evalEquals("9/3*3", 9L / 3L * 3L);
     evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5L);
     evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
     evalEquals("10*2+1", 21L);
@@ -208,6 +249,11 @@ public class ParserTest extends ExpressionTest {
     evalEquals("42%(3+2)", 2L);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0L);
+
+    // Operators with the same precedence and adjacent, respect associativity without parenthesis
+    evalEquals("3*5/2", 3 * 5 / 2d);
+    evalEquals("9/3*3", 9L / 3L * 3L);
+    evalEquals("-10*2/4+1", -10L * 2L / 4L + 1L);
 
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
@@ -237,7 +283,15 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void SyntaxError() throws Exception {
+  public void unparse() throws Exception {
+    optimize("4*(2+FIELD_INTEGER)", "4*(2+FIELD_INTEGER)");
+    optimize("-FIELD_INTEGER::NUMBER", "-CAST(FIELD_INTEGER AS NUMBER)");
+    optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*FIELD_INTEGER/2");
+    optimize("((FIELD_INTEGER > 5) AND FALSE) OR (FIELD_INTEGER < 10)", "FIELD_INTEGER<10");
+  }
+
+  @Test
+  public void syntaxError() throws Exception {
 
     // Single quote for string
     evalFails("'T'||'T");
@@ -276,6 +330,7 @@ public class ParserTest extends ExpressionTest {
     evalFails("TRUE AND");
     evalFails("FIELD_BOOLEAN_TRUE IS ");
     evalFails("FIELD_BOOLEAN_TRUE IS MONTH");
+    evalFails("FIELD_BOOLEAN_TRUE NOT IS NULL");
     evalFails("IS ");
     evalFails("IS AND");
 
@@ -298,7 +353,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void DataType() throws Exception {
+  public void dataType() throws Exception {
     evalEquals("Cast(123 as InTeGeR)", 123L);
     evalEquals("Cast(123 as STRING(3))", "123");
 

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -33,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *
  * @see {@link IstNullOperator}
  */
-public class IsNotNullOperator extends Operator {
+public class IsNotNullOperator extends PostfixUnaryOperator {
 
   public IsNotNullOperator() {
     super(
@@ -72,11 +71,5 @@ public class IsNotNullOperator extends Operator {
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     return value != null;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append(" IS NOT NULL");
   }
 }

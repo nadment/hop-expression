@@ -16,8 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionComparator;
@@ -37,10 +38,7 @@ import org.apache.hop.expression.type.Types;
  * Arithmetic multiply operator. <br>
  * <strong>Syntax:</strong> <code>x * y</code>
  */
-public class MultiplyOperator extends Operator {
-
-  private static final MultiplyOperator IntegerMultiplyOperator = new IntegerMultiplyOperator();
-  private static final MultiplyOperator NumberMultiplyOperator = new NumberMultiplyOperator();
+public class MultiplyOperator extends BinaryOperator {
 
   public MultiplyOperator() {
     super(
@@ -55,59 +53,108 @@ public class MultiplyOperator extends Operator {
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+  public Operator reverse() {
+    return this;
+  }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Reorder chained symmetric operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
     operands.addAll(this.getChainedOperands(call, true));
-    IExpression operand = operands.poll();
-    while (!operands.isEmpty()) {
-      call = new Call(this, operand, operands.poll());
-      call.inferReturnType();
-      operand = call;
-    }
-    call = operand.asCall();
 
-    IExpression left = call.getOperand(0);
-    IExpression right = call.getOperand(1);
+    final List<IExpression> zeroTerms = new ArrayList<>();
+    final List<IExpression> oneTerms = new ArrayList<>();
+    final List<IExpression> constantTerms = new ArrayList<>();
+    final List<IExpression> nullableTerms = new ArrayList<>();
+    final List<Call> divideTerms = new ArrayList<>();
+    final List<Call> negateTerms = new ArrayList<>();
 
-    // Simplify NULL * A → NULL
-    if (left.isNull()) {
-      return Literal.NULL;
+    for (IExpression operand : operands) {
+
+      // NULL as soon any operand is NULL
+      if (operand.isNull()) {
+        return Literal.NULL;
+      }
+      if (Literal.ZERO.equals(operand)) {
+        zeroTerms.add(operand);
+      }
+      if (Literal.ONE.equals(operand)) {
+        oneTerms.add(operand);
+      }
+      if (operand.isConstant()) {
+        constantTerms.add(operand);
+      }
+      if (operand.getType().isNullable()) {
+        nullableTerms.add(operand);
+      }
+      if (operand.is(Operators.NEGATE)) {
+        negateTerms.add(operand.asCall());
+      }
+      if (operand.is(Operators.DIVIDE)) {
+        divideTerms.add(operand.asCall());
+      }
     }
 
     // Simplify arithmetic 0 * A → 0 (if A is not nullable)
-    if (Literal.ZERO.equals(left) && !right.getType().isNullable()) {
+    if (!zeroTerms.isEmpty() && nullableTerms.isEmpty()) {
       return Literal.ZERO;
     }
 
     // Simplify arithmetic 1 * A → A
-    if (Literal.ONE.equals(left)) {
-      return right;
+    if (!oneTerms.isEmpty()) {
+      // operands.removeAll(oneTerms);
+      for (IExpression term : oneTerms) {
+        if (operands.size() > 1) {
+          operands.remove(term);
+        }
+      }
     }
 
     // Simplify arithmetic (-A) * (-B) → A * B
-    if (left.is(Operators.NEGATE) && right.is(Operators.NEGATE)) {
-      return new Call(
-          Operators.MULTIPLY, left.asCall().getOperand(0), right.asCall().getOperand(0));
+    int negateCount = negateTerms.size();
+    if (negateCount > 1) {
+      // Remove all negate if pair else Keep one negate
+      int i = negateCount % 2;
+      for (Call term : negateTerms) {
+        if (i <= 0) {
+          operands.add(term.getOperand(0));
+          operands.remove(term);
+          i--;
+        }
+      }
     }
 
     // Simplify arithmetic A * (1 / B) → A / B
-    if (right.is(Operators.DIVIDE) && Literal.ONE.equals(right.asCall().getOperand(0))) {
-      return new Call(Operators.DIVIDE, left, right.asCall().getOperand(1));
+    for (Call term : divideTerms) {
+      if (Literal.ONE.equals(term.getOperand(0))) {
+        operands.remove(term);
+        operands.add(term.getOperand(1));
+      }
     }
 
-    // Simplify arithmetic A * A → SQUARE(A)
-    if (left.equals(right)) {
-      return new Call(SquareFunction.INSTANCE, left);
+    // Rebuild chain
+    if (operands.size() == 1) {
+      return operands.peek();
     }
 
-    // Optimize data type
-    if (call.getType().is(TypeId.INTEGER)) {
-      return new Call(IntegerMultiplyOperator, call.getOperands());
-    }
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {
+      call = new Call(Operators.MULTIPLY, operand, operands.poll());
+      call.inferReturnType();
 
-    return new Call(NumberMultiplyOperator, call.getOperands());
+      // Optimize data type
+      if (call.getType().is(TypeId.INTEGER)) {
+        call.setOperator(MultiplyInteger.INSTANCE);
+      } else {
+        call.setOperator(MultiplyNumber.INSTANCE);
+      }
+
+      operand = call;
+    }
+    call = operand.asCall();
+
+    return call;
   }
 
   @Override
@@ -117,17 +164,12 @@ public class MultiplyOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionArithmeticOperator(call);
+    return Types.coercionMultiplyOperator(call);
   }
 
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append('*');
-    operands[1].unparse(writer);
-  }
+  private static final class MultiplyInteger extends MultiplyOperator {
+    private static final MultiplyOperator INSTANCE = new MultiplyInteger();
 
-  private static final class IntegerMultiplyOperator extends MultiplyOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
@@ -139,7 +181,9 @@ public class MultiplyOperator extends Operator {
     }
   }
 
-  private static final class NumberMultiplyOperator extends MultiplyOperator {
+  private static final class MultiplyNumber extends MultiplyOperator {
+    private static final MultiplyOperator INSTANCE = new MultiplyNumber();
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);

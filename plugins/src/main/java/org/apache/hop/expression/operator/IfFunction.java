@@ -36,6 +36,8 @@ import org.apache.hop.expression.type.Type;
 @FunctionPlugin
 public class IfFunction extends Function {
 
+  public static final Function INSTANCE = new IfFunction();
+
   public IfFunction() {
     super(
         "IF",
@@ -63,30 +65,38 @@ public class IfFunction extends Function {
     if (condition.is(Operators.IS_NULL)) {
       // IF(x IS NULL,y,x) → IFNULL(x, y)
       if (call.getOperand(2).equals(condition.asCall().getOperand(0))) {
-        return new Call(Operators.IFNULL, call.getOperand(2), call.getOperand(1));
+        return new Call(IfNullFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       }
 
       // IF(x IS NULL,y,z) → NVL2(x, z, y)
       return new Call(
-          Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(2), call.getOperand(1));
+          Nvl2Function.INSTANCE,
+          condition.asCall().getOperand(0),
+          call.getOperand(2),
+          call.getOperand(1));
     }
 
     if (condition.is(Operators.IS_NOT_NULL)) {
       // IF(x IS NOT NULL,y,z) → NVL2(x,y,z)
       return new Call(
-          Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(1), call.getOperand(2));
+          Nvl2Function.INSTANCE,
+          condition.asCall().getOperand(0),
+          call.getOperand(1),
+          call.getOperand(2));
     }
 
     if (condition.is(Operators.EQUAL) && call.getOperand(1).isNull()) {
 
       // IF(x=y,NULL,x) → NULLIF(x, y)
       if (condition.asCall().getOperand(0).equals(call.getOperand(2))) {
-        return new Call(Operators.NULLIF, call.getOperand(2), condition.asCall().getOperand(1));
+        return new Call(
+            NullIfFunction.INSTANCE, call.getOperand(2), condition.asCall().getOperand(1));
       }
 
       // IF(x=y,NULL,y) → NULLIF(y, x)
       if (condition.asCall().getOperand(1).equals(call.getOperand(2))) {
-        return new Call(Operators.NULLIF, call.getOperand(2), condition.asCall().getOperand(0));
+        return new Call(
+            NullIfFunction.INSTANCE, call.getOperand(2), condition.asCall().getOperand(0));
       }
     }
 

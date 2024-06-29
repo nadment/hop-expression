@@ -148,6 +148,15 @@ public interface IExpression {
   /**
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.
+   *
+   * <p>The <code>leftPrec</code> and <code>rightPrec</code> parameters give us enough context to
+   * decide whether we need to enclose the expression in parentheses. For example, we need
+   * parentheses around "2 + 3" if preceded by "5 *". This is because the precedence of the "*"
+   * operator is greater than the precedence of the "+" operator.
+   *
+   * @param writer Target writer
+   * @param leftPrec The precedence of the {@link IExpression} immediately preceding
+   * @param rightPrec The precedence of the {@link IExpression} immediately
    */
-  public void unparse(StringWriter writer);
+  public void unparse(final StringWriter writer, int leftPrec, int rightPrec);
 }

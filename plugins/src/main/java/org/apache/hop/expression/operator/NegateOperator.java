@@ -23,7 +23,6 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Interval;
@@ -34,10 +33,7 @@ import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 
 /** Prefix arithmetic minus (negative) operator '<code>-</code>' for numeric or interval. */
-public class NegateOperator extends Operator {
-  private static final NegateOperator IntervalNegateOperator = new IntervalNegateOperator();
-  private static final NegateOperator IntegerNegateOperator = new IntegerNegateOperator();
-  private static final NegateOperator NumberNegateOperator = new NumberNegateOperator();
+public class NegateOperator extends PrefixUnaryOperator {
 
   public NegateOperator() {
     super(
@@ -62,7 +58,7 @@ public class NegateOperator extends Operator {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.INTERVAL)) {
-      return new Call(call.getPosition(), IntervalNegateOperator, call.getOperands());
+      return new Call(call.getPosition(), NegateInterval.INSTANCE, call.getOperands());
     }
 
     // Simplify arithmetic -(A-B) → B-A
@@ -71,9 +67,9 @@ public class NegateOperator extends Operator {
       return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
     }
 
-    NegateOperator operator = NumberNegateOperator;
+    NegateOperator operator = NegateNumber.INSTANCE;
     if (type.is(TypeId.INTEGER)) {
-      operator = IntegerNegateOperator;
+      operator = NegateInteger.INSTANCE;
     }
 
     return new Call(call.getPosition(), operator, call.getOperands());
@@ -82,10 +78,12 @@ public class NegateOperator extends Operator {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append('-');
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
   }
 
-  private static final class IntegerNegateOperator extends NegateOperator {
+  private static final class NegateInteger extends NegateOperator {
+    private static final NegateOperator INSTANCE = new NegateInteger();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -98,7 +96,9 @@ public class NegateOperator extends Operator {
     }
   }
 
-  private static final class NumberNegateOperator extends NegateOperator {
+  private static final class NegateNumber extends NegateOperator {
+    private static final NegateOperator INSTANCE = new NegateNumber();
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
@@ -107,7 +107,9 @@ public class NegateOperator extends Operator {
     }
   }
 
-  private static final class IntervalNegateOperator extends NegateOperator {
+  private static final class NegateInterval extends NegateOperator {
+    private static final NegateOperator INSTANCE = new NegateInterval();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Interval interval = operands[0].getValue(Interval.class);

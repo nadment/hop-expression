@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
@@ -24,7 +23,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Interval;
@@ -38,11 +36,7 @@ import org.apache.hop.expression.type.Types;
  * Generic subtraction operator. <br>
  * <strong>Syntax:</strong> <code>x - y</code>
  */
-public class SubtractOperator extends Operator {
-  private static final SubtractOperator IntegerSubtractOperator = new IntegerSubtractOperator();
-  private static final SubtractOperator NumberSubtractOperator = new NumberSubtractOperator();
-  private static final SubtractOperator IntervalSubtractOperator = new IntervalSubtractOperator();
-
+public class SubtractOperator extends BinaryOperator {
   public SubtractOperator() {
     super(
         "SUBTRACT",
@@ -69,7 +63,7 @@ public class SubtractOperator extends Operator {
         return new Call(
             AddDaysFunction.INSTANCE, left, new Call(call.getPosition(), Operators.NEGATE, right));
       }
-      return new Call(IntervalSubtractOperator, call.getOperands());
+      return new Call(SubtractInterval.INSTANCE, call.getOperands());
     }
 
     // Simplify arithmetic A-0 → A
@@ -89,20 +83,15 @@ public class SubtractOperator extends Operator {
 
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER)) {
-      return new Call(IntegerSubtractOperator, call.getOperands());
+      return new Call(SubtractInteger.INSTANCE, call.getOperands());
     }
 
-    return new Call(NumberSubtractOperator, call.getOperands());
+    return new Call(SubtractNumber.INSTANCE, call.getOperands());
   }
 
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append('-');
-    operands[1].unparse(writer);
-  }
+  private static final class SubtractInteger extends SubtractOperator {
+    private static final SubtractOperator INSTANCE = new SubtractInteger();
 
-  private static final class IntegerSubtractOperator extends SubtractOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
@@ -114,7 +103,9 @@ public class SubtractOperator extends Operator {
     }
   }
 
-  private static final class NumberSubtractOperator extends SubtractOperator {
+  private static final class SubtractNumber extends SubtractOperator {
+    private static final SubtractOperator INSTANCE = new SubtractNumber();
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);
@@ -132,7 +123,8 @@ public class SubtractOperator extends Operator {
   }
 
   /** Subtracts a specified interval to a date or timestamp */
-  public static final class IntervalSubtractOperator extends SubtractOperator {
+  public static final class SubtractInterval extends SubtractOperator {
+    private static final SubtractOperator INSTANCE = new SubtractInterval();
 
     @Override
     public Object eval(final IExpression[] operands) {

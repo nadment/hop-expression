@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *
  * @see {@link IsNotNullOperator}
  */
-public class IsNullOperator extends Operator {
+public class IsNullOperator extends PostfixUnaryOperator {
 
   public IsNullOperator() {
     super(
@@ -71,7 +71,7 @@ public class IsNullOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" IS NULL");
   }
 }

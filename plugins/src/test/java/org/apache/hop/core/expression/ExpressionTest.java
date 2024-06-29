@@ -33,6 +33,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 import org.apache.hop.core.HopClientEnvironment;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
@@ -178,6 +179,7 @@ public class ExpressionTest {
     if (withData) {
       Calendar calendar = Calendar.getInstance();
       calendar.set(1981, 5, 23);
+      calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 
       Object[] row = new Object[37];
       row[0] = "TEST";
@@ -435,6 +437,12 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+    evalNull("NULL_INTEGER*1*1");
+
+    optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*FIELD_INTEGER/2");
+
+    // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
+
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

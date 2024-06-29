@@ -91,25 +91,25 @@ public class LikeOperator extends Operator {
       // field LIKE '%' → IFNULL(field,NULL,TRUE)
       if ("%".equals(pattern)) {
         // return new Call(Operators.EQUAL, value, value);
-        return new Call(Operators.NVL2, value, Literal.TRUE, Literal.NULL);
+        return new Call(Nvl2Function.INSTANCE, value, Literal.TRUE, Literal.NULL);
       }
 
       // field LIKE '%foo%' → CONTAINS(field,'foo')
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(ContainsFunction.StringContainsFunction, value, Literal.of(search));
+        return new Call(ContainsFunction.INSTANCE, value, Literal.of(search));
       }
 
       // field LIKE 'foo%' → STARTSWITH(field,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(StartsWithFunction.StringStartsWithFunction, value, Literal.of(search));
+        return new Call(StartsWithFunction.INSTANCE, value, Literal.of(search));
       }
 
       // field LIKE '%foo' → ENDSWITH(field,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(EndsWithFunction.StringEndsWithFunction, value, Literal.of(search));
+        return new Call(EndsWithFunction.INSTANCE, value, Literal.of(search));
       }
 
       // field LIKE 'Hello' → field='Hello'
@@ -149,12 +149,12 @@ public class LikeOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" LIKE ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
     if (operands.length == 3) {
       writer.append(" ESCAPE ");
-      operands[2].unparse(writer);
+      operands[2].unparse(writer, getLeftPrec(), getRightPrec());
     }
   }
 }

@@ -35,10 +35,11 @@ import org.apache.hop.expression.type.ReturnTypes;
  *
  * @see {@link IsNotDistinctFromOperator}
  */
-public class IsDistinctFromOperator extends Operator {
+public class IsDistinctFromOperator extends BinaryOperator {
 
   public IsDistinctFromOperator() {
     super(
+        "IS DISTINCT FROM",
         "IS DISTINCT FROM",
         10,
         true,
@@ -51,6 +52,15 @@ public class IsDistinctFromOperator extends Operator {
   @Override
   public Operator not() {
     return Operators.IS_NOT_DISTINCT_FROM;
+  }
+
+  public Operator reverse() {
+    return this;
+  }
+
+  @Override
+  public boolean isSymmetrical() {
+    return true;
   }
 
   @Override
@@ -85,8 +95,8 @@ public class IsDistinctFromOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" IS DISTINCT FROM ");
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.PriorityQueue;
@@ -26,7 +25,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Interval;
@@ -40,10 +38,7 @@ import org.apache.hop.expression.type.Types;
  * Generic addition operator. <br>
  * <strong>Syntax:</strong> <code>x + y</code>
  */
-public class AddOperator extends Operator {
-  private static final AddOperator IntervalAddOperator = new IntervalAddOperator();
-  private static final AddOperator IntegerAddOperator = new IntegerAddOperator();
-  private static final AddOperator NumberAddOperator = new NumberAddOperator();
+public class AddOperator extends BinaryOperator {
 
   public AddOperator() {
     super(
@@ -72,11 +67,11 @@ public class AddOperator extends Operator {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
       }
 
-      return new Call(call.getPosition(), IntervalAddOperator, call.getOperands());
+      return new Call(call.getPosition(), IntervalAddOperator.INSTANCE, call.getOperands());
     } else if (left.getType().isFamily(TypeFamily.INTERVAL)) {
       // Normalize operands order DATE+INTERVAL
       return new Call(
-          call.getPosition(), IntervalAddOperator, call.getOperand(1), call.getOperand(0));
+          call.getPosition(), IntervalAddOperator.INSTANCE, call.getOperand(1), call.getOperand(0));
     }
 
     // Rebuild chained operator
@@ -101,20 +96,15 @@ public class AddOperator extends Operator {
 
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER)) {
-      return new Call(IntegerAddOperator, call.getOperands());
+      return new Call(IntegerAddOperator.INSTANCE, call.getOperands());
     }
 
-    return new Call(call.getPosition(), NumberAddOperator, call.getOperands());
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append('+');
-    operands[1].unparse(writer);
+    return new Call(call.getPosition(), NumberAddOperator.INSTANCE, call.getOperands());
   }
 
   private static final class IntegerAddOperator extends AddOperator {
+    private static final AddOperator INSTANCE = new IntegerAddOperator();
+
     @Override
     public boolean isSymmetrical() {
       return true;
@@ -137,6 +127,8 @@ public class AddOperator extends Operator {
   }
 
   private static final class NumberAddOperator extends AddOperator {
+
+    private static final AddOperator INSTANCE = new NumberAddOperator();
 
     @Override
     public boolean isSymmetrical() {
@@ -161,6 +153,7 @@ public class AddOperator extends Operator {
 
   /** Adds a specified interval to a date or timestamp */
   private static final class IntervalAddOperator extends AddOperator {
+    private static final AddOperator INSTANCE = new IntervalAddOperator();
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

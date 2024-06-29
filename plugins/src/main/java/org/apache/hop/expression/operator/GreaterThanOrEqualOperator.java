@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +31,7 @@ import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /** Comparison greater than or equal operator '<code>&gt;=</code>'. */
-public class GreaterThanOrEqualOperator extends Operator {
+public class GreaterThanOrEqualOperator extends BinaryOperator {
 
   public GreaterThanOrEqualOperator() {
     super(
@@ -48,6 +47,11 @@ public class GreaterThanOrEqualOperator extends Operator {
 
   @Override
   public Operator not() {
+    return Operators.LESS_THAN;
+  }
+
+  @Override
+  public Operator reverse() {
     return Operators.LESS_THAN_OR_EQUAL;
   }
 
@@ -111,12 +115,5 @@ public class GreaterThanOrEqualOperator extends Operator {
   @Override
   public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append(">=");
-    operands[1].unparse(writer);
   }
 }

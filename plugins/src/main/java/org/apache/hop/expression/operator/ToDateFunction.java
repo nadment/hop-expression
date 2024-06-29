@@ -38,8 +38,6 @@ import org.apache.hop.expression.util.DateTimeFormat;
  */
 @FunctionPlugin
 public class ToDateFunction extends Function {
-  private static final ToDateFunction IntegerToDateFunction = new IntegerToDateFunction();
-  private static final ToDateFunction NumberToDateFunction = new NumberToDateFunction();
 
   public ToDateFunction() {
     super(
@@ -56,10 +54,10 @@ public class ToDateFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.is(TypeId.INTEGER)) {
-      return new Call(IntegerToDateFunction, call.getOperands());
+      return new Call(ToDateInteger.INSTANCE, call.getOperands());
     }
     if (type.is(TypeId.NUMBER)) {
-      return new Call(NumberToDateFunction, call.getOperands());
+      return new Call(ToDateNumber.INSTANCE, call.getOperands());
     }
 
     // String with specified format
@@ -74,13 +72,13 @@ public class ToDateFunction extends Function {
     DateTimeFormat format = DateTimeFormat.of(pattern);
     format.setTwoDigitYearStart(twoDigitYearStart);
 
-    return new Call(new StringToDateFunction(format), call.getOperands());
+    return new Call(new ToDateString(format), call.getOperands());
   }
 
-  private static final class StringToDateFunction extends ToDateFunction {
+  private static final class ToDateString extends ToDateFunction {
     private final DateTimeFormat format;
 
-    public StringToDateFunction(DateTimeFormat format) {
+    public ToDateString(DateTimeFormat format) {
       super();
       this.format = format;
     }
@@ -93,7 +91,9 @@ public class ToDateFunction extends Function {
     }
   }
 
-  private static final class IntegerToDateFunction extends ToDateFunction {
+  private static final class ToDateInteger extends ToDateFunction {
+    private static final ToDateInteger INSTANCE = new ToDateInteger();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -102,7 +102,9 @@ public class ToDateFunction extends Function {
     }
   }
 
-  private static final class NumberToDateFunction extends ToDateFunction {
+  private static final class ToDateNumber extends ToDateFunction {
+    private static final ToDateFunction INSTANCE = new ToDateNumber();
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);

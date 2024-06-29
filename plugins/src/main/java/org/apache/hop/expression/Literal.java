@@ -153,11 +153,6 @@ public final class Literal implements IExpression {
     return type;
   }
 
-  public Class<?> getJavaClass() {
-    if (value == null) return Void.class;
-    return value.getClass();
-  }
-
   @Override
   public int hashCode() {
     return Objects.hash(value, type);
@@ -187,12 +182,12 @@ public final class Literal implements IExpression {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    unparse(writer);
+    unparse(writer, 0, 0);
     return writer.toString();
   }
 
   @Override
-  public void unparse(final StringWriter writer) {
+  public void unparse(final StringWriter writer, int leftPrec, int rightPrec) {
 
     if (value == null) {
       writer.append("NULL");

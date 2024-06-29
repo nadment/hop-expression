@@ -46,6 +46,11 @@ public class LeastFunction extends Function {
   }
 
   @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+
+  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return call;
   }
@@ -60,7 +65,7 @@ public class LeastFunction extends Function {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.getValue();
-      // null is always smaller
+      // Null is always smaller
       if (value == null) continue;
       if (result == null || Comparison.compare(value, result) < 0) {
         result = value;

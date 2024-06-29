@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -37,7 +36,7 @@ import org.apache.hop.expression.type.Types;
  *
  * <p>NULL is not equal ( = ) to anything—not even to another NULL.
  */
-public class EqualOperator extends Operator {
+public class EqualOperator extends BinaryOperator {
 
   public EqualOperator() {
     super(
@@ -59,6 +58,11 @@ public class EqualOperator extends Operator {
   @Override
   public Operator not() {
     return Operators.NOT_EQUAL;
+  }
+
+  @Override
+  public Operator reverse() {
+    return Operators.EQUAL;
   }
 
   @Override
@@ -119,12 +123,5 @@ public class EqualOperator extends Operator {
   @Override
   public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append('=');
-    operands[1].unparse(writer);
   }
 }

@@ -16,41 +16,39 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.IOperandTypeChecker;
+import org.apache.hop.expression.type.IReturnTypeInference;
 
-/**
- * An operator describing the <code>IS NOT TRUE</code> operator.
- *
- * @see {@link IsTrueOperator}
- */
-public class IsNotTrueOperator extends PostfixUnaryOperator {
+/** Postfix unary operator, as in "x is null". */
+public abstract class PrefixUnaryOperator extends Operator {
 
-  public IsNotTrueOperator() {
+  public PrefixUnaryOperator(
+      String id,
+      String name,
+      int precedence,
+      boolean isLeftAssociative,
+      IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker,
+      String category,
+      String documentationUrl) {
     super(
-        "IS NOT TRUE",
-        140,
-        true,
-        ReturnTypes.BOOLEAN_NOT_NULL,
-        OperandTypes.BOOLEAN,
-        OperatorCategory.COMPARISON,
-        "/docs/is-true.html");
+        id,
+        name,
+        precedence,
+        isLeftAssociative,
+        returnTypeInference,
+        operandTypeChecker,
+        category,
+        documentationUrl);
   }
 
   @Override
-  public Operator not() {
-    return Operators.IS_TRUE;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Boolean value = operands[0].getValue(Boolean.class);
-
-    // NULL is always NOT TRUE
-    return value != Boolean.TRUE;
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append(getName());
+    writer.append(' ');
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

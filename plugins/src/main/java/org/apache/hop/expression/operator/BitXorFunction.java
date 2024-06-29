@@ -58,6 +58,11 @@ public class BitXorFunction extends Function {
   }
 
   @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+
+  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
@@ -94,8 +99,8 @@ public class BitXorFunction extends Function {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, 0, 0);
     writer.append('^');
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, 0, 0);
   }
 }

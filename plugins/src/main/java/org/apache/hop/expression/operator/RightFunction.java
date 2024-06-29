@@ -34,8 +34,6 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class RightFunction extends Function {
-  public static final RightFunction StringRightFunction = new StringRightFunction();
-  public static final RightFunction BinaryRightFunction = new BinaryRightFunction();
 
   public RightFunction() {
     super(
@@ -51,14 +49,16 @@ public class RightFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(BinaryRightFunction, call.getOperands());
+      return new Call(RightBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(StringRightFunction, call.getOperands());
+    return new Call(RightString.INSTANCE, call.getOperands());
   }
 
   /** The function extracts a number of characters from a string (starting from right) */
-  private static final class StringRightFunction extends RightFunction {
+  private static final class RightString extends RightFunction {
+    public static final RightFunction INSTANCE = new RightString();
+
     @Override
     public Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
@@ -79,7 +79,9 @@ public class RightFunction extends Function {
   }
 
   /** The function extracts a number of bytes from a binary (starting from right) */
-  private static final class BinaryRightFunction extends RightFunction {
+  private static final class RightBinary extends RightFunction {
+    public static final RightFunction INSTANCE = new RightBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);

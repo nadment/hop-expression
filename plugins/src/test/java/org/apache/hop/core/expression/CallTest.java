@@ -108,13 +108,22 @@ public class CallTest extends ExpressionTest {
   }
 
   @Test
-  public void orderIdentifierByName() throws Exception {
+  public void normalizeReversibleOperator() throws Exception {
 
-    // Order identifiers by name with symmetrical operator
+    // Normalize identifiers by name
+    optimize(
+        "FIELD_STRING_NUMBER<FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER>FIELD_STRING_NUMBER");
+    optimize(
+        "FIELD_STRING_NUMBER<=FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER>=FIELD_STRING_NUMBER");
+  }
+
+  @Test
+  public void normalizeSymmetricalOperator() throws Exception {
+
+    // Normalize identifiers by name
     optimize(
         "FIELD_STRING_NUMBER+FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER+FIELD_STRING_NUMBER");
-    optimize(
-        "FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
+
     optimize(
         "FIELD_BOOLEAN_TRUE AND FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE AND FIELD_BOOLEAN_TRUE");
     optimize(
@@ -123,13 +132,15 @@ public class CallTest extends ExpressionTest {
     optimize(
         "EQUAL_NULL(FIELD_BOOLEAN_TRUE,FIELD_BOOLEAN_FALSE)",
         "EQUAL_NULL(FIELD_BOOLEAN_FALSE,FIELD_BOOLEAN_TRUE)");
-  }
 
-  @Test
-  public void orderOperandByCost() throws Exception {
-
-    // Order operands by cost with symmetrical operator
+    // Normalize operands by cost
     optimize("1+FIELD_NUMBER+3", "4+FIELD_NUMBER");
+
+    optimize("FIELD_NUMBER>3 AND TRUE", "TRUE AND FIELD_NUMBER>3");
+
+    // Coerce operands
     optimize("2*FIELD_STRING_NUMBER*3", "6*CAST(FIELD_STRING_NUMBER AS NUMBER)");
+    optimize(
+        "FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
   }
 }

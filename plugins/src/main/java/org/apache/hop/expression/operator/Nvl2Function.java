@@ -30,6 +30,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class Nvl2Function extends Function {
 
+  public static final Function INSTANCE = new Nvl2Function();
+
   public Nvl2Function() {
     super(
         "NVL2",

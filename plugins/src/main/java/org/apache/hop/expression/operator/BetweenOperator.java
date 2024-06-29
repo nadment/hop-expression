@@ -115,13 +115,13 @@ public class BetweenOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" BETWEEN ");
     if (between == Between.SYMMETRIC) {
       writer.append("SYMMETRIC ");
     }
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" AND ");
-    operands[2].unparse(writer);
+    operands[2].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

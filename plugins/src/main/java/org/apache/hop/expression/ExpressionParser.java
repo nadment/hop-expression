@@ -319,6 +319,11 @@ public class ExpressionParser {
       } else {
         expression = new Call(getPosition(), Operators.LIKE, expression, pattern);
       }
+
+      if (not) {
+        return new Call(Operators.BOOLNOT, expression);
+      }
+      return expression;
     } else if (isThenNext(Id.ILIKE)) {
       IExpression pattern = this.parseBitwiseOr();
 
@@ -328,6 +333,11 @@ public class ExpressionParser {
       } else {
         expression = new Call(getPosition(), Operators.ILIKE, expression, pattern);
       }
+
+      if (not) {
+        return new Call(Operators.BOOLNOT, expression);
+      }
+      return expression;
     } else if (isThenNext(Id.IN)) {
       return new Call(
           getPosition(), not ? Operators.NOT_IN : Operators.IN, expression, this.parseTuple());
@@ -347,9 +357,12 @@ public class ExpressionParser {
       IExpression end = this.parseBitwiseOr();
 
       expression = new Call(getPosition(), operator, expression, start, end);
-    }
 
-    if (isThenNext(Id.SIMILAR)) {
+      if (not) {
+        return new Call(Operators.BOOLNOT, expression);
+      }
+      return expression;
+    } else if (isThenNext(Id.SIMILAR)) {
       if (isThenNext(Id.TO)) {
         return new Call(
             getPosition(),
@@ -362,7 +375,7 @@ public class ExpressionParser {
     }
 
     if (not) {
-      return new Call(Operators.BOOLNOT, expression);
+      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.NOT);
     }
 
     return expression;

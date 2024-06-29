@@ -36,8 +36,7 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class EndsWithFunction extends Function {
-  public static final EndsWithFunction StringEndsWithFunction = new StringEndsWithFunction();
-  public static final EndsWithFunction BinaryEndsWithFunction = new BinaryEndsWithFunction();
+  public static final Function INSTANCE = new EndsWithFunction();
 
   public EndsWithFunction() {
     super(
@@ -53,17 +52,19 @@ public class EndsWithFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(BinaryEndsWithFunction, call.getOperands());
+      return new Call(EndsWithBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(StringEndsWithFunction, call.getOperands());
+    return new Call(EndsWithString.INSTANCE, call.getOperands());
   }
 
   /**
    * The function returns TRUE if the first value ends with second value. Both values must be data
    * type of string.
    */
-  private static final class StringEndsWithFunction extends EndsWithFunction {
+  private static final class EndsWithString extends EndsWithFunction {
+    public static final EndsWithFunction INSTANCE = new EndsWithString();
+
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -79,7 +80,8 @@ public class EndsWithFunction extends Function {
    * The function returns TRUE if the first value ends with second value. Both values must be data
    * type of binary.
    */
-  private static final class BinaryEndsWithFunction extends EndsWithFunction {
+  private static final class EndsWithBinary extends EndsWithFunction {
+    public static final EndsWithFunction INSTANCE = new EndsWithBinary();
 
     @Override
     public Object eval(final IExpression[] operands) {

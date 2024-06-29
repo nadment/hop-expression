@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +31,7 @@ import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /** Comparison less than or equal operator '<code>&lt;=</code>'. */
-public class LessThanOrEqualOperator extends Operator {
+public class LessThanOrEqualOperator extends BinaryOperator {
 
   public LessThanOrEqualOperator() {
     super(
@@ -48,6 +47,11 @@ public class LessThanOrEqualOperator extends Operator {
 
   @Override
   public Operator not() {
+    return Operators.GREATER_THAN;
+  }
+
+  @Override
+  public Operator reverse() {
     return Operators.GREATER_THAN_OR_EQUAL;
   }
 
@@ -87,7 +91,7 @@ public class LessThanOrEqualOperator extends Operator {
     }
     // Simplify x<=x → NVL2(x,TRUE,NULL)
     if (left.equals(right)) {
-      return new Call(Operators.NVL2, left, Literal.TRUE, new Literal(null, Types.BOOLEAN));
+      return new Call(Nvl2Function.INSTANCE, left, Literal.TRUE, new Literal(null, Types.BOOLEAN));
     }
 
     // Simplify only if x is data type boolean FALSE<=x → x IS NOT NULL
@@ -113,12 +117,5 @@ public class LessThanOrEqualOperator extends Operator {
   @Override
   public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append("<=");
-    operands[1].unparse(writer);
   }
 }

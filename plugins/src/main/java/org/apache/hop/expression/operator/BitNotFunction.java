@@ -79,6 +79,6 @@ public class BitNotFunction extends Function {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append('~');
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, 0, 0);
   }
 }

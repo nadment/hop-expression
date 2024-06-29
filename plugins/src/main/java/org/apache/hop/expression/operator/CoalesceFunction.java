@@ -27,7 +27,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -39,6 +38,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class CoalesceFunction extends Function {
+
+  public static final Function INSTANCE = new CoalesceFunction();
 
   public CoalesceFunction() {
     super(
@@ -69,7 +70,7 @@ public class CoalesceFunction extends Function {
       }
 
       // Flatten chained COALESCE or IFNULL but keep order
-      if (operand.is(Operators.IFNULL) || operand.is(Operators.COALESCE)) {
+      if (operand.is(IfNullFunction.INSTANCE) || operand.is(CoalesceFunction.INSTANCE)) {
         operands.addAll(Arrays.asList(operand.asCall().getOperands()));
       } else {
         operands.add(operand);
@@ -82,14 +83,14 @@ public class CoalesceFunction extends Function {
       case 1: // COALESCE(X) → X
         return operands.get(0);
       case 2: // COALESCE(X,Y) → IFNULL(X,Y)
-        return new Call(Operators.IFNULL, operands);
+        return new Call(IfNullFunction.INSTANCE, operands);
       default:
         // First is literal COALESCE(1, a, b) → 1
         if (operands.get(0).isConstant()) {
           return operands.get(0);
         }
 
-        return new Call(Operators.COALESCE, operands);
+        return new Call(CoalesceFunction.INSTANCE, operands);
     }
   }
 }

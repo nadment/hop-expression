@@ -44,6 +44,11 @@ public class GreatestFunction extends Function {
   }
 
   @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+
+  @Override
   public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);
   }

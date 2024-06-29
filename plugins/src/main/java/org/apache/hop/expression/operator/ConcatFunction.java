@@ -36,9 +36,6 @@ import org.apache.hop.expression.type.TypeFamily;
 /** String or binary concatenation operator '<code>||</code>' */
 @FunctionPlugin
 public class ConcatFunction extends Function {
-  public static final ConcatFunction StringConcatFunction = new StringConcatFunction();
-  public static final ConcatFunction BinaryConcatFunction = new BinaryConcatFunction();
-  public static final ConcatFunction ArrayConcatFunction = new ArrayConcatFunction();
 
   // Function
   public ConcatFunction() {
@@ -86,12 +83,12 @@ public class ConcatFunction extends Function {
       case 1: // Concat(X) → X
         return operands.get(0);
       default:
-        Operator operator = StringConcatFunction;
+        Operator operator = ConcatString.INSTANCE;
         if (type != null) {
           if (type.isFamily(TypeFamily.ARRAY)) {
-            operator = ArrayConcatFunction;
+            operator = ConcatArray.INSTANCE;
           } else if (type.isFamily(TypeFamily.BINARY)) {
-            operator = BinaryConcatFunction;
+            operator = ConcatBinary.INSTANCE;
           }
         }
         return new Call(operator, operands);
@@ -104,12 +101,14 @@ public class ConcatFunction extends Function {
     for (IExpression operand : operands) {
       if (concatFirst) concatFirst = false;
       else writer.append("||");
-      operand.unparse(writer);
+      operand.unparse(writer, 0, 0);
     }
   }
 
   /** String concatenation */
-  private static final class StringConcatFunction extends ConcatFunction {
+  private static final class ConcatString extends ConcatFunction {
+    public static final ConcatFunction INSTANCE = new ConcatString();
+
     @Override
     public Object eval(final IExpression[] operands) {
 
@@ -135,7 +134,9 @@ public class ConcatFunction extends Function {
   }
 
   /** Binary concatenation */
-  private static final class BinaryConcatFunction extends ConcatFunction {
+  private static final class ConcatBinary extends ConcatFunction {
+    public static final ConcatFunction INSTANCE = new ConcatBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
       byte[][] values = new byte[operands.length][];
@@ -164,7 +165,9 @@ public class ConcatFunction extends Function {
   }
 
   /** Array concatenation */
-  private static final class ArrayConcatFunction extends ConcatFunction {
+  private static final class ConcatArray extends ConcatFunction {
+    public static final ConcatFunction INSTANCE = new ConcatArray();
+
     @Override
     public Object eval(final IExpression[] operands) {
       Tuple tuple0 = operands[0].asTuple();

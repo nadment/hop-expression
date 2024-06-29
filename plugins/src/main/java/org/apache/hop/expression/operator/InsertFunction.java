@@ -36,9 +36,6 @@ import org.apache.hop.expression.type.TypeFamily;
 @FunctionPlugin
 public class InsertFunction extends Function {
 
-  public static final InsertFunction InsertStringFunction = new InsertStringFunction();
-  public static final InsertFunction InsertBinaryFunction = new InsertBinaryFunction();
-
   public InsertFunction() {
     super(
         "INSERT",
@@ -54,10 +51,10 @@ public class InsertFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.isFamily(TypeFamily.STRING)) {
-      return new Call(InsertStringFunction, call.getOperands());
+      return new Call(InsertString.INSTANCE, call.getOperands());
     }
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(InsertBinaryFunction, call.getOperands());
+      return new Call(InsertBinary.INSTANCE, call.getOperands());
     }
 
     return call;
@@ -67,7 +64,9 @@ public class InsertFunction extends Function {
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * string value.
    */
-  private static final class InsertStringFunction extends InsertFunction {
+  private static final class InsertString extends InsertFunction {
+    public static final InsertFunction INSTANCE = new InsertString();
+
     @Override
     public Object eval(final IExpression[] operands) {
       String original = operands[0].getValue(String.class);
@@ -103,7 +102,10 @@ public class InsertFunction extends Function {
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * binary value.
    */
-  private static final class InsertBinaryFunction extends InsertFunction {
+  private static final class InsertBinary extends InsertFunction {
+
+    public static final InsertFunction INSTANCE = new InsertBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);

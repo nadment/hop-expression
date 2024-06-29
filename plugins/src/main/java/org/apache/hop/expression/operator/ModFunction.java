@@ -97,13 +97,13 @@ public class ModFunction extends Function {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionArithmeticOperator(call);
+    return Types.coercionMultiplyOperator(call);
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append('%');
-    operands[1].unparse(writer);
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

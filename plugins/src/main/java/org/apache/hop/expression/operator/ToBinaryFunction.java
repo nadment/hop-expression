@@ -35,13 +35,9 @@ import org.apache.hop.expression.util.Hex;
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
 
-  private static final ToBinaryFunction StringHexToBinaryFunction = new StringHexToBinaryFunction();
-  private static final ToBinaryFunction StringUtf8ToBinaryFunction =
-      new StringUtf8ToBinaryFunction();
-  private static final ToBinaryFunction StringBase64ToBinaryFunction =
-      new StringBase64ToBinaryFunction();
-
   private static final class StringHexToBinaryFunction extends ToBinaryFunction {
+    private static final ToBinaryFunction INSTANCE = new StringHexToBinaryFunction();
+
     @Override
     public Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
@@ -53,6 +49,8 @@ public class ToBinaryFunction extends Function {
   }
 
   private static final class StringUtf8ToBinaryFunction extends ToBinaryFunction {
+    private static final ToBinaryFunction INSTANCE = new StringUtf8ToBinaryFunction();
+
     @Override
     public Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
@@ -64,6 +62,8 @@ public class ToBinaryFunction extends Function {
   }
 
   private static final class StringBase64ToBinaryFunction extends ToBinaryFunction {
+    private static final ToBinaryFunction INSTANCE = new StringBase64ToBinaryFunction();
+
     @Override
     public Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
@@ -99,13 +99,13 @@ public class ToBinaryFunction extends Function {
       format = format.toUpperCase();
 
       if (format.equals("HEX")) {
-        return new Call(StringHexToBinaryFunction, call.getOperands());
+        return new Call(StringHexToBinaryFunction.INSTANCE, call.getOperands());
       }
       if (format.equals("BASE64")) {
-        return new Call(StringBase64ToBinaryFunction, call.getOperands());
+        return new Call(StringBase64ToBinaryFunction.INSTANCE, call.getOperands());
       }
       if (format.equals("UTF8") || format.equals("UTF-8")) {
-        return new Call(StringUtf8ToBinaryFunction, call.getOperands());
+        return new Call(StringUtf8ToBinaryFunction.INSTANCE, call.getOperands());
       }
     }
     throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);

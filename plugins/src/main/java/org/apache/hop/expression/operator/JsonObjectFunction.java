@@ -121,9 +121,9 @@ public class JsonObjectFunction extends Function {
         writer.append(',');
       }
       writer.append("KEY ");
-      operands[i].unparse(writer);
+      operands[i].unparse(writer, 0, 0);
       writer.append(" VALUE ");
-      operands[i + 1].unparse(writer);
+      operands[i + 1].unparse(writer, 0, 0);
     }
     writer.append(')');
   }

@@ -33,7 +33,7 @@ public class Call implements IExpression {
   // The position of this expression in the source before compilation else 0.
   protected final int position;
   // The operator of this call
-  protected final Operator operator;
+  protected Operator operator;
   // The operands of this call
   protected IExpression[] operands;
   // The return data type
@@ -98,6 +98,15 @@ public class Call implements IExpression {
   }
 
   /**
+   * Change the operator, be very careful with this method!
+   *
+   * @param operator The operator to set
+   */
+  public void setOperator(Operator operator) {
+    this.operator = requireNonNull(operator, "operator");
+  }
+
+  /**
    * Get array of operands. An empty array is returned if no operands
    *
    * @return the operands
@@ -111,17 +120,17 @@ public class Call implements IExpression {
   }
 
   /**
-   * Changes the value of an operand.
+   * Change the value of an operand.
    *
-   * @param i Operand index
-   * @param operand Operand value
+   * @param index The operand index
+   * @param operand The operand to set
    */
   public void setOperand(int index, IExpression operand) {
     if (index < 0 || index >= operands.length) {
       return;
     }
 
-    operands[index] = operand;
+    operands[index] = requireNonNull(operand, "operand");
   }
 
   /** Returns a count of operands of this expression. */
@@ -220,14 +229,21 @@ public class Call implements IExpression {
   }
 
   @Override
-  public void unparse(final StringWriter writer) {
-    operator.unparse(writer, operands);
+  public void unparse(final StringWriter writer, int leftPrec, int rightPrec) {
+    if ((leftPrec < operator.getLeftPrec() && (leftPrec != 0))
+        || (operator.getRightPrec() > rightPrec && (rightPrec != 0))) {
+      writer.append('(');
+      operator.unparse(writer, operands);
+      writer.append(')');
+    } else {
+      operator.unparse(writer, operands);
+    }
   }
 
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    unparse(writer);
+    unparse(writer, 0, 0);
     return writer.toString();
   }
 

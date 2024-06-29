@@ -42,6 +42,8 @@ import org.apache.hop.expression.type.Types;
 @FunctionPlugin
 public class CastFunction extends Function {
 
+  public static final Function INSTANCE = new CastFunction();
+
   public CastFunction() {
     this("CAST");
   }
@@ -131,12 +133,12 @@ public class CastFunction extends Function {
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());
     writer.append('(');
-    operands[0].unparse(writer);
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" AS ");
     writer.append(operands[1].toString());
     if (operands.length == 3) {
       writer.append(" FORMAT ");
-      operands[2].unparse(writer);
+      operands[2].unparse(writer, 0, 0);
     }
     writer.append(')');
   }

@@ -30,21 +30,16 @@ import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.CaseOperator;
 import org.apache.hop.expression.operator.CaseOperator.When;
-import org.apache.hop.expression.operator.CastFunction;
 import org.apache.hop.expression.operator.CastOperator;
-import org.apache.hop.expression.operator.CoalesceFunction;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.operator.CountFunction.Count;
 import org.apache.hop.expression.operator.DivOperator;
 import org.apache.hop.expression.operator.ElementAtOperator;
 import org.apache.hop.expression.operator.EqualOperator;
-import org.apache.hop.expression.operator.ExtractFunction;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
 import org.apache.hop.expression.operator.ILikeOperator;
-import org.apache.hop.expression.operator.IfFunction;
-import org.apache.hop.expression.operator.IfNullFunction;
 import org.apache.hop.expression.operator.InOperator;
 import org.apache.hop.expression.operator.IsDistinctFromOperator;
 import org.apache.hop.expression.operator.IsFalseOperator;
@@ -63,8 +58,7 @@ import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegateOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
-import org.apache.hop.expression.operator.NullIfFunction;
-import org.apache.hop.expression.operator.Nvl2Function;
+import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
 
@@ -90,11 +84,11 @@ public class Operators {
   // -------------------------------------------------------------
   public static final Operator CASE_SEARCH = new CaseOperator(When.SEARCH);
   public static final Operator CASE_SIMPLE = new CaseOperator(When.SIMPLE);
-  public static final Operator COALESCE = new CoalesceFunction();
-  public static final Operator IF = new IfFunction();
-  public static final Operator IFNULL = new IfNullFunction();
-  public static final Operator NULLIF = new NullIfFunction();
-  public static final Operator NVL2 = new Nvl2Function();
+
+  // -------------------------------------------------------------
+  // CAST OPERATOR
+  // -------------------------------------------------------------
+  public static final Operator CAST = new CastOperator();
 
   // -------------------------------------------------------------
   // COMPARISON OPERATORS
@@ -107,8 +101,8 @@ public class Operators {
   public static final Operator IS_NOT_FALSE = new IsNotFalseOperator();
   public static final Operator IS_DISTINCT_FROM = new IsDistinctFromOperator();
   public static final Operator IS_NOT_DISTINCT_FROM = new IsNotDistinctFromOperator();
-  public static final Operator SIMILAR_TO = new SimilarToOperator(false);
-  public static final Operator NOT_SIMILAR_TO = new SimilarToOperator(true);
+  public static final Operator SIMILAR_TO = new SimilarToOperator();
+  public static final Operator NOT_SIMILAR_TO = new NotSimilarToOperator();
   public static final Operator IN = new InOperator(false);
   public static final Operator NOT_IN = new InOperator(true);
   public static final Operator LIKE = new LikeOperator();
@@ -134,22 +128,19 @@ public class Operators {
   public static final Operator MODULUS = new ModFunction("%");
 
   // -------------------------------------------------------------
-  // DATE OPERATORS
+  // DATE OPERATOR
   // -------------------------------------------------------------
   public static final Operator AT_TIME_ZONE = new AtTimeZoneOperator();
 
   // -------------------------------------------------------------
-  // ARRAY OPERATORS
+  // ARRAY OPERATOR
   // -------------------------------------------------------------
   public static final Operator ELEMENT_AT = new ElementAtOperator();
 
   // -------------------------------------------------------------
-  // SPECIAL OPERATORS with custom or alternative syntax, or optimized
+  // STRING OPERATOR
   // -------------------------------------------------------------
-  public static final Operator CAST = new CastOperator();
-  public static final Operator CAST_FUNCTION = new CastFunction();
   public static final Function CONCAT = new ConcatFunction("||");
-  public static final Function EXTRACT = new ExtractFunction();
 
   // -------------------------------------------------------------
   // AGGREGATE FUNCTIONS with custom syntax

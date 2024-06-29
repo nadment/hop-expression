@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -24,7 +23,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
@@ -37,7 +35,7 @@ import org.apache.hop.expression.type.Types;
  *
  * @see {@link Div0Function}
  */
-public class DivOperator extends Operator {
+public class DivOperator extends BinaryOperator {
 
   public DivOperator() {
     super(
@@ -81,7 +79,7 @@ public class DivOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionArithmeticOperator(call);
+    return Types.coercionMultiplyOperator(call);
   }
 
   @Override
@@ -95,12 +93,5 @@ public class DivOperator extends Operator {
     if (divisor.signum() == 0) throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
 
     return value.divide(divisor, MATH_CONTEXT);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer);
-    writer.append('/');
-    operands[1].unparse(writer);
   }
 }

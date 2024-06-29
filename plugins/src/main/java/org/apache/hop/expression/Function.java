@@ -76,7 +76,7 @@ public abstract class Function extends Operator {
     for (IExpression operand : operands) {
       if (!first) writer.append(',');
       else first = false;
-      operand.unparse(writer);
+      operand.unparse(writer, 0, 0);
     }
     writer.append(')');
   }

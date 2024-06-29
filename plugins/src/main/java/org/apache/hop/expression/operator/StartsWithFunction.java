@@ -36,9 +36,7 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class StartsWithFunction extends Function {
-
-  public static final StartsWithFunction StringStartsWithFunction = new StringStartsWithFunction();
-  public static final StartsWithFunction BinaryStartsWithFunction = new BinaryStartsWithFunction();
+  public static final Function INSTANCE = new StartsWithFunction();
 
   public StartsWithFunction() {
     super(
@@ -54,17 +52,19 @@ public class StartsWithFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(BinaryStartsWithFunction, call.getOperands());
+      return new Call(StartsWithBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(StringStartsWithFunction, call.getOperands());
+    return new Call(StartsWithString.INSTANCE, call.getOperands());
   }
 
   /**
    * The function returns TRUE if the first value starts with second value. Both values must be data
    * type string or binary.
    */
-  private static final class StringStartsWithFunction extends StartsWithFunction {
+  private static final class StartsWithString extends StartsWithFunction {
+    public static final StartsWithFunction INSTANCE = new StartsWithString();
+
     @Override
     public Object eval(final IExpression[] operands) {
 
@@ -81,7 +81,9 @@ public class StartsWithFunction extends Function {
    * The function returns TRUE if the first value starts with second value. Both values must be data
    * type binary.
    */
-  private static final class BinaryStartsWithFunction extends StartsWithFunction {
+  private static final class StartsWithBinary extends StartsWithFunction {
+    public static final StartsWithFunction INSTANCE = new StartsWithBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
 
