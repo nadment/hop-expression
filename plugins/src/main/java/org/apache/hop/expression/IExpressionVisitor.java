@@ -20,7 +20,7 @@ public interface IExpressionVisitor<E> {
 
   public E visitCall(Call call);
 
-  public E visitTuple(Tuple tuple);
+  public E visitArray(Array array);
 
   public E visitLiteral(Literal literal);
 }

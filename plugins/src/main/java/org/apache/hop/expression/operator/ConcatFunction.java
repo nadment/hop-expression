@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,7 +28,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -170,22 +170,22 @@ public class ConcatFunction extends Function {
 
     @Override
     public Object eval(final IExpression[] operands) {
-      Tuple tuple0 = operands[0].asTuple();
-      Tuple tuple1 = operands[1].asTuple();
+      Array array0 = operands[0].asArray();
+      Array array1 = operands[1].asArray();
 
-      int size0 = tuple0.size();
-      int size1 = tuple1.size();
+      int size0 = array0.size();
+      int size1 = array1.size();
 
       IExpression[] values = new IExpression[size0 + size1];
       int i = 0;
       for (; i < size0; i++) {
-        values[i] = tuple0.get(i);
+        values[i] = array0.get(i);
       }
       for (int j = 0; j < size1; i++, j++) {
-        values[i] = tuple1.get(j);
+        values[i] = array1.get(j);
       }
 
-      return new Tuple(tuple0.getType(), values);
+      return new Array(array0.getType(), values);
     }
   }
 }

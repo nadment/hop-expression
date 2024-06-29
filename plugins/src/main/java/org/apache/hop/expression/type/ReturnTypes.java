@@ -191,7 +191,7 @@ public final class ReturnTypes {
           precision += type.getPrecision();
           if (type.is(TypeId.ARRAY)) {
             typeId = TypeId.ARRAY;
-            elementType = Types.getLeastRestrictive(operand.asTuple());
+            elementType = Types.getLeastRestrictive(operand.asArray());
           } else if (type.is(TypeId.BINARY)) {
             typeId = TypeId.BINARY;
           }

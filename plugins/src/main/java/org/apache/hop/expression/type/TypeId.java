@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.Set;
-import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.Array;
 
 /**
  * Enumeration of the data type identifier which can be used to construct an expression.
@@ -66,7 +66,7 @@ public enum TypeId {
   INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class),
 
   /** A Array type */
-  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Tuple.class);
+  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class);
 
   protected static final Set<TypeId> STRING_TYPES = Set.of(STRING);
   protected static final Set<TypeId> BINARY_TYPES = Set.of(BINARY);

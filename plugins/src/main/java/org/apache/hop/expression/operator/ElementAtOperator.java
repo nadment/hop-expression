@@ -19,13 +19,13 @@ package org.apache.hop.expression.operator;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -52,13 +52,13 @@ public class ElementAtOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    Tuple tuple = call.getOperand(0).asTuple();
-    Type type = Types.getLeastRestrictive(tuple);
+    Array array = call.getOperand(0).asArray();
+    Type type = Types.getLeastRestrictive(array);
 
-    // Coerce tuple values
+    // Coerce values
     boolean coerced = false;
     List<IExpression> list = new ArrayList<>();
-    for (IExpression operand : tuple) {
+    for (IExpression operand : array) {
       if (Types.needToCast(operand, type)) {
         operand = Types.cast(operand, type);
         coerced = true;
@@ -67,7 +67,7 @@ public class ElementAtOperator extends Operator {
     }
 
     if (coerced) {
-      call.setOperand(0, new Tuple(ArrayType.of(type), list));
+      call.setOperand(0, new Array(ArrayType.of(type), list));
       call.inferReturnType();
     }
 
@@ -76,19 +76,19 @@ public class ElementAtOperator extends Operator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Tuple tuple = operands[0].asTuple();
+    Array array = operands[0].asArray();
     Long index = operands[1].getValue(Long.class);
     if (index == null) return null;
 
     int i = index.intValue();
 
-    if (i < 0) i = tuple.size() + i + 1;
+    if (i < 0) i = array.size() + i + 1;
 
-    if (i < 1 || i > tuple.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
+    if (i < 1 || i > array.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
       throw new ExpressionException(ErrorCode.INVALID_ARRAY_INDEX, index);
     }
 
-    return tuple.get(i - 1).getValue();
+    return array.get(i - 1).getValue();
   }
 
   @Override

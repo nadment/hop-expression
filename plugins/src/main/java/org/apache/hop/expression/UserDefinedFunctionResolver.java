@@ -47,13 +47,13 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
   }
 
   @Override
-  public IExpression visitTuple(final Tuple tuple) {
-    List<IExpression> expressions = new ArrayList<>(tuple.size());
-    for (IExpression expression : tuple) {
+  public IExpression visitArray(final Array array) {
+    List<IExpression> expressions = new ArrayList<>(array.size());
+    for (IExpression expression : array) {
       expression = expression.accept(this);
       expressions.add(expression);
     }
-    return new Tuple(expressions);
+    return new Array(expressions);
   }
 
   @Override

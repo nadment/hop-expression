@@ -29,6 +29,7 @@ import java.util.PriorityQueue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
@@ -39,7 +40,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
@@ -120,7 +120,7 @@ public class BoolAndOperator extends BinaryOperator {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.is(Operators.NOT_IN) && term.getOperand(1).isConstant()) {
-          for (IExpression operand : term.getOperand(1).asTuple()) {
+          for (IExpression operand : term.getOperand(1).asArray()) {
             notInTerms.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
           }
         }
@@ -167,7 +167,7 @@ public class BoolAndOperator extends BinaryOperator {
           values.add(pair.getRight());
           predicates.remove(pair.getLeft());
         }
-        Call predicate = new Call(Operators.NOT_IN, reference, new Tuple(values));
+        Call predicate = new Call(Operators.NOT_IN, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }
@@ -183,12 +183,12 @@ public class BoolAndOperator extends BinaryOperator {
       for (Pair<Call, IExpression> pair : inTerms.get(reference)) {
         IExpression term = pair.getRight();
         if (values.isEmpty()) {
-          if (term.is(Kind.TUPLE)) {
-            term.asTuple().forEach(values::add);
+          if (term.is(Kind.ARRAY)) {
+            term.asArray().forEach(values::add);
           } else values.add(term);
         } else {
-          if (term.is(Kind.TUPLE)) {
-            values = CollectionUtils.intersection(values, term.asTuple());
+          if (term.is(Kind.ARRAY)) {
+            values = CollectionUtils.intersection(values, term.asArray());
           } else {
             values = CollectionUtils.intersection(values, List.of(term));
           }
@@ -213,7 +213,7 @@ public class BoolAndOperator extends BinaryOperator {
         predicate.inferReturnType();
         predicates.add(predicate);
       } else {
-        Call predicate = new Call(Operators.IN, reference, new Tuple(values));
+        Call predicate = new Call(Operators.IN, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }

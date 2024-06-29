@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -31,7 +32,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -74,8 +74,8 @@ public class InOperator extends Operator {
     Type type = call.getOperand(0).getType();
     if (type.is(TypeId.UNKNOWN)) return false;
 
-    Tuple tuple = call.getOperand(1).asTuple();
-    for (IExpression operand : tuple) {
+    Array array = call.getOperand(1).asArray();
+    for (IExpression operand : array) {
       if (!type.isCoercible(operand.getType())) {
         return false;
       }
@@ -97,7 +97,7 @@ public class InOperator extends Operator {
     List<IExpression> list = new ArrayList<>();
 
     IExpression reference = call.getOperand(0);
-    Tuple tuple = call.getOperand(1).asTuple();
+    Array array = call.getOperand(1).asArray();
 
     // NULL if left side expression is always NULL
     if (reference.isNull()) {
@@ -106,13 +106,13 @@ public class InOperator extends Operator {
 
     // Try to evaluate all operands to detect error like division by zero X IN (1,2,3/0)
     if (call.isConstant()) {
-      for (IExpression o : tuple) {
+      for (IExpression o : array) {
         o.getValue();
       }
     }
 
     // Remove null and duplicate element in list
-    for (IExpression expression : tuple) {
+    for (IExpression expression : array) {
 
       if (!not && expression.isNull()) {
         continue;
@@ -137,8 +137,8 @@ public class InOperator extends Operator {
     // Sort list on cost
     list.sort(Comparator.comparing(IExpression::getCost));
 
-    // Rebuild tuple
-    call = new Call(this, call.getOperand(0), new Tuple(tuple.getType(), list));
+    // Rebuild call
+    call = new Call(this, call.getOperand(0), new Array(array.getType(), list));
     call.inferReturnType();
 
     return call;
@@ -149,18 +149,18 @@ public class InOperator extends Operator {
     Type type = call.getOperand(0).getType();
 
     // Determine common type
-    Tuple tuple = call.getOperand(1).asTuple();
-    for (IExpression operand : tuple) {
+    Array array = call.getOperand(1).asArray();
+    for (IExpression operand : array) {
       type = getCommonTypeForComparison(type, operand.getType());
     }
 
     // Coerce term
     boolean coercedTerm = coerceOperandType(call, type, 0);
 
-    // Coerce tuple values
+    // Coerce values
     boolean coercedValues = false;
     List<IExpression> list = new ArrayList<>();
-    for (IExpression operand : tuple) {
+    for (IExpression operand : array) {
       if (Types.needToCast(operand, type)) {
         operand = Types.cast(operand, type);
         coercedValues = true;
@@ -169,7 +169,7 @@ public class InOperator extends Operator {
     }
 
     if (coercedValues) {
-      call.setOperand(1, new Tuple(list));
+      call.setOperand(1, new Array(list));
       call.inferReturnType();
     }
 
@@ -183,12 +183,12 @@ public class InOperator extends Operator {
       return null;
     }
 
-    Tuple tuple = (Tuple) operands[1];
+    Array array = (Array) operands[1];
 
     // c1 NOT IN (c2, c3, NULL) is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
     if (not) {
       Boolean result = Boolean.TRUE;
-      for (IExpression expression : tuple) {
+      for (IExpression expression : array) {
         Object value = expression.getValue();
         if (value == null) return null;
 
@@ -200,7 +200,7 @@ public class InOperator extends Operator {
     }
 
     // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
-    for (IExpression expression : tuple) {
+    for (IExpression expression : array) {
       Object value = expression.getValue();
       if (Comparison.equals(left, value)) {
         return Boolean.TRUE;
@@ -213,7 +213,7 @@ public class InOperator extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(not ? " NOT IN (" : " IN (");
-    operands[1].asTuple().unparseValues(writer);
+    operands[1].asArray().unparseValues(writer);
     writer.append(')');
   }
 }

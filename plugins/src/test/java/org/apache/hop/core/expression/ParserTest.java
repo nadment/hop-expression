@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
@@ -31,7 +32,6 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorComparator;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
@@ -225,13 +225,13 @@ public class ParserTest extends ExpressionTest {
     assertTrue(compile("ABS(FIELD_INTEGER)").asCall() instanceof Call);
     assertTrue(compile("FIELD_INTEGER").asIdentifier() instanceof Identifier);
     assertTrue(compile("123").asLiteral() instanceof Literal);
-    assertTrue(compile("ARRAY[1,2,3]").asTuple() instanceof Tuple);
+    assertTrue(compile("ARRAY[1,2,3]").asArray() instanceof Array);
 
     assertThrows(UnsupportedOperationException.class, () -> compile("123").asCall());
     assertThrows(
         UnsupportedOperationException.class, () -> compile("ABS(FIELD_INTEGER)").asIdentifier());
     assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asLiteral());
-    assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asTuple());
+    assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asArray());
   }
 
   @Test

@@ -22,11 +22,11 @@ import java.util.stream.Stream;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
-/** A tuple is a immutable ordered list of expressions. */
-public final class Tuple implements IExpression, Iterable<IExpression> {
+/** A array is a immutable ordered list of expressions. */
+public final class Array implements IExpression, Iterable<IExpression> {
 
   /**
-   * Iterator implementation used to efficiently expose contents of an Tuple as read-only iterator.
+   * Iterator implementation used to efficiently expose contents of an Array as read-only iterator.
    */
   public class Iterator implements java.util.Iterator<IExpression> {
 
@@ -58,27 +58,27 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   private final Type type;
   private final IExpression[] values;
 
-  public Tuple(IExpression... expressions) {
+  public Array(IExpression... expressions) {
     this(Types.ARRAY, expressions);
   }
 
-  public Tuple(Type type, IExpression... expressions) {
+  public Array(Type type, IExpression... expressions) {
     this.type = type;
     this.values = expressions;
   }
 
-  public Tuple(Collection<IExpression> expressions) {
+  public Array(Collection<IExpression> expressions) {
     this(Types.ARRAY, expressions);
   }
 
-  public Tuple(Type type, Collection<IExpression> expressions) {
+  public Array(Type type, Collection<IExpression> expressions) {
     this.type = type;
     this.values = expressions.toArray(new IExpression[0]);
   }
 
   @Override
   public Kind getKind() {
-    return Kind.TUPLE;
+    return Kind.ARRAY;
   }
 
   @Override
@@ -109,14 +109,14 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public <E> E accept(IExpressionVisitor<E> visitor) {
-    return visitor.visitTuple(this);
+    return visitor.visitArray(this);
   }
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof Tuple) {
-      Tuple tuple = (Tuple) other;
-      return Arrays.equals(values, tuple.values);
+    if (other instanceof Array) {
+      Array array = (Array) other;
+      return Arrays.equals(values, array.values);
     }
     return false;
   }
@@ -174,7 +174,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public Tuple asTuple() {
+  public Array asArray() {
     return this;
   }
 
@@ -188,7 +188,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     return true;
   }
 
-  /** Returns {@code true} if this tuple contains the specified elements. */
+  /** Returns {@code true} if this array contains the specified elements. */
   public boolean contains(IExpression element) {
     for (int i = 0; i < values.length; i++) {
       if (element.equals(values[i])) {
@@ -199,10 +199,10 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   /**
-   * Returns {@code true} if this tuple contains all of the elements of the specified collection.
+   * Returns {@code true} if this array contains all of the elements of the specified collection.
    *
-   * @param c collection to be checked for containment in this tuple
-   * @return {@code true} if this tuple contains all of the elements of the specified collection
+   * @param c collection to be checked for containment in this array
+   * @return {@code true} if this array contains all of the elements of the specified collection
    * @see #contains(Object)
    */
   public boolean containsAll(Collection<IExpression> collection) {

@@ -137,11 +137,11 @@ public interface IExpression {
   }
 
   /**
-   * Casts and returns this expression as a {@link Tuple} if it is of kind {@code TUPLE}
+   * Casts and returns this expression as a {@link Array} if it is of kind {@code ARRAY}
    *
    * @return this instance cast to a class
    */
-  public default Tuple asTuple() {
+  public default Array asArray() {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 

@@ -27,12 +27,12 @@ import org.apache.hop.core.row.value.ValueMetaInternetAddress;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Tuple;
 
 public class Types {
 
@@ -117,12 +117,12 @@ public class Types {
     return result;
   }
 
-  public static Type getLeastRestrictive(Tuple tuple) {
+  public static Type getLeastRestrictive(Array array) {
     Type result = null;
-    for (IExpression operand : tuple) {
+    for (IExpression operand : array) {
       Type type = operand.getType();
-      if (operand.is(Kind.TUPLE)) {
-        type = Types.getLeastRestrictive(operand.asTuple());
+      if (operand.is(Kind.ARRAY)) {
+        type = Types.getLeastRestrictive(operand.asArray());
       }
       result = Types.getLeastRestrictive(result, type);
     }
@@ -168,17 +168,17 @@ public class Types {
   /**
    * Coerce the operand at the specified index to target {@code Type}.
    *
-   * <p>If the operand is a {@code Tuple}, coercion of all its members
+   * <p>If the operand is a {@code Array}, coercion of all its elements
    */
   public static boolean coerceOperandType(final Call call, final Type type, int index) {
 
     IExpression operand = call.getOperand(index);
 
-    // If the operand is a tuple, coercion of all its members
-    if (operand.is(Kind.TUPLE)) {
-      Tuple tuple = coerceTupleOperandType(operand.asTuple(), type);
-      if (!tuple.equals(operand.asTuple())) {
-        call.setOperand(index, tuple);
+    // If the operand is a array, coercion of all its elements
+    if (operand.is(Kind.ARRAY)) {
+      Array array = coerceOperandType(operand.asArray(), type);
+      if (!array.equals(operand.asArray())) {
+        call.setOperand(index, array);
         return true;
       }
 
@@ -195,18 +195,18 @@ public class Types {
     return true;
   }
 
-  public static Tuple coerceTupleOperandType(final Tuple tuple, final Type type) {
+  public static Array coerceOperandType(final Array array, final Type type) {
     List<IExpression> list = new ArrayList<>();
-    for (IExpression operand : tuple) {
-      if (operand.is(Kind.TUPLE)) {
-        operand = coerceTupleOperandType(operand.asTuple(), type);
+    for (IExpression operand : array) {
+      if (operand.is(Kind.ARRAY)) {
+        operand = coerceOperandType(operand.asArray(), type);
       } else if (needToCast(operand, type)) {
         operand = cast(operand, type);
       }
       list.add(operand);
     }
 
-    return new Tuple(new ArrayType(type, type.isNullable()), list);
+    return new Array(new ArrayType(type, type.isNullable()), list);
   }
 
   public static Call cast(IExpression expression, Type type) {

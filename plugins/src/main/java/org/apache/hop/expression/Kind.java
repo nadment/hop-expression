@@ -18,8 +18,8 @@ package org.apache.hop.expression;
 public enum Kind {
   /** An object of type {@link org.apache.hop.expression.Literal} */
   LITERAL,
-  /** An object of type {@link org.apache.hop.expression.Tuple} */
-  TUPLE,
+  /** An object of type {@link org.apache.hop.expression.Array} */
+  ARRAY,
   /** An object of type {@link org.apache.hop.expression.Identifier} */
   IDENTIFIER,
   /** An object of type {@link org.apache.hop.expression.Call} */

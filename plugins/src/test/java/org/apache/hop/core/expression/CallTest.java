@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -51,9 +51,9 @@ public class CallTest extends ExpressionTest {
             new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
 
     Call call6 =
-        new Call(Operators.IN, new Identifier("Field"), new Tuple(Literal.of(1), Literal.of(2)));
+        new Call(Operators.IN, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
     Call call7 =
-        new Call(Operators.IN, new Identifier("Field"), new Tuple(Literal.of(1), Literal.of(2)));
+        new Call(Operators.IN, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
     Call call8 = new Call(FunctionRegistry.getFunction("RANDOM"));
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);

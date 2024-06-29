@@ -89,8 +89,8 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           Object constantValue = expression.getValue();
           Type constantType = expression.getType();
 
-          if (constantValue instanceof Tuple tuple) {
-            return tuple;
+          if (constantValue instanceof Array array) {
+            return array;
           }
 
           // Some operator don't known return type like JSON_VALUE.
@@ -114,12 +114,12 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression visitTuple(final Tuple tuple) {
-    int size = tuple.size();
+  public IExpression visitArray(final Array array) {
+    int size = array.size();
 
     List<IExpression> expressions = new ArrayList<>(size);
     List<Type> types = new ArrayList<>(size);
-    for (IExpression expression : tuple) {
+    for (IExpression expression : array) {
       expression = expression.accept(this);
       expressions.add(expression);
       types.add(expression.getType());
@@ -127,7 +127,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
     Type type = Types.getLeastRestrictive(types);
 
-    return new Tuple(ArrayType.of(type), expressions);
+    return new Array(ArrayType.of(type), expressions);
   }
 
   @Override

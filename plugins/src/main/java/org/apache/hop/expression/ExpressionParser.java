@@ -340,7 +340,7 @@ public class ExpressionParser {
       return expression;
     } else if (isThenNext(Id.IN)) {
       return new Call(
-          getPosition(), not ? Operators.NOT_IN : Operators.IN, expression, this.parseTuple());
+          getPosition(), not ? Operators.NOT_IN : Operators.IN, expression, this.parseElements());
     } else if (isThenNext(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN_ASYMMETRIC;
       if (isThenNext(Id.ASYMMETRIC)) {
@@ -625,7 +625,7 @@ public class ExpressionParser {
 
     // Empty array
     if (isThenNext(Id.RBRACKET)) {
-      return new Tuple(operands);
+      return new Array(operands);
     }
 
     operands.add(this.parseLogicalOr());
@@ -638,7 +638,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_BRACKET);
     }
 
-    return new Tuple(operands);
+    return new Array(operands);
   }
 
   /** AdditiveExpression ( || AdditiveExpression )* */
@@ -740,7 +740,7 @@ public class ExpressionParser {
   }
 
   /** Parses a list of expressions separated by commas. (expression [,expression...] ) */
-  private Tuple parseTuple() throws ExpressionException {
+  private Array parseElements() throws ExpressionException {
 
     List<IExpression> list = new ArrayList<>();
 
@@ -760,7 +760,7 @@ public class ExpressionParser {
       }
 
       if (isThenNext(Id.RPARENTHESIS)) {
-        return new Tuple(list);
+        return new Array(list);
       }
 
       break;
@@ -797,7 +797,7 @@ public class ExpressionParser {
           values.add(this.parseLogicalOr());
         } while (this.isThenNext(Id.COMMA));
 
-        expression = new Tuple(values);
+        expression = new Array(values);
       }
       whenList.add(expression);
 
@@ -819,8 +819,8 @@ public class ExpressionParser {
         start,
         simple ? Operators.CASE_SIMPLE : Operators.CASE_SEARCH,
         valueExpression,
-        new Tuple(whenList),
-        new Tuple(thenList),
+        new Array(whenList),
+        new Array(thenList),
         elseExpression);
   }
 

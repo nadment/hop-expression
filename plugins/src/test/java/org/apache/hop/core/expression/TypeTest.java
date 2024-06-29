@@ -30,9 +30,9 @@ import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Random;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
@@ -129,7 +129,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.JSON, TypeId.fromJavaClass(JsonNode.class));
     assertEquals(TypeId.INET, TypeId.fromJavaClass(InetAddress.class));
     assertEquals(TypeId.INTEGER, TypeId.fromJavaClass(Long.class));
-    assertEquals(TypeId.ARRAY, TypeId.fromJavaClass(Tuple.class));
+    assertEquals(TypeId.ARRAY, TypeId.fromJavaClass(Array.class));
   }
 
   @Test

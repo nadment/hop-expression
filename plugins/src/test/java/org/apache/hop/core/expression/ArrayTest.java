@@ -20,48 +20,48 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
-public class TupleTest extends ExpressionTest {
+public class ArrayTest extends ExpressionTest {
 
   @Test
   public void test() throws Exception {
-    Tuple tuple0 = new Tuple();
-    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
-    Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
-    Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
-    Tuple tuple4 = new Tuple(ArrayType.of(Types.STRING), Literal.of("A"), new Identifier("B"));
+    Array array0 = new Array();
+    Array array1 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
+    Array array2 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
+    Array array3 = new Array(Literal.NULL, Literal.NULL, Literal.NULL);
+    Array array4 = new Array(ArrayType.of(Types.STRING), Literal.of("A"), new Identifier("B"));
 
-    assertEquals(Kind.TUPLE, tuple1.getKind());
-    assertEquals(Types.ARRAY, tuple3.getType());
-    assertEquals(ArrayType.of(Types.STRING), tuple4.getType());
+    assertEquals(Kind.ARRAY, array1.getKind());
+    assertEquals(Types.ARRAY, array3.getType());
+    assertEquals(ArrayType.of(Types.STRING), array4.getType());
 
-    assertTrue(tuple0.isEmpty());
-    assertFalse(tuple1.isEmpty());
-    assertTrue(tuple1.isConstant());
-    assertFalse(tuple4.isConstant());
-    assertEquals(tuple1, tuple2);
+    assertTrue(array0.isEmpty());
+    assertFalse(array1.isEmpty());
+    assertTrue(array1.isConstant());
+    assertFalse(array4.isConstant());
+    assertEquals(array1, array2);
     assertEquals(
-        new Tuple(Literal.TRUE, Literal.FALSE, Literal.NULL),
-        new Tuple(Literal.TRUE, Literal.FALSE, Literal.NULL));
+        new Array(Literal.TRUE, Literal.FALSE, Literal.NULL),
+        new Array(Literal.TRUE, Literal.FALSE, Literal.NULL));
     assertEquals(
-        new Tuple(Literal.of("A"), Literal.of("B")), new Tuple(Literal.of("A"), Literal.of("B")));
-    assertNotEquals(tuple1, null);
-    assertNotEquals(tuple1, tuple3);
+        new Array(Literal.of("A"), Literal.of("B")), new Array(Literal.of("A"), Literal.of("B")));
+    assertNotEquals(array1, null);
+    assertNotEquals(array1, array3);
     assertNotEquals(
-        new Tuple(Literal.of("B"), Literal.of("A")), new Tuple(Literal.of("A"), Literal.of("B")));
-    assertEquals(tuple4.hashCode(), tuple4.hashCode());
-    assertEquals(tuple1.hashCode(), tuple2.hashCode());
-    assertEquals("ARRAY[1,0,NULL]", tuple1.toString());
+        new Array(Literal.of("B"), Literal.of("A")), new Array(Literal.of("A"), Literal.of("B")));
+    assertEquals(array4.hashCode(), array4.hashCode());
+    assertEquals(array1.hashCode(), array2.hashCode());
+    assertEquals("ARRAY[1,0,NULL]", array1.toString());
 
     // Not evaluable alone
-    assertThrows(UnsupportedOperationException.class, () -> tuple1.getValue());
-    assertThrows(UnsupportedOperationException.class, () -> tuple1.getValue(String.class));
+    assertThrows(UnsupportedOperationException.class, () -> array1.getValue());
+    assertThrows(UnsupportedOperationException.class, () -> array1.getValue(String.class));
   }
 }
