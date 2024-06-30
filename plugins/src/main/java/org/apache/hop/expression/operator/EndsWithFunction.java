@@ -94,13 +94,13 @@ public class EndsWithFunction extends Function {
 
       if (offset < 0) {
         return Boolean.FALSE;
-      } else {
-        for (int i = 0; i < suffix.length; i++) {
-          if (value[offset + i] != suffix[i]) {
-            return Boolean.FALSE;
-          }
+      }
+      for (int i = 0; i < suffix.length; i++) {
+        if (value[offset + i] != suffix[i]) {
+          return Boolean.FALSE;
         }
       }
+
       return Boolean.TRUE;
     }
   }

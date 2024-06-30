@@ -3163,12 +3163,13 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void StartsWith() throws Exception {
     // String
     evalTrue("StartsWith('TEST FROM','TES')").returnType(Types.BOOLEAN);
-    evalFalse("StartsWith('-TEST FROM','TES')");
+    evalFalse("StartsWith('XXXTEST FROM','TES')");
+    evalFalse("StartsWith('TEST','TESTXXX')");
 
     // Binary
     evalTrue("StartsWith(BINARY 'FAA12345',BINARY 'fA')").returnType(Types.BOOLEAN);
     evalFalse("StartsWith(BINARY 'FAA12345',BINARY 'EE')");
-    evalFalse("StartsWith(BINARY '12345',BINARY '123456')");
+    evalFalse("StartsWith(BINARY '1234',BINARY '123456')");
 
     evalNull("StartsWith(NULL_STRING,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL_STRING)");
@@ -3180,13 +3181,15 @@ public class ScalarFunctionTest extends ExpressionTest {
     // String
     evalTrue("EndsWith('TEST FROM','ROM')").returnType(Types.BOOLEAN);
     evalFalse("EndsWith('TEST FROM','ROMA')");
+    evalFalse("EndsWith('TEST','TESTXX')");
+    evalFalse("EndsWith('TEST','XXTEST')");
     evalNull("EndsWith(NULL_STRING,'ROMA')").returnType(Types.BOOLEAN);
     evalNull("EndsWith('TEST FROM',NULL_STRING)").returnType(Types.BOOLEAN);
 
     // Binary
     evalTrue("EndsWith(BINARY 'FAA12345',BINARY '2345')").returnType(Types.BOOLEAN);
     evalFalse("EndsWith(BINARY 'FAA12345',BINARY '88')");
-    evalFalse("EndsWith(BINARY '12345',BINARY 'FFFF12345')");
+    evalFalse("EndsWith(BINARY '1234',BINARY 'FFFF1234')");
 
     evalFails("EndsWith()");
   }

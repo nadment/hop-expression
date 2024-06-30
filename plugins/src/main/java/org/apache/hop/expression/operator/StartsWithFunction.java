@@ -93,15 +93,16 @@ public class StartsWithFunction extends Function {
       if (prefix == null) return null;
 
       if (prefix.length > value.length) {
-        return Boolean.TRUE;
-      } else {
-        int end = prefix.length;
-        for (int i = 0; i < end; i++) {
-          if (value[i] != prefix[i]) {
-            return Boolean.FALSE;
-          }
+        return Boolean.FALSE;
+      }
+
+      int end = prefix.length;
+      for (int i = 0; i < end; i++) {
+        if (value[i] != prefix[i]) {
+          return Boolean.FALSE;
         }
       }
+
       return Boolean.TRUE;
     }
   }
