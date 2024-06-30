@@ -80,6 +80,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_timestamp.adoc[CURRENT_TIMESTAMP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_timezone.adoc[CURRENT_TIMEZONE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_user.adoc[CURRENT_USER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_version.adoc[CURRENT_VERSION]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_add.adoc[DATE_ADD]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_diff.adoc[DATE_DIFF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_trunc.adoc[DATE_TRUNC]

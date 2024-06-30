@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.core.HopVersionProvider;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,21 +28,28 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** The function return the current user. */
+/** The function return the Apache Hop version. */
 @FunctionPlugin
-public class CurrentUserFunction extends Function {
+public class CurrentVersionFunction extends Function {
 
-  public CurrentUserFunction() {
+  private static final Literal version;
+
+  static {
+    HopVersionProvider versionProvider = new HopVersionProvider();
+    version = Literal.of(versionProvider.getVersion()[0]);
+  }
+
+  public CurrentVersionFunction() {
     super(
-        "CURRENT_USER",
-        ReturnTypes.STRING_NULLABLE,
+        "CURRENT_VERSION",
+        ReturnTypes.STRING_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.SPECIAL,
-        "/docs/current_user.html");
+        "/docs/current_version.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return Literal.of(System.getProperty("user.name"));
+    return version;
   }
 }
