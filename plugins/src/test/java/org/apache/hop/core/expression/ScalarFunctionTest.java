@@ -401,6 +401,36 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
+  public void ParseUrl() throws Exception {
+    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PROTOCOL')", "http")
+        .returnType(Types.STRING);
+    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','HOST')", "hop.apache.org");
+    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PORT')", "80");
+    evalEquals(
+        "Parse_Url('http://user:password@hop.apache.org:80/path?query=1','USERINFO')",
+        "user:password");
+    evalEquals(
+        "Parse_Url('http://user:password@hop.apache.org:80/path?query=1','AUTHORITY')",
+        "user:password@hop.apache.org:80");
+
+    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PATH')", "/path");
+    evalEquals(
+        "Parse_Url('http://hop.apache.org:80/path?query=1#fragment','FILE')", "/path?query=1");
+    evalEquals(
+        "Parse_Url('http://hop.apache.org:80/path?query=1&lang=fr','QUERY')", "query=1&lang=fr");
+    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1&id=2','QUERY','id')", "2");
+    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1#fragment', 'REF')", "fragment");
+
+    evalNull("Parse_Url(NULL_STRING,'PATH')");
+    evalNull("Parse_Url('http://hop.apache.org:80',NULL_STRING)");
+    evalNull("Parse_Url('http://hop.apache.org:80','PATH')");
+    evalNull("Parse_Url('http://hop.apache.org/path?query=1','PORT')");
+    evalNull("Parse_Url('http://hop.apache.org/path','QUERY')");
+    evalNull("Parse_Url('http://hop.apache.org/path?query=1','QUERY','xxx')");
+    evalNull("Parse_Url('http://hop.apache.org/path?query=1','QUERY',NULL_STRING)");
+  }
+
+  @Test
   public void Pi() throws Exception {
     evalEquals("Pi()", PI).returnType(Types.NUMBER);
     evalFails("Pi(123)");

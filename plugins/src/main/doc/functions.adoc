@@ -152,6 +152,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullifzero.adoc[NULLIFZERO]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/numberformat.adoc[NUMBERFORMAT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nvl2.adoc[NVL2]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/parse_url.adoc[PARSE_URL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/pi.adoc[PI]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/power.adoc[POWER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/previous_day.adoc[PREVIOUS_DAY]
