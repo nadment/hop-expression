@@ -55,12 +55,12 @@ public class AddNanosecondsFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null) return null;
+    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
+    if (datetime == null) return null;
 
     Long nanos = operands[1].getValue(Long.class);
     if (nanos == null) return null;
 
-    return value.plusNanos(nanos);
+    return datetime.plusNanos(nanos);
   }
 }

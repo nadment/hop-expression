@@ -480,7 +480,7 @@ public class ExpressionParser {
     // Cast operator ::
     if (isThenNext(Id.CAST)) {
       IExpression type = parseLiteralDataType(next());
-      return new Call(Operators.CAST, expression, type);
+      return new Call(getPosition(), Operators.CAST, expression, type);
     }
 
     // Array element at ARRAY[index]
@@ -847,7 +847,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
-    return new Call(function, operands);
+    return new Call(token.start(), function, operands);
   }
 
   /** Parse POSITION(expression IN expression) */
@@ -888,7 +888,7 @@ public class ExpressionParser {
       function = FirstValueFunction.FIRST_VALUE_RESPECT_NULLS;
     }
 
-    return new Call(function, operand);
+    return new Call(token.start(), function, operand);
   }
 
   /** Parse <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
@@ -908,7 +908,7 @@ public class ExpressionParser {
       function = LastValueFunction.LAST_VALUE_RESPECT_NULLS;
     }
 
-    return new Call(function, operand);
+    return new Call(token.start(), function, operand);
   }
 
   /** Parse <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code> */
@@ -935,7 +935,7 @@ public class ExpressionParser {
       function = NthValueFunction.NTH_VALUE_RESPECT_NULLS;
     }
 
-    return new Call(function, operands);
+    return new Call(token.start(), function, operands);
   }
 
   /** EXTRACT(part FROM expression) */
@@ -957,7 +957,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
-    return new Call(function, operands);
+    return new Call(token.start(), function, operands);
   }
 
   /** COUNT(*) | COUNT([DISTINCT] expression) */
@@ -981,7 +981,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
-    return new Call(aggregator, operands);
+    return new Call(token.start(), aggregator, operands);
   }
 
   /** LISTAGG([DISTINCT] expression [, delimiter] ) */
@@ -1008,7 +1008,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
-    return new Call(aggregator, operands);
+    return new Call(token.start(), aggregator, operands);
   }
 
   /** JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...) */
@@ -1043,7 +1043,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
-    return new Call(function, operands);
+    return new Call(token.start(), function, operands);
   }
 
   /** Function */

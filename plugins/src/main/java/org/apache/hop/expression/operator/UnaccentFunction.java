@@ -52,8 +52,8 @@ public class UnaccentFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator())) {
-      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+    if (operand.is(this)) {
+      return operand;
     }
 
     return call;

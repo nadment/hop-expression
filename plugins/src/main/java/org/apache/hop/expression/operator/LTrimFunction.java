@@ -67,8 +67,8 @@ public class LTrimFunction extends Function {
       IExpression operand = call.getOperand(0);
 
       // Repetitions of the same function
-      if (operand.is(call.getOperator())) {
-        return new Call(call.getOperator(), operand.asCall().getOperand(0));
+      if (operand.is(this)) {
+        return operand;
       }
 
       // Repetitions of functions that do not have any effects on the result

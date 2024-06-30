@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -28,14 +26,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /** The function repeats a string or binary as many times as specified. */
 @FunctionPlugin
 public class RepeatFunction extends Function {
-
-  public static final RepeatFunction StringRepeatFunction = new StringRepeatFunction();
-  public static final RepeatFunction BinaryRepeatFunction = new BinaryRepeatFunction();
 
   public RepeatFunction() {
     super(
@@ -49,51 +44,67 @@ public class RepeatFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Type type = call.getOperand(0).getType();
-    if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(BinaryRepeatFunction, call.getOperands());
+    Type type = call.getType();
+    if (type.is(TypeId.BINARY)) {
+      return new Call(RepeatBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(StringRepeatFunction, call.getOperands());
+    return new Call(RepeatString.INSTANCE, call.getOperands());
   }
 
   /** The function repeats a string as many times as specified. */
-  private static final class StringRepeatFunction extends RepeatFunction {
+  private static final class RepeatString extends RepeatFunction {
+    public static final RepeatFunction INSTANCE = new RepeatString();
+
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
       if (repeat == null) return null;
-      int count = repeat.intValue();
 
-      StringBuilder builder = new StringBuilder(value.length() * count);
-      while (count-- > 0) {
-        builder.append(value);
+      final int len = value.length();
+      final long longSize = (long) len * repeat;
+      final int size = (int) longSize;
+      if (size != longSize) {
+        throw new ExpressionException("Result size too large: %s".formatted(longSize));
       }
-      return builder.toString();
+      // Nothing to repeat
+      if (size == 0) return "";
+
+      final char[] array = new char[size];
+      value.getChars(0, len, array, 0);
+      for (int n = 0; n < size; n += len) {
+        System.arraycopy(array, 0, array, n, len);
+      }
+      return new String(array);
     }
   }
 
   /** The function repeats a binary as many times as specified. */
-  private static final class BinaryRepeatFunction extends RepeatFunction {
+  private static final class RepeatBinary extends RepeatFunction {
+    public static final RepeatFunction INSTANCE = new RepeatBinary();
+
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
       if (repeat == null) return null;
-      int count = repeat.intValue();
+      // int count = repeat.intValue();
 
-      try {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream(value.length * count);
-        for (int i = 0; i < count; i++) {
-          buffer.write(value);
-        }
-        return buffer.toByteArray();
-      } catch (IOException e) {
-        return null;
+      final int len = value.length;
+      final long longSize = (long) len * repeat;
+      final int size = (int) longSize;
+      if (size != longSize) {
+        throw new ExpressionException("Result size too large: %s".formatted(longSize));
       }
+
+      final byte[] array = new byte[size];
+      for (int n = 0; n < size; n += len) {
+        System.arraycopy(value, 0, array, n, len);
+      }
+      return array;
     }
   }
 }

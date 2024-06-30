@@ -67,11 +67,11 @@ public class AddOperator extends BinaryOperator {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
       }
 
-      return new Call(call.getPosition(), IntervalAddOperator.INSTANCE, call.getOperands());
-    } else if (left.getType().isFamily(TypeFamily.INTERVAL)) {
+      return new Call(call.getPosition(), AddInterval.INSTANCE, call.getOperands());
+    } else if (left.getType().is(TypeId.INTERVAL)) {
       // Normalize operands order DATE+INTERVAL
       return new Call(
-          call.getPosition(), IntervalAddOperator.INSTANCE, call.getOperand(1), call.getOperand(0));
+          call.getPosition(), AddInterval.INSTANCE, call.getOperand(1), call.getOperand(0));
     }
 
     // Rebuild chained operator
@@ -96,14 +96,14 @@ public class AddOperator extends BinaryOperator {
 
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER)) {
-      return new Call(IntegerAddOperator.INSTANCE, call.getOperands());
+      return new Call(AddInteger.INSTANCE, call.getOperands());
     }
 
-    return new Call(call.getPosition(), NumberAddOperator.INSTANCE, call.getOperands());
+    return new Call(call.getPosition(), AddNumber.INSTANCE, call.getOperands());
   }
 
-  private static final class IntegerAddOperator extends AddOperator {
-    private static final AddOperator INSTANCE = new IntegerAddOperator();
+  private static final class AddInteger extends AddOperator {
+    private static final AddOperator INSTANCE = new AddInteger();
 
     @Override
     public boolean isSymmetrical() {
@@ -126,9 +126,9 @@ public class AddOperator extends BinaryOperator {
     }
   }
 
-  private static final class NumberAddOperator extends AddOperator {
+  private static final class AddNumber extends AddOperator {
 
-    private static final AddOperator INSTANCE = new NumberAddOperator();
+    private static final AddOperator INSTANCE = new AddNumber();
 
     @Override
     public boolean isSymmetrical() {
@@ -152,8 +152,8 @@ public class AddOperator extends BinaryOperator {
   }
 
   /** Adds a specified interval to a date or timestamp */
-  private static final class IntervalAddOperator extends AddOperator {
-    private static final AddOperator INSTANCE = new IntervalAddOperator();
+  private static final class AddInterval extends AddOperator {
+    private static final AddOperator INSTANCE = new AddInterval();
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

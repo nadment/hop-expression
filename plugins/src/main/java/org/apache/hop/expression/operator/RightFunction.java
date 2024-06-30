@@ -26,7 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /**
  * The function extracts a number of characters from a string or bytes from binary starting from
@@ -48,7 +48,7 @@ public class RightFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.isFamily(TypeFamily.BINARY)) {
+    if (type.is(TypeId.BINARY)) {
       return new Call(RightBinary.INSTANCE, call.getOperands());
     }
 

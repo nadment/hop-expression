@@ -74,7 +74,6 @@ public class BitOrFunction extends Function {
       call.inferReturnType();
       operand = call;
     }
-    call = operand.asCall();
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 

@@ -21,7 +21,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
@@ -83,11 +82,10 @@ public class BoolNotOperator extends PrefixUnaryOperator {
     // NOT(x IS NOT SIMILAR TO y) → x IS SIMILAR TO  y
     // NOT(x IN (y,z)) → x NOT IN (y,z)
     // NOT(x NOT IN (y,z)) → x IN (y,z)
-    if (operand.is(Kind.CALL)) {
-      Call callOperand = operand.asCall();
-      Operator operator = callOperand.getOperator().not();
+    if (operand instanceof Call c) {
+      Operator operator = c.getOperator().not();
       if (operator != null) {
-        return new Call(operator, callOperand.getOperands());
+        return new Call(operator, c.getOperands());
       }
     }
 

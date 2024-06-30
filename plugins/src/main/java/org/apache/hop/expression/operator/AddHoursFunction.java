@@ -55,12 +55,12 @@ public class AddHoursFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null) return null;
+    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
+    if (datetime == null) return null;
 
     Long hours = operands[1].getValue(Long.class);
     if (hours == null) return null;
 
-    return value.plusHours(hours);
+    return datetime.plusHours(hours);
   }
 }

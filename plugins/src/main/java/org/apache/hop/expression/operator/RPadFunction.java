@@ -27,7 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /**
  * The function right-pads a string or binary with another string or binary, to a certain length.
@@ -54,9 +54,8 @@ public class RPadFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Type type = call.getOperand(0).getType();
-
-    if (type.isFamily(TypeFamily.BINARY)) {
+    Type type = call.getType();
+    if (type.is(TypeId.BINARY)) {
       return new Call(RPadBinary.INSTANCE, call.getOperands());
     }
 

@@ -57,10 +57,10 @@ public class UpperFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator())
+    if (operand.is(this)
         || operand.is(LowerFunction.INSTANCE)
         || operand.is(InitCapFunction.INSTANCE)) {
-      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+      return new Call(this, operand.asCall().getOperand(0));
     }
 
     return call;

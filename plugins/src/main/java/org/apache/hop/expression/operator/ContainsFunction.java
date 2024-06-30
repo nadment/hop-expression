@@ -26,7 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /** Contains function */
 @FunctionPlugin
@@ -46,7 +46,7 @@ public class ContainsFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.isFamily(TypeFamily.BINARY)) {
+    if (type.is(TypeId.BINARY)) {
       return new Call(ContainsBinary.INSTANCE, call.getOperands());
     }
 

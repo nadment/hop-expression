@@ -31,7 +31,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /** String or binary concatenation operator '<code>||</code>' */
 @FunctionPlugin
@@ -85,9 +85,9 @@ public class ConcatFunction extends Function {
       default:
         Operator operator = ConcatString.INSTANCE;
         if (type != null) {
-          if (type.isFamily(TypeFamily.ARRAY)) {
+          if (type.is(TypeId.ARRAY)) {
             operator = ConcatArray.INSTANCE;
-          } else if (type.isFamily(TypeFamily.BINARY)) {
+          } else if (type.is(TypeId.BINARY)) {
             operator = ConcatBinary.INSTANCE;
           }
         }

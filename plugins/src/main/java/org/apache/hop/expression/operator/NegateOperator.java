@@ -29,7 +29,6 @@ import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 
 /** Prefix arithmetic minus (negative) operator '<code>-</code>' for numeric or interval. */
@@ -57,7 +56,7 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
 
     Type type = call.getOperand(0).getType();
-    if (type.isFamily(TypeFamily.INTERVAL)) {
+    if (type.is(TypeId.INTERVAL)) {
       return new Call(call.getPosition(), NegateInterval.INSTANCE, call.getOperands());
     }
 

@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /**
  * Extracts the specified time unit from a date, timestamp or interval.
@@ -55,7 +55,7 @@ public class ExtractFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(1).getType();
-    if (type.isFamily(TypeFamily.INTERVAL)) {
+    if (type.is(TypeId.INTERVAL)) {
       return new Call(ExtractInterval.INSTANCE, call.getOperands());
     }
     return new Call(ExtractDate.INSTANCE, call.getOperands());

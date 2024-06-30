@@ -998,8 +998,15 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void compile() throws Exception {
       optimize("FIELD_INTEGER BETWEEN 10 AND 20");
+
+      // By default BETWEEN is ASYMMETRIC
+      optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
+      optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 50 AND 20");
+
+      // Remove SYMMETRIC if operands are constant, and swap bound if necessary
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
+
       optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
       optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
       optimizeFalse("2 between 3 and (5+1)");

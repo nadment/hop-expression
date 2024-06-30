@@ -28,7 +28,7 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /** Check if a string is a valid JSON. */
 @FunctionPlugin
@@ -47,12 +47,12 @@ public class IsJsonFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().isFamily(TypeFamily.STRING)) {
+    if (call.getOperand(0).getType().is(TypeId.STRING)) {
       return call;
     }
 
     // Optimize "IS_JSON(json)" to "json IS NOT NULL"
-    if (call.getOperand(0).getType().isFamily(TypeFamily.JSON)) {
+    if (call.getOperand(0).getType().is(TypeId.JSON)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
 

@@ -35,6 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Hex;
 import org.apache.hop.expression.util.NumberFormat;
@@ -68,7 +69,7 @@ public class ToCharFunction extends Function {
       pattern = call.getOperand(1).getValue(String.class);
     }
 
-    if (type.isFamily(TypeFamily.STRING) && call.getOperandCount() == 1) {
+    if (type.is(TypeId.STRING) && call.getOperandCount() == 1) {
       return call.getOperand(0);
     }
 
@@ -79,7 +80,7 @@ public class ToCharFunction extends Function {
 
       // Compile format to check it
       DateTimeFormat format = DateTimeFormat.of(pattern);
-      return new Call(new DateToCharFunction(format), call.getOperands());
+      return new Call(new ToCharDate(format), call.getOperands());
     }
 
     if (type.isFamily(TypeFamily.NUMERIC)) {
@@ -89,14 +90,14 @@ public class ToCharFunction extends Function {
 
       // Compile format to check it
       NumberFormat format = NumberFormat.of(pattern);
-      return new Call(new NumberToCharFunction(format), call.getOperand(0), Literal.of(pattern));
+      return new Call(new ToCharNumber(format), call.getOperand(0), Literal.of(pattern));
     }
 
-    if (type.isFamily(TypeFamily.BOOLEAN)) {
-      return new Call(BooleanToCharFunction.INSTANCE, call.getOperands());
+    if (type.is(TypeId.BOOLEAN)) {
+      return new Call(ToCharBoolean.INSTANCE, call.getOperands());
     }
 
-    if (type.isFamily(TypeFamily.BINARY)) {
+    if (type.is(TypeId.BINARY)) {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT, "HEX");
       }
@@ -105,13 +106,13 @@ public class ToCharFunction extends Function {
       pattern = pattern.toUpperCase();
 
       if (pattern.equals("HEX")) {
-        return new Call(BinaryToCharHexFunction.INSTANCE, call.getOperands());
+        return new Call(ToCharHexBinary.INSTANCE, call.getOperands());
       }
       if (pattern.equals("BASE64")) {
-        return new Call(BinaryToCharBase64Function.INSTANCE, call.getOperands());
+        return new Call(ToCharBase64Binary.INSTANCE, call.getOperands());
       }
       if (pattern.equals("UTF8") || pattern.equals("UTF-8")) {
-        return new Call(BinaryToCharUtf8Function.INSTANCE, call.getOperands());
+        return new Call(ToCharUtf8Binary.INSTANCE, call.getOperands());
       }
 
       throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
@@ -121,11 +122,11 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a date expression to a string value. */
-  private static final class DateToCharFunction extends ToCharFunction {
+  private static final class ToCharDate extends ToCharFunction {
 
     private final DateTimeFormat formatter;
 
-    public DateToCharFunction(DateTimeFormat formatter) {
+    public ToCharDate(DateTimeFormat formatter) {
       super();
       this.formatter = formatter;
     }
@@ -141,11 +142,11 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a numeric expression to a string value. */
-  private static final class NumberToCharFunction extends ToCharFunction {
+  private static final class ToCharNumber extends ToCharFunction {
 
     private final NumberFormat formatter;
 
-    public NumberToCharFunction(NumberFormat formatter) {
+    public ToCharNumber(NumberFormat formatter) {
       super();
       this.formatter = formatter;
     }
@@ -161,10 +162,10 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a boolean expression to a string value. */
-  private static final class BooleanToCharFunction extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new BooleanToCharFunction();
+  private static final class ToCharBoolean extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new ToCharBoolean();
 
-    public BooleanToCharFunction() {
+    public ToCharBoolean() {
       super();
     }
 
@@ -179,8 +180,8 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a binary expression to a string value. */
-  private static final class BinaryToCharHexFunction extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new BinaryToCharHexFunction();
+  private static final class ToCharHexBinary extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new ToCharHexBinary();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -192,8 +193,8 @@ public class ToCharFunction extends Function {
     }
   }
 
-  private static final class BinaryToCharUtf8Function extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new BinaryToCharUtf8Function();
+  private static final class ToCharUtf8Binary extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new ToCharUtf8Binary();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -205,8 +206,8 @@ public class ToCharFunction extends Function {
     }
   }
 
-  private static final class BinaryToCharBase64Function extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new BinaryToCharBase64Function();
+  private static final class ToCharBase64Binary extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new ToCharBase64Binary();
 
     @Override
     public Object eval(final IExpression[] operands) {

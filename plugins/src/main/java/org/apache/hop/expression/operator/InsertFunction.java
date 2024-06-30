@@ -27,7 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /**
  * Replaces a substring of the specified length, starting at the specified position, with a new
@@ -48,12 +48,12 @@ public class InsertFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Type type = call.getOperand(0).getType();
+    Type type = call.getType();
 
-    if (type.isFamily(TypeFamily.STRING)) {
+    if (type.is(TypeId.STRING)) {
       return new Call(InsertString.INSTANCE, call.getOperands());
     }
-    if (type.isFamily(TypeFamily.BINARY)) {
+    if (type.is(TypeId.BINARY)) {
       return new Call(InsertBinary.INSTANCE, call.getOperands());
     }
 

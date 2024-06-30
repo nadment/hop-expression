@@ -55,12 +55,12 @@ public class AddQuartersFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null) return null;
+    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
+    if (datetime == null) return null;
 
     Long quarters = operands[1].getValue(Long.class);
     if (quarters == null) return null;
 
-    return value.plusMonths(3 * quarters);
+    return datetime.plusMonths(3 * quarters);
   }
 }

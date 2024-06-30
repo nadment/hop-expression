@@ -29,6 +29,7 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /** Check if a string or a numeric is a valid number. */
 @FunctionPlugin
@@ -47,7 +48,7 @@ public class IsNumberFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().isFamily(TypeFamily.STRING)) {
+    if (call.getOperand(0).getType().is(TypeId.STRING)) {
       return call;
     }
 

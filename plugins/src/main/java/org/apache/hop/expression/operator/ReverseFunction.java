@@ -26,7 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeId;
 
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
@@ -50,7 +50,7 @@ public class ReverseFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isFamily(TypeFamily.BINARY)) {
+    if (type.is(TypeId.BINARY)) {
       return new Call(BinaryReverseFunction, call.getOperand(0));
     }
 

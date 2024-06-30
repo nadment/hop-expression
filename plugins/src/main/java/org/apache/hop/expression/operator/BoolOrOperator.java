@@ -33,6 +33,7 @@ import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
@@ -80,7 +81,7 @@ public class BoolOrOperator extends BinaryOperator {
 
     final List<IExpression> nullTerms = new ArrayList<>();
     final List<IExpression> notNullTerms = new ArrayList<>();
-    final List<IExpression> identifiers = new ArrayList<>();
+    final List<Identifier> identifiers = new ArrayList<>();
     final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
@@ -103,11 +104,9 @@ public class BoolOrOperator extends BinaryOperator {
         predicates.remove(predicate);
       }
 
-      if (predicate.is(Kind.IDENTIFIER)) {
-        identifiers.add(predicate);
-      } else if (predicate.is(Kind.CALL)) {
-        Call term = predicate.asCall();
-
+      if (predicate instanceof Identifier identifier) {
+        identifiers.add(identifier);
+      } else if (predicate instanceof Call term) {
         if (term.is(Operators.IS_NULL)) {
           nullTerms.add(term.getOperand(0));
         }

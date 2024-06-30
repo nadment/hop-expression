@@ -1921,18 +1921,28 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Repeat() throws Exception {
     // String
-    evalEquals("Repeat('ABCD',3)", "ABCDABCDABCD").returnType(Types.STRING);
-    evalEquals("Repeat('ABCDEFCD',0)", "");
+    evalEquals("Repeat('ABC',0)", "").returnType(Types.STRING);
+    evalEquals("Repeat('ABC',1)", "ABC").returnType(Types.STRING);
+    evalEquals("Repeat('ABC',2)", "ABCABC").returnType(Types.STRING);
+    evalEquals("Repeat('ABC',3)", "ABCABCABC").returnType(Types.STRING);
     evalNull("Repeat(NULL_STRING,2)").returnType(Types.STRING);
-    evalNull("Repeat('ABCD',NULL_INTEGER)");
+    evalNull("Repeat('ABC',NULL_INTEGER)");
 
     // Binary
-    evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34})
-        .returnType(Types.BINARY);
+    evalEquals("Repeat(BINARY '1234',0)", new byte[] {}).returnType(Types.BINARY);
+    evalEquals("Repeat(BINARY '1234',1)", new byte[] {0x12, 0x34});
+    evalEquals("Repeat(BINARY '1234',2)", new byte[] {0x12, 0x34, 0x12, 0x34});
+    evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
+
     evalNull("Repeat(NULL_BINARY,2)");
     evalNull("Repeat(FIELD_BINARY,NULL_INTEGER)");
 
+    // Bad syntax
     evalFails("Repeat()");
+
+    // Result to large
+    evalFails("Repeat('ABC',9999999999999)");
+    evalFails("Repeat(BINARY '1234',9999999999999)");
   }
 
   @Test
