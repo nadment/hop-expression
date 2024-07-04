@@ -24,23 +24,22 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 This plugin provides 4 transformations and 2 actions that use the power of an expression language.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression,24,24,role=text-center]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/expression.svg[Expression,24,24,role=text-center]
 `Expression` transformation calculate fields with expression.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/route.svg[Route,24,24,role=left]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/route.svg[Route,24,24,role=left]
 `Route` transformation switches rows according to an expression condition.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/where.svg[Where,24,24,role=left]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/where.svg[Where,24,24,role=left]
 `Where` transformation filter rows with expression condition.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/aggregate.svg[Where,24,24,role=left]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/aggregate.svg[Aggregate,24,24,role=left]
 `Aggregate` transformation uses aggregation functions to calculate values on groups of rows.
 
-
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/set-variable.svg[Set variable,24,24,role=left]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/set-variable.svg[Set variable,24,24,role=left]
 `Set variable` action provide the possibility to set variables or modify existing variables using expressions.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/loop.svg[Loop,24,24,role=left]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/loop.svg[Loop,24,24,role=left]
 `Loop (experimental)` action provide the possibility to execute a workflow in a loop while a condition expression is true.
 
 
@@ -70,7 +69,7 @@ end
 * Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
 * Pattern matching operators `LIKE` `ILIKE` `SIMILAR TO`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
+* Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
 * User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading
 * Are not case-sensitive, excepted for identifier
@@ -78,7 +77,7 @@ end
 * Optimized immediately after parsing, so the `5+XYZ+4*2+5` is optimized to `XYZ+18` and has no impact on performance
 
 
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
+https://github.com/nadment/hop-expression/blob/master/src/main/doc/expression.adoc[Documentation] are work in progress.
 
 
 ## Extends with plugins
@@ -119,7 +118,7 @@ Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
 
-1. Unzip the plugin archive into the hop\plugins\ directory
+1. Unzip the plugin archive into the hop\plugins\misc directory
 2. Restart Hop
 
 ### Support
