@@ -105,6 +105,10 @@ public class AddOperator extends BinaryOperator {
   private static final class AddInteger extends AddOperator {
     private static final AddOperator INSTANCE = new AddInteger();
 
+    private AddInteger() {
+      super();
+    }
+
     @Override
     public boolean isSymmetrical() {
       return true;
@@ -130,6 +134,10 @@ public class AddOperator extends BinaryOperator {
 
     private static final AddOperator INSTANCE = new AddNumber();
 
+    private AddNumber() {
+      super();
+    }
+
     @Override
     public boolean isSymmetrical() {
       return true;
@@ -154,6 +162,10 @@ public class AddOperator extends BinaryOperator {
   /** Adds a specified interval to a date or timestamp */
   private static final class AddInterval extends AddOperator {
     private static final AddOperator INSTANCE = new AddInterval();
+
+    private AddInterval() {
+      super();
+    }
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

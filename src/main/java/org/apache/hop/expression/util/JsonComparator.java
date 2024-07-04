@@ -33,12 +33,8 @@ public class JsonComparator implements Comparator<JsonNode> {
     if (o1.equals(o2)) {
       return 0;
     }
-    if ((o1 instanceof NumericNode) && (o2 instanceof NumericNode)) {
-      Double d1 = ((NumericNode) o1).asDouble();
-      Double d2 = ((NumericNode) o2).asDouble();
-      if (d1.compareTo(d2) == 0) {
-        return 0;
-      }
+    if ((o1 instanceof NumericNode n1) && (o2 instanceof NumericNode n2)) {
+      return Double.compare(n1.asDouble(), n2.asDouble());
     }
     return 1;
   }

@@ -65,6 +65,10 @@ public class EndsWithFunction extends Function {
   private static final class EndsWithString extends EndsWithFunction {
     public static final EndsWithFunction INSTANCE = new EndsWithString();
 
+    private EndsWithString() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -82,6 +86,10 @@ public class EndsWithFunction extends Function {
    */
   private static final class EndsWithBinary extends EndsWithFunction {
     public static final EndsWithFunction INSTANCE = new EndsWithBinary();
+
+    private EndsWithBinary() {
+      super();
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

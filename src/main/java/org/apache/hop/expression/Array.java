@@ -17,6 +17,7 @@ package org.apache.hop.expression;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import org.apache.hop.expression.type.Type;
@@ -28,11 +29,11 @@ public final class Array implements IExpression, Iterable<IExpression> {
   /**
    * Iterator implementation used to efficiently expose contents of an Array as read-only iterator.
    */
-  public class Iterator implements java.util.Iterator<IExpression> {
+  private class ArrayIterator implements java.util.Iterator<IExpression> {
 
     private int index;
 
-    public Iterator() {
+    public ArrayIterator() {
       index = 0;
     }
 
@@ -114,8 +115,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof Array) {
-      Array array = (Array) other;
+    if (other instanceof Array array) {
       return Arrays.equals(values, array.values);
     }
     return false;
@@ -134,7 +134,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void unparse(final StringWriter writer, int leftPrec, int rightPrec) {
     writer.append("ARRAY[");
     this.unparseValues(writer);
     writer.append(']');
@@ -145,7 +145,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
    *
    * @param writer
    */
-  public void unparseValues(StringWriter writer) {
+  public void unparseValues(final StringWriter writer) {
     boolean first = true;
     for (IExpression expression : values) {
       if (first) first = false;
@@ -170,7 +170,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   @Override
   public java.util.Iterator<IExpression> iterator() {
-    return new Iterator();
+    return new ArrayIterator();
   }
 
   @Override
@@ -206,9 +206,9 @@ public final class Array implements IExpression, Iterable<IExpression> {
    * @see #contains(Object)
    */
   public boolean containsAll(Collection<IExpression> collection) {
-    Iterator it = (Iterator) collection.iterator();
-    while (it.hasNext()) {
-      if (contains(it.next()) == false) {
+    Iterator<IExpression> iterator = collection.iterator();
+    while (iterator.hasNext()) {
+      if (!contains(iterator.next())) {
         return false;
       }
     }

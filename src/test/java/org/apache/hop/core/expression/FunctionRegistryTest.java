@@ -23,10 +23,10 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.operator.CoalesceFunction;
 import org.junit.jupiter.api.Test;
 
-public class FunctionRegistryTest extends ExpressionTest {
+class FunctionRegistryTest extends ExpressionTest {
 
   @Test
-  public void test() throws Exception {
+  void registry() throws Exception {
     assertNotNull(FunctionRegistry.getFunctions());
     assertNotNull(FunctionRegistry.getFunctionNames());
     assertNull(FunctionRegistry.getFunction(null));
@@ -40,7 +40,7 @@ public class FunctionRegistryTest extends ExpressionTest {
   }
 
   @Test
-  public void failOnAlreadyRegistredFucntion() throws Exception {
+  void failOnAlreadyRegistredFucntion() throws Exception {
     FunctionRegistry.register("COALESCE", new CoalesceFunction());
   }
 }

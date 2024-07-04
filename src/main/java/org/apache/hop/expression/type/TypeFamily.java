@@ -84,8 +84,7 @@ public enum TypeFamily {
         return family.isFamily(INET);
       case ARRAY:
         return family.isFamily(ARRAY);
-      case ANY:
-      case NONE:
+      case ANY, NONE:
         return true;
       case SYMBOL:
       default:

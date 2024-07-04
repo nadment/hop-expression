@@ -89,7 +89,6 @@ public class LikeOperator extends Operator {
 
       // field LIKE '%' → IFNULL(field,NULL,TRUE)
       if ("%".equals(pattern)) {
-        // return new Call(Operators.EQUAL, value, value);
         return new Call(Nvl2Function.INSTANCE, value, Literal.TRUE, Literal.NULL);
       }
 

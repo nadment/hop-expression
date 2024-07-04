@@ -83,6 +83,10 @@ public class NegateOperator extends PrefixUnaryOperator {
   private static final class NegateInteger extends NegateOperator {
     private static final NegateOperator INSTANCE = new NegateInteger();
 
+    private NegateInteger() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -98,6 +102,10 @@ public class NegateOperator extends PrefixUnaryOperator {
   private static final class NegateNumber extends NegateOperator {
     private static final NegateOperator INSTANCE = new NegateNumber();
 
+    private NegateNumber() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
@@ -108,6 +116,10 @@ public class NegateOperator extends PrefixUnaryOperator {
 
   private static final class NegateInterval extends NegateOperator {
     private static final NegateOperator INSTANCE = new NegateInterval();
+
+    private NegateInterval() {
+      super();
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

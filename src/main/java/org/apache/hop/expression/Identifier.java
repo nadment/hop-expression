@@ -138,8 +138,7 @@ public class Identifier implements IExpression {
           return valueMeta.getString(row[ordinal]);
         case IValueMeta.TYPE_INTEGER:
           return valueMeta.getInteger(row[ordinal]);
-        case IValueMeta.TYPE_NUMBER:
-        case IValueMeta.TYPE_BIGNUMBER:
+        case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER:
           return valueMeta.getBigNumber(row[ordinal]);
         case ValueMetaJson.TYPE_JSON:
           return valueMeta.getNativeDataType(row[ordinal]);
@@ -295,15 +294,13 @@ public class Identifier implements IExpression {
     switch (meta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
         return Types.BOOLEAN;
-      case IValueMeta.TYPE_DATE:
-      case IValueMeta.TYPE_TIMESTAMP:
+      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP:
         return Types.DATE;
       case IValueMeta.TYPE_STRING:
         return StringType.of(meta.getLength());
       case IValueMeta.TYPE_INTEGER:
         return IntegerType.of(meta.getLength());
-      case IValueMeta.TYPE_NUMBER:
-      case IValueMeta.TYPE_BIGNUMBER:
+      case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER:
         return NumberType.of(meta.getLength(), meta.getPrecision());
       case ValueMetaJson.TYPE_JSON:
         return Types.JSON;

@@ -25,7 +25,7 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 /** Binary operator, as in "x + y". */
 public abstract class BinaryOperator extends Operator {
 
-  public BinaryOperator(
+  protected BinaryOperator(
       String id,
       String name,
       int precedence,

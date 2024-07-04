@@ -27,7 +27,6 @@ import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionListener;
@@ -125,8 +124,7 @@ public class ExpressionText extends Composite {
     wToolBar.setLayoutData(
         new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_CENTER));
 
-    modifyListenerTooltipText = getModifyListenerTooltipText(wText);
-    wText.addModifyListener(modifyListenerTooltipText);
+    wText.addListener(SWT.Modify, (e) -> updateTooltip(wText));
 
     controlSpaceKeyAdapter =
         new ControlSpaceKeyAdapter(
@@ -172,24 +170,20 @@ public class ExpressionText extends Composite {
     this.insertTextInterface = insertTextInterface;
   }
 
-  protected ModifyListener getModifyListenerTooltipText(final Text textField) {
-    return new ModifyListener() {
-      public void modifyText(ModifyEvent e) {
-        if (textField.getEchoChar() == '\0') { // Can't show passwords ;-)
+  protected void updateTooltip(final Text textField) {
+    if (textField.getEchoChar() == '\0') { // Can't show passwords ;-)
 
-          String tip = textField.getText();
+      String tip = textField.getText();
 
-          if (!Utils.isEmpty(tip) && !Utils.isEmpty(getToolTipText())) {
-            tip += Const.CR + Const.CR + getToolTipText();
-          }
-
-          if (Utils.isEmpty(tip)) {
-            tip = getToolTipText();
-          }
-          textField.setToolTipText(variables.resolve(tip));
-        }
+      if (!Utils.isEmpty(tip) && !Utils.isEmpty(getToolTipText())) {
+        tip += Const.CR + Const.CR + getToolTipText();
       }
-    };
+
+      if (Utils.isEmpty(tip)) {
+        tip = getToolTipText();
+      }
+      textField.setToolTipText(variables.resolve(tip));
+    }
   }
 
   /**

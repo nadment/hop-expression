@@ -56,15 +56,15 @@ public class LPadFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeId.BINARY)) {
-      return new Call(LPadBinaryFunction.INSTANCE, call.getOperands());
+      return new Call(LPadBinary.INSTANCE, call.getOperands());
     }
 
-    return new Call(LPadStringFunction.INSTANCE, call.getOperands());
+    return new Call(LPadString.INSTANCE, call.getOperands());
   }
 
   /** The function left-pads a string with another string, to a certain length. */
-  private static final class LPadStringFunction extends LPadFunction {
-    public static final LPadFunction INSTANCE = new LPadStringFunction();
+  private static final class LPadString extends LPadFunction {
+    public static final LPadFunction INSTANCE = new LPadString();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -116,9 +116,9 @@ public class LPadFunction extends Function {
   }
 
   /** The function left-pads a binary with another binary, to a certain length. */
-  private static final class LPadBinaryFunction extends LPadFunction {
+  private static final class LPadBinary extends LPadFunction {
 
-    public static final LPadFunction INSTANCE = new LPadBinaryFunction();
+    public static final LPadFunction INSTANCE = new LPadBinary();
 
     private static final byte[] DEFAULT = new byte[] {0x00};
 

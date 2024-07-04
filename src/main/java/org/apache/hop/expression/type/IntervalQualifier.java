@@ -127,8 +127,7 @@ public enum IntervalQualifier {
    */
   public TimeUnit getStartUnit() {
     switch (this) {
-      case YEAR:
-      case YEAR_TO_MONTH:
+      case YEAR, YEAR_TO_MONTH:
         return TimeUnit.YEAR;
       case QUARTER:
         return TimeUnit.QUARTER;
@@ -136,17 +135,11 @@ public enum IntervalQualifier {
         return TimeUnit.MONTH;
       case WEEK:
         return TimeUnit.WEEK;
-      case DAY:
-      case DAY_TO_HOUR:
-      case DAY_TO_MINUTE:
-      case DAY_TO_SECOND:
+      case DAY, DAY_TO_HOUR, DAY_TO_MINUTE, DAY_TO_SECOND:
         return TimeUnit.DAY;
-      case HOUR:
-      case HOUR_TO_MINUTE:
-      case HOUR_TO_SECOND:
+      case HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND:
         return TimeUnit.HOUR;
-      case MINUTE:
-      case MINUTE_TO_SECOND:
+      case MINUTE, MINUTE_TO_SECOND:
         return TimeUnit.MINUTE;
       case SECOND:
         return TimeUnit.SECOND;
@@ -164,24 +157,17 @@ public enum IntervalQualifier {
         return TimeUnit.YEAR;
       case QUARTER:
         return TimeUnit.QUARTER;
-      case YEAR_TO_MONTH:
-      case MONTH:
+      case YEAR_TO_MONTH, MONTH:
         return TimeUnit.MONTH;
       case WEEK:
         return TimeUnit.WEEK;
       case DAY:
         return TimeUnit.DAY;
-      case DAY_TO_HOUR:
-      case HOUR:
+      case DAY_TO_HOUR, HOUR:
         return TimeUnit.HOUR;
-      case DAY_TO_MINUTE:
-      case HOUR_TO_MINUTE:
-      case MINUTE:
+      case DAY_TO_MINUTE, HOUR_TO_MINUTE, MINUTE:
         return TimeUnit.MINUTE;
-      case DAY_TO_SECOND:
-      case HOUR_TO_SECOND:
-      case MINUTE_TO_SECOND:
-      case SECOND:
+      case DAY_TO_SECOND, HOUR_TO_SECOND, MINUTE_TO_SECOND, SECOND:
         return TimeUnit.SECOND;
       default:
         throw new AssertionError(this);
@@ -231,13 +217,7 @@ public enum IntervalQualifier {
    * @return whether interval with this type has years
    */
   public boolean hasYears() {
-    switch (this) {
-      case YEAR:
-      case YEAR_TO_MONTH:
-        return true;
-      default:
-        return false;
-    }
+    return this == YEAR || this == YEAR_TO_MONTH;
   }
 
   /**
@@ -246,14 +226,7 @@ public enum IntervalQualifier {
    * @return whether interval with this type has months
    */
   public boolean hasMonths() {
-    switch (this) {
-      case MONTH:
-      case QUARTER:
-      case YEAR_TO_MONTH:
-        return true;
-      default:
-        return false;
-    }
+    return this == MONTH || this == QUARTER || this == YEAR_TO_MONTH;
   }
 
   /**
@@ -262,16 +235,11 @@ public enum IntervalQualifier {
    * @return whether interval with this type has days
    */
   public boolean hasDays() {
-    switch (this) {
-      case DAY:
-      case DAY_TO_HOUR:
-      case DAY_TO_MINUTE:
-      case DAY_TO_SECOND:
-      case WEEK:
-        return true;
-      default:
-        return false;
-    }
+    return this == DAY
+        || this == DAY_TO_HOUR
+        || this == DAY_TO_MINUTE
+        || this == DAY_TO_SECOND
+        || this == WEEK;
   }
 
   /**
@@ -280,17 +248,12 @@ public enum IntervalQualifier {
    * @return whether interval with this type has hours
    */
   public boolean hasHours() {
-    switch (this) {
-      case HOUR:
-      case DAY_TO_HOUR:
-      case DAY_TO_MINUTE:
-      case DAY_TO_SECOND:
-      case HOUR_TO_MINUTE:
-      case HOUR_TO_SECOND:
-        return true;
-      default:
-        return false;
-    }
+    return this == HOUR
+        || this == DAY_TO_HOUR
+        || this == DAY_TO_MINUTE
+        || this == DAY_TO_SECOND
+        || this == HOUR_TO_MINUTE
+        || this == HOUR_TO_SECOND;
   }
 
   /**
@@ -299,17 +262,12 @@ public enum IntervalQualifier {
    * @return whether interval with this type has minutes
    */
   public boolean hasMinutes() {
-    switch (this) {
-      case MINUTE:
-      case DAY_TO_MINUTE:
-      case DAY_TO_SECOND:
-      case HOUR_TO_MINUTE:
-      case HOUR_TO_SECOND:
-      case MINUTE_TO_SECOND:
-        return true;
-      default:
-        return false;
-    }
+    return this == MINUTE
+        || this == DAY_TO_MINUTE
+        || this == DAY_TO_SECOND
+        || this == HOUR_TO_MINUTE
+        || this == HOUR_TO_SECOND
+        || this == MINUTE_TO_SECOND;
   }
 
   /**
@@ -318,15 +276,10 @@ public enum IntervalQualifier {
    * @return whether interval with this qualifier has seconds
    */
   public boolean hasSeconds() {
-    switch (this) {
-      case SECOND:
-      case DAY_TO_SECOND:
-      case HOUR_TO_SECOND:
-      case MINUTE_TO_SECOND:
-        return true;
-      default:
-        return false;
-    }
+    return this == SECOND
+        || this == DAY_TO_SECOND
+        || this == HOUR_TO_SECOND
+        || this == MINUTE_TO_SECOND;
   }
 
   @Override

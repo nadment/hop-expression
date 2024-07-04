@@ -25,7 +25,7 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 /** Postfix unary operator, as in "x is null". */
 public abstract class PrefixUnaryOperator extends Operator {
 
-  public PrefixUnaryOperator(
+  protected PrefixUnaryOperator(
       String id,
       String name,
       int precedence,

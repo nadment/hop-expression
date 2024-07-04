@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 public class IdentifierTest extends ExpressionTest {
 
   @Test
-  public void test() throws Exception {
+  public void identifier() throws Exception {
     Identifier identifier1 = new Identifier(0, "FIELD_STRING");
     Identifier identifier2 = new Identifier(10, "FIELD_STRING");
     Identifier identifier3 = new Identifier("FIELD_STRING");

@@ -38,6 +38,10 @@ public class TryToBinaryFunction extends Function {
   private static final class TryToBinaryHex extends TryToBinaryFunction {
     private static final TryToBinaryFunction INSTANCE = new TryToBinaryHex();
 
+    private TryToBinaryHex() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
@@ -56,6 +60,10 @@ public class TryToBinaryFunction extends Function {
 
     private static final TryToBinaryFunction INSTANCE = new TryToBinaryUtf8();
 
+    private TryToBinaryUtf8() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
@@ -72,6 +80,10 @@ public class TryToBinaryFunction extends Function {
 
   private static final class TryToBinaryBase64 extends TryToBinaryFunction {
     private static final TryToBinaryFunction INSTANCE = new TryToBinaryBase64();
+
+    private TryToBinaryBase64() {
+      super();
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

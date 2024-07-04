@@ -1061,8 +1061,7 @@ public class ExpressionParser {
 
     // Function with custom syntax
     switch (token.text()) {
-      case "CAST":
-      case "TRY_CAST":
+      case "CAST", "TRY_CAST":
         return parseFunctionCast(token, function);
       case "EXTRACT":
         return parseFunctionExtract(token, function);
@@ -1448,17 +1447,7 @@ public class ExpressionParser {
             throw new ExpressionException(start, ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
           }
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '.': // Number without zero .1
+        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.': // Number without zero .1
           {
             int start = position;
             char previous;

@@ -131,8 +131,7 @@ public final class NumberType extends Type {
       return null;
     }
 
-    if (value instanceof BigDecimal) {
-      BigDecimal number = (BigDecimal) value;
+    if (value instanceof BigDecimal number) {
       if (this.scale != SCALE_NOT_SPECIFIED) {
         number = number.setScale(scale, RoundingMode.DOWN);
       }

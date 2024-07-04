@@ -139,9 +139,9 @@ public final class StringType extends Type {
         number = (BigDecimal) value;
       }
       result = NumberFormat.of(pattern).format(number);
-    } else if (value instanceof ZonedDateTime) {
+    } else if (value instanceof ZonedDateTime datetime) {
       if (pattern == null) pattern = "YYYY-MM-DD";
-      result = DateTimeFormat.of(pattern).format((ZonedDateTime) value);
+      result = DateTimeFormat.of(pattern).format(datetime);
     } else if (value instanceof byte[] bytes) {
       result = new String(bytes, StandardCharsets.UTF_8);
     } else if (value instanceof JsonNode json) {

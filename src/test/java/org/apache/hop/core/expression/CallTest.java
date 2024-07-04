@@ -30,10 +30,10 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
-public class CallTest extends ExpressionTest {
+class CallTest extends ExpressionTest {
 
   @Test
-  public void testCall() throws Exception {
+  void testCall() throws Exception {
     Call call1 = new Call(3, Operators.ADD, Literal.of(3), Literal.of(5));
     Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
 
@@ -82,7 +82,7 @@ public class CallTest extends ExpressionTest {
   }
 
   @Test
-  public void coercion() throws Exception {
+  void coercion() throws Exception {
 
     // Coercion to boolean
     evalTrue("FIELD_STRING_BOOLEAN_TRUE IS TRUE");
@@ -108,7 +108,7 @@ public class CallTest extends ExpressionTest {
   }
 
   @Test
-  public void normalizeReversibleOperator() throws Exception {
+  void normalizeReversibleOperator() throws Exception {
 
     // Normalize identifiers by name
     optimize(
@@ -118,7 +118,7 @@ public class CallTest extends ExpressionTest {
   }
 
   @Test
-  public void normalizeSymmetricalOperator() throws Exception {
+  void normalizeSymmetricalOperator() throws Exception {
 
     // Normalize identifiers by name
     optimize(

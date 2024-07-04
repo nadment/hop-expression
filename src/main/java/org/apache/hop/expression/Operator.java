@@ -452,20 +452,17 @@ public abstract class Operator {
 
       // Swap terms 1=A → A=1
       if (left.is(Kind.LITERAL)) {
-        System.out.println("Swap literal to right");
         return swap(call);
       }
       // Swap terms B=A → A=B
       if (left.is(Kind.IDENTIFIER)
           && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-        System.out.println("Swap identifier by name");
         return swap(call);
       }
     }
 
     // Normalize operator by moving the low-cost operand to the left
     if (left.getCost() > right.getCost()) {
-      System.out.println("Swap term by cost");
       return swap(call);
     }
 

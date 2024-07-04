@@ -59,6 +59,10 @@ public class RightFunction extends Function {
   private static final class RightString extends RightFunction {
     public static final RightFunction INSTANCE = new RightString();
 
+    private RightString() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
@@ -81,6 +85,10 @@ public class RightFunction extends Function {
   /** The function extracts a number of bytes from a binary (starting from right) */
   private static final class RightBinary extends RightFunction {
     public static final RightFunction INSTANCE = new RightBinary();
+
+    private RightBinary() {
+      super();
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -64,7 +64,7 @@ public class RepeatFunction extends Function {
       if (repeat == null) return null;
 
       final int len = value.length();
-      final long longSize = (long) len * repeat;
+      final long longSize = len * repeat;
       final int size = (int) longSize;
       if (size != longSize) {
         throw new ExpressionException("Result size too large: %s".formatted(longSize));

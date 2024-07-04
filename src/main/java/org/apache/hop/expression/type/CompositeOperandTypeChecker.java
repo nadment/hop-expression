@@ -94,8 +94,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
         return repeatRange;
       case SEQUENCE:
         return OperandCountRange.of(rules.size());
-      case AND:
-      case OR:
+      case AND, OR:
       default:
         final List<IOperandCountRange> ranges =
             new AbstractList<IOperandCountRange>() {

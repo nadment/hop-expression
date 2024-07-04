@@ -170,9 +170,9 @@ public abstract class Type {
   @Override
   public final boolean equals(Object obj) {
     return this == obj
-        || obj instanceof Type
-            && Objects.equals(this.signature, ((Type) obj).signature)
-            && nullable == ((Type) obj).nullable;
+        || obj instanceof Type type
+            && Objects.equals(this.signature, type.signature)
+            && nullable == type.nullable;
   }
 
   @Override

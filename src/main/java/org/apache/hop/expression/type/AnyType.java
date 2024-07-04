@@ -72,15 +72,15 @@ public final class AnyType extends Type {
         return clazz.cast(JsonType.convertToJson(str));
       }
     }
-    if (value instanceof BigDecimal) {
+    if (value instanceof BigDecimal number) {
       if (clazz == Boolean.class) {
-        return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
+        return clazz.cast(number.unscaledValue() != BigInteger.ZERO);
       }
       if (clazz == Long.class) {
-        return clazz.cast(((BigDecimal) value).longValue());
+        return clazz.cast(number.longValue());
       }
       if (clazz == String.class) {
-        return clazz.cast(StringType.convertToString((BigDecimal) value));
+        return clazz.cast(StringType.convertToString(number));
       }
     }
     if (value instanceof Boolean bool) {

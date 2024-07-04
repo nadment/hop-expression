@@ -88,17 +88,17 @@ public final class DateType extends Type {
       return null;
     }
 
-    if (value instanceof ZonedDateTime) {
-      return (ZonedDateTime) value;
+    if (value instanceof ZonedDateTime datetime) {
+      return datetime;
     }
-    if (value instanceof String) {
-      return DateTimeFormat.of(pattern).parse((String) value);
+    if (value instanceof String str) {
+      return DateTimeFormat.of(pattern).parse(str);
     }
-    if (value instanceof Long) {
-      return convertToDate((Long) value);
+    if (value instanceof Long number) {
+      return convertToDate(number);
     }
-    if (value instanceof BigDecimal) {
-      return convertToDate((BigDecimal) value);
+    if (value instanceof BigDecimal number) {
+      return convertToDate(number);
     }
 
     throw new ConversionException(

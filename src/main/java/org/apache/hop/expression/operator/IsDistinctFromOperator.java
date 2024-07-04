@@ -54,6 +54,7 @@ public class IsDistinctFromOperator extends BinaryOperator {
     return Operators.IS_NOT_DISTINCT_FROM;
   }
 
+  @Override
   public Operator reverse() {
     return this;
   }

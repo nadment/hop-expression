@@ -96,6 +96,10 @@ public class TryToDateFunction extends Function {
   private static final class TryToDateInteger extends TryToDateFunction {
     private static final TryToDateFunction INSTANCE = new TryToDateInteger();
 
+    private TryToDateInteger() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -106,6 +110,10 @@ public class TryToDateFunction extends Function {
 
   private static final class TryToDateNumber extends TryToDateFunction {
     private static final TryToDateFunction INSTANCE = new TryToDateNumber();
+
+    private TryToDateNumber() {
+      super();
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

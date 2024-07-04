@@ -94,6 +94,10 @@ public class ToDateFunction extends Function {
   private static final class ToDateInteger extends ToDateFunction {
     private static final ToDateInteger INSTANCE = new ToDateInteger();
 
+    private ToDateInteger() {
+      super();
+    }
+
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -104,6 +108,10 @@ public class ToDateFunction extends Function {
 
   private static final class ToDateNumber extends ToDateFunction {
     private static final ToDateFunction INSTANCE = new ToDateNumber();
+
+    private ToDateNumber() {
+      super();
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

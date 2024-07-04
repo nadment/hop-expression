@@ -28,10 +28,10 @@ import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
-public class ArrayTest extends ExpressionTest {
+class ArrayTest extends ExpressionTest {
 
   @Test
-  public void test() throws Exception {
+  void array() throws Exception {
     Array array0 = new Array();
     Array array1 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
     Array array2 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
