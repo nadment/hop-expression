@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;

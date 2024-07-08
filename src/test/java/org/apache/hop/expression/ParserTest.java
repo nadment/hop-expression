@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,15 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.hop.expression.Array;
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorComparator;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;

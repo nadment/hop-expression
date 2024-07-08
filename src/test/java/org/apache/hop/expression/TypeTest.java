@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,9 +30,6 @@ import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Random;
-import org.apache.hop.expression.Array;
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;

@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.IntervalQualifier;
 import org.junit.jupiter.api.Test;

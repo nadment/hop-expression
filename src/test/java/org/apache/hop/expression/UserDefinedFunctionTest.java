@@ -12,17 +12,12 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.FunctionArgument;
-import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.UserDefinedFunction;
-import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;

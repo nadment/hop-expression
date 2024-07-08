@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -30,10 +30,6 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;

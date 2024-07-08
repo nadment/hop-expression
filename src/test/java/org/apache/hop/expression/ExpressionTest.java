@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,11 +49,6 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;

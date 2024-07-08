@@ -13,13 +13,12 @@
  * the License.
  */
 
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.apache.hop.expression.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 public class TimeUnitTest extends ExpressionTest {

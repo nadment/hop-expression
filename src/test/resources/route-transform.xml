@@ -1,0 +1,36 @@
+<transform>
+    <name>Route row</name>
+    <type>Route</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <default_target_transform>Condition default</default_target_transform>
+    <routes>
+      <route>
+        <condition>FIELD_BOOLEAN is TRUE</condition>
+        <target_transform>Condition 1</target_transform>
+      </route>
+      <route>
+        <condition>FIELD_INTEGER between 10 and 50</condition>
+        <target_transform>Condition 2</target_transform>
+      </route>
+      <route>
+        <condition>FIELD_DATE > LAST_DAY(CURRENT_DATE(), QUARTER)</condition>
+        <target_transform>Condition 3</target_transform>
+      </route>
+      <route>
+        <condition/>
+        <target_transform>Condition 4</target_transform>
+      </route>
+    </routes>
+    <attributes/>
+    <GUI>
+      <xloc>304</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>

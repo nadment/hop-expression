@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,11 +29,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.TimeZone;
-import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;

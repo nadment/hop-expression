@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,10 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.hop.expression.Array;
-import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.Kind;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;

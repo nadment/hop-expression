@@ -13,13 +13,12 @@
  * the License.
  */
 
-package org.apache.hop.core.expression;
+package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.operator.CoalesceFunction;
 import org.junit.jupiter.api.Test;
 
