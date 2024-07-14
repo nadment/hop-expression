@@ -61,8 +61,6 @@ public class ExpressionText extends Composite {
 
   protected Text wText;
 
-  protected ModifyListener modifyListenerTooltipText;
-
   protected ToolBar wToolBar;
 
   protected ExpressionMode mode;
@@ -198,7 +196,6 @@ public class ExpressionText extends Composite {
    */
   public void setText(String text) {
     wText.setText(text);
-    modifyListenerTooltipText.modifyText(null);
   }
 
   public Text getTextWidget() {
@@ -257,7 +254,6 @@ public class ExpressionText extends Composite {
   public void setToolTipText(String toolTipText) {
     super.setToolTipText(toolTipText);
     wText.setToolTipText(toolTipText);
-    modifyListenerTooltipText.modifyText(null);
   }
 
   public void setEditable(boolean editable) {
@@ -279,6 +275,5 @@ public class ExpressionText extends Composite {
   public void setVariables(IVariables vars) {
     variables = vars;
     controlSpaceKeyAdapter.setVariables(variables);
-    modifyListenerTooltipText.modifyText(null);
   }
 }
