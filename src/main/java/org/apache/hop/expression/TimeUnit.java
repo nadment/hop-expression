@@ -14,6 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
@@ -28,6 +32,22 @@ import org.apache.hop.expression.type.Interval;
 public enum TimeUnit {
   /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
   EPOCH {
+
+    @Override
+    public long extract(final LocalDate date) {
+      return date.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.toEpochSecond(ZoneOffset.UTC);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.toEpochSecond();
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.toEpochSecond();
@@ -36,6 +56,22 @@ public enum TimeUnit {
 
   /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
   MILLENNIUM("MILLENNIUMS") {
+
+    @Override
+    public long extract(final LocalDate date) {
+      return millennium(date.getYear());
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return millennium(datetime.getYear());
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return millennium(datetime.getYear());
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return millennium(datetime.getYear());
@@ -50,6 +86,21 @@ public enum TimeUnit {
   /** The century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
   CENTURY {
     @Override
+    public long extract(final LocalDate date) {
+      return century(date.getYear());
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return century(datetime.getYear());
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return century(datetime.getYear());
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return century(datetime.getYear());
     }
@@ -62,6 +113,21 @@ public enum TimeUnit {
 
   /** First day of its decade. The year divided by 10. */
   DECADE("DECADES") {
+    @Override
+    public long extract(final LocalDate date) {
+      return decade(date.getYear());
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return decade(datetime.getYear());
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return decade(datetime.getYear());
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return decade(datetime.getYear());
@@ -76,6 +142,21 @@ public enum TimeUnit {
   /** The years */
   YEAR("YEARS") {
     @Override
+    public long extract(final LocalDate date) {
+      return date.getYear();
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getYear();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getYear();
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getYear();
     }
@@ -89,6 +170,21 @@ public enum TimeUnit {
   /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
   ISOYEAR {
     @Override
+    public long extract(final LocalDate date) {
+      return date.get(IsoFields.WEEK_BASED_YEAR);
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(IsoFields.WEEK_BASED_YEAR);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(IsoFields.WEEK_BASED_YEAR);
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(IsoFields.WEEK_BASED_YEAR);
     }
@@ -96,6 +192,21 @@ public enum TimeUnit {
 
   /** The number (1 - 12) of the month */
   MONTH("MONTHS") {
+    @Override
+    public long extract(final LocalDate date) {
+      return date.getMonthValue();
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getMonthValue();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getMonthValue();
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getMonthValue();
@@ -110,6 +221,21 @@ public enum TimeUnit {
   /** The number (1 - 31) of the day */
   DAY("DAYS", "DAYOFMONTH") {
     @Override
+    public long extract(final LocalDate date) {
+      return date.getDayOfMonth();
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getDayOfMonth();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getDayOfMonth();
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getDayOfMonth();
     }
@@ -123,10 +249,23 @@ public enum TimeUnit {
   /** A number (1 = Sunday, 2 = Monday, 7 = Saturday) indicating the day of the week */
   DAYOFWEEK {
     @Override
+    public long extract(final LocalDate date) {
+      return dow(date.getDayOfWeek().getValue());
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return dow(datetime.getDayOfWeek().getValue());
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return dow(datetime.getDayOfWeek().getValue());
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
-      int dow = datetime.getDayOfWeek().getValue() + 1;
-      if (dow == 8) dow = 1;
-      return Long.valueOf(dow);
+      return dow(datetime.getDayOfWeek().getValue());
     }
   },
 
@@ -136,6 +275,21 @@ public enum TimeUnit {
    */
   ISODAYOFWEEK {
     @Override
+    public long extract(final LocalDate date) {
+      return date.getDayOfWeek().getValue();
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getDayOfWeek().getValue();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getDayOfWeek().getValue();
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getDayOfWeek().getValue();
     }
@@ -143,6 +297,21 @@ public enum TimeUnit {
 
   /** A number (1 - 366) indicating the day of the year */
   DAYOFYEAR {
+    @Override
+    public long extract(final LocalDate date) {
+      return date.getDayOfYear();
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getDayOfYear();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getDayOfYear();
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getDayOfYear();
@@ -155,6 +324,21 @@ public enum TimeUnit {
    */
   WEEK("WEEKS", "WEEKOFYEAR") {
     @Override
+    public long extract(final LocalDate date) {
+      return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
     }
@@ -166,6 +350,21 @@ public enum TimeUnit {
    */
   ISOWEEK("ISOWEEKOFYEAR") {
     @Override
+    public long extract(final LocalDate date) {
+      return date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
@@ -173,6 +372,21 @@ public enum TimeUnit {
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH {
+    @Override
+    public long extract(final LocalDate date) {
+      return date.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -182,12 +396,38 @@ public enum TimeUnit {
   /** Quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
   QUARTER("QUARTERS") {
     @Override
+    public long extract(final LocalDate date) {
+      return date.get(IsoFields.QUARTER_OF_YEAR);
+    }
+
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(IsoFields.QUARTER_OF_YEAR);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(IsoFields.QUARTER_OF_YEAR);
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(IsoFields.QUARTER_OF_YEAR);
     }
   },
+
   /** Hour (0-23). */
   HOUR("HOURS") {
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getHour();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getHour();
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getHour();
@@ -202,6 +442,16 @@ public enum TimeUnit {
   /** Minute (0-59). */
   MINUTE("MINUTES") {
     @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getMinute();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getMinute();
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getMinute();
     }
@@ -214,6 +464,16 @@ public enum TimeUnit {
 
   /** Second (0-59). */
   SECOND("SECONDS") {
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getSecond();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getSecond();
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getSecond();
@@ -228,6 +488,16 @@ public enum TimeUnit {
   /** Millisecond. */
   MILLISECOND("MILLISECONDS") {
     @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(ChronoField.MILLI_OF_SECOND);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(ChronoField.MILLI_OF_SECOND);
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(ChronoField.MILLI_OF_SECOND);
     }
@@ -240,6 +510,16 @@ public enum TimeUnit {
 
   /** Microsecond. */
   MICROSECOND("MICROSECONDS") {
+    @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.get(ChronoField.MICRO_OF_SECOND);
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.get(ChronoField.MICRO_OF_SECOND);
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.get(ChronoField.MICRO_OF_SECOND);
@@ -254,6 +534,16 @@ public enum TimeUnit {
   /** The nanosecond. */
   NANOSECOND("NANOSECONDS") {
     @Override
+    public long extract(final LocalDateTime datetime) {
+      return datetime.getNano();
+    }
+
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getNano();
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getNano();
     }
@@ -267,6 +557,11 @@ public enum TimeUnit {
   /** Time zone offset's hour part. */
   TIMEZONE_HOUR {
     @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getOffset().getTotalSeconds() / (60 * 60);
+    }
+
+    @Override
     public long extract(final ZonedDateTime datetime) {
       return datetime.getOffset().getTotalSeconds() / (60 * 60);
     }
@@ -274,6 +569,11 @@ public enum TimeUnit {
 
   /** Time zone offset's minute part. */
   TIMEZONE_MINUTE {
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return (datetime.getOffset().getTotalSeconds() / 60) % 60;
+    }
+
     @Override
     public long extract(final ZonedDateTime datetime) {
       return (datetime.getOffset().getTotalSeconds() / 60) % 60;
@@ -315,6 +615,18 @@ public enum TimeUnit {
     return null;
   }
 
+  public long extract(LocalDate date) {
+    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+  }
+
+  public long extract(LocalDateTime datetime) {
+    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+  }
+
+  public long extract(OffsetDateTime datetime) {
+    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+  }
+
   public long extract(ZonedDateTime datetime) {
     throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
   }
@@ -338,5 +650,11 @@ public enum TimeUnit {
 
   protected static int decade(int year) {
     return year >= 0 ? year / 10 : (year - 9) / 10;
+  }
+
+  protected static int dow(int dow) {
+    dow++;
+    if (dow == 8) dow = 1;
+    return dow;
   }
 }
