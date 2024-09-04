@@ -54,7 +54,7 @@ public enum TimeUnit {
     }
   },
 
-  /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
+  /** The Gregorian millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
   MILLENNIUM("MILLENNIUMS") {
 
     @Override
@@ -83,7 +83,7 @@ public enum TimeUnit {
     }
   },
 
-  /** The century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
+  /** The Gregorian century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
   CENTURY {
     @Override
     public long extract(final LocalDate date) {
@@ -111,7 +111,7 @@ public enum TimeUnit {
     }
   },
 
-  /** First day of its decade. The year divided by 10. */
+  /** The Gregorian decade. The year divided by 10. */
   DECADE("DECADES") {
     @Override
     public long extract(final LocalDate date) {
@@ -139,7 +139,7 @@ public enum TimeUnit {
     }
   },
 
-  /** The years */
+  /** The Gregorian years */
   YEAR("YEARS") {
     @Override
     public long extract(final LocalDate date) {

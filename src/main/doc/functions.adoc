@@ -18,7 +18,6 @@ under the License.
 
 Expression support most of the standard scalar and aggregate functions.
 
-* https://github.com/nadment/hop-expression/blob/master/src/main/doc/abort.adoc[ABORT]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/abs.adoc[ABS]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/acos.adoc[ACOS]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/acosh.adoc[ACOSH]
@@ -96,6 +95,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/div0.adoc[DIV0]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/endswith.adoc[ENDSWITH]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/equal_null.adoc[EQUAL_NULL]
+* https://github.com/nadment/hop-expression/blob/master/src/main/doc/error.adoc[ERROR]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/exp.adoc[EXP]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/extract.adoc[EXTRACT]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/factorial.adoc[FACTORIAL]

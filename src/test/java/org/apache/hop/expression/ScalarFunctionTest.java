@@ -41,8 +41,8 @@ import org.junit.jupiter.api.Test;
 public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
-  public void Abort() throws Exception {
-    evalFails("ABORT('Custom error message')");
+  public void Error() throws Exception {
+    evalFails("ERROR('Custom error message')");
   }
 
   @Test
@@ -371,9 +371,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalEquals("Decode('A','B',2,'C',3,0)", 0L).returnType(IntegerType.of(1));
 
-    // Support ABORT as default
+    // Support ERROR as default
     evalEquals(
-        "Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',ABORT('Error generated with ABORT'))",
+        "Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',Error('Error generated with ABORT'))",
         "Flag 2");
 
     evalNull("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>')");
