@@ -34,4 +34,5 @@ Returns:: The data type of the returned value is the same as the data type of th
 
 ----
 ABS(-123) = 123
+ABS(INTERVAL -5 YEARS) = INTERVAL 5 YEARS
 ----

@@ -432,8 +432,8 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    // evalFails("Repeat('ABC',9999999999999)");
-    evalEquals("Repeat('ABC',2)", "ABCABC");
+
+    evalEquals("Overlay('Apxxxe','ache Hop',3)", "Apache Hop");
 
     // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
 

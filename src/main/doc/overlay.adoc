@@ -14,12 +14,29 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CURRENT_VERSION
+= OVERLAY
 
-Returns the Apache Hop version.
-
+Replaces a substring of the specified length, starting at the specified position, with a new string.
+ 
 == Syntax
 ----
-CURRENT_VERSION()
+OVERLAY( value, replace, position [, length] )
 ----
 
+Returns:: String
+
+== Usage
+
+* The first position in the string is 1.
+* If `position` is beyond the end of string, replacement is placed directly after string.
+* If `length` is 0, `replace` is simply inserted.
+* If `length` is omitted, it defaults to the length of replace.
+* Returns NULL if one of the arguments is NULL.
+
+== Example
+
+----
+OVERLAY('Apxxxe','ach',3) = 'Apache'
+OVERLAY('Apxxxe','ache',3,2) = 'Apacxe'
+OVERLAY('Apxxxe','pl',3,3) = 'Apple'
+----

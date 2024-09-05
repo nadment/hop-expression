@@ -3032,13 +3032,44 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
+  public void Overlay() throws Exception {
+    evalEquals("Overlay('Apxxxe','ach',3)", "Apache").returnType(Types.STRING);
+    evalEquals("Overlay('Apxxxe','ache Hop',3)", "Apache Hop");
+    evalEquals("Overlay('Apxxxe','ach',5)", "Apxxach");
+
+    // Empty value
+    evalEquals("Overlay('','Apache',3)", "Apache");
+    evalEquals("Overlay('','Apache',3,0)", "Apache");
+    evalEquals("Overlay('','Apache',3,20)", "Apache");
+
+    // Empty replace
+    evalEquals("Overlay('Apache','',2)", "Apache");
+    evalEquals("Overlay('Apache','',2,3)", "Ahe");
+    evalEquals("Overlay('Apache','',2,10)", "A");
+
+    // Number of characters to replace
+    evalEquals("Overlay('Apxxxe','ach',3,2)", "Apacxe");
+
+    // Exact replacement length
+    evalEquals("Overlay('Apxxxe','ach',3,3)", "Apache");
+    evalEquals("Overlay('Apxxxe','ache',3,4)", "Apache");
+
+    // More characters to replace than available in replacing String
+    evalEquals("Overlay('Apxxxe','ach',3,4)", "Apach");
+    evalEquals("Overlay('Apxxxe','pl',3,3)", "Apple");
+
+    evalNull("Overlay(NULL_STRING,'ach',3)").returnType(Types.STRING);
+    evalNull("Overlay(FIELD_STRING,NULL_STRING,3)").returnType(Types.STRING);
+  }
+
+  @Test
   public void Reverse() throws Exception {
     evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH").returnType(StringType.of(13));
     evalEquals("Reverse(BINARY '2A3B4C')", new byte[] {0x4C, 0x3B, 0x2A})
         .returnType(BinaryType.of(3));
 
     evalNull("Reverse(NULL_STRING)").returnType(Types.STRING);
-    evalNull("Reverse(NULL_BINARY)");
+    evalNull("Reverse(NULL_BINARY)").returnType(Types.BINARY);
 
     evalFails("Reverse()");
     evalFails("Reverse(FIELD_DATE)");
