@@ -49,14 +49,27 @@ public class AddOperator extends BinaryOperator {
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC
             .or(OperandTypes.TEMPORAL_INTERVAL)
+            .or(OperandTypes.TEMPORAL_NUMERIC)
+            .or(OperandTypes.NUMERIC_TEMPORAL)
             .or(OperandTypes.INTERVAL_TEMPORAL)
-            .or(OperandTypes.TEMPORAL_NUMERIC),
+            .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
         "/docs/add.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Rebuild chained operator
+    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+    operands.addAll(this.getChainedOperands(call, true));
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {
+      call = new Call(this, operand, operands.poll());
+      call.inferReturnType();
+      operand = call;
+    }
+
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -67,21 +80,35 @@ public class AddOperator extends BinaryOperator {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
       }
 
-      return new Call(call.getPosition(), AddInterval.INSTANCE, call.getOperands());
-    } else if (left.getType().is(TypeId.INTERVAL)) {
+      return new Call(call.getPosition(), AddIntervalToTemporal.INSTANCE, call.getOperands());
+    } else if (right.getType().isFamily(TypeFamily.TEMPORAL)) {
+      // Normalize operands order DATE+NUMERIC
+      if (left.getType().isFamily(TypeFamily.NUMERIC)) {
+        return new Call(
+            call.getPosition(), AddDaysFunction.INSTANCE, call.getOperand(1), call.getOperand(0));
+      }
+
+      // Normalize operands order DATE+NUMERIC
+      if (left.getType().isFamily(TypeFamily.INTERVAL)) {
+        return new Call(
+            call.getPosition(),
+            AddIntervalToTemporal.INSTANCE,
+            call.getOperand(1),
+            call.getOperand(0));
+      }
+
+    } else if (left.getType().isFamily(TypeFamily.INTERVAL)) {
+
+      if (right.getType().isFamily(TypeFamily.INTERVAL)) {
+        return new Call(call.getPosition(), AddIntervalToInterval.INSTANCE, call.getOperands());
+      }
+
       // Normalize operands order DATE+INTERVAL
       return new Call(
-          call.getPosition(), AddInterval.INSTANCE, call.getOperand(1), call.getOperand(0));
-    }
-
-    // Rebuild chained operator
-    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
-    operands.addAll(this.getChainedOperands(call, true));
-    IExpression operand = operands.poll();
-    while (!operands.isEmpty()) {
-      call = new Call(this, operand, operands.poll());
-      call.inferReturnType();
-      operand = call;
+          call.getPosition(),
+          AddIntervalToTemporal.INSTANCE,
+          call.getOperand(1),
+          call.getOperand(0));
     }
 
     // Simplify arithmetic 0+A → A
@@ -160,10 +187,10 @@ public class AddOperator extends BinaryOperator {
   }
 
   /** Adds a specified interval to a date or timestamp */
-  private static final class AddInterval extends AddOperator {
-    private static final AddOperator INSTANCE = new AddInterval();
+  private static final class AddIntervalToTemporal extends AddOperator {
+    private static final AddOperator INSTANCE = new AddIntervalToTemporal();
 
-    private AddInterval() {
+    private AddIntervalToTemporal() {
       super();
     }
 
@@ -191,6 +218,40 @@ public class AddOperator extends BinaryOperator {
       if (interval == null) return null;
 
       return interval.addTo(datetime);
+    }
+  }
+
+  private static final class AddIntervalToInterval extends AddOperator {
+    private static final AddOperator INSTANCE = new AddIntervalToInterval();
+
+    private AddIntervalToInterval() {
+      super();
+    }
+
+    @Override
+    public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+      // Simplify arithmetic INTERVAL A+INTERVAL 0 → INTERVAL A
+      IExpression operand = call.getOperand(1);
+      if (operand.isConstant() && !operand.isNull()) {
+        Interval interval = operand.getValue(Interval.class);
+        if (interval.isZero()) {
+          return call.getOperand(0);
+        }
+      }
+
+      return call;
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Interval interval0 = operands[0].getValue(Interval.class);
+      if (interval0 == null) return null;
+
+      Interval interval1 = operands[1].getValue(Interval.class);
+      if (interval1 == null) return null;
+
+      return interval0.add(interval1);
     }
   }
 }

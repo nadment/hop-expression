@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class IntervalTest extends ExpressionTest {
 
   @Test
-  public void intervalZero() throws Exception {
+  void intervalZero() throws Exception {
     Interval interval = new Interval();
     assertEquals(0, interval.getDays());
     assertEquals(0, interval.getHours());
@@ -43,7 +43,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalParseNull() throws Exception {
+  void intervalParseNull() throws Exception {
     assertNull(Interval.year(null));
     assertNull(Interval.yearToMonth(null));
     assertNull(Interval.quarter(null));
@@ -62,7 +62,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalParseFail() throws Exception {
+  void intervalParseFail() throws Exception {
     assertNotEquals(null, Interval.yearToMonth("5-24"));
     assertNull(Interval.year("Z"));
     assertNull(Interval.yearToMonth("5-Z"));
@@ -80,7 +80,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalField() throws Exception {
+  void intervalField() throws Exception {
     Interval interval = Interval.of(5, 25, 44, 22, 30, 58, 123456789);
     assertEquals(7, interval.getYears());
     assertEquals(1, interval.getMonths());
@@ -103,7 +103,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalParse() throws Exception {
+  void intervalParse() throws Exception {
     // Short format
     assertEquals(Interval.of(5), Interval.year("5"));
     assertEquals(Interval.of(1), Interval.yearToMonth("+0-12"));
@@ -156,13 +156,13 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalFormat() throws Exception {
+  void intervalFormat() throws Exception {
     assertEquals(
         "+7-1 44 22:30:58.123456789", Interval.of(5, 25, 44, 22, 30, 58, 123456789).toString());
   }
 
   @Test
-  public void intervalSign() throws Exception {
+  void intervalSign() throws Exception {
     assertEquals(1, Interval.yearToMonth("5-24").getSign());
     assertEquals(1, Interval.yearToMonth("+5-24").getSign());
     assertEquals(-1, Interval.yearToMonth("-5-24").getSign());
@@ -170,12 +170,12 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalQualifierOf() throws Exception {
+  void intervalQualifierOf() throws Exception {
     assertNull(IntervalQualifier.of(TimeUnit.CENTURY, null));
   }
 
   @Test
-  public void intervalQualifierStartUnit() throws Exception {
+  void intervalQualifierStartUnit() throws Exception {
     assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR.getStartUnit());
     assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR_TO_MONTH.getStartUnit());
     assertEquals(TimeUnit.QUARTER, IntervalQualifier.QUARTER.getStartUnit());
@@ -194,7 +194,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalQualifierEndUnit() throws Exception {
+  void intervalQualifierEndUnit() throws Exception {
     assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR.getEndUnit());
     assertEquals(TimeUnit.MONTH, IntervalQualifier.YEAR_TO_MONTH.getEndUnit());
     assertEquals(TimeUnit.QUARTER, IntervalQualifier.QUARTER.getEndUnit());
@@ -213,7 +213,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalQualifierHasTimeUnit() throws Exception {
+  void intervalQualifierHasTimeUnit() throws Exception {
     assertTrue(IntervalQualifier.YEAR.hasYears());
     assertFalse(IntervalQualifier.YEAR.hasMonths());
     assertFalse(IntervalQualifier.YEAR.hasDays());
@@ -270,7 +270,7 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalAbs() throws Exception {
+  void intervalAbs() throws Exception {
     assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months").negate().abs());
   }
 }

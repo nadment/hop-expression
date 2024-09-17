@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 public class IdentifierTest extends ExpressionTest {
 
   @Test
-  public void identifier() throws Exception {
+  void identifier() throws Exception {
     Identifier identifier1 = new Identifier(0, "FIELD_STRING");
     Identifier identifier2 = new Identifier(10, "FIELD_STRING");
     Identifier identifier3 = new Identifier("FIELD_STRING");
@@ -38,7 +38,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void quoteIfNeeded() throws Exception {
+  void quoteIfNeeded() throws Exception {
     assertEquals(Identifier.quoteIfNeeded("NORMAL"), "NORMAL");
     assertEquals(Identifier.quoteIfNeeded("TRIM"), "\"TRIM\"");
     assertEquals(Identifier.quoteIfNeeded("OR"), "\"OR\"");
@@ -46,7 +46,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void eval() throws Exception {
+  void eval() throws Exception {
     evalEquals("FIELD_INTEGER%2", 0L);
     evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0L);
     evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
@@ -60,7 +60,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionValueMetaBoolean() throws Exception {
+  void coercionValueMetaBoolean() throws Exception {
     // From boolean value meta
     evalEquals("Upper(FIELD_BOOLEAN_TRUE)", "TRUE");
     evalEquals("Upper(FIELD_BOOLEAN_FALSE)", "FALSE");
@@ -71,7 +71,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionValueMetaString() throws Exception {
+  void coercionValueMetaString() throws Exception {
     // From string value meta
     evalEquals("Upper(FIELD_STRING_BOOLEAN_TRUE)", "TRUE");
     evalEquals("Upper(FIELD_STRING_BOOLEAN_FALSE)", "FALSE");
@@ -84,7 +84,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionValueMetaInteger() throws Exception {
+  void coercionValueMetaInteger() throws Exception {
     // From integer value meta
     evalTrue("FIELD_INTEGER IS TRUE");
     evalTrue("FIELD_INTEGER_ZERO IS FALSE");
@@ -94,7 +94,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionValueMetaNumber() throws Exception {
+  void coercionValueMetaNumber() throws Exception {
     // From number value meta
     evalEquals("Upper(FIELD_NUMBER)", "-5.12");
     evalTrue("FIELD_NUMBER IS TRUE");
@@ -105,7 +105,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionValueMetaBigNumber() throws Exception {
+  void coercionValueMetaBigNumber() throws Exception {
     // From bignumber value meta
     evalEquals("Upper(FIELD_BIGNUMBER)", "123456.789");
     evalTrue("FIELD_BIGNUMBER IS TRUE");
@@ -115,26 +115,26 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionValueMetaBinary() throws Exception {
+  void coercionValueMetaBinary() throws Exception {
     // From binary value meta
     evalEquals("FIELD_BINARY::STRING", "TEST");
   }
 
   @Test
-  public void coercionValueMetaJson() throws Exception {
+  void coercionValueMetaJson() throws Exception {
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
     evalEquals("LENGTH(FIELD_JSON::STRING)", 466L);
     evalFails("FIELD_JSON IS TRUE");
   }
 
   @Test
-  public void coercionValueMetaInet() throws Exception {
+  void coercionValueMetaInet() throws Exception {
     // Unsupported value meta
     evalFails("UPPER(FIELD_INET)");
   }
 
   @Test
-  public void escape() throws Exception {
+  void escape() throws Exception {
     // Reserved word
     evalEquals("Upper(\"STRING\")", "PARIS");
     // Field name like a function name
@@ -142,7 +142,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  public void write() throws Exception {
+  void write() throws Exception {
     optimize("FIELD_STRING");
     // Reserved word
     optimize("\"CASE\"", "\"CASE\"");

@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 public class UserDefinedFunctionTest extends ExpressionTest {
 
   // @Test
-  public void testString() throws Exception {
+  void testString() throws Exception {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("UCASE");
     meta.setDescription("UDF test");
@@ -47,7 +47,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void testDate() throws Exception {
+  void testDate() throws Exception {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("DATE_FROM_ID");
     meta.setSource("case when v0 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");
@@ -65,7 +65,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void testCompilationError() throws Exception {
+  void testCompilationError() throws Exception {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("ERROR_UDF");
     meta.setSource("case when v1 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");

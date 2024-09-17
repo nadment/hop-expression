@@ -41,12 +41,12 @@ import org.junit.jupiter.api.Test;
 public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
-  public void Error() throws Exception {
+  void Error() throws Exception {
     evalFails("ERROR('Custom error message')");
   }
 
   @Test
-  public void Try_Cast() throws Exception {
+  void Try_Cast() throws Exception {
 
     // String to Boolean
     evalTrue("TRY_CAST('Yes' as Boolean)").returnType(Types.BOOLEAN);
@@ -84,7 +84,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Try_To_Binary() throws Exception {
+  void Try_To_Binary() throws Exception {
     evalEquals("TRY_TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes());
     evalEquals("TRY_TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
     evalNull("TRY_TO_BINARY('Z4','HEX')");
@@ -105,7 +105,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Try_To_Boolean() throws Exception {
+  void Try_To_Boolean() throws Exception {
     evalTrue("TRY_TO_BOOLEAN('True')").returnType(Types.BOOLEAN);
     evalFalse("TRY_TO_BOOLEAN('falSE')");
     evalNull("TRY_TO_BOOLEAN('Bad')").returnType(Types.BOOLEAN);
@@ -114,7 +114,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Try_To_Number() throws Exception {
+  void Try_To_Number() throws Exception {
     evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D).returnType(Types.NUMBER);
 
     // Return NULL if parsing failed
@@ -136,7 +136,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Try_To_Date() throws Exception {
+  void Try_To_Date() throws Exception {
     evalEquals("TRY_TO_DATE('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
 
     // Return NULL if parsing failed
@@ -168,7 +168,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Try_To_Json() throws Exception {
+  void Try_To_Json() throws Exception {
 
     evalEquals(
             "Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
@@ -186,7 +186,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Coalesce() throws Exception {
+  void Coalesce() throws Exception {
     // Coalesce string
     evalEquals("Coalesce(NULL_STRING,'TEST','BIDON')", "TEST").returnType(Types.STRING);
     // evalEquals("Coalesce('TEST','BIDON')", "TEST").returnType(StringType.of(5));
@@ -225,7 +225,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void If() throws Exception {
+  void If() throws Exception {
     evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True").returnType(Types.STRING);
     evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
     evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(Types.INTEGER);
@@ -267,7 +267,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Nvl2() throws Exception {
+  void Nvl2() throws Exception {
     evalEquals("Nvl2(FIELD_BOOLEAN_TRUE,FIELD_STRING,'ex2')", "TEST")
         .returnType(StringType.of(1000));
     evalEquals("Nvl2('test','ex1','ex2')", "ex1");
@@ -279,7 +279,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void IfNull() throws Exception {
+  void IfNull() throws Exception {
     evalEquals("IfNull(1,FIELD_INTEGER)", 1L).returnType(Types.INTEGER);
     evalEquals("IfNull(NULL_INTEGER, FIELD_NUMBER)", -5L).returnType(Types.NUMBER);
 
@@ -312,7 +312,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void NullIf() throws Exception {
+  void NullIf() throws Exception {
     evalEquals("NullIf(1,NULL_INTEGER)", 1L);
     evalNull("NullIf(1,1)");
     evalNull("NULLIF(0.1,0.1)");
@@ -338,7 +338,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void ZeroIfNull() throws Exception {
+  void ZeroIfNull() throws Exception {
     evalEquals("ZeroIfNull(1)", 1L);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
     evalFails("ZeroIfNull()");
@@ -346,7 +346,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void NullIfZero() throws Exception {
+  void NullIfZero() throws Exception {
     evalEquals("NULLIFZERO(0.1)", new BigDecimal("0.1"));
     evalEquals("NULLIFZERO(0.1)", 0.1);
     evalEquals("NullIfZero(1)", 1L);
@@ -362,7 +362,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Decode() throws Exception {
+  void Decode() throws Exception {
     evalEquals("Decode(1,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "one")
         .returnType(StringType.of(3));
     evalEquals("Decode(2,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "two");
@@ -396,7 +396,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void ParseUrl() throws Exception {
+  void ParseUrl() throws Exception {
     evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PROTOCOL')", "http")
         .returnType(Types.STRING);
     evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','HOST')", "hop.apache.org");
@@ -426,7 +426,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Pi() throws Exception {
+  void Pi() throws Exception {
     evalEquals("Pi()", PI).returnType(Types.NUMBER);
     evalFails("Pi(123)");
 
@@ -434,7 +434,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Current_Date() throws Exception {
+  void Current_Date() throws Exception {
     IExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_DATE.getDate(context);
     evalEquals(context, "Today()", today).returnType(Types.DATE);
@@ -444,7 +444,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Current_Timestamp() throws Exception {
+  void Current_Timestamp() throws Exception {
     IExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.getDate(context);
     evalEquals(context, "Now()", today).returnType(Types.DATE);
@@ -454,7 +454,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Current_TimeZone() throws Exception {
+  void Current_TimeZone() throws Exception {
     TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
     evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12));
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -463,7 +463,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void ConvertTimeZone() throws Exception {
+  void ConvertTimeZone() throws Exception {
     evalEquals(
             "CONVERT_TIMEZONE('America/Los_Angeles', 'America/New_York', TIMESTAMP '2023-01-01 14:00:00')",
             LocalDateTime.of(2023, Month.JANUARY, 1, 17, 00, 00))
@@ -485,13 +485,13 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Current_User() throws Exception {
+  void Current_User() throws Exception {
     evalEquals("Current_User()", System.getProperty("user.name"))
         .returnType(StringType.of(System.getProperty("user.name").length()));
   }
 
   @Test
-  public void MakeDate() throws Exception {
+  void MakeDate() throws Exception {
     evalEquals("MAKE_DATE(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1)).returnType(Types.DATE);
     evalEquals("MAKE_DATE(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
     evalEquals("MAKE_DATE(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
@@ -514,7 +514,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void MakeTimestamp() throws Exception {
+  void MakeTimestamp() throws Exception {
     evalEquals(
             "MAKE_TIMESTAMP(2019,01,1,23,15,59)",
             LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59))
@@ -549,7 +549,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void MakeInterval() throws Exception {
+  void MakeInterval() throws Exception {
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59)", Interval.of(20, 1, 1, 23, 15, 59))
         .returnType(Types.INTERVAL);
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59.123)", Interval.of(20, 1, 1, 23, 15, 59, 123000000));
@@ -561,7 +561,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void First_Day() throws Exception {
+  void First_Day() throws Exception {
     evalEquals("First_Day(DATE '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1))
         .returnType(Types.DATE);
     evalEquals("First_Day(DATE '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 1));
@@ -592,7 +592,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Last_Day() throws Exception {
+  void Last_Day() throws Exception {
     evalEquals("Last_Day(DATE '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 31))
         .returnType(Types.DATE);
     evalEquals("Last_Day(DATE '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 29));
@@ -622,7 +622,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Next_Day() throws Exception {
+  void Next_Day() throws Exception {
     evalEquals("Next_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2))
         .returnType(Types.DATE);
     evalEquals("Next_Day(FIELD_DATE,'monday')", LocalDate.of(1981, Month.JUNE, 29));
@@ -639,7 +639,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Previous_Day() throws Exception {
+  void Previous_Day() throws Exception {
     evalEquals("Previous_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24))
         .returnType(Types.DATE);
 
@@ -652,7 +652,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Normalize() throws Exception {
+  void Normalize() throws Exception {
     evalEquals("Normalize('\u00ea')", "ê").returnType(Types.STRING);
     evalEquals("Normalize('\u0065\u0302')", "ê");
     evalEquals("Normalize('Jane\u2004Doe', 'NFKC')", "Jane Doe");
@@ -666,7 +666,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Unaccent() throws Exception {
+  void Unaccent() throws Exception {
     evalEquals("Unaccent('ÁÀÂÃÄÅĀĄàáâãäåāą')", "AAAAAAAAaaaaaaaa").returnType(Types.STRING);
     evalEquals("Unaccent('ÇĆČçćč')", "CCCccc");
     evalEquals("Unaccent('ĎḌḒďḍḓ')", "DDDddd");
@@ -695,7 +695,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Upper() throws Exception {
+  void Upper() throws Exception {
     evalEquals("Upper('test')", "TEST").returnType(Types.STRING);
     evalNull("Upper(NULL_STRING)").returnType(Types.STRING);
 
@@ -708,7 +708,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void InitCap() throws Exception {
+  void InitCap() throws Exception {
     evalEquals("InitCap('hello the wORLD')", "Hello The World").returnType(Types.STRING);
     evalEquals("InitCap('tRy a littlE  ')", "Try A Little  ");
     evalEquals("InitCap('won''t it?no')", "Won'T It?No");
@@ -723,7 +723,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Instr() throws Exception {
+  void Instr() throws Exception {
     evalEquals("Instr('CORPORATE FLOOR','OR')", 2L).returnType(Types.INTEGER);
     evalEquals("Instr('CORPORATE FLOOR','or')", 0L);
     evalEquals("Instr('CORPORATE FLOOR','ORA')", 5L);
@@ -756,7 +756,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void RPad() throws Exception {
+  void RPad() throws Exception {
     evalEquals("RPad('test',7)", "test   ").returnType(Types.STRING);
     evalEquals("RPad('test',7,'*')", "test***");
     evalEquals("RPad('test',4,'*')", "test");
@@ -800,7 +800,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void LPad() throws Exception {
+  void LPad() throws Exception {
     evalEquals("LPad('test',6)", "  test").returnType(Types.STRING);
     evalEquals("LPad('test',7,'*')", "***test");
     evalEquals("LPad('test',3,'*')", "tes");
@@ -840,14 +840,14 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Year() throws Exception {
+  void Year() throws Exception {
     evalEquals("Year(DATE '2019-01-01')", 2019L).returnType(Types.INTEGER);
     evalNull("Year(NULL_DATE)").returnType(Types.INTEGER);
     evalFails("Year()");
   }
 
   @Test
-  public void MonthName() throws Exception {
+  void MonthName() throws Exception {
     evalEquals("MonthName(DATE '2019-01-01')", "January").returnType(Types.STRING);
     evalEquals("MonthName(DATE '2019-12-28')", "December");
     evalNull("MonthName(NULL_DATE)");
@@ -855,7 +855,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void DayName() throws Exception {
+  void DayName() throws Exception {
     evalEquals("DayName(DATE '2019-01-01')", "Tuesday").returnType(Types.STRING);
     evalEquals("DayName(DATE '2019-12-28')", "Saturday");
     evalNull("DayName(NULL_DATE)");
@@ -863,7 +863,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Month() throws Exception {
+  void Month() throws Exception {
     evalEquals("Month(DATE '2019-01-01')", 1L).returnType(Types.INTEGER);
     evalEquals("Month(DATE '2020-02-23')", 2L);
     evalEquals("Month(DATE '2019-12-28')", 12L);
@@ -873,7 +873,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Date_Diff() throws Exception {
+  void Date_Diff() throws Exception {
     evalEquals("Date_Diff(MILLENNIUM, DATE '1001-01-01',DATE '3150-01-01')", 2L)
         .returnType(Types.INTEGER);
     evalEquals("Date_Diff(CENTURY, DATE '1001-01-01',DATE '2000-01-01')", 9L);
@@ -910,7 +910,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Years_Between() throws Exception {
+  void Years_Between() throws Exception {
     evalEquals(
         "Years_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')", -1L);
     evalNull("Years_Between(NULL_DATE, DATE '2007-11-09')");
@@ -920,7 +920,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Months_Between() throws Exception {
+  void Months_Between() throws Exception {
     evalEquals("Months_Between(DATE '2005-01-01',DATE '2005-02-02')", 1.032258064516129)
         .returnType(Types.NUMBER);
     evalEquals("Months_Between(DATE '2007-11-09',DATE '2003-12-28')", -45.54838709677419);
@@ -940,7 +940,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Days_Between() throws Exception {
+  void Days_Between() throws Exception {
     evalEquals("Days_Between(DATE '2021-01-01',DATE '2021-01-01')", 0L);
     evalEquals("Days_Between(DATE '2021-11-09',DATE '2020-12-28')", -316L);
     evalEquals("Days_Between(DATE '2007-11-09',DATE '2007-12-09')", 30L);
@@ -952,7 +952,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Hours_Between() throws Exception {
+  void Hours_Between() throws Exception {
     evalEquals(
         "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 0L);
     evalEquals(
@@ -963,7 +963,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Minutes_Between() throws Exception {
+  void Minutes_Between() throws Exception {
     evalEquals(
         "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 28L);
     evalEquals(
@@ -974,7 +974,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Seconds_Between() throws Exception {
+  void Seconds_Between() throws Exception {
     evalEquals(
         "Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')",
         28L * 60L);
@@ -986,7 +986,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Quarter() throws Exception {
+  void Quarter() throws Exception {
     evalEquals("Quarter(DATE '2019-01-01')", 1L).returnType(Types.INTEGER);
     evalEquals("Quarter(DATE '2019-02-28')", 1L);
     evalEquals("Quarter(DATE '2019-04-28')", 2L);
@@ -1002,7 +1002,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void DayOfWeek() throws Exception {
+  void DayOfWeek() throws Exception {
     evalEquals("DayOfWeek(DATE '2019-01-01')", 3L).returnType(Types.INTEGER);
     evalEquals("DayOfWeek(DATE '2019-07-27')", 7L);
     evalEquals("DayOfWeek(DATE '2019-07-28')", 1L);
@@ -1016,7 +1016,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Day() throws Exception {
+  void Day() throws Exception {
     evalEquals("Day(DATE '2019-01-01')", 1L).returnType(Types.INTEGER);
     evalEquals("Day(DATE '2019-02-28')", 28L);
     evalEquals("Day(DATE '2019-12-28')", 28L);
@@ -1033,7 +1033,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void DayOfYear() throws Exception {
+  void DayOfYear() throws Exception {
     evalEquals("DayOfYear(DATE '2019-01-01')", 1L).returnType(Types.INTEGER);
     evalEquals("DayOfYear(DATE '2019-12-31')", 365L);
     evalEquals("DayOfYear(FIELD_DATE)", 174L);
@@ -1044,7 +1044,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Julian_Day() throws Exception {
+  void Julian_Day() throws Exception {
     evalEquals("Julian_Day(DATE '2021-06-23')", 2459389L).returnType(Types.INTEGER);
     evalEquals("Julian_Day(TIMESTAMP  '2021-06-23 8:00:00' at time zone 'UTC+12')", 2459389L);
     evalNull("Julian_Day(NULL_DATE)").returnType(Types.INTEGER);
@@ -1053,7 +1053,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Week() throws Exception {
+  void Week() throws Exception {
     evalEquals("Week(DATE '2015-12-31')", 53L).returnType(Types.INTEGER);
     evalEquals("Week(DATE '2015-01-01')", 1L);
     evalEquals("Week(DATE '2015-01-02')", 1L);
@@ -1064,14 +1064,14 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void IsoDayOfWeek() throws Exception {
+  void IsoDayOfWeek() throws Exception {
     evalEquals("IsoDayOfWeek(DATE '2003-12-28')", 7L).returnType(Types.INTEGER);
     evalNull("IsoDayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
     evalFails("IsoDayOfWeek()");
   }
 
   @Test
-  public void IsoWeek() throws Exception {
+  void IsoWeek() throws Exception {
     evalEquals("IsoWeek(DATE '2015-12-31')", 53L).returnType(Types.INTEGER);
     evalEquals("IsoWeek(DATE '2016-01-01')", 53L);
     evalEquals("IsoWeek(DATE '2016-01-02')", 53L);
@@ -1082,7 +1082,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void IsoYear() throws Exception {
+  void IsoYear() throws Exception {
     evalEquals("IsoYear(DATE '2015-12-31')", 2015L).returnType(Types.INTEGER);
     evalEquals("IsoYear(DATE '2016-01-01')", 2015L);
     evalEquals("IsoYear(DATE '2016-01-02')", 2015L);
@@ -1094,7 +1094,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Years() throws Exception {
+  void Add_Years() throws Exception {
     evalEquals("Add_Years(DATE '2019-01-15',1)", LocalDate.of(2020, Month.JANUARY, 15));
     evalEquals("Add_Years(DATE '2019-01-15',-2)", LocalDate.of(2017, Month.JANUARY, 15));
     evalEquals("Add_Years(DATE '2019-11-15',3)", LocalDate.of(2022, Month.NOVEMBER, 15));
@@ -1110,7 +1110,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Months() throws Exception {
+  void Add_Months() throws Exception {
     evalEquals("Add_Months(DATE '2019-01-15',1)", LocalDate.of(2019, Month.FEBRUARY, 15));
     evalEquals("Add_Months(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.NOVEMBER, 15));
     evalEquals("Add_Months(DATE '2019-11-15',3)", LocalDate.of(2020, Month.FEBRUARY, 15));
@@ -1124,7 +1124,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Weeks() throws Exception {
+  void Add_Weeks() throws Exception {
     evalEquals("Add_Weeks(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
 
@@ -1135,7 +1135,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Days() throws Exception {
+  void Add_Days() throws Exception {
     evalEquals("Add_Days(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(DATE '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
     evalEquals(
@@ -1150,7 +1150,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Hours() throws Exception {
+  void Add_Hours() throws Exception {
     evalEquals(
         "Add_Hours(DATE '2019-01-15',1)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
     evalEquals(
@@ -1164,7 +1164,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Minutes() throws Exception {
+  void Add_Minutes() throws Exception {
     evalEquals(
         "Add_Minutes(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
@@ -1175,7 +1175,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Seconds() throws Exception {
+  void Add_Seconds() throws Exception {
     evalEquals(
         "Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
     evalEquals(
@@ -1186,7 +1186,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Add_Nanoseconds() throws Exception {
+  void Add_Nanoseconds() throws Exception {
     evalEquals(
         "Add_NanoSeconds(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
@@ -1200,7 +1200,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Date_Add() throws Exception {
+  void Date_Add() throws Exception {
     evalEquals("DATE_ADD(YEAR,1,DATE '2020-02-29')", LocalDate.of(2021, Month.FEBRUARY, 28));
     evalEquals("DATE_ADD(QUARTER,1,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
     evalEquals("DATE_ADD(MONTH,3,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
@@ -1228,28 +1228,28 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Hour() throws Exception {
+  void Hour() throws Exception {
     evalEquals("Hour(TIMESTAMP '2019-01-01 15:28:59')", 15L);
     evalNull("Hour(NULL_DATE)");
     evalFails("Hour()");
   }
 
   @Test
-  public void Minute() throws Exception {
+  void Minute() throws Exception {
     evalEquals("Minute(TIMESTAMP '2019-01-01 15:28:59')", 28L);
     evalNull("Minute(NULL_DATE)");
     evalFails("Minute()");
   }
 
   @Test
-  public void Second() throws Exception {
+  void Second() throws Exception {
     evalEquals("Second(TIMESTAMP '2019-01-01 15:28:59')", 59L);
     evalNull("Second(NULL_DATE)");
     evalFails("Second()");
   }
 
   @Test
-  public void Lower() throws Exception {
+  void Lower() throws Exception {
     evalEquals("Lower('TesT')", "test").returnType(Types.STRING);
     evalNull("Lower(NULL_STRING)").returnType(Types.STRING);
     evalFails("Lower()");
@@ -1262,7 +1262,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Squeeze() throws Exception {
+  void Squeeze() throws Exception {
     evalEquals("SQUEEZE('   Tes T      ')", "Tes T").returnType(Types.STRING);
     evalEquals("SQUEEZE('')", "");
     evalEquals("SQUEEZE('  ')", "");
@@ -1281,7 +1281,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Substring() throws Exception {
+  void Substring() throws Exception {
     evalEquals("Substring('TEST FROM',6)", "FROM").returnType(Types.STRING);
     evalEquals("Substring('TEST FROM',6,2)", "FR");
     evalEquals("Substring('TEST FROM',1,4)", "TEST");
@@ -1297,7 +1297,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Split_part() throws Exception {
+  void Split_part() throws Exception {
     evalEquals("Split_Part('127.1.2.3','.',1)", "127").returnType(Types.STRING);
     evalEquals("Split_Part('127.1.2.3','.',2)", "1");
     evalEquals("Split_Part('127.1.2.3','.',4)", "3");
@@ -1320,7 +1320,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Strtok() throws Exception {
+  void Strtok() throws Exception {
     evalEquals("Strtok('127.1-2-3','.-:',1)", "127").returnType(Types.STRING);
     evalEquals("Strtok('127.1-2-3','.-:',2)", "1");
     evalEquals("Strtok('127.1-2-3','.-:',4)", "3");
@@ -1357,7 +1357,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Space() throws Exception {
+  void Space() throws Exception {
     evalEquals("Space(4)", "    ").returnType(Types.STRING);
     evalEquals("Space(0)", "");
     evalNull("Space(-3)");
@@ -1367,7 +1367,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Abs() throws Exception {
+  void Abs() throws Exception {
     evalEquals("Abs(0)", 0L).returnType(IntegerType.of(1));
     evalEquals("Abs(1)", 1L).returnType(IntegerType.of(1));
     evalEquals("Abs(-1)", 1L).returnType(IntegerType.of(1));
@@ -1400,7 +1400,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Acos() throws Exception {
+  void Acos() throws Exception {
     evalEquals("Acos(0)", 1.5707963267948966).returnType(Types.NUMBER);
     evalEquals("Acos(1)", 0L).returnType(Types.NUMBER);
     evalNull("Acos(NULL_INTEGER)");
@@ -1412,7 +1412,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Acosh() throws Exception {
+  void Acosh() throws Exception {
     evalEquals("Acosh(1)", 0L).returnType(Types.NUMBER);
     evalEquals("Acosh(3)", new BigDecimal("1.7627471740390860504652186499596"))
         .returnType(Types.NUMBER);
@@ -1423,7 +1423,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Asin() throws Exception {
+  void Asin() throws Exception {
     evalEquals("Asin(0)", 0L).returnType(Types.NUMBER);
     evalEquals("Asin(sin(0.5))", 0.5D);
     evalNull("Asin(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -1432,7 +1432,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Asinh() throws Exception {
+  void Asinh() throws Exception {
     evalEquals("Asinh(asin(0.5))", new BigDecimal("0.50221898503461160828703900193479"))
         .returnType(Types.NUMBER);
     evalNull("Asinh(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -1441,7 +1441,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Atan() throws Exception {
+  void Atan() throws Exception {
     evalEquals("Atan(0.5)", new BigDecimal("0.46364760900080611621425623146121"))
         .returnType(Types.NUMBER);
     evalEquals("Atan(Tan(0.5))", 0.5);
@@ -1450,7 +1450,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Atan2() throws Exception {
+  void Atan2() throws Exception {
     evalEquals("Atan2(0,3)", 0L).returnType(Types.NUMBER);
     evalEquals("Atan2(0,-3)", PI);
     evalNull("Atan2(NULL_INTEGER,0)").returnType(Types.NUMBER);
@@ -1462,7 +1462,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Atanh() throws Exception {
+  void Atanh() throws Exception {
     evalEquals("Atanh(0.2)", new BigDecimal("0.20273255405408219098900655773217"))
         .returnType(Types.NUMBER);
     evalNull("Atanh(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -1472,7 +1472,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Cos() throws Exception {
+  void Cos() throws Exception {
     evalEquals("Cos(0)", 1L).returnType(Types.NUMBER);
     evalEquals("Cos(1)", new BigDecimal("0.54030230586813971740093660744298"))
         .returnType(Types.NUMBER);
@@ -1483,7 +1483,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Cosh() throws Exception {
+  void Cosh() throws Exception {
     evalEquals("Cosh(1.234)", new BigDecimal("1.8630338016984225890736437502561"))
         .returnType(Types.NUMBER);
     evalEquals("Cosh(0)", 1L);
@@ -1493,7 +1493,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sin() throws Exception {
+  void Sin() throws Exception {
     evalEquals("Sin(0)", 0L);
     evalEquals("Sin(1)", new BigDecimal("0.84147098480789650665250232163030"))
         .returnType(Types.NUMBER);
@@ -1504,7 +1504,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sinh() throws Exception {
+  void Sinh() throws Exception {
     evalEquals("Sinh(84.4)", new BigDecimal("2.2564425307670914188455367832027E+36"))
         .returnType(Types.NUMBER);
     evalEquals("Sinh(0)", 0L);
@@ -1515,7 +1515,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Cot() throws Exception {
+  void Cot() throws Exception {
     evalEquals("Cot(1)", new BigDecimal("0.64209261593433070300641998659427"))
         .returnType(Types.NUMBER);
     // evalEquals("Cot(0)", Double.POSITIVE_INFINITY);
@@ -1528,7 +1528,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Csc() throws Exception {
+  void Csc() throws Exception {
     evalEquals("Csc(Pi()/2)", 1L).returnType(Types.NUMBER);
     evalNull("Csc(NULL_INTEGER)").returnType(Types.NUMBER);
 
@@ -1539,7 +1539,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Csch() throws Exception {
+  void Csch() throws Exception {
     evalEquals("Csch(1.5)", new BigDecimal("0.4696424405952245847295644318870206"))
         .returnType(Types.NUMBER);
     evalEquals("Csch(Pi())", 0L).returnType(Types.NUMBER);
@@ -1552,7 +1552,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sec() throws Exception {
+  void Sec() throws Exception {
     evalEquals("Sec(Pi())", -1L).returnType(Types.NUMBER);
 
     evalNull("Sec(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -1563,7 +1563,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sech() throws Exception {
+  void Sech() throws Exception {
     evalEquals("Sech(0)", 1L).returnType(Types.NUMBER);
     evalEquals("Sech(1)", 0L);
     evalNull("Sech(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -1574,7 +1574,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Tan() throws Exception {
+  void Tan() throws Exception {
     evalEquals("Tan(84.4)", new BigDecimal("-0.45017764606195051960412881423455"))
         .returnType(Types.NUMBER);
     evalEquals("Tan(0)", 0L).returnType(Types.NUMBER);
@@ -1584,7 +1584,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Tanh() throws Exception {
+  void Tanh() throws Exception {
     evalEquals("Tanh(1.234)", new BigDecimal("0.84373566258933019391702000004355"))
         .returnType(Types.NUMBER);
     evalEquals("Tanh(0)", 0L);
@@ -1594,7 +1594,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Exp() throws Exception {
+  void Exp() throws Exception {
     evalEquals("Exp(1)", BigDecimalMath.exp(BigDecimal.ONE, Operator.MATH_CONTEXT))
         .returnType(Types.NUMBER);
     evalEquals("Exp(2)", new BigDecimal("7.3890560989306502272304274605750"));
@@ -1608,7 +1608,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Factorial() throws Exception {
+  void Factorial() throws Exception {
     evalEquals("Factorial(0)", 1L);
     evalEquals("Factorial(1)", 1L);
     evalEquals("Factorial(5)", 120L);
@@ -1624,7 +1624,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Power() throws Exception {
+  void Power() throws Exception {
     evalEquals("Power(3,2)", 9L);
     evalEquals("Power(100,0.5)", 10L);
     evalEquals("Power(-4,2)", 16L);
@@ -1647,7 +1647,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sign() throws Exception {
+  void Sign() throws Exception {
     evalEquals("Sign(0.3)", 1L).returnType(Types.INTEGER);
     evalEquals("Sign(0)", 0L);
     evalEquals("Sign(-5)", -1L);
@@ -1661,7 +1661,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Cbrt() throws Exception {
+  void Cbrt() throws Exception {
     evalEquals("Cbrt(0)", 0L);
     evalEquals("Cbrt(1)", 1L);
     evalEquals("Cbrt(64)", 4L);
@@ -1671,7 +1671,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sqrt() throws Exception {
+  void Sqrt() throws Exception {
     evalEquals("Sqrt(9)", 3L);
     evalFails("Sqrt(-5)");
     evalFails("Sqrt()");
@@ -1679,7 +1679,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Square() throws Exception {
+  void Square() throws Exception {
     evalEquals("Square(1)", 1L);
     evalEquals("Square(-5)", 25L);
     evalEquals("Square(FIELD_STRING_INTEGER)", 25L * 25L);
@@ -1688,7 +1688,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Trim() throws Exception {
+  void Trim() throws Exception {
     evalEquals("Trim('a')", "a").returnType(Types.STRING);
     evalEquals("Trim(' a ')", "a");
     evalEquals("Trim('  a b  ')", "a b");
@@ -1708,7 +1708,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void LTrim() throws Exception {
+  void LTrim() throws Exception {
     evalEquals("LTrim('a')", "a").returnType(Types.STRING);
     evalEquals("LTrim(' a ')", "a ");
     evalEquals("LTrim('01ABC012', '012')", "ABC012");
@@ -1722,7 +1722,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void RTrim() throws Exception {
+  void RTrim() throws Exception {
     evalEquals("RTrim('a')", "a").returnType(Types.STRING);
     evalEquals("RTrim(' a ')", " a");
     evalEquals("RTrim('012ABC10', '012')", "012ABC");
@@ -1736,7 +1736,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Greatest() throws Exception {
+  void Greatest() throws Exception {
     // Boolean
     evalTrue("Greatest(false, FIELD_BOOLEAN_TRUE)").returnType(Types.BOOLEAN);
     evalTrue("Greatest(false,true,false)").returnType(Types.BOOLEAN);
@@ -1788,7 +1788,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Least() throws Exception {
+  void Least() throws Exception {
     // Boolean
     evalTrue("Least(FIELD_BOOLEAN_TRUE, true)").returnType(Types.BOOLEAN);
     evalFalse("Least(true,false,true,false)");
@@ -1839,7 +1839,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Length() throws Exception {
+  void Length() throws Exception {
     // String
     evalEquals("Length('TEST')", 4L).returnType(Types.INTEGER);
     evalEquals("Len('TEST')", 4L).returnType(Types.INTEGER);
@@ -1868,12 +1868,12 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Cardinality() throws Exception {
+  void Cardinality() throws Exception {
     evalEquals("Cardinality(Array[1,4,8+2])", 3L).returnType(Types.INTEGER);
   }
 
   @Test
-  public void Left() throws Exception {
+  void Left() throws Exception {
     // String
     evalEquals("Left('TEST FROM',4)", "TEST").returnType(Types.STRING);
     evalEquals("Left('',1)", "");
@@ -1894,7 +1894,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Insert() throws Exception {
+  void Insert() throws Exception {
     // String
     evalEquals("Insert('abcd', 1, 0, 'QW')", "QWabcd").returnType(Types.STRING);
     evalEquals("Insert('abcd', 2, 1, 'QW')", "aQWcd");
@@ -1922,7 +1922,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Right() throws Exception {
+  void Right() throws Exception {
     // String
     evalEquals("Right('TEST FROM',4)", "FROM").returnType(Types.STRING);
     evalEquals("Right('',1)", "");
@@ -1944,7 +1944,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Repeat() throws Exception {
+  void Repeat() throws Exception {
     // String
     evalEquals("Repeat('ABC',0)", "").returnType(Types.STRING);
     evalEquals("Repeat('ABC',1)", "ABC").returnType(Types.STRING);
@@ -1971,7 +1971,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Replace() throws Exception {
+  void Replace() throws Exception {
     evalEquals("Replace('ABCD','CD')", "AB").returnType(Types.STRING);
     evalEquals("Replace('ABCDEFCD','CD','EF')", "ABEFEFEF");
     evalNull("Replace(NULL_STRING,'CD','EF')");
@@ -1981,7 +1981,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Is_Number() throws Exception {
+  void Is_Number() throws Exception {
     // String
     evalTrue("IS_NUMBER(' 123   ')").returnType(Types.BOOLEAN);
     evalTrue("IS_NUMBER('-123.45')");
@@ -2013,7 +2013,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Is_Json() throws Exception {
+  void Is_Json() throws Exception {
     evalTrue("IS_JSON('{\"name\":\"Smith\", \"age\":29}')").returnType(Types.BOOLEAN);
     evalTrue("IS_JSON('{name:\"Smith\", age:29}')");
     evalTrue("IS_JSON('{id:1,coordinates:[10,20]}')");
@@ -2030,7 +2030,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Is_Date() throws Exception {
+  void Is_Date() throws Exception {
 
     // String
     evalTrue("IS_DATE('2023','YYYY')").returnType(Types.BOOLEAN);
@@ -2056,7 +2056,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Boolean() throws Exception {
+  void To_Boolean() throws Exception {
     evalTrue("To_Boolean('True')").returnType(Types.BOOLEAN);
     evalTrue("To_Boolean('t')");
     evalTrue("To_Boolean('yes')");
@@ -2084,7 +2084,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void HexEncode() throws Exception {
+  void HexEncode() throws Exception {
     evalEquals("HEX_ENCODE('Apache Hop')", "41706163686520486f70");
 
     evalNull("HEX_ENCODE(NULL_STRING)");
@@ -2094,7 +2094,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void HexDecode() throws Exception {
+  void HexDecode() throws Exception {
     evalEquals("HEX_DECODE('41706163686520486f70')", "Apache Hop");
 
     evalNull("HEX_DECODE(NULL_STRING)");
@@ -2104,7 +2104,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Binary() throws Exception {
+  void To_Binary() throws Exception {
     evalEquals("TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes());
     evalEquals("TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
 
@@ -2121,7 +2121,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Number() throws Exception {
+  void To_Number() throws Exception {
 
     // No precision/scale and no format
     evalEquals("TO_NUMBER('1000')", 1000L);
@@ -2240,7 +2240,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Char() throws Exception {
+  void To_Char() throws Exception {
     // Null
     evalNull("TO_CHAR(NULL_NUMBER)").returnType(Types.STRING);
     evalNull("TO_CHAR(NULL_DATE)").returnType(Types.STRING);
@@ -2620,7 +2620,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Date() throws Exception {
+  void To_Date() throws Exception {
     evalEquals("To_Date('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
     evalEquals("To_Date('2020:148','YYYY:DDD')", LocalDate.of(2020, 5, 27));
     evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
@@ -2874,7 +2874,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Interval() throws Exception {
+  void To_Interval() throws Exception {
     evalEquals("TO_INTERVAL('0-0 45 22:30:58')", Interval.of(0, 0, 45, 22, 30, 58))
         .returnType(Types.INTERVAL);
     evalEquals("TO_INTERVAL('+0-0 45 22:30:58')", Interval.of(0, 0, 45, 22, 30, 58));
@@ -2887,7 +2887,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void To_Json() throws Exception {
+  void To_Json() throws Exception {
 
     evalEquals(
             "To_Json('{\"name\":\"Smith\", \"age\":29}')",
@@ -2904,7 +2904,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Json_Value() throws Exception {
+  void Json_Value() throws Exception {
     // dot–notation
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
 
@@ -2948,7 +2948,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Json_Query() throws Exception {
+  void Json_Query() throws Exception {
     // No Json path
     evalEquals(
             "Json_Query('{name:\"Smith\",age:29}'::JSON)",
@@ -3000,7 +3000,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Json_Object() throws Exception {
+  void Json_Object() throws Exception {
     evalEquals(
             "Json_Object(KEY 'name' VALUE 'Smith')", JsonType.convertToJson("{\"name\":\"Smith\"}"))
         .returnType(Types.JSON);
@@ -3032,7 +3032,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Overlay() throws Exception {
+  void Overlay() throws Exception {
     evalEquals("Overlay('Apxxxe','ach',3)", "Apache").returnType(Types.STRING);
     evalEquals("Overlay('Apxxxe','ache Hop',3)", "Apache Hop");
     evalEquals("Overlay('Apxxxe','ach',5)", "Apxxach");
@@ -3063,7 +3063,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Reverse() throws Exception {
+  void Reverse() throws Exception {
     evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH").returnType(StringType.of(13));
     evalEquals("Reverse(BINARY '2A3B4C')", new byte[] {0x4C, 0x3B, 0x2A})
         .returnType(BinaryType.of(3));
@@ -3076,7 +3076,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Soundex() throws Exception {
+  void Soundex() throws Exception {
     evalEquals("Soundex('Wikipedia')", "W213").returnType(Types.STRING);
     evalEquals("Soundex('I LOVE ROCKS.')", "I416");
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
@@ -3087,7 +3087,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Difference() throws Exception {
+  void Difference() throws Exception {
     evalEquals("Difference('Juice', 'Jucy')", 4L);
     evalNull("Difference(NULL_STRING,NULL_STRING)");
     evalNull("Difference(NULL_STRING,'Jucy')");
@@ -3095,7 +3095,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Levenshtein() throws Exception {
+  void Levenshtein() throws Exception {
     evalEquals("Levenshtein('Superman', 'Superman')", 0L);
     evalEquals("Levenshtein('kitten', 'sitting')", 3L);
     evalNull("Levenshtein(NULL_STRING,NULL_STRING)");
@@ -3104,7 +3104,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void JaroWinkler() throws Exception {
+  void JaroWinkler() throws Exception {
     evalEquals("JaroWinkler('Superman', 'Superman')", 100L);
     evalEquals("JaroWinkler('Peter Parker', 'Pete Parker')", 88L);
     evalEquals("JaroWinkler('elephant', 'hippo')", 44L);
@@ -3117,7 +3117,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Translate() throws Exception {
+  void Translate() throws Exception {
     evalEquals("Translate('Hello, world!','eo','EO')", "HEllO, wOrld!");
     evalEquals("Translate('Hello, wOrld!','eol', 'E')", "HE, wOrd!");
     evalEquals("Translate('Hello, world!','oel,! ', '')", "Hwrd");
@@ -3127,7 +3127,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Truncate() throws Exception {
+  void Truncate() throws Exception {
     evalEquals("Truncate(-975.975)", -975L); // TODO: .returnType(NumberType.of(3));
     evalEquals("Truncate(-975.975,-1)", -970L);
     evalEquals("Truncate(-975.975, 0)", -975L);
@@ -3146,7 +3146,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Date_Trunc() throws Exception {
+  void Date_Trunc() throws Exception {
     evalEquals("Date_Trunc(MILLENNIUM, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
     evalEquals("Date_Trunc(CENTURY, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
     evalEquals("Date_Trunc(DECADE, DATE '2021-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
@@ -3193,7 +3193,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Contains() throws Exception {
+  void Contains() throws Exception {
     // String
     evalTrue("CONTAINS(FIELD_STRING,'ES')").returnType(Types.BOOLEAN);
     evalFalse("CONTAINS(FIELD_STRING,'YZ')");
@@ -3216,7 +3216,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void StartsWith() throws Exception {
+  void StartsWith() throws Exception {
     // String
     evalTrue("StartsWith('TEST FROM','TES')").returnType(Types.BOOLEAN);
     evalFalse("StartsWith('XXXTEST FROM','TES')");
@@ -3233,7 +3233,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void EndsWith() throws Exception {
+  void EndsWith() throws Exception {
     // String
     evalTrue("EndsWith('TEST FROM','ROM')").returnType(Types.BOOLEAN);
     evalFalse("EndsWith('TEST FROM','ROMA')");
@@ -3251,7 +3251,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Regexp_Like() throws Exception {
+  void Regexp_Like() throws Exception {
     evalTrue("Regexp_Like('aaa','a{2,4}')").returnType(Types.BOOLEAN);
     evalTrue("Regexp_Like('Erdbeere','Erd[a[:SPACE:]b]eere')");
     evalTrue("Regexp_Like('12345TEST','123[:alnum:]*')");
@@ -3272,7 +3272,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Regexp_Replace() throws Exception {
+  void Regexp_Replace() throws Exception {
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234").returnType(Types.STRING);
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
     evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
@@ -3302,7 +3302,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Regexp_Count() throws Exception {
+  void Regexp_Count() throws Exception {
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+')", 2L)
         .returnType(Types.INTEGER);
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', 20)", 1L);
@@ -3311,7 +3311,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Regexp_Instr() throws Exception {
+  void Regexp_Instr() throws Exception {
     evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6L).returnType(Types.INTEGER);
     evalEquals("Regexp_Instr('hello to YOU', '(.o).', 1, 3, 1,'i')", 13L);
     evalEquals(
@@ -3323,7 +3323,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Regexp_Substr() throws Exception {
+  void Regexp_Substr() throws Exception {
     evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache").returnType(Types.STRING);
     evalEquals(
         "regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)", "regexp_substr");
@@ -3349,7 +3349,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void EqualsNull() throws Exception {
+  void EqualsNull() throws Exception {
     evalFalse("Equal_Null(1,NULL_INTEGER)").returnType(Types.BOOLEAN);
     evalTrue("Equal_Null(NULL_STRING,NULL_STRING)").returnType(Types.BOOLEAN);
     evalTrue("Equal_Null(NULL_INTEGER,NULL_NUMBER)");
@@ -3374,7 +3374,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Concat() throws Exception {
+  void Concat() throws Exception {
     // String
     evalEquals("CONCAT('TES','T')", "TEST").returnType(StringType.of(4));
     evalEquals("FIELD_STRING||'t'", "TESTt").returnType(StringType.of(1001));
@@ -3430,7 +3430,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void ConcatWs() throws Exception {
+  void ConcatWs() throws Exception {
 
     // String
     evalEquals("CONCAT_WS(',','ONE','TWO','THREE')", "ONE,TWO,THREE");
@@ -3459,7 +3459,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Chr() throws Exception {
+  void Chr() throws Exception {
     evalEquals("Chr(83)", "S").returnType(Types.STRING);
     evalEquals("Chr(115)", "s");
     evalEquals("Chr(233)", "é");
@@ -3474,7 +3474,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Ascii() throws Exception {
+  void Ascii() throws Exception {
     evalEquals("Ascii('ABC')", 65L).returnType(Types.INTEGER);
     evalEquals("Ascii('é')", 233L);
     evalEquals("Ascii('€')", 8364L);
@@ -3486,7 +3486,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Unicode() throws Exception {
+  void Unicode() throws Exception {
     evalEquals("Unicode('SSSS')", 83L).returnType(Types.INTEGER);
     ;
     evalEquals("Unicode('é')", 233L);
@@ -3497,7 +3497,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void String_Encode() throws Exception {
+  void String_Encode() throws Exception {
     evalEquals("String_Encode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"").returnType(Types.STRING);
     // Encode 16 bit unicode
     evalEquals("String_Encode('€')", "\\u20AC");
@@ -3505,7 +3505,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void String_Decode() throws Exception {
+  void String_Decode() throws Exception {
     evalEquals("String_Decode('\\t\\r\\n\\f\\b\\\"')", "\t\r\n\f\b\"").returnType(Types.STRING);
     // Decode 16 bits unicode
     evalEquals("String_Decode('\\u20AC')", "€");
@@ -3515,7 +3515,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Html_Encode() throws Exception {
+  void Html_Encode() throws Exception {
     evalEquals("Html_Encode('18€ & <test> ™')", "18&euro; &amp; &lt;test&gt; &trade;")
         .returnType(Types.STRING);
     evalNull("Html_Encode(NULL_STRING)").returnType(Types.STRING);
@@ -3524,7 +3524,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Html_Decode() throws Exception {
+  void Html_Decode() throws Exception {
     evalEquals("Html_Decode('18&euro; &amp; &lt;test&gt; &#8482;')", "18€ & <test> ™");
     evalNull("Html_Decode(NULL_STRING)");
     evalFails("Html_Decode()");
@@ -3532,7 +3532,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Url_Encode() throws Exception {
+  void Url_Encode() throws Exception {
     evalEquals("Url_Encode('a b')", "a+b").returnType(Types.STRING);
     evalEquals("Url_Encode('a+b')", "a%2Bb");
     evalEquals("Url_Encode('âéè')", "%C3%A2%C3%A9%C3%A8");
@@ -3542,7 +3542,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Url_Decode() throws Exception {
+  void Url_Decode() throws Exception {
     evalEquals("Url_Decode('a+b')", "a b").returnType(Types.STRING);
     evalEquals("Url_Decode('a%2Bb')", "a+b");
     evalEquals("Url_Decode('%C3%A2%C3%A9%C3%A8')", "âéè");
@@ -3553,7 +3553,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Base64_Encode() throws Exception {
+  void Base64_Encode() throws Exception {
     evalEquals("Base64_Encode('Apache Hop')", "QXBhY2hlIEhvcA==").returnType(Types.STRING);
     evalEquals("Base64_Encode('Apache Hop'::Binary)", "QXBhY2hlIEhvcA==").returnType(Types.STRING);
     evalNull("Base64_Encode(NULL_STRING)").returnType(Types.STRING);
@@ -3561,7 +3561,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Base64_Decode() throws Exception {
+  void Base64_Decode() throws Exception {
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop").returnType(Types.STRING);
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop").returnType(Types.STRING);
     evalNull("Base64_Decode(NULL_STRING)").returnType(Types.STRING);
@@ -3569,7 +3569,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Base32_Encode() throws Exception {
+  void Base32_Encode() throws Exception {
     evalEquals("Base32_Encode('Apache Hop')", "IFYGCY3IMUQEQ33Q").returnType(Types.STRING);
     evalEquals("Base32_Encode('Apache Hop'::Binary)", "IFYGCY3IMUQEQ33Q").returnType(Types.STRING);
     evalNull("Base32_Encode(NULL_STRING)").returnType(Types.STRING);
@@ -3577,7 +3577,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Base32_Decode() throws Exception {
+  void Base32_Decode() throws Exception {
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q')", "Apache Hop").returnType(Types.STRING);
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q'::Binary)", "Apache Hop").returnType(Types.STRING);
     evalNull("Base32_Decode(NULL_STRING)").returnType(Types.STRING);
@@ -3585,7 +3585,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Ceil() throws Exception {
+  void Ceil() throws Exception {
     evalEquals("Ceil(1)", 1L).returnType(NumberType.of(1));
     evalEquals("Ceil(125.9)", 126L).returnType(NumberType.of(3));
     evalEquals("Ceil(0.4873)", 1L).returnType(NumberType.of(1));
@@ -3613,7 +3613,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Floor() throws Exception {
+  void Floor() throws Exception {
     evalEquals("Floor(1)", 1L).returnType(NumberType.of(1));
     evalEquals("Floor(125.9)", 125L).returnType(NumberType.of(3));
     evalEquals("Floor(0.4873)", 0L).returnType(NumberType.of(1));
@@ -3638,7 +3638,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Round() throws Exception {
+  void Round() throws Exception {
     evalEquals("Round(1)", 1L).returnType(Types.NUMBER);
     evalEquals("Round(2.5)", 3L).returnType(Types.NUMBER);
     evalEquals("Round(-2.5)", -3L).returnType(Types.NUMBER);
@@ -3662,7 +3662,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Ln() throws Exception {
+  void Ln() throws Exception {
     evalEquals("Ln(1)", 0L).returnType(Types.NUMBER);
     evalEquals("Ln(Exp(2.4))", 2.4D).returnType(Types.NUMBER);
     evalEquals("Ln(10)", new BigDecimal("2.3025850929940456840179914546844"))
@@ -3676,7 +3676,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Log() throws Exception {
+  void Log() throws Exception {
     evalEquals("Log(10,100)", 2L).returnType(Types.NUMBER);
     evalEquals("Log(10,1000)", 3L);
 
@@ -3690,7 +3690,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Log10() throws Exception {
+  void Log10() throws Exception {
     evalEquals("Log10(10)", 1L).returnType(Types.NUMBER);
     evalEquals("Log10(1000)", 3L).returnType(Types.NUMBER);
     evalNull("Log10(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -3700,7 +3700,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Degrees() throws Exception {
+  void Degrees() throws Exception {
     evalEquals("Degrees(Pi())", 180L).returnType(Types.NUMBER);
     evalEquals("Degrees(Radians(50))", 50L).returnType(Types.NUMBER);
     evalNull("Degrees(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -3709,7 +3709,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Radians() throws Exception {
+  void Radians() throws Exception {
     evalEquals("Radians(180)", PI).returnType(Types.NUMBER);
     evalNull("Radians(NULL_INTEGER)").returnType(Types.NUMBER);
     evalFails("Radians()");
@@ -3717,7 +3717,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Crc32() throws Exception {
+  void Crc32() throws Exception {
     evalEquals("CRC32('Apache Hop')", "dbb81b5e").returnType(Types.STRING);
     evalEquals("CRC32(BINARY '123456789ABCDEF')", "2f720f20").returnType(Types.STRING);
     evalNull("CRC32(NULL_STRING)").returnType(Types.STRING);
@@ -3725,7 +3725,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void MD5() throws Exception {
+  void MD5() throws Exception {
     evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b").returnType(Types.STRING);
     evalEquals(
             "MD5(BINARY '123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF')",
@@ -3736,14 +3736,14 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sha1() throws Exception {
+  void Sha1() throws Exception {
     evalEquals("SHA1('Test')", "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa").returnType(Types.STRING);
     evalNull("SHA1(NULL_STRING)").returnType(Types.STRING);
     evalFails("SHA1()");
   }
 
   @Test
-  public void Sha224() throws Exception {
+  void Sha224() throws Exception {
     evalEquals("SHA224('Test')", "c696f08d2858549cfe0929bb7b098cfa9b64d51bec94aa68471688e4")
         .returnType(Types.STRING);
     evalNull("SHA224(NULL_STRING)").returnType(Types.STRING);
@@ -3751,7 +3751,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sha256() throws Exception {
+  void Sha256() throws Exception {
     evalEquals("SHA256('Test')", "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25")
         .returnType(Types.STRING);
     evalNull("SHA256(NULL_STRING)").returnType(Types.STRING);
@@ -3759,7 +3759,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sha384() throws Exception {
+  void Sha384() throws Exception {
     evalEquals(
             "SHA384('Test')",
             "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3")
@@ -3769,7 +3769,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Sha512() throws Exception {
+  void Sha512() throws Exception {
     evalEquals(
             "SHA512('Test')",
             "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31")
@@ -3778,7 +3778,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Random() throws Exception {
+  void Random() throws Exception {
     assertFalse(FunctionRegistry.getFunction("RANDOM").isDeterministic());
 
     evalTrue("Random() between 0 and 1");
@@ -3805,7 +3805,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Uuid() throws Exception {
+  void Uuid() throws Exception {
     assertFalse(FunctionRegistry.getFunction("UUID").isDeterministic());
 
     evalEquals("Length(Uuid())", 36L);
@@ -3814,19 +3814,19 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Compress() throws Exception {
+  void Compress() throws Exception {
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
     evalNull("Compress(NULL_BINARY)").returnType(Types.BINARY);
   }
 
   @Test
-  public void Decompress() throws Exception {
+  void Decompress() throws Exception {
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
     evalNull("Decompress(NULL_BINARY)").returnType(Types.BINARY);
   }
 
   @Test
-  public void BitGet() throws Exception {
+  void BitGet() throws Exception {
     evalTrue("Bit_Get(3,1)").returnType(Types.BOOLEAN);
     evalTrue("Bit_Get(3,2)");
     evalFalse("Bit_Get(3,4)");
@@ -3844,7 +3844,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void BitCount() throws Exception {
+  void BitCount() throws Exception {
     evalEquals("Bit_Count(FIELD_INTEGER)", 2L).returnType(Types.INTEGER);
     evalEquals("Bit_Count(31)", 5L);
     evalEquals("Bit_Count(True)", 1L);
@@ -3856,7 +3856,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void BitSet() throws Exception {
+  void BitSet() throws Exception {
     evalEquals("Bit_Set(16,1)", 17L).returnType(Types.INTEGER);
     evalEquals("Bit_Set(1,4)", 9L);
     evalEquals("Bit_Set(16,4)", 24L);
@@ -3875,7 +3875,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void BitClear() throws Exception {
+  void BitClear() throws Exception {
     evalEquals("Bit_Clear(3,1)", 2L).returnType(Types.INTEGER);
     evalEquals("Bit_Clear(3,4)", 3L);
 
@@ -3892,7 +3892,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void BitShift() throws Exception {
+  void BitShift() throws Exception {
     evalEquals("Bit_Shift(123,0)", 123L).returnType(Types.INTEGER);
     evalEquals("Bit_Shift(1,4)", 16L).returnType(Types.INTEGER);
     evalEquals("Bit_Shift(2,8)", 512L);
@@ -3922,7 +3922,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void BitRotate() throws Exception {
+  void BitRotate() throws Exception {
     evalEquals("Bit_Rotate(123,0)", 123L).returnType(Types.INTEGER);
     evalEquals("Bit_Rotate(1,4)", 16L).returnType(Types.INTEGER);
     evalEquals("Bit_Rotate(16,-4)", 1L);
@@ -3943,7 +3943,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void TypeOf() throws Exception {
+  void TypeOf() throws Exception {
     evalEquals("TypeOf(TRUE)", "BOOLEAN").returnType(Types.STRING);
     evalEquals("TypeOf('str')", "STRING").returnType(Types.STRING);
     evalEquals("TypeOf(25)", "INTEGER").returnType(Types.STRING);
@@ -3953,7 +3953,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Extract() throws Exception {
+  void Extract() throws Exception {
     // Extract part from temporal
     evalEquals("Extract(MILLENNIUM from TIMESTAMP '2020-05-25 23:48:59')", 3L)
         .returnType(Types.INTEGER);
@@ -4050,7 +4050,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  public void Position() throws Exception {
+  void Position() throws Exception {
     evalEquals("Position('abc' IN 'abcdefgh')", 1L).returnType(Types.INTEGER);
     evalEquals("Position('XYZ' IN 'abcdefgh')", 0L).returnType(Types.INTEGER);
     evalEquals("Position('def' IN 'abcdefgh')", 4L).returnType(Types.INTEGER);

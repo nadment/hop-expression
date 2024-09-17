@@ -26,6 +26,8 @@ public enum TypeFamily {
   //
   NUMERIC,
   //
+  INTERVAL,
+  //
   TEMPORAL,
   //
   BOOLEAN,
@@ -33,8 +35,6 @@ public enum TypeFamily {
   STRING,
   //
   JSON,
-  //
-  INTERVAL,
   //
   INET,
   // -------------------------------------------

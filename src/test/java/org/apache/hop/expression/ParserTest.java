@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class ParserTest extends ExpressionTest {
 
   @Test
-  public void reservedWords() throws Exception {
+  void reservedWords() throws Exception {
     assertTrue(ExpressionParser.isReservedWord("BETWEEN"));
     assertFalse(ExpressionParser.isReservedWord("XXX"));
     assertFalse(ExpressionParser.isReservedWord(null));
@@ -39,13 +39,13 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void sourceNullSource() throws Exception {
+  void sourceNullSource() throws Exception {
     ExpressionParser parser = new ExpressionParser(null);
     assertNull(parser.getSource());
   }
 
   @Test
-  public void sourceEmptyOrNull() throws Exception {
+  void sourceEmptyOrNull() throws Exception {
     // Empty source return NULL
     evalNull("");
     evalNull(" ");
@@ -56,7 +56,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void sourceComment() throws Exception {
+  void sourceComment() throws Exception {
     evalTrue(" // Test line comment \n  true ");
     evalTrue(" /* Test block comment */  true ");
     evalTrue(" true /* Test block comment */");
@@ -93,20 +93,20 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void sourceTab() throws Exception {
+  void sourceTab() throws Exception {
     evalTrue(" \n\tTrue");
     evalTrue(" \nTrue\t\r");
   }
 
   @Test
-  public void sourceCarriageReturnAndLineFeed() throws Exception {
+  void sourceCarriageReturnAndLineFeed() throws Exception {
     evalTrue(" \rTrue");
     evalTrue(" \n\tTrue");
     evalTrue(" \nTrue\n\r");
   }
 
   @Test
-  public void array() throws Exception {
+  void array() throws Exception {
     // Empty array
     optimize("ARRAY[]");
 
@@ -123,20 +123,20 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void arrayElementAt() throws Exception {
+  void arrayElementAt() throws Exception {
     evalEquals("ARRAY['A','B','C'][1]", "A").returnType(StringType.of(1));
     evalEquals("ARRAY[1,4,8][2]", 4L).returnType(IntegerType.of(1));
   }
 
   @Test
-  public void operatorComparator() throws Exception {
+  void operatorComparator() throws Exception {
     // Primary operator first and alias last
     OperatorComparator comparator = new OperatorComparator();
     assertTrue(comparator.compare(Operators.CONCAT, new ConcatFunction()) > 0);
   }
 
   @Test
-  public void operator() throws Exception {
+  void operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
     assertEquals(Operators.CONCAT, new ConcatFunction("||"));
     assertEquals(51, Operators.MULTIPLY.getLeftPrec());
@@ -158,7 +158,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void operatorNot() throws Exception {
+  void operatorNot() throws Exception {
     assertEquals(Operators.IS_NOT_NULL, Operators.IS_NULL.not());
     assertEquals(Operators.IS_NULL, Operators.IS_NOT_NULL.not());
     assertEquals(Operators.IS_NOT_TRUE, Operators.IS_TRUE.not());
@@ -178,7 +178,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void operatorReverse() throws Exception {
+  void operatorReverse() throws Exception {
     assertEquals(Operators.EQUAL, Operators.EQUAL.reverse());
     assertEquals(Operators.NOT_EQUAL, Operators.NOT_EQUAL.reverse());
     assertEquals(Operators.LESS_THAN_OR_EQUAL, Operators.GREATER_THAN_OR_EQUAL.reverse());
@@ -194,7 +194,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void operatorSymmetrical() throws Exception {
+  void operatorSymmetrical() throws Exception {
     assertTrue(Operators.BOOLAND.isSymmetrical());
     assertTrue(Operators.BOOLOR.isSymmetrical());
     assertTrue(Operators.BOOLXOR.isSymmetrical());
@@ -212,7 +212,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void as() throws Exception {
+  void as() throws Exception {
     assertTrue(compile("ABS(FIELD_INTEGER)").asCall() instanceof Call);
     assertTrue(compile("FIELD_INTEGER").asIdentifier() instanceof Identifier);
     assertTrue(compile("123").asLiteral() instanceof Literal);
@@ -226,7 +226,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void operatorPrecedenceAndAssociativity() throws Exception {
+  void operatorPrecedenceAndAssociativity() throws Exception {
 
     // Arithmetic
     evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5L);
@@ -274,7 +274,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void unparse() throws Exception {
+  void unparse() throws Exception {
     optimize("4*(2+FIELD_INTEGER)", "4*(2+FIELD_INTEGER)");
     optimize("-FIELD_INTEGER::NUMBER", "-CAST(FIELD_INTEGER AS NUMBER)");
     optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*FIELD_INTEGER/2");
@@ -282,7 +282,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void syntaxError() throws Exception {
+  void syntaxError() throws Exception {
 
     // Single quote for string
     evalFails("'T'||'T");
@@ -344,7 +344,7 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  public void dataType() throws Exception {
+  void dataType() throws Exception {
     evalEquals("Cast(123 as InTeGeR)", 123L);
     evalEquals("Cast(123 as STRING(3))", "123");
 

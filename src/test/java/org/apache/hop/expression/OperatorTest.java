@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class OperatorTest extends ExpressionTest {
 
   @Test
-  public void ElementAt() throws Exception {
+  void ElementAt() throws Exception {
     evalEquals("ARRAY[1,3,5][1]", 1L);
     evalEquals("ARRAY[1,3.5,5][3]", 5L);
     evalEquals("ARRAY['A','B',FIELD_STRING][3]", "TEST");
@@ -46,7 +46,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void EqualTo() throws Exception {
+  void EqualTo() throws Exception {
     // Integer
     evalTrue("0.0 = 0");
     evalTrue("0.0 = -0.000");
@@ -155,7 +155,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void NotEqualTo() throws Exception {
+  void NotEqualTo() throws Exception {
     evalTrue("FIELD_STRING != 'foo'").returnType(Types.BOOLEAN);
     evalTrue("FIELD_STRING <> 'tEST'");
     evalFalse("FIELD_INTEGER != 40");
@@ -244,7 +244,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void GreaterThan() throws Exception {
+  void GreaterThan() throws Exception {
     evalTrue("9>5").returnType(Types.BOOLEAN);
     evalTrue("9.4>9.358");
     evalTrue("(4+2)>10-9");
@@ -322,7 +322,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void GreaterThanOrEqualTo() throws Exception {
+  void GreaterThanOrEqualTo() throws Exception {
     evalTrue("9 >= 5").returnType(Types.BOOLEAN);
     evalTrue("9.4 >= 9.358");
     evalTrue("(4+2) >= 10-9");
@@ -404,7 +404,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void LessThan() throws Exception {
+  void LessThan() throws Exception {
     evalTrue("5 < 9").returnType(Types.BOOLEAN);
     evalTrue("9.358 < 9.4");
     evalTrue("10-9 < (4+2)");
@@ -480,7 +480,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void LessThanOrEqualTo() throws Exception {
+  void LessThanOrEqualTo() throws Exception {
     evalTrue("5 <= 9");
     evalTrue("9.358 <= 9.4");
     evalTrue("10-9 <= (4+2)");
@@ -560,7 +560,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void In() throws Exception {
+  void In() throws Exception {
     evalTrue("FIELD_STRING in ('?','*','TEST')").returnType(Types.BOOLEAN);
     evalTrue("FIELD_STRING not in ('?','-','!')").returnType(Types.BOOLEAN);
     evalTrue("FIELD_INTEGER not in (1,2,3)").returnType(Types.BOOLEAN);
@@ -628,7 +628,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void IsTrue() throws Exception {
+  void IsTrue() throws Exception {
     evalTrue("True IS True").returnType(Types.BOOLEAN);
     evalTrue("True IS NOT False").returnType(Types.BOOLEAN);
     evalTrue("FIELD_BOOLEAN_TRUE is True").returnType(Types.BOOLEAN);
@@ -651,7 +651,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void IsFalse() throws Exception {
+  void IsFalse() throws Exception {
     evalFalse("FIELD_BOOLEAN_TRUE IS FALSE").returnType(Types.BOOLEAN);
     evalTrue("FIELD_BOOLEAN_TRUE IS NOT FALSE").returnType(Types.BOOLEAN);
     evalTrue("FIELD_STRING='XX' IS FALSE");
@@ -671,7 +671,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void IsNull() throws Exception {
+  void IsNull() throws Exception {
     evalFalse("True IS Null");
     evalFalse("False IS Null");
     evalFalse("NULL_BOOLEAN IS NOT NULL");
@@ -706,7 +706,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void IsDistinctFrom() throws Exception {
+  void IsDistinctFrom() throws Exception {
     evalTrue("1 IS DISTINCT FROM 2");
     evalFalse("1 IS DISTINCT FROM 1");
     evalTrue("FIELD_INTEGER IS DISTINCT FROM 1").returnType(Types.BOOLEAN);
@@ -747,7 +747,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void SimilarTo() throws Exception {
+  void SimilarTo() throws Exception {
     evalTrue("'abc' SIMILAR TO 'abc'");
     evalTrue("'abc' SIMILAR TO '_b_'");
     evalTrue("'aaa' SIMILAR TO 'a{2,4}'");
@@ -783,7 +783,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void AddNumeric() throws Exception {
+  void AddToNumeric() throws Exception {
     // Addition of numeric
     evalEquals("10+(-0.5)", 9.5).returnType(NumberType.of(4, 1));
     evalEquals("BINARY 'F'::INTEGER+1", 16L);
@@ -827,11 +827,14 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void AddTemporal() throws Exception {
+  void AddToTemporal() throws Exception {
 
     // Addition of interval to a temporal
-    evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
-    evalEquals("INTERVAL 2 YEARS+DATE '2019-02-25'", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0))
+        .returnType(Types.DATE);
+    evalEquals(
+        "INTERVAL 2 YEARS+DATE '2019-02-25'+INTERVAL 1 YEARS",
+        LocalDateTime.of(2022, 2, 25, 0, 0, 0));
     evalEquals(
         "DATE '2019-02-25'+INTERVAL '2-11' YEAR TO MONTH", LocalDateTime.of(2022, 1, 25, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL 1 WEEK", LocalDateTime.of(2019, 3, 4, 0, 0, 0));
@@ -841,8 +844,8 @@ public class OperatorTest extends ExpressionTest {
         "DATE '2019-02-25'+INTERVAL '10 4' DAY TO HOUR", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
     // evalEquals("DATE '2019-02-25'+TO_INTERVAL('10 4:0:0')", LocalDateTime.of(2019, 3, 7, 4, 0,
     // 0));
-    evalNull("NULL_DATE+INTERVAL 12 DAYS");
-    evalNull("INTERVAL 12 DAYS+NULL_DATE");
+    evalNull("NULL_DATE+INTERVAL 12 DAYS").returnType(Types.DATE);
+    evalNull("INTERVAL 12 DAYS+NULL_DATE").returnType(Types.DATE);
 
     evalFails("FIELD_DATE+TO_INTERVAL('z')");
 
@@ -854,44 +857,34 @@ public class OperatorTest extends ExpressionTest {
 
     evalEquals("DATE '0010-01-01'+INTERVAL 178956970 YEARS", LocalDate.of(178956980, 1, 1));
 
-    // Add interval to interval
-    // optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1 0 00:00:00.000000000'");
-
     // Addition of days to a temporal
-    evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26));
+    evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26)).returnType(Types.DATE);
     evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
     evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
 
     // Only integer, round number
     evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
+
+    optimize(
+        "INTERVAL 1 HOUR+FIELD_DATE+INTERVAL 4 HOUR+INTERVAL 1 HOUR", "FIELD_DATE+INTERVAL 6 HOUR");
   }
 
   @Test
-  public void Subtract() throws Exception {
+  void AddToInterval() throws Exception {
+    // Add interval to interval
+    optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1' YEAR TO MONTH");
+    optimize("INTERVAL 4 HOUR+INTERVAL 1 HOUR", "INTERVAL 5 HOUR");
+  }
+
+  @Test
+  void SubtractFromNumeric() throws Exception {
     // Subtract of numeric
     evalEquals("10-0.5", 9.5D).returnType(NumberType.of(4, 1));
     evalEquals("FIELD_INTEGER-0.5", 39.5D);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     evalEquals("FIELD_INTEGER-FIELD_NUMBER-FIELD_BIGNUMBER", -123411.669);
     evalEquals("FIELD_BIGNUMBER-FIELD_NUMBER-FIELD_INTEGER", 123421.909);
-
-    // Subtraction interval to a temporal
-    evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-    evalEquals("DATE '2019-02-25'-INTERVAL 2 WEEKS", LocalDateTime.of(2019, 2, 11, 0, 0, 0));
-
-    // Subtraction of days to a temporal
-    evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
-    evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
-    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
-    // evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-    // evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
-
-    // Adjust day to the end of month and leap year.
-    evalEquals("DATE '2019-03-30'-INTERVAL 1 MONTH", LocalDate.of(2019, 2, 28));
-    evalEquals("DATE '2020-03-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 2, 29));
-    evalEquals("DATE '2020-04-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 3, 30));
-    evalEquals("DATE '2020-02-29'-INTERVAL 12 MONTHS", LocalDate.of(2019, 2, 28));
 
     // Implicit coercion from BOOLEAN
     evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2));
@@ -903,16 +896,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("'1'-2", -1L).returnType(Types.NUMBER);
     evalEquals("1-'2'", -1L).returnType(Types.NUMBER);
     evalEquals("2.5-'1.3'", 1.2).returnType(Types.NUMBER);
-    ;
     evalEquals("'2.5'-1", 1.5).returnType(Types.NUMBER);
-    ;
-
-    // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
-
-    // TODO: Diff of two date
-    // evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
-    // evalEquals("DATE '2019-02-23'-DATE '2019-02-25'", -2);
-    // evalEquals("DATE '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
 
     evalNull("5-NULL_INTEGER"); // TODO: .returnType(IntegerType.of(19));
     evalNull("NULL_INTEGER-5");
@@ -924,6 +908,41 @@ public class OperatorTest extends ExpressionTest {
     optimize("0-FIELD_INTEGER", "-FIELD_INTEGER");
     optimize("FIELD_INTEGER-(0-FIELD_INTEGER)", "FIELD_INTEGER+FIELD_INTEGER");
     optimize("FIELD_INTEGER-(-FIELD_NUMBER)", "FIELD_INTEGER+FIELD_NUMBER");
+  }
+
+  @Test
+  void SubtractFromTemporal() throws Exception {
+    // Subtraction interval to a temporal
+    evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+    evalEquals("DATE '2019-02-25'-INTERVAL 2 WEEKS", LocalDateTime.of(2019, 2, 11, 0, 0, 0));
+
+    // Subtraction of days to a temporal
+    evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
+    evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    // evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+    // evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
+
+    // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
+
+    // TODO: Diff of two date
+    // evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
+    // evalEquals("DATE '2019-02-23'-DATE '2019-02-25'", -2);
+    // evalEquals("DATE '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
+
+    // Adjust day to the end of month and leap year.
+    evalEquals("DATE '2019-03-30'-INTERVAL 1 MONTH", LocalDate.of(2019, 2, 28));
+    evalEquals("DATE '2020-03-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 2, 29));
+    evalEquals("DATE '2020-04-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 3, 30));
+    evalEquals("DATE '2020-02-29'-INTERVAL 12 MONTHS", LocalDate.of(2019, 2, 28));
+  }
+
+  // @Test
+  void SubtractFromInterval() throws Exception {
+    // Subtraction of interval to a interval
+    evalEquals("INTERVAL 5 HOUR - INTERVAL 1 HOUR", Interval.of(0, 0, 0, 4));
+
+    optimize("INTERVAL 5 HOUR - INTERVAL 1 HOUR", "INTERVAL 4 HOURS");
   }
 
   @Nested
@@ -1016,7 +1035,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToBoolean() throws Exception {
+  void CastToBoolean() throws Exception {
 
     // Boolean to Boolean
     evalTrue("CAST(TRUE as Boolean)").returnType(Types.BOOLEAN);
@@ -1093,7 +1112,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToInteger() throws Exception {
+  void CastToInteger() throws Exception {
     // Integer
     evalEquals("CAST(0 as Integer)", 0L).returnType(Types.INTEGER);
     evalEquals("CAST(123 as Integer)", 123L);
@@ -1170,7 +1189,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToNumber() throws Exception {
+  void CastToNumber() throws Exception {
 
     // Boolean
     evalEquals("CAST(TRUE as Number)", 1L).returnType(Types.NUMBER);
@@ -1234,7 +1253,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToString() throws Exception {
+  void CastToString() throws Exception {
     // Boolean
     evalEquals("CAST(true as String)", "TRUE").returnType(Types.STRING);
     evalEquals("CAST(false as String)", "FALSE");
@@ -1287,7 +1306,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToDate() throws Exception {
+  void CastToDate() throws Exception {
     // String
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1))
         .returnType(Types.DATE);
@@ -1333,7 +1352,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToBinary() throws Exception {
+  void CastToBinary() throws Exception {
     // String
     evalEquals("CAST('AB' as BINARY)", "AB".getBytes()).returnType(Types.BINARY);
 
@@ -1345,7 +1364,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToJson() throws Exception {
+  void CastToJson() throws Exception {
     // String
     // evalEquals("CAST('A' as JSON)", "A".getBytes());
 
@@ -1359,7 +1378,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToInterval() throws Exception {
+  void CastToInterval() throws Exception {
     // String
     evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5)).returnType(Types.INTERVAL);
     evalEquals("'2 hour'::INTERVAL", Interval.of(0, 0, 0, 2)).returnType(Types.INTERVAL);
@@ -1371,7 +1390,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CastToInet() throws Exception {
+  void CastToInet() throws Exception {
     // String
     evalEquals("CAST('10.10.10.1' as INET)", InetAddress.getByName("10.10.10.1"))
         .returnType(Types.INET);
@@ -1386,7 +1405,7 @@ public class OperatorTest extends ExpressionTest {
   @Nested
   class Cast {
     @Test
-    public void Cast() throws Exception {
+    void cast() throws Exception {
       evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(NumberType.of(20));
 
       // Accept data type quoted like a String
@@ -1395,7 +1414,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    public void syntax() throws Exception {
+    void syntax() throws Exception {
       // Error syntax
       evalFails("'1234':");
       evalFails("'1234':NUMBER");
@@ -1414,7 +1433,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    public void unknownType() throws Exception {
+    void unknownType() throws Exception {
       // Unknown data type
       evalFails("Cast(123 as Nill)");
       evalFails("Cast(123 as 1)");
@@ -1425,7 +1444,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void AtTimeZone() throws Exception {
+  void AtTimeZone() throws Exception {
     evalEquals(
         "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'",
         ZonedDateTime.of(2023, 5, 25, 20, 48, 00, 0, ZoneId.of("Europe/Paris")));
@@ -1454,7 +1473,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void ConvertTimeZone() throws Exception {
+  void ConvertTimeZone() throws Exception {
     evalEquals(
         "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')",
         ZonedDateTime.of(2020, 5, 25, 22, 48, 00, 0, ZoneId.of("Europe/Paris")));
@@ -1468,7 +1487,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Positive() throws Exception {
+  void Positive() throws Exception {
     evalEquals("+(40)", 40L);
     evalEquals("+FIELD_INTEGER", 40L).returnType(IntegerType.of(12));
     evalEquals("+FIELD_NUMBER", -5L).returnType(Types.NUMBER);
@@ -1481,7 +1500,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Negative() throws Exception {
+  void Negative() throws Exception {
     evalEquals("-(1+2)", -3L);
     evalEquals("-FIELD_INTEGER", -40L).returnType(IntegerType.of(12));
     evalEquals("-FIELD_NUMBER", 5L).returnType(Types.NUMBER);
@@ -1508,7 +1527,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Mod() throws Exception {
+  void Mod() throws Exception {
     evalEquals("11%4", 3L).returnType(Types.NUMBER);
     evalEquals("Mod(11,4)", 3L);
     evalEquals("Mod(11,-4)", 3L);
@@ -1543,7 +1562,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Multiply() throws Exception {
+  void Multiply() throws Exception {
     evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2));
     evalEquals("4*10", 40D).returnType(IntegerType.of(3));
     evalEquals("-4*-1", 4D).returnType(IntegerType.of(2));
@@ -1607,7 +1626,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Div() throws Exception {
+  void Div() throws Exception {
     evalEquals("FIELD_INTEGER/4", 10D).returnType(NumberType.of(18, 6));
     evalEquals("10/4", 2.5D).returnType(NumberType.of(8, 6));
     evalEquals("40/-10", -4L).returnType(NumberType.of(8, 6));
@@ -1645,7 +1664,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Div0() throws Exception {
+  void Div0() throws Exception {
     evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6));
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
     evalEquals("Div0(FIELD_INTEGER,0)", 0L);
@@ -1677,7 +1696,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BitNot() throws Exception {
+  void BitNot() throws Exception {
     evalEquals("~1", -2L).returnType(Types.INTEGER);
     evalEquals("~ 1", -2L).returnType(Types.INTEGER);
     evalEquals("~0", -1L);
@@ -1695,7 +1714,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BitAnd() throws Exception {
+  void BitAnd() throws Exception {
     evalEquals("3 & 2", 2L);
     evalEquals("100 & 2", 0L);
     evalEquals("100 & 2 & 1", 0L);
@@ -1723,7 +1742,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BitOr() throws Exception {
+  void BitOr() throws Exception {
     evalEquals("100 | 2", 102L);
     evalEquals("3 | 2", 3L);
     evalNull("100 | NULL_INTEGER").returnType(Types.INTEGER);
@@ -1748,7 +1767,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BitXor() throws Exception {
+  void BitXor() throws Exception {
     evalEquals("BIT_XOR(2,2)", 0L).returnType(Types.INTEGER);
     evalEquals("2 ^ 1", 3L).returnType(Types.INTEGER);
     evalEquals("100 ^ 2", 102L).returnType(Types.INTEGER);
@@ -1771,7 +1790,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BoolNot() throws Exception {
+  void BoolNot() throws Exception {
     evalTrue("FIELD_BOOLEAN_TRUE is not false").returnType(Types.BOOLEAN);
     evalTrue("NULL_BOOLEAN is null").returnType(Types.BOOLEAN);
     evalTrue("NOT (NULL_BOOLEAN is not null)").returnType(Types.BOOLEAN);
@@ -1827,7 +1846,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BoolXor() throws Exception {
+  void BoolXor() throws Exception {
     evalFalse("true XOR true").returnType(Types.BOOLEAN);
     evalFalse("2 XOR 3").returnType(Types.BOOLEAN);
     evalFalse("false XOR false").returnType(Types.BOOLEAN);
@@ -1842,7 +1861,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BoolOr() throws Exception {
+  void BoolOr() throws Exception {
     evalTrue("true OR true").returnType(Types.BOOLEAN);
     evalTrue("true OR false");
     evalTrue("false OR true");
@@ -1931,7 +1950,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void BoolAnd() throws Exception {
+  void BoolAnd() throws Exception {
     evalTrue("true AND true");
     evalTrue("true AND FIELD_STRING_BOOLEAN_TRUE");
     evalFalse("true AND false");
@@ -2023,7 +2042,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void ILike() throws Exception {
+  void ILike() throws Exception {
     evalTrue("'test' ILIKE '%t%'");
     evalTrue("'test' ILIKE '%T%'");
 
@@ -2036,7 +2055,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void Like() throws Exception {
+  void Like() throws Exception {
     evalTrue("FIELD_STRING like 'TES%'");
     evalTrue("FIELD_STRING not like 'X%'");
     evalFalse("FIELD_STRING like 'X%'");
@@ -2121,7 +2140,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CaseSearch() throws Exception {
+  void CaseSearch() throws Exception {
 
     evalEquals("case when TRUE then 1 else 2 end", 1L).returnType(IntegerType.of(1));
     evalEquals("case when FALSE then 1 else 2 end", 2L).returnType(IntegerType.of(1));
@@ -2207,7 +2226,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void CaseSimple() throws Exception {
+  void CaseSimple() throws Exception {
 
     evalEquals("case FIELD_INTEGER when 10 then 10 when 40 then 40 else 50 end", 40L)
         .returnType(IntegerType.of(2));

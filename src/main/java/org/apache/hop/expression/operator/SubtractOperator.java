@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -33,7 +34,7 @@ import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /**
- * Generic subtraction operator. <br>
+ * Generic subtraction operator.<br>
  * <strong>Syntax:</strong> <code>x - y</code>
  */
 public class SubtractOperator extends BinaryOperator {
@@ -46,8 +47,8 @@ public class SubtractOperator extends BinaryOperator {
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC
             .or(OperandTypes.TEMPORAL_INTERVAL)
-            .or(OperandTypes.TEMPORAL_NUMERIC)
-            .or(OperandTypes.INTERVAL_INTERVAL),
+            .or(OperandTypes.TEMPORAL_NUMERIC),
+        // .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
         "/docs/subtract.html");
   }
@@ -63,7 +64,7 @@ public class SubtractOperator extends BinaryOperator {
         return new Call(
             AddDaysFunction.INSTANCE, left, new Call(call.getPosition(), Operators.NEGATE, right));
       }
-      return new Call(SubtractInterval.INSTANCE, call.getOperands());
+      return new Call(SubtractIntervalFromTemporal.INSTANCE, call.getOperands());
     }
 
     // Simplify arithmetic A-0 → A
@@ -123,8 +124,8 @@ public class SubtractOperator extends BinaryOperator {
   }
 
   /** Subtracts a specified interval to a date or timestamp */
-  public static final class SubtractInterval extends SubtractOperator {
-    private static final SubtractOperator INSTANCE = new SubtractInterval();
+  public static final class SubtractIntervalFromTemporal extends SubtractOperator {
+    private static final SubtractOperator INSTANCE = new SubtractIntervalFromTemporal();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -135,6 +136,27 @@ public class SubtractOperator extends BinaryOperator {
       if (interval == null) return null;
 
       return interval.subtractFrom(datetime);
+    }
+
+    @Override
+    public boolean coerceOperandsType(Call call) {
+      return Types.coercionArithmeticOperator(call);
+    }
+  }
+
+  public static final class SubtractIntervalFromInterval extends SubtractOperator {
+    private static final SubtractOperator INSTANCE = new SubtractIntervalFromInterval();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Interval interval0 = operands[0].getValue(Interval.class);
+      if (interval0 == null) return null;
+
+      Interval interval1 = operands[1].getValue(Interval.class);
+      if (interval1 == null) return null;
+
+      // return interval0.subtract(interval1);
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR.message());
     }
 
     @Override

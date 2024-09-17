@@ -455,10 +455,12 @@ public class Types {
     if (type1.is(TypeId.DATE) && type2.is(TypeId.INTERVAL)) {
       return type1;
     }
-    if (type2.is(TypeId.DATE) && type1.is(TypeId.INTERVAL)) {
+    if (type1.is(TypeId.INTERVAL) && type2.is(TypeId.DATE)) {
       return type2;
     }
-
+    if (type1.is(TypeId.INTERVAL) && type2.is(TypeId.INTERVAL)) {
+      return type1;
+    }
     if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
       return Types.NUMBER;
     }

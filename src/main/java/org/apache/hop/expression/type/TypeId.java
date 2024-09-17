@@ -50,6 +50,9 @@ public enum TypeId {
   /** Unlimited precision number */
   NUMBER(TypeFamily.NUMERIC, true, true, 38, 1, 37, 0, BigDecimal.class),
 
+  /** A interval type TODO: add precision for nanoseconds */
+  INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class),
+
   /** Date-time value with nanosecond precision and time zone TODO: add precision for nanoseconds */
   DATE(TypeFamily.TEMPORAL, false, false, -1, -1, -1, -1, ZonedDateTime.class),
 
@@ -61,9 +64,6 @@ public enum TypeId {
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
-
-  /** A interval type TODO: add precision for nanoseconds */
-  INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class),
 
   /** A Array type */
   ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class);

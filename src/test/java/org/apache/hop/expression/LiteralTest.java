@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 public class LiteralTest extends ExpressionTest {
 
   @Test
-  public void testEquals() throws Exception {
+  void testEquals() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0L));
     assertEquals(Literal.ONE, Literal.of(1L));
     assertEquals(Literal.of(new BigDecimal("5")), Literal.of(5L));
@@ -49,7 +49,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Null() throws Exception {
+  void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Objects.hash(null, Types.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is((Kind) null));
@@ -62,12 +62,12 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void TimeUnit() throws Exception {
+  void TimeUnit() throws Exception {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
 
   @Test
-  public void Interval() throws Exception {
+  void Interval() throws Exception {
 
     evalEquals("INTERVAL 20 YEAR", Interval.of(20)).returnType(Types.INTERVAL);
     evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL);
@@ -175,12 +175,12 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Type() throws Exception {
+  void Type() throws Exception {
     assertEquals(Types.NUMBER, Literal.of(Types.NUMBER).getValue());
   }
 
   @Test
-  public void String() throws Exception {
+  void String() throws Exception {
     assertEquals("Test", Literal.of("Test").getValue());
     assertEquals(Literal.of("Test"), Literal.of("Test"));
 
@@ -199,7 +199,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Inet() throws Exception {
+  void Inet() throws Exception {
 
     optimize("INET '192.0.2.123'");
     // optimize("INET '192.168.0.0/16'");
@@ -208,7 +208,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Json() throws Exception {
+  void Json() throws Exception {
     JsonMapper mapper = JsonMapper.builder().build();
 
     assertEquals(
@@ -231,7 +231,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Boolean() throws Exception {
+  void Boolean() throws Exception {
     assertEquals(Boolean.TRUE, Literal.TRUE.getValue());
     assertEquals(Boolean.FALSE, Literal.FALSE.getValue());
     assertEquals(Literal.TRUE, Literal.of(true));
@@ -256,7 +256,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Binary() throws Exception {
+  void Binary() throws Exception {
 
     evalEquals("BINARY '1F'", new byte[] {0x1F});
     evalEquals(
@@ -271,7 +271,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Integer() throws Exception {
+  void Integer() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0L));
     assertEquals(Literal.ONE, Literal.of(1L));
 
@@ -348,7 +348,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Number() throws Exception {
+  void Number() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0L));
     assertEquals(Literal.ZERO, Literal.of(BigDecimal.ZERO));
     assertEquals(Literal.ONE, Literal.of(1L));
@@ -413,7 +413,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Date() throws Exception {
+  void Date() throws Exception {
     ZonedDateTime datetime =
         ZonedDateTime.of(2021, 2, 25, 2, 59, 00, 000000, ZoneId.systemDefault());
 
@@ -444,7 +444,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Timestamp() throws Exception {
+  void Timestamp() throws Exception {
 
     // Timestamp
     evalEquals("TimeSTAMP '2021-02-25 3'", LocalDateTime.of(2021, 2, 25, 3, 0, 0))

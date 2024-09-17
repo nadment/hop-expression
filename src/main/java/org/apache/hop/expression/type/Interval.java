@@ -853,6 +853,32 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
+   * Adds this interval to the specified interval.
+   *
+   * @param interval the interval object to adjust, not null
+   */
+  public Interval add(final Interval interval) {
+    return new Interval(
+        this.months + interval.months,
+        this.seconds + interval.seconds,
+        this.nanos + interval.nanos,
+        false);
+  }
+
+  /**
+   * Subtracts this interval to the specified interval.
+   *
+   * @param interval the interval object to adjust, not null
+   */
+  //  public Interval subtract(final Interval interval) {
+  //    return new Interval(
+  //        this.months - interval.months,
+  //        this.seconds - interval.seconds,
+  //        this.nanos - interval.nanos,
+  //        this.negative ^ interval.negative);
+  //  }
+
+  /**
    * Subtracts this interval from the specified temporal object.
    *
    * @param temporal the temporal object to adjust, not null

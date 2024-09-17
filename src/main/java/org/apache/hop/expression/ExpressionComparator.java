@@ -29,12 +29,19 @@ public class ExpressionComparator implements Comparator<IExpression> {
     if (e1.getCost() < e2.getCost()) return -1;
     if (e1.getCost() > e2.getCost()) return 1;
 
+    // If same cost
+
     // Order identifier by name (useful for test)
     if (e1.is(Kind.IDENTIFIER) && e2.is(Kind.IDENTIFIER)) {
       return e1.asIdentifier().getName().compareTo(e2.asIdentifier().getName());
     }
 
-    // If same cost order with textual representation
+    // Order constant by family
+    if (e1.isConstant() && e2.isConstant()) {
+      return e1.getType().getFamily().compareTo(e2.getType().getFamily());
+    }
+
+    // Order with textual representation
     return e1.toString().compareTo(e2.toString());
   }
 }

@@ -170,6 +170,8 @@ public final class OperandTypes {
           TypeFamily.NUMERIC);
 
   public static final IOperandTypeChecker NUMERIC_TEXT = sequence(NUMERIC, TEXT);
+  public static final IOperandTypeChecker NUMERIC_TEMPORAL =
+      family(TypeFamily.NUMERIC, TypeFamily.TEMPORAL);
 
   public static final IOperandTypeChecker TEMPORAL = family(TypeFamily.TEMPORAL);
   public static final IOperandTypeChecker TEMPORAL_TEMPORAL =
