@@ -280,6 +280,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Boolean.TRUE, type.cast(new BigDecimal("0.5")));
     assertEquals(Boolean.TRUE, type.cast("1"));
     assertEquals(Boolean.TRUE, type.cast("T"));
+    assertEquals(Boolean.TRUE, type.cast("t"));
     assertEquals(Boolean.TRUE, type.cast("True"));
     assertEquals(Boolean.TRUE, type.cast("Y"));
     assertEquals(Boolean.TRUE, type.cast("Yes"));
@@ -289,6 +290,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Boolean.FALSE, type.cast(BigDecimal.ZERO));
     assertEquals(Boolean.FALSE, type.cast("0"));
     assertEquals(Boolean.FALSE, type.cast("F"));
+    assertEquals(Boolean.FALSE, type.cast("f"));
     assertEquals(Boolean.FALSE, type.cast("False"));
     assertEquals(Boolean.FALSE, type.cast("N"));
     assertEquals(Boolean.FALSE, type.cast("No"));

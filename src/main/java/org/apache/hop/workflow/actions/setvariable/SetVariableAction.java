@@ -179,7 +179,7 @@ public class SetVariableAction extends ActionBase implements IAction {
           }
 
           // ok we can process this line
-          if (log.isDetailed()) {
+          if (isDetailed()) {
             logDetailed(
                 BaseMessages.getString(
                     PKG, "SetVariableAction.Log.SetVariableToValue", name, value));

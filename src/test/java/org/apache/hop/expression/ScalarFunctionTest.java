@@ -3642,12 +3642,14 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Round(1)", 1L).returnType(Types.NUMBER);
     evalEquals("Round(2.5)", 3L).returnType(Types.NUMBER);
     evalEquals("Round(-2.5)", -3L).returnType(Types.NUMBER);
-    evalEquals("Round(12.123456,2)", 12.12).returnType(Types.NUMBER);
+    evalEquals("Round(12.123456,2)", new BigDecimal("12.12")).returnType(Types.NUMBER);
     evalEquals("Round(12.123456,-1)", 10L).returnType(Types.NUMBER);
     evalEquals("Round(125.49)", 125L);
     evalEquals("Round(125.99)", 126L);
     evalEquals("Round(0.4873)", 0L);
     evalEquals("Round(-0.65)", -1L);
+    evalEquals("Round(9223372036854775807,-1)", new BigDecimal("9223372036854775810"))
+        .returnType(Types.NUMBER);
 
     evalNull("Round(NULL_INTEGER)");
     evalNull("Round(NULL_NUMBER)");

@@ -62,7 +62,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       // it is used to guard some processing tasks, like figuring out field
       // indexes in the row structure that only need to be done once
       if (first) {
-        if (log.isDebug()) {
+        if (isDebug()) {
           logDebug(BaseMessages.getString(PKG, "Where.Log.StartedProcessing"));
         }
 
@@ -121,7 +121,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       if (predicat != null && predicat) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {
-          if (log.isRowLevel()) {
+          if (isRowLevel()) {
             logRowlevel(
                 BaseMessages.getString(
                     PKG,
@@ -134,7 +134,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       } else {
         // put the row to the FALSE output row stream
         if (data.falseRowSet != null) {
-          if (log.isRowLevel()) {
+          if (isRowLevel()) {
             logRowlevel(
                 BaseMessages.getString(
                     PKG,

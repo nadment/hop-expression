@@ -108,7 +108,7 @@ public class LoopAction extends ActionBase implements IAction {
       execution = executeWorkflow(workflowMeta, numberOfRows, execution);
       Result result = execution.result;
       if (!result.getResult() || result.getNrErrors() > 0 || result.isStopped()) {
-        log.logError(
+        logError(
             "Workflow execution has encountered an error or has been stopped. This ends the loop.");
 
         // On error or an false result, stop the loop

@@ -188,7 +188,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     processAggregate(row);
 
     if (checkFeedback(getLinesRead())) {
-      if (log.isBasic()) {
+      if (isBasic()) {
         logBasic(BaseMessages.getString(PKG, "Aggregate.LineNumber") + getLinesRead());
       }
     }

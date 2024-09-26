@@ -114,7 +114,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),
             e);
       }
-      if (log.isDebug()) {
+      if (isDebug()) {
         logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones", "" + data.numberOfClones));
       }
     }
@@ -164,7 +164,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
       putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
     }
 
-    if (log.isDetailed() && checkFeedback(getLinesRead())) {
+    if (isDetailed() && checkFeedback(getLinesRead())) {
       logDetailed(BaseMessages.getString(PKG, "CloneRow.Log.LineNumber", "" + getLinesRead()));
     }
 
