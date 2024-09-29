@@ -26,8 +26,8 @@ import org.apache.hop.metadata.api.IHopMetadata;
 /** A user-defined function (UDF) is a function provided by the user */
 @HopMetadata(
     key = "udf",
-    name = "User Defined Function",
-    description = "User defined function for expression",
+    name = "i18n::UserDefinedFunction.Name",
+    description = "i18n::UserDefinedFunction.Description",
     image = "function.svg")
 public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMetadata {
 
