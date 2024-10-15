@@ -357,7 +357,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
   /** Called when the user confirms the dialog. */
   protected void ok() {
 
-    if (Utils.isEmpty(wTransformName.getText())) {
+    if (!isValid()) {
       return;
     }
 
