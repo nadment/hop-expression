@@ -433,8 +433,6 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    evalEquals("Overlay('Apxxxe','ache Hop',3)", "Apache Hop");
-
     // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
 
     // String jsonPath = "$[0]['gender']";

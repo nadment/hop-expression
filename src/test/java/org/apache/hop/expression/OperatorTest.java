@@ -795,6 +795,9 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4L).returnType(NumberType.of(38, 10));
     evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4L).returnType(NumberType.of(15, 2));
 
+    // Check no arithmetic overflow Long.MAX_VALUE+1
+    evalEquals("9223372036854775807::INTEGER+1::INTEGER", new BigDecimal("9223372036854775808"));
+
     // Implicit coercion from BOOLEAN
     evalEquals("1+FIELD_BOOLEAN_FALSE", 1L);
     evalEquals("FIELD_BOOLEAN_TRUE+1", 2L);
@@ -810,6 +813,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("+NULL_INTEGER+5");
     evalNull("NULL_INTEGER+NULL_NUMBER");
 
+    // Syntax error
     evalFails("5+");
 
     optimize("10+FIELD_INTEGER");
@@ -885,6 +889,9 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     evalEquals("FIELD_INTEGER-FIELD_NUMBER-FIELD_BIGNUMBER", -123411.669);
     evalEquals("FIELD_BIGNUMBER-FIELD_NUMBER-FIELD_INTEGER", 123421.909);
+
+    // Check no arithmetic overflow Long.MIN_VALUE-2
+    evalEquals("-9223372036854775807::INTEGER-2::INTEGER", new BigDecimal("-9223372036854775809"));
 
     // Implicit coercion from BOOLEAN
     evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2));
@@ -1577,10 +1584,10 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("'2'*2", 4L).returnType(Types.NUMBER);
     evalEquals("2.5*'2'", 5L).returnType(NumberType.of(38, 10));
 
-    // Check no overflow Long.MAX_VALUE * 2
+    // Check no arithmetic overflow Long.MAX_VALUE * 2
     evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"))
         .returnType(NumberType.of(20));
-    // Check no underflow Long.MIN_VALUE * 2
+    // Check no arithmetic underflow Long.MIN_VALUE * 2
     evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
 
     evalNull("NULL_INTEGER*1*1");
