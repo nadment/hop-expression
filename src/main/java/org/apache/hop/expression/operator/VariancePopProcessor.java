@@ -16,7 +16,7 @@ package org.apache.hop.expression.operator;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 
@@ -29,6 +29,8 @@ import org.apache.hop.expression.IExpressionProcessor;
  * <p>Null values are ignored.
  */
 public class VariancePopProcessor implements IExpressionProcessor {
+
+  private static final Variance VARIANCE = new Variance(false);
 
   private List<Double> values;
 
@@ -50,6 +52,6 @@ public class VariancePopProcessor implements IExpressionProcessor {
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);
     }
-    return StatUtils.populationVariance(array);
+    return VARIANCE.evaluate(array, 0, array.length);
   }
 }
