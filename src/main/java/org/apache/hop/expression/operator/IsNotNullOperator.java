@@ -69,7 +69,6 @@ public class IsNotNullOperator extends PostfixUnaryOperator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
-    return value != null;
+    return operands[0].getValue() != null;
   }
 }

@@ -47,7 +47,7 @@ import org.apache.hop.workflow.engine.IWorkflowEngine;
     description = "i18n::SetVariableAction.Description",
     image = "set-variable.svg",
     categoryDescription = "i18n:org.apache.hop.workflow:ActionCategory.Category.Utility",
-    keywords = "i18n::SetVariableAction.keywords",
+    keywords = "i18n::SetVariableAction.Keywords",
     documentationUrl = "/workflow/actions/setvariable.html")
 public class SetVariableAction extends ActionBase implements IAction {
   static final Class<?> PKG = SetVariableAction.class; // For Translator
