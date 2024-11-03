@@ -584,7 +584,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         "First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
 
     evalNull("First_Day(NULL_DATE)").returnType(Types.DATE);
+    evalNull("First_day(NULL_DATE, WEEK)");
     evalNull("First_day(NULL_DATE, MONTH)");
+    evalNull("First_day(NULL_DATE, QUARTER)");
+    evalNull("First_day(NULL_DATE, YEAR)");
 
     evalFails("First_Day()");
     evalFails("First_Day(FIELD_STRING)");
@@ -615,7 +618,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         "Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.DECEMBER, 31));
 
     evalNull("Last_Day(NULL_DATE)").returnType(Types.DATE);
+    evalNull("Last_Day(NULL_DATE, WEEK)");
     evalNull("Last_Day(NULL_DATE, MONTH)");
+    evalNull("Last_Day(NULL_DATE, QUARTER)");
+    evalNull("Last_Day(NULL_DATE, YEAR)");
 
     evalFails("Last_Day()");
     evalFails("Last_Day(FIELD_INTEGER)");
