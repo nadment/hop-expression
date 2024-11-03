@@ -28,20 +28,15 @@ public class FirstDayOfQuarter implements TemporalAdjuster {
   public Temporal adjustInto(Temporal temporal) {
 
     int quarter = temporal.get(IsoFields.QUARTER_OF_YEAR);
-    switch (quarter) {
-      case 1:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.JANUARY.getValue());
-        break;
-      case 2:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.APRIL.getValue());
-        break;
-      case 3:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.JULY.getValue());
-        break;
-      case 4:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.OCTOBER.getValue());
-        break;
-    }
+
+    temporal =
+        switch (quarter) {
+          case 1 -> temporal.with(MONTH_OF_YEAR, Month.JANUARY.getValue());
+          case 2 -> temporal.with(MONTH_OF_YEAR, Month.APRIL.getValue());
+          case 3 -> temporal.with(MONTH_OF_YEAR, Month.JULY.getValue());
+          case 4 -> temporal.with(MONTH_OF_YEAR, Month.OCTOBER.getValue());
+          default -> throw new IllegalArgumentException("Unexpected quarter value: " + quarter);
+        };
 
     return temporal.with(DAY_OF_MONTH, 1);
   }

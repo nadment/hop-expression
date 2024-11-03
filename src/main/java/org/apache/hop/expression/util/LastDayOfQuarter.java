@@ -28,20 +28,14 @@ public class LastDayOfQuarter implements TemporalAdjuster {
   public Temporal adjustInto(Temporal temporal) {
 
     int quarter = temporal.get(IsoFields.QUARTER_OF_YEAR);
-    switch (quarter) {
-      case 1:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.MARCH.getValue());
-        break;
-      case 2:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.JUNE.getValue());
-        break;
-      case 3:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.SEPTEMBER.getValue());
-        break;
-      case 4:
-        temporal = temporal.with(MONTH_OF_YEAR, Month.DECEMBER.getValue());
-        break;
-    }
+    temporal =
+        switch (quarter) {
+          case 1 -> temporal.with(MONTH_OF_YEAR, Month.MARCH.getValue());
+          case 2 -> temporal.with(MONTH_OF_YEAR, Month.JUNE.getValue());
+          case 3 -> temporal.with(MONTH_OF_YEAR, Month.SEPTEMBER.getValue());
+          case 4 -> temporal.with(MONTH_OF_YEAR, Month.DECEMBER.getValue());
+          default -> throw new IllegalArgumentException("Unexpected quarter value: " + quarter);
+        };
 
     return temporal.with(DAY_OF_MONTH, temporal.range(DAY_OF_MONTH).getMaximum());
   }

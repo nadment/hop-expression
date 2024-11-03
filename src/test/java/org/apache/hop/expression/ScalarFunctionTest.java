@@ -569,6 +569,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("First_Day(DATE '2020-02-27', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("First_Day(DATE '2020-02-27', QUARTER)", LocalDate.of(2020, Month.JANUARY, 1));
     evalEquals("First_Day(DATE '2020-05-27', QUARTER)", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("First_Day(DATE '2020-09-27', QUARTER)", LocalDate.of(2020, Month.JULY, 1));
+    evalEquals("First_Day(DATE '2020-12-27', QUARTER)", LocalDate.of(2020, Month.OCTOBER, 1));
     evalEquals("First_Day(DATE '2020-02-01', WEEK)", LocalDate.of(2020, Month.JANUARY, 27));
     evalEquals("First_Day(DATE '2020-02-27', WEEK)", LocalDate.of(2020, Month.FEBRUARY, 24));
     evalEquals("First_Day(DATE '2020-12-31', WEEK)", LocalDate.of(2020, Month.DECEMBER, 28));
@@ -600,7 +602,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Last_Day(DATE '2022-02-27', MONTH)", LocalDate.of(2022, Month.FEBRUARY, 28));
     evalEquals("Last_Day(DATE '2020-02-27', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 29));
     evalEquals("Last_Day(DATE '2020-02-27', QUARTER)", LocalDate.of(2020, Month.MARCH, 31));
+    evalEquals("Last_Day(DATE '2020-04-27', QUARTER)", LocalDate.of(2020, Month.JUNE, 30));
     evalEquals("Last_Day(DATE '2020-07-27', QUARTER)", LocalDate.of(2020, Month.SEPTEMBER, 30));
+    evalEquals("Last_Day(DATE '2020-10-27', QUARTER)", LocalDate.of(2020, Month.DECEMBER, 31));
     evalEquals("Last_Day(DATE '2020-12-31', WEEK)", LocalDate.of(2021, Month.JANUARY, 3));
     evalEquals("Last_Day(FIELD_DATE, YEAR)", LocalDate.of(1981, Month.DECEMBER, 31));
     evalEquals("Last_Day(FIELD_TIMESTAMP, YEAR)", LocalDate.of(2023, Month.DECEMBER, 31));
