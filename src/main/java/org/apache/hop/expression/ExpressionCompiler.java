@@ -127,7 +127,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
             return call;
           } else
           // For CAST operator, it's important to return type
-          if (expression.is(Operators.CAST)) {
+          if (expression.isOperator(Operators.CAST)) {
             value = constantType.cast(value);
           }
 

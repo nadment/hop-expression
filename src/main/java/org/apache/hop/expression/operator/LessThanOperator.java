@@ -75,7 +75,7 @@ public class LessThanOperator extends BinaryOperator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Normalize
-    call = normalizeReversiblePredicate(call);
+    call = Call.normalizeReversiblePredicate(call);
 
     // If the operator has been changed
     if (!call.getOperator().equals(this)) return call;
@@ -94,7 +94,9 @@ public class LessThanOperator extends BinaryOperator {
     }
 
     // Simplify 3<X+1 → 3-1<X
-    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+    if (left.isConstant()
+        && right.isOperator(Operators.ADD)
+        && right.asCall().getOperand(0).isConstant()) {
       return new Call(
           call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),

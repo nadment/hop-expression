@@ -59,11 +59,11 @@ public class FloorFunction extends Function {
 
     // Idempotent function repetition
     // FLOOR(FLOOR(x)) → FLOOR(x)
-    if (call.getOperand(0).is(call.getOperator())) {
+    if (call.getOperand(0).isOperator(call.getOperator())) {
       return call.getOperand(0);
     }
     // FLOOR(CEIL(x)) → CEIL(x)
-    if (call.getOperand(0).is(FunctionRegistry.getFunction("CEIL"))) {
+    if (call.getOperand(0).isOperator(FunctionRegistry.getFunction("CEIL"))) {
       return call.getOperand(0);
     }
 

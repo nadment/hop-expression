@@ -197,7 +197,7 @@ public class Operators {
 
   public static boolean is(IExpression expression, Operator... operators) {
     for (Operator o : operators) {
-      if (expression.is(o)) {
+      if (expression.isOperator(o)) {
         return true;
       }
     }

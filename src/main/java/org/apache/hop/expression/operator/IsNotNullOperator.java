@@ -55,7 +55,7 @@ public class IsNotNullOperator extends PostfixUnaryOperator {
     IExpression operand = call.getOperand(0);
 
     // CAST(x AS type) IS NOT NULL → x IS NOT NULL
-    if (operand.is(Operators.CAST)) {
+    if (operand.isOperator(Operators.CAST)) {
       return new Call(call.getOperator(), operand.asCall().getOperands());
     }
 

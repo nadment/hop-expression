@@ -88,7 +88,7 @@ public class CastFunction extends Function {
       }
 
       // Remove unnecessary chained cast CAST(CAST(x as type(10)) as type(5)) → CAST(x as type(5))
-      if (call.getOperand(0).is(Operators.CAST)) {
+      if (call.getOperand(0).isOperator(Operators.CAST)) {
         Type toType = call.getType();
         Type fromType = call.getOperand(0).getType();
         if (Types.isLosslessCast(toType, fromType)) {

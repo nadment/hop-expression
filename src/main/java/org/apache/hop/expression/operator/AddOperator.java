@@ -62,7 +62,7 @@ public class AddOperator extends BinaryOperator {
 
     // Rebuild chained operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
-    operands.addAll(this.getChainedOperands(call, true));
+    operands.addAll(call.getChainedOperands(true));
     IExpression operand = operands.poll();
     while (!operands.isEmpty()) {
       call = new Call(this, operand, operands.poll());
@@ -117,7 +117,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A+(-B) → A-B
-    if (right.is(Operators.NEGATE)) {
+    if (right.isOperator(Operators.NEGATE)) {
       return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
     }
 

@@ -67,14 +67,14 @@ public class LTrimFunction extends Function {
       IExpression operand = call.getOperand(0);
 
       // Repetitions of the same function
-      if (operand.is(this)) {
+      if (operand.isOperator(this)) {
         return operand;
       }
 
       // Repetitions of functions that do not have any effects on the result
       // LTRIM(RTRIM(x)) → TRIM(x)
       // LTRIM(TRIM(x)) → TRIM(x)
-      if (operand.is(TrimFunction.INSTANCE) || operand.is(RTrimFunction.INSTANCE)) {
+      if (operand.isOperator(TrimFunction.INSTANCE) || operand.isOperator(RTrimFunction.INSTANCE)) {
         return new Call(TrimFunction.INSTANCE, operand.asCall().getOperand(0));
       }
     }

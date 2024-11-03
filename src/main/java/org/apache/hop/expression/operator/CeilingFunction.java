@@ -59,11 +59,11 @@ public class CeilingFunction extends Function {
 
     // Idempotent function repetition
     // CEIL(CEIL(x)) → CEIL(x)
-    if (call.getOperand(0).is(call.getOperator())) {
+    if (call.getOperand(0).isOperator(call.getOperator())) {
       return call.getOperand(0);
     }
     // CEIL(FLOOR(x)) → FLOOR(x)
-    if (call.getOperand(0).is(FunctionRegistry.getFunction("FLOOR"))) {
+    if (call.getOperand(0).isOperator(FunctionRegistry.getFunction("FLOOR"))) {
       return call.getOperand(0);
     }
 

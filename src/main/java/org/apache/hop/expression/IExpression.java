@@ -45,7 +45,7 @@ public interface IExpression {
   public Type getType();
 
   /** Check if the expression is a call to this operator or an alias of this operator. */
-  public default boolean is(Operator operator) {
+  public default boolean isOperator(Operator operator) {
     return false;
   }
 

@@ -47,7 +47,7 @@ public class AbsFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Idempotent function repetition ABS(ABS(x)) → ABS(x)
-    if (call.getOperand(0).is(call.getOperator())) {
+    if (call.getOperand(0).isOperator(call.getOperator())) {
       return call.getOperand(0);
     }
 

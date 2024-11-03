@@ -51,7 +51,7 @@ class CallTest extends ExpressionTest {
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
     assertTrue(call1.is(Kind.CALL));
-    assertTrue(call1.is(Operators.ADD));
+    assertTrue(call1.isOperator(Operators.ADD));
     assertTrue(call1.isConstant());
     assertFalse(call4.isConstant());
     assertFalse(call8.isConstant());

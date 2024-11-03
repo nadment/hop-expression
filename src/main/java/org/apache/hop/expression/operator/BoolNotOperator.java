@@ -59,7 +59,7 @@ public class BoolNotOperator extends PrefixUnaryOperator {
     IExpression operand = call.getOperand(0);
 
     // NOT(NOT(x)) → x
-    if (operand.is(Operators.BOOLNOT)) {
+    if (operand.isOperator(Operators.BOOLNOT)) {
       return operand.asCall().getOperand(0);
     }
 

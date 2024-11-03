@@ -50,9 +50,9 @@ public class InitCapFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(this)
-        || operand.is(UpperFunction.INSTANCE)
-        || operand.is(LowerFunction.INSTANCE)) {
+    if (operand.isOperator(this)
+        || operand.isOperator(UpperFunction.INSTANCE)
+        || operand.isOperator(LowerFunction.INSTANCE)) {
       return new Call(this, operand.asCall().getOperand(0));
     }
 

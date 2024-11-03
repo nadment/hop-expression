@@ -71,7 +71,7 @@ public class ConcatFunction extends Function {
     // Combine chained CONCAT operator and remove NULL
     // This is especially useful for the || operator
     ArrayList<IExpression> operands = new ArrayList<>();
-    for (IExpression operand : getChainedOperands(call, true)) {
+    for (IExpression operand : call.getChainedOperands(true)) {
       if (operand.isNull()) continue;
       if (type == null) type = operand.getType();
       operands.add(0, operand);

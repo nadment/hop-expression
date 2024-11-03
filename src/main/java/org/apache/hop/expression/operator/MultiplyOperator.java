@@ -61,7 +61,7 @@ public class MultiplyOperator extends BinaryOperator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Reorder chained symmetric operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
-    operands.addAll(this.getChainedOperands(call, true));
+    operands.addAll(call.getChainedOperands(true));
 
     final List<IExpression> zeroTerms = new ArrayList<>();
     final List<IExpression> oneTerms = new ArrayList<>();
@@ -88,10 +88,10 @@ public class MultiplyOperator extends BinaryOperator {
       if (operand.getType().isNullable()) {
         nullableTerms.add(operand);
       }
-      if (operand.is(Operators.NEGATE)) {
+      if (operand.isOperator(Operators.NEGATE)) {
         negateTerms.add(operand.asCall());
       }
-      if (operand.is(Operators.DIVIDE)) {
+      if (operand.isOperator(Operators.DIVIDE)) {
         divideTerms.add(operand.asCall());
       }
     }

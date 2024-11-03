@@ -77,7 +77,7 @@ public class BoolOrOperator extends BinaryOperator {
     // x OR x → x
     // x OR y OR x → x OR y
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
-    predicates.addAll(this.getChainedOperands(call, false));
+    predicates.addAll(call.getChainedOperands(false));
 
     final List<IExpression> nullTerms = new ArrayList<>();
     final List<IExpression> notNullTerms = new ArrayList<>();
@@ -107,34 +107,34 @@ public class BoolOrOperator extends BinaryOperator {
       if (predicate instanceof Identifier identifier) {
         identifiers.add(identifier);
       } else if (predicate instanceof Call term) {
-        if (term.is(Operators.IS_NULL)) {
+        if (term.isOperator(Operators.IS_NULL)) {
           nullTerms.add(term.getOperand(0));
         }
-        if (term.is(Operators.IS_NOT_NULL)) {
+        if (term.isOperator(Operators.IS_NOT_NULL)) {
           notNullTerms.add(term.getOperand(0));
         }
-        if (term.is(Operators.EQUAL)) {
+        if (term.isOperator(Operators.EQUAL)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
             inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
           }
         }
-        if (term.is(Operators.IN) && term.getOperand(1).isConstant()) {
+        if (term.isOperator(Operators.IN) && term.getOperand(1).isConstant()) {
           for (IExpression operand : term.getOperand(1).asArray()) {
             inTerms.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
           }
         }
-        if (term.is(Operators.NOT_IN)) {
+        if (term.isOperator(Operators.NOT_IN)) {
           notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.is(Operators.NOT_EQUAL)) {
+        if (term.isOperator(Operators.NOT_EQUAL)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.is(Operators.LESS_THAN)) {
+        if (term.isOperator(Operators.LESS_THAN)) {
           lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
-        if (term.is(Operators.GREATER_THAN)) {
+        if (term.isOperator(Operators.GREATER_THAN)) {
           greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
         if (Operators.isStrong(term)) {

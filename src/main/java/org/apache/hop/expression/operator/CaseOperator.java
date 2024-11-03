@@ -127,7 +127,7 @@ public class CaseOperator extends Operator {
       //
       // When a searched CASE expression nests another CASE expression in its ELSE clause, that can
       // be flattened into the top level CASE expression.
-      if (elseTerm.is(Operators.CASE_SEARCH)) {
+      if (elseTerm.isOperator(Operators.CASE_SEARCH)) {
         List<IExpression> whenOperands = new ArrayList<>();
         whenTerm.forEach(whenOperands::add);
         elseTerm.asCall().getOperand(1).asArray().forEach(whenOperands::add);
@@ -152,12 +152,13 @@ public class CaseOperator extends Operator {
         IExpression thenTerm0 = thenTerm.get(0);
 
         // CASE WHEN x IS NULL THEN y ELSE x END → IFNULL(x,y)
-        if (whenTerm0.is(Operators.IS_NULL) && whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
+        if (whenTerm0.isOperator(Operators.IS_NULL)
+            && whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
           return new Call(IfNullFunction.INSTANCE, whenTerm0.asCall().getOperand(0), thenTerm0);
         }
 
         // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
-        if (whenTerm0.is(Operators.EQUAL) && thenTerm0.isNull()) {
+        if (whenTerm0.isOperator(Operators.EQUAL) && thenTerm0.isNull()) {
 
           if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
             return new Call(
@@ -175,13 +176,13 @@ public class CaseOperator extends Operator {
         }
 
         // CASE WHEN x IS NOT NULL THEN y ELSE z END → NVL2(x,y,z)
-        if (whenTerm0.is(Operators.IS_NOT_NULL)) {
+        if (whenTerm0.isOperator(Operators.IS_NOT_NULL)) {
           return new Call(
               Nvl2Function.INSTANCE, whenTerm0.asCall().getOperand(0), thenTerm0, elseTerm);
         }
 
         // CASE WHEN x IS NULL THEN y ELSE z END → NVL2(x,z,y)
-        if (whenTerm0.is(Operators.IS_NULL)) {
+        if (whenTerm0.isOperator(Operators.IS_NULL)) {
           return new Call(
               Nvl2Function.INSTANCE, whenTerm0.asCall().getOperand(0), elseTerm, thenTerm0);
         }

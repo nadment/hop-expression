@@ -78,7 +78,7 @@ public class SubtractOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A-(-B) → A+B
-    if (right.is(Operators.NEGATE)) {
+    if (right.isOperator(Operators.NEGATE)) {
       return new Call(Operators.ADD, left, right.asCall().getOperand(0));
     }
 

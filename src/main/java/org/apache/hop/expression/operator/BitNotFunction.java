@@ -61,7 +61,7 @@ public class BitNotFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Simplify reverses itself "~(~(A))" to "A"
-    if (operand.is(Operators.BITNOT)) {
+    if (operand.isOperator(Operators.BITNOT)) {
       return operand.asCall().getOperand(0);
     }
 

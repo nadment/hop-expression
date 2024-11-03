@@ -191,6 +191,7 @@ public class ParserTest extends ExpressionTest {
     assertEquals(Operators.BOOLAND, Operators.BOOLAND.reverse());
     assertEquals(Operators.BOOLOR, Operators.BOOLOR.reverse());
     assertEquals(Operators.BOOLXOR, Operators.BOOLXOR.reverse());
+    assertNull(Operators.CONCAT.reverse());
   }
 
   @Test
@@ -203,6 +204,7 @@ public class ParserTest extends ExpressionTest {
     assertTrue(Operators.NOT_EQUAL.isSymmetrical());
     assertTrue(Operators.IS_DISTINCT_FROM.isSymmetrical());
     assertTrue(Operators.IS_NOT_DISTINCT_FROM.isSymmetrical());
+    assertFalse(Operators.GREATER_THAN.isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("EQUAL_NULL").isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("BIT_AND").isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("BIT_OR").isSymmetrical());

@@ -78,7 +78,7 @@ public class BoolAndOperator extends BinaryOperator {
     // x AND x → x
     // x AND y AND x → x AND y
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
-    predicates.addAll(this.getChainedOperands(call, false));
+    predicates.addAll(call.getChainedOperands(false));
 
     final List<IExpression> strongTerms = new ArrayList<>();
     final List<IExpression> nullTerms = new ArrayList<>();
@@ -97,27 +97,27 @@ public class BoolAndOperator extends BinaryOperator {
       }
 
       if (predicate instanceof Call term) {
-        if (term.is(Operators.IS_NULL)) {
+        if (term.isOperator(Operators.IS_NULL)) {
           nullTerms.add(term.getOperand(0));
         }
-        if (term.is(Operators.IS_NOT_NULL)) {
+        if (term.isOperator(Operators.IS_NOT_NULL)) {
           notNullTerms.add(term.getOperand(0));
         }
-        if (term.is(Operators.EQUAL)) {
+        if (term.isOperator(Operators.EQUAL)) {
           if (term.getOperand(1).is(Kind.LITERAL)) {
             inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.is(Operators.NOT_EQUAL)) {
+        if (term.isOperator(Operators.NOT_EQUAL)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
             notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
           }
         }
-        if (term.is(Operators.IN)) {
+        if (term.isOperator(Operators.IN)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.is(Operators.NOT_IN) && term.getOperand(1).isConstant()) {
+        if (term.isOperator(Operators.NOT_IN) && term.getOperand(1).isConstant()) {
           for (IExpression operand : term.getOperand(1).asArray()) {
             notInTerms.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
           }
@@ -145,7 +145,7 @@ public class BoolAndOperator extends BinaryOperator {
         List<IExpression> unnecessary = new ArrayList<>();
         while (iterator.hasNext()) {
           IExpression condition = iterator.next();
-          if (condition.is(Operators.IS_NOT_NULL)
+          if (condition.isOperator(Operators.IS_NOT_NULL)
               && condition.asCall().getOperand(0).equals(operand)) {
             unnecessary.add(condition);
           }

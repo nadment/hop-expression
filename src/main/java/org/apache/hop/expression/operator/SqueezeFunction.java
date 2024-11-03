@@ -53,7 +53,7 @@ public class SqueezeFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator())) {
+    if (operand.isOperator(call.getOperator())) {
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }
 

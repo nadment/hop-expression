@@ -71,7 +71,7 @@ public class RoundFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Iempotent function repetition
-    if (call.getOperandCount() == 1 && call.getOperand(0).is(call.getOperator())) {
+    if (call.getOperandCount() == 1 && call.getOperand(0).isOperator(call.getOperator())) {
       return call.getOperand(0);
     }
 

@@ -52,7 +52,7 @@ public class UnaccentFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(this)) {
+    if (operand.isOperator(this)) {
       return operand;
     }
 

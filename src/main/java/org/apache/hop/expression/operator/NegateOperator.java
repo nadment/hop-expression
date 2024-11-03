@@ -51,7 +51,7 @@ public class NegateOperator extends PrefixUnaryOperator {
     IExpression operand = call.getOperand(0);
 
     // Simplify -(-(A)) → A
-    if (operand.is(Operators.NEGATE)) {
+    if (operand.isOperator(Operators.NEGATE)) {
       return operand.asCall().getOperand(0);
     }
 
@@ -61,7 +61,7 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
 
     // Simplify arithmetic -(A-B) → B-A
-    if (operand.is(Operators.SUBTRACT)) {
+    if (operand.isOperator(Operators.SUBTRACT)) {
       Call subtract = operand.asCall();
       return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
     }

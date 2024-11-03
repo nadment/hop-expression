@@ -62,7 +62,7 @@ public class IfFunction extends Function {
 
     IExpression condition = call.getOperand(0);
 
-    if (condition.is(Operators.IS_NULL)) {
+    if (condition.isOperator(Operators.IS_NULL)) {
       // IF(x IS NULL,y,x) → IFNULL(x, y)
       if (call.getOperand(2).equals(condition.asCall().getOperand(0))) {
         return new Call(IfNullFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
@@ -76,7 +76,7 @@ public class IfFunction extends Function {
           call.getOperand(1));
     }
 
-    if (condition.is(Operators.IS_NOT_NULL)) {
+    if (condition.isOperator(Operators.IS_NOT_NULL)) {
       // IF(x IS NOT NULL,y,z) → NVL2(x,y,z)
       return new Call(
           Nvl2Function.INSTANCE,
@@ -85,7 +85,7 @@ public class IfFunction extends Function {
           call.getOperand(2));
     }
 
-    if (condition.is(Operators.EQUAL) && call.getOperand(1).isNull()) {
+    if (condition.isOperator(Operators.EQUAL) && call.getOperand(1).isNull()) {
 
       // IF(x=y,NULL,x) → NULLIF(x, y)
       if (condition.asCall().getOperand(0).equals(call.getOperand(2))) {

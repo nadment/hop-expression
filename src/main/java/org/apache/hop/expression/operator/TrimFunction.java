@@ -69,9 +69,9 @@ public class TrimFunction extends Function {
       // TRIM(TRIM(x)) → TRIM(x)
       // TRIM(RTRIM(x)) → TRIM(x)
       // TRIM(LTRIM(x)) → TRIM(x)
-      if (operand.is(this)
-          || operand.is(LTrimFunction.INSTANCE)
-          || operand.is(RTrimFunction.INSTANCE)) {
+      if (operand.isOperator(this)
+          || operand.isOperator(LTrimFunction.INSTANCE)
+          || operand.isOperator(RTrimFunction.INSTANCE)) {
         return new Call(call.getOperator(), operand.asCall().getOperand(0));
       }
     }

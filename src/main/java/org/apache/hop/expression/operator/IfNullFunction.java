@@ -59,7 +59,8 @@ public class IfNullFunction extends Function {
       }
 
       // Flatten chained COALESCE or IFNULL but keep order
-      if (operand.is(IfNullFunction.INSTANCE) || operand.is(CoalesceFunction.INSTANCE)) {
+      if (operand.isOperator(IfNullFunction.INSTANCE)
+          || operand.isOperator(CoalesceFunction.INSTANCE)) {
         operands.addAll(Arrays.asList(operand.asCall().getOperands()));
       } else {
         operands.add(operand);
