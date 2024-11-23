@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
-  void Error() throws Exception {
+  public void Error() throws Exception {
     evalFails("ERROR('Custom error message')");
   }
 
@@ -1635,17 +1635,20 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Power() throws Exception {
-    evalEquals("Power(3,2)", 9L);
+    evalEquals("Power(3,2)", 9L).returnType(Types.NUMBER);
     evalEquals("Power(100,0.5)", 10L);
     evalEquals("Power(-4,2)", 16L);
     evalEquals("Power(FIELD_INTEGER,0)", 1L);
     evalEquals("Power(999,0)", 1L);
     evalEquals("Power(2,2.5)", new BigDecimal("5.6568542494923801952067548968388"));
-    evalEquals("Power(2,-3)", 0.125D);
+    evalEquals("Power(2,-3)", 0.125D).returnType(Types.NUMBER);
+    evalEquals("Power(2.000,-2)", new BigDecimal("0.25")).returnType(Types.NUMBER);
 
     evalNull("Power(NULL_INTEGER,2)");
     evalNull("Power(3,NULL_INTEGER)");
+    evalNull("Power(NULL_INTEGER,NULL_INTEGER)");
 
+    evalFails("Power(-4,0.5)");
     evalFails("Power()");
     evalFails("Power(3)");
     evalFails("Power(1,2,3)");

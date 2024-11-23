@@ -434,6 +434,7 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
     // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
+    evalEquals("Power(FIELD_INTEGER,-2)", 0L);
 
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
