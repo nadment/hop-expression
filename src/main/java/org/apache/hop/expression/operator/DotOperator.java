@@ -17,38 +17,45 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.type.IOperandTypeChecker;
-import org.apache.hop.expression.type.IReturnTypeInference;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 
-/** Binary operator, as in "x + y". */
-public abstract class BinaryOperator extends Operator {
+/**
+ * Dot operator to access a field of a record.<br>
+ * <strong>Syntax:</strong> <code>json.field</code>
+ */
+public class DotOperator extends Operator {
 
-  protected BinaryOperator(
-      String id,
-      String name,
-      int precedence,
-      boolean isLeftAssociative,
-      IReturnTypeInference returnTypeInference,
-      IOperandTypeChecker operandTypeChecker,
-      String category,
-      String documentationUrl) {
+  public DotOperator() {
     super(
-        id,
-        name,
-        precedence,
-        isLeftAssociative,
-        returnTypeInference,
-        operandTypeChecker,
-        category,
-        documentationUrl);
+        "DOT",
+        ".",
+        100,
+        true,
+        ReturnTypes.DIVIDE_OPERATOR,
+        OperandTypes.JSON_STRING,
+        OperatorCategory.ARRAY,
+        "/docs/dot.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    return call;
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
-    writer.append(getName());
+    writer.append('.');
     operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

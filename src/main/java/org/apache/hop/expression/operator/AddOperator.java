@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -130,7 +131,7 @@ public class AddOperator extends BinaryOperator {
   }
 
   private static final class AddInteger extends AddOperator {
-    private static final AddOperator INSTANCE = new AddInteger();
+    private static final AddInteger INSTANCE = new AddInteger();
 
     private AddInteger() {
       super();
@@ -153,13 +154,17 @@ public class AddOperator extends BinaryOperator {
       Long right = operands[1].getValue(Long.class);
       if (right == null) return null;
 
-      return left + right;
+      try {
+        return Math.addExact(left, right);
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
+      }
     }
   }
 
   private static final class AddNumber extends AddOperator {
 
-    private static final AddOperator INSTANCE = new AddNumber();
+    private static final AddNumber INSTANCE = new AddNumber();
 
     private AddNumber() {
       super();
@@ -188,7 +193,7 @@ public class AddOperator extends BinaryOperator {
 
   /** Adds a specified interval to a date or timestamp */
   private static final class AddIntervalToTemporal extends AddOperator {
-    private static final AddOperator INSTANCE = new AddIntervalToTemporal();
+    private static final AddIntervalToTemporal INSTANCE = new AddIntervalToTemporal();
 
     private AddIntervalToTemporal() {
       super();

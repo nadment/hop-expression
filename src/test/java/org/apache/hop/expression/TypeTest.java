@@ -144,7 +144,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.NUMBER, TypeId.fromValue(BigDecimal.valueOf(123456789, 3)));
     assertEquals(TypeId.DATE, TypeId.fromValue(ZonedDateTime.now()));
     assertEquals(TypeId.INTERVAL, TypeId.fromValue(Interval.of(5)));
-    assertEquals(TypeId.JSON, TypeId.fromValue(JsonType.convertToJson("{\"name\":\"Smith\"}")));
+    assertEquals(TypeId.JSON, TypeId.fromValue(JsonType.convert("{\"name\":\"Smith\"}")));
   }
 
   @Test
@@ -383,7 +383,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals("3.123", type.cast(new BigDecimal("3.123")));
     assertEquals("-3.123", type.cast(new BigDecimal("-3.123")));
     assertEquals("ABCD��", type.cast("ABCD��".getBytes(StandardCharsets.UTF_8)));
-    assertEquals("{\"name\":\"Smith\"}", type.cast(JsonType.convertToJson("{\"name\":\"Smith\"}")));
+    assertEquals("{\"name\":\"Smith\"}", type.cast(JsonType.convert("{\"name\":\"Smith\"}")));
   }
 
   @Test

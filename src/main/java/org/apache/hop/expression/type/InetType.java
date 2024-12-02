@@ -72,7 +72,7 @@ public final class InetType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convertToString((InetAddress) value));
+      return clazz.cast(StringType.convert((InetAddress) value));
     }
 
     return super.convert(value, clazz);
@@ -103,7 +103,7 @@ public final class InetType extends Type {
     }
 
     if (value instanceof String str) {
-      return convertToInet(str);
+      return convert(str);
     }
 
     throw new ConversionException(
@@ -116,7 +116,7 @@ public final class InetType extends Type {
    * @param str the string to convert
    * @return InetAddress
    */
-  public static InetAddress convertToInet(final String str) throws ConversionException {
+  public static InetAddress convert(final String str) throws ConversionException {
     if (str == null || Utils.isEmpty(str)) return null;
 
     try {

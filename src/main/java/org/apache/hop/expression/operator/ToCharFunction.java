@@ -175,7 +175,7 @@ public class ToCharFunction extends Function {
       if (value == null) {
         return null;
       }
-      return StringType.convertToString(value);
+      return StringType.convert(value);
     }
   }
 

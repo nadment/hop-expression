@@ -813,6 +813,11 @@ public class OperatorTest extends ExpressionTest {
     evalNull("+NULL_INTEGER+5");
     evalNull("NULL_INTEGER+NULL_NUMBER");
 
+    // Arithmetic overflow
+    // evalFails("cast(5e18 as INTEGER)+cast(5e18 as INTEGER)");
+    // evalFails("cast(-5e18 as NUMBER(19,0))+cast(-5e18 as NUMBER(19,0))");
+    // evalFails("cast(5e18 as NUMBER(19,10))+cast(5e18 as NUMBER(19,10))");
+
     // Syntax error
     evalFails("5+");
 
@@ -908,6 +913,12 @@ public class OperatorTest extends ExpressionTest {
     evalNull("5-NULL_INTEGER"); // TODO: .returnType(IntegerType.of(19));
     evalNull("NULL_INTEGER-5");
 
+    // Arithmetic overflow
+    // evalFails("cast(-5e18 as INTEGER)-cast(5e18 as INTEGER)");
+    // evalFails("cast(5e18 as NUMBER(19,0))-cast(-5e18 as NUMBER(19,0))");
+    // evalFails("cast(5e18 as NUMBER(19,10))-cast(-5e18 as NUMBER(19,10))");
+
+    // Syntax error
     evalFails("5-");
 
     optimize("10-FIELD_INTEGER");
@@ -1514,7 +1525,11 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("-FIELD_BIGNUMBER", -123456L).returnType(Types.NUMBER);
     evalEquals("+40", 40L);
     evalEquals("1+ -2", -1L);
+
     evalNull("-NULL_INTEGER").returnType(Types.INTEGER);
+
+    // Arithmetic overflow
+    // evalFails("-CAST(9223372036854775807 as INTEGER)");
 
     optimize("-FIELD_INTEGER", "-FIELD_INTEGER");
     optimize("-(10+2)", "-12");
@@ -1590,6 +1605,11 @@ public class OperatorTest extends ExpressionTest {
     // Check no arithmetic underflow Long.MIN_VALUE * 2
     evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
 
+    // Arithmetic overflow
+    // evalFails("cast(5e9 as INTEGER) * cast(2e9 as INTEGER)");
+    // evalFails("cast(2e9 as NUMBER(19,0)) * cast(-5e9 as NUMBER(19,0))");
+    // evalFails("cast(5e4 as NUMBER(19,10)) * cast(2e4 as NUMBER(19,10))");
+
     evalNull("NULL_INTEGER*1*1");
     evalNull("1*NULL_INTEGER");
     evalNull("FIELD_STRING_INTEGER::INTEGER*NULL_INTEGER");
@@ -1631,6 +1651,9 @@ public class OperatorTest extends ExpressionTest {
 
     // TODO: optimize("-2*(FIELD_INTEGER-4)/2", "-FIELD_INTEGER+4");
   }
+
+  @Test
+  void Dot() throws Exception {}
 
   @Test
   void Div() throws Exception {

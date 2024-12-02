@@ -81,7 +81,7 @@ public class NegateOperator extends PrefixUnaryOperator {
   }
 
   private static final class NegateInteger extends NegateOperator {
-    private static final NegateOperator INSTANCE = new NegateInteger();
+    private static final NegateInteger INSTANCE = new NegateInteger();
 
     private NegateInteger() {
       super();
@@ -91,16 +91,16 @@ public class NegateOperator extends PrefixUnaryOperator {
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
-
-      if (value == Long.MIN_VALUE) {
-        throw new ArithmeticException(ErrorCode.ARITHMETIC_OVERFLOW.message(value));
+      try {
+        return Math.negateExact(value);
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
       }
-      return Long.valueOf(-value);
     }
   }
 
   private static final class NegateNumber extends NegateOperator {
-    private static final NegateOperator INSTANCE = new NegateNumber();
+    private static final NegateNumber INSTANCE = new NegateNumber();
 
     private NegateNumber() {
       super();
@@ -115,7 +115,7 @@ public class NegateOperator extends PrefixUnaryOperator {
   }
 
   private static final class NegateInterval extends NegateOperator {
-    private static final NegateOperator INSTANCE = new NegateInterval();
+    private static final NegateInterval INSTANCE = new NegateInterval();
 
     private NegateInterval() {
       super();
@@ -125,7 +125,6 @@ public class NegateOperator extends PrefixUnaryOperator {
     public Object eval(final IExpression[] operands) {
       Interval interval = operands[0].getValue(Interval.class);
       if (interval == null) return null;
-
       return interval.negate();
     }
   }

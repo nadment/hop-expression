@@ -102,7 +102,7 @@ public class ToDateFunction extends Function {
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
-      return DateType.convertToDate(value);
+      return DateType.convert(value);
     }
   }
 
@@ -117,7 +117,7 @@ public class ToDateFunction extends Function {
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) return null;
-      return DateType.convertToDate(value);
+      return DateType.convert(value);
     }
   }
 }

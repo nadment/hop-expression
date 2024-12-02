@@ -112,14 +112,14 @@ public final class BooleanType extends Type {
       return number.signum() != 0;
     }
     if (value instanceof String str) {
-      return convertToBoolean(str);
+      return convert(str);
     }
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
-  public static final Boolean convertToBoolean(final String str) throws ConversionException {
+  public static final Boolean convert(final String str) throws ConversionException {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {

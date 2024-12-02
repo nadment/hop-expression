@@ -81,7 +81,7 @@ public final class IntervalType extends Type {
    * @param str the string to convert
    * @return Interval
    */
-  public static Interval convertToInterval(final String str) throws ConversionException {
+  public static Interval convert(final String str) throws ConversionException {
     if (str == null) return null;
     Interval value = Interval.valueOf(str);
     if (value == null) throw new ConversionException(ErrorCode.INVALID_INTERVAL, str);

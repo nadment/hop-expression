@@ -146,13 +146,13 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(l);
     }
     if (value instanceof String str) {
-      return convertToNumber(str);
+      return convert(str);
     }
     if (value instanceof byte[] bytes) {
-      return convertToNumber(bytes);
+      return convert(bytes);
     }
     if (value instanceof ZonedDateTime dt) {
-      return convertToNumber(dt);
+      return convert(dt);
     }
 
     throw new ConversionException(
@@ -176,13 +176,13 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(number);
     }
     if (value instanceof String str) {
-      return convertToNumber(str);
+      return convert(str);
     }
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.NUMBER);
   }
 
-  public static final BigDecimal convertToNumber(final String str) throws ConversionException {
+  public static final BigDecimal convert(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
     } catch (NumberParseException e) {
@@ -191,7 +191,7 @@ public final class NumberType extends Type {
     }
   }
 
-  public static final BigDecimal convertToNumber(final byte[] bytes) throws ConversionException {
+  public static final BigDecimal convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
           ErrorCode.CONVERSION_ERROR, bytes, TypeId.BINARY, TypeId.NUMBER);
@@ -203,8 +203,7 @@ public final class NumberType extends Type {
     return new BigDecimal(result);
   }
 
-  public static final BigDecimal convertToNumber(final ZonedDateTime datetime)
-      throws ConversionException {
+  public static final BigDecimal convert(final ZonedDateTime datetime) throws ConversionException {
 
     BigDecimal result = new BigDecimal(datetime.toEpochSecond());
     int nanos = datetime.getNano();

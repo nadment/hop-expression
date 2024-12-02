@@ -87,7 +87,7 @@ public class ToNumberFunction extends Function {
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) return null;
-      return NumberType.convertToNumber(value);
+      return NumberType.convert(value);
     }
   }
 }

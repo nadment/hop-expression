@@ -344,7 +344,7 @@ UPPER(SUBSTR('${os.name}',1,10))</expression>
         <type>Integer</type>
       </field>
       <field>
-        <expression>DAYS_BETWEEN(Date '1980-05-18',DATE_FROM_PARTS(2020,6,29))</expression>
+        <expression>DAYS_BETWEEN(Date '1980-05-18',MAKE_DATE(2020,6,29))</expression>
         <length>-1</length>
         <name>AGE</name>
         <precision>-1</precision>
@@ -476,7 +476,7 @@ End
         <type>Integer</type>
       </field>
       <field>
-        <expression>DECODE(FIELD_INTEGER,4,'Flag 1',8,'Flag 2',ABORT('Error generated with ABORT'))</expression>
+        <expression>DECODE(FIELD_INTEGER,4,'Flag 1',8,'Flag 2',ERROR('Error generated with ABORT'))</expression>
         <length>-1</length>
         <name>ABORT</name>
         <precision>-1</precision>

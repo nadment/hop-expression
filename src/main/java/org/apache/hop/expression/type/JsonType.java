@@ -76,7 +76,7 @@ public final class JsonType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convertToString((JsonNode) value));
+      return clazz.cast(StringType.convert((JsonNode) value));
     }
 
     return super.convert(value, clazz);
@@ -107,7 +107,7 @@ public final class JsonType extends Type {
     }
 
     if (value instanceof String str) {
-      return convertToJson(str);
+      return convert(str);
     }
 
     throw new ConversionException(
@@ -120,7 +120,7 @@ public final class JsonType extends Type {
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode convertToJson(final String str) throws ConversionException {
+  public static JsonNode convert(final String str) throws ConversionException {
     if (str == null) return null;
     try {
       JsonMapper mapper =

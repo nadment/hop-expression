@@ -192,7 +192,7 @@ public class ExpressionTest {
       // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
       row[11] =
-          JsonType.convertToJson(
+          JsonType.convert(
               "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
 
       // Null values
@@ -383,6 +383,15 @@ public class ExpressionTest {
         });
   }
 
+  protected void evalFails(final String source, ErrorCode error) throws Exception {
+    assertThrows(
+        ExpressionException.class,
+        () -> {
+          Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+          evaluator.eval(Object.class);
+        });
+  }
+
   protected IExpression compile(String source) throws Exception {
 
     IExpressionContext context = createExpressionContext(false);
@@ -434,7 +443,7 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
     // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
-    evalEquals("Power(FIELD_INTEGER,-2)", 0L);
+    // evalFails("cast(5e18 as INTEGER)+cast(5e18 as INTEGER)");
 
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();

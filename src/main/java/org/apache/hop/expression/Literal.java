@@ -237,13 +237,13 @@ public class Literal implements IExpression {
           writer.append('\'');
           break;
         case BOOLEAN:
-          writer.append(StringType.convertToString((boolean) value));
+          writer.append(StringType.convert((boolean) value));
           break;
         case INTEGER:
           writer.append(((Long) value).toString());
           break;
         case NUMBER:
-          writer.append(StringType.convertToString((BigDecimal) value));
+          writer.append(StringType.convert((BigDecimal) value));
           break;
         case BINARY:
           writer.append("BINARY '");
@@ -322,12 +322,12 @@ public class Literal implements IExpression {
           }
         case JSON:
           writer.append("JSON '");
-          writer.append(StringType.convertToString((JsonNode) value));
+          writer.append(StringType.convert((JsonNode) value));
           writer.append('\'');
           break;
         case INET:
           writer.append("INET '");
-          writer.append(StringType.convertToString((InetAddress) value));
+          writer.append(StringType.convert((InetAddress) value));
           writer.append('\'');
           break;
         case UNKNOWN:

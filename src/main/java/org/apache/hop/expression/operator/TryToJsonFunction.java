@@ -42,7 +42,7 @@ public class TryToJsonFunction extends Function {
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     try {
-      return JsonType.convertToJson(value);
+      return JsonType.convert(value);
     } catch (ConversionException e) {
       return null;
     }

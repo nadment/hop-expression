@@ -69,7 +69,7 @@ public class IsNumberFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     try {
-      NumberType.convertToNumber(value);
+      NumberType.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

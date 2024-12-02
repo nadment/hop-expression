@@ -57,13 +57,13 @@ public final class DateType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convertToString((ZonedDateTime) value));
+      return clazz.cast(StringType.convert((ZonedDateTime) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerType.convertToInteger((ZonedDateTime) value));
+      return clazz.cast(IntegerType.convert((ZonedDateTime) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberType.convertToNumber((ZonedDateTime) value));
+      return clazz.cast(NumberType.convert((ZonedDateTime) value));
     }
     return super.convert(value, clazz);
   }
@@ -95,10 +95,10 @@ public final class DateType extends Type {
       return DateTimeFormat.of(pattern).parse(str);
     }
     if (value instanceof Long number) {
-      return convertToDate(number);
+      return convert(number);
     }
     if (value instanceof BigDecimal number) {
-      return convertToDate(number);
+      return convert(number);
     }
 
     throw new ConversionException(
@@ -124,7 +124,7 @@ public final class DateType extends Type {
         ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.DATE);
   }
 
-  public static final ZonedDateTime convertToDate(final String value) throws ConversionException {
+  public static final ZonedDateTime convert(final String value) throws ConversionException {
     return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
   }
 
@@ -135,12 +135,12 @@ public final class DateType extends Type {
    *     1970)
    * @return
    */
-  public static final ZonedDateTime convertToDate(final Long seconds) {
+  public static final ZonedDateTime convert(final Long seconds) {
     Instant instant = Instant.ofEpochSecond(seconds);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }
 
-  public static final ZonedDateTime convertToDate(final BigDecimal number) {
+  public static final ZonedDateTime convert(final BigDecimal number) {
     long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
     Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);

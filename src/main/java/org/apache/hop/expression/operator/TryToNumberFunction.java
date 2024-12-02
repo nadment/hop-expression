@@ -99,7 +99,7 @@ public class TryToNumberFunction extends Function {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) return null;
       try {
-        return NumberType.convertToNumber(value);
+        return NumberType.convert(value);
       } catch (RuntimeException e) {
         return null;
       }

@@ -78,25 +78,25 @@ public final class StringType extends Type {
       return clazz.cast(value);
     }
     if (clazz == Boolean.class) {
-      return clazz.cast(BooleanType.convertToBoolean((String) value));
+      return clazz.cast(BooleanType.convert((String) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerType.convertToInteger((String) value));
+      return clazz.cast(IntegerType.convert((String) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberType.convertToNumber((String) value));
+      return clazz.cast(NumberType.convert((String) value));
     }
     if (clazz == byte[].class) {
-      return clazz.cast(BinaryType.convertToBinary((String) value));
+      return clazz.cast(BinaryType.convert((String) value));
     }
     if (clazz == ZonedDateTime.class) {
-      return clazz.cast(DateType.convertToDate((String) value));
+      return clazz.cast(DateType.convert((String) value));
     }
     if (clazz == JsonNode.class) {
-      return clazz.cast(JsonType.convertToJson((String) value));
+      return clazz.cast(JsonType.convert((String) value));
     }
     if (clazz == InetAddress.class) {
-      return clazz.cast(InetType.convertToInet((String) value));
+      return clazz.cast(InetType.convert((String) value));
     }
     return super.convert(value, clazz);
   }
@@ -127,7 +127,7 @@ public final class StringType extends Type {
     if (value instanceof String str) {
       result = str;
     } else if (value instanceof Boolean bool) {
-      result = convertToString(bool);
+      result = convert(bool);
     } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
@@ -145,9 +145,9 @@ public final class StringType extends Type {
     } else if (value instanceof byte[] bytes) {
       result = new String(bytes, StandardCharsets.UTF_8);
     } else if (value instanceof JsonNode json) {
-      return convertToString(json);
+      return convert(json);
     } else if (value instanceof InetAddress inet) {
-      return convertToString(inet);
+      return convert(inet);
     }
 
     if (result == null) {
@@ -182,32 +182,32 @@ public final class StringType extends Type {
       return str;
     }
     if (value instanceof Boolean bool) {
-      return convertToString(bool);
+      return convert(bool);
     }
     if (value instanceof BigDecimal number) {
-      return convertToString(number);
+      return convert(number);
     }
 
     return String.valueOf(value);
   }
 
-  public static String convertToString(final boolean value) {
+  public static String convert(final boolean value) {
     return value ? "TRUE" : "FALSE";
   }
 
-  public static String convertToString(final BigDecimal value) throws ConversionException {
+  public static String convert(final BigDecimal value) throws ConversionException {
     return NumberFormat.of("TM").format(value);
   }
 
-  public static String convertToString(final byte[] bytes) {
+  public static String convert(final byte[] bytes) {
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
-  public static String convertToString(final ZonedDateTime value) throws ConversionException {
+  public static String convert(final ZonedDateTime value) throws ConversionException {
     return DateTimeFormat.of("YYYY-MM-DD").format(value);
   }
 
-  public static String convertToString(final InetAddress value) throws ConversionException {
+  public static String convert(final InetAddress value) throws ConversionException {
     return value.getHostAddress();
   }
 
@@ -217,7 +217,7 @@ public final class StringType extends Type {
    * @param json the json to convert
    * @return String
    */
-  public static String convertToString(final JsonNode json) throws ConversionException {
+  public static String convert(final JsonNode json) throws ConversionException {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);

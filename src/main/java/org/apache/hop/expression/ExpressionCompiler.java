@@ -41,7 +41,6 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     int loop = 0;
     do {
       changed = false;
-      // System.out.println(expression);
       expression = expression.accept(this);
 
       // Check a maximum loop to avoid infinite loop

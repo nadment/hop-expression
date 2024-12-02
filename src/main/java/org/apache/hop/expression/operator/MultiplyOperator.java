@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -177,7 +178,11 @@ public class MultiplyOperator extends BinaryOperator {
       Long right = operands[1].getValue(Long.class);
       if (right == null) return null;
 
-      return left * right;
+      try {
+        return Math.multiplyExact(left, right);
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
+      }
     }
   }
 

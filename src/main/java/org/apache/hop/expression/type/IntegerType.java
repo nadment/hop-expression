@@ -18,12 +18,19 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.util.NumberFormat;
 
 public final class IntegerType extends Type {
+
+  /** BigInteger equal to Long.MIN_VALUE. */
+  private static final BigInteger LONGMIN = BigInteger.valueOf(Long.MIN_VALUE);
+
+  /** BigInteger equal to Long.MAX_VALUE. */
+  private static final BigInteger LONGMAX = BigInteger.valueOf(Long.MAX_VALUE);
 
   private static NumberFormat numberFormat = NumberFormat.of("TM");
 
@@ -85,7 +92,7 @@ public final class IntegerType extends Type {
       return number.longValue();
     }
     if (value instanceof String str) {
-      return IntegerType.convertToInteger(str);
+      return IntegerType.convert(str);
     }
 
     throw new ConversionException(
@@ -125,39 +132,50 @@ public final class IntegerType extends Type {
     if (value == null) {
       return null;
     }
-    if (value instanceof Long number) {
-      return number;
+    if (value instanceof Long integer) {
+      return integer;
     }
     if (value instanceof BigDecimal number) {
-      return number.longValue();
+      return convert(number);
     }
     if (value instanceof Boolean bool) {
       return (bool) ? 1L : 0L;
     }
     if (value instanceof String str) {
-      return convertToInteger(str);
+      return convert(str);
     }
     if (value instanceof byte[] bytes) {
-      return convertToInteger(bytes);
+      return convert(bytes);
     }
     if (value instanceof ZonedDateTime datetime) {
-      return convertToInteger(datetime);
+      return convert(datetime);
     }
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
   }
 
-  public static final Long convertToInteger(final String str) throws ConversionException {
+  public static final Long convert(final BigDecimal number) throws ConversionException {
+    try {
+      BigInteger integer = number.toBigInteger();
+      if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
+        throw new ConversionException(ErrorCode.ARITHMETIC_OVERFLOW, "CONVERT");
+      return number.longValue();
+    } catch (Exception e) {
+      throw new ConversionException(ErrorCode.ARITHMETIC_OVERFLOW, "CONVERT");
+    }
+  }
+
+  public static final Long convert(final String str) throws ConversionException {
     try {
       BigDecimal number = numberFormat.parse(str);
-      return number.longValue();
+      return convert(number);
     } catch (Exception e) {
       throw new ConversionException(ErrorCode.INVALID_INTEGER, str);
     }
   }
 
-  public static final Long convertToInteger(final byte[] bytes) throws ConversionException {
+  public static final Long convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
           ErrorCode.CONVERSION_ERROR, TypeId.BINARY, bytes, TypeId.INTEGER);
@@ -169,8 +187,7 @@ public final class IntegerType extends Type {
     return result;
   }
 
-  public static final Long convertToInteger(final ZonedDateTime datetime)
-      throws ConversionException {
+  public static final Long convert(final ZonedDateTime datetime) throws ConversionException {
     return datetime.toEpochSecond();
   }
 

@@ -72,7 +72,7 @@ public enum ErrorCode {
   UNEXPECTED_END_OF_EXPRESSION,
   /** Unexpected data type {1} with function {0} */
   UNEXPECTED_DATA_TYPE,
-  // Arithmetic overflow error converting ''{0}''
+  // Arithmetic overflow in ''{0}'' operator (consider adding explicit CAST to NUMBER)
   ARITHMETIC_OVERFLOW,
   /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE,

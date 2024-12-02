@@ -91,7 +91,7 @@ public class SubtractOperator extends BinaryOperator {
   }
 
   private static final class SubtractInteger extends SubtractOperator {
-    private static final SubtractOperator INSTANCE = new SubtractInteger();
+    private static final SubtractInteger INSTANCE = new SubtractInteger();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -100,12 +100,16 @@ public class SubtractOperator extends BinaryOperator {
       Long right = operands[1].getValue(Long.class);
       if (right == null) return null;
 
-      return left - right;
+      try {
+        return Math.subtractExact(left, right);
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
+      }
     }
   }
 
   private static final class SubtractNumber extends SubtractOperator {
-    private static final SubtractOperator INSTANCE = new SubtractNumber();
+    private static final SubtractNumber INSTANCE = new SubtractNumber();
 
     @Override
     public Object eval(final IExpression[] operands) {

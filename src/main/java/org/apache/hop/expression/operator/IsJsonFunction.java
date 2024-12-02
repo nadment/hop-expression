@@ -68,7 +68,7 @@ public class IsJsonFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     try {
-      JsonType.convertToJson(value);
+      JsonType.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;
