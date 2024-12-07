@@ -1218,7 +1218,7 @@ public class ExpressionParser {
     if (startUnit == null) {
       previous();
 
-      Interval interval = Interval.valueOf(value.text());
+      Interval interval = Interval.of(value.text());
       return Literal.of(interval);
     }
 

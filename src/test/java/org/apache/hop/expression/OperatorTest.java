@@ -608,8 +608,8 @@ public class OperatorTest extends ExpressionTest {
 
     evalFails(" in (1,2)", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_INTEGER in (1,2.5,)", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_INTEGER in ()", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_INTEGER in ()    ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in () ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in (,)    ", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_INTEGER in (,2,3)", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_INTEGER in (1,,3)", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_INTEGER in (1,2,)", ErrorCode.SYNTAX_ERROR);
@@ -618,9 +618,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER in 40", ErrorCode.MISSING_LEFT_PARENTHESIS);
     evalFails("FIELD_INTEGER in (1,2,3", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    evalFails("FIELD_INTEGER in (1,2,NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // TODO: better error code
-    evalFails("NULL in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_INTEGER in (1,2,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_DATE in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("FIELD_INTEGER IN (10,20,30,40)");
     optimize("FIELD_INTEGER NOT IN (10,20,30,40)");
@@ -925,7 +924,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("2.5-'1.3'", 1.2).returnType(Types.NUMBER);
     evalEquals("'2.5'-1", 1.5).returnType(Types.NUMBER);
 
-    evalNull("5-NULL_INTEGER"); // TODO: .returnType(IntegerType.of(19));
+    evalNull("5-NULL_INTEGER").returnType(IntegerType.of(19));
     evalNull("NULL_INTEGER-5");
 
     // Arithmetic overflow Long.MIN_VALUE-2
@@ -1430,7 +1429,7 @@ public class OperatorTest extends ExpressionTest {
     // Null
     evalNull("CAST(NULL_STRING as INTERVAL)");
 
-    // TODO: evalFails("CAST('5 yea' as INTERVAL)", ErrorCode.INVALID_INTERVAL);
+    evalFails("CAST('5 yea' as INTERVAL)", ErrorCode.INVALID_INTERVAL);
     evalFails("CAST(3 as INTERVAL)", ErrorCode.UNSUPPORTED_CONVERSION);
     evalFails("CAST(TRUE as INTERVAL)", ErrorCode.UNSUPPORTED_CONVERSION);
   }

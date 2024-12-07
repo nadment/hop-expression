@@ -120,7 +120,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("INTERVAL MONTH", ErrorCode.SYNTAX_ERROR);
     evalFails("INTERVAL 5 MONTH TO", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("INTERVAL '5' MONTH TO", ErrorCode.SYNTAX_ERROR);
-    evalFails("INTERVAL '5 10' TO MONTH", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("INTERVAL '5 10' TO MONTH", ErrorCode.INVALID_INTERVAL);
     evalFails("INTERVAL '5' YEAR TO MONTH", ErrorCode.INVALID_INTERVAL);
     evalFails("INTERVAL '5-' DAY TO HOUR", ErrorCode.INVALID_INTERVAL);
     evalFails("INTERVAL '5' DAY TO MINUTE", ErrorCode.INVALID_INTERVAL);

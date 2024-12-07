@@ -68,7 +68,7 @@ public final class IntervalType extends Type {
     }
 
     if (value instanceof String str) {
-      return Interval.valueOf(str);
+      return Interval.of(str);
     }
 
     throw new ConversionException(
@@ -83,8 +83,7 @@ public final class IntervalType extends Type {
    */
   public static Interval convert(final String str) throws ConversionException {
     if (str == null) return null;
-    Interval value = Interval.valueOf(str);
-    if (value == null) throw new ConversionException(ErrorCode.INVALID_INTERVAL, str);
+    Interval value = Interval.of(str);
     return value;
   }
 }

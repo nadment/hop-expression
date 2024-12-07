@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.hop.expression.type.Interval;
@@ -74,9 +75,9 @@ public class IntervalTest extends ExpressionTest {
     assertNull(Interval.minute("Z"));
     assertNull(Interval.second("1123.Z"));
 
-    assertNull(Interval.valueOf("Z"));
-    assertNull(Interval.valueOf("3"));
-    assertNull(Interval.valueOf(" DAYS"));
+    assertThrows(ExpressionException.class, () -> Interval.of("3"));
+    assertThrows(ExpressionException.class, () -> Interval.of("DAYS"));
+    assertThrows(ExpressionException.class, () -> Interval.of("Z"));
   }
 
   @Test
@@ -138,18 +139,17 @@ public class IntervalTest extends ExpressionTest {
         Interval.of(0, 0, 0, 0, 0, 56, 123456789).negate(), Interval.second("-56.123456789"));
 
     // Verbose format
-    assertEquals(
-        Interval.of(5, 6, 30, 12, 30, 58, 999000000), Interval.valueOf("5-6 30 12:30:58.999"));
-    assertEquals(Interval.of(4), Interval.valueOf(" 4 year"));
-    assertEquals(Interval.of(4), Interval.valueOf(" 4 years "));
-    assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months"));
-    assertEquals(Interval.of(0, 0, 14), Interval.valueOf("2 weeks"));
-    assertEquals(Interval.of(0, 3), Interval.valueOf("1 quarter"));
-    assertEquals(Interval.of(4, 6, 22), Interval.valueOf(" 4 years, 6 months,   22 days"));
-    assertEquals(Interval.of(0, 0, 5), Interval.valueOf(" 5 days"));
-    assertEquals(Interval.of(0, 0, 5, 23, 30), Interval.valueOf("5 days 23 hours 30 minute"));
-    assertEquals(Interval.of(0, 0, 0, 0, 30), Interval.valueOf("30 MINUTES "));
-    assertEquals(Interval.of(0, 0, 0, 0, 0, 58), Interval.valueOf("58 seconds"));
+    assertEquals(Interval.of(5, 6, 30, 12, 30, 58, 999000000), Interval.of("5-6 30 12:30:58.999"));
+    assertEquals(Interval.of(4), Interval.of(" 4 year"));
+    assertEquals(Interval.of(4), Interval.of(" 4 years "));
+    assertEquals(Interval.of(4, 6), Interval.of(" 4 years 6 months"));
+    assertEquals(Interval.of(0, 0, 14), Interval.of("2 weeks"));
+    assertEquals(Interval.of(0, 3), Interval.of("1 quarter"));
+    assertEquals(Interval.of(4, 6, 22), Interval.of(" 4 years, 6 months,   22 days"));
+    assertEquals(Interval.of(0, 0, 5), Interval.of(" 5 days"));
+    assertEquals(Interval.of(0, 0, 5, 23, 30), Interval.of("5 days 23 hours 30 minute"));
+    assertEquals(Interval.of(0, 0, 0, 0, 30), Interval.of("30 MINUTES "));
+    assertEquals(Interval.of(0, 0, 0, 0, 0, 58), Interval.of("58 seconds"));
 
     // ISO format 8601
     // assertEquals( new YearToMonth(5), YearToMonth.year("P5Y"));
@@ -271,6 +271,6 @@ public class IntervalTest extends ExpressionTest {
 
   @Test
   void intervalAbs() throws Exception {
-    assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months").negate().abs());
+    assertEquals(Interval.of(4, 6), Interval.of(" 4 years 6 months").negate().abs());
   }
 }

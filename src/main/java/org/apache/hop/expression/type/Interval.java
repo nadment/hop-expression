@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.util.Characters;
 
@@ -469,7 +471,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @param milli The number of milliseconds as a fractional number
    * @return The loaded <code>INTERVAL DAY TO SECOND</code> object
    */
-  // public static Interval valueOf(BigDecimal value) {
+  // public static Interval of(BigDecimal value) {
   //
   // BigDecimal abs = value.abs();
   // long decimal = abs.longValue();
@@ -498,10 +500,10 @@ public class Interval implements Serializable, Comparable<Interval> {
    *
    * @param string A string representation of the form <code>
    *     [+|-][years]-[months] [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
-   * @return The parsed <code>YEAR TO SECOND</code> object, or <code>null</code> if the string could
-   *     not be parsed.
+   * @return The parsed <code>YEAR TO SECOND</code> object
+   * @throws ExpressionException if the string could not be parsed.
    */
-  public static Interval valueOf(String string) {
+  public static Interval of(String string) {
     if (string != null) {
 
       Matcher matcher = PATTERN_YTS.matcher(string);
@@ -947,7 +949,7 @@ public class Interval implements Serializable, Comparable<Interval> {
       }
 
       if (index == start) {
-        return null;
+        throw new ExpressionException(ErrorCode.INVALID_INTERVAL, text);
       }
 
       // Skip space
@@ -984,7 +986,7 @@ public class Interval implements Serializable, Comparable<Interval> {
               seconds += quantity;
               break;
             default:
-              return null;
+              break;
           }
 
           index += unit.name().length();
@@ -998,7 +1000,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         }
       }
 
-      if (noMatch) return null;
+      if (noMatch) throw new ExpressionException(ErrorCode.INVALID_INTERVAL, text);
 
       if (index < length && text.charAt(index) == ',') {
         index++;
