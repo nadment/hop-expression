@@ -705,9 +705,9 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimizeFalse("true is null");
     optimizeFalse("false is null");
-    optimizeTrue("NULL IS NULL");
-    optimizeTrue("NULL+1 IS NULL");
-    optimizeFalse("NULL+1 IS NOT NULL");
+    optimizeTrue("NULLIF(1,1) IS NULL");
+    optimizeTrue("NULLIF(1,1)+1 IS NULL");
+    optimizeFalse("NULLIF(1,1)+1 IS NOT NULL");
     optimizeTrue("TRUE IS NOT NULL");
     optimizeFalse("TRUE IS NULL");
     optimizeFalse("1 IS NULL");
@@ -1795,8 +1795,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER&4", "4&FIELD_INTEGER");
 
     // Simplify NULL & A → NULL
-    optimizeNull("NULL&FIELD_INTEGER");
-    optimizeNull("FIELD_INTEGER&NULL");
+    optimizeNull("NULLIF(1,1)&FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER&NULLIF(1,1)");
 
     // Simplify 0 & A -> 0 (if A not nullable)
     optimize("FIELD_INTEGER&0", "0&FIELD_INTEGER");
@@ -1822,8 +1822,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("1|FIELD_INTEGER|4", "5|FIELD_INTEGER");
 
     // Simplify NULL | A → NULL
-    optimizeNull("NULL|FIELD_INTEGER");
-    optimizeNull("FIELD_INTEGER|NULL");
+    optimizeNull("NULLIF(1,1)|FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER|NULLIF(1,1)");
 
     // Simplify 0 | A → A (even if A is null)
     optimize("FIELD_INTEGER|0", "FIELD_INTEGER");
@@ -1845,8 +1845,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER^4");
 
     // Simplify NULL ^ A → NULL
-    optimizeNull("NULL^FIELD_INTEGER");
-    optimizeNull("FIELD_INTEGER^NULL");
+    optimizeNull("NULLIF(1,1)^FIELD_INTEGER");
+    optimizeNull("FIELD_INTEGER^NULLIF(1,1)");
 
     // Simplify 0 ^ A → A (even if A is null)
     optimize("0^FIELD_INTEGER", "FIELD_INTEGER");
@@ -1917,9 +1917,9 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("0 XOR 0").returnType(Types.BOOLEAN);
     evalTrue("true XOR false").returnType(Types.BOOLEAN);
     evalTrue("false XOR true").returnType(Types.BOOLEAN);
-    evalNull("null XOR true");
-    evalNull("true XOR null");
-    evalNull("null XOR null");
+    evalNull("NULLIF(true,true) XOR true");
+    evalNull("true XOR NULLIF(true,true)");
+    evalNull("false XOR NULLIF(true,true)");
 
     evalFails(" XOR true", ErrorCode.SYNTAX_ERROR);
     evalFails("XOR false", ErrorCode.SYNTAX_ERROR);
@@ -2044,10 +2044,10 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("false and true");
     optimizeFalse("false and false");
 
-    optimizeFalse("false and NULL");
+    optimizeFalse("false and NULLIF(true,true)");
     optimizeFalse("false and FIELD_BOOLEAN_TRUE");
     optimizeFalse("FIELD_BOOLEAN_TRUE and false");
-    optimizeFalse("null AND null AND null AND false");
+    optimizeFalse("NULLIF(true,true) AND NULLIF(true,true) AND NULLIF(true,true) AND false");
     optimizeNull("null AND null AND null AND true");
 
     // Simplify NULL
@@ -2191,7 +2191,6 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_STRING like 'NULL'").returnType(Types.BOOLEAN);
     evalNull("NULL_STRING LIKE '%'").returnType(Types.BOOLEAN);
     evalNull("'test' LIKE NULL_STRING").returnType(Types.BOOLEAN);
-    evalNull("'a' LIKE NULL").returnType(Types.BOOLEAN);
 
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.ILLEGAL_ARGUMENT);

@@ -456,8 +456,7 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')",
-    // ErrorCode.INVALID_DATE_FORMAT);
+    optimizeTrue("NULLIF(1,1) IS NULL");
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

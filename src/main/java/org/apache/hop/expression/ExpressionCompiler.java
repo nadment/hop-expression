@@ -131,6 +131,11 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
           changed = true;
 
+          // If the value is null, change nullability of the type.
+          if (value == null) {
+            type = type.withNullability(true);
+          }
+
           return new Literal(value, type);
         } catch (Exception e) {
           // Ignore error like division by zero "X IN (1,3/0)" and continue

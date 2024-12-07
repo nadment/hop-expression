@@ -331,6 +331,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("NullIf('TEST','XXX')", "TEST");
     evalEquals("NullIf(DATE '2019-01-01',DATE '2018-12-31')", LocalDate.of(2019, Month.JANUARY, 1));
 
+    evalFails("NullIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("NullIf(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
     optimizeNull("NULLIF(NULL, NULL)");
     optimizeNull("NULLIF(true, true)");
     optimizeTrue("NULLIF(true, false)");
@@ -656,10 +660,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Next_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Next_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Next_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
+    // TODO: ILLEGAL_ARGUMENT_TYPE
+    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_COERCION);
     evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.CONVERSION_ERROR);
-    // TODO: check
-    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_COERCION);
   }
 
   @Test
@@ -673,6 +677,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Previous_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
+    // TODO: ILLEGAL_ARGUMENT_TYPE
+    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_COERCION);
     evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
@@ -3482,9 +3488,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     optimizeTrue("EQUAL_NULL(FIELD_INTEGER, FIELD_INTEGER)");
     optimizeTrue("EQUAL_NULL(FIELD_DATE, FIELD_DATE)");
 
-    optimize("EQUAL_NULL(FIELD_INTEGER,NULL)", "FIELD_INTEGER IS NULL");
-    optimize("EQUAL_NULL(NULL,FIELD_INTEGER)", "FIELD_INTEGER IS NULL");
-    // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
+    optimize("EQUAL_NULL(FIELD_INTEGER,NULLIF(1,1))", "FIELD_INTEGER IS NULL");
+    optimize("EQUAL_NULL(NULLIF(1,1),FIELD_INTEGER)", "FIELD_INTEGER IS NULL");
+    // optimize("EQUAL_NULL(NULLIF(1,1),1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
     optimize("EQUAL_NULL(TRUE,FIELD_BOOLEAN_TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");
     optimize("EQUAL_NULL(FIELD_BOOLEAN_TRUE,TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");
     optimize("EQUAL_NULL(FALSE,FIELD_BOOLEAN_TRUE)", "FIELD_BOOLEAN_TRUE IS FALSE");

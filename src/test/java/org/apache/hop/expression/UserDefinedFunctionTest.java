@@ -57,7 +57,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     FunctionRegistry.register(udf.getName(), udf);
 
     evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(Types.DATE);
-    evalNull("DATE_FROM_ID(null)").returnType(Types.DATE);
+    evalNull("DATE_FROM_ID(NULLIF(1,1))").returnType(Types.DATE);
     evalFails("DATE_FROM_ID()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("DATE_FROM_ID(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 
