@@ -30,8 +30,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.util.FormatParseException;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.NumberParseException;
 
 /** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
@@ -81,7 +81,7 @@ public class TryToNumberFunction extends Function {
 
       try {
         return format.parse(value);
-      } catch (NumberParseException e) {
+      } catch (FormatParseException e) {
         return null;
       }
     }

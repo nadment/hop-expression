@@ -44,7 +44,7 @@ import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
-import org.apache.hop.expression.util.DateTimeParseException;
+import org.apache.hop.expression.util.FormatParseException;
 import org.junit.jupiter.api.Test;
 
 public class TypeTest extends ExpressionTest {
@@ -92,6 +92,19 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.JSON.isCastable(TypeFamily.STRING));
     assertFalse(TypeFamily.JSON.isCastable(null));
     assertFalse(TypeFamily.JSON.isCastable(TypeFamily.TEMPORAL));
+  }
+
+  @Test
+  void typeOf() throws Exception {
+    assertThrows(ExpressionException.class, () -> IntegerType.of(20));
+    assertThrows(ExpressionException.class, () -> NumberType.of(39));
+    assertThrows(ExpressionException.class, () -> StringType.of(16_777_217));
+    assertThrows(ExpressionException.class, () -> BinaryType.of(16_777_217));
+    assertThrows(ExpressionException.class, () -> IntegerType.of(0));
+    assertThrows(ExpressionException.class, () -> NumberType.of(0));
+    assertThrows(ExpressionException.class, () -> StringType.of(0));
+    assertThrows(ExpressionException.class, () -> BinaryType.of(0));
+    assertThrows(ExpressionException.class, () -> NumberType.of(10, 20));
   }
 
   @Test
@@ -237,23 +250,19 @@ public class TypeTest extends ExpressionTest {
   @Test
   void checkPrecisionScale() throws Exception {
     // Check maximum precision
-    assertThrows(
-        IllegalArgumentException.class, () -> IntegerType.of(TypeId.INTEGER.getMaxPrecision() + 1));
-    assertThrows(
-        IllegalArgumentException.class, () -> NumberType.of(TypeId.NUMBER.getMaxPrecision() + 1));
-    assertThrows(
-        IllegalArgumentException.class, () -> StringType.of(TypeId.STRING.getMaxPrecision() + 1));
-    assertThrows(
-        IllegalArgumentException.class, () -> BinaryType.of(TypeId.BINARY.getMaxPrecision() + 1));
+    evalFails("CAST(1 as INTEGER(20))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("CAST(1 as NUMBER(39))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("CAST('x' as STRING(16_777_217))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("CAST(BINARY '00' as BINARY(16_777_217))", ErrorCode.PRECISION_OUT_OF_RANGE);
 
     // Check minimum precision
-    assertThrows(IllegalArgumentException.class, () -> IntegerType.of(0));
-    assertThrows(IllegalArgumentException.class, () -> NumberType.of(0));
-    assertThrows(IllegalArgumentException.class, () -> StringType.of(0));
-    assertThrows(IllegalArgumentException.class, () -> BinaryType.of(0));
+    evalFails("CAST(1 as INTEGER(0))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("CAST(1 as NUMBER(0))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("CAST('x' as STRING(0))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("CAST(BINARY '00' as BINARY(0))", ErrorCode.PRECISION_OUT_OF_RANGE);
 
     // Check scale > precision
-    assertThrows(IllegalArgumentException.class, () -> NumberType.of(10, 20));
+    evalFails("CAST(1 as NUMBER(10,20))", ErrorCode.SCALE_GREATER_THAN_PRECISION);
   }
 
   @Test
@@ -573,7 +582,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(-123), type.convert("-123", Long.class));
     assertEquals(BigDecimal.ONE, type.convert("1", BigDecimal.class));
 
-    assertThrows(DateTimeParseException.class, () -> type.convert("ABC", ZonedDateTime.class));
+    assertThrows(FormatParseException.class, () -> type.convert("ABC", ZonedDateTime.class));
   }
 
   @Test

@@ -42,7 +42,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Error() throws Exception {
-    evalFails("ERROR('Custom error message')");
+    evalFails("ERROR('Custom error message')", ErrorCode.MESSAGE_ERROR);
   }
 
   @Test
@@ -66,17 +66,18 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TRY_CAST(NULL_STRING AS DATE)");
 
     // Bad syntax
-    evalFails("TRY_CAST('2020-01-021' AS NULL)");
-    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL_STRING)");
-    evalFails("TRY_CAST('bad' AS)");
-    evalFails("TRY_CAST(1234 AS STRING FORMAT )");
-    evalFails("TRY_CAST(DATE '2019-02-25' AS String FORMAT )");
+    evalFails(
+        "TRY_CAST('2020-01-021' AS DATE FORMAT NULL_STRING)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("TRY_CAST('bad' AS)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("TRY_CAST(1234 AS STRING FORMAT )", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("TRY_CAST(DATE '2019-02-25' AS String FORMAT )", ErrorCode.SYNTAX_ERROR_FUNCTION);
 
     // Bad data type
-    evalFails("Try_Cast(123 as Nill)");
+    evalFails("TRY_CAST('2020-01-021' AS NULL)", ErrorCode.INVALID_TYPE);
+    evalFails("Try_Cast(123 as Nill)", ErrorCode.INVALID_TYPE);
 
     // Bad format
-    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')");
+    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
 
     optimize("TRY_CAST(FIELD_STRING AS BINARY)");
     optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)");
@@ -98,10 +99,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_BINARY(NULL_STRING)");
 
     // Failed if format is null
-    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)");
+    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
     // Failed if format is bad
-    evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')");
-    evalFails("TRY_TO_BINARY()");
+    evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')", ErrorCode.INVALID_BINARY_FORMAT);
+
+    evalFails("TRY_TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("TRY_TO_BINARY('te','t','s')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -110,7 +114,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("TRY_TO_BOOLEAN('falSE')");
     evalNull("TRY_TO_BOOLEAN('Bad')").returnType(Types.BOOLEAN);
     evalNull("TRY_TO_BOOLEAN(NULL_STRING)");
-    evalFails("TRY_TO_BOOLEAN()");
+    evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -122,9 +126,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("TRY_TO_NUMBER(NULL_STRING)");
 
+    evalFails("TRY_TO_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     // Failed if format is bad
-    evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')");
-    evalFails("TRY_TO_NUMBER()");
+    evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Date to Epoch
     evalEquals("TRY_TO_NUMBER(Date '1970-01-01')", 0L);
@@ -148,8 +153,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Return NULL if argument is NULL
     evalNull("TRY_TO_DATE(NULL_STRING,'FXDD/MM/YYYY')");
 
+    evalFails("TRY_TO_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     // Failed if format is bad
-    evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
+    evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Integer Unix Epoch in seconds
     evalEquals("TRY_TO_DATE(0)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
@@ -181,8 +188,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Try_To_Json('BAD JSON ;')");
     evalNull("Try_To_Json('{\"name\":\"Smith\"; \"age\":29}')");
 
-    evalFails("Try_To_Json()");
-    evalFails("Try_To_Json(BOOLEAN_FIELD)");
+    evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Try_To_Json(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -193,10 +200,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Coalesce numeric
     evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1));
-    // TODO: max precision evalEquals("Coalesce(1,2,30)", 1L).returnType( IntegerType.of(2));
+    // TODO: evalEquals("Coalesce(1,2,30)", 1L).returnType(IntegerType.of(2));
     evalEquals("Coalesce(NULL_NUMBER,NULL_INTEGER,1,2)", 1L).returnType(Types.NUMBER);
     evalNull("Coalesce(NULL_NUMBER,NULL_INTEGER,NULL_BIGNUMBER)").returnType(Types.NUMBER);
-    evalFails("Coalesce()");
+
+    evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     optimize("COALESCE(NULL)", "NULL");
     optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
@@ -243,10 +251,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("If(false,1)");
     evalNull("If(false,Date '2023-01-01')");
 
-    evalFails("If()");
-    evalFails("If(true)");
-    evalFails("If(true,2,'2')");
-    evalFails("If(Date '2023-01-01',1,2)");
+    evalFails("If()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("If(true)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");
@@ -273,9 +281,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Nvl2('test','ex1','ex2')", "ex1");
     evalEquals("Nvl2(NULL_STRING,'ex1','ex2')", "ex2");
 
-    evalFails("Nvl2()");
-    evalFails("Nvl2(true)");
-    evalFails("Nvl2(true,2)");
+    evalFails("Nvl2()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Nvl2(true)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Nvl2(true,2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -291,9 +299,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("IfNull(NULL_DATE,DATE '2022-01-01')", LocalDate.of(2022, 1, 1))
         .returnType(Types.DATE);
 
-    evalFails("IfNull()");
-    evalFails("IfNull(1)");
-    evalFails("IfNull(1,2,3)");
+    evalFails("IfNull()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IfNull(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IfNull(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 
     // Flatten chained IFNULL or COALESCE
     optimize(
@@ -341,8 +349,8 @@ public class ScalarFunctionTest extends ExpressionTest {
   void ZeroIfNull() throws Exception {
     evalEquals("ZeroIfNull(1)", 1L);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
-    evalFails("ZeroIfNull()");
-    evalFails("ZeroIfNull(1,2)");
+    evalFails("ZeroIfNull()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -354,7 +362,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("NullIfZero(0.000)");
     evalNull("NullIfZero(-0.0)");
 
-    evalFails("NullIfZero()");
+    evalFails("NullIfZero()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("NullIfZero(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
 
     optimize("NULLIFZERO(0.1)", "0.1");
     optimizeNull("NULLIFZERO(0.0)");
@@ -380,11 +389,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Decode(9,1,'one',9,NULL,NULL_INTEGER,'<NULL>')");
     evalNull("Decode(1,1,NULL_STRING,9,'9',NULL_INTEGER,'<NULL>')");
 
-    evalFails("Decode()");
-    evalFails("Decode(1)");
-    evalFails("Decode(1,2)");
+    evalFails("Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Decode(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Decode(1,2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     // Mixed type
-    evalFails("Decode(AGE,1,'baby',20,false,true)");
+    evalFails("Decode(FIELD_INTEGER,1,'baby',20,false,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify unreachable DECODE clauses
     optimize(
@@ -428,7 +438,8 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   void Pi() throws Exception {
     evalEquals("Pi()", PI).returnType(Types.NUMBER);
-    evalFails("Pi(123)");
+
+    evalFails("Pi(123)", ErrorCode.TOO_MANY_ARGUMENT);
 
     optimize("PI()", "3.1415926535897932384626433832795");
   }
@@ -440,7 +451,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals(context, "Today()", today).returnType(Types.DATE);
     evalEquals(context, "Current_Date()", today);
 
-    evalFails("Today(Null)");
+    evalFails("Today(Null)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -450,7 +461,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals(context, "Now()", today).returnType(Types.DATE);
     evalEquals(context, "Current_Timestamp()", today);
 
-    evalFails("Now(Null)");
+    evalFails("Now(Null)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -459,7 +470,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12));
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3));
-    evalFails("Current_Timezone(Null)");
+
+    evalFails("Current_Timezone(Null)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -481,7 +493,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)").returnType(Types.DATE);
     evalNull("CONVERT_TIMEZONE('Europe/Paris', 'America/New_York', NULL_TIMESTAMP)");
 
-    evalFails("CONVERT_TIMEZONE(Null, '2023-01-01 14:00:00')");
+    evalFails("CONVERT_TIMEZONE(Null, '2023-01-01 14:00:00')", ErrorCode.INVALID_TIMEZONE);
   }
 
   @Test
@@ -507,10 +519,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("MAKE_DATE(2020,NULL_INTEGER,1)");
     evalNull("MAKE_DATE(2020,-1,NULL_INTEGER)");
 
-    evalFails("MAKE_DATE()");
-    evalFails("MAKE_DATE(2020)");
-    evalFails("MAKE_DATE(2020,15)");
-    evalFails("MAKE_DATE(2020,1,1,1)");
+    evalFails("MAKE_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_DATE(2020)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_DATE(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_DATE(2020,1,1,1)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -542,10 +554,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("MAKE_TIMESTAMP(2020,NULL_INTEGER,1,23,15,59)");
     evalNull("MAKE_TIMESTAMP(2020,-1,NULL_INTEGER,23,15,59)");
 
-    evalFails("MAKE_TIMESTAMP()");
-    evalFails("MAKE_TIMESTAMP(2020)");
-    evalFails("MAKE_TIMESTAMP(2020,15)");
-    evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)");
+    evalFails("MAKE_TIMESTAMP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_TIMESTAMP(2020)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_TIMESTAMP(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -554,10 +566,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.INTERVAL);
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59.123)", Interval.of(20, 1, 1, 23, 15, 59, 123000000));
 
-    evalFails("MAKE_INTERVAL()");
-    evalFails("MAKE_INTERVAL(20)");
-    evalFails("MAKE_INTERVAL(20,15)");
-    evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)");
+    evalFails("MAKE_INTERVAL()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_INTERVAL(20)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_INTERVAL(20,15)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -589,11 +601,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("First_day(NULL_DATE, QUARTER)");
     evalNull("First_day(NULL_DATE, YEAR)");
 
-    evalFails("First_Day()");
-    evalFails("First_Day(FIELD_STRING)");
-    evalFails("First_Day(FIELD_DATE, FIELD_INTEGER)");
-    evalFails("First_Day(FIELD_DATE, NULL)");
-    evalFails("First_Day(FIELD_DATE, HOUR)");
+    evalFails("First_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("First_Day(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
+    evalFails("First_Day(FIELD_DATE, FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // TODO: check
+    evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -623,12 +636,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Last_Day(NULL_DATE, QUARTER)");
     evalNull("Last_Day(NULL_DATE, YEAR)");
 
-    evalFails("Last_Day()");
-    evalFails("Last_Day(FIELD_INTEGER)");
-    evalFails("Last_Day(FIELD_STRING)");
-    evalFails("Last_Day(FIELD_DATE, FIELD_INTEGER)");
-    evalFails("Last_Day(FIELD_DATE, NULL)");
-    evalFails("Last_Day(FIELD_DATE, HOUR)");
+    evalFails("Last_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Last_Day(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Last_Day(FIELD_DATE, FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // TODO: check
+    evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -641,11 +655,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Next_Day(NULL_DATE, 'monday')").returnType(Types.DATE);
     evalNull("Next_Day(FIELD_DATE, NULL_STRING)");
 
-    evalFails("Next_Day()");
-    evalFails("Next_Day(FIELD_INTEGER, 'monday')");
-    evalFails("Next_Day(FIELD_STRING, 'monday')");
-    evalFails("Next_Day(FIELD_DATE)");
-    evalFails("Next_Day(FIELD_DATE, HOUR)");
+    evalFails("Next_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Next_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Next_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.CONVERSION_ERROR);
+    // TODO: check
+    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_COERCION);
   }
 
   @Test
@@ -656,9 +672,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Previous_Day(NULL_DATE, 'monday')").returnType(Types.DATE);
     evalNull("Previous_Day(FIELD_DATE, NULL_STRING)");
 
-    evalFails("Previous_Day()");
-    evalFails("Previous_Day(FIELD_DATE)");
-    evalFails("Previous_Day(FIELD_INTEGER, 'monday')");
+    evalFails("Previous_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Previous_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -671,8 +688,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Normalize('i⁹', 'NFKC')", "i9");
     evalNull("Normalize(NULL_STRING)");
 
-    evalFails("Normalize()");
-    evalFails("Normalize('\u00ea','BAD')");
+    evalFails("Normalize()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Normalize('\u00ea','BAD')", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -698,7 +715,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Unaccent(NULL_STRING)").returnType(Types.STRING);
 
-    evalFails("Unaccent()");
+    evalFails("Unaccent()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Function repetition
     optimize("Unaccent(Unaccent(FIELD_STRING))", "UNACCENT(FIELD_STRING)");
@@ -709,7 +726,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Upper('test')", "TEST").returnType(Types.STRING);
     evalNull("Upper(NULL_STRING)").returnType(Types.STRING);
 
-    evalFails("Upper()");
+    evalFails("Upper()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Function repetition
     optimize("UPPER(UPPER(FIELD_STRING))", "UPPER(FIELD_STRING)");
@@ -724,7 +741,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("InitCap('won''t it?no')", "Won'T It?No");
     evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
     evalNull("InitCap(NULL_STRING)").returnType(Types.STRING);
-    evalFails("InitCap()");
+
+    evalFails("InitCap()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Function repetition
     optimize("INITCAP(LOWER(FIELD_STRING))", "INITCAP(FIELD_STRING)");
@@ -760,9 +778,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Instr('test',NULL_STRING)");
     evalNull("Instr(NULL_STRING,NULL_STRING)");
 
-    evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)");
-    evalFails("Instr('CORPORATE FLOOR','OR',0)");
-    evalFails("Instr()");
+    evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Instr('CORPORATE FLOOR','OR',0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Instr()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -801,12 +819,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("RPad(NULL_STRING,-8)");
     evalNull("RPad(NULL_BINARY,-8)");
 
-    // Missing length
-    evalFails("RPad('test')");
+    // Missing arguments
+    evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Test PAD_LIMIT
-    evalFails("RPad('test',10000)");
-    evalFails("RPad(FIELD_BINARY,10000)");
+    evalFails("RPad('test',10000,'t')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -843,17 +861,21 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("LPad(NULL_BINARY,2)").returnType(Types.BINARY);
     evalNull("LPad(NULL_BINARY,-8)");
 
-    evalFails("LPad('test')");
+    // Missing arguments
+    evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Test PAD_LIMIT
-    evalFails("LPad('test',10000)");
+    evalFails("LPad('test',10000,'t')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
   void Year() throws Exception {
     evalEquals("Year(DATE '2019-01-01')", 2019L).returnType(Types.INTEGER);
     evalNull("Year(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("Year()");
+
+    evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Year(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -861,7 +883,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("MonthName(DATE '2019-01-01')", "January").returnType(Types.STRING);
     evalEquals("MonthName(DATE '2019-12-28')", "December");
     evalNull("MonthName(NULL_DATE)");
-    evalFails("MonthName()");
+
+    evalFails("MonthName()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MonthName(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -869,7 +893,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("DayName(DATE '2019-01-01')", "Tuesday").returnType(Types.STRING);
     evalEquals("DayName(DATE '2019-12-28')", "Saturday");
     evalNull("DayName(NULL_DATE)");
-    evalFails("DayName()");
+
+    evalFails("DayName()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("DayName(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -878,8 +904,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Month(DATE '2020-02-23')", 2L);
     evalEquals("Month(DATE '2019-12-28')", 12L);
     evalNull("Month(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("Month()");
-    evalFails("Month(FIELD_INTEGER)");
+
+    evalFails("Month()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Month(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -916,7 +943,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Date_Diff(YEAR, DATE '2007-11-09',NULL_DATE)");
     evalNull("Date_Diff(YEAR, NULL_DATE, NULL_DATE)");
 
-    evalFails("Date_Diff(YEAR, DATE '2007-11-09')");
+    evalFails("Date_Diff(YEAR, DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -926,7 +953,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Years_Between(NULL_DATE, DATE '2007-11-09')");
     evalNull("Years_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Years_Between(NULL_DATE, NULL_DATE)");
-    evalFails("Years_Between(DATE '2007-11-09')");
+
+    evalFails("Years_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -946,7 +974,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Months_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Months_Between(NULL_DATE, DATE '2007-11-09')");
     evalNull("Months_Between(NULL_DATE, NULL_DATE)");
-    evalFails("Months_Between(DATE '2007-11-09')");
+
+    evalFails("Months_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -958,7 +987,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Days_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Days_Between(NULL_DATE, Date '2007-11-09')");
     evalNull("Days_Between(NULL_DATE, NULL_DATE)");
-    evalFails("Days_Between(DATE '2007-11-09')");
+
+    evalFails("Days_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -969,7 +999,7 @@ public class ScalarFunctionTest extends ExpressionTest {
         "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 24L);
     evalNull("Hours_Between(NULL_TIMESTAMP, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Hours_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_TIMESTAMP)");
-    evalFails("Hours_Between(DATE '2007-11-09')");
+    evalFails("Hours_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -980,7 +1010,8 @@ public class ScalarFunctionTest extends ExpressionTest {
         "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 1440L);
     evalNull("Minutes_Between(NULL_DATE, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Minutes_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
-    evalFails("Minutes_Between(DATE '2007-11-09')");
+
+    evalFails("Minutes_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -992,7 +1023,8 @@ public class ScalarFunctionTest extends ExpressionTest {
         "Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 86400L);
     evalNull("Seconds_Between(NULL_DATE, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Seconds_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
-    evalFails("Seconds_Between(DATE '2007-11-09')");
+
+    evalFails("Seconds_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -1005,10 +1037,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Quarter(NULL_DATE)").returnType(Types.INTEGER);
 
-    evalFails("Quarter()");
-    evalFails("Quarter(FIELD_STRING)");
-    evalFails("Quarter(FIELD_INTEGER)");
-    evalFails("Quarter(FIELD_NUMBER)");
+    evalFails("Quarter()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Quarter(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Quarter(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Quarter(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1022,7 +1054,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("DayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
 
-    evalFails("DayOfWeek()");
+    evalFails("DayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("DayOfWeek(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DayOfWeek(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1034,9 +1068,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Day(FIELD_TIMESTAMP)", 28L);
     evalNull("Day(NULL_DATE)").returnType(Types.INTEGER);
 
-    evalFails("Day()");
-    evalFails("Day(123)");
-    evalFails("Day('text')");
+    evalFails("Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Day(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Day('text')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     optimize("DAY(DATE '2019-02-15')", "15");
     optimize("DAY(MAKE_DATE(2019,2,15))", "15");
@@ -1049,8 +1083,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("DayOfYear(FIELD_DATE)", 174L);
     evalEquals("DayOfYear(FIELD_TIMESTAMP)", 59L);
     evalNull("DayOfYear(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("DayOfYear()");
-    evalFails("DayOfYear(123)");
+
+    evalFails("DayOfYear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("DayOfYear(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1058,8 +1093,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Julian_Day(DATE '2021-06-23')", 2459389L).returnType(Types.INTEGER);
     evalEquals("Julian_Day(TIMESTAMP  '2021-06-23 8:00:00' at time zone 'UTC+12')", 2459389L);
     evalNull("Julian_Day(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("Julian_Day()");
-    evalFails("Julian_Day(123)");
+
+    evalFails("Julian_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Julian_Day(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1069,15 +1105,17 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Week(DATE '2015-01-02')", 1L);
     evalNull("Week(NULL_DATE)").returnType(Types.INTEGER);
 
-    evalFails("Week()");
-    evalFails("Week(123)");
+    evalFails("Week()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Week(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
   void IsoDayOfWeek() throws Exception {
     evalEquals("IsoDayOfWeek(DATE '2003-12-28')", 7L).returnType(Types.INTEGER);
     evalNull("IsoDayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("IsoDayOfWeek()");
+
+    evalFails("IsoDayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IsoDayOfWeek(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1088,7 +1126,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("IsoWeek(DATE '2016-01-03')", 53L);
     evalEquals("IsoWeek(DATE '2016-01-04')", 1L);
     evalNull("IsoWeek(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("IsoWeek()");
+
+    evalFails("IsoWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IsoWeek(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1099,8 +1139,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("IsoYear(DATE '2016-01-04')", 2016L);
     evalEquals("IsoYear(DATE '2042-12-31')", 2043L);
     evalNull("IsoYear(NULL_DATE)").returnType(Types.INTEGER);
-    evalFails("IsoYear('ERROR')");
-    evalFails("IsoYear()");
+
+    evalFails("IsoYear('ERROR')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("IsoYear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IsoYear(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1114,8 +1156,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Add_Years(NULL_DATE,140)");
     evalNull("Add_Years(DATE '2019-01-15',NULL_INTEGER)");
 
-    evalFails("Add_Years(DATE '2019-01-15')");
-    evalFails("Add_Years()");
+    evalFails("Add_Years()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Years(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     optimize("Add_Years(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1129,7 +1172,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Add_Months(DATE '2019-01-31',1)", LocalDate.of(2019, Month.FEBRUARY, 28));
     evalNull("Add_Months(NULL_DATE,140)");
     evalNull("Add_Months(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_Months(DATE '2019-01-15')");
+
+    evalFails("Add_Months(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     optimize("Add_Months(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1140,7 +1185,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Add_Weeks(NULL_DATE,140)");
     evalNull("Add_Weeks(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_Weeks(DATE '2019-01-15')");
+
+    evalFails("Add_Weeks(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     optimize("Add_Weeks(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1154,7 +1201,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Add_Days(NULL_DATE,140)");
     evalNull("Add_Days(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_Days(DATE '2019-01-15')");
+
+    evalFails("Add_Days(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     optimize("Add_Days(FIELD_DATE,0)", "FIELD_DATE");
   }
@@ -1168,7 +1216,8 @@ public class ScalarFunctionTest extends ExpressionTest {
         ZonedDateTime.of(2021, 1, 1, 17, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
     evalNull("Add_Hours(NULL_DATE,140)");
     evalNull("Add_Hours(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_Hours(DATE '2019-01-15')");
+
+    evalFails("Add_Hours(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     optimize("Add_Hours(FIELD_DATE,0)", "FIELD_DATE");
   }
@@ -1180,7 +1229,9 @@ public class ScalarFunctionTest extends ExpressionTest {
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
     evalNull("Add_Minutes(NULL_DATE,140)");
     evalNull("Add_Minutes(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_Minutes(DATE '2019-01-15')");
+
+    evalFails("Add_Minutes(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     optimize("Add_Minutes(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1192,7 +1243,8 @@ public class ScalarFunctionTest extends ExpressionTest {
         "Add_Seconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20));
     evalNull("Add_Seconds(NULL_DATE,140)");
     evalNull("Add_Seconds(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_Seconds(DATE '2019-01-15')");
+
+    evalFails("Add_Seconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -1205,7 +1257,9 @@ public class ScalarFunctionTest extends ExpressionTest {
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140));
     evalNull("Add_NanoSeconds(NULL_DATE,140)");
     evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
-    evalFails("Add_NanoSeconds(DATE '2019-01-15')");
+
+    evalFails("Add_NanoSeconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     optimize("Add_NanoSeconds(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1241,29 +1295,30 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Hour() throws Exception {
     evalEquals("Hour(TIMESTAMP '2019-01-01 15:28:59')", 15L);
     evalNull("Hour(NULL_DATE)");
-    evalFails("Hour()");
+    evalFails("Hour()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
   void Minute() throws Exception {
     evalEquals("Minute(TIMESTAMP '2019-01-01 15:28:59')", 28L);
     evalNull("Minute(NULL_DATE)");
-    evalFails("Minute()");
+    evalFails("Minute()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
   void Second() throws Exception {
     evalEquals("Second(TIMESTAMP '2019-01-01 15:28:59')", 59L);
     evalNull("Second(NULL_DATE)");
-    evalFails("Second()");
+    evalFails("Second()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
   void Lower() throws Exception {
     evalEquals("Lower('TesT')", "test").returnType(Types.STRING);
     evalNull("Lower(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Lower()");
-    evalFails("Lower('Test','Test')");
+
+    evalFails("Lower()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Lower('Test','Test')", ErrorCode.TOO_MANY_ARGUMENT);
 
     // Function repetition
     optimize("LOWER(LOWER(FIELD_STRING))", "LOWER(FIELD_STRING)");
@@ -1283,8 +1338,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("SQUEEZE('T \t es T')", "T es T");
     evalEquals("SQUEEZE('T \t es T\n\r')", "T es T");
     evalNull("SQUEEZE(NULL_STRING)").returnType(Types.STRING);
-    evalFails("SQUEEZE()");
-    evalFails("SQUEEZE('Test','Test')");
+
+    evalFails("SQUEEZE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SQUEEZE('Test','Test')", ErrorCode.TOO_MANY_ARGUMENT);
 
     // Function repetition
     optimize("SQUEEZE(Squeeze(FIELD_STRING))", "SQUEEZE(FIELD_STRING)");
@@ -1326,7 +1382,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Split_Part('127.1.2.3',NULL_STRING,5)");
     evalNull("Split_Part('127.1.2.3','.',NULL_INTEGER)");
 
-    evalFails("Split_Part('127.1.2.3','.')");
+    evalFails("Split_Part('127.1.2.3','.')", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -1362,8 +1418,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Strtok('127.1.2.3',NULL_STRING,5)").returnType(Types.STRING);
     evalNull("Strtok('127.1.2.3','.',NULL_INTEGER)").returnType(Types.STRING);
 
-    evalFails("Strtok()");
-    evalFails("Strtok('127.1.2.3','.',5,5)");
+    evalFails("Strtok()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Strtok('127.1.2.3','.',5,5)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -1372,8 +1428,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Space(0)", "");
     evalNull("Space(-3)");
     evalNull("Space(NULL_INTEGER)");
-    evalFails("Space()");
-    evalFails("Space('str')");
+
+    evalFails("Space()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    // TODO: should throw conversion error
+    evalFails("Space('str')", ErrorCode.INVALID_INTEGER);
   }
 
   @Test
@@ -1399,9 +1458,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Abs(INTERVAL -5 YEARS)", Interval.of(5)).returnType(Types.INTERVAL);
     evalNull("Abs(NULL_STRINg::INTERVAL)").returnType(Types.INTERVAL);
 
-    evalFails("Abs()");
-    evalFails("Abs(");
-    evalFails("Abs(FIELD_STRING)");
+    evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Abs(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Abs(", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Abs(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
 
     optimize("ABS(-FIELD_INTEGER)");
 
@@ -1415,10 +1475,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Acos(1)", 0L).returnType(Types.NUMBER);
     evalNull("Acos(NULL_INTEGER)");
 
-    evalFails("Acos(2)");
-    evalFails("Acos(-2)");
-    evalFails("Acos()");
-    evalFails("Acos(FIELD_STRING)");
+    evalFails("Acos(2)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Acos(-2)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Acos()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Acos(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Acos(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1428,8 +1489,9 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalNull("Acosh(NULL_INTEGER)").returnType(Types.NUMBER);
 
-    evalFails("Acosh()");
-    evalFails("Acosh(FIELD_STRING)");
+    evalFails("Acosh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Acosh(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Acosh(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1437,8 +1499,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Asin(0)", 0L).returnType(Types.NUMBER);
     evalEquals("Asin(sin(0.5))", 0.5D);
     evalNull("Asin(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Asin()");
-    evalFails("Asin(FIELD_STRING)");
+
+    evalFails("Asin()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Asin(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Asin(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1446,8 +1510,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Asinh(asin(0.5))", new BigDecimal("0.50221898503461160828703900193479"))
         .returnType(Types.NUMBER);
     evalNull("Asinh(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Asinh()");
-    evalFails("Asinh(FIELD_STRING)");
+
+    evalFails("Asinh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Asinh(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Asinh(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1456,7 +1522,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Atan(Tan(0.5))", 0.5);
     evalNull("Atan(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Atan()");
+
+    evalFails("Atan()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Atan(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Atan(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1466,9 +1535,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Atan2(NULL_INTEGER,0)").returnType(Types.NUMBER);
     evalNull("Atan2(1,NULL_INTEGER)");
 
-    evalFails("Atan2()");
-    evalFails("Atan2(1)");
-    evalFails("Atan2(FIELD_STRING)");
+    evalFails("Atan2()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Atan2(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Atan2(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Atan2(FIELD_STRING,1)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1477,8 +1547,9 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalNull("Atanh(NULL_INTEGER)").returnType(Types.NUMBER);
 
-    evalFails("Atanh()");
-    evalFails("Atanh(FIELD_STRING)");
+    evalFails("Atanh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Atanh(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Atanh(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1488,8 +1559,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Cos(Pi())", -1L);
     evalNull("Cos(NULL_NUMBER)");
-    evalFails("Cos()");
-    evalFails("Cos(0,1)");
+
+    evalFails("Cos()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Cos(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Cos(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1498,8 +1571,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Cosh(0)", 1L);
     evalNull("Cosh(NULL_NUMBER)").returnType(Types.NUMBER);
-    evalFails("Cosh()");
-    evalFails("Cosh(0,1)");
+
+    evalFails("Cosh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Cosh(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Cosh(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1509,8 +1584,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Sin(Pi()/2)", 1L);
     evalNull("Sin(NULL_NUMBER)").returnType(Types.NUMBER);
-    evalFails("Sin()");
-    evalFails("Sin(0,1)");
+
+    evalFails("Sin()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Sin(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Sin(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1519,9 +1596,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Sinh(0)", 0L);
     evalNull("Sinh(NULL_NUMBER)").returnType(Types.NUMBER);
-    evalFails("Sinh()");
-    evalFails("Sinh(FIELD_STRING)");
-    evalFails("Sinh(0,1)");
+
+    evalFails("Sinh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Sinh(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Sinh(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1531,10 +1609,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     // evalEquals("Cot(0)", Double.POSITIVE_INFINITY);
     evalNull("Cot(NULL_NUMBER)").returnType(Types.NUMBER);
 
-    evalFails("Cot(0)");
-    evalFails("Cot()");
-    evalFails("Cot(FIELD_STRING)");
-    evalFails("Cot(1,0)");
+    evalFails("Cot(0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Cot()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Cot(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Cot(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1542,10 +1620,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Csc(Pi()/2)", 1L).returnType(Types.NUMBER);
     evalNull("Csc(NULL_INTEGER)").returnType(Types.NUMBER);
 
-    evalFails("Csc(0)");
-    evalFails("Csc()");
-    evalFails("Csc(FIELD_STRING)");
-    evalFails("Csc(1,0)");
+    evalFails("Csc(0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Csc()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Csc(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Csc(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1555,10 +1633,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Csch(Pi())", 0L).returnType(Types.NUMBER);
     evalNull("Csch(NULL_INTEGER)");
 
-    evalFails("Csch(0)");
-    evalFails("Csch()");
-    evalFails("Csch(FIELD_STRING)");
-    evalFails("Csch(1,0)");
+    evalFails("Csch(0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Csch()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Csch(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Csch(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1566,10 +1644,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Sec(Pi())", -1L).returnType(Types.NUMBER);
 
     evalNull("Sec(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Sec(0)");
-    evalFails("Sec()");
-    evalFails("Sec(FIELD_STRING)");
-    evalFails("Sec(1,0)");
+
+    evalFails("Sec(0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Sec()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Sec(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Sec(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1578,9 +1657,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Sech(1)", 0L);
     evalNull("Sech(NULL_INTEGER)").returnType(Types.NUMBER);
 
-    evalFails("Sech()");
-    evalFails("Sech(FIELD_STRING)");
-    evalFails("Sech(1,0)");
+    evalFails("Sech()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Sech(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Sech(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1589,8 +1668,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Tan(0)", 0L).returnType(Types.NUMBER);
     evalNull("Tan(NULL_NUMBER)").returnType(Types.NUMBER);
-    evalFails("Tan()");
-    evalFails("Tan(0,1)");
+
+    evalFails("Tan()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Tan(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Tan(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1599,8 +1680,10 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER);
     evalEquals("Tanh(0)", 0L);
     evalNull("Tanh(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Tanh()");
-    evalFails("Tanh(0,1)");
+
+    evalFails("Tanh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Tanh(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Tanh(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -1611,8 +1694,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Exp(NULL_INTEGER)").returnType(Types.NUMBER);
 
-    evalFails("Exp()");
-    evalFails("Exp(1,2)");
+    evalFails("Exp()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Exp(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Exp(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
 
     optimize("EXP(1)", "2.7182818284590452353602874713527");
   }
@@ -1628,9 +1712,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Factorial(NULL_INTEGER)");
 
-    evalFails("Factorial()");
-    evalFails("Factorial(-2)");
-    evalFails("Factorial(1,2)");
+    evalFails("Factorial(-2)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Factorial()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Factorial(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    // TODO: should throw conversion error
+    evalFails("Factorial(FIELD_STRING)", ErrorCode.INVALID_INTEGER);
   }
 
   @Test
@@ -1648,10 +1734,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Power(3,NULL_INTEGER)");
     evalNull("Power(NULL_INTEGER,NULL_INTEGER)");
 
-    evalFails("Power(-4,0.5)");
-    evalFails("Power()");
-    evalFails("Power(3)");
-    evalFails("Power(1,2,3)");
+    evalFails("Power(-4,0.5)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Power()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Power(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Power(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Power(FIELD_STRING,2)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Power(2,FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
 
     // Alias
     evalEquals("Pow(3,2)", 9L);
@@ -1664,8 +1752,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Sign(0.3)", 1L).returnType(Types.INTEGER);
     evalEquals("Sign(0)", 0L);
     evalEquals("Sign(-5)", -1L);
-    evalFails("Sign()");
-    evalFails("Sign(1,2)");
+
+    evalFails("Sign()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Sign(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
 
     evalNull("Sign(NULL_INTEGER)").returnType(Types.INTEGER);
 
@@ -1680,15 +1769,19 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Cbrt(64)", 4L);
     evalEquals("Cbrt(343)", 7L);
     evalNull("Cbrt(NULL_INTEGER)");
-    evalFails("Cbrt()");
+
+    evalFails("Cbrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Cbrt(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
   void Sqrt() throws Exception {
     evalEquals("Sqrt(9)", 3L);
-    evalFails("Sqrt(-5)");
-    evalFails("Sqrt()");
     evalNull("Sqrt(NULL_INTEGER)");
+
+    evalFails("Sqrt(-5)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Sqrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Sqrt(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -1696,8 +1789,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Square(1)", 1L);
     evalEquals("Square(-5)", 25L);
     evalEquals("Square(FIELD_STRING_INTEGER)", 25L * 25L);
-    evalFails("Square()");
     evalNull("Square(NULL_INTEGER)");
+
+    evalFails("Square()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Square(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -1709,7 +1804,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Trim(' 01ABC10 ', ' 012')", "ABC");
     evalNull("Trim(NULL_STRING)").returnType(Types.STRING);
     evalNull("Trim(' 01ABC012 ',NULL_STRING)");
-    evalFails("Trim()");
+
+    evalFails("Trim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     optimize("Trim(' test ')", "'test'");
     optimizeTrue("Trim(' test ')='test'");
@@ -1727,7 +1823,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("LTrim('01ABC012', '012')", "ABC012");
     evalNull("LTrim(NULL_STRING)").returnType(Types.STRING);
     evalNull("LTrim('01ABC012',NULL_STRING)");
-    evalFails("LTrim()");
+
+    evalFails("LTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Function repetition
     optimize("LTRIM(LTRIM(FIELD_STRING))", "LTRIM(FIELD_STRING)");
@@ -1741,7 +1838,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("RTrim('012ABC10', '012')", "012ABC");
     evalNull("RTrim(NULL_STRING)").returnType(Types.STRING);
     evalNull("RTrim('01ABC012',NULL_STRING)");
-    evalFails("RTrim()");
+    evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Function repetition
     optimize("RTRIM(RTRIM(FIELD_STRING))", "RTRIM(FIELD_STRING)");
@@ -1794,10 +1891,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Greatest(NULL_INTEGER, NULL_NUMBER)");
 
     // Data type mixed
-    evalFails("Greatest(123,'str',123)");
-    evalFails("Greatest(123,DATE '2021-12-06',123)");
-
-    evalFails("Greatest(NULL_JSON, FIELD_JSON)");
+    evalFails("Greatest(123,'str',123)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Greatest(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Greatest(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1845,10 +1941,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Least(NULL_INTEGER, NULL_NUMBER)");
 
     // Date type mixed
-    evalFails("Least(123,'str',123)");
-    evalFails("Least(123,DATE '2021-12-06',123)");
-
-    evalFails("Least(NULL_JSON, FIELD_JSON)");
+    evalFails("Least(123,'str',123)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Least(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Least(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1876,8 +1971,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     // evalEquals("Length(Date '2023-01-01')", 8L);
 
     // Bad data type
-    evalFails("Length()");
-    evalFails("Length(Date '2023-01-01')");
+    evalFails("Length()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Length(Date '2023-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1903,7 +1998,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Left(NULL_BINARY,4)");
     evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
 
-    evalFails("Left()");
+    evalFails("Left()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -1929,9 +2024,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Insert(BINARY '1234', 1, 1, BINARY '56')", new byte[] {0x56, 0x34});
     evalNull("Insert(NULL_BINARY, 1, 0, BINARY '56')");
 
-    evalFails("Insert()");
-    evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')");
-    evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')");
+    evalFails("Insert()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -1953,7 +2048,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
 
-    evalFails("Right()");
+    evalFails("Right()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -1976,11 +2071,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Repeat(FIELD_BINARY,NULL_INTEGER)");
 
     // Bad syntax
-    evalFails("Repeat()");
+    evalFails("Repeat()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    // Result to large
-    evalFails("Repeat('ABC',9999999999999)");
-    evalFails("Repeat(BINARY '1234',9999999999999)");
+    // Result size to large
+    evalFails("Repeat('ABC',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    evalFails("Repeat(BINARY '1234',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
   }
 
   @Test
@@ -1990,7 +2085,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Replace(NULL_STRING,'CD','EF')");
     evalNull("Replace('ABCD',NULL_STRING,'EF')");
 
-    evalFails("Replace()");
+    evalFails("Replace()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -2022,7 +2117,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("IS_NUMBER(FIELD_BINARY)");
     evalFalse("IS_NUMBER(FIELD_JSON)");
 
-    evalFails("IS_NUMBER()");
+    evalFails("IS_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -2039,7 +2134,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     optimize("IS_JSON(FIELD_JSON)", "FIELD_JSON IS NOT NULL");
     optimizeFalse("IS_JSON(FIELD_DATE)");
 
-    evalFails("IS_JSON()");
+    evalFails("IS_JSON()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -2091,9 +2186,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("To_Boolean(NULL_STRING)").returnType(Types.BOOLEAN);
 
-    evalFails("To_Boolean()");
-    evalFails("To_Boolean('falsee')");
-    evalFails("To_Boolean(1,2,3)");
+    evalFails("To_Boolean()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("To_Boolean(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("To_Boolean('falsee')", ErrorCode.INVALID_BOOLEAN);
   }
 
   @Test
@@ -2102,8 +2197,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("HEX_ENCODE(NULL_STRING)");
 
-    evalFails("HEX_ENCODE()");
-    evalFails("HEX_ENCODE(0x01,0x02)");
+    evalFails("HEX_ENCODE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("HEX_ENCODE(0x01,0x02)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -2112,8 +2207,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("HEX_DECODE(NULL_STRING)");
 
-    evalFails("HEX_DECODE()");
-    evalFails("HEX_DECODE('p1','p2')");
+    evalFails("HEX_DECODE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("HEX_DECODE('p1','p2')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -2129,8 +2224,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("TO_BINARY(NULL_STRING)");
 
-    evalFails("TO_BINARY('Apache Hop',NULL_STRING)");
-    evalFails("TO_BINARY()");
+    evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -2185,7 +2280,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Sign PR (format element can appear only in the last position of a number format model.)
     evalEquals("TO_NUMBER(' 0.5 ','99.99PR')", 0.5);
     evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5);
-    evalFails("TO_NUMBER('-5','PR9999')");
+    evalFails("TO_NUMBER('-5','PR9999')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Format with Thousand Group Markers
     Locale.setDefault(new Locale("en", "US"));
@@ -2243,13 +2338,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TO_NUMBER(NULL_DATE)");
 
     // You can specify only one decimal separator in a number format model.
-    evalFails("TO_NUMBER('123.456','9D999D9')");
-    evalFails("TO_NUMBER('123.456','9.999.9')");
+    evalFails("TO_NUMBER('123.456','9D999D9')", ErrorCode.INVALID_NUMBER_FORMAT);
+    evalFails("TO_NUMBER('123.456','9.999.9')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // A group separator cannot appear to the right of a decimal character or period in a number
     // format model.
-    evalFails("TO_NUMBER('-0.2','999.999G99')");
-    evalFails("TO_NUMBER('-0.2','999.999,99')");
+    evalFails("TO_NUMBER('-0.2','999.999G99')", ErrorCode.INVALID_NUMBER_FORMAT);
+    evalFails("TO_NUMBER('-0.2','999.999,99')", ErrorCode.INVALID_NUMBER_FORMAT);
   }
 
   @Test
@@ -2326,7 +2421,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(7,'9999pr')", "    7 ");
     evalEquals("TO_CHAR(-7,'9999PR')", "   <7>");
     evalEquals("TO_CHAR(7,'FM9999PR')", "7");
-    evalFails("TO_CHAR(-7,'PR9999')");
+
+    evalFails("TO_CHAR(-7,'PR9999')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Currency dollar
     evalEquals("TO_CHAR(12,'$99')", " $12");
@@ -2373,8 +2469,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(5.2, 'FMRN')", "V");
     evalEquals("TO_CHAR(485, 'FMRN')", "CDLXXXV");
     evalEquals("TO_CHAR(515, 'RN')", "            DXV");
-    evalFails("TO_CHAR(0, 'RN')"); // Must be > 0
-    evalFails("TO_CHAR(4000, 'RN')"); // Must be < 4000
+    evalFails("TO_CHAR(0, 'RN')", ErrorCode.CALL_FUNCTION_ERROR); // Must be > 0
+    evalFails("TO_CHAR(4000, 'RN')", ErrorCode.CALL_FUNCTION_ERROR); // Must be < 4000
 
     // Hex
     evalEquals("TO_CHAR(123,'XX')", " 7B");
@@ -2384,7 +2480,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(9234,'xx')", "###");
 
     // No space
-    evalFails("TO_CHAR(485,'9 9 9')");
+    evalFails("TO_CHAR(485,'9 9 9')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Date
     evalEquals("To_Char(DATE '2019-07-23','AD')", "AD").returnType(Types.STRING);
@@ -2609,9 +2705,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Special char
     evalEquals("To_Char(DATE '2019-07-23',':;.,=-/(FMMONTH)')", ":;.,=-/(JULY)");
-    evalFails("To_Char(DATE '2019-07-23','*')");
-    evalFails("To_Char(DATE '2019-07-23','Â£')");
-    evalFails("To_Char(DATE '2019-07-23','{}[]')");
+    evalFails("To_Char(DATE '2019-07-23','*')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("To_Char(DATE '2019-07-23','Â£')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("To_Char(DATE '2019-07-23','{}[]')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Full case
     evalEquals(
@@ -2750,9 +2846,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Date('1001426','J')", LocalDate.of(-1971, 9, 16));
 
     // FX
-    evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')");
-    evalFails("To_Date('1-02-2020','FXDD/MM/YYYY')");
-    evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
+    evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("To_Date('1-02-2020','FXDD/MM/YYYY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
     // evalEquals("To_Date('1/02/2020','FXFMDD-MON-YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
     // Is interpreted as 10 February 2003
@@ -2911,9 +3007,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("To_Json(NULL_STRING)").returnType(Types.JSON);
 
-    evalFails("To_Json()");
-    evalFails("To_Json(BOOLEAN_FIELD)");
-    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')");
+    evalFails("To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.INVALID_JSON);
+    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.INVALID_JSON);
   }
 
   @Test
@@ -2957,7 +3053,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Return NULL if JsonPath does not match a value
     evalNull("Json_Value(FIELD_JSON,'$.notexist')");
 
-    evalFails("Json_Value(FIELD_JSON,NULL_STRING)");
+    evalFails("Json_Value(FIELD_JSON,NULL_STRING)", ErrorCode.JSON_PATH_IS_NULL);
   }
 
   @Test
@@ -3007,8 +3103,12 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 
-    evalFails("Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)");
-    evalFails("Json_Query('{\"name\":\"Smith\", \"age\":29}','$.notexist')");
+    evalFails(
+        "Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)",
+        ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails(
+        "Json_Query('{\"name\":\"Smith\", \"age\":29}','$.notexist')",
+        ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3032,9 +3132,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Accept missing KEY
     evalEquals("Json_Object('name' VALUE 'Smith')", JsonType.convert("{\"name\":\"Smith\"}"));
 
-    evalFails("Json_Object(KEY 'name' VALUE )");
-    evalFails("Json_Object(KEY VALUE 'Smith')");
-    evalFails("Json_Object(KEY 'name' VALUE 'Smith'");
+    evalFails("Json_Object(KEY 'name' VALUE )", ErrorCode.SYNTAX_ERROR);
+    evalFails("Json_Object(KEY VALUE 'Smith')", ErrorCode.SYNTAX_ERROR);
+    evalFails("Json_Object(KEY 'name' VALUE 'Smith'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize(
         "JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')",
@@ -3071,6 +3171,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Overlay(NULL_STRING,'ach',3)").returnType(Types.STRING);
     evalNull("Overlay(FIELD_STRING,NULL_STRING,3)").returnType(Types.STRING);
+
+    evalFails("Overlay()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Overlay(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Overlay(FIELD_DATE,'ach',5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3082,8 +3186,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Reverse(NULL_STRING)").returnType(Types.STRING);
     evalNull("Reverse(NULL_BINARY)").returnType(Types.BINARY);
 
-    evalFails("Reverse()");
-    evalFails("Reverse(FIELD_DATE)");
+    evalFails("Reverse()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Reverse(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3093,8 +3197,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
     evalNull("Soundex(NULL_STRING)").returnType(Types.STRING);
 
-    evalFails("Soundex()");
-    evalFails("Soundex(FIELD_DATE)");
+    evalFails("Soundex()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Soundex(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3173,12 +3277,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Date_Trunc(DAY, NULL_TIMESTAMP)");
     evalNull("Date_Trunc(DAY, NULL_DATE)");
 
-    evalFails("Date_Trunc(DAY)");
-    evalFails("Date_Trunc(ISOWEEK, DATE '2020-05-25')");
-    evalFails("Date_Trunc(DATE '2020-05-25')");
-    evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')");
-    evalFails("Date_Trunc(123, DATE '2020-05-25')");
-    evalFails("Date_Trunc('xxx', DATE '2020-05-25')");
+    evalFails("Date_Trunc(DAY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Date_Trunc(DATE '2020-05-25')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Date_Trunc(ISOWEEK, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Date_Trunc(123, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Truncate timestamp
     evalEquals(
@@ -3221,9 +3325,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("CONTAINS(NULL_BINARY,BINARY '1A2B3C')").returnType(Types.BOOLEAN);
     evalNull("CONTAINS(BINARY '1A2B3C',NULL_BINARY)");
 
-    evalFails("CONTAINS()");
-    evalFails("CONTAINS(FIELD_STRING)");
-    evalFails("CONTAINS(FIELD_BINARY)");
+    evalFails("CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CONTAINS(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CONTAINS(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3240,7 +3344,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("StartsWith(NULL_STRING,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL_STRING)");
-    evalFails("StartsWith()");
+
+    evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("StartsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("StartsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3258,7 +3365,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("EndsWith(BINARY 'FAA12345',BINARY '88')");
     evalFalse("EndsWith(BINARY '1234',BINARY 'FFFF1234')");
 
-    evalFails("EndsWith()");
+    evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("EndsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EndsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3277,9 +3386,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("Regexp_Like('','')");
     evalFalse("Regexp_Like('ABC','')");
 
-    evalFails("Regexp_Like()");
-    evalFails("Regexp_Like('A')");
-    evalFails("Regexp_Like('A','[a-z]','z')");
+    evalFails("Regexp_Like()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Regexp_Like('A')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Regexp_Like('A','[a-z]','z')", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -3309,7 +3418,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Regexp_Replace(NULL_STRING,'A')").returnType(Types.STRING);
     evalNull("Regexp_Replace('A', NULL_STRING)");
 
-    evalFails("Regexp_Replace()");
+    evalFails("Regexp_Replace()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3367,7 +3476,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalTrue("Equal_Null(DATE '2019-01-01',DATE '2019-01-01')");
     evalFalse("Equal_Null(DATE '2019-01-01',DATE '2018-01-01')").returnType(Types.BOOLEAN);
 
-    evalFails("Equal_Null(NOM)");
+    evalFails("Equal_Null(NULL_INTEGER)", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Same operands always true
     optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
@@ -3411,7 +3520,7 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.BINARY);
     evalNull("Concat(NULL_BINARY,NULL_BINARY)").returnType(Types.BINARY);
 
-    evalFails("Concat()");
+    evalFails("Concat()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Mix String and Binary
     // evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
@@ -3421,11 +3530,14 @@ public class ScalarFunctionTest extends ExpressionTest {
     optimize("ARRAY[1,2,3] || ARRAY[4,5] || ARRAY[6,7]", "ARRAY[1,2,3,4,5,6,7]");
 
     // Check operands type
-    evalFails("Concat(FIELD_STRING, FIELD_DATE)");
-    evalFails("Concat(FIELD_STRING, FIELD_STRING, FIELD_DATE)");
-    evalFails("Concat(FIELD_BINARY, FIELD_DATE)");
-    evalFails("Concat(FIELD_DATE, FIELD_STRING)");
-    evalFails("Concat(FIELD_DATE, FIELD_BINARY)");
+    evalFails("Concat(FIELD_STRING, FIELD_DATE)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Concat(FIELD_STRING, FIELD_STRING, FIELD_DATE)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Concat(FIELD_BINARY, FIELD_DATE)", ErrorCode.CONVERSION_ERROR);
+    evalFails("Concat(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Concat(FIELD_DATE, FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    evalFails("||'text'", ErrorCode.SYNTAX_ERROR);
+    evalFails("'text'||", ErrorCode.SYNTAX_ERROR);
 
     // Literal
     optimize("CONCAT('TES','T')", "'TEST'");
@@ -3462,11 +3574,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("CONCAT_WS('a',NULL_STRING)");
     evalNull("CONCAT_WS(BINARY '1F',NULL_STRING,NULL_STRING)").returnType(Types.BINARY);
 
-    evalFails("CONCAT_WS()");
-    evalFails("CONCAT_WS(',')");
+    evalFails("CONCAT_WS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CONCAT_WS(',')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Mix String and Binary
-    evalFails("CONCAT_WS(NOM,0x2A3B)");
+    // TODO: evalFails("CONCAT_WS(FIELD_STRING,0x2A3B)");
   }
 
   @Test
@@ -3479,9 +3591,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Chr(33288)", "興");
     evalNull("Chr(NULL_INTEGER)");
 
-    evalFails("Chr()");
-    evalFails("Chr(-1)");
-    evalFails("Chr(999999999999)");
+    evalFails("Chr()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Chr(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Chr(999999999999)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -3493,18 +3605,20 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Ascii('')", 0L);
     evalNull("Ascii(NULL_STRING)");
 
-    evalFails("Ascii()");
+    evalFails("Ascii()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Ascii('a','b')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
   void Unicode() throws Exception {
     evalEquals("Unicode('SSSS')", 83L).returnType(Types.INTEGER);
-    ;
     evalEquals("Unicode('é')", 233L);
     evalEquals("Unicode('€')", 8364L);
     evalEquals("Unicode('')", 0L);
     evalNull("Unicode(NULL_STRING)");
-    evalFails("Unicode()");
+
+    evalFails("Unicode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Unicode('a','b')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3530,16 +3644,16 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Html_Encode('18€ & <test> ™')", "18&euro; &amp; &lt;test&gt; &trade;")
         .returnType(Types.STRING);
     evalNull("Html_Encode(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Html_Encode()");
-    evalFails("Html_Encode('x','y')");
+    evalFails("Html_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Html_Encode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
   void Html_Decode() throws Exception {
     evalEquals("Html_Decode('18&euro; &amp; &lt;test&gt; &#8482;')", "18€ & <test> ™");
     evalNull("Html_Decode(NULL_STRING)");
-    evalFails("Html_Decode()");
-    evalFails("Html_Decode('x','y')");
+    evalFails("Html_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Html_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3548,8 +3662,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Url_Encode('a+b')", "a%2Bb");
     evalEquals("Url_Encode('âéè')", "%C3%A2%C3%A9%C3%A8");
     evalNull("Url_Encode(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Url_Encode()");
-    evalFails("Url_Encode('x','y')");
+    evalFails("Url_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Url_Encode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3558,9 +3672,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Url_Decode('a%2Bb')", "a+b");
     evalEquals("Url_Decode('%C3%A2%C3%A9%C3%A8')", "âéè");
     evalNull("Url_Decode(NULL_STRING)");
-    evalFails("Url_Decode('a%%2Bb')");
-    evalFails("Url_Decode()");
-    evalFails("Url_Decode('x','y')");
+    evalFails("Url_Decode('a%%2Bb')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Url_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Url_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3568,7 +3682,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Base64_Encode('Apache Hop')", "QXBhY2hlIEhvcA==").returnType(Types.STRING);
     evalEquals("Base64_Encode('Apache Hop'::Binary)", "QXBhY2hlIEhvcA==").returnType(Types.STRING);
     evalNull("Base64_Encode(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Base64_Encode()");
+    evalFails("Base64_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3576,7 +3690,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop").returnType(Types.STRING);
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop").returnType(Types.STRING);
     evalNull("Base64_Decode(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Base64_Decode()");
+    evalFails("Base64_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3584,7 +3698,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Base32_Encode('Apache Hop')", "IFYGCY3IMUQEQ33Q").returnType(Types.STRING);
     evalEquals("Base32_Encode('Apache Hop'::Binary)", "IFYGCY3IMUQEQ33Q").returnType(Types.STRING);
     evalNull("Base32_Encode(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Base32_Encode()");
+    evalFails("Base32_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3592,7 +3706,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q')", "Apache Hop").returnType(Types.STRING);
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q'::Binary)", "Apache Hop").returnType(Types.STRING);
     evalNull("Base32_Decode(NULL_STRING)").returnType(Types.STRING);
-    evalFails("Base32_Decode()");
+    evalFails("Base32_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3611,9 +3725,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Ceil(NULL_NUMBER)");
     evalNull("Ceil(NULL_BIGNUMBER)");
 
-    evalFails("Ceil()");
-    evalFails("Ceil(1,2,3)");
-    evalFails("Ceil('x')");
+    evalFails("Ceil()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Ceil(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Ceil('12x')", ErrorCode.CONVERSION_ERROR);
 
     // Alias
     evalEquals("Ceiling(1)", 1L);
@@ -3639,9 +3753,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Floor(NULL_NUMBER)");
     evalNull("Floor(NULL_BIGNUMBER)");
 
-    evalFails("Floor()");
-    evalFails("Floor(1,2,3)");
-    evalFails("Floor('x')");
+    evalFails("Floor()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Floor(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Floor('12x')", ErrorCode.CONVERSION_ERROR);
 
     // Function repetition
     optimize("FLOOR(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
@@ -3666,9 +3780,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Round(NULL_NUMBER)");
     evalNull("Round(NULL_BIGNUMBER)");
 
-    evalFails("Round()");
-    evalFails("Round(1,2,3)");
-    evalFails("Round('x')");
+    evalFails("Round()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Round(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Round('x')", ErrorCode.CONVERSION_ERROR);
 
     // Function repetition
     optimize("ROUND(ROUND(FIELD_NUMBER))", "ROUND(FIELD_NUMBER)");
@@ -3684,8 +3798,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Ln(NULL_INTEGER)");
     evalNull("Ln(NULL_NUMBER)");
 
-    evalFails("Ln(0)");
-    evalFails("Ln()");
+    evalFails("Ln(0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Ln()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3696,10 +3810,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Log(10,NULL_INTEGER)").returnType(Types.NUMBER);
     evalNull("Log(NULL_INTEGER,1)").returnType(Types.NUMBER);
 
-    evalFails("Log(10,0)");
-    evalFails("Log(-2)");
-    evalFails("Log(1)");
-    evalFails("Log(x,y)");
+    evalFails("Log()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Log(-2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Log(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Log(10,0)", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -3707,9 +3821,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Log10(10)", 1L).returnType(Types.NUMBER);
     evalEquals("Log10(1000)", 3L).returnType(Types.NUMBER);
     evalNull("Log10(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Log10(-1)");
-    evalFails("Log10()");
-    evalFails("Log10(1,2)");
+
+    evalFails("Log10(-1)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Log10()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Log10(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3717,16 +3832,18 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Degrees(Pi())", 180L).returnType(Types.NUMBER);
     evalEquals("Degrees(Radians(50))", 50L).returnType(Types.NUMBER);
     evalNull("Degrees(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Degrees()");
-    evalFails("Degrees(1,2)");
+
+    evalFails("Degrees()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Degrees(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
   void Radians() throws Exception {
     evalEquals("Radians(180)", PI).returnType(Types.NUMBER);
     evalNull("Radians(NULL_INTEGER)").returnType(Types.NUMBER);
-    evalFails("Radians()");
-    evalFails("Radians(1,2)");
+
+    evalFails("Radians()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Radians(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3734,7 +3851,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("CRC32('Apache Hop')", "dbb81b5e").returnType(Types.STRING);
     evalEquals("CRC32(BINARY '123456789ABCDEF')", "2f720f20").returnType(Types.STRING);
     evalNull("CRC32(NULL_STRING)").returnType(Types.STRING);
-    evalFails("CRC32()");
+
+    evalFails("CRC32()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3745,14 +3863,15 @@ public class ScalarFunctionTest extends ExpressionTest {
             "99c415050a2cddbeb525670345ff0aee")
         .returnType(Types.STRING);
     evalNull("MD5(NULL_STRING)").returnType(Types.STRING);
-    evalFails("MD5()");
+
+    evalFails("MD5()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
   void Sha1() throws Exception {
     evalEquals("SHA1('Test')", "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa").returnType(Types.STRING);
     evalNull("SHA1(NULL_STRING)").returnType(Types.STRING);
-    evalFails("SHA1()");
+    evalFails("SHA1()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3760,7 +3879,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("SHA224('Test')", "c696f08d2858549cfe0929bb7b098cfa9b64d51bec94aa68471688e4")
         .returnType(Types.STRING);
     evalNull("SHA224(NULL_STRING)").returnType(Types.STRING);
-    evalFails("SHA224()");
+    evalFails("SHA224()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3768,7 +3887,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("SHA256('Test')", "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25")
         .returnType(Types.STRING);
     evalNull("SHA256(NULL_STRING)").returnType(Types.STRING);
-    evalFails("SHA256()");
+    evalFails("SHA256()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3778,7 +3897,7 @@ public class ScalarFunctionTest extends ExpressionTest {
             "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3")
         .returnType(Types.STRING);
     evalNull("SHA384(NULL_STRING)").returnType(Types.STRING);
-    evalFails("SHA384()");
+    evalFails("SHA384()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3807,8 +3926,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     double randomValue = ((BigDecimal) value).doubleValue();
     assertTrue(0 <= randomValue && randomValue < 1);
 
-    evalFails("Random('test')");
-    evalFails("Random(1,2)");
+    evalFails("Random('test')", ErrorCode.INVALID_NUMBER);
+    evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
 
     // Alias
     evalTrue("Rand()>0");
@@ -3824,6 +3943,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Length(Uuid())", 36L);
 
     returnType("UUID()", Types.STRING);
+
+    evalFails("UUID(1)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3852,8 +3973,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Bit_Get(NULL_INTEGER,3)");
     evalNull("Bit_Get(123, NULL_INTEGER)");
 
-    evalFails("Bit_Get()");
-    evalFails("Bit_Get(123)");
+    evalFails("Bit_Get()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Get(123)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3864,8 +3985,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Bit_Count(NULL_INTEGER)").returnType(Types.INTEGER);
 
-    evalFails("Bit_Count()");
-    evalFails("Bit_Count(1,2)");
+    evalFails("Bit_Count()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Count(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3883,8 +4004,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Bit_Set(NULL_INTEGER,3)");
     evalNull("Bit_Set(123, NULL_INTEGER)");
 
-    evalFails("Bit_Set()");
-    evalFails("Bit_Set(123)");
+    evalFails("Bit_Set()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Set(123)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3900,8 +4021,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Bit_Clear(NULL_INTEGER,3)");
     evalNull("Bit_Clear(123, NULL_INTEGER)");
 
-    evalFails("Bit_Clear()");
-    evalFails("Bit_Clear(123)");
+    evalFails("Bit_Clear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Clear(123)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3928,10 +4049,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Bit_Shift(NULL_INTEGER,3)").returnType(Types.INTEGER);
     evalNull("Bit_Shift(123, NULL_INTEGER)");
 
-    evalFails("Bit_Shift('Bidon',3)");
-    evalFails("Bit_Shift()");
-    evalFails("Bit_Shift(123)");
-    evalFails("Bit_Shift(DATE '2022-11-25', 3)");
+    evalFails("Bit_Shift('Bidon',3)", ErrorCode.INVALID_INTEGER);
+    evalFails("Bit_Shift()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Shift(123)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Shift(DATE '2022-11-25', 3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -3951,8 +4072,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Bit_Rotate(NULL_INTEGER,3)").returnType(Types.INTEGER);
     evalNull("Bit_Rotate(123, NULL_INTEGER)");
 
-    evalFails("Bit_Rotate()");
-    evalFails("Bit_Rotate(123)");
+    evalFails("Bit_Rotate()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Bit_Rotate(123)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -4033,18 +4154,22 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Extract(MICROSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654L);
     evalEquals("Extract(NANOSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654321L);
 
-    evalFails("Extract(");
-    evalFails("Extract()");
-    evalFails("Extract(MONTH)");
-    evalFails("Extract(MONTH DATE '2023-12-01')");
-    evalFails("Extract(MONTH FROM DATE '2023-12-01'");
-    evalFails("Extract(123 from DATE '2021-01-01')");
-    evalFails("Extract('TEST' from DATE '2021-01-01')");
-    evalFails("Extract(NULL from DATE '2021-01-01')");
-    evalFails("Extract(BIDON from NULL)");
-    evalFails("Extract(BIDON from DATE '2021-01-01')");
-    evalFails("Extract(DAY DATE '2021-01-01')");
-    evalFails("Extract(EPOCH from INTERVAL -45 DAYS)");
+    evalFails("Extract()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
+    evalFails("Extract(", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Extract(MONTH)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Extract(MONTH DATE '2023-12-01')", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Extract(DAY DATE '2021-01-01')", ErrorCode.SYNTAX_ERROR_FUNCTION);
+
+    evalFails("Extract(MONTH FROM DATE '2023-12-01'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    evalFails("Extract(123 from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
+    evalFails("Extract('TEST' from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
+    evalFails("Extract(NULL from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
+    evalFails("Extract(BIDON from NULL)", ErrorCode.INVALID_TIMEUNIT);
+    evalFails("Extract(BIDON from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
+
+    evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimize("EXTRACT(CENTURY FROM FIELD_DATE)");
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
@@ -4069,7 +4194,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Position('def' IN 'abcdefgh')", 4L).returnType(Types.INTEGER);
     evalNull("Position(NULL_STRING IN 'abcdefgh')").returnType(Types.INTEGER);
     evalNull("Position('abc' IN NULL_STRING)").returnType(Types.INTEGER);
-    evalFails("Position('abc' IN ");
-    evalFails("Position( IN 'fsd'");
+
+    evalFails("Position()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Position( ", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Position('abc' ", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Position('abc' IN ", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Position('abc' IN 'abcd'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Position( IN 'fsd'", ErrorCode.SYNTAX_ERROR);
   }
 }

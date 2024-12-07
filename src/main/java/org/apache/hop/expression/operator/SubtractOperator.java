@@ -160,7 +160,7 @@ public class SubtractOperator extends BinaryOperator {
       if (interval1 == null) return null;
 
       // return interval0.subtract(interval1);
-      throw new ExpressionException(ErrorCode.INTERNAL_ERROR.message());
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
     }
 
     @Override

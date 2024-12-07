@@ -172,20 +172,19 @@ public class Token {
     /** Time unit element DAY, MONTH, QUARTER, MINUTE, ... */
     LITERAL_TIMEUNIT;
 
-    private final String source;
+    private final String label;
 
     Id() {
-      this.source = name();
+      this.label = name();
     }
 
-    Id(final String source) {
-      this.source = source;
+    Id(final String label) {
+      this.label = label;
     }
 
     @Override
     public String toString() {
-      if (this.source.equals(this.name())) return source;
-      return this.name() + '(' + source + ')';
+      return label;
     }
   }
 
@@ -195,7 +194,7 @@ public class Token {
   private final String text;
 
   protected Token(Id id, int start) {
-    this(id, start, start + 1, id.source);
+    this(id, start, start + 1, id.label);
   }
 
   protected Token(Id id, int start, int end, String text) {
@@ -235,6 +234,6 @@ public class Token {
 
   @Override
   public String toString() {
-    return id.name() + "(" + text + ")";
+    return (text != null) ? text : id.toString();
   }
 }

@@ -28,6 +28,7 @@ import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IRowExpressionContext;
@@ -156,11 +157,11 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       try {
         IExpression expression = context.createExpression(field.getExpression());
         if (!expression.is(Kind.CALL)) {
-          throw new ExpressionException("Not an aggregation expression");
+          throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
         }
         Operator operator = ((Call) expression).getOperator();
         if (!(operator instanceof AggregateFunction)) {
-          throw new ExpressionException("Not an aggregation expression");
+          throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
         }
 
         IValueMeta valueMeta = Types.createValueMeta(field.getName(), expression.getType());

@@ -119,7 +119,7 @@ public class Identifier implements IExpression {
   public Object getValue() {
     Object[] row = context.getRow();
     if (row == null) {
-      throw new ExpressionException(position, ErrorCode.CONTEXT_ERROR);
+      throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
     }
 
     try {
@@ -154,15 +154,17 @@ public class Identifier implements IExpression {
     } catch (Exception e) {
       // Ignore
     }
+
+    // TODO: check message
     throw new ExpressionException(
-        position, ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal]);
+        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal]);
   }
 
   @Override
   public <T> T getValue(Class<T> clazz) {
     Object[] row = context.getRow();
     if (row == null) {
-      throw new ExpressionException(position, ErrorCode.CONTEXT_ERROR);
+      throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
     }
 
     try {
@@ -257,11 +259,7 @@ public class Identifier implements IExpression {
       // Ignore
     }
     throw new ExpressionException(
-        position,
-        ErrorCode.CONVERSION_ERROR,
-        valueMeta.getTypeDesc().toUpperCase(),
-        row[ordinal],
-        clazz);
+        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), clazz, row[ordinal]);
   }
 
   /**
@@ -286,7 +284,7 @@ public class Identifier implements IExpression {
     }
 
     if (valueMeta == null) {
-      throw new ExpressionException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
+      throw new ExpressionParseException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
     }
   }
 
@@ -310,7 +308,7 @@ public class Identifier implements IExpression {
         return BinaryType.of(meta.getLength());
       default:
         throw new ExpressionException(
-            position, ErrorCode.UNSUPPORTED_VALUEMETA, getName(), meta.getTypeDesc());
+            ErrorCode.UNSUPPORTED_VALUEMETA, getName(), meta.getTypeDesc());
     }
   }
 

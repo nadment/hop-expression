@@ -28,9 +28,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Count() throws Exception {
-    evalFails("Count()");
-    evalFails("Count(DISTINCT )");
-    evalFails("Count(1,2)");
+    evalFails("Count()", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Count(DISTINCT )", ErrorCode.SYNTAX_ERROR);
+    evalFails("Count(1,2)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     returnType("Count(*)", Types.INTEGER);
 
@@ -41,9 +41,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void CountIf() throws Exception {
-    evalFails("CountIf()");
-    evalFails("CountIf(FIELD_DATE)");
-    evalFails("CountIf(1,2)");
+    evalFails("CountIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("CountIf(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     returnType("CountIf(FIELD_INTEGER>=10)", Types.INTEGER);
     optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(FIELD_INTEGER>=10)");
   }
@@ -81,8 +81,8 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void FirstValue() throws Exception {
-    evalFails("FIRST_VALUE(FIELD_DATE) IGNORE");
-    evalFails("FIRST_VALUE(FIELD_DATE) NULLS");
+    evalFails("FIRST_VALUE(FIELD_DATE) IGNORE", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("FIRST_VALUE(FIELD_DATE) NULLS", ErrorCode.UNEXPECTED_CHARACTER);
 
     optimize("FIRST_VALUE(FIELD_DATE) RESPECT NULLS", "FIRST_VALUE(FIELD_DATE)");
     optimize("FIRST_VALUE(FIELD_DATE) IGNORE NULLS");
@@ -92,8 +92,8 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void LastValue() throws Exception {
-    evalFails("LAST_VALUE(FIELD_DATE) IGNORE");
-    evalFails("LAST_VALUE(FIELD_DATE) NULLS");
+    evalFails("LAST_VALUE(FIELD_DATE) IGNORE", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("LAST_VALUE(FIELD_DATE) NULLS", ErrorCode.UNEXPECTED_CHARACTER);
 
     optimize("LAST_VALUE(FIELD_DATE) RESPECT NULLS", "LAST_VALUE(FIELD_DATE)");
     optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS");
@@ -103,9 +103,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void NthValue() throws Exception {
-    evalFails("NTH_VALUE(FIELD_DATE)");
-    evalFails("NTH_VALUE(FIELD_DATE) IGNORE");
-    evalFails("NTH_VALUE(FIELD_DATE) NULLS");
+    evalFails("NTH_VALUE(FIELD_DATE)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("NTH_VALUE(FIELD_DATE) IGNORE", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("NTH_VALUE(FIELD_DATE) NULLS", ErrorCode.SYNTAX_ERROR_FUNCTION);
 
     optimize("NTH_VALUE(FIELD_DATE,2) RESPECT NULLS", "NTH_VALUE(FIELD_DATE,2)");
     optimize("NTH_VALUE(FIELD_DATE,2) IGNORE NULLS");

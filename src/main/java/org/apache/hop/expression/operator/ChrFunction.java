@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -49,7 +50,7 @@ public class ChrFunction extends Function {
     int codePoint = value.intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
-      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, codePoint));
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, codePoint);
     }
     return String.valueOf(Character.toChars(codePoint));
   }

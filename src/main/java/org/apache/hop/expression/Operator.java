@@ -300,10 +300,10 @@ public abstract class Operator {
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(call.getPosition(), ErrorCode.NOT_ENOUGH_ARGUMENT, this);
+        throw new ExpressionParseException(call.getPosition(), ErrorCode.NOT_ENOUGH_ARGUMENT, this);
       }
       if (call.getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(call.getPosition(), ErrorCode.TOO_MANY_ARGUMENT, this);
+        throw new ExpressionParseException(call.getPosition(), ErrorCode.TOO_MANY_ARGUMENT, this);
       }
     }
   }
@@ -337,7 +337,7 @@ public abstract class Operator {
     }
 
     if (throwOnFailure) {
-      throw new ExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
+      throw new ExpressionParseException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
     }
 
     return false;
@@ -396,7 +396,7 @@ public abstract class Operator {
       MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
       return lookup.findVirtual(clazz, methodName, methodType);
     } catch (NoSuchMethodException | IllegalAccessException e) {
-      throw new ExpressionException(0, ErrorCode.INTERNAL_ERROR, clazz);
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
     }
   }
 
@@ -407,7 +407,7 @@ public abstract class Operator {
       MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
       return lookup.findStatic(clazz, methodName, methodType);
     } catch (NoSuchMethodException | IllegalAccessException e) {
-      throw new ExpressionException(0, ErrorCode.INTERNAL_ERROR, clazz);
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
     }
   }
 }

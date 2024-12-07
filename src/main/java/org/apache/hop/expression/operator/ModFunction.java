@@ -90,7 +90,7 @@ public class ModFunction extends Function {
     if (divisor == null) return null;
 
     // Prevent a division by zero ..
-    if (divisor.signum() == 0) throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
+    if (divisor.signum() == 0) throw new ExpressionException(ErrorCode.DIVISION_BY_ZERO);
 
     return value.remainder(divisor);
   }

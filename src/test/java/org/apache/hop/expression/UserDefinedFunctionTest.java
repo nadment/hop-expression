@@ -42,8 +42,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
 
     evalEquals("UCASE('abcd',3)", "ABC").returnType(Types.STRING);
     evalEquals("UCASE(NULL_STRING,2)", "*").returnType(Types.STRING);
-    evalFails("UCASE()");
-    evalFails("UCASE(1,2,3)");
+    evalFails("UCASE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("UCASE(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -58,8 +58,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
 
     evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(Types.DATE);
     evalNull("DATE_FROM_ID(null)").returnType(Types.DATE);
-    evalFails("DATE_FROM_ID()");
-    evalFails("DATE_FROM_ID(1,2,3)");
+    evalFails("DATE_FROM_ID()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("DATE_FROM_ID(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 
     assertThrows(ExpressionException.class, () -> optimize("DATE_FROM_ID()"));
   }

@@ -450,9 +450,9 @@ final class PatternNumberFormat extends NumberFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws NumberParseException
+   * @throws FormatParseException
    */
-  public BigDecimal parse(String text) throws NumberParseException {
+  public BigDecimal parse(String text) throws FormatParseException {
 
     int start = 0; // first not white space symbol
     try {

@@ -19,6 +19,7 @@ package org.apache.hop.expression.type;
 import java.util.Objects;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 /**
  * Data type
@@ -68,16 +69,15 @@ public abstract class Type {
     TypeId id = getId();
     if (id.supportsPrecision()
         && (precision < id.getMinPrecision() || precision > id.getMaxPrecision())) {
-      throw new IllegalArgumentException(
-          ErrorCode.PRECISION_OUT_OF_RANGE.message(
-              signature, id.getMinPrecision(), id.getMaxPrecision()));
+      throw new ExpressionException(
+          ErrorCode.PRECISION_OUT_OF_RANGE, signature, id.getMinPrecision(), id.getMaxPrecision());
     }
     if (id.supportsScale() && (scale < id.getMinScale() || scale > id.getMaxScale())) {
-      throw new IllegalArgumentException(
-          ErrorCode.SCALE_OUT_OF_RANGE.message(signature, id.getMinScale(), id.getMaxScale()));
+      throw new ExpressionException(
+          ErrorCode.SCALE_OUT_OF_RANGE, signature, id.getMinScale(), id.getMaxScale());
     }
     if (scale > precision) {
-      throw new IllegalArgumentException(ErrorCode.SCALE_GREATER_THAN_PRECISION.message(signature));
+      throw new ExpressionException(ErrorCode.SCALE_GREATER_THAN_PRECISION, signature);
     }
   }
 

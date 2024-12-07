@@ -31,6 +31,7 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
@@ -284,7 +285,7 @@ import org.apache.hop.expression.ErrorCode;
      */
     public void append(StringBuilder buffer, ZonedDateTime datetime) throws DateTimeException {}
 
-    public void parse(DateTimeParser parser) throws DateTimeParseException {}
+    public void parse(DateTimeParser parser) throws FormatParseException {}
   }
 
   private static class StringFormat extends Format {
@@ -326,7 +327,7 @@ import org.apache.hop.expression.ErrorCode;
       char c = parser.parseChar();
       if (exactMode && ch != c) {
         // TODO: Translate
-        throw new DateTimeParseException(
+        throw new FormatParseException(
             ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
       }
     }
@@ -459,7 +460,7 @@ import org.apache.hop.expression.ErrorCode;
         }
       }
 
-      throw new DateTimeParseException(
+      throw new FormatParseException(
           ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
     }
   }
@@ -785,7 +786,7 @@ import org.apache.hop.expression.ErrorCode;
       } else
         try {
           parser.month = parser.parseInt(2);
-        } catch (DateTimeParseException e) {
+        } catch (FormatParseException e) {
           // Rule to try alternate format MONTH and MON
           parseNameOfMonth(parser);
         }
@@ -817,7 +818,7 @@ import org.apache.hop.expression.ErrorCode;
         month++;
       }
 
-      throw new DateTimeParseException(
+      throw new FormatParseException(
           ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
     }
   }
@@ -1625,7 +1626,7 @@ import org.apache.hop.expression.ErrorCode;
         continue;
       }
 
-      throw new IllegalArgumentException(ErrorCode.INVALID_DATE_FORMAT.message(pattern, index));
+      throw new ExpressionException(ErrorCode.INVALID_DATE_FORMAT, pattern, index);
     }
 
     if (!exactMode) {
@@ -1635,7 +1636,7 @@ import org.apache.hop.expression.ErrorCode;
     return list.toArray(new Format[0]);
   }
 
-  public ZonedDateTime parse(final String text) throws DateTimeParseException {
+  public ZonedDateTime parse(final String text) throws FormatParseException {
 
     DateTimeParser parser = new DateTimeParser(this, text);
     for (Format format : formats) {
@@ -1643,7 +1644,7 @@ import org.apache.hop.expression.ErrorCode;
     }
 
     if (!parser.isAllCharParsed()) {
-      throw new DateTimeParseException(
+      throw new FormatParseException(
           ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
     }
 
@@ -1666,7 +1667,7 @@ import org.apache.hop.expression.ErrorCode;
       }
       return output.toString();
     } catch (Exception e) {
-      throw new DateTimeException("Error formating datetime " + value + " with pattern " + pattern);
+      throw new ExpressionException(ErrorCode.FORMAT_DATE_WITH_FORMAT, value, pattern);
     }
   }
 

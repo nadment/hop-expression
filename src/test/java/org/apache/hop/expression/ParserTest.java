@@ -52,7 +52,7 @@ public class ParserTest extends ExpressionTest {
     evalNull("\t");
     evalNull("\n");
 
-    evalFails(null);
+    evalFails(null, ErrorCode.NULL_SOURCE_ERROR);
   }
 
   @Test
@@ -85,11 +85,11 @@ public class ParserTest extends ExpressionTest {
     evalNull("-- Single line comment\n");
 
     // Syntax error
-    evalFails(" /");
-    evalFails("/*   True");
-    evalFails("/   True");
-    evalFails("/*   True*");
-    evalFails("/* /* nested block comment */    True");
+    evalFails(" /", ErrorCode.SYNTAX_ERROR);
+    evalFails("/   True", ErrorCode.SYNTAX_ERROR);
+    evalFails("/*   True", ErrorCode.MISSING_END_BLOCK_COMMENT);
+    evalFails("/*   True/*", ErrorCode.MISSING_END_BLOCK_COMMENT);
+    evalFails("/* /* nested block comment */    True", ErrorCode.MISSING_END_BLOCK_COMMENT);
   }
 
   @Test
@@ -117,9 +117,9 @@ public class ParserTest extends ExpressionTest {
     // Multidimensional array values
     optimize("ARRAY[ARRAY[1,2],ARRAY[3,4]]");
 
-    evalFails("ARRAY[1");
-    evalFails("ARRAY[1,");
-    evalFails("ARRAY[1,]");
+    evalFails("ARRAY[1", ErrorCode.MISSING_RIGHT_BRACKET);
+    evalFails("ARRAY[1,", ErrorCode.SYNTAX_ERROR);
+    evalFails("ARRAY[1,]", ErrorCode.SYNTAX_ERROR);
   }
 
   @Test
@@ -271,7 +271,7 @@ public class ParserTest extends ExpressionTest {
 
     // The cast operator has higher precedence than the unary minus (negation) operator,
     // so the statement is interpreted as -(0.0::NUMBER::BOOLEAN)
-    evalFails("-0.0::NUMBER::BOOLEAN");
+    evalFails("-0.0::NUMBER::BOOLEAN", ErrorCode.UNEXPECTED_CHARACTER);
     evalFalse("(-0.0::NUMBER)::BOOLEAN");
   }
 
@@ -287,62 +287,69 @@ public class ParserTest extends ExpressionTest {
   void syntaxError() throws Exception {
 
     // Single quote for string
-    evalFails("'T'||'T");
+    evalFails("'T'||'T", ErrorCode.MISSING_END_SINGLE_QUOTED_STRING);
+    evalFails("'missing end", ErrorCode.MISSING_END_SINGLE_QUOTED_STRING);
 
     // Double quote for identifier
-    evalFails("\"T\"||\"T");
-    evalFails("\"");
-    evalFails(" \" ");
-    evalFails(" \"");
-    evalFails("\"\"");
+    evalFails("\"T\"||\"T", ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
+    evalFails("\"", ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
+    evalFails(" \" ", ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
+    evalFails(" \"", ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
 
-    evalFails("9!7");
-    evalFails("(9+7");
-    evalFails("9+(");
-    evalFails("9+*(");
-    evalFails("9:");
-    evalFails("*9");
-    evalFails("DATE '2023-01-01'||'X'");
-    evalFails("Date ");
-    evalFails("Timestamp ");
+    // Empty identifier
+    evalFails("\"\"", ErrorCode.UNRESOLVED_IDENTIFIER);
 
-    evalFails("3*(1+2");
-    evalFails(")+1");
-    evalFails("'missing end");
-    evalFails("Year(");
-    evalFails("Year(2020");
-    evalFails("Year)");
-    evalFails("Year()");
-    evalFails("Year(()");
-    evalFails("Year+3");
-    evalFails("Today())");
-    evalFails("Date '2022-05-01' AT TIME");
-    evalFails("Date '2022-05-01' AT TIME ZONE");
-    evalFails("Date '2022-05-01' AT TIME ZONE 'XYZ'");
-    evalFails("Year(1,2)");
-    evalFails("TRUE AND");
-    evalFails("FIELD_BOOLEAN_TRUE IS ");
-    evalFails("FIELD_BOOLEAN_TRUE IS MONTH");
-    evalFails("FIELD_BOOLEAN_TRUE NOT IS NULL");
-    evalFails("IS ");
-    evalFails("IS AND");
+    // Unbalanced parenthesis
+    evalFails("(9+7", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("9+(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("3*(1+2", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Year(2020", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    evalFails("case when 1=1 then 1 else 0");
-    evalFails("case when 1=1 then 1 else  end ");
-    evalFails("case 1 when 1  else 0 end");
+    evalFails("9+()", ErrorCode.SYNTAX_ERROR);
+    evalFails("9+*(", ErrorCode.SYNTAX_ERROR);
+    evalFails("*9", ErrorCode.SYNTAX_ERROR);
+    evalFails("DATE '2023-01-01'||'X'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-    evalFails("FIELD IS ");
-    evalFails("BOOLEAN ");
-    evalFails("DATE ");
-    evalFails("DATE FIELD_STRING");
-    evalFails("TIME");
-    evalFails("TIMESTAMP");
-    evalFails("INTEGER");
-    evalFails("NUMBER");
-    evalFails("BINARY");
-    evalFails("JSON ");
+    evalFails(")+1", ErrorCode.SYNTAX_ERROR);
+    evalFails("Year(", ErrorCode.SYNTAX_ERROR_FUNCTION);
 
-    assertThrows(ExpressionException.class, () -> eval("0xABCDEFg"));
+    evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Year(()", ErrorCode.SYNTAX_ERROR);
+    evalFails("Year+3", ErrorCode.UNSUPPORTED_COERCION);
+
+    evalFails("Today())", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("Year)", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("9!7", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("9: ", ErrorCode.UNEXPECTED_CHARACTER);
+
+    evalFails("Date '2022-05-01' AT TIME", ErrorCode.SYNTAX_ERROR);
+    evalFails("Date '2022-05-01' AT TIME ZONE", ErrorCode.SYNTAX_ERROR);
+    evalFails("Date '2022-05-01' AT TIME ZONE 'XYZ'", ErrorCode.INVALID_TIMEZONE);
+    evalFails("Year(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("TRUE AND", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_BOOLEAN_TRUE IS ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_BOOLEAN_TRUE IS MONTH", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_BOOLEAN_TRUE NOT IS NULL", ErrorCode.SYNTAX_ERROR);
+    evalFails("IS ", ErrorCode.SYNTAX_ERROR);
+    evalFails("IS AND", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD IS ", ErrorCode.SYNTAX_ERROR);
+
+    evalFails("case when 1=1 then 1 else 0", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
+    evalFails("case when 1=1 then 1 else  end ", ErrorCode.SYNTAX_ERROR);
+    evalFails("case 1 when 1  else 0 end", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
+
+    evalFails("BOOLEAN ", ErrorCode.RETURN_TYPE_UNKNOWN);
+    evalFails("DATE ", ErrorCode.SYNTAX_ERROR);
+    evalFails("TIME", ErrorCode.SYNTAX_ERROR);
+    evalFails("TIMESTAMP", ErrorCode.SYNTAX_ERROR);
+    evalFails("BINARY", ErrorCode.SYNTAX_ERROR);
+    evalFails("JSON ", ErrorCode.SYNTAX_ERROR);
+
+    evalFails("DATE FIELD_STRING", ErrorCode.INVALID_DATE);
+    evalFails("TIMESTAMP FIELD_STRING", ErrorCode.INVALID_TIMESTAMP);
+
+    evalFails("INTEGER", ErrorCode.RETURN_TYPE_UNKNOWN);
+    evalFails("NUMBER", ErrorCode.RETURN_TYPE_UNKNOWN);
   }
 
   @Test
@@ -350,10 +357,11 @@ public class ParserTest extends ExpressionTest {
     evalEquals("Cast(123 as InTeGeR)", 123L);
     evalEquals("Cast(123 as STRING(3))", "123");
 
-    evalFails("Cast(12 as STRING(4");
-    evalFails("Cast('TRUE' as BOOLEAN(4)");
-    evalFails("Cast('2023-12-31' as DATE(10)");
-    evalFails("Cast(123 as STRING(3)");
-    evalFails("Cast(123 as STRING 3))");
+    evalFails("Cast(12 as STRING(4", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Cast(123 as STRING(3)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Cast(123 as STRING 3))", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    evalFails("Cast('TRUE' as BOOLEAN(4)", ErrorCode.INVALID_TYPE);
+    evalFails("Cast('2023-12-31' as DATE(10)", ErrorCode.INVALID_TYPE);
   }
 }

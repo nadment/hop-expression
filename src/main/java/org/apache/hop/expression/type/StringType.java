@@ -152,7 +152,7 @@ public final class StringType extends Type {
 
     if (result == null) {
       throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, this);
+          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), this, value);
     }
     // adjust length
     if (precision < result.length()) {

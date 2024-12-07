@@ -41,8 +41,8 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("ARRAY[1,3,5][-1]", 5L);
     evalEquals("ARRAY[1,3,5][-3]", 1L);
 
-    evalFails("ARRAY[1,3,5][0]");
-    evalFails("ARRAY[1,3,5][9]");
+    evalFails("ARRAY[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
+    evalFails("ARRAY[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
   }
 
   @Test
@@ -126,8 +126,8 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("FIELD_JSON = FIELD_STRING_JSON::JSON");
 
     // Syntax error
-    evalFails("FIELD_INTEGER=");
-    evalFails(" = FIELD_INTEGER ");
+    evalFails("FIELD_INTEGER=", ErrorCode.SYNTAX_ERROR);
+    evalFails(" = FIELD_INTEGER ", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("10=FIELD_INTEGER", "FIELD_INTEGER=10");
@@ -211,11 +211,11 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("FIELD_JSON <> FIELD_STRING_JSON::JSON");
 
     // Syntax error
-    evalFails("FIELD_INTEGER<>");
-    evalFails("FIELD_INTEGER <> ");
-    evalFails("FIELD_INTEGER!");
-    evalFails("FIELD_INTEGER ! ");
-    evalFails("<>FIELD_INTEGER");
+    evalFails("FIELD_INTEGER<>", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER <> ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER!", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("FIELD_INTEGER ! ", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("<>FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("10!=FIELD_INTEGER", "FIELD_INTEGER!=10");
@@ -299,14 +299,19 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Date '2023-12-01' > '2023-10-31'");
     evalFalse("Date '2023-10-01' > '2023-10-31'");
 
+    // Unsupported coercion
+    evalFails("FIELD_DATE>5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
     // Compare unordered type
-    evalFails("FIELD_JSON > FIELD_STRING");
+    evalFails("FIELD_JSON > FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Conversion error
+    evalFails("FIELD_STRING>5", ErrorCode.CONVERSION_ERROR);
 
     // Syntax error
-    evalFails("> FIELD_INTEGER");
-    evalFails("FIELD_INTEGER >");
-    evalFails("FIELD_INTEGER > ");
-    evalFails("FIELD_STRING>5");
+    evalFails("> FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER >", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER > ", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("FIELD_INTEGER>10");
@@ -375,13 +380,18 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("Date '2023-10-01' >= '2023-10-31'");
 
     // Compare unordered type
-    evalFails("FIELD_JSON >= FIELD_STRING");
+    evalFails("FIELD_JSON >= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Unsupported coercion
+    evalFails("FIELD_DATE>=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Conversion error
+    evalFails("FIELD_STRING>=5", ErrorCode.CONVERSION_ERROR);
 
     // Syntax error
-    evalFails(">=FIELD_INTEGER");
-    evalFails("FIELD_INTEGER >=");
-    evalFails("FIELD_INTEGER >= ");
-    evalFails("FIELD_STRING>=5");
+    evalFails(">=FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER >=", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER >= ", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("FIELD_INTEGER>=80");
@@ -457,13 +467,15 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Date '2023-10-01' < '2023-10-31'");
 
     // Compare unordered type
-    evalFails("FIELD_JSON < FIELD_STRING");
+    evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Conversion error
+    evalFails("FIELD_STRING < 5", ErrorCode.CONVERSION_ERROR);
 
     // Syntax error
-    evalFails("< FIELD_INTEGER");
-    evalFails("FIELD_INTEGER <");
-    evalFails("FIELD_INTEGER < ");
-    evalFails("FIELD_STRING < 5");
+    evalFails("< FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER <", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER < ", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("FIELD_INTEGER<80");
@@ -532,13 +544,15 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Date '2023-10-01' <= '2023-10-31'");
 
     // Compare unordered type
-    evalFails("FIELD_JSON <= FIELD_STRING");
+    evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Conversion error
+    evalFails("FIELD_STRING <=5", ErrorCode.CONVERSION_ERROR);
 
     // Syntax error
-    evalFails("<= FIELD_INTEGER");
-    evalFails("FIELD_INTEGER <=");
-    evalFails("FIELD_INTEGER <= ");
-    evalFails("FIELD_STRING <=5");
+    evalFails("<= FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER <=", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER <= ", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("FIELD_INTEGER<=5");
@@ -592,18 +606,21 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
 
-    evalFails(" in (1,2)");
-    evalFails("FIELD_INTEGER in 1,2)");
-    evalFails("FIELD_INTEGER in (1,2.5,)");
-    evalFails("FIELD_INTEGER in ()");
-    evalFails("FIELD_INTEGER in ()    ");
-    evalFails("FIELD_INTEGER in 40");
-    evalFails("FIELD_INTEGER in (,2,3)");
-    evalFails("FIELD_INTEGER in (1,2,3");
-    evalFails("FIELD_INTEGER in (1,,3)");
-    evalFails("FIELD_INTEGER in (1,2,)");
-    evalFails("FIELD_INTEGER in (1,2,NULL)");
-    evalFails("NULL in (1,2,3)");
+    evalFails(" in (1,2)", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in (1,2.5,)", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in ()", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in ()    ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in (,2,3)", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in (1,,3)", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER in (1,2,)", ErrorCode.SYNTAX_ERROR);
+
+    evalFails("FIELD_INTEGER in 1,2)", ErrorCode.MISSING_LEFT_PARENTHESIS);
+    evalFails("FIELD_INTEGER in 40", ErrorCode.MISSING_LEFT_PARENTHESIS);
+    evalFails("FIELD_INTEGER in (1,2,3", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    evalFails("FIELD_INTEGER in (1,2,NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // TODO: better error code
+    evalFails("NULL in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("FIELD_INTEGER IN (10,20,30,40)");
     optimize("FIELD_INTEGER NOT IN (10,20,30,40)");
@@ -638,9 +655,9 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("NULL_BOOLEAN is True");
     evalTrue("NULL_BOOLEAN IS NOT True");
 
-    evalFails("NOM IS ");
-    evalFails("IS TRUE");
-    evalFails("IS NOT TRUE");
+    evalFails("NOM IS ", ErrorCode.SYNTAX_ERROR);
+    evalFails("IS TRUE", ErrorCode.SYNTAX_ERROR);
+    evalFails("IS NOT TRUE", ErrorCode.SYNTAX_ERROR);
 
     optimize("FIELD_BOOLEAN_TRUE IS TRUE");
     optimize("FIELD_BOOLEAN_TRUE IS NOT TRUE");
@@ -660,8 +677,8 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("NULL_BOOLEAN IS False");
     evalTrue("NULL_BOOLEAN IS NOT False");
 
-    evalFails("IS FALSE");
-    evalFails("IS NOT FALSE");
+    evalFails("IS FALSE", ErrorCode.SYNTAX_ERROR);
+    evalFails("IS NOT FALSE", ErrorCode.SYNTAX_ERROR);
 
     optimize("FIELD_BOOLEAN_TRUE IS FALSE");
     optimize("FIELD_BOOLEAN_TRUE IS NOT FALSE");
@@ -681,8 +698,8 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("FIELD_BOOLEAN_TRUE IS NULL").returnType(Types.BOOLEAN);
     evalTrue("FIELD_BOOLEAN_TRUE IS NOT NULL").returnType(Types.BOOLEAN);
 
-    evalFails("IS NULL");
-    evalFails("IS NOT NULL");
+    evalFails("IS NULL", ErrorCode.SYNTAX_ERROR);
+    evalFails("IS NOT NULL", ErrorCode.SYNTAX_ERROR);
 
     optimize("FIELD_BOOLEAN_TRUE IS NULL");
     optimize("FIELD_BOOLEAN_TRUE IS NOT NULL");
@@ -723,8 +740,8 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("DATE '2019-01-01' IS DISTINCT FROM DATE '2018-01-01'");
     evalFalse("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2018-01-01'");
 
-    evalFails("FIELD_STRING IS NOT DISTINCT FROM ");
-    evalFails("FIELD_STRING IS DISTINCT 'TEST' ");
+    evalFails("FIELD_STRING IS NOT DISTINCT FROM ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING IS DISTINCT 'TEST' ", ErrorCode.SYNTAX_ERROR);
 
     optimize("FIELD_BOOLEAN_TRUE IS DISTINCT FROM TRUE");
     optimize("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE");
@@ -772,18 +789,18 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_STRING SIMILAR TO 'A'");
     evalNull("'A' SIMILAR TO NULL_STRING");
 
-    evalFails("FIELD_STRING IS ");
-    evalFails("FIELD_STRING IS SIMILAR");
-    evalFails("FIELD_STRING IS SIMILAR 'A'");
-    evalFails("FIELD_STRING IS SIMILAR TO ");
-    evalFails("FIELD_STRING IS SIMILAR AND TO ");
+    evalFails("FIELD_STRING IS ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING IS SIMILAR", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING IS SIMILAR 'A'", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING IS SIMILAR TO ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING IS SIMILAR AND TO ", ErrorCode.SYNTAX_ERROR);
 
     optimize("FIELD_STRING SIMILAR TO 'abc'");
     optimize("FIELD_STRING NOT SIMILAR TO 'abc'");
   }
 
   @Test
-  void AddToNumeric() throws Exception {
+  void AddNumericToNumeric() throws Exception {
     // Addition of numeric
     evalEquals("10+(-0.5)", 9.5).returnType(NumberType.of(4, 1));
     evalEquals("BINARY 'F'::INTEGER+1", 16L);
@@ -794,9 +811,6 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1).returnType(Types.NUMBER);
     evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4L).returnType(NumberType.of(38, 10));
     evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4L).returnType(NumberType.of(15, 2));
-
-    // Check no arithmetic overflow Long.MAX_VALUE+1
-    evalEquals("9223372036854775807::INTEGER+1::INTEGER", new BigDecimal("9223372036854775808"));
 
     // Implicit coercion from BOOLEAN
     evalEquals("1+FIELD_BOOLEAN_FALSE", 1L);
@@ -813,13 +827,14 @@ public class OperatorTest extends ExpressionTest {
     evalNull("+NULL_INTEGER+5");
     evalNull("NULL_INTEGER+NULL_NUMBER");
 
+    // Arithmetic overflow Long.MAX_VALUE+1
+    evalFails("9223372036854775807::INTEGER+1::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
+
     // Arithmetic overflow
-    // evalFails("cast(5e18 as INTEGER)+cast(5e18 as INTEGER)");
-    // evalFails("cast(-5e18 as NUMBER(19,0))+cast(-5e18 as NUMBER(19,0))");
-    // evalFails("cast(5e18 as NUMBER(19,10))+cast(5e18 as NUMBER(19,10))");
+    evalFails("cast(5e18 as INTEGER)+cast(5e18 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
 
     // Syntax error
-    evalFails("5+");
+    evalFails("5+", ErrorCode.SYNTAX_ERROR);
 
     optimize("10+FIELD_INTEGER");
     optimize("3+1+1+1+1+1+1+1+1+1+1+1", "14");
@@ -836,7 +851,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  void AddToTemporal() throws Exception {
+  void AddIntervalToTemporal() throws Exception {
 
     // Addition of interval to a temporal
     evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0))
@@ -856,7 +871,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_DATE+INTERVAL 12 DAYS").returnType(Types.DATE);
     evalNull("INTERVAL 12 DAYS+NULL_DATE").returnType(Types.DATE);
 
-    evalFails("FIELD_DATE+TO_INTERVAL('z')");
+    evalFails("FIELD_DATE+TO_INTERVAL('z')", ErrorCode.INVALID_INTERVAL);
 
     // Adjust day to the end of month and leap year.
     evalEquals("DATE '2019-01-31'+INTERVAL 1 MONTH", LocalDate.of(2019, 2, 28));
@@ -866,6 +881,12 @@ public class OperatorTest extends ExpressionTest {
 
     evalEquals("DATE '0010-01-01'+INTERVAL 178956970 YEARS", LocalDate.of(178956980, 1, 1));
 
+    optimize(
+        "INTERVAL 1 HOUR+FIELD_DATE+INTERVAL 4 HOUR+INTERVAL 1 HOUR", "FIELD_DATE+INTERVAL 6 HOUR");
+  }
+
+  @Test
+  void AddNumericToTemporal() throws Exception {
     // Addition of days to a temporal
     evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26)).returnType(Types.DATE);
     evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
@@ -874,29 +895,23 @@ public class OperatorTest extends ExpressionTest {
     // Only integer, round number
     evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
-
-    optimize(
-        "INTERVAL 1 HOUR+FIELD_DATE+INTERVAL 4 HOUR+INTERVAL 1 HOUR", "FIELD_DATE+INTERVAL 6 HOUR");
   }
 
   @Test
-  void AddToInterval() throws Exception {
+  void AddIntervalToInterval() throws Exception {
     // Add interval to interval
     optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1' YEAR TO MONTH");
     optimize("INTERVAL 4 HOUR+INTERVAL 1 HOUR", "INTERVAL 5 HOUR");
   }
 
   @Test
-  void SubtractFromNumeric() throws Exception {
+  void SubtractNumericFromNumeric() throws Exception {
     // Subtract of numeric
     evalEquals("10-0.5", 9.5D).returnType(NumberType.of(4, 1));
     evalEquals("FIELD_INTEGER-0.5", 39.5D);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     evalEquals("FIELD_INTEGER-FIELD_NUMBER-FIELD_BIGNUMBER", -123411.669);
     evalEquals("FIELD_BIGNUMBER-FIELD_NUMBER-FIELD_INTEGER", 123421.909);
-
-    // Check no arithmetic overflow Long.MIN_VALUE-2
-    evalEquals("-9223372036854775807::INTEGER-2::INTEGER", new BigDecimal("-9223372036854775809"));
 
     // Implicit coercion from BOOLEAN
     evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2));
@@ -913,13 +928,14 @@ public class OperatorTest extends ExpressionTest {
     evalNull("5-NULL_INTEGER"); // TODO: .returnType(IntegerType.of(19));
     evalNull("NULL_INTEGER-5");
 
+    // Arithmetic overflow Long.MIN_VALUE-2
+    evalFails("-9223372036854775807::INTEGER-2::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
+
     // Arithmetic overflow
-    // evalFails("cast(-5e18 as INTEGER)-cast(5e18 as INTEGER)");
-    // evalFails("cast(5e18 as NUMBER(19,0))-cast(-5e18 as NUMBER(19,0))");
-    // evalFails("cast(5e18 as NUMBER(19,10))-cast(-5e18 as NUMBER(19,10))");
+    evalFails("cast(-5e18 as INTEGER)-cast(5e18 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
 
     // Syntax error
-    evalFails("5-");
+    evalFails("5-", ErrorCode.SYNTAX_ERROR);
 
     optimize("10-FIELD_INTEGER");
     optimize("FIELD_INTEGER-0", "FIELD_INTEGER");
@@ -929,19 +945,10 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  void SubtractFromTemporal() throws Exception {
+  void SubtractIntervalFromTemporal() throws Exception {
     // Subtraction interval to a temporal
     evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     evalEquals("DATE '2019-02-25'-INTERVAL 2 WEEKS", LocalDateTime.of(2019, 2, 11, 0, 0, 0));
-
-    // Subtraction of days to a temporal
-    evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
-    evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
-    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
-    // evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-    // evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
-
-    // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
 
     // TODO: Diff of two date
     // evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
@@ -955,8 +962,19 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("DATE '2020-02-29'-INTERVAL 12 MONTHS", LocalDate.of(2019, 2, 28));
   }
 
+  @Test
+  void SubtractNumericFromTemporal() throws Exception {
+    // Subtraction of days to a temporal
+    evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
+    evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    // evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+    // evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
+    // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
+  }
+
   // @Test
-  void SubtractFromInterval() throws Exception {
+  void SubtractIntervalFromInterval() throws Exception {
     // Subtraction of interval to a interval
     evalEquals("INTERVAL 5 HOUR - INTERVAL 1 HOUR", Interval.of(0, 0, 0, 4));
 
@@ -1022,14 +1040,15 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void syntax() throws Exception {
-      evalFails("'the' between 1 and 2");
-      evalFails("FIELD_INTEGER between 10 and");
-      evalFails("FIELD_INTEGER between and 10");
-      evalFails("FIELD_INTEGER between and ");
-      evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING");
-      evalFails("FIELD_INTEGER BETWEEN 4 AND");
-      evalFails("FIELD_INTEGER BETWEEN  AND 7");
-      evalFails("FIELD_INTEGER BETWEEN 4 OR 6");
+      evalFails("'the' between 1 and 2", ErrorCode.CONVERSION_ERROR);
+      evalFails("FIELD_INTEGER between 10 and", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_INTEGER between and 10", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_INTEGER between and ", ErrorCode.SYNTAX_ERROR);
+      evalFails(
+          "FIELD_INTEGER between FIELD_DATE and FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER BETWEEN 4 AND", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_INTEGER BETWEEN  AND 7", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_INTEGER BETWEEN 4 OR 6", ErrorCode.SYNTAX_ERROR);
     }
 
     @Test
@@ -1118,9 +1137,11 @@ public class OperatorTest extends ExpressionTest {
     evalNull("CAST(NULL_STRING as Boolean)").returnType(Types.BOOLEAN);
     evalNull("CAST(NULL_BOOLEAN as Boolean)").returnType(Types.BOOLEAN);
 
+    evalFails("'YEP'::Boolean", ErrorCode.INVALID_BOOLEAN);
+
     // Unsupported conversion
-    evalFails("CAST(DATE '2019-02-25' AS BOOLEAN)");
-    evalFails("CAST(FIELD_JSON AS BOOLEAN)");
+    evalFails("CAST(DATE '2019-02-25' AS BOOLEAN)", ErrorCode.UNSUPPORTED_CONVERSION);
+    evalFails("CAST(FIELD_JSON AS BOOLEAN)", ErrorCode.UNSUPPORTED_CONVERSION);
 
     // Remove lossless cast
     optimize("CAST(FIELD_BOOLEAN_TRUE AS BOOLEAN)", "FIELD_BOOLEAN_TRUE");
@@ -1171,7 +1192,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(Types.INTEGER);
 
     // Unsupported conversion
-    evalFails("CAST(FIELD_JSON AS INTEGER)");
+    evalFails("CAST(FIELD_JSON AS INTEGER)", ErrorCode.UNSUPPORTED_CONVERSION);
 
     // Remove unnecessary cast excepted with format
     optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
@@ -1260,8 +1281,10 @@ public class OperatorTest extends ExpressionTest {
     evalNull("CAST(NULL_NUMBER as Number)").returnType(Types.NUMBER);
     evalNull("CAST(NULL_BIGNUMBER as Number(12,2))").returnType(NumberType.of(12, 2));
 
+    evalFails("CAST('ABC' AS NUMBER)", ErrorCode.CONVERSION_ERROR);
+
     // Unsupported conversion
-    evalFails("CAST(FIELD_JSON AS NUMBER)");
+    evalFails("CAST(FIELD_JSON AS NUMBER)", ErrorCode.UNSUPPORTED_CONVERSION);
 
     optimize("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
     optimize("FIELD_INTEGER::NUMBER", "CAST(FIELD_INTEGER AS NUMBER)");
@@ -1352,12 +1375,15 @@ public class OperatorTest extends ExpressionTest {
     evalNull("CAST(NULL as Date)").returnType(Types.DATE);
     evalNull("CAST(NULL_DATE as Date)").returnType(Types.DATE);
 
-    // Error parsing format
-    evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
-    evalFails("CAST('2023-01' AS DATE FORMAT 'YYYY-MM-DD')");
+    // Bad format
+    evalFails("CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
+
+    // Error parsing with format
+    evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("CAST('2023-01' AS DATE FORMAT 'YYYY-MM-DD')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     // Unsupported conversion
-    evalFails("CAST(TRUE AS DATE)");
+    evalFails("CAST(TRUE AS DATE)", ErrorCode.UNSUPPORTED_CONVERSION);
 
     // optimize("CAST(FIELD_STRING AS DATE)", "TO_DATE(FIELD_STRING)");
     // optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')",
@@ -1387,7 +1413,7 @@ public class OperatorTest extends ExpressionTest {
     // evalEquals("CAST('A' as JSON)", "A".getBytes());
 
     // Null
-    evalNull("CAST(NULL as Json)").returnType(Types.JSON);
+    evalNull("CAST(NULL_STRING as Json)").returnType(Types.JSON);
     evalNull("CAST(NULL_JSON as Json)");
 
     optimize("CAST(FIELD_JSON AS JSON)", "FIELD_JSON");
@@ -1402,9 +1428,11 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("'2 hour'::INTERVAL", Interval.of(0, 0, 0, 2)).returnType(Types.INTERVAL);
 
     // Null
-    evalNull("CAST(NULL as INTERVAL)");
+    evalNull("CAST(NULL_STRING as INTERVAL)");
 
-    evalFails("CAST(3 as INTERVAL");
+    // TODO: evalFails("CAST('5 yea' as INTERVAL)", ErrorCode.INVALID_INTERVAL);
+    evalFails("CAST(3 as INTERVAL)", ErrorCode.UNSUPPORTED_CONVERSION);
+    evalFails("CAST(TRUE as INTERVAL)", ErrorCode.UNSUPPORTED_CONVERSION);
   }
 
   @Test
@@ -1415,16 +1443,17 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
 
     // Null
-    evalNull("CAST(NULL as INET)");
+    evalNull("CAST(NULL_STRING as INET)");
 
-    evalFails("CAST('xyz' as INET");
+    evalFails("CAST('xyz' as INET)", ErrorCode.INVALID_INET);
+    evalFails("CAST(TRUE as INET)", ErrorCode.UNSUPPORTED_CONVERSION);
   }
 
   @Nested
   class Cast {
     @Test
     void cast() throws Exception {
-      evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(NumberType.of(20));
+      evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(Types.INTEGER);
 
       // Accept data type quoted like a String
       evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(Types.INTEGER);
@@ -1433,31 +1462,32 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void syntax() throws Exception {
-      // Error syntax
-      evalFails("'1234':");
-      evalFails("'1234':NUMBER");
-      evalFails("'1234'::");
-      evalFails("CAST('bad' AS)");
-      evalFails("CAST('2020-01-01' AS NULL)");
-      evalFails("CAST(1234 AS STRING FORMAT )");
-      evalFails("CAST(DATE '2019-02-25' AS String FORMAT )");
-      evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)");
-      evalFails("CAST 3 as BOOLEAN)");
-      evalFails("CAST(3 as BOOLEAN");
-      evalFails("CAST(3 as NILL)");
-      evalFails("CAST(3 as )");
-      evalFails("CAST(3 as");
-      evalFails("CAST(3 STRING");
+      // Operator syntax
+      evalFails("'1234':", ErrorCode.UNEXPECTED_CHARACTER);
+      evalFails("'1234':NUMBER", ErrorCode.UNEXPECTED_CHARACTER);
+      evalFails("'1234'::", ErrorCode.SYNTAX_ERROR);
+
+      // Function custom syntax
+      evalFails("CAST('bad' AS)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("CAST(1234 AS STRING FORMAT )", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("CAST(DATE '2019-02-25' AS String FORMAT )", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("CAST 3 as BOOLEAN)", ErrorCode.UNEXPECTED_CHARACTER);
+      evalFails("CAST(3 as )", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("CAST(3 as", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("CAST(3 STRING", ErrorCode.SYNTAX_ERROR_FUNCTION);
+
+      evalFails("CAST(3 as BOOLEAN", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     @Test
-    void unknownType() throws Exception {
-      // Unknown data type
-      evalFails("Cast(123 as Nill)");
-      evalFails("Cast(123 as 1)");
-      evalFails("Cast(123 as TRUE)");
-      evalFails("CAST('bad' AS NULL)");
-      evalFails("Cast(123 as 'Text')");
+    void invalidType() throws Exception {
+      // Bad data type
+      evalFails("Cast(123 as Nill)", ErrorCode.INVALID_TYPE);
+      evalFails("Cast(123 as 1)", ErrorCode.INVALID_TYPE);
+      evalFails("Cast(123 as TRUE)", ErrorCode.INVALID_TYPE);
+      evalFails("CAST('2020-01-01' AS NULL)", ErrorCode.INVALID_TYPE);
+      evalFails("Cast(123 as 'Text')", ErrorCode.INVALID_TYPE);
     }
   }
 
@@ -1482,10 +1512,10 @@ public class OperatorTest extends ExpressionTest {
         "(TIMESTAMP '2023-05-25 10:48:00' AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Singapore'",
         ZonedDateTime.of(2023, 5, 25, 10, 48, 00, 0, ZoneId.of("Asia/Singapore")));
 
-    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'XYZ'");
-    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME 'Europe/Paris'");
-    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE");
-    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT ZONE 'Europe/Paris'");
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'XYZ'", ErrorCode.INVALID_TIMEZONE);
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME 'Europe/Paris'", ErrorCode.SYNTAX_ERROR);
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE", ErrorCode.SYNTAX_ERROR);
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT ZONE 'Europe/Paris'", ErrorCode.SYNTAX_ERROR);
 
     optimize("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
@@ -1563,12 +1593,12 @@ public class OperatorTest extends ExpressionTest {
     evalNull("Mod(2,NULL_INTEGER)");
 
     // Syntax error
-    evalFails("'TEST'%5");
-    evalFails("Mod()");
-    evalFails("Mod(3)");
+    evalFails("'TEST'%5", ErrorCode.CONVERSION_ERROR);
+    evalFails("Mod()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Mod(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Division by 0
-    evalFails("Mod(9,0)");
+    evalFails("Mod(9,0)", ErrorCode.DIVISION_BY_ZERO);
 
     // Normalize
     optimize("0%0");
@@ -1600,13 +1630,13 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("2.5*'2'", 5L).returnType(NumberType.of(38, 10));
 
     // Check no arithmetic overflow Long.MAX_VALUE * 2
-    evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"))
-        .returnType(NumberType.of(20));
+    evalEquals("9223372036854775807*2::NUMBER", new BigDecimal("18446744073709551614"))
+        .returnType(Types.NUMBER);
     // Check no arithmetic underflow Long.MIN_VALUE * 2
-    evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
+    evalEquals("-9223372036854775808*2::NUMBER", new BigDecimal("-18446744073709551616"));
 
     // Arithmetic overflow
-    // evalFails("cast(5e9 as INTEGER) * cast(2e9 as INTEGER)");
+    evalFails("cast(5e9 as INTEGER) * cast(2e9 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
     // evalFails("cast(2e9 as NUMBER(19,0)) * cast(-5e9 as NUMBER(19,0))");
     // evalFails("cast(5e4 as NUMBER(19,10)) * cast(2e4 as NUMBER(19,10))");
 
@@ -1671,7 +1701,8 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER/0");
     evalNull("1/NULL_INTEGER");
 
-    evalFails("40/0");
+    // Division by zero
+    evalFails("40/0", ErrorCode.DIVISION_BY_ZERO);
 
     // Implicit coercion from STRING
     evalEquals("'8'/2", 4L).returnType(NumberType.of(38, 11));
@@ -1703,9 +1734,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
 
-    evalFails("Div0()");
-    evalFails("Div0(40)");
-    evalFails("Div0(40,1,2)");
+    evalFails("Div0()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Div0(40)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Div0(40,1,2)", ErrorCode.TOO_MANY_ARGUMENT);
 
     // Normalize
     optimize("DIV0(FIELD_INTEGER,4)");
@@ -1733,8 +1764,11 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("~4", -5L);
     evalEquals("~65504", -65505L);
     evalNull("~NULL_INTEGER").returnType(Types.INTEGER);
-    evalFails("~");
-    evalFails("~ ");
+
+    evalFails("BIT_NOT()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("BIT_NOT(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("~", ErrorCode.SYNTAX_ERROR);
+    evalFails("~ ", ErrorCode.SYNTAX_ERROR);
 
     // Alias function
     evalEquals("BIT_NOT(1)", -2L);
@@ -1750,8 +1784,8 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("100 & 2 & 1", 0L);
     evalNull("100 & NULL_INTEGER").returnType(Types.INTEGER);
     evalNull("NULL_INTEGER & 100").returnType(Types.INTEGER);
-    evalFails("100&");
-    evalFails("100 & ");
+    evalFails("100&", ErrorCode.SYNTAX_ERROR);
+    evalFails("100 & ", ErrorCode.SYNTAX_ERROR);
 
     // Alias function
     evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER);
@@ -1777,8 +1811,8 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("3 | 2", 3L);
     evalNull("100 | NULL_INTEGER").returnType(Types.INTEGER);
     evalNull("NULL_INTEGER | 100").returnType(Types.INTEGER);
-    evalFails("3|");
-    evalFails("3 | ");
+    evalFails("3|", ErrorCode.SYNTAX_ERROR);
+    evalFails("3 | ", ErrorCode.SYNTAX_ERROR);
 
     // Alias function
     evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER);
@@ -1804,8 +1838,8 @@ public class OperatorTest extends ExpressionTest {
     evalNull("100 ^ NULL_INTEGER").returnType(Types.INTEGER);
     evalNull("NULL_INTEGER ^ 100").returnType(Types.INTEGER);
 
-    evalFails("100^");
-    evalFails("100 ^ ");
+    evalFails("100^", ErrorCode.SYNTAX_ERROR);
+    evalFails("100 ^ ", ErrorCode.SYNTAX_ERROR);
 
     // Nothing to simplify
     optimize("FIELD_INTEGER^4");
@@ -1832,8 +1866,8 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("NOT NOT True").returnType(Types.BOOLEAN);
     evalNull("NOT NULL_BOOLEAN").returnType(Types.BOOLEAN);
 
-    evalFails("FIELD_BOOLEAN_TRUE is ");
-    evalFails("NOT");
+    evalFails("FIELD_BOOLEAN_TRUE is ", ErrorCode.SYNTAX_ERROR);
+    evalFails("NOT", ErrorCode.SYNTAX_ERROR);
 
     // Function syntax
     evalTrue("NOT(FALSE)").returnType(Types.BOOLEAN);
@@ -1886,8 +1920,10 @@ public class OperatorTest extends ExpressionTest {
     evalNull("null XOR true");
     evalNull("true XOR null");
     evalNull("null XOR null");
-    evalFails(" XOR true");
-    evalFails("XOR false");
+
+    evalFails(" XOR true", ErrorCode.SYNTAX_ERROR);
+    evalFails("XOR false", ErrorCode.SYNTAX_ERROR);
+    evalFails("true XOR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1904,8 +1940,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_BOOLEAN OR false");
     evalNull("NULL_BOOLEAN OR NULL_BOOLEAN");
 
-    evalFails("false OR");
-    evalFails("OR false");
+    evalFails("false OR", ErrorCode.SYNTAX_ERROR);
+    evalFails("OR false", ErrorCode.SYNTAX_ERROR);
+    evalFails("true OR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify literal
     optimizeTrue("true or true");
@@ -1996,8 +2033,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_BOOLEAN AND true");
     evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN_TRUE");
 
-    evalFails("false AND");
-    evalFails("AND false");
+    evalFails("false AND", ErrorCode.SYNTAX_ERROR);
+    evalFails("AND false", ErrorCode.SYNTAX_ERROR);
+    evalFails("true AND Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN");
     optimizeTrue("25>=12 and 14<15");
@@ -2155,9 +2193,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("'test' LIKE NULL_STRING").returnType(Types.BOOLEAN);
     evalNull("'a' LIKE NULL").returnType(Types.BOOLEAN);
 
-    evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
-    evalFails("'test' LIKE 'TEST' escape NULL");
-    evalFails("'a' LIKE '%' ESCAPE NULL");
+    evalFails("'give me 30% discount' like '%30!%%' escape '!!'", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimize("FIELD_STRING LIKE 'AD%D'");
     optimize("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
@@ -2195,13 +2233,14 @@ public class OperatorTest extends ExpressionTest {
     evalNull("case when NULL_INTEGER is NULL then NULL else 1 end").returnType(IntegerType.of(1));
 
     // Missing 'END'
-    evalFails("case when FIELD_INTEGER=40 then 10 else 50");
+    evalFails("case when FIELD_INTEGER=40 then 10 else 50", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
     // Incompatible return type
-    evalFails("case when FIELD_INTEGER=40 then 10 else 'Error'");
+    evalFails(
+        "case when FIELD_INTEGER=40 then 10 else 'Error'", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
     // Unknown return type
-    evalFails("case when false then NULL end");
+    evalFails("case when false then NULL end", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Literal
     optimizeFalse("(CASE WHEN FALSE THEN 1 ELSE 2 END) IS NULL");
@@ -2294,14 +2333,18 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 30, 40 THEN 'B' ELSE 'C' END", "B");
 
     // Coerce
-    evalFails("case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5");
+    evalFails(
+        "case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5",
+        ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
     // Incompatible return type
-    evalFails("case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end");
+    evalFails(
+        "case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end",
+        ErrorCode.INVALID_INTEGER);
 
     // Missing 'END'
-    evalFails("case FIELD_INTEGER when 40 then 10 else 50");
-    evalFails("case FIELD_INTEGER then 10 else 50");
+    evalFails("case FIELD_INTEGER when 40 then 10 else 50", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
+    evalFails("case FIELD_INTEGER then 10 else 50", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
     optimize("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
     // Multi values

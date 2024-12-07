@@ -14,20 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.util;
+package org.apache.hop.expression;
 
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.ExpressionException;
-
-public class DateTimeParseException extends ExpressionException {
+public class ExpressionParseException extends ExpressionException {
   @java.io.Serial private static final long serialVersionUID = 1L;
+
+  /**
+   * The zero-based character offset into the string being parsed at which the error was found
+   * during parsing.
+   */
+  private final int position;
 
   /**
    * Construct a new expression exception.
    *
    * @param error a error message
    */
-  public DateTimeParseException(ErrorCode error, Object... values) {
-    super(error.message(values));
+  public ExpressionParseException(int position, ErrorCode error, Object... values) {
+    super(error, values);
+
+    this.position = position;
+  }
+
+  /**
+   * Returns the position where the error was found.
+   *
+   * @return the position where the error was found
+   */
+  public int getPosition() {
+    return position;
   }
 }

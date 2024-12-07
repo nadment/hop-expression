@@ -88,7 +88,7 @@ public class JsonValueFunction extends Function {
       return null;
     } catch (ClassCastException e) {
       throw new ExpressionException(
-          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, TypeId.ANY);
+          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), TypeId.ANY, value);
     } catch (Exception e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }

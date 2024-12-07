@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -40,6 +41,6 @@ public class ErrorFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String message = operands[0].getValue(String.class);
-    throw new ExpressionException(message);
+    throw new ExpressionException(ErrorCode.MESSAGE_ERROR, message);
   }
 }

@@ -14,10 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
@@ -57,6 +57,7 @@ import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
@@ -93,7 +94,13 @@ public class ExpressionTest {
     private final String source;
 
     public Evaluator(IExpressionContext context, String source) {
-      this.expression = context.createExpression(source);
+
+      try {
+        this.expression = context.createExpression(source);
+      } catch (Exception ex) {
+        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+        throw ex;
+      }
       this.source = source;
     }
 
@@ -242,11 +249,6 @@ public class ExpressionTest {
     assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
   }
 
-  protected Object eval(String source) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
-    return evaluator.eval(Object.class);
-  }
-
   protected Evaluator evalNull(String source) throws Exception {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
     assertNull(evaluator.eval(Object.class));
@@ -374,22 +376,35 @@ public class ExpressionTest {
     return evaluator;
   }
 
-  protected void evalFails(final String source) throws Exception {
-    assertThrows(
-        ExpressionException.class,
-        () -> {
-          Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
-          evaluator.eval(Object.class);
-        });
-  }
-
+  /** Check if expression fails with the supplied {@code ErrorCode}. */
   protected void evalFails(final String source, ErrorCode error) throws Exception {
-    assertThrows(
-        ExpressionException.class,
-        () -> {
-          Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
-          evaluator.eval(Object.class);
-        });
+    try {
+      Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+      evaluator.eval(Object.class);
+    } catch (Throwable exception) {
+      if (exception instanceof ExpressionException ee) {
+        if (error != ee.getErrorCode()) {
+          throw assertionFailure()
+              .reason(
+                  "Expected %s to be thrown, but was %s."
+                      .formatted(error.name(), ee.getErrorCode().name()))
+              .build();
+        }
+
+        return;
+      } else {
+        UnrecoverableExceptions.rethrowIfUnrecoverable(exception);
+        throw assertionFailure()
+            .expected(ExpressionException.class)
+            .actual(exception.getClass())
+            .reason("Unexpected exception type thrown")
+            .cause(exception)
+            .build();
+      }
+    }
+    throw assertionFailure()
+        .reason("Expected ExpressionException to be thrown, but nothing was thrown.")
+        .build();
   }
 
   protected IExpression compile(String source) throws Exception {
@@ -441,10 +456,8 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-
-    // optimize("EQUAL_NULL(NULL,1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
-    // evalFails("cast(5e18 as INTEGER)+cast(5e18 as INTEGER)");
-
+    // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')",
+    // ErrorCode.INVALID_DATE_FORMAT);
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

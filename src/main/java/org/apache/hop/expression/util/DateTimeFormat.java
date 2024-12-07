@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
@@ -259,7 +260,7 @@ public abstract class DateTimeFormat extends BaseFormat {
     return new PatternDateTimeFormat(pattern);
   }
 
-  public abstract ZonedDateTime parse(String text) throws DateTimeParseException;
+  public abstract ZonedDateTime parse(String text) throws FormatParseException;
 
   /**
    * See also TO_CHAR(datetime) and datetime format models.
@@ -281,7 +282,7 @@ public abstract class DateTimeFormat extends BaseFormat {
     try {
       return ZoneId.of(zone);
     } catch (Exception e) {
-      throw new IllegalArgumentException(ErrorCode.INVALID_TIMEZONE.message(zone));
+      throw new ExpressionException(ErrorCode.INVALID_TIMEZONE, zone);
     }
   }
 }

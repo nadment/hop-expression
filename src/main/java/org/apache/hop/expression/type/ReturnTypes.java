@@ -250,13 +250,13 @@ public final class ReturnTypes {
       };
 
   public static final IReturnTypeInference ADDITIVE_OPERATOR =
-      call -> Types.deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());
+      call -> deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());
   public static final IReturnTypeInference MULTIPLY_OPERATOR =
-      call -> Types.deriveMultiplyType(call.getOperand(0).getType(), call.getOperand(1).getType());
+      call -> deriveMultiplyType(call.getOperand(0).getType(), call.getOperand(1).getType());
   public static final IReturnTypeInference DIVIDE_OPERATOR =
-      call -> Types.deriveDivideType(call.getOperand(0).getType(), call.getOperand(1).getType());
+      call -> deriveDivideType(call.getOperand(0).getType(), call.getOperand(1).getType());
   public static final IReturnTypeInference MOD_OPERATOR =
-      call -> Types.deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
+      call -> deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
 
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
 
@@ -288,4 +288,179 @@ public final class ReturnTypes {
 
         return transform.transformType(type1);
       };
+
+  /**
+   * Calculate return type precision and scale for x + y and x - y
+   *
+   * <ul>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>s = max(s1, s2)
+   *         <li>p = max(p1 - s1, p2 - s2) + s + 1
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
+   * </ul>
+   */
+  protected static Type deriveAdditiveType(final Type type1, final Type type2) {
+
+    if (type1.is(TypeId.DATE) && type2.is(TypeId.INTERVAL)) {
+      return type1;
+    }
+    if (type1.is(TypeId.INTERVAL) && type2.is(TypeId.DATE)) {
+      return type2;
+    }
+    if (type1.is(TypeId.INTERVAL) && type2.is(TypeId.INTERVAL)) {
+      return type1;
+    }
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+      return Types.NUMBER;
+    }
+
+    int p1 = type1.getPrecision();
+    int p2 = type2.getPrecision();
+
+    // Preserve integer type and adjust precision
+    if ((type1.is(TypeId.INTEGER) || type1.is(TypeId.BOOLEAN))
+        && (type2.is(TypeId.INTEGER) || type2.is(TypeId.BOOLEAN))) {
+      int p = Math.min(TypeId.INTEGER.getMaxPrecision(), Math.max(p1, p2) + 1);
+      return IntegerType.of(p);
+    }
+
+    int s1 = type1.getScale();
+    int s2 = type2.getScale();
+
+    // Return type scale
+    int s = Math.max(s1, s2);
+    s = Math.min(s, TypeId.NUMBER.getMaxScale());
+
+    // Return type precision
+    int p = Math.max(p1 - s1, p2 - s2) + s + 1;
+    p = Math.min(p, TypeId.NUMBER.getMaxPrecision());
+
+    return NumberType.of(p, s);
+  }
+
+  /**
+   * Calculate return type precision and scale for x * y
+   *
+   * <ul>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>p = p1 + p2
+   *         <li>s = s1 + s2
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
+   * </ul>
+   */
+  protected static Type deriveMultiplyType(final Type type1, final Type type2) {
+
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+      return Types.NUMBER;
+    }
+
+    int p1 = type1.getPrecision();
+    int p2 = type2.getPrecision();
+
+    // Preserve integer type and adjust precision
+    if (type1.is(TypeId.INTEGER) && type2.is(TypeId.INTEGER)) {
+      int p = Math.min(TypeId.INTEGER.getMaxPrecision(), p1 + p2);
+      return IntegerType.of(p);
+    }
+
+    // Return type precision
+    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), p1 + p2);
+
+    // Return type scale
+    int s1 = type1.getScale();
+    int s2 = type2.getScale();
+    int s = Math.min(TypeId.NUMBER.getMaxScale(), s1 + s2);
+
+    return NumberType.of(p, s);
+  }
+
+  /**
+   * Calculate return type precision and scale for x / y
+   *
+   * <ul>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>d = p1 - s1 + s2
+   *         <li>s = max(6, s1 + p2 + 1)
+   *         <li>p = d + s
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
+   * </ul>
+   */
+  protected static Type deriveDivideType(final Type type1, final Type type2) {
+
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+      return Types.NUMBER;
+    }
+
+    int p1 = type1.getPrecision();
+    int p2 = type2.getPrecision();
+    int s1 = type1.getScale();
+    int s2 = type2.getScale();
+
+    int d = p1 - s1 + s2;
+
+    // Return type scale
+    int s = Math.max(6, s1 + p2 + 1);
+    s = Math.min(TypeId.NUMBER.getMaxScale(), s);
+
+    // Return type precision
+    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), d + s);
+
+    return NumberType.of(p, s);
+  }
+
+  /**
+   * Calculate return type precision and scale for x % y
+   *
+   * <ul>
+   *   <li>Let p1, s1 be the precision and scale of the first operand
+   *   <li>Let p2, s2 be the precision and scale of the second operand
+   *   <li>Let p, s be the precision and scale of the result
+   *   <li>Let d be the number of whole digits in the result
+   *   <li>Then the result type is a decimal with:
+   *       <ul>
+   *         <li>s = max(s1, s2)
+   *         <li>p = min(p1 - s1, p2 - s2) + max(s1, s2)
+   *       </ul>
+   *   <li>p and s are capped at their maximum values
+   * </ul>
+   */
+  protected static Type deriveModType(final Type type1, final Type type2) {
+
+    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+      return Types.NUMBER;
+    }
+
+    int p1 = type1.getPrecision();
+    int p2 = type2.getPrecision();
+    int s1 = type1.getScale();
+    int s2 = type2.getScale();
+
+    // Return type scale
+    int s = Math.max(s1, s2);
+
+    // Return type precision
+    int p = Math.min(p1 - s1, p2 - s2) + s;
+
+    p = Math.min(TypeId.NUMBER.getMaxPrecision(), p);
+
+    return NumberType.of(p, s);
+  }
 }

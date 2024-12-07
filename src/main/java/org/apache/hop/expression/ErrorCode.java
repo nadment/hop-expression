@@ -18,18 +18,18 @@ import org.apache.hop.i18n.BaseMessages;
 
 /** Enumeration of the error which can be used in expression exception. */
 public enum ErrorCode {
+  /** {0} */
+  MESSAGE_ERROR,
   /** Internal error {0} */
   INTERNAL_ERROR,
   /** Expression source is null */
   NULL_SOURCE_ERROR,
-  /** Syntax error: {0} */
+  /** Incorrect syntax near keyword “{0}” */
   SYNTAX_ERROR,
-  /** Incorrect syntax near keyword ''{0}'' */
-  SYNTAX_ERROR_NEAR_KEYWORD,
   /** Incorrect syntax for function ''{0}'' */
   SYNTAX_ERROR_FUNCTION,
-  /** Syntax error: Invalid data type ''{0}'' */
-  SYNTAX_ERROR_DATATYPE,
+  /** Syntax error at or near “case” when using a case statement */
+  SYNTAX_ERROR_CASE_STATEMENT,
   /** Operator call {0} error: {1} */
   CALL_OPERATOR_ERROR,
   /** Function call {0} error: {1} */
@@ -46,6 +46,8 @@ public enum ErrorCode {
   UNRESOLVED_IDENTIFIER,
   /** Function ''{0}'' does not exist */
   FUNCTION_DOES_NOT_EXIST,
+  /** Not an aggregation expression */
+  NOT_AN_AGGREGATE_EXPRESSION,
   /** Not enough arguments to call function {0} */
   NOT_ENOUGH_ARGUMENT,
   /** Too many arguments to call function {0} */
@@ -64,15 +66,11 @@ public enum ErrorCode {
   MISSING_RIGHT_BRACKET,
   /** Missing right parenthesis */
   MISSING_RIGHT_PARENTHESIS,
-  /** Unbalanced parenthesis */
-  UNBALANCE_PARENTHESIS,
   /** Unexpected character ''{0}'' */
   UNEXPECTED_CHARACTER,
-  /** Unexpected end of expression */
-  UNEXPECTED_END_OF_EXPRESSION,
   /** Unexpected data type {1} with function {0} */
   UNEXPECTED_DATA_TYPE,
-  // Arithmetic overflow in ''{0}'' operator (consider adding explicit CAST to NUMBER)
+  /** Arithmetic overflow in ''{0}'' operator (consider adding explicit CAST to NUMBER) */
   ARITHMETIC_OVERFLOW,
   /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE,
@@ -110,25 +108,29 @@ public enum ErrorCode {
   INVALID_NUMBER_FORMAT,
   /** Invalid binary format ''{0}'' */
   INVALID_BINARY_FORMAT,
-  // Invalid json ''{0}'' */
+  /** Invalid json ''{0}'' */
   INVALID_JSON,
   /** Invalid json path ''{0}'' */
   INVALID_JSON_PATH,
-  // Invalid internet address ''{0}'' */
+  /** Invalid internet address ''{0}'' */
   INVALID_INET,
   /** Invalid regexp pattern ''{0}'' */
   INVALID_REGEXP_PATTERN,
   /** Invalid escape sequence ''{0}'', {1} */
   INVALID_REGEXP_ESCAPE,
+  /** Data type ''{0}'' is not recognized */
+  INVALID_TYPE,
   /** Json path is null */
   JSON_PATH_IS_NULL,
   /** Json property cannot be found in specified path ''{0}'' */
   JSON_PATH_NOT_FOUND,
+  /** Return type is unknown */
+  RETURN_TYPE_UNKNOWN,
   /** Error compile user defined function ''{0}'' */
   UDF_COMPILATION_ERROR,
   /** Implicit conversion from {1} to {2} is not supported for value ''{0}'' */
   UNSUPPORTED_COERCION,
-  /* Conversion from {1} to {2} is not supported for value ''{0}'' */
+  /** Conversion from {1} to {2} is not supported for value ''{0}'' */
   UNSUPPORTED_CONVERSION,
   /** Field ''{0}'' of type ''{1}'' not supported */
   UNSUPPORTED_VALUEMETA,
@@ -136,12 +138,16 @@ public enum ErrorCode {
   UNSUPPORTED_JSON_TYPE,
   /** Unsupported array type ''{0}'' */
   UNSUPPORTED_ARRAY_TYPE,
-  /** Error converting {0} value ''{1}'' to data type {2} */
+  /** Error converting {0} value ''{2}'' to data type {1} */
   CONVERSION_ERROR,
   /** Compression error */
   COMPRESSION_ERROR,
-  /** decompression error */
+  /** Decompression error */
   DECOMPRESSION_ERROR,
+  /** Result size too large: {0} */
+  RESULT_SIZE_TOO_LARGE,
+  /** Error formating datetime {0} with format ''{1}'' */
+  FORMAT_DATE_WITH_FORMAT,
   /** Date ''{0}'' not recognized with format ''{1}'' */
   UNPARSABLE_DATE_WITH_FORMAT,
   /** Number ''{0}'' not recognized with format ''{1}'' */

@@ -19,56 +19,19 @@ package org.apache.hop.expression;
 public class ExpressionException extends RuntimeException {
   @java.io.Serial private static final long serialVersionUID = 1L;
 
-  /**
-   * The zero-based character offset into the string being parsed at which the error was found
-   * during parsing.
-   */
-  private final int position;
+  private final ErrorCode error;
 
   /**
    * Create a new expression exception.
    *
    * @param error a error message
    */
-  public ExpressionException(String error) {
-    super(error);
-    this.position = 0;
-  }
-
-  /**
-   * Construct a new expression exception.
-   *
-   * @param error a error message
-   */
-  public ExpressionException(int position, ErrorCode error) {
-    super(error.message());
-    this.position = position;
-  }
-
-  /**
-   * Create a new expression exception.
-   *
-   * @param error a error message
-   */
-  public ExpressionException(ErrorCode error) {
-    this(0, error);
-  }
-
   public ExpressionException(ErrorCode error, Object... values) {
-    this(0, error, values);
-  }
-
-  public ExpressionException(int position, ErrorCode error, Object... values) {
     super(error.message(values));
-    this.position = position;
+    this.error = error;
   }
 
-  /**
-   * Returns the position where the error was found.
-   *
-   * @return the position where the error was found
-   */
-  public int getPosition() {
-    return position;
+  public ErrorCode getErrorCode() {
+    return error;
   }
 }

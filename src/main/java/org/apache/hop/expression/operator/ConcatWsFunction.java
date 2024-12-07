@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -111,7 +112,7 @@ public class ConcatWsFunction extends Function {
 
         return output.toByteArray();
       } catch (IOException e) {
-        throw new ExpressionException(e.getMessage());
+        throw new ExpressionException(ErrorCode.INTERNAL_ERROR, e.getMessage());
       }
     }
   }

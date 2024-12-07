@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -67,7 +68,7 @@ public class RepeatFunction extends Function {
       final long longSize = len * repeat;
       final int size = (int) longSize;
       if (size != longSize) {
-        throw new ExpressionException("Result size too large: %s".formatted(longSize));
+        throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, longSize);
       }
       // Nothing to repeat
       if (size == 0) return "";
@@ -97,7 +98,7 @@ public class RepeatFunction extends Function {
       final long longSize = (long) len * repeat;
       final int size = (int) longSize;
       if (size != longSize) {
-        throw new ExpressionException("Result size too large: %s".formatted(longSize));
+        throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, longSize);
       }
 
       final byte[] array = new byte[size];

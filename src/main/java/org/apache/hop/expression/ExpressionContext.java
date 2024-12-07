@@ -95,29 +95,22 @@ public class ExpressionContext extends Variables implements IExpressionContext {
 
   public IExpression createExpression(String source) throws ExpressionException {
 
+    // Syntax analysis
     ExpressionParser parser = new ExpressionParser(resolve(source));
+    IExpression expression = parser.parse();
 
-    try {
-      // Syntax analysis
-      IExpression expression = parser.parse();
+    // Semantic analysis
+    expression.validate(this);
 
-      // Semantic analysis
-      expression.validate(this);
+    // Compile expression
+    ExpressionCompiler compiler = new ExpressionCompiler(this);
+    expression = compiler.compile(expression);
 
-      // Compile expression
-      ExpressionCompiler compiler = new ExpressionCompiler(this);
-      expression = compiler.compile(expression);
-
-      // Unknown are not expected here
-      if (!expression.isNull() && expression.getType().is(TypeId.UNKNOWN)) {
-        throw new ExpressionException(0, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, source);
-      }
-
-      return expression;
-    } catch (ExpressionException e) {
-      throw e;
-    } catch (IllegalArgumentException e) {
-      throw new ExpressionException(parser.getPosition(), ErrorCode.SYNTAX_ERROR, e.getMessage());
+    // Return type Unknown is not expected here
+    if (!expression.isNull() && expression.getType().is(TypeId.UNKNOWN)) {
+      throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
     }
+
+    return expression;
   }
 }

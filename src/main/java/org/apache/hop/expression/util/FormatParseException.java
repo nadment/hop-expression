@@ -19,7 +19,7 @@ package org.apache.hop.expression.util;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 
-public class NumberParseException extends ExpressionException {
+public class FormatParseException extends ExpressionException {
   @java.io.Serial private static final long serialVersionUID = 1L;
 
   /**
@@ -27,7 +27,7 @@ public class NumberParseException extends ExpressionException {
    *
    * @param error a error message
    */
-  public NumberParseException(ErrorCode error, Object... values) {
-    super(error.message(values));
+  public FormatParseException(ErrorCode error, Object... values) {
+    super(error, values);
   }
 }

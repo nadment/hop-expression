@@ -22,7 +22,11 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.type.ArrayType;
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
@@ -86,10 +90,10 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
         changed = true;
       }
 
-      // Evaluate if constant
+      // Evaluate if the call is constant
       if (expression.isConstant()) {
         try {
-          Type constantType = expression.getType();
+          Type type = expression.getType();
           Object value = expression.getValue();
 
           if (value instanceof Array array) {
@@ -97,47 +101,44 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           }
 
           // Some operator don't known return type like JSON_VALUE.
-          if (TypeId.ANY.equals(constantType.getId())) {
-            if (value instanceof Boolean bool) {
-              return Literal.of(bool);
+          if (TypeId.ANY.equals(type.getId())) {
+            if (value == null) {
+              type = Types.STRING;
+            } else if (value instanceof Boolean) {
+              type = Types.BOOLEAN;
+            } else if (value instanceof Long integer) {
+              type = IntegerType.from(integer);
+            } else if (value instanceof BigDecimal number) {
+              type = NumberType.from(number);
+            } else if (value instanceof String string) {
+              type = StringType.from(string);
+            } else if (value instanceof ZonedDateTime) {
+              type = Types.DATE;
+            } else if (value instanceof Interval) {
+              type = Types.INTERVAL;
+            } else if (value instanceof JsonNode) {
+              type = Types.JSON;
+            } else if (value instanceof byte[] bytes) {
+              type = BinaryType.from(bytes);
+            } else {
+              return call;
             }
-            if (value instanceof Long number) {
-              return Literal.of(number);
-            }
-            if (value instanceof BigDecimal number) {
-              return Literal.of(number);
-            }
-            if (value instanceof String str) {
-              return Literal.of(str);
-            }
-            if (value instanceof ZonedDateTime datetime) {
-              return Literal.of(datetime);
-            }
-            if (value instanceof Interval interval) {
-              return Literal.of(interval);
-            }
-            if (value instanceof JsonNode json) {
-              return Literal.of(json);
-            }
-            if (value instanceof byte[] bytes) {
-              return Literal.of(bytes);
-            }
-
-            return call;
-          } else
+          }
           // For CAST operator, it's important to return type
-          if (expression.isOperator(Operators.CAST)) {
-            value = constantType.cast(value);
+          else if (expression.isOperator(Operators.CAST)) {
+            value = type.cast(value);
           }
 
           changed = true;
 
-          return new Literal(value, constantType);
+          return new Literal(value, type);
         } catch (Exception e) {
           // Ignore error like division by zero "X IN (1,3/0)" and continue
+          expression = call;
         }
       }
     }
+
     return expression;
   }
 

@@ -147,7 +147,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
             }
           }
           if (function == null) {
-            throw new ExpressionException("Not an aggregate expression");
+            throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
           }
           data.aggregates[index] = call;
           data.functions[index] = function;

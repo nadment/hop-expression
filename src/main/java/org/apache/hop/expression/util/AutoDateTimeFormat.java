@@ -50,7 +50,7 @@ public class AutoDateTimeFormat extends DateTimeFormat {
   }
 
   @Override
-  public ZonedDateTime parse(final String str) throws DateTimeParseException {
+  public ZonedDateTime parse(final String str) throws FormatParseException {
     DateTimeParser parser = new DateTimeParser(this, str);
 
     parser.skipSpace();
@@ -144,7 +144,7 @@ public class AutoDateTimeFormat extends DateTimeFormat {
     parser.skipSpace();
 
     if (!parser.isAllCharParsed()) {
-      throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, str, this);
+      throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, str, this);
     }
 
     // Build the date

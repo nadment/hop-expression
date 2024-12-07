@@ -111,23 +111,23 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("INTERVAL -58 SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
     evalEquals("INTERVAL '-58' SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
 
-    evalFails("INTERVAL");
-    evalFails("INTERVAL 5");
-    evalFails("INTERVAL -5");
-    evalFails("INTERVAL '5'");
-    evalFails("INTERVAL '' MONTH");
-    evalFails("INTERVAL '' YEAR");
-    evalFails("INTERVAL MONTH");
-    evalFails("INTERVAL 5 MONTH TO");
-    evalFails("INTERVAL '5' MONTH TO");
-    evalFails("INTERVAL '5 10' TO MONTH");
-    evalFails("INTERVAL '5' YEAR TO MONTH");
-    evalFails("INTERVAL '5-' DAY TO HOUR");
-    evalFails("INTERVAL '5' DAY TO MINUTE");
-    evalFails("INTERVAL '5' DAY TO SECOND");
-    evalFails("INTERVAL '5' HOUR TO MINUTE");
-    evalFails("INTERVAL '5' HOUR TO SECOND");
-    evalFails("INTERVAL '5' MINUTE TO SECOND");
+    evalFails("INTERVAL", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL 5", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL -5", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL '5'", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL '' MONTH", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '' YEAR", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL MONTH", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL 5 MONTH TO", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("INTERVAL '5' MONTH TO", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL '5 10' TO MONTH", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("INTERVAL '5' YEAR TO MONTH", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5-' DAY TO HOUR", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5' DAY TO MINUTE", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5' DAY TO SECOND", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5' HOUR TO MINUTE", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5' HOUR TO SECOND", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5' MINUTE TO SECOND", ErrorCode.INVALID_INTERVAL);
 
     optimize("INTERVAL 20 YEAR");
     optimize("INTERVAL '20' YEAR", "INTERVAL 20 YEAR");
@@ -241,18 +241,11 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("TRUE", String.valueOf(Literal.TRUE));
     assertEquals("FALSE", String.valueOf(Literal.FALSE));
 
-    evalTrue("True").returnType(Types.BOOLEAN);
-    evalFalse(" False").returnType(Types.BOOLEAN);
-
-    evalTrue("'On'::Boolean");
-    evalTrue("'Yes'::Boolean");
-    evalFalse("'Off'::Boolean");
-    evalFalse("'No'::Boolean");
-    // evalNull("NULL");
-
-    evalFails("'YEP'::Boolean");
+    evalTrue("True").returnType(Types.BOOLEAN_NOT_NULL);
+    evalFalse(" False").returnType(Types.BOOLEAN_NOT_NULL);
 
     optimize("TRUE", "TRUE");
+    optimize("FALSE", "FALSE");
   }
 
   @Test
@@ -265,7 +258,7 @@ public class LiteralTest extends ExpressionTest {
     // Minimum precision for empty binary is 1
     evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1));
 
-    evalFails("BINARY '0Z'");
+    evalFails("BINARY '0Z'", ErrorCode.UNPARSABLE_BINARY);
 
     optimize("BINARY '12AF'", "BINARY '12AF'");
   }
@@ -279,6 +272,8 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.ZERO, Literal.of((int) 0));
     assertEquals(Literal.ONE, Literal.of((int) 1));
 
+    assertEquals(-123456L, Literal.of(-123456L).getValue());
+
     assertEquals("-123456", Literal.of(-123456L).toString());
 
     // Integer decimal
@@ -288,12 +283,14 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4));
     evalEquals("-1234", -1234L).returnType(IntegerType.of(4));
 
+    // Invalid integer
+    evalFails("123_", ErrorCode.INVALID_NUMBER);
+    evalFails("1__23", ErrorCode.INVALID_NUMBER);
+
     // Bad syntax
-    evalFails("_123");
-    evalFails("123_");
-    evalFails("-_123");
-    evalFails("+_123");
-    evalFails("1__23");
+    evalFails("_123", ErrorCode.UNRESOLVED_IDENTIFIER);
+    evalFails("-_123", ErrorCode.UNRESOLVED_IDENTIFIER);
+    evalFails("+_123", ErrorCode.UNRESOLVED_IDENTIFIER);
 
     // Integer exponent
     evalEquals("2.3E2", 230L).returnType(IntegerType.of(3));
@@ -309,39 +306,36 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("0x0_F", 0xFL);
     evalEquals("0x_0F", 0xFL);
     evalEquals("0xF", 0xFL);
-    evalFails("0x");
-    evalFails("0xG");
-    evalFails("0xF2_");
-    evalFails("0xF2__FF");
-    evalFails("0xABCDEFg");
+    evalFails("0x", ErrorCode.INVALID_NUMBER);
+    evalFails("0xG", ErrorCode.INVALID_NUMBER);
+    evalFails("0xF2_", ErrorCode.INVALID_NUMBER);
+    evalFails("0xF2__FF", ErrorCode.INVALID_NUMBER);
+    evalFails("0xABCDEFg", ErrorCode.UNEXPECTED_CHARACTER);
 
     // Integer octal
     evalEquals("0o0757", 495L).returnType(IntegerType.of(3));
     evalEquals("0o12345671234567", 718046312823L);
-
     evalEquals("0O12345", 5349L);
     evalEquals("0O1_2_3_4_5", 5349L);
     evalEquals("0O_12345", 5349L);
-    evalFails("0o");
-    evalFails("0O99");
-    evalFails("0o72_");
-    evalFails("0O12__345");
+    evalFails("0o", ErrorCode.INVALID_NUMBER);
+    evalFails("0O99", ErrorCode.INVALID_NUMBER);
+    evalFails("0o72_", ErrorCode.INVALID_NUMBER);
+    evalFails("0O12__345", ErrorCode.INVALID_NUMBER);
+    evalFails("0o0A", ErrorCode.UNEXPECTED_CHARACTER);
 
     // Integer bit
-    evalEquals("0b10", 0b10L);
+    evalEquals("0b10", 0b10L).returnType(IntegerType.of(1));
     evalEquals("0b00000010", 0b10L);
     evalEquals("0b011", 0b11L);
     evalEquals("0b000000011111111", 0b000000011111111L);
-    evalEquals(
-        "0b1010000101000101101000010100010110100001010001011010000101000101",
-        0b1010000101000101101000010100010110100001010001011010000101000101L);
     evalEquals("0B010101", 0b010101L);
     evalEquals("0B0_1_0101", 0b010101L);
     evalEquals("0B_0001_0101", 0b010101L);
-    evalFails("0b");
-    evalFails("0b2");
-    evalFails("0b1001_");
-    evalFails("0b10__01");
+    evalFails("0b", ErrorCode.INVALID_NUMBER);
+    evalFails("0b1001_", ErrorCode.INVALID_NUMBER);
+    evalFails("0b10__01", ErrorCode.INVALID_NUMBER);
+    evalFails("0b02", ErrorCode.UNEXPECTED_CHARACTER);
 
     optimize("123456", "123456");
     optimize("0X1F", "31");
@@ -382,32 +376,38 @@ public class LiteralTest extends ExpressionTest {
             new BigInteger("457557121475257725552561123145677110", 8))
         .returnType(NumberType.of(33));
 
-    // Number exponent
+    // Number binary
+    evalEquals(
+            "0b1010000101000101101000010100010110100001010001011010000101000101",
+            0b1010000101000101101000010100010110100001010001011010000101000101L)
+        .returnType(NumberType.of(20));
+
+    // Number with exponent
     evalEquals("2.3E-2", 2.3E-2D).returnType(NumberType.of(5, 3));
     evalEquals("-2.3e-2", -2.3E-2D).returnType(NumberType.of(5, 3));
     evalEquals("1_000.5e-0_1", 100.05D).returnType(NumberType.of(5, 2));
 
     // Underscore
-    evalFails("1__2");
-    evalFails("0.0__1");
-    evalFails("2E2E2");
-    evalFails("2E-2.2");
-    evalFails("-2.3EE-2");
-    evalFails("-2.3E");
-    evalFails("-2.3E--2");
-    evalFails("-_2.3E-2");
-    evalFails("-2_.3E-2");
-    evalFails("-2__0.3E-2");
-    evalFails("-2._3E-2");
-    evalFails("-2.3_E-2");
-    evalFails("-2.3E_2");
-    evalFails("-2.3E2_");
-    evalFails("-2.3E1__2");
+    evalFails("1__2", ErrorCode.INVALID_NUMBER);
+    evalFails("0.0__1", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3EE-2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3E", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3E--2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2_.3E-2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2__0.3E-2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2._3E-2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3_E-2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3E_2", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3E2_", ErrorCode.INVALID_NUMBER);
+    evalFails("-2.3E1__2", ErrorCode.INVALID_NUMBER);
+    evalFails("-1.", ErrorCode.INVALID_NUMBER);
+    evalFails("..1", ErrorCode.INVALID_NUMBER);
 
     // Bad syntax
-    evalFails("-1.");
-    evalFails("..1");
-    evalFails(".0.1");
+    evalFails(".0.1", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("-_2.3E-2", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("2E2E2", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("2E-2.2", ErrorCode.UNEXPECTED_CHARACTER);
 
     optimize("-2.3E-2", "-0.023");
   }
@@ -424,21 +424,21 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("'2021-02-25'::DATE", LocalDate.of(2021, 2, 25)).returnType(Types.DATE);
 
     // Fails because literal use exact mode
-    evalFails("DATE '2021-Feb-25'");
-    evalFails("DATE '2021-2-25'");
-    evalFails("DATE '2021-02-2'");
-    evalFails("DATE ' 2021-02-02'");
-    evalFails("DATE '2021-02-02 '");
-    evalFails("DATE '2021 -02-02'");
-    evalFails("DATE '2021- 02-02'");
-    evalFails("DATE '2021-02-32'");
-    evalFails("DATE '21-02-25'");
-    evalFails("DATE '201-02-25'");
+    evalFails("DATE '2021-Feb-25'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2021-2-25'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2021-02-2'", ErrorCode.INVALID_DATE);
+    evalFails("DATE ' 2021-02-02'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2021-02-02 '", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2021 -02-02'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2021- 02-02'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2021-02-32'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '21-02-25'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '201-02-25'", ErrorCode.INVALID_DATE);
 
-    // Invalid date
-    evalFails("Date '2020-20-28'");
-    evalFails("Date '2020-20-28 '");
-    evalFails("Date ' 2020-20-28'");
+    // Invalid literal date
+    evalFails("Date '2020-20-28'", ErrorCode.INVALID_DATE);
+    evalFails("Date '2020-20-28 '", ErrorCode.INVALID_DATE);
+    evalFails("Date ' 2020-20-28'", ErrorCode.INVALID_DATE);
 
     optimize("DATE '2021-02-25'");
   }
@@ -579,8 +579,10 @@ public class LiteralTest extends ExpressionTest {
     optimize(
         "TIMESTAMP '2021-12-01 12:01:01.999999999Z'", "TIMESTAMP '2021-12-01 12:01:01.999999999'");
 
-    evalFails("TIMESTAMP '21-02-25 23:59:59.999999999'");
-    evalFails("TIMESTAMP '2021-01-01 15:28:59.123456789' AT TIME ZONE 'test'");
-    evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'");
+    evalFails("TIMESTAMP '21-02-25 23:59:59.999999999'", ErrorCode.INVALID_TIMESTAMP);
+    evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'", ErrorCode.INVALID_TIMESTAMP);
+    evalFails(
+        "TIMESTAMP '2021-01-01 15:28:59.123456789' AT TIME ZONE 'test'",
+        ErrorCode.INVALID_TIMEZONE);
   }
 }

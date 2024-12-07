@@ -38,7 +38,11 @@ public class ExpressionComparator implements Comparator<IExpression> {
 
     // Order constant by family
     if (e1.isConstant() && e2.isConstant()) {
-      return e1.getType().getFamily().compareTo(e2.getType().getFamily());
+      int familyCompare = e1.getType().getFamily().compareTo(e2.getType().getFamily());
+
+      if (familyCompare != 0) return familyCompare;
+
+      return e1.hashCode() - e2.hashCode();
     }
 
     // Order with textual representation

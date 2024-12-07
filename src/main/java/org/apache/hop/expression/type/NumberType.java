@@ -23,8 +23,8 @@ import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.FormatParseException;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.NumberParseException;
 
 /** Number type with an optional precision and scale: */
 public final class NumberType extends Type {
@@ -185,16 +185,15 @@ public final class NumberType extends Type {
   public static final BigDecimal convert(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
-    } catch (NumberParseException e) {
-      throw new ConversionException(
-          ErrorCode.UNSUPPORTED_COERCION, str, TypeId.STRING, TypeId.NUMBER);
+    } catch (FormatParseException e) {
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.STRING, TypeId.NUMBER, str);
     }
   }
 
   public static final BigDecimal convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, bytes, TypeId.BINARY, TypeId.NUMBER);
+          ErrorCode.CONVERSION_ERROR, TypeId.BINARY, TypeId.NUMBER, bytes);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

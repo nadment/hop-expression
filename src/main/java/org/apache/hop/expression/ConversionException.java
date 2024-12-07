@@ -25,10 +25,10 @@ public class ConversionException extends ExpressionException {
    * @param error a error message
    */
   public ConversionException(ErrorCode error) {
-    super(error.message());
+    super(error);
   }
 
   public ConversionException(ErrorCode error, Object... values) {
-    super(error.message(values));
+    super(error, values);
   }
 }

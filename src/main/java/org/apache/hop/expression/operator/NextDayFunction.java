@@ -19,6 +19,8 @@ package org.apache.hop.expression.operator;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -46,7 +48,12 @@ public class NextDayFunction extends Function {
     String dow = operands[1].getValue(String.class);
     if (dow == null) return null;
 
-    DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toUpperCase());
+    DayOfWeek dayofweek;
+    try {
+      dayofweek = DayOfWeek.valueOf(dow.toUpperCase());
+    } catch (Exception e) {
+      throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, dow);
+    }
 
     return value.with(TemporalAdjusters.next(dayofweek));
   }
