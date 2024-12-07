@@ -136,6 +136,8 @@ public enum ErrorCode {
   UNSUPPORTED_VALUEMETA,
   /** Unsupported json type ''{0}'' */
   UNSUPPORTED_JSON_TYPE,
+  /** Unsupported time unit ''{0}'' */
+  UNSUPPORTED_TIME_UNIT,
   /** Unsupported array type ''{0}'' */
   UNSUPPORTED_ARRAY_TYPE,
   /** Error converting {0} value ''{2}'' to data type {1} */

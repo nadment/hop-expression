@@ -21,10 +21,13 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
@@ -54,6 +57,23 @@ public class LastDayFunction extends Function {
   }
 
   @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Validate time unit
+    if (call.getOperandCount() == 2) {
+      TimeUnit unit = call.getOperand(1).getValue(TimeUnit.class);
+      switch (unit) {
+        case YEAR, QUARTER, MONTH, WEEK:
+          break;
+        default:
+          throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+      }
+    }
+
+    return call;
+  }
+
+  @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
@@ -76,7 +96,7 @@ public class LastDayFunction extends Function {
           adjuster = TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
           break;
         default:
-          throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
+          throw new IllegalArgumentException(ErrorCode.UNSUPPORTED_TIME_UNIT.message(unit));
       }
     }
 

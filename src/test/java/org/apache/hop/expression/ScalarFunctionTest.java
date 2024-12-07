@@ -603,10 +603,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("First_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("First_Day(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("First_Day(FIELD_DATE, FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("First_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // TODO: check
-    evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
   @Test
@@ -639,10 +638,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Last_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Last_Day(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Last_Day(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("Last_Day(FIELD_DATE, FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // TODO: check
-    evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
   @Test
