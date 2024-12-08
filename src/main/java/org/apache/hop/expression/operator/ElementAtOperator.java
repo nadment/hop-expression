@@ -52,7 +52,7 @@ public class ElementAtOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    Array array = call.getOperand(0).asArray();
+    Array array = (Array) call.getOperand(0);
     Type type = Types.getLeastRestrictive(array);
 
     // Coerce values
@@ -76,7 +76,7 @@ public class ElementAtOperator extends Operator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Array array = operands[0].asArray();
+    Array array = (Array) operands[0];
     Long index = operands[1].getValue(Long.class);
     if (index == null) return null;
 

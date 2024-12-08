@@ -25,10 +25,10 @@ import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
@@ -119,7 +119,7 @@ public class AddOperator extends BinaryOperator {
 
     // Simplify arithmetic A+(-B) → A-B
     if (right.isOperator(Operators.NEGATE)) {
-      return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
+      return new Call(Operators.SUBTRACT, left, call(right).getOperand(0));
     }
 
     // Optimize data type

@@ -49,7 +49,6 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;

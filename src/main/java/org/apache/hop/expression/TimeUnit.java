@@ -23,7 +23,6 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.hop.expression.type.Interval;
 
 /**
  * Enumeration of time units. <br>

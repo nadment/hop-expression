@@ -351,11 +351,6 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public Identifier asIdentifier() {
-    return this;
-  }
-
-  @Override
   public String toString() {
     StringWriter writer = new StringWriter();
     unparse(writer, 0, 0);

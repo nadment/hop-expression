@@ -174,11 +174,6 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public Array asArray() {
-    return this;
-  }
-
-  @Override
   public boolean isConstant() {
     for (IExpression expression : values) {
       if (!expression.isConstant()) {

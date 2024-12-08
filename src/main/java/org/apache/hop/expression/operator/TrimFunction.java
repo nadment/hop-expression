@@ -72,7 +72,7 @@ public class TrimFunction extends Function {
       if (operand.isOperator(this)
           || operand.isOperator(LTrimFunction.INSTANCE)
           || operand.isOperator(RTrimFunction.INSTANCE)) {
-        return new Call(call.getOperator(), operand.asCall().getOperand(0));
+        return new Call(call.getOperator(), call(operand).getOperand(0));
       }
     }
     return call;

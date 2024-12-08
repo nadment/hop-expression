@@ -54,7 +54,7 @@ public class SqueezeFunction extends Function {
 
     // Repetitions of functions that do not have any effects on the result
     if (operand.isOperator(call.getOperator())) {
-      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+      return new Call(call.getOperator(), call(operand).getOperand(0));
     }
 
     return call;

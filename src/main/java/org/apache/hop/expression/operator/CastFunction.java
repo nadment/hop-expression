@@ -93,7 +93,7 @@ public class CastFunction extends Function {
         Type fromType = call.getOperand(0).getType();
         if (Types.isLosslessCast(toType, fromType)) {
           return new Call(
-              call.getOperator(), call.getOperand(0).asCall().getOperand(0), Literal.of(toType));
+              call.getOperator(), call(call.getOperand(0)).getOperand(0), Literal.of(toType));
         }
       }
 

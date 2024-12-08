@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.hop.expression.type;
-
-import org.apache.hop.expression.TimeUnit;
+package org.apache.hop.expression;
 
 public enum IntervalQualifier {
   YEAR,

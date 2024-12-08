@@ -211,11 +211,6 @@ public class Call implements IExpression {
   }
 
   @Override
-  public Call asCall() {
-    return this;
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
 
@@ -268,54 +263,6 @@ public class Call implements IExpression {
   }
 
   /**
-   * Normalize reversible operator
-   *
-   * <ul>
-   *   <li>swap term to identifier operator literal 1>A → A<1
-   *   <li>ordering identifiers by name with case sensitive B>A → A<B
-   *   <li>ordering the low-cost operand to the left
-   * </ul>
-   *
-   * @param call The call to normalize
-   * @return normalized call
-   */
-  public static Call normalizeReversiblePredicate(Call call) {
-    IExpression left = call.getOperand(0);
-    IExpression right = call.getOperand(1);
-
-    // Nothing to normalize
-    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
-      return call;
-    }
-
-    // Normalize identifier to the left
-    if (right.is(Kind.IDENTIFIER)) {
-      // Swap terms and reverse operator 1>A → A<1
-      if (left.is(Kind.LITERAL)) {
-        return call.reverse();
-      }
-      // Swap terms and reverse operator B>A → A<B
-      if (left.is(Kind.IDENTIFIER)
-          && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-        return call.reverse();
-      }
-    }
-
-    // Normalize operator by moving the low-cost operand to the left
-    if (left.getCost() > right.getCost()) {
-      return call.reverse();
-    }
-
-    // If same cost order with textual representation
-    //    if (left.toString().compareTo(right.toString()) > 0) {
-    //      System.out.println("Reverse term by textual");
-    //      return reverse(call);
-    //    }
-
-    return call;
-  }
-
-  /**
    * Swap the first and second operands, reverse the operator and preserve type.
    *
    * @param call
@@ -325,54 +272,6 @@ public class Call implements IExpression {
     Call reverse = new Call(operator.reverse(), getOperand(1), getOperand(0));
     reverse.inferReturnType();
     return reverse;
-  }
-
-  /**
-   * Normalize symmetrical operator
-   *
-   * <ul>
-   *   <li>swap term to identifier operator literal 1=A → A=1
-   *   <li>ordering identifiers by name (case sensitive) B=A → A=B
-   *   <li>ordering the low-cost operand to the left
-   * </ul>
-   *
-   * @param call The call to normalize
-   * @return normalized call
-   */
-  public static Call normalizeSymmetricalPredicate(Call call) {
-    IExpression left = call.getOperand(0);
-    IExpression right = call.getOperand(1);
-
-    // Nothing to normalize
-    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
-      return call;
-    }
-
-    if (right.is(Kind.IDENTIFIER)) {
-
-      // Swap terms 1=A → A=1
-      if (left.is(Kind.LITERAL)) {
-        return call.swap();
-      }
-      // Swap terms B=A → A=B
-      if (left.is(Kind.IDENTIFIER)
-          && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-        return call.swap();
-      }
-    }
-
-    // Normalize operator by moving the low-cost operand to the left
-    if (left.getCost() > right.getCost()) {
-      return call.swap();
-    }
-
-    // If same cost order with textual representation
-    //    if (left.toString().compareTo(right.toString()) > 0) {
-    //      System.out.println("Swap term by textual");
-    //      return swap(call);
-    //    }
-
-    return call;
   }
 
   /**
@@ -395,7 +294,7 @@ public class Call implements IExpression {
       Call call, Deque<IExpression> operands, boolean allowDuplicate) {
     for (IExpression operand : call.getOperands()) {
       if (operand.isOperator(call.getOperator())) {
-        getChainedOperands(operand.asCall(), operands, allowDuplicate);
+        getChainedOperands((Call) operand, operands, allowDuplicate);
       } else if (allowDuplicate || !operands.contains(operand)) {
         operands.push(operand);
       }

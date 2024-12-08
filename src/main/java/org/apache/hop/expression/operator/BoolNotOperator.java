@@ -60,7 +60,7 @@ public class BoolNotOperator extends PrefixUnaryOperator {
 
     // NOT(NOT(x)) → x
     if (operand.isOperator(Operators.BOOLNOT)) {
-      return operand.asCall().getOperand(0);
+      return call(operand).getOperand(0);
     }
 
     // If the operand is a call to a logical operator that can be inverted, then remove NOT

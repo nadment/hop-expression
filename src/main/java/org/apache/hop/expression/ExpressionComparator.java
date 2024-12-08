@@ -32,8 +32,8 @@ public class ExpressionComparator implements Comparator<IExpression> {
     // If same cost
 
     // Order identifier by name (useful for test)
-    if (e1.is(Kind.IDENTIFIER) && e2.is(Kind.IDENTIFIER)) {
-      return e1.asIdentifier().getName().compareTo(e2.asIdentifier().getName());
+    if (e1 instanceof Identifier i1 && e2 instanceof Identifier i2) {
+      return i1.getName().compareTo(i2.getName());
     }
 
     // Order constant by family

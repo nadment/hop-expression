@@ -60,7 +60,7 @@ public class LowerFunction extends Function {
     if (operand.isOperator(this)
         || operand.isOperator(UpperFunction.INSTANCE)
         || operand.isOperator(InitCapFunction.INSTANCE)) {
-      return new Call(this, operand.asCall().getOperand(0));
+      return new Call(this, call(operand).getOperand(0));
     }
 
     return call;

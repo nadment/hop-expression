@@ -75,7 +75,7 @@ public class RTrimFunction extends Function {
       // RTRIM(LTRIM(x)) → TRIM(x)
       // RTRIM(TRIM(x)) → TRIM(x)
       if (operand.isOperator(TrimFunction.INSTANCE) || operand.isOperator(LTrimFunction.INSTANCE)) {
-        return new Call(TrimFunction.INSTANCE, operand.asCall().getOperand(0));
+        return new Call(TrimFunction.INSTANCE, call(operand).getOperand(0));
       }
     }
 

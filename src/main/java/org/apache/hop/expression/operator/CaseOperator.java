@@ -66,8 +66,8 @@ public class CaseOperator extends Operator {
   @Override
   public Object eval(final IExpression[] operands) {
     int index = 0;
-    Array whenTerm = operands[1].asArray();
-    Array thenTerm = operands[2].asArray();
+    Array whenTerm = (Array) operands[1];
+    Array thenTerm = (Array) operands[2];
     IExpression elseTerm = operands[3];
 
     if (when == When.SIMPLE) {
@@ -78,7 +78,7 @@ public class CaseOperator extends Operator {
 
           // Multi-values
           if (whenOperand.is(Kind.ARRAY)) {
-            for (IExpression expression : whenOperand.asArray()) {
+            for (IExpression expression : (Array) whenOperand) {
               Object value = expression.getValue();
               if (Comparison.equals(condition, value)) {
                 return thenTerm.get(index).getValue();
@@ -109,8 +109,8 @@ public class CaseOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Array whenTerm = call.getOperand(1).asArray();
-    Array thenTerm = call.getOperand(2).asArray();
+    Array whenTerm = (Array) call.getOperand(1);
+    Array thenTerm = (Array) call.getOperand(2);
     IExpression elseTerm = call.getOperand(3);
     if (when == When.SIMPLE) {
       if (whenTerm.size() == 1) {
@@ -130,18 +130,18 @@ public class CaseOperator extends Operator {
       if (elseTerm.isOperator(Operators.CASE_SEARCH)) {
         List<IExpression> whenOperands = new ArrayList<>();
         whenTerm.forEach(whenOperands::add);
-        elseTerm.asCall().getOperand(1).asArray().forEach(whenOperands::add);
+        array(call(elseTerm).getOperand(1)).forEach(whenOperands::add);
 
         List<IExpression> thenOperands = new ArrayList<>();
         thenTerm.forEach(thenOperands::add);
-        elseTerm.asCall().getOperand(2).asArray().forEach(thenOperands::add);
+        array(call(elseTerm).getOperand(2)).forEach(thenOperands::add);
 
         return new Call(
             Operators.CASE_SEARCH,
             Literal.NULL,
             new Array(whenOperands),
             new Array(thenOperands),
-            elseTerm.asCall().getOperand(3));
+            call(elseTerm).getOperand(3));
       }
 
       // Search CASE expressions with one condition can be turned into COALESCE, NULLIF, NVL2 or
@@ -153,38 +153,38 @@ public class CaseOperator extends Operator {
 
         // CASE WHEN x IS NULL THEN y ELSE x END → IFNULL(x,y)
         if (whenTerm0.isOperator(Operators.IS_NULL)
-            && whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
-          return new Call(IfNullFunction.INSTANCE, whenTerm0.asCall().getOperand(0), thenTerm0);
+            && call(whenTerm0).getOperand(0).equals(elseTerm)) {
+          return new Call(IfNullFunction.INSTANCE, call(whenTerm0).getOperand(0), thenTerm0);
         }
 
         // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
         if (whenTerm0.isOperator(Operators.EQUAL) && thenTerm0.isNull()) {
 
-          if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
+          if (call(whenTerm0).getOperand(0).equals(elseTerm)) {
             return new Call(
                 NullIfFunction.INSTANCE,
-                whenTerm0.asCall().getOperand(0),
-                whenTerm0.asCall().getOperand(1));
+                call(whenTerm0).getOperand(0),
+                call(whenTerm0).getOperand(1));
           }
 
-          if (whenTerm0.asCall().getOperand(1).equals(elseTerm)) {
+          if (call(whenTerm0).getOperand(1).equals(elseTerm)) {
             return new Call(
                 NullIfFunction.INSTANCE,
-                whenTerm0.asCall().getOperand(1),
-                whenTerm0.asCall().getOperand(0));
+                call(whenTerm0).getOperand(1),
+                call(whenTerm0).getOperand(0));
           }
         }
 
         // CASE WHEN x IS NOT NULL THEN y ELSE z END → NVL2(x,y,z)
         if (whenTerm0.isOperator(Operators.IS_NOT_NULL)) {
           return new Call(
-              Nvl2Function.INSTANCE, whenTerm0.asCall().getOperand(0), thenTerm0, elseTerm);
+              Nvl2Function.INSTANCE, call(whenTerm0).getOperand(0), thenTerm0, elseTerm);
         }
 
         // CASE WHEN x IS NULL THEN y ELSE z END → NVL2(x,z,y)
         if (whenTerm0.isOperator(Operators.IS_NULL)) {
           return new Call(
-              Nvl2Function.INSTANCE, whenTerm0.asCall().getOperand(0), elseTerm, thenTerm0);
+              Nvl2Function.INSTANCE, call(whenTerm0).getOperand(0), elseTerm, thenTerm0);
         }
 
         // CASE WHEN a=b THEN 1 END to CASE a WHEN b THEN 1 END
@@ -222,8 +222,8 @@ public class CaseOperator extends Operator {
     }
 
     int index = 0;
-    Array whenTerms = operands[1].asArray();
-    Array thenTerms = operands[2].asArray();
+    Array whenTerms = (Array) operands[1];
+    Array thenTerms = (Array) operands[2];
     for (IExpression whenOperand : whenTerms) {
       writer.append(" WHEN ");
       if (whenOperand instanceof Array array) {
@@ -245,8 +245,8 @@ public class CaseOperator extends Operator {
   @Override
   public boolean checkOperandTypes(Call call) {
 
-    Array whenTerm = call.getOperand(1).asArray();
-    Array thenTerm = call.getOperand(2).asArray();
+    Array whenTerm = (Array) call.getOperand(1);
+    Array thenTerm = (Array) call.getOperand(2);
     IExpression elseTerm = call.getOperand(3);
 
     // Search case should be a predicate
@@ -261,7 +261,7 @@ public class CaseOperator extends Operator {
     for (IExpression operand : whenTerm) {
       if (operand.is(Kind.ARRAY)) {
         // Mutli-values simple form
-        for (IExpression value : operand.asArray()) {
+        for (IExpression value : (Array) operand) {
           if (!valueType.isCoercible(value.getType())) {
             return false;
           }
@@ -297,7 +297,7 @@ public class CaseOperator extends Operator {
     // Simple case operator
     if (when == When.SIMPLE) {
 
-      Type type = getLeastRestrictive(call.getOperand(1).asArray());
+      Type type = getLeastRestrictive((Array) call.getOperand(1));
       type = getLeastRestrictive(type, call.getOperand(0).getType());
 
       // Coerce value operand

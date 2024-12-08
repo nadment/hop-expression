@@ -90,10 +90,10 @@ public class MultiplyOperator extends BinaryOperator {
         nullableTerms.add(operand);
       }
       if (operand.isOperator(Operators.NEGATE)) {
-        negateTerms.add(operand.asCall());
+        negateTerms.add((Call) operand);
       }
       if (operand.isOperator(Operators.DIVIDE)) {
-        divideTerms.add(operand.asCall());
+        divideTerms.add((Call) operand);
       }
     }
 
@@ -153,9 +153,7 @@ public class MultiplyOperator extends BinaryOperator {
 
       operand = call;
     }
-    call = operand.asCall();
-
-    return call;
+    return operand;
   }
 
   @Override

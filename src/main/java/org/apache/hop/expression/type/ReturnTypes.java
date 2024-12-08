@@ -18,6 +18,7 @@ package org.apache.hop.expression.type;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.IExpression;
 
 /** A collection of strategies for return type inference. */
@@ -191,7 +192,7 @@ public final class ReturnTypes {
           precision += type.getPrecision();
           if (type.is(TypeId.ARRAY)) {
             typeId = TypeId.ARRAY;
-            elementType = Types.getLeastRestrictive(operand.asArray());
+            elementType = Types.getLeastRestrictive((Array) operand);
           } else if (type.is(TypeId.BINARY)) {
             typeId = TypeId.BINARY;
           }

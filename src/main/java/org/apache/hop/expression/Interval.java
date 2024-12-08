@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.type;
+package org.apache.hop.expression;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -24,9 +24,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.util.Characters;
 
 /** A interval represents a duration of time which can be used in date/time arithmetic. */

@@ -22,7 +22,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
@@ -704,9 +703,9 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimizeFalse("true is null");
     optimizeFalse("false is null");
-    optimizeTrue("NULLIF(1,1) IS NULL");
-    optimizeTrue("NULLIF(1,1)+1 IS NULL");
-    optimizeFalse("NULLIF(1,1)+1 IS NOT NULL");
+    optimizeTrue("NULL IS NULL");
+    optimizeTrue("NULL IS NULL");
+    optimizeFalse("NULL+1 IS NOT NULL");
     optimizeTrue("TRUE IS NOT NULL");
     optimizeFalse("TRUE IS NULL");
     optimizeFalse("1 IS NULL");
@@ -741,6 +740,7 @@ public class OperatorTest extends ExpressionTest {
 
     evalFails("FIELD_STRING IS NOT DISTINCT FROM ", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_STRING IS DISTINCT 'TEST' ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING DISTINCT FROM 'TEST' ", ErrorCode.UNEXPECTED_CHARACTER);
 
     optimize("FIELD_BOOLEAN_TRUE IS DISTINCT FROM TRUE");
     optimize("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE");
@@ -754,6 +754,8 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("FIELD_INTEGER IS DISTINCT FROM FIELD_INTEGER");
 
     // The DISTINCT predicate is a verbose way of NULL safe comparisons
+    optimizeFalse("NULL IS DISTINCT FROM NULL");
+    optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
     optimize("NULL_INTEGER IS DISTINCT FROM NULL", "NULL_INTEGER IS NOT NULL");
     optimize("NULL_INTEGER IS NOT DISTINCT FROM NULL", "NULL_INTEGER IS NULL");
     optimize("FIELD_STRING IS DISTINCT FROM NULL", "FIELD_STRING IS NOT NULL");

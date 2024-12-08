@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.hop.expression.operator.ConcatFunction;
@@ -214,20 +213,6 @@ public class ParserTest extends ExpressionTest {
   }
 
   @Test
-  void as() throws Exception {
-    assertTrue(compile("ABS(FIELD_INTEGER)").asCall() instanceof Call);
-    assertTrue(compile("FIELD_INTEGER").asIdentifier() instanceof Identifier);
-    assertTrue(compile("123").asLiteral() instanceof Literal);
-    assertTrue(compile("ARRAY[1,2,3]").asArray() instanceof Array);
-
-    assertThrows(UnsupportedOperationException.class, () -> compile("123").asCall());
-    assertThrows(
-        UnsupportedOperationException.class, () -> compile("ABS(FIELD_INTEGER)").asIdentifier());
-    assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asLiteral());
-    assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asArray());
-  }
-
-  @Test
   void operatorPrecedenceAndAssociativity() throws Exception {
 
     // Arithmetic
@@ -315,7 +300,7 @@ public class ParserTest extends ExpressionTest {
 
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Year(()", ErrorCode.SYNTAX_ERROR);
-    evalFails("Year+3", ErrorCode.UNSUPPORTED_COERCION);
+    evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     evalFails("Today())", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("Year)", ErrorCode.UNEXPECTED_CHARACTER);

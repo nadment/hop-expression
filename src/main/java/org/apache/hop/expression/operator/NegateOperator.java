@@ -23,9 +23,9 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -52,7 +52,7 @@ public class NegateOperator extends PrefixUnaryOperator {
 
     // Simplify -(-(A)) → A
     if (operand.isOperator(Operators.NEGATE)) {
-      return operand.asCall().getOperand(0);
+      return call(operand).getOperand(0);
     }
 
     Type type = call.getOperand(0).getType();
@@ -62,7 +62,7 @@ public class NegateOperator extends PrefixUnaryOperator {
 
     // Simplify arithmetic -(A-B) → B-A
     if (operand.isOperator(Operators.SUBTRACT)) {
-      Call subtract = operand.asCall();
+      Call subtract = call(operand);
       return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
     }
 

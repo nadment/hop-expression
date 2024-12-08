@@ -56,7 +56,7 @@ public class IsNotNullOperator extends PostfixUnaryOperator {
 
     // CAST(x AS type) IS NOT NULL → x IS NOT NULL
     if (operand.isOperator(Operators.CAST)) {
-      return new Call(call.getOperator(), operand.asCall().getOperands());
+      return new Call(call.getOperator(), call(operand).getOperands());
     }
 
     // If the operand is not nullable, always true

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 
 /** Least restrictive then expression or else expression */
@@ -27,7 +28,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public Type inferReturnType(Call call) {
-    Type returnType = Types.getLeastRestrictive(call.getOperand(2).asArray());
+    Type returnType = Types.getLeastRestrictive((Array) call.getOperand(2));
     return Types.getLeastRestrictive(returnType, call.getOperand(3).getType());
   }
 }

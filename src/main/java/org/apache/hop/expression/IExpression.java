@@ -110,42 +110,6 @@ public interface IExpression {
   public abstract <E> E accept(IExpressionVisitor<E> visitor);
 
   /**
-   * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
-   *
-   * @return this instance cast to a class
-   */
-  public default Call asCall() {
-    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
-  }
-
-  /**
-   * Casts and returns this expression as a {@link Literal} if it is of kind {@code LITERAL}
-   *
-   * @return this instance cast to a class
-   */
-  public default Literal asLiteral() {
-    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
-  }
-
-  /**
-   * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
-   *
-   * @return this instance cast to a class
-   */
-  public default Identifier asIdentifier() {
-    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
-  }
-
-  /**
-   * Casts and returns this expression as a {@link Array} if it is of kind {@code ARRAY}
-   *
-   * @return this instance cast to a class
-   */
-  public default Array asArray() {
-    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
-  }
-
-  /**
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.
    *

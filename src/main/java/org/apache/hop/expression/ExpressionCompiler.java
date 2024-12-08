@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
@@ -64,20 +63,17 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression visitCall(Call call) {
-
-    IExpression original = call;
+  public IExpression visitCall(final Call original) {
 
     // Compile the operands of a call
-    for (int i = 0; i < call.getOperandCount(); i++) {
-      call.setOperand(i, call.getOperand(i).accept(this));
+    for (int i = 0; i < original.getOperandCount(); i++) {
+      original.setOperand(i, original.getOperand(i).accept(this));
     }
 
     // Compile with operator
-    IExpression expression = call.getOperator().compile(context, call);
+    IExpression expression = original.getOperator().compile(context, original);
 
-    if (expression.is(Kind.CALL)) {
-      call = expression.asCall();
+    if (expression instanceof Call call) {
 
       // Coerce operands data type
       changed |= call.getOperator().coerceOperandsType(call);
@@ -86,7 +82,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       call.inferReturnType();
 
       // If something changed
-      if (!expression.equals(original)) {
+      if (!call.equals(original)) {
         changed = true;
       }
 

@@ -51,7 +51,7 @@ public class TruncateFunction extends Function {
     // Idempotent function repetition
     if (call.getOperandCount() == 1
         && call.getOperand(0).isOperator(call.getOperator())
-        && call.getOperand(0).asCall().getOperandCount() == 1) {
+        && call(call.getOperand(0)).getOperandCount() == 1) {
       return call.getOperand(0);
     }
     return call;

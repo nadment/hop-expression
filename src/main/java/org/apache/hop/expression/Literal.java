@@ -24,8 +24,6 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.Interval;
-import org.apache.hop.expression.type.IntervalQualifier;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
@@ -39,14 +37,31 @@ public class Literal implements IExpression {
   /** Literal null value without known data type */
   public static final Literal NULL = new Literal(null, Types.UNKNOWN);
 
+  /** Literal null with binary data type */
   public static final Literal NULL_BINARY = new Literal(null, Types.BINARY);
+
+  /** Literal null with boolean data type */
   public static final Literal NULL_BOOLEAN = new Literal(null, Types.BOOLEAN);
+
+  /** Literal null with string data type */
   public static final Literal NULL_STRING = new Literal(null, Types.STRING);
+
+  /** Literal null with integer data type */
   public static final Literal NULL_INTEGER = new Literal(null, Types.INTEGER);
+
+  /** Literal null with number data type */
   public static final Literal NULL_NUMBER = new Literal(null, Types.NUMBER);
+
+  /** Literal null with date data type */
   public static final Literal NULL_DATE = new Literal(null, Types.DATE);
+
+  /** Literal null with json data type */
   public static final Literal NULL_JSON = new Literal(null, Types.JSON);
+
+  /** Literal null with inet data type */
   public static final Literal NULL_INET = new Literal(null, Types.INET);
+
+  /** Literal null with interval data type */
   public static final Literal NULL_INTERVAL = new Literal(null, Types.INTERVAL);
 
   /** Literal true value with boolean data type */
@@ -62,7 +77,7 @@ public class Literal implements IExpression {
   public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
 
   public static Literal of(final Boolean value) {
-    if (value == null) return NULL;
+    if (value == null) return NULL_BOOLEAN;
     return value ? TRUE : FALSE;
   }
 
@@ -92,7 +107,7 @@ public class Literal implements IExpression {
   }
 
   public static Literal of(final BigDecimal number) {
-    if (number == null) return NULL_BOOLEAN;
+    if (number == null) return NULL_NUMBER;
 
     if (BigDecimal.ZERO.compareTo(number) == 0) {
       return ZERO;
@@ -135,7 +150,7 @@ public class Literal implements IExpression {
 
   public static Literal of(final TimeUnit value) {
     if (value == null) return NULL;
-    return new Literal(value, Types.UNKNOWN);
+    return new Literal(value, Types.TIMEUNIT);
   }
 
   public static Literal of(final BaseFormat value) {
@@ -203,11 +218,6 @@ public class Literal implements IExpression {
       return value.equals(o.value);
     }
     return false;
-  }
-
-  @Override
-  public Literal asLiteral() {
-    return this;
   }
 
   @Override

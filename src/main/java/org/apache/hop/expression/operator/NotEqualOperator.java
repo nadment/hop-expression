@@ -77,7 +77,7 @@ public class NotEqualOperator extends BinaryOperator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Normalize
-    call = Call.normalizeSymmetricalPredicate(call);
+    call = normalizeSymmetricalPredicate(call);
 
     // If the operator has been changed
     if (!call.getOperator().equals(this)) return call;
@@ -110,11 +110,11 @@ public class NotEqualOperator extends BinaryOperator {
     // Simplify 3!=X+1 → 3-1!=X
     if (left.isConstant()
         && right.isOperator(Operators.ADD)
-        && right.asCall().getOperand(0).isConstant()) {
+        && call(right).getOperand(0).isConstant()) {
       return new Call(
           call.getOperator(),
-          new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
-          right.asCall().getOperand(1));
+          new Call(Operators.SUBTRACT, left, call(right).getOperand(0)),
+          call(right).getOperand(1));
     }
 
     return call;

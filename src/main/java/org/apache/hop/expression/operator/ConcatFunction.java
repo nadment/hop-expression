@@ -170,8 +170,8 @@ public class ConcatFunction extends Function {
 
     @Override
     public Object eval(final IExpression[] operands) {
-      Array array0 = operands[0].asArray();
-      Array array1 = operands[1].asArray();
+      Array array0 = (Array) operands[0];
+      Array array1 = (Array) operands[1];
 
       int size0 = array0.size();
       int size1 = array1.size();

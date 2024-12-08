@@ -66,7 +66,7 @@ public class EqualNullFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Normalize
-    call = Call.normalizeSymmetricalPredicate(call);
+    call = normalizeSymmetricalPredicate(call);
 
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);

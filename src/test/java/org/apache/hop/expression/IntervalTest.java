@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.hop.expression.type.Interval;
-import org.apache.hop.expression.type.IntervalQualifier;
 import org.junit.jupiter.api.Test;
 
 public class IntervalTest extends ExpressionTest {

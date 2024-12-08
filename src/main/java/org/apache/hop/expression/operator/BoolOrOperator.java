@@ -116,12 +116,12 @@ public class BoolOrOperator extends BinaryOperator {
         if (term.isOperator(Operators.EQUAL)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
-            inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
+            inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
         if (term.isOperator(Operators.IN) && term.getOperand(1).isConstant()) {
-          for (IExpression operand : term.getOperand(1).asArray()) {
-            inTerms.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
+          for (IExpression operand : array(term.getOperand(1))) {
+            inTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
         if (term.isOperator(Operators.NOT_IN)) {
@@ -190,11 +190,11 @@ public class BoolOrOperator extends BinaryOperator {
         IExpression term = pair.getRight();
         if (values.isEmpty()) {
           if (term.is(Kind.ARRAY)) {
-            term.asArray().forEach(values::add);
+            array(term).forEach(values::add);
           } else values.add(term);
         } else {
           if (term.is(Kind.ARRAY)) {
-            values = CollectionUtils.intersection(values, term.asArray());
+            values = CollectionUtils.intersection(values, array(term));
           } else {
             values = CollectionUtils.intersection(values, List.of(term));
           }

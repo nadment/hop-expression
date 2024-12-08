@@ -410,4 +410,127 @@ public abstract class Operator {
       throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
     }
   }
+
+  /**
+   * Normalize reversible operator
+   *
+   * <ul>
+   *   <li>swap term to identifier operator literal 1>A → A<1
+   *   <li>ordering identifiers by name with case sensitive B>A → A<B
+   *   <li>ordering the low-cost operand to the left
+   * </ul>
+   *
+   * @param call The call to normalize
+   * @return normalized call
+   */
+  protected Call normalizeReversiblePredicate(Call call) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Nothing to normalize
+    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
+      return call;
+    }
+
+    // Normalize identifier to the left
+    if (right.is(Kind.IDENTIFIER)) {
+      // Swap terms and reverse operator 1>A → A<1
+      if (left.is(Kind.LITERAL)) {
+        return call.reverse();
+      }
+      // Swap terms and reverse operator B>A → A<B
+      if (left.is(Kind.IDENTIFIER)
+          && identifier(left).getName().compareTo(identifier(right).getName()) > 0) {
+        return call.reverse();
+      }
+    }
+
+    // Normalize operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return call.reverse();
+    }
+
+    // If same cost order with textual representation
+    //    if (left.toString().compareTo(right.toString()) > 0) {
+    //      System.out.println("Reverse term by textual");
+    //      return reverse(call);
+    //    }
+
+    return call;
+  }
+
+  /**
+   * Normalize symmetrical operator
+   *
+   * <ul>
+   *   <li>swap term to identifier operator literal 1=A → A=1
+   *   <li>ordering identifiers by name (case sensitive) B=A → A=B
+   *   <li>ordering the low-cost operand to the left
+   * </ul>
+   *
+   * @param call The call to normalize
+   * @return normalized call
+   */
+  protected Call normalizeSymmetricalPredicate(Call call) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Nothing to normalize
+    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
+      return call;
+    }
+
+    if (right.is(Kind.IDENTIFIER)) {
+
+      // Swap terms 1=A → A=1
+      if (left.is(Kind.LITERAL)) {
+        return call.swap();
+      }
+      // Swap terms B=A → A=B
+      if (left.is(Kind.IDENTIFIER)
+          && identifier(left).getName().compareTo(identifier(right).getName()) > 0) {
+        return call.swap();
+      }
+    }
+
+    // Normalize operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return call.swap();
+    }
+
+    // If same cost order with textual representation
+    //    if (left.toString().compareTo(right.toString()) > 0) {
+    //      System.out.println("Swap term by textual");
+    //      return swap(call);
+    //    }
+
+    return call;
+  }
+
+  /**
+   * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
+   *
+   * @return this instance cast to a class
+   */
+  protected static Call call(final IExpression expression) {
+    return (Call) expression;
+  }
+
+  /**
+   * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
+   *
+   * @return this instance cast to a class
+   */
+  protected static Identifier identifier(final IExpression expression) {
+    return (Identifier) expression;
+  }
+
+  /**
+   * Casts and returns this expression as a {@link Array} if it is of kind {@code ARRAY}
+   *
+   * @return this instance cast to a class
+   */
+  protected static Array array(final IExpression expression) {
+    return (Array) expression;
+  }
 }

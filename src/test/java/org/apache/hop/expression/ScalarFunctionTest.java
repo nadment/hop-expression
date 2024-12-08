@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -660,8 +659,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Next_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Next_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Next_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
-    // TODO: ILLEGAL_ARGUMENT_TYPE
-    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_COERCION);
+    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.CONVERSION_ERROR);
   }
@@ -677,8 +675,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Previous_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
-    // TODO: ILLEGAL_ARGUMENT_TYPE
-    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_COERCION);
+    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
@@ -1435,6 +1432,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Space()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     // TODO: should throw conversion error
     evalFails("Space('str')", ErrorCode.INVALID_INTEGER);
   }

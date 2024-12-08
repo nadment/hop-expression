@@ -18,34 +18,32 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.Interval;
 
-public final class IntervalType extends Type {
+public final class TimeUnitType extends Type {
 
-  IntervalType(boolean nullable) {
-    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  TimeUnitType(boolean nullable) {
+    super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
     this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   @Override
-  public IntervalType withNullability(boolean nullable) {
-    return new IntervalType(nullable);
+  public TimeUnitType withNullability(boolean nullable) {
+    return new TimeUnitType(nullable);
   }
 
   @Override
   public TypeId getId() {
-    return TypeId.INTERVAL;
+    return TypeId.TIMEUNIT;
   }
 
   @Override
   public TypeComparability getComparability() {
-    return TypeComparability.ALL;
+    return TypeComparability.NONE;
   }
 
   @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+
     if (value == null) {
       return null;
     }
@@ -54,37 +52,5 @@ public final class IntervalType extends Type {
     }
 
     return super.convert(value, clazz);
-  }
-
-  @Override
-  public Object cast(final Object value) throws ConversionException {
-    return cast(value, null);
-  }
-
-  @Override
-  public Object cast(final Object value, final String pattern) throws ConversionException {
-
-    if (value == null) {
-      return null;
-    }
-
-    if (value instanceof String str) {
-      return Interval.of(str);
-    }
-
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
-  }
-
-  /**
-   * Convert String value to Interval.
-   *
-   * @param str the string to convert
-   * @return Interval
-   */
-  public static Interval convert(final String str) throws ConversionException {
-    if (str == null) return null;
-    Interval value = Interval.of(str);
-    return value;
   }
 }

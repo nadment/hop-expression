@@ -35,7 +35,6 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -130,7 +129,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Void.class));
     assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Float.class));
     assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Type.class));
-    assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(TimeUnit.class));
+    assertEquals(TypeId.TIMEUNIT, TypeId.fromJavaClass(TimeUnit.class));
     assertEquals(TypeId.BOOLEAN, TypeId.fromJavaClass(Boolean.class));
     assertEquals(TypeId.STRING, TypeId.fromJavaClass(String.class));
     assertEquals(TypeId.DATE, TypeId.fromJavaClass(ZonedDateTime.class));
@@ -147,7 +146,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.UNKNOWN, TypeId.fromValue(null));
     assertEquals(TypeId.UNKNOWN, TypeId.fromValue(new Random()));
     assertEquals(TypeId.BOOLEAN, TypeId.fromValue(true));
-    assertEquals(TypeId.UNKNOWN, TypeId.fromValue(TimeUnit.CENTURY));
+    assertEquals(TypeId.TIMEUNIT, TypeId.fromValue(TimeUnit.CENTURY));
     assertEquals(TypeId.STRING, TypeId.fromValue("test"));
     assertEquals(TypeId.BINARY, TypeId.fromValue(new byte[] {0xF}));
     assertEquals(TypeId.INTEGER, TypeId.fromValue(123));
@@ -193,7 +192,7 @@ public class TypeTest extends ExpressionTest {
     assertTrue(Types.BINARY.isFamily(TypeFamily.BINARY));
     assertFalse(Types.BINARY.isFamily(TypeFamily.NUMERIC));
     assertTrue(Types.BINARY.isFamily(TypeFamily.ANY));
-    assertFalse(Types.BINARY.isFamily(TypeFamily.NONE));
+    assertFalse(Types.BINARY.isFamily(TypeFamily.SYMBOL));
     assertTrue(Types.BINARY.isFamily(TypeFamily.BINARY));
 
     assertTrue(Types.BOOLEAN.isFamily(TypeFamily.BOOLEAN));

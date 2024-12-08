@@ -64,14 +64,14 @@ public class IfFunction extends Function {
 
     if (condition.isOperator(Operators.IS_NULL)) {
       // IF(x IS NULL,y,x) → IFNULL(x, y)
-      if (call.getOperand(2).equals(condition.asCall().getOperand(0))) {
+      if (call.getOperand(2).equals(call(condition).getOperand(0))) {
         return new Call(IfNullFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       }
 
       // IF(x IS NULL,y,z) → NVL2(x, z, y)
       return new Call(
           Nvl2Function.INSTANCE,
-          condition.asCall().getOperand(0),
+          call(condition).getOperand(0),
           call.getOperand(2),
           call.getOperand(1));
     }
@@ -80,7 +80,7 @@ public class IfFunction extends Function {
       // IF(x IS NOT NULL,y,z) → NVL2(x,y,z)
       return new Call(
           Nvl2Function.INSTANCE,
-          condition.asCall().getOperand(0),
+          call(condition).getOperand(0),
           call.getOperand(1),
           call.getOperand(2));
     }
@@ -88,15 +88,13 @@ public class IfFunction extends Function {
     if (condition.isOperator(Operators.EQUAL) && call.getOperand(1).isNull()) {
 
       // IF(x=y,NULL,x) → NULLIF(x, y)
-      if (condition.asCall().getOperand(0).equals(call.getOperand(2))) {
-        return new Call(
-            NullIfFunction.INSTANCE, call.getOperand(2), condition.asCall().getOperand(1));
+      if (call(condition).getOperand(0).equals(call.getOperand(2))) {
+        return new Call(NullIfFunction.INSTANCE, call.getOperand(2), call(condition).getOperand(1));
       }
 
       // IF(x=y,NULL,y) → NULLIF(y, x)
-      if (condition.asCall().getOperand(1).equals(call.getOperand(2))) {
-        return new Call(
-            NullIfFunction.INSTANCE, call.getOperand(2), condition.asCall().getOperand(0));
+      if (call(condition).getOperand(1).equals(call.getOperand(2))) {
+        return new Call(NullIfFunction.INSTANCE, call.getOperand(2), call(condition).getOperand(0));
       }
     }
 

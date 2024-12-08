@@ -40,14 +40,13 @@ public enum TypeFamily {
   // -------------------------------------------
   // Secondary
   // -------------------------------------------
+  UNKNOWN,
   //
-  NONE,
+  SYMBOL,
   //
   ANY,
   //
-  ARRAY,
-  //
-  SYMBOL;
+  ARRAY;
 
   /** Returns whether type are in same type family. */
   public boolean isFamily(final TypeFamily... families) {
@@ -84,7 +83,7 @@ public enum TypeFamily {
         return family.isFamily(INET);
       case ARRAY:
         return family.isFamily(ARRAY);
-      case ANY, NONE:
+      case UNKNOWN, ANY:
         return true;
       case SYMBOL:
       default:
@@ -116,8 +115,9 @@ public enum TypeFamily {
         return family.isFamily(INTERVAL);
       case INET:
         return family.isFamily(INET, STRING);
-      case ANY:
+      case UNKNOWN, ANY:
         return true;
+      case SYMBOL:
       default:
         return false;
     }

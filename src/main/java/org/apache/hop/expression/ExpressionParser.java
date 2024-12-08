@@ -26,8 +26,6 @@ import org.apache.hop.expression.operator.LastValueFunction;
 import org.apache.hop.expression.operator.NthValueFunction;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.Interval;
-import org.apache.hop.expression.type.IntervalQualifier;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;

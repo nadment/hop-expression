@@ -111,15 +111,15 @@ public class BoolAndOperator extends BinaryOperator {
         if (term.isOperator(Operators.NOT_EQUAL)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
-            notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
+            notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
         if (term.isOperator(Operators.IN)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(Operators.NOT_IN) && term.getOperand(1).isConstant()) {
-          for (IExpression operand : term.getOperand(1).asArray()) {
-            notInTerms.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
+          for (IExpression operand : array(term.getOperand(1))) {
+            notInTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
         if (Operators.isStrong(term)) {
@@ -146,7 +146,7 @@ public class BoolAndOperator extends BinaryOperator {
         while (iterator.hasNext()) {
           IExpression condition = iterator.next();
           if (condition.isOperator(Operators.IS_NOT_NULL)
-              && condition.asCall().getOperand(0).equals(operand)) {
+              && call(condition).getOperand(0).equals(operand)) {
             unnecessary.add(condition);
           }
         }
@@ -182,11 +182,11 @@ public class BoolAndOperator extends BinaryOperator {
         IExpression term = pair.getRight();
         if (values.isEmpty()) {
           if (term.is(Kind.ARRAY)) {
-            term.asArray().forEach(values::add);
+            array(term).forEach(values::add);
           } else values.add(term);
         } else {
           if (term.is(Kind.ARRAY)) {
-            values = CollectionUtils.intersection(values, term.asArray());
+            values = CollectionUtils.intersection(values, array(term));
           } else {
             values = CollectionUtils.intersection(values, List.of(term));
           }

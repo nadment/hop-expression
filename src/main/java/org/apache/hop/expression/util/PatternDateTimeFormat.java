@@ -326,7 +326,6 @@ import org.apache.hop.expression.ExpressionException;
     public void parse(final DateTimeParser parser) {
       char c = parser.parseChar();
       if (exactMode && ch != c) {
-        // TODO: Translate
         throw new FormatParseException(
             ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
       }

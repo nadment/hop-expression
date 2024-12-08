@@ -39,7 +39,7 @@ public class CardinalityFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Array array = operands[0].asArray();
+    Array array = (Array) operands[0];
     return Long.valueOf(array.size());
   }
 }

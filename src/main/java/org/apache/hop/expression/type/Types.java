@@ -42,6 +42,8 @@ public class Types {
 
   public static final UnknownType UNKNOWN = new UnknownType(true);
 
+  public static final TimeUnitType TIMEUNIT = new TimeUnitType(true);
+
   public static final ArrayType ARRAY = new ArrayType(UNKNOWN, true);
 
   public static final AnyType ANY = new AnyType(true);
@@ -176,8 +178,8 @@ public class Types {
 
     // If the operand is a array, coercion of all its elements
     if (operand.is(Kind.ARRAY)) {
-      Array array = coerceOperandType(operand.asArray(), type);
-      if (!array.equals(operand.asArray())) {
+      Array array = coerceOperandType((Array) operand, type);
+      if (!array.equals((Array) operand)) {
         call.setOperand(index, array);
         return true;
       }

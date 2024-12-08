@@ -74,7 +74,7 @@ public class InOperator extends Operator {
     Type type = call.getOperand(0).getType();
     if (type.is(TypeId.UNKNOWN)) return false;
 
-    Array array = call.getOperand(1).asArray();
+    Array array = (Array) call.getOperand(1);
     for (IExpression operand : array) {
       if (!type.isCoercible(operand.getType())) {
         return false;
@@ -97,7 +97,7 @@ public class InOperator extends Operator {
     List<IExpression> list = new ArrayList<>();
 
     IExpression reference = call.getOperand(0);
-    Array array = call.getOperand(1).asArray();
+    Array array = (Array) call.getOperand(1);
 
     // NULL if left side expression is always NULL
     if (reference.isNull()) {
@@ -149,7 +149,7 @@ public class InOperator extends Operator {
     Type type = call.getOperand(0).getType();
 
     // Determine common type
-    Array array = call.getOperand(1).asArray();
+    Array array = (Array) call.getOperand(1);
     for (IExpression operand : array) {
       type = getCommonTypeForComparison(type, operand.getType());
     }
@@ -213,7 +213,7 @@ public class InOperator extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(not ? " NOT IN (" : " IN (");
-    operands[1].asArray().unparseValues(writer);
+    array(operands[1]).unparseValues(writer);
     writer.append(')');
   }
 }

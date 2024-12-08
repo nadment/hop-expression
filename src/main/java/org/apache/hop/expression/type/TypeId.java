@@ -22,6 +22,8 @@ import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import org.apache.hop.expression.Array;
+import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.TimeUnit;
 
 /**
  * Enumeration of the data type identifier which can be used to construct an expression.
@@ -34,7 +36,9 @@ import org.apache.hop.expression.Array;
 public enum TypeId {
 
   /** A unknown type */
-  UNKNOWN(TypeFamily.NONE, false, false, -1, -1, -1, -1, Void.class),
+  UNKNOWN(TypeFamily.UNKNOWN, false, false, -1, -1, -1, -1, Void.class),
+
+  TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class),
 
   ANY(TypeFamily.ANY, false, false, -1, -1, -1, -1, Object.class),
 
@@ -76,7 +80,7 @@ public enum TypeId {
   protected static final Set<TypeId> JSON_TYPES = Set.of(JSON);
   protected static final Set<TypeId> INTERVAL_TYPES = Set.of(INTERVAL);
 
-  protected static final Set<TypeId> ALL_TYPES =
+  protected static final Set<TypeId> PRIMARY_TYPES =
       Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, INTERVAL, BINARY, JSON);
 
   /** If the precision parameter is supported. */
