@@ -88,8 +88,9 @@ public class RPadFunction extends Function {
         return "";
       }
       if (length > PAD_LIMIT) {
+        // TODO: Fix me
         throw new IllegalArgumentException(
-            ErrorCode.ILLEGAL_ARGUMENT.message(
+            ErrorCode.INVALID_ARGUMENT.message(
                 "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
@@ -144,7 +145,7 @@ public class RPadFunction extends Function {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
         throw new IllegalArgumentException(
-            ErrorCode.ILLEGAL_ARGUMENT.message(
+            ErrorCode.INVALID_ARGUMENT.message(
                 "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 

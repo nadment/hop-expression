@@ -159,6 +159,6 @@ public final class BooleanType extends Type {
         break;
     }
 
-    throw new ConversionException(ErrorCode.INVALID_BOOLEAN, str);
+    throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeId.STRING, str);
   }
 }

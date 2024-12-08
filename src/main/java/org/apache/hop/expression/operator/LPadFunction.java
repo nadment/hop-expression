@@ -87,7 +87,7 @@ public class LPadFunction extends Function {
         length = 0;
       } else if (length > PAD_LIMIT) {
         throw new IllegalArgumentException(
-            ErrorCode.ILLEGAL_ARGUMENT.message(
+            ErrorCode.INVALID_ARGUMENT.message(
                 "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
@@ -143,7 +143,7 @@ public class LPadFunction extends Function {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
         throw new IllegalArgumentException(
-            ErrorCode.ILLEGAL_ARGUMENT.message(
+            ErrorCode.INVALID_ARGUMENT.message(
                 "Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 

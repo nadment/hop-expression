@@ -146,7 +146,7 @@ public class Call implements IExpression {
       return operator.eval(operands);
     } catch (ExpressionException e) {
       throw e;
-    } catch (Throwable e) {
+    } catch (Exception e) {
       ErrorCode error =
           (operator instanceof Function)
               ? ErrorCode.CALL_FUNCTION_ERROR
@@ -162,7 +162,7 @@ public class Call implements IExpression {
       return type.convert(value, clazz);
     } catch (ExpressionException e) {
       throw e;
-    } catch (Throwable e) {
+    } catch (Exception e) {
       ErrorCode error =
           (operator instanceof Function)
               ? ErrorCode.CALL_FUNCTION_ERROR

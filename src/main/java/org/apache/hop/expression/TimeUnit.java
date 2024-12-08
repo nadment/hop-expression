@@ -615,23 +615,23 @@ public enum TimeUnit {
   }
 
   public long extract(LocalDate date) {
-    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+    throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, this);
   }
 
   public long extract(LocalDateTime datetime) {
-    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+    throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, this);
   }
 
   public long extract(OffsetDateTime datetime) {
-    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+    throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, this);
   }
 
   public long extract(ZonedDateTime datetime) {
-    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+    throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, this);
   }
 
   public long extract(Interval interval) {
-    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+    throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, this);
   }
 
   /** Returns a list of name and alias. */

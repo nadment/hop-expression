@@ -195,7 +195,7 @@ public final class StringType extends Type {
     return value ? "TRUE" : "FALSE";
   }
 
-  public static String convert(final BigDecimal value) throws ConversionException {
+  public static String convert(final BigDecimal value) {
     return NumberFormat.of("TM").format(value);
   }
 
@@ -203,11 +203,11 @@ public final class StringType extends Type {
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
-  public static String convert(final ZonedDateTime value) throws ConversionException {
+  public static String convert(final ZonedDateTime value) {
     return DateTimeFormat.of("YYYY-MM-DD").format(value);
   }
 
-  public static String convert(final InetAddress value) throws ConversionException {
+  public static String convert(final InetAddress value) {
     return value.getHostAddress();
   }
 
@@ -222,7 +222,7 @@ public final class StringType extends Type {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.INVALID_JSON, json);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_STRING, TypeId.JSON, json);
     }
   }
 }

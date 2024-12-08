@@ -42,7 +42,7 @@ class AggregateFunctionTest extends ExpressionTest {
   @Test
   void CountIf() throws Exception {
     evalFails("CountIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("CountIf(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     returnType("CountIf(FIELD_INTEGER>=10)", Types.INTEGER);
     optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(FIELD_INTEGER>=10)");

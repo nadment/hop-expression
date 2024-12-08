@@ -92,7 +92,7 @@ public class DateDiffFunction extends Function {
       case NANOSECOND:
         return startDateTime.until(endDateTime, ChronoUnit.NANOS);
       default:
-        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
+        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
     }
   }
 }

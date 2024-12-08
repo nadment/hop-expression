@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -46,8 +47,7 @@ public class FactorialFunction extends Function {
 
     int n = value.intValue();
 
-    if (n < 0)
-      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
+    if (n < 0) throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value);
 
     if (n > 20) {
       BigInteger result = BigInteger.ONE;

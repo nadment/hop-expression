@@ -86,7 +86,7 @@ public class DateTruncFunction extends Function {
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
       default:
-        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
+        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
     }
   }
 }

@@ -293,14 +293,14 @@ public class ParserTest extends ExpressionTest {
     evalFails("9+()", ErrorCode.SYNTAX_ERROR);
     evalFails("9+*(", ErrorCode.SYNTAX_ERROR);
     evalFails("*9", ErrorCode.SYNTAX_ERROR);
-    evalFails("DATE '2023-01-01'||'X'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DATE '2023-01-01'||'X'", ErrorCode.ILLEGAL_ARGUMENT);
 
     evalFails(")+1", ErrorCode.SYNTAX_ERROR);
     evalFails("Year(", ErrorCode.SYNTAX_ERROR_FUNCTION);
 
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Year(()", ErrorCode.SYNTAX_ERROR);
-    evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT);
 
     evalFails("Today())", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("Year)", ErrorCode.UNEXPECTED_CHARACTER);

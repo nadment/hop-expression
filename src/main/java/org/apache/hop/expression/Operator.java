@@ -337,7 +337,7 @@ public abstract class Operator {
     }
 
     if (throwOnFailure) {
-      throw new ExpressionParseException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
+      throw new ExpressionParseException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT, this);
     }
 
     return false;

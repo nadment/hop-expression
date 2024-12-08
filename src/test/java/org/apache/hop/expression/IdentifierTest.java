@@ -56,7 +56,7 @@ public class IdentifierTest extends ExpressionTest {
     evalFails("BIDON||'X'", ErrorCode.UNRESOLVED_IDENTIFIER);
     evalFails("ABS(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
     evalFails("SIN(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("CAST(FIELD_STRING as INTEGER)", ErrorCode.INVALID_INTEGER);
+    evalFails("CAST(FIELD_STRING as INTEGER)", ErrorCode.CONVERSION_ERROR_TO_INTEGER);
   }
 
   @Test
@@ -90,7 +90,7 @@ public class IdentifierTest extends ExpressionTest {
     evalTrue("FIELD_INTEGER_ZERO IS FALSE");
     evalEquals("Upper(FIELD_INTEGER)", "40");
     evalEquals("ADD_YEARS(Date '2000-01-01',FIELD_INTEGER)", LocalDate.of(2040, Month.JANUARY, 1));
-    evalFails("DECOMPRESS(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DECOMPRESS(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -101,7 +101,7 @@ public class IdentifierTest extends ExpressionTest {
     evalTrue("FIELD_NUMBER_ZERO IS FALSE");
     evalEquals("LEFT('ABCDEFG',ABS(FIELD_NUMBER))", "ABCDE");
     evalEquals("ADD_YEARS(Date '2020-01-01',FIELD_NUMBER)", LocalDate.of(2015, Month.JANUARY, 1));
-    evalFails("DECOMPRESS(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DECOMPRESS(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -111,7 +111,7 @@ public class IdentifierTest extends ExpressionTest {
     evalTrue("FIELD_BIGNUMBER IS TRUE");
     evalTrue("FIELD_BIGNUMBER_ZERO IS FALSE");
     evalEquals("LEFT('ABCDEFG',FIELD_BIGNUMBER)", "ABCDEFG");
-    evalFails("DECOMPRESS(FIELD_BIGNUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DECOMPRESS(FIELD_BIGNUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -124,13 +124,13 @@ public class IdentifierTest extends ExpressionTest {
   void coercionValueMetaJson() throws Exception {
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
     evalEquals("LENGTH(FIELD_JSON::STRING)", 466L);
-    evalFails("FIELD_JSON IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_JSON IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
   void coercionValueMetaInet() throws Exception {
     // Unsupported value meta
-    evalFails("UPPER(FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("UPPER(FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test

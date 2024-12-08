@@ -122,7 +122,7 @@ public final class InetType extends Type {
     try {
       return InetAddress.getByName(str);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.INVALID_INET, str);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeId.STRING, str);
     }
   }
 }

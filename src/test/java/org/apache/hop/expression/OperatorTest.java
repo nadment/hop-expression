@@ -299,10 +299,10 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("Date '2023-10-01' > '2023-10-31'");
 
     // Unsupported coercion
-    evalFails("FIELD_DATE>5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_DATE>5", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Compare unordered type
-    evalFails("FIELD_JSON > FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_JSON > FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Conversion error
     evalFails("FIELD_STRING>5", ErrorCode.CONVERSION_ERROR);
@@ -379,10 +379,10 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("Date '2023-10-01' >= '2023-10-31'");
 
     // Compare unordered type
-    evalFails("FIELD_JSON >= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_JSON >= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Unsupported coercion
-    evalFails("FIELD_DATE>=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_DATE>=5", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Conversion error
     evalFails("FIELD_STRING>=5", ErrorCode.CONVERSION_ERROR);
@@ -466,7 +466,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Date '2023-10-01' < '2023-10-31'");
 
     // Compare unordered type
-    evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Conversion error
     evalFails("FIELD_STRING < 5", ErrorCode.CONVERSION_ERROR);
@@ -543,7 +543,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Date '2023-10-01' <= '2023-10-31'");
 
     // Compare unordered type
-    evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Conversion error
     evalFails("FIELD_STRING <=5", ErrorCode.CONVERSION_ERROR);
@@ -617,8 +617,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER in 40", ErrorCode.MISSING_LEFT_PARENTHESIS);
     evalFails("FIELD_INTEGER in (1,2,3", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    evalFails("FIELD_INTEGER in (1,2,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("FIELD_DATE in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_INTEGER in (1,2,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("FIELD_DATE in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimize("FIELD_INTEGER IN (10,20,30,40)");
     optimize("FIELD_INTEGER NOT IN (10,20,30,40)");
@@ -1045,8 +1045,7 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_INTEGER between 10 and", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and 10", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and ", ErrorCode.SYNTAX_ERROR);
-      evalFails(
-          "FIELD_INTEGER between FIELD_DATE and FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
       evalFails("FIELD_INTEGER BETWEEN 4 AND", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER BETWEEN  AND 7", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER BETWEEN 4 OR 6", ErrorCode.SYNTAX_ERROR);
@@ -1138,7 +1137,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("CAST(NULL_STRING as Boolean)").returnType(Types.BOOLEAN);
     evalNull("CAST(NULL_BOOLEAN as Boolean)").returnType(Types.BOOLEAN);
 
-    evalFails("'YEP'::Boolean", ErrorCode.INVALID_BOOLEAN);
+    evalFails("'YEP'::Boolean", ErrorCode.CONVERSION_ERROR_TO_BOOLEAN);
 
     // Unsupported conversion
     evalFails("CAST(DATE '2019-02-25' AS BOOLEAN)", ErrorCode.UNSUPPORTED_CONVERSION);
@@ -1446,7 +1445,7 @@ public class OperatorTest extends ExpressionTest {
     // Null
     evalNull("CAST(NULL_STRING as INET)");
 
-    evalFails("CAST('xyz' as INET)", ErrorCode.INVALID_INET);
+    evalFails("CAST('xyz' as INET)", ErrorCode.CONVERSION_ERROR_TO_INET);
     evalFails("CAST(TRUE as INET)", ErrorCode.UNSUPPORTED_CONVERSION);
   }
 
@@ -1924,7 +1923,7 @@ public class OperatorTest extends ExpressionTest {
 
     evalFails(" XOR true", ErrorCode.SYNTAX_ERROR);
     evalFails("XOR false", ErrorCode.SYNTAX_ERROR);
-    evalFails("true XOR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("true XOR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1943,7 +1942,7 @@ public class OperatorTest extends ExpressionTest {
 
     evalFails("false OR", ErrorCode.SYNTAX_ERROR);
     evalFails("OR false", ErrorCode.SYNTAX_ERROR);
-    evalFails("true OR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("true OR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Simplify literal
     optimizeTrue("true or true");
@@ -2036,7 +2035,7 @@ public class OperatorTest extends ExpressionTest {
 
     evalFails("false AND", ErrorCode.SYNTAX_ERROR);
     evalFails("AND false", ErrorCode.SYNTAX_ERROR);
-    evalFails("true AND Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("true AND Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimize("FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN");
     optimizeTrue("25>=12 and 14<15");
@@ -2193,9 +2192,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_STRING LIKE '%'").returnType(Types.BOOLEAN);
     evalNull("'test' LIKE NULL_STRING").returnType(Types.BOOLEAN);
 
-    evalFails("'give me 30% discount' like '%30!%%' escape '!!'", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("'give me 30% discount' like '%30!%%' escape '!!'", ErrorCode.INVALID_ARGUMENT);
+    evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.INVALID_ARGUMENT);
+    evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
 
     optimize("FIELD_STRING LIKE 'AD%D'");
     optimize("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
@@ -2240,7 +2239,7 @@ public class OperatorTest extends ExpressionTest {
         "case when FIELD_INTEGER=40 then 10 else 'Error'", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
     // Unknown return type
-    evalFails("case when false then NULL end", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("case when false then NULL end", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Literal
     optimizeFalse("(CASE WHEN FALSE THEN 1 ELSE 2 END) IS NULL");
@@ -2337,10 +2336,10 @@ public class OperatorTest extends ExpressionTest {
         "case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5",
         ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
-    // Incompatible return type
+    // TODO: Incompatible return type
     evalFails(
         "case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end",
-        ErrorCode.INVALID_INTEGER);
+        ErrorCode.CONVERSION_ERROR_TO_INTEGER);
 
     // Missing 'END'
     evalFails("case FIELD_INTEGER when 40 then 10 else 50", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);

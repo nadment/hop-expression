@@ -59,7 +59,7 @@ public enum TypeFamily {
 
   /**
    * Returns whether this {@link TypeFamily} support implicit coercion to the specified {@link
-   * TypeFamily}.
+   * TypeFamily}. Implicit coercions is generally only possible when the cast cannot fail.
    */
   public boolean isCoercible(final TypeFamily family) {
     if (family == null) return false;

@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -51,7 +52,7 @@ public class NormalizeFunction extends Function {
       try {
         form = Form.valueOf(name);
       } catch (Exception e) {
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(name));
+        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, name);
       }
     }
 

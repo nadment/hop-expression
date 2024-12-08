@@ -171,14 +171,13 @@ public final class IntegerType extends Type {
       BigDecimal number = numberFormat.parse(str);
       return convert(number);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.INVALID_INTEGER, str);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeId.STRING, str);
     }
   }
 
   public static final Long convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, TypeId.BINARY, bytes, TypeId.INTEGER);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeId.BINARY, bytes);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

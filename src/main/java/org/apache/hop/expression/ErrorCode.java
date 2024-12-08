@@ -38,10 +38,10 @@ public enum ErrorCode {
   CONTEXT_ERROR,
   /** Division by zero */
   DIVISION_BY_ZERO,
-  /** Illegal argument to the operator ''{0}'' */
+  /** Invalid argument ''{0}'' */
+  INVALID_ARGUMENT,
+  /** Illegal argument type to call {0}. You might need to add explicit type casts. */
   ILLEGAL_ARGUMENT,
-  /** {0}: Illegal argument data type */
-  ILLEGAL_ARGUMENT_TYPE,
   /** Field not found ''{0}'' */
   UNRESOLVED_IDENTIFIER,
   /** Function ''{0}'' does not exist */
@@ -82,22 +82,16 @@ public enum ErrorCode {
   SCALE_GREATER_THAN_PRECISION,
   /** The index ''{0}'' is out of bounds */
   INVALID_ARRAY_INDEX,
-  /** Invalid Boolean ''{0}'' */
-  INVALID_BOOLEAN,
   /** Date ''{0}'' is not recognized */
   INVALID_DATE,
   /** Time unit ''{0}'' is not recognized */
   INVALID_TIMEUNIT,
   /** Invalid date format ''{0}'' at position {1} */
   INVALID_DATE_FORMAT,
-  /** Time value ''{0}'' is not recognized */
-  INVALID_TIME,
   /** Timestamp ''{0}'' is not recognized */
   INVALID_TIMESTAMP,
   /** Time zone ''{0}'' is not recognized */
   INVALID_TIMEZONE,
-  /** Integer ''{0}'' is not recognized */
-  INVALID_INTEGER,
   /** Interval ''{0}'' is not recognized */
   INVALID_INTERVAL,
   /** Invalid name of month ''{0}'' at position {1} */
@@ -108,12 +102,8 @@ public enum ErrorCode {
   INVALID_NUMBER_FORMAT,
   /** Invalid binary format ''{0}'' */
   INVALID_BINARY_FORMAT,
-  /** Invalid json ''{0}'' */
-  INVALID_JSON,
   /** Invalid json path ''{0}'' */
   INVALID_JSON_PATH,
-  /** Invalid internet address ''{0}'' */
-  INVALID_INET,
   /** Invalid regexp pattern ''{0}'' */
   INVALID_REGEXP_PATTERN,
   /** Invalid escape sequence ''{0}'', {1} */
@@ -140,8 +130,26 @@ public enum ErrorCode {
   UNSUPPORTED_TIME_UNIT,
   /** Unsupported array type ''{0}'' */
   UNSUPPORTED_ARRAY_TYPE,
-  /** Error converting {0} value ''{2}'' to data type {1} */
+  /** Error converting {0} value ''{2}'' to {1} */
   CONVERSION_ERROR,
+  /** Error converting {0} value ''{1}'' to BINARY */
+  CONVERSION_ERROR_TO_BINARY,
+  /** Error converting {0} value ''{1}'' to BOOLEAN */
+  CONVERSION_ERROR_TO_BOOLEAN,
+  /** Error converting {0} value ''{1}'' to DATE */
+  CONVERSION_ERROR_TO_DATE,
+  /** Error converting {0} value ''{1}'' to INET */
+  CONVERSION_ERROR_TO_INET,
+  /** Error converting {0} value ''{1}'' to INTEGER */
+  CONVERSION_ERROR_TO_INTEGER,
+  /** Error converting {0} value ''{1}'' to INTERVAL */
+  CONVERSION_ERROR_TO_INTERVAL,
+  /** Error converting {0} value ''{1}'' to JSON */
+  CONVERSION_ERROR_TO_JSON,
+  /** Error converting {0} value ''{1}'' to NUMBER */
+  CONVERSION_ERROR_TO_NUMBER,
+  /** Error converting {0} value ''{1}'' to STRING */
+  CONVERSION_ERROR_TO_STRING,
   /** Compression error */
   COMPRESSION_ERROR,
   /** Decompression error */

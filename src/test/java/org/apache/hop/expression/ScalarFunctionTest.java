@@ -98,7 +98,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_BINARY(NULL_STRING)");
 
     // Failed if format is null
-    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Failed if format is bad
     evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')", ErrorCode.INVALID_BINARY_FORMAT);
@@ -188,7 +188,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Try_To_Json('{\"name\":\"Smith\"; \"age\":29}')");
 
     evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Try_To_Json(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Try_To_Json(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -252,8 +252,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("If()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("If(true)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");
@@ -332,7 +332,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("NullIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("NullIf(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimizeNull("NULLIF(NULL, NULL)");
     optimizeNull("NULLIF(true, true)");
@@ -397,7 +397,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Decode(1,2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Mixed type
-    evalFails("Decode(FIELD_INTEGER,1,'baby',20,false,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Decode(FIELD_INTEGER,1,'baby',20,false,true)", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Simplify unreachable DECODE clauses
     optimize(
@@ -606,8 +606,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("First_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("First_Day(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("First_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("First_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
@@ -639,10 +639,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Last_Day(NULL_DATE, YEAR)");
 
     evalFails("Last_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Last_Day(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Last_Day(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("Last_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
@@ -658,9 +658,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Next_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Next_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Next_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Next_Day(FIELD_DATE, 'bad')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.CONVERSION_ERROR);
   }
 
@@ -674,9 +674,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Previous_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -690,7 +690,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Normalize(NULL_STRING)");
 
     evalFails("Normalize()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Normalize('\u00ea','BAD')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Normalize('\u00ea','BAD')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Normalize('\u00ea',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -876,7 +877,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Year(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Year(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Year(12)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -886,7 +887,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("MonthName(NULL_DATE)");
 
     evalFails("MonthName()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MonthName(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MonthName(12)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -896,7 +897,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("DayName(NULL_DATE)");
 
     evalFails("DayName()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("DayName(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DayName(12)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -907,7 +908,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Month(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("Month()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Month(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Month(12)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1040,8 +1041,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Quarter()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Quarter(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("Quarter(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Quarter(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Quarter(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Quarter(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1056,8 +1057,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("DayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("DayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("DayOfWeek(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("DayOfWeek(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DayOfWeek(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("DayOfWeek(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1070,7 +1071,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Day(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Day(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Day(123)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Day('text')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     optimize("DAY(DATE '2019-02-15')", "15");
@@ -1086,7 +1087,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("DayOfYear(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("DayOfYear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("DayOfYear(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DayOfYear(123)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1096,7 +1097,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Julian_Day(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("Julian_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Julian_Day(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Julian_Day(123)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1107,7 +1108,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Week(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("Week()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Week(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Week(123)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1116,7 +1117,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("IsoDayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("IsoDayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IsoDayOfWeek(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IsoDayOfWeek(123)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1129,7 +1130,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("IsoWeek(NULL_DATE)").returnType(Types.INTEGER);
 
     evalFails("IsoWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IsoWeek(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IsoWeek(123)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1143,7 +1144,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("IsoYear('ERROR')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
     evalFails("IsoYear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IsoYear(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IsoYear(123)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1432,9 +1433,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Space()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // TODO: should throw conversion error
-    evalFails("Space('str')", ErrorCode.INVALID_INTEGER);
+    evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Space('str')", ErrorCode.CONVERSION_ERROR_TO_INTEGER);
   }
 
   @Test
@@ -1714,11 +1714,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Factorial(NULL_INTEGER)");
 
-    evalFails("Factorial(-2)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Factorial(-2)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Factorial()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Factorial(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    // TODO: should throw conversion error
-    evalFails("Factorial(FIELD_STRING)", ErrorCode.INVALID_INTEGER);
+    evalFails("Factorial(FIELD_STRING)", ErrorCode.CONVERSION_ERROR_TO_INTEGER);
   }
 
   @Test
@@ -1894,8 +1893,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Data type mixed
     evalFails("Greatest(123,'str',123)", ErrorCode.CONVERSION_ERROR);
-    evalFails("Greatest(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Greatest(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Greatest(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Greatest(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1944,8 +1943,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Date type mixed
     evalFails("Least(123,'str',123)", ErrorCode.CONVERSION_ERROR);
-    evalFails("Least(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Least(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Least(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Least(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -1970,11 +1969,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Length(-5.3)", 4L);
 
     // TODO: Implicit conversion from Date to String ?
-    // evalEquals("Length(Date '2023-01-01')", 8L);
+    // evalEquals("Length(Date '2023-01-01')", 10L);
 
     // Bad data type
     evalFails("Length()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Length(Date '2023-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Length(Date '2023-01-01')", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -2190,7 +2189,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("To_Boolean()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("To_Boolean(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("To_Boolean('falsee')", ErrorCode.INVALID_BOOLEAN);
+    evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR_TO_BOOLEAN);
   }
 
   @Test
@@ -2226,7 +2226,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("TO_BINARY(NULL_STRING)");
 
-    evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
@@ -3010,8 +3010,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("To_Json(NULL_STRING)").returnType(Types.JSON);
 
     evalFails("To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.INVALID_JSON);
-    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.INVALID_JSON);
+    evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.CONVERSION_ERROR_TO_JSON);
+    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.CONVERSION_ERROR_TO_JSON);
   }
 
   @Test
@@ -3106,11 +3106,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 
     evalFails(
-        "Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)",
-        ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+        "Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails(
-        "Json_Query('{\"name\":\"Smith\", \"age\":29}','$.notexist')",
-        ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+        "Json_Query('{\"name\":\"Smith\", \"age\":29}','$.notexist')", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3176,7 +3174,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Overlay()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Overlay(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Overlay(FIELD_DATE,'ach',5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Overlay(FIELD_DATE,'ach',5)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3189,7 +3187,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Reverse(NULL_BINARY)").returnType(Types.BINARY);
 
     evalFails("Reverse()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Reverse(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Reverse(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3200,7 +3198,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Soundex(NULL_STRING)").returnType(Types.STRING);
 
     evalFails("Soundex()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Soundex(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Soundex(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3281,10 +3279,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Date_Trunc(DAY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Date_Trunc(DATE '2020-05-25')", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Date_Trunc(ISOWEEK, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Date_Trunc(123, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Date_Trunc(ISOWEEK, DATE '2020-05-25')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Date_Trunc(123, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Truncate timestamp
     evalEquals(
@@ -3348,8 +3346,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("StartsWith('TEST FROM',NULL_STRING)");
 
     evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("StartsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("StartsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("StartsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("StartsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3368,8 +3366,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("EndsWith(BINARY '1234',BINARY 'FFFF1234')");
 
     evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("EndsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("EndsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EndsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("EndsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3535,8 +3533,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Concat(FIELD_STRING, FIELD_DATE)", ErrorCode.CONVERSION_ERROR);
     evalFails("Concat(FIELD_STRING, FIELD_STRING, FIELD_DATE)", ErrorCode.CONVERSION_ERROR);
     evalFails("Concat(FIELD_BINARY, FIELD_DATE)", ErrorCode.CONVERSION_ERROR);
-    evalFails("Concat(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Concat(FIELD_DATE, FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Concat(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Concat(FIELD_DATE, FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT);
 
     evalFails("||'text'", ErrorCode.SYNTAX_ERROR);
     evalFails("'text'||", ErrorCode.SYNTAX_ERROR);
@@ -4051,10 +4049,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Bit_Shift(NULL_INTEGER,3)").returnType(Types.INTEGER);
     evalNull("Bit_Shift(123, NULL_INTEGER)");
 
-    evalFails("Bit_Shift('Bidon',3)", ErrorCode.INVALID_INTEGER);
+    evalFails("Bit_Shift('Bidon',3)", ErrorCode.CONVERSION_ERROR_TO_INTEGER);
     evalFails("Bit_Shift()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Bit_Shift(123)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Bit_Shift(DATE '2022-11-25', 3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Shift(DATE '2022-11-25', 3)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -4171,7 +4169,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Extract(BIDON from NULL)", ErrorCode.INVALID_TIMEUNIT);
     evalFails("Extract(BIDON from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
 
-    evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
 
     optimize("EXTRACT(CENTURY FROM FIELD_DATE)");
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");

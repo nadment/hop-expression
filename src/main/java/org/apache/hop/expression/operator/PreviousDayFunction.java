@@ -53,7 +53,7 @@ public class PreviousDayFunction extends Function {
     try {
       dayofweek = DayOfWeek.valueOf(dow.toUpperCase());
     } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, dow);
+      throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, dow);
     }
     return value.with(TemporalAdjusters.previous(dayofweek));
   }

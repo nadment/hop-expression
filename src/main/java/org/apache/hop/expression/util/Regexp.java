@@ -32,7 +32,7 @@ public class Regexp {
     if (escapeStr != null) {
 
       if (escapeStr.length() != 1) {
-        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, escapeStr);
+        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, escapeStr);
       }
 
       escapeChar = escapeStr.charAt(0);
@@ -101,7 +101,7 @@ public class Regexp {
             flags |= Pattern.MULTILINE;
             break;
           default:
-            throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(str));
+            throw new IllegalArgumentException(ErrorCode.INVALID_ARGUMENT.message(str));
         }
       }
     }
