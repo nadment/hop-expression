@@ -2088,6 +2088,17 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void ArrayToString() throws Exception {
+    evalEquals("ARRAY_TO_STRING(Array['Hello','world'],' ')", "Hello world")
+        .returnType(Types.STRING);
+    evalEquals("ARRAY_TO_STRING(Array[1.2,4,8+2],',')", "1.2,4,10").returnType(Types.STRING);
+    evalEquals("ARRAY_TO_STRING(Array['A',ARRAY[4,8+2],'B'],'')", "A410B");
+
+    // Check operands
+    evalFails("ARRAY_TO_STRING(Array[1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENT);
+  }
+
+  @Test
   void Left() throws Exception {
     // String
     evalEquals("Left('TEST FROM',4)", "TEST").returnType(Types.STRING);

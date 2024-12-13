@@ -258,6 +258,7 @@ public final class OperandTypes {
   public static final ISingleOperandTypeChecker ARRAY = explicit(TypeName.ARRAY);
   public static final IOperandTypeChecker ARRAY_INTEGER =
       explicit(TypeName.ARRAY, TypeName.INTEGER);
+  public static final IOperandTypeChecker ARRAY_STRING = explicit(TypeName.ARRAY, TypeName.STRING);
   public static final IOperandTypeChecker ARRAY_VARIADIC =
       repeat(OperandCountRange.between(1, -1), ARRAY);
 

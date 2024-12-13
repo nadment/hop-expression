@@ -96,6 +96,11 @@ public final class Array implements IExpression, Iterable<IExpression> {
     return cost;
   }
 
+  @Override
+  public Object getValue() {
+    return this;
+  }
+
   public IExpression get(int index) {
     return values[index];
   }

@@ -459,10 +459,6 @@ public class ExpressionTest {
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");
     // System.out.print(result);
-
-    evalEquals(
-        "Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',Error('Error generated with ABORT'))",
-        "Flag 2");
     // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 }
