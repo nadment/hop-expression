@@ -36,10 +36,10 @@ public class ReturnTypeTransformCascade implements IReturnTypeInference {
 
   @Override
   public Type inferReturnType(Call call) {
-    Type ret = rule.inferReturnType(call);
+    Type type = rule.inferReturnType(call);
     for (ITypeTransform transform : transforms) {
-      ret = transform.transformType(ret);
+      type = transform.transformType(type);
     }
-    return ret;
+    return type;
   }
 }

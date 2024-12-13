@@ -32,8 +32,8 @@ public final class TimeUnitType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.TIMEUNIT;
+  public TypeName getName() {
+    return TypeName.TIMEUNIT;
   }
 
   @Override

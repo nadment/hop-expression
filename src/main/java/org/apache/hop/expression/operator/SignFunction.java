@@ -35,7 +35,7 @@ public class SignFunction extends Function {
     super(
         "SIGN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.INTEGER.or(OperandTypes.NUMBER),
         OperatorCategory.MATHEMATICAL,
         "/docs/sign.html");
   }

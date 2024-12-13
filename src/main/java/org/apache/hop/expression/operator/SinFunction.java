@@ -33,7 +33,7 @@ public class SinFunction extends Function {
     super(
         "SIN",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/sin.html");
   }

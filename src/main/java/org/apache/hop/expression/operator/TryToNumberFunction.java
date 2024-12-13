@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.FormatParseException;
 import org.apache.hop.expression.util.NumberFormat;
 
@@ -41,7 +41,7 @@ public class TryToNumberFunction extends Function {
     super(
         "TRY_TO_NUMBER",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.TEMPORAL),
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.DATE),
         OperatorCategory.CONVERSION,
         "/docs/to_number.html");
   }
@@ -51,7 +51,7 @@ public class TryToNumberFunction extends Function {
       throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.DATE)) {
+    if (Types.isDate(type)) {
       return new Call(TryToNumberDate.INSTANCE, call.getOperands());
     }
 

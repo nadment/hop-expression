@@ -31,7 +31,7 @@ public class StdDevSampFunction extends AggregateFunction {
 
   public StdDevSampFunction() {
     super(
-        "STDDEV_SAMP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/stddev_samp.html");
+        "STDDEV_SAMP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/stddev_samp.html");
   }
 
   @Override

@@ -41,7 +41,7 @@ public class BitOrFunction extends Function {
     super(
         "BIT_OR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }
@@ -53,7 +53,7 @@ public class BitOrFunction extends Function {
         90,
         true,
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }

@@ -35,7 +35,7 @@ public class CoshFunction extends Function {
     super(
         "COSH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/cosh.html");
   }

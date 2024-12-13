@@ -34,8 +34,8 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.BOOLEAN;
+  public TypeName getName() {
+    return TypeName.BOOLEAN;
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class BooleanType extends Type {
       return number.intValue() != 0;
     }
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.BOOLEAN);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.BOOLEAN);
   }
 
   @Override
@@ -116,10 +116,11 @@ public final class BooleanType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   public static final Boolean convert(final String str) throws ConversionException {
+    if (str == null) return null;
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
@@ -159,6 +160,16 @@ public final class BooleanType extends Type {
         break;
     }
 
-    throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeId.STRING, str);
+    throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeName.STRING, str);
+  }
+
+  public static final Boolean convert(final Long number) {
+    if (number == null) return null;
+    return number != 0;
+  }
+
+  public static final Boolean convert(final BigDecimal number) {
+    if (number == null) return null;
+    return number.signum() != 0;
   }
 }

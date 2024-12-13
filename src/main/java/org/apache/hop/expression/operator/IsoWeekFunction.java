@@ -33,7 +33,7 @@ public class IsoWeekFunction extends Function {
     super(
         "ISOWEEK",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/isoweek.html");
   }

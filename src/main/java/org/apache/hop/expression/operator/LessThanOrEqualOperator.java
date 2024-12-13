@@ -27,7 +27,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /** Comparison less than or equal operator '<code>&lt;=</code>'. */
@@ -95,11 +94,11 @@ public class LessThanOrEqualOperator extends BinaryOperator {
     }
 
     // Simplify only if x is data type boolean FALSE<=x → x IS NOT NULL
-    if (left.equals(Literal.FALSE) && right.getType().is(TypeId.BOOLEAN)) {
+    if (Literal.FALSE.equals(left) && Types.isBoolean(right.getType())) {
       return new Call(Operators.IS_NOT_NULL, right);
     }
     // Simplify only if x is data type boolean x<=TRUE → x IS NOT NULL
-    if (right.equals(Literal.TRUE) && left.getType().is(TypeId.BOOLEAN)) {
+    if (Literal.TRUE.equals(right) && Types.isBoolean(left.getType())) {
       return new Call(Operators.IS_NOT_NULL, left);
     }
 

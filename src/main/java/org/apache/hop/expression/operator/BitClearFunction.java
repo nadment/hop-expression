@@ -31,7 +31,7 @@ public class BitClearFunction extends Function {
     super(
         "BIT_CLEAR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_clear.html");
   }

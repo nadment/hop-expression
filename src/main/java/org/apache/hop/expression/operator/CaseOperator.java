@@ -37,7 +37,7 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
 /** An operator describing the <code>CASE</code> operator. */
@@ -262,7 +262,7 @@ public class CaseOperator extends Operator {
       if (operand.is(Kind.ARRAY)) {
         // Mutli-values simple form
         for (IExpression value : (Array) operand) {
-          if (!valueType.isCoercible(value.getType())) {
+          if (!valueType.getName().isCoercible(value.getType().getName())) {
             return false;
           }
         }
@@ -273,7 +273,7 @@ public class CaseOperator extends Operator {
 
     // Determine common return type
     Type returnType = getLeastRestrictive(getLeastRestrictive(thenTerm), elseTerm.getType());
-    if (returnType.is(TypeId.UNKNOWN)) return false;
+    if (returnType.is(TypeName.UNKNOWN)) return false;
 
     // Check then operands
     for (IExpression thenOperand : thenTerm) {

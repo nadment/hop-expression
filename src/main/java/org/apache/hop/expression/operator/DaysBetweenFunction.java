@@ -33,7 +33,7 @@ public class DaysBetweenFunction extends Function {
     super(
         "DAYS_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL_TEMPORAL,
+        OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
         "/docs/days_between.html");
   }

@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
 public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
@@ -97,7 +97,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           }
 
           // Some operator don't known return type like JSON_VALUE.
-          if (TypeId.ANY.equals(type.getId())) {
+          if (TypeName.ANY.equals(type.getName())) {
             if (value == null) {
               type = Types.STRING;
             } else if (value instanceof Boolean) {

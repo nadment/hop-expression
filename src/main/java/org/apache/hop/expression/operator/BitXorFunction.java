@@ -39,7 +39,7 @@ public class BitXorFunction extends Function {
     super(
         "BIT_XOR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }
@@ -51,7 +51,7 @@ public class BitXorFunction extends Function {
         80,
         true,
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }

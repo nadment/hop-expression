@@ -33,7 +33,7 @@ public class AsinhFunction extends Function {
     super(
         "ASINH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/asinh.html");
   }

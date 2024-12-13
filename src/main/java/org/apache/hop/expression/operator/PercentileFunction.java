@@ -31,7 +31,7 @@ public class PercentileFunction extends AggregateFunction {
     super(
         "PERCENTILE",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         "/docs/percentile.html");
   }
 

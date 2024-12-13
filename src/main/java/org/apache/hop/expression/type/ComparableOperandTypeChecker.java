@@ -36,7 +36,7 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
       max = call.getOperandCount();
     }
 
-    TypeFamily firstFamily = null;
+    TypeName firstId = null;
     for (int i = 0; i < max; i++) {
       IExpression operand = call.getOperand(i);
 
@@ -47,12 +47,12 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
 
       // Ignore null
       if (operand.isNull()) continue;
-      if (firstFamily != null) {
-        if (!type.getFamily().isCoercible(firstFamily)) {
+      if (firstId != null) {
+        if (!type.getName().isCoercible(firstId)) {
           return false;
         }
       } else {
-        firstFamily = type.getFamily();
+        firstId = type.getName();
       }
     }
 

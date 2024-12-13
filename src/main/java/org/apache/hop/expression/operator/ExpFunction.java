@@ -33,7 +33,7 @@ public class ExpFunction extends Function {
     super(
         "EXP",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/exp.html");
   }

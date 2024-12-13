@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AvgFunction extends AggregateFunction {
 
   public AvgFunction() {
-    super("AVG", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/avg.html");
+    super("AVG", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/avg.html");
   }
 
   @Override

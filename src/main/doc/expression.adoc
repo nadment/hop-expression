@@ -298,39 +298,33 @@ NOTE: An operator on higher levels is evaluated before an operator on a lower le
 
 NOTE: When an operator combines expressions of different data types, the data type with the lower precedence is first converted to the data type with the higher precedence. If the conversion isn't a supported implicit conversion, an error is returned. 
 
-== Coercion rules
+== Type coercion
 
-Expression supports both implicit and explicit conversion between data types. 
-Explicit conversion is supported by using the `CAST` function.
+Expression supports both implicit and explicit conversion between data types.
+
+Explicit conversion is supported by using the `CAST` function or specific functions.
+
 When there is no ambiguity about the data type of an expression value, it is implicitly coerced to match the expected data type.
 
-[cols="^1,<5,<1,<1,<1", options="header"]
+[cols="^5,^1,^1,^1,^1,^1,^1,^1,^1", options="header"]
 |===
-|From|To|Coerce|Cast|Function
-|Boolean|Integer|✔|✔|
-|Boolean|Number|✔|✔|
-|Boolean|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
-|Integer|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
-|Integer|Number|✔|✔|
-|Integer|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
-|Number|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
-|Number|Integer|✔|✔|
-|Number|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
-|String|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
-|String|Integer|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
-|String|Number|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
-|String|Date|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
-|String|Binary|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]
-|String|Json|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_json.adoc[TO_JSON]
-|Date|String|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
-|Binary|String|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
-|Json|String|✔|✔|
+|From / To|Binary|Boolean|Date|Integer|Number|String|Json|Inet
+|Function|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]||https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_json.adoc[TO_JSON]|
+|Binary|-|❌|❌|❌|❌|✅|❌|❌
+|Boolean|❌|-|❌|✅|✅|✅|❌|❌
+|Date|❌|❌|-|☑️|☑️|✅|❌|❌
+|Integer|❌|✅|☑️|-|✅|✅|❌|❌
+|Number|❌|✅|☑️|☑️|-|✅|❌|❌
+|String|☑️|☑️|☑️|☑️|☑️|-|☑️|❌
+|Json|❌|❌|❌|❌|❌|✅|-|❌
+|Inet|❌|❌|❌|❌|❌|✅|❌|-
 |===
 
-* Numeric types can be coerced to a wider numeric type. For example, an INTEGER expression can be coerced to a NUMBER.
-* A STRING containing a number can be coerced to a numeric type.
-* A STRING containing a boolean value can be coerced to a BOOLEAN. Valid boolean values are true, false, yes, no, on, off. Comparison is case-insensitive.
-* A STRING containing an ISO-8601 formatted date string can be coerced to TIMESTAMP.
+❌ Non convertible
+✅ Coerce: Implicit conversion
+☑️ Cast: Explicit conversion
+
+* Numeric types can be coerced to a wider numeric type. For example, an INTEGER type can be coerced to a NUMBER.
 
 
 

@@ -34,7 +34,7 @@ public class SubstringFunction extends Function {
     super(
         "SUBSTRING",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.STRING_NUMERIC_NUMERIC),
+        OperandTypes.STRING_INTEGER.or(OperandTypes.STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
         "/docs/substring.html");
   }

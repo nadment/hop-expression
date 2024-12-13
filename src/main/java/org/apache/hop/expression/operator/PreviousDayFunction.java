@@ -36,7 +36,7 @@ public class PreviousDayFunction extends Function {
     super(
         "PREVIOUS_DAY",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_STRING,
+        OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
         "/docs/previous_day.html");
   }

@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /** Converts a string expression to a date value. */
@@ -40,7 +40,10 @@ public class TryToDateFunction extends Function {
     super(
         "TRY_TO_DATE",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMERIC),
+        OperandTypes.STRING
+            .or(OperandTypes.STRING_TEXT)
+            .or(OperandTypes.INTEGER)
+            .or(OperandTypes.NUMBER),
         OperatorCategory.CONVERSION,
         "/docs/to_date.html");
   }
@@ -50,11 +53,10 @@ public class TryToDateFunction extends Function {
       throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-
-    if (type.is(TypeId.INTEGER)) {
+    if (Types.isInteger(type)) {
       return new Call(TryToDateInteger.INSTANCE, call.getOperands());
     }
-    if (type.is(TypeId.NUMBER)) {
+    if (Types.isNumber(type)) {
       return new Call(TryToDateNumber.INSTANCE, call.getOperands());
     }
 
@@ -103,7 +105,6 @@ public class TryToDateFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
-      if (value == null) return null;
       return DateType.convert(value);
     }
   }
@@ -118,7 +119,6 @@ public class TryToDateFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
-      if (value == null) return null;
       return DateType.convert(value);
     }
   }

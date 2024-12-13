@@ -47,9 +47,9 @@ public final class IntegerType extends Type {
   }
 
   public static IntegerType of(int precision, boolean nullable) {
-    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeId.INTEGER.getMaxPrecision();
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.INTEGER.getMaxPrecision();
 
-    if (precision == TypeId.INTEGER.getMaxPrecision() && nullable) return Types.INTEGER;
+    if (precision == TypeName.INTEGER.getMaxPrecision() && nullable) return Types.INTEGER;
 
     return new IntegerType(precision, nullable);
   }
@@ -66,8 +66,8 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.INTEGER;
+  public TypeName getName() {
+    return TypeName.INTEGER;
   }
 
   @Override
@@ -96,7 +96,7 @@ public final class IntegerType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.INTEGER);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.INTEGER);
   }
 
   @Override
@@ -152,7 +152,7 @@ public final class IntegerType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   public static final Long convert(final BigDecimal number) throws ConversionException {
@@ -171,13 +171,13 @@ public final class IntegerType extends Type {
       BigDecimal number = numberFormat.parse(str);
       return convert(number);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeId.STRING, str);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.STRING, str);
     }
   }
 
   public static final Long convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeId.BINARY, bytes);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.BINARY, bytes);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

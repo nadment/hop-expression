@@ -35,8 +35,8 @@ public final class InetType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.INET;
+  public TypeName getName() {
+    return TypeName.INET;
   }
 
   @Override
@@ -59,7 +59,7 @@ public final class InetType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.JSON);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.JSON);
   }
 
   @Override
@@ -107,7 +107,7 @@ public final class InetType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   /**
@@ -122,7 +122,7 @@ public final class InetType extends Type {
     try {
       return InetAddress.getByName(str);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeId.STRING, str);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeName.STRING, str);
     }
   }
 }

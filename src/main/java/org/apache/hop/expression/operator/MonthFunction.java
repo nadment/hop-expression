@@ -32,7 +32,7 @@ public class MonthFunction extends Function {
     super(
         "MONTH",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/month.html");
   }

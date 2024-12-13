@@ -37,7 +37,7 @@ public class AddSecondsFunction extends Function {
     super(
         "ADD_SECONDS",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_NUMERIC,
+        OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
         "/docs/add_seconds.html");
   }

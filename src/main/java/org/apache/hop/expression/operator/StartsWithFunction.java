@@ -26,7 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The function returns TRUE if the first value starts with second value. Both values must be the
@@ -51,7 +51,7 @@ public class StartsWithFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.BINARY)) {
+    if (Types.isBinary(type)) {
       return new Call(StartsWithBinary.INSTANCE, call.getOperands());
     }
 

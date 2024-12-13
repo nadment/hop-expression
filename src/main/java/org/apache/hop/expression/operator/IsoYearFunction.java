@@ -33,7 +33,7 @@ public class IsoYearFunction extends Function {
     super(
         "ISOYEAR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/isoyear.html");
   }

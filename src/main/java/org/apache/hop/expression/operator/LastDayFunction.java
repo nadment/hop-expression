@@ -51,7 +51,7 @@ public class LastDayFunction extends Function {
     super(
         "LAST_DAY",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
+        OperandTypes.DATE.or(OperandTypes.DATE_TIMEUNIT),
         OperatorCategory.DATE,
         "/docs/last_day.html");
   }

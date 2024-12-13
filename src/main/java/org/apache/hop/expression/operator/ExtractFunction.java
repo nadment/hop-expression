@@ -33,7 +33,7 @@ import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Extracts the specified time unit from a date, timestamp or interval.
@@ -47,7 +47,7 @@ public class ExtractFunction extends Function {
     super(
         "EXTRACT",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL),
+        OperandTypes.TIMEUNIT_DATE.or(OperandTypes.TIMEUNIT_INTERVAL),
         OperatorCategory.DATE,
         "/docs/extract.html");
   }
@@ -55,7 +55,7 @@ public class ExtractFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(1).getType();
-    if (type.is(TypeId.INTERVAL)) {
+    if (Types.isInterval(type)) {
       return new Call(ExtractInterval.INSTANCE, call.getOperands());
     }
     return new Call(ExtractDate.INSTANCE, call.getOperands());

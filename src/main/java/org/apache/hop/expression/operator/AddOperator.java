@@ -31,8 +31,6 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -49,10 +47,10 @@ public class AddOperator extends BinaryOperator {
         true,
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC
-            .or(OperandTypes.TEMPORAL_INTERVAL)
-            .or(OperandTypes.TEMPORAL_NUMERIC)
-            .or(OperandTypes.NUMERIC_TEMPORAL)
-            .or(OperandTypes.INTERVAL_TEMPORAL)
+            .or(OperandTypes.DATE_INTERVAL)
+            .or(OperandTypes.DATE_INTEGER)
+            .or(OperandTypes.INTEGER_DATE)
+            .or(OperandTypes.INTERVAL_DATE)
             .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
         "/docs/add.html");
@@ -74,23 +72,24 @@ public class AddOperator extends BinaryOperator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    if (left.getType().isFamily(TypeFamily.TEMPORAL)) {
+    if (Types.isDate(left.getType())) {
       // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
       // - } <integer>
-      if (right.getType().isFamily(TypeFamily.NUMERIC)) {
+      if (Types.isNumeric(right.getType())) {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
       }
 
       return new Call(call.getPosition(), AddIntervalToTemporal.INSTANCE, call.getOperands());
-    } else if (right.getType().isFamily(TypeFamily.TEMPORAL)) {
+    } else if (Types.isDate(right.getType())) {
+
       // Normalize operands order DATE+NUMERIC
-      if (left.getType().isFamily(TypeFamily.NUMERIC)) {
+      if (Types.isNumeric(left.getType())) {
         return new Call(
             call.getPosition(), AddDaysFunction.INSTANCE, call.getOperand(1), call.getOperand(0));
       }
 
-      // Normalize operands order DATE+NUMERIC
-      if (left.getType().isFamily(TypeFamily.INTERVAL)) {
+      // Normalize operands order DATE+INTERVAL
+      if (Types.isInterval(left.getType())) {
         return new Call(
             call.getPosition(),
             AddIntervalToTemporal.INSTANCE,
@@ -98,9 +97,9 @@ public class AddOperator extends BinaryOperator {
             call.getOperand(0));
       }
 
-    } else if (left.getType().isFamily(TypeFamily.INTERVAL)) {
+    } else if (Types.isInterval(left.getType())) {
 
-      if (right.getType().isFamily(TypeFamily.INTERVAL)) {
+      if (Types.isInterval(right.getType())) {
         return new Call(call.getPosition(), AddIntervalToInterval.INSTANCE, call.getOperands());
       }
 
@@ -123,7 +122,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     // Optimize data type
-    if (call.getType().is(TypeId.INTEGER)) {
+    if (Types.isInteger(call.getType())) {
       return new Call(AddInteger.INSTANCE, call.getOperands());
     }
 

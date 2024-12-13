@@ -31,7 +31,7 @@ public class OverlayFunction extends Function {
     super(
         "OVERLAY",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_STRING_NUMERIC.or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC),
+        OperandTypes.STRING_STRING_INTEGER.or(OperandTypes.STRING_STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
         "/docs/overlay.html");
   }

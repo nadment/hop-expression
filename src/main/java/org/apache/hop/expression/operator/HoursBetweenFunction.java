@@ -33,7 +33,7 @@ public class HoursBetweenFunction extends Function {
     super(
         "HOURS_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL_TEMPORAL,
+        OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
         "/docs/hours_between.html");
   }

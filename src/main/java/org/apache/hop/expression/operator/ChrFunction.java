@@ -38,7 +38,7 @@ public class ChrFunction extends Function {
     super(
         "CHR",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.INTEGER,
         OperatorCategory.STRING,
         "/docs/chr.html");
   }

@@ -33,6 +33,7 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Build a JSON object from a list of key=values pairs. <code>
@@ -56,7 +57,8 @@ public class JsonObjectFunction extends Function {
     public boolean checkOperandTypes(Call call) {
       for (int i = 0; i < call.getOperandCount(); ) {
         // Key should be string
-        if (call.getOperand(i++).getType().getFamily() != TypeFamily.STRING) {
+        IExpression key = call.getOperand(i++);
+        if (!Types.isString(key.getType())) {
           return false;
         }
 

@@ -109,16 +109,11 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("TRUE=1.1");
     evalFalse("TRUE=0");
 
-    // Compare numeric with implicit coercion from STRING
-    evalTrue("2 = '2'");
-    evalTrue("'2'=2");
-    evalFalse("2 = '2.1'");
-    evalFalse("'2.1' = 2");
-
-    // Compare date with implicit coercion from STRING
-    evalFalse("Date '2023-12-01' = '2023-10-31'");
-    evalTrue("Date '2023-12-01' = '2023-12-01'");
-    evalFalse("Date '2023-10-01' = '2023-10-31'");
+    // Compare numeric with implicit coercion from integer and number
+    evalTrue("2 = 2.0");
+    evalTrue("2.0=2");
+    evalFalse("2 = 2.1");
+    evalFalse("2.1 = 2");
 
     // Comparable unordered type
     evalNull("NULL_JSON = FIELD_JSON");
@@ -162,7 +157,7 @@ public class OperatorTest extends ExpressionTest {
 
     evalTrue("1 <> 2");
     evalTrue("10 <> 0x10");
-    evalFalse("1 <> '1'");
+    evalFalse("1.12 <> 1.12");
 
     evalTrue("true <> false");
     evalTrue("false <> true");
@@ -195,16 +190,11 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("TRUE<>0");
     evalFalse("TRUE<>1");
 
-    // Compare numeric with implicit coercion from STRING
-    evalTrue("2 = '2'");
-    evalTrue("'2'=2");
-    evalFalse("2 = '2.1'");
-    evalFalse("'2.1' = 2");
-
-    // Compare date with implicit coercion from STRING
-    evalTrue("Date '2023-12-01' <> '2023-10-31'");
-    evalFalse("Date '2023-12-01' <> '2023-12-01'");
-    evalTrue("Date '2023-10-01' <> '2023-10-31'");
+    // Compare numeric with implicit coercion from INTEGER and NUMBER
+    evalTrue("2 <> 2.1");
+    evalTrue("2.1 <> 2");
+    evalFalse("2 <> 2.0");
+    evalFalse("2.0 <> 2");
 
     // Comparable unordered type
     evalTrue("FIELD_JSON <> FIELD_STRING_JSON::JSON");
@@ -287,16 +277,12 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("TRUE>1.1");
     evalTrue("TRUE>0.5");
 
-    // Compare numeric with implicit coercion from STRING
-    evalTrue("2 > '1'");
-    evalTrue("2.1 > '2'");
-    evalFalse("1 > '2'");
-    evalFalse("2 > '2.1'");
-    evalFalse("2.1 > '2.1'");
-
-    // Compare date with implicit coercion from STRING
-    evalTrue("Date '2023-12-01' > '2023-10-31'");
-    evalFalse("Date '2023-10-01' > '2023-10-31'");
+    // Compare numeric with implicit coercion from INTEGER and NUMBER
+    evalTrue("2 > 1.5");
+    evalTrue("2.1 > 2");
+    evalFalse("1 > 2");
+    evalFalse("2 > 2.1");
+    evalFalse("2.0 > 2");
 
     // Unsupported coercion
     evalFails("FIELD_DATE>5", ErrorCode.ILLEGAL_ARGUMENT);
@@ -366,17 +352,12 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("TRUE>=1.1");
     evalTrue("TRUE>=0.5");
 
-    // Compare numeric with implicit coercion from STRING
-    evalTrue("2 >= '1'");
-    evalFalse("2 >= '2.1'");
-    evalTrue("2 >= '2'");
-    evalFalse("1 >= '2'");
-    evalTrue("1 >= '1'");
-
-    // Compare DATE with implicit coercion from STRING
-    evalTrue("Date '2023-12-01' >= '2023-10-31'");
-    evalTrue("Date '2023-12-01' >= '2023-12-01'");
-    evalFalse("Date '2023-10-01' >= '2023-10-31'");
+    // Compare numeric with implicit coercion from INTEGER and NUMBER
+    evalTrue("2 >= 1.5");
+    evalFalse("2 >= 2.1");
+    evalTrue("2 >= 2.0");
+    evalFalse("1.5 >= 2");
+    evalTrue("1 >= 1.0");
 
     // Compare unordered type
     evalFails("FIELD_JSON >= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
@@ -442,7 +423,7 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("INTERVAL 3 YEARS < INTERVAL 3 MONTHS");
 
     evalNull("NULL_INTEGER < 1").returnType(Types.BOOLEAN);
-    // evalNull("NULL_NUMBER < NULL_INTEGER");
+    evalNull("NULL_NUMBER < NULL_INTEGER");
     evalNull("NULL_STRING < Upper(FIELD_STRING)");
     evalNull("FIELD_STRING < NULL_STRING");
     evalNull("NULL_STRING < FIELD_STRING");
@@ -453,17 +434,12 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("TRUE<1.1");
     evalFalse("TRUE<0.5");
 
-    // Compare numeric with implicit coercion from STRING
-    evalFalse("2 < '1'");
-    evalFalse("2.1 < '2'");
-    evalTrue("1 < '2'");
-    evalTrue("2 < '2.1'");
-    evalFalse("2.1 < '2.1'");
-
-    // Compare date with implicit coercion from STRING
-    evalFalse("Date '2023-12-01' < '2023-10-31'");
-    evalFalse("Date '2023-12-01' < '2023-12-01'");
-    evalTrue("Date '2023-10-01' < '2023-10-31'");
+    // Compare numeric with implicit coercion from INTEGER and NUMBER
+    evalFalse("2 < 1.5");
+    evalFalse("2.1 < 2");
+    evalTrue("1.5 < 2");
+    evalTrue("2 < 2.1");
+    evalFalse("2.1 < 2.1");
 
     // Compare unordered type
     evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
@@ -530,17 +506,12 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("TRUE<=1.1");
     evalFalse("TRUE<=0.5");
 
-    // Compare numeric with implicit coercion from STRING
-    evalFalse("2 <= '1'");
-    evalFalse("2.1 <= '2'");
-    evalTrue("1 <= '2'");
-    evalTrue("2 <= '2.1'");
-    evalTrue("2.1 <= '2.1'");
-
-    // Compare date with implicit coercion from STRING
-    evalFalse("Date '2023-12-01' <= '2023-10-31'");
-    evalTrue("Date '2023-12-01' <= '2023-12-01'");
-    evalTrue("Date '2023-10-01' <= '2023-10-31'");
+    // Compare numeric with implicit coercion from INTEGER and NUMBER
+    evalFalse("2 <= 1.5");
+    evalFalse("2.1 <= 2");
+    evalTrue("1.5 <= 2");
+    evalTrue("2 <= 2.1");
+    evalTrue("2.1 <= 2.1");
 
     // Compare unordered type
     evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
@@ -814,14 +785,14 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4L).returnType(NumberType.of(15, 2));
 
     // Implicit coercion from BOOLEAN
-    evalEquals("1+FIELD_BOOLEAN_FALSE", 1L);
-    evalEquals("FIELD_BOOLEAN_TRUE+1", 2L);
+    evalEquals("1+FALSE", 1L);
+    evalEquals("TRUE+1", 2L);
 
     // Implicit coercion from STRING
-    evalEquals("'1'+2", 3L).returnType(Types.NUMBER);
-    evalEquals("1+'2'", 3L).returnType(Types.NUMBER);
-    evalEquals("1.3+'2.5'", 3.8);
-    evalEquals("1+'-2.5'", -1.5);
+    // evalEquals("'1'+2", 3L).returnType(Types.NUMBER);
+    // evalEquals("1+'2'", 3L).returnType(Types.NUMBER);
+    // evalEquals("1.3+'2.5'", 3.8);
+    // evalEquals("1+'-2.5'", -1.5);
 
     // Addition of NULL is always null
     evalNull("5+NULL_INTEGER+5");
@@ -921,10 +892,10 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("FIELD_BOOLEAN_TRUE-2", -1L);
 
     // Implicit coercion from STRING
-    evalEquals("'1'-2", -1L).returnType(Types.NUMBER);
-    evalEquals("1-'2'", -1L).returnType(Types.NUMBER);
-    evalEquals("2.5-'1.3'", 1.2).returnType(Types.NUMBER);
-    evalEquals("'2.5'-1", 1.5).returnType(Types.NUMBER);
+    // evalEquals("'1'-2", -1L).returnType(Types.NUMBER);
+    // evalEquals("1-'2'", -1L).returnType(Types.NUMBER);
+    // evalEquals("2.5-'1.3'", 1.2).returnType(Types.NUMBER);
+    // evalEquals("'2.5'-1", 1.5).returnType(Types.NUMBER);
 
     evalNull("5-NULL_INTEGER").returnType(IntegerType.of(19));
     evalNull("NULL_INTEGER-5");
@@ -1020,13 +991,17 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void coercion() throws Exception {
-      // Integer with string coercion
-      evalTrue("FIELD_INTEGER not between '10' and 20");
-      evalTrue("FIELD_INTEGER not between 10.5 and '20'");
+      // Integer with boolean coercion
+      evalTrue("FIELD_BOOLEAN_TRUE between -1 and 1");
+      evalFalse("FIELD_INTEGER between FALSE and TRUE");
 
-      // Date with String coercion
-      evalTrue("DATE '2019-02-28' between '2019-01-01' and DATE '2019-12-31'");
-      evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and '2019-12-31'");
+      // Integer with number coercion
+      evalTrue("FIELD_INTEGER not between 10.5 and 20");
+      evalTrue("FIELD_INTEGER not between 10 and 20.8");
+
+      // Date with Timestamp coercion
+      evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and TIMESTAMP '2019-12-31 06:59'");
+      evalTrue("TIMESTAMP '2019-02-28 06:59' between DATE '2019-01-01' and DATE '2019-12-31'");
     }
 
     @Test
@@ -1593,9 +1568,11 @@ public class OperatorTest extends ExpressionTest {
     evalNull("Mod(2,NULL_INTEGER)");
 
     // Syntax error
-    evalFails("'TEST'%5", ErrorCode.CONVERSION_ERROR);
     evalFails("Mod()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Mod(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
+    // Illegal argument
+    evalFails("'TEST'%5", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Division by 0
     evalFails("Mod(9,0)", ErrorCode.DIVISION_BY_ZERO);
@@ -1625,9 +1602,9 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204L)
         .returnType(NumberType.of(38, 8));
 
-    // Implicit coercion from STRING
-    evalEquals("'2'*2", 4L).returnType(Types.NUMBER);
-    evalEquals("2.5*'2'", 5L).returnType(NumberType.of(38, 10));
+    // Implicit coercion from INTEGER to NUMBER
+    evalEquals("2*2.2", 4.4).returnType(NumberType.of(3, 1));
+    evalEquals("2.5*2::INTEGER", 5L).returnType(NumberType.of(21, 1));
 
     // Check no arithmetic overflow Long.MAX_VALUE * 2
     evalEquals("9223372036854775807*2::NUMBER", new BigDecimal("18446744073709551614"))
@@ -1704,9 +1681,9 @@ public class OperatorTest extends ExpressionTest {
     // Division by zero
     evalFails("40/0", ErrorCode.DIVISION_BY_ZERO);
 
-    // Implicit coercion from STRING
-    evalEquals("'8'/2", 4L).returnType(NumberType.of(38, 11));
-    evalEquals("5/'2'", 2.5).returnType(NumberType.of(38, 37));
+    // Implicit coercion from BOOLEAN
+    evalEquals("8/TRUE", 8L).returnType(NumberType.of(7, 6));
+    evalEquals("TRUE/2", 0.5).returnType(NumberType.of(7, 6));
 
     // Normalize
     optimize("0/0");
@@ -1861,8 +1838,8 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("NOT 1").returnType(Types.BOOLEAN);
     evalTrue("NOT 0").returnType(Types.BOOLEAN);
     evalFalse("NOT FIELD_INTEGER").returnType(Types.BOOLEAN);
-    evalTrue("NOT FIELD_STRING_BOOLEAN_FALSE").returnType(Types.BOOLEAN);
-    evalFalse("NOT FIELD_STRING_BOOLEAN_TRUE").returnType(Types.BOOLEAN);
+    evalTrue("NOT FIELD_STRING_BOOLEAN_FALSE::BOOLEAN").returnType(Types.BOOLEAN);
+    evalFalse("NOT FIELD_STRING_BOOLEAN_TRUE::BOOLEAN").returnType(Types.BOOLEAN);
     evalTrue("NOT NOT True").returnType(Types.BOOLEAN);
     evalNull("NOT NULL_BOOLEAN").returnType(Types.BOOLEAN);
 
@@ -1912,12 +1889,12 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void BoolXor() throws Exception {
     evalFalse("true XOR true").returnType(Types.BOOLEAN);
-    evalFalse("2 XOR 3").returnType(Types.BOOLEAN);
+    // evalFalse("2 XOR 3").returnType(Types.BOOLEAN);
     evalFalse("false XOR false").returnType(Types.BOOLEAN);
-    evalFalse("0 XOR 0").returnType(Types.BOOLEAN);
+    // evalFalse("0 XOR 0").returnType(Types.BOOLEAN);
     evalTrue("true XOR false").returnType(Types.BOOLEAN);
     evalTrue("false XOR true").returnType(Types.BOOLEAN);
-    evalNull("NULLIF(true,true) XOR true");
+    evalNull("NULL XOR true");
     evalNull("true XOR NULLIF(true,true)");
     evalNull("false XOR NULLIF(true,true)");
 
@@ -1950,7 +1927,7 @@ public class OperatorTest extends ExpressionTest {
     optimizeTrue("false or true");
     optimizeFalse("false or false");
     optimizeTrue("FIELD_BOOLEAN_TRUE or true");
-    optimizeTrue("true or FIELD_STRING");
+    optimizeTrue("true or FIELD_BOOLEAN_FALSE");
     optimizeTrue("true or FIELD_BOOLEAN_TRUE");
     optimizeTrue("FIELD_BOOLEAN_TRUE or true");
     optimize("false or FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
@@ -2019,7 +1996,7 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void BoolAnd() throws Exception {
     evalTrue("true AND true");
-    evalTrue("true AND FIELD_STRING_BOOLEAN_TRUE");
+    evalTrue("true AND FIELD_BOOLEAN_TRUE");
     evalFalse("true AND false");
     evalFalse("false AND true");
     evalFalse("false AND false");

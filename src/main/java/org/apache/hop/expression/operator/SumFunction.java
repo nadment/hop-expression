@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SumFunction extends AggregateFunction {
 
   public SumFunction() {
-    super("SUM", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/sum.html");
+    super("SUM", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/sum.html");
   }
 
   @Override

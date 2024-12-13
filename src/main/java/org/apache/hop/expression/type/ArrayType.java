@@ -48,8 +48,8 @@ public final class ArrayType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.ARRAY;
+  public TypeName getName() {
+    return TypeName.ARRAY;
   }
 
   @Override

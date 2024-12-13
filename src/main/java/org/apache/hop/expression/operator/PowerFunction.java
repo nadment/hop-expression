@@ -37,7 +37,7 @@ public class PowerFunction extends Function {
     super(
         "POWER",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/power.html");
   }

@@ -32,7 +32,7 @@ public class HourFunction extends Function {
     super(
         "HOUR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/hour.html");
   }

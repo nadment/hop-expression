@@ -38,7 +38,7 @@ public class DateTruncFunction extends Function {
     super(
         "DATE_TRUNC",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TIMEUNIT_TEMPORAL,
+        OperandTypes.TIMEUNIT_DATE,
         OperatorCategory.DATE,
         "/docs/date_trunc.html");
   }

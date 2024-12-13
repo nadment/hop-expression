@@ -34,7 +34,7 @@ public class CscFunction extends Function {
     super(
         "CSC",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/csc.html");
   }

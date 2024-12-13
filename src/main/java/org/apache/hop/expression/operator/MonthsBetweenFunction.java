@@ -38,7 +38,7 @@ public class MonthsBetweenFunction extends Function {
     super(
         "MONTHS_BETWEEN",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.TEMPORAL_TEMPORAL,
+        OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
         "/docs/months_between.html");
   }

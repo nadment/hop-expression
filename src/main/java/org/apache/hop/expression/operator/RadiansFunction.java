@@ -33,7 +33,7 @@ public class RadiansFunction extends Function {
     super(
         "RADIANS",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/radians.html");
   }

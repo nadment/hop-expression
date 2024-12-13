@@ -34,7 +34,7 @@ public class SecFunction extends Function {
     super(
         "SEC",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/sec.html");
   }

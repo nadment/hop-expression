@@ -37,7 +37,7 @@ public class AddHoursFunction extends Function {
     super(
         "ADD_HOURS",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_NUMERIC,
+        OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
         "/docs/add_hours.html");
   }

@@ -45,7 +45,7 @@ public class ElementAtOperator extends Operator {
         200,
         true,
         ReturnTypes.ARRAY_ELEMENT,
-        OperandTypes.ARRAY_NUMERIC,
+        OperandTypes.ARRAY_INTEGER,
         OperatorCategory.ARRAY,
         "/docs/element_at.html");
   }

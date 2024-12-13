@@ -14,20 +14,20 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class FunctionArgument {
 
   @HopMetadataProperty private String name;
 
-  @HopMetadataProperty private TypeId type;
+  @HopMetadataProperty private TypeName type;
 
   public FunctionArgument() {
     super();
   }
 
-  public FunctionArgument(String name, TypeId type) {
+  public FunctionArgument(String name, TypeName type) {
     super();
     this.name = name;
     this.type = type;
@@ -41,11 +41,11 @@ public class FunctionArgument {
     this.name = name;
   }
 
-  public TypeId getType() {
+  public TypeName getType() {
     return type;
   }
 
-  public void setType(TypeId type) {
+  public void setType(TypeName type) {
     this.type = type;
   }
 

@@ -35,9 +35,9 @@ public final class StringType extends Type {
   }
 
   public static StringType of(int precision, boolean nullable) {
-    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeId.STRING.getMaxPrecision();
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.STRING.getMaxPrecision();
 
-    if (precision == TypeId.STRING.getMaxPrecision() && nullable) return Types.STRING;
+    if (precision == TypeName.STRING.getMaxPrecision() && nullable) return Types.STRING;
 
     return new StringType(precision, nullable);
   }
@@ -60,8 +60,8 @@ public final class StringType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.STRING;
+  public TypeName getName() {
+    return TypeName.STRING;
   }
 
   @Override
@@ -152,7 +152,7 @@ public final class StringType extends Type {
 
     if (result == null) {
       throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), this, value);
+          ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), this, value);
     }
     // adjust length
     if (precision < result.length()) {
@@ -222,7 +222,7 @@ public final class StringType extends Type {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_STRING, TypeId.JSON, json);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_STRING, TypeName.JSON, json);
     }
   }
 }

@@ -42,7 +42,7 @@ public class BitAndFunction extends Function {
     super(
         "BIT_AND",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
   }
@@ -54,7 +54,7 @@ public class BitAndFunction extends Function {
         70,
         true,
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
   }

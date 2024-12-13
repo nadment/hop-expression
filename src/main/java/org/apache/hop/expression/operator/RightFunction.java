@@ -26,7 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The function extracts a number of characters from a string or bytes from binary starting from
@@ -39,7 +39,7 @@ public class RightFunction extends Function {
     super(
         "RIGHT",
         ReturnTypes.ARG0_MAX_PRECISION,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+        OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
         "/docs/right.html");
   }
@@ -48,7 +48,7 @@ public class RightFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.BINARY)) {
+    if (Types.isBinary(type)) {
       return new Call(RightBinary.INSTANCE, call.getOperands());
     }
 

@@ -32,7 +32,7 @@ public class SecondFunction extends Function {
     super(
         "SECOND",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/second.html");
   }

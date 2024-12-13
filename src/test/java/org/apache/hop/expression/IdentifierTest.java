@@ -54,8 +54,8 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("\"IDENTIFIER lower\"", "lower");
 
     evalFails("BIDON||'X'", ErrorCode.UNRESOLVED_IDENTIFIER);
-    evalFails("ABS(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
-    evalFails("SIN(FIELD_STRING)", ErrorCode.CONVERSION_ERROR);
+    evalFails("ABS(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("SIN(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("CAST(FIELD_STRING as INTEGER)", ErrorCode.CONVERSION_ERROR_TO_INTEGER);
   }
 
@@ -76,8 +76,9 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("Upper(FIELD_STRING_BOOLEAN_TRUE)", "TRUE");
     evalEquals("Upper(FIELD_STRING_BOOLEAN_FALSE)", "FALSE");
     evalEquals(
-        "ADD_YEARS(Date '2000-01-01',FIELD_STRING_INTEGER)", LocalDate.of(2025, Month.JANUARY, 1));
-    evalEquals("Abs(FIELD_STRING_NUMBER)", new BigDecimal("12.56"));
+        "ADD_YEARS(Date '2000-01-01',FIELD_STRING_INTEGER::INTEGER)",
+        LocalDate.of(2025, Month.JANUARY, 1));
+    evalEquals("Abs(FIELD_STRING_NUMBER::NUMBER)", new BigDecimal("12.56"));
     evalEquals("LOWER(FIELD_STRING_JSON)", "{id:\"01\",name:\"john\",age:29}");
     evalEquals("Json_Value(FIELD_STRING_JSON, '$.age')", 29L);
     // evalEquals("DECOMPRESS(FIELD_STRING)","");
@@ -99,8 +100,9 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("Upper(FIELD_NUMBER)", "-5.12");
     evalTrue("FIELD_NUMBER IS TRUE");
     evalTrue("FIELD_NUMBER_ZERO IS FALSE");
-    evalEquals("LEFT('ABCDEFG',ABS(FIELD_NUMBER))", "ABCDE");
-    evalEquals("ADD_YEARS(Date '2020-01-01',FIELD_NUMBER)", LocalDate.of(2015, Month.JANUARY, 1));
+    evalEquals("CONCAT('ABC-',ABS(FIELD_NUMBER))", "ABC-5.12");
+    evalEquals(
+        "ADD_YEARS(Date '2020-01-01',ROUND(FIELD_NUMBER))", LocalDate.of(2015, Month.JANUARY, 1));
     evalFails("DECOMPRESS(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
@@ -110,7 +112,7 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("Upper(FIELD_BIGNUMBER)", "123456.789");
     evalTrue("FIELD_BIGNUMBER IS TRUE");
     evalTrue("FIELD_BIGNUMBER_ZERO IS FALSE");
-    evalEquals("LEFT('ABCDEFG',FIELD_BIGNUMBER)", "ABCDEFG");
+    evalEquals("CONCAT('ABC-',FIELD_BIGNUMBER)", "ABC-123456.789");
     evalFails("DECOMPRESS(FIELD_BIGNUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
@@ -129,8 +131,11 @@ public class IdentifierTest extends ExpressionTest {
 
   @Test
   void coercionValueMetaInet() throws Exception {
+
+    evalEquals("LENGTH(FIELD_INET)", 10L);
+
     // Unsupported value meta
-    evalFails("UPPER(FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("FIELD_INET IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test

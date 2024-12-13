@@ -33,7 +33,7 @@ public class DayOfWeekFunction extends Function {
     super(
         "DAYOFWEEK",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/dayofweek.html");
   }

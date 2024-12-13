@@ -33,7 +33,7 @@ public class YearsBetweenFunction extends Function {
     super(
         "YEARS_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL_TEMPORAL,
+        OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
         "/docs/years_between.html");
   }

@@ -33,7 +33,7 @@ public class WeekFunction extends Function {
     super(
         "WEEK",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/week.html");
   }

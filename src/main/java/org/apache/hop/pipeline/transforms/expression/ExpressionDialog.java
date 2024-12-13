@@ -28,7 +28,7 @@ import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -279,10 +279,10 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
             for (TableItem item : wTableFields.getNonEmptyItems()) {
               // All expressions previously defined
               if (item.equals(wTableFields.getActiveTableItem())) break;
-              TypeId typeId = TypeId.of(item.getText(3));
-              if (typeId != null) {
+              TypeName typeName = TypeName.of(item.getText(3));
+              if (typeName != null) {
                 String name = item.getText(1);
-                rowMeta.addValueMeta(Types.createValueMeta(name, typeId));
+                rowMeta.addValueMeta(Types.createValueMeta(name, typeName));
               }
             }
 

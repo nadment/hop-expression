@@ -30,7 +30,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -45,9 +44,7 @@ public class SubtractOperator extends BinaryOperator {
         100,
         true,
         ReturnTypes.ADDITIVE_OPERATOR,
-        OperandTypes.NUMERIC_NUMERIC
-            .or(OperandTypes.TEMPORAL_INTERVAL)
-            .or(OperandTypes.TEMPORAL_NUMERIC),
+        OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.DATE_INTERVAL).or(OperandTypes.DATE_INTEGER),
         // .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
         "/docs/subtract.html");
@@ -58,7 +55,7 @@ public class SubtractOperator extends BinaryOperator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    if (left.getType().isFamily(TypeFamily.TEMPORAL)) {
+    if (Types.isDate(left.getType())) {
       // Supports the basic subtraction of days to DATE values
       if (right.getType().isFamily(TypeFamily.NUMERIC)) {
         return new Call(
@@ -83,7 +80,7 @@ public class SubtractOperator extends BinaryOperator {
     }
 
     // Optimize data type
-    if (call.getType().is(TypeId.INTEGER)) {
+    if (Types.isInteger(call.getType())) {
       return new Call(SubtractInteger.INSTANCE, call.getOperands());
     }
 

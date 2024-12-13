@@ -33,7 +33,7 @@ public class SquareFunction extends Function {
     super(
         "SQUARE",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/square.html");
   }

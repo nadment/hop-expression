@@ -35,7 +35,7 @@ public class MonthName extends Function {
     super(
         "MONTHNAME",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/monthname.html");
   }

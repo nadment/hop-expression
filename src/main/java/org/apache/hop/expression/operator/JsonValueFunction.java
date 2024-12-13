@@ -33,7 +33,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 
 /** Extracts a scalar value from a JSON string. */
 @FunctionPlugin
@@ -88,7 +88,7 @@ public class JsonValueFunction extends Function {
       return null;
     } catch (ClassCastException e) {
       throw new ExpressionException(
-          ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), TypeId.ANY, value);
+          ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.ANY, value);
     } catch (Exception e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }

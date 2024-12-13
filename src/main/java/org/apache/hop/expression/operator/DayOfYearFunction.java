@@ -32,7 +32,7 @@ public class DayOfYearFunction extends Function {
     super(
         "DAYOFYEAR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/dayofyear.html");
   }

@@ -33,7 +33,7 @@ public class MinutesBetweenFunction extends Function {
     super(
         "MINUTES_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL_TEMPORAL,
+        OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
         "/docs/minutes_between.html");
   }

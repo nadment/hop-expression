@@ -51,8 +51,8 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.BINARY;
+  public TypeName getName() {
+    return TypeName.BINARY;
   }
 
   @Override
@@ -75,7 +75,7 @@ public final class BinaryType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.BINARY);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.BINARY);
   }
 
   @Override
@@ -119,7 +119,7 @@ public final class BinaryType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   public static byte[] convert(Long number) throws ConversionException {

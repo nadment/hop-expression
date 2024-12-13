@@ -33,7 +33,7 @@ public class DegreesFunction extends Function {
     super(
         "DEGREES",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/degrees.html");
   }

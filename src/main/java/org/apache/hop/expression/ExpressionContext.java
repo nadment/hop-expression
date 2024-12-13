@@ -23,7 +23,7 @@ import java.util.Objects;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 
 public class ExpressionContext extends Variables implements IExpressionContext {
 
@@ -107,7 +107,7 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     expression = compiler.compile(expression);
 
     // Return type Unknown is not expected here
-    if (!expression.isNull() && expression.getType().is(TypeId.UNKNOWN)) {
+    if (!expression.isNull() && expression.getType().is(TypeName.UNKNOWN)) {
       throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
     }
 

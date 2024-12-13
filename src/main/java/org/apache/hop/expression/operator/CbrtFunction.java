@@ -35,7 +35,7 @@ public class CbrtFunction extends Function {
     super(
         "CBRT",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/cbrt.html");
   }

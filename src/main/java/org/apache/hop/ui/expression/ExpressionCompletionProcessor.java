@@ -33,7 +33,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -259,7 +259,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           if (quoted
               || name.indexOf(' ') >= 0
               || ExpressionParser.isReservedWord(name)
-              || TypeId.of(name) != null
+              || TypeName.of(name) != null
               || TimeUnit.of(name) != null
               || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';

@@ -40,7 +40,7 @@ public class TruncateFunction extends Function {
     super(
         "TRUNCATE",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
+        OperandTypes.NUMBER.or(OperandTypes.NUMBER_NUMBER),
         OperatorCategory.MATHEMATICAL,
         "/docs/truncate.html");
   }

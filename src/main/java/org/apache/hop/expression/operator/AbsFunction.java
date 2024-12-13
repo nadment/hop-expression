@@ -29,7 +29,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /** Returns the absolute (positive) value of the numeric or interval value. */
 @FunctionPlugin
@@ -53,11 +53,11 @@ public class AbsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeId.INTERVAL)) {
+    if (Types.isInterval(type)) {
       return new Call(AbsInterval.INSTANCE, call.getOperands());
     }
 
-    if (type.is(TypeId.INTEGER)) {
+    if (Types.isInteger(type)) {
       return new Call(AbsInteger.INSTANCE, call.getOperands());
     }
 

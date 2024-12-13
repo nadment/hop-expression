@@ -33,7 +33,7 @@ public class IsoDayOfWeekFunction extends Function {
     super(
         "ISODAYOFWEEK",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/isodayofweek.html");
   }

@@ -34,8 +34,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Hex;
 import org.apache.hop.expression.util.NumberFormat;
@@ -48,10 +47,10 @@ public class ToCharFunction extends Function {
     super(
         "TO_CHAR",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.NUMERIC
-            .or(OperandTypes.NUMERIC_TEXT)
-            .or(OperandTypes.TEMPORAL)
-            .or(OperandTypes.TEMPORAL_TEXT)
+        OperandTypes.NUMBER
+            .or(OperandTypes.NUMBER_TEXT)
+            .or(OperandTypes.DATE)
+            .or(OperandTypes.DATE_TEXT)
             .or(OperandTypes.BINARY)
             .or(OperandTypes.BINARY_TEXT)
             .or(OperandTypes.BOOLEAN),
@@ -69,11 +68,11 @@ public class ToCharFunction extends Function {
       pattern = call.getOperand(1).getValue(String.class);
     }
 
-    if (type.is(TypeId.STRING) && call.getOperandCount() == 1) {
+    if (Types.isString(type) && call.getOperandCount() == 1) {
       return call.getOperand(0);
     }
 
-    if (type.isFamily(TypeFamily.TEMPORAL)) {
+    if (Types.isDate(type)) {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
@@ -83,7 +82,7 @@ public class ToCharFunction extends Function {
       return new Call(new ToCharDate(format), call.getOperands());
     }
 
-    if (type.isFamily(TypeFamily.NUMERIC)) {
+    if (Types.isNumeric(type)) {
       if (pattern == null) {
         pattern = "TM";
       }
@@ -93,11 +92,11 @@ public class ToCharFunction extends Function {
       return new Call(new ToCharNumber(format), call.getOperand(0), Literal.of(pattern));
     }
 
-    if (type.is(TypeId.BOOLEAN)) {
+    if (Types.isBoolean(type)) {
       return new Call(ToCharBoolean.INSTANCE, call.getOperands());
     }
 
-    if (type.is(TypeId.BINARY)) {
+    if (Types.isBinary(type)) {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT, "HEX");
       }

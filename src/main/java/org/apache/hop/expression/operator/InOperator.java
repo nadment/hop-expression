@@ -35,7 +35,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -72,8 +71,6 @@ public class InOperator extends Operator {
   @Override
   public boolean checkOperandTypes(final Call call) {
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.UNKNOWN)) return false;
-
     Array array = (Array) call.getOperand(1);
     for (IExpression operand : array) {
       if (!type.isCoercible(operand.getType())) {

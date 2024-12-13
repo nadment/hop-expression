@@ -41,7 +41,7 @@ public class CeilingFunction extends Function {
     super(
         "CEILING",
         ReturnTypes.CEIL_FLOOR_FUNCTION,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/ceiling.html");
   }

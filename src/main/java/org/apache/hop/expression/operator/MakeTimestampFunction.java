@@ -36,7 +36,7 @@ public class MakeTimestampFunction extends Function {
     super(
         "MAKE_TIMESTAMP",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER_INTEGER_INTEGER_INTEGER_NUMBER,
         OperatorCategory.DATE,
         "/docs/make_timestamp.html");
   }

@@ -27,10 +27,17 @@ public final class OperandTypes {
     // Utility class
   }
 
-  /** Creates a checker that passes if each operand is a member of a corresponding family. */
-  public static FamilyOperandTypeChecker family(TypeFamily... families) {
-    return new FamilyOperandTypeChecker(List.of(families), i -> false);
+  /**
+   * Creates a checker that passes if each operand is a member of a corresponding {@code TypeId}.
+   */
+  public static ExplicitOperandTypeChecker explicit(TypeName... names) {
+    return new ExplicitOperandTypeChecker(List.of(names), i -> false);
   }
+
+  /** Creates a checker that passes if each operand is a member of a corresponding family. */
+  //  public static FamilyOperandTypeChecker family(TypeFamily... families) {
+  //    return new FamilyOperandTypeChecker(List.of(families), i -> false);
+  //  }
 
   /** Creates a checker that passes if any one of the rules passes. */
   public static IOperandTypeChecker or(IOperandTypeChecker... rules) {
@@ -69,18 +76,18 @@ public final class OperandTypes {
   /** Operand type-checking strategy type must be a literal string non-NULL. */
   public static final IOperandTypeChecker TEXT = literal(String.class);
 
-  public static final ISingleOperandTypeChecker ANY = family(TypeFamily.ANY);
-  public static final IOperandTypeChecker ANY_BOOLEAN = family(TypeFamily.ANY, TypeFamily.BOOLEAN);
-  public static final IOperandTypeChecker ANY_NUMERIC = family(TypeFamily.ANY, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker ANY_ANY = family(TypeFamily.ANY, TypeFamily.ANY);
+  public static final ISingleOperandTypeChecker ANY = explicit(TypeName.ANY);
+  public static final IOperandTypeChecker ANY_BOOLEAN = explicit(TypeName.ANY, TypeName.BOOLEAN);
+  public static final IOperandTypeChecker ANY_INTEGER = explicit(TypeName.ANY, TypeName.INTEGER);
+  public static final IOperandTypeChecker ANY_ANY = explicit(TypeName.ANY, TypeName.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY =
-      family(TypeFamily.ANY, TypeFamily.ANY, TypeFamily.ANY);
-  public static final IOperandTypeChecker ANY_STRING = family(TypeFamily.ANY, TypeFamily.STRING);
+      explicit(TypeName.ANY, TypeName.ANY, TypeName.ANY);
+  public static final IOperandTypeChecker ANY_STRING = explicit(TypeName.ANY, TypeName.STRING);
   public static final IOperandTypeChecker ANY_SAME_SAME =
       ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
   /** Operand type-checking strategy for an operator which takes no operands. */
-  public static final IOperandTypeChecker NILADIC = family();
+  public static final IOperandTypeChecker NILADIC = explicit();
 
   /** Operand type-checking strategy where two operands must both be in the same type family. */
   public static final IOperandTypeChecker SAME_SAME =
@@ -126,138 +133,131 @@ public final class OperandTypes {
   public static final IOperandTypeChecker COMPARABLE_UNORDERED_COMPARABLE_UNORDERED =
       new ComparableOperandTypeChecker(OperandCountRange.of(2), TypeComparability.UNORDERED);
 
-  public static final ISingleOperandTypeChecker BOOLEAN = family(TypeFamily.BOOLEAN);
+  public static final ISingleOperandTypeChecker BOOLEAN = explicit(TypeName.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
-      family(TypeFamily.BOOLEAN, TypeFamily.BOOLEAN);
+      explicit(TypeName.BOOLEAN, TypeName.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_VARIADIC =
       repeat(OperandCountRange.between(1, -1), BOOLEAN);
 
-  public static final IOperandTypeChecker BOOLEAN_ANY = family(TypeFamily.BOOLEAN, TypeFamily.ANY);
+  public static final IOperandTypeChecker BOOLEAN_ANY = explicit(TypeName.BOOLEAN, TypeName.ANY);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =
-      family(TypeFamily.BOOLEAN, TypeFamily.ANY, TypeFamily.ANY);
+      explicit(TypeName.BOOLEAN, TypeName.ANY, TypeName.ANY);
   public static final IOperandTypeChecker BOOLEAN_SAME_SAME =
       BOOLEAN_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
-  public static final ISingleOperandTypeChecker BINARY = family(TypeFamily.BINARY);
+  public static final ISingleOperandTypeChecker BINARY = explicit(TypeName.BINARY);
   public static final IOperandTypeChecker BINARY_VARIADIC =
       repeat(OperandCountRange.between(1, -1), BINARY);
   public static final IOperandTypeChecker BINARY_BINARY =
-      family(TypeFamily.BINARY, TypeFamily.BINARY);
+      explicit(TypeName.BINARY, TypeName.BINARY);
   public static final IOperandTypeChecker BINARY_BINARY_VARIADIC =
       repeat(OperandCountRange.between(2, -1), BINARY);
 
-  public static final IOperandTypeChecker BINARY_NUMERIC =
-      family(TypeFamily.BINARY, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker BINARY_NUMERIC_BINARY =
-      family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.BINARY);
-  public static final IOperandTypeChecker BINARY_NUMERIC_NUMERIC_BINARY =
-      family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY_INTEGER =
+      explicit(TypeName.BINARY, TypeName.INTEGER);
+  public static final IOperandTypeChecker BINARY_INTEGER_BINARY =
+      explicit(TypeName.BINARY, TypeName.INTEGER, TypeName.BINARY);
+  public static final IOperandTypeChecker BINARY_INTEGER_INTEGER_BINARY =
+      explicit(TypeName.BINARY, TypeName.INTEGER, TypeName.INTEGER, TypeName.BINARY);
 
   public static final IOperandTypeChecker BINARY_TEXT = sequence(BINARY, TEXT);
 
-  public static final ISingleOperandTypeChecker NUMERIC = family(TypeFamily.NUMERIC);
+  public static final ISingleOperandTypeChecker INTEGER = explicit(TypeName.INTEGER);
+  public static final ISingleOperandTypeChecker NUMBER = explicit(TypeName.NUMBER);
+  public static final IOperandTypeChecker NUMERIC = or(INTEGER, NUMBER);
   public static final IOperandTypeChecker NUMERIC_NUMERIC =
-      family(TypeFamily.NUMERIC, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC =
-      family(TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC =
-      family(
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC);
+      sequence(INTEGER, INTEGER).or(sequence(NUMBER, NUMBER));
 
-  public static final IOperandTypeChecker NUMERIC_TEXT = sequence(NUMERIC, TEXT);
-  public static final IOperandTypeChecker NUMERIC_TEMPORAL =
-      family(TypeFamily.NUMERIC, TypeFamily.TEMPORAL);
+  public static final IOperandTypeChecker INTEGER_INTEGER =
+      explicit(TypeName.INTEGER, TypeName.INTEGER);
+  public static final IOperandTypeChecker NUMBER_NUMBER =
+      explicit(TypeName.NUMBER, TypeName.NUMBER);
 
-  public static final IOperandTypeChecker TEMPORAL = family(TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker TEMPORAL_TEMPORAL =
-      family(TypeFamily.TEMPORAL, TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker TEMPORAL_NUMERIC =
-      family(TypeFamily.TEMPORAL, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker TEMPORAL_STRING =
-      family(TypeFamily.TEMPORAL, TypeFamily.STRING);
-  public static final IOperandTypeChecker TEMPORAL_INTERVAL =
-      family(TypeFamily.TEMPORAL, TypeFamily.INTERVAL);
+  public static final IOperandTypeChecker INTEGER_INTEGER_INTEGER =
+      explicit(TypeName.INTEGER, TypeName.INTEGER, TypeName.INTEGER);
+  public static final IOperandTypeChecker INTEGER_INTEGER_INTEGER_INTEGER_INTEGER_NUMBER =
+      explicit(
+          TypeName.INTEGER,
+          TypeName.INTEGER,
+          TypeName.INTEGER,
+          TypeName.INTEGER,
+          TypeName.INTEGER,
+          TypeName.NUMBER);
 
-  public static final ISingleOperandTypeChecker INTERVAL = family(TypeFamily.INTERVAL);
+  public static final IOperandTypeChecker NUMBER_TEXT = sequence(NUMBER, TEXT);
+  public static final IOperandTypeChecker INTEGER_DATE = explicit(TypeName.INTEGER, TypeName.DATE);
+
+  public static final IOperandTypeChecker DATE = explicit(TypeName.DATE);
+  public static final IOperandTypeChecker DATE_DATE = explicit(TypeName.DATE, TypeName.DATE);
+  public static final IOperandTypeChecker DATE_INTEGER = explicit(TypeName.DATE, TypeName.INTEGER);
+  public static final IOperandTypeChecker DATE_STRING = explicit(TypeName.DATE, TypeName.STRING);
+  public static final IOperandTypeChecker DATE_INTERVAL =
+      explicit(TypeName.DATE, TypeName.INTERVAL);
+
+  public static final ISingleOperandTypeChecker INTERVAL = explicit(TypeName.INTERVAL);
   public static final IOperandTypeChecker INTERVAL_INTERVAL =
-      family(TypeFamily.INTERVAL, TypeFamily.INTERVAL);
-  public static final IOperandTypeChecker INTERVAL_TEMPORAL =
-      family(TypeFamily.INTERVAL, TypeFamily.TEMPORAL);
+      explicit(TypeName.INTERVAL, TypeName.INTERVAL);
+  public static final IOperandTypeChecker INTERVAL_DATE =
+      explicit(TypeName.INTERVAL, TypeName.DATE);
 
-  public static final IOperandTypeChecker TIMEUNIT_TEMPORAL = sequence(TIMEUNIT, TEMPORAL);
-  public static final IOperandTypeChecker TIMEUNIT_TEMPORAL_TEMPORAL =
-      sequence(TIMEUNIT, TEMPORAL, TEMPORAL);
-  public static final IOperandTypeChecker TIMEUNIT_NUMERIC_TEMPORAL =
-      sequence(TIMEUNIT, NUMERIC, TEMPORAL);
+  public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT, DATE);
+  public static final IOperandTypeChecker TIMEUNIT_DATE_DATE = sequence(TIMEUNIT, DATE, DATE);
+  public static final IOperandTypeChecker TIMEUNIT_INTEGER_DATE = sequence(TIMEUNIT, INTEGER, DATE);
   public static final IOperandTypeChecker TIMEUNIT_INTERVAL = sequence(TIMEUNIT, INTERVAL);
 
-  public static final ISingleOperandTypeChecker STRING = family(TypeFamily.STRING);
+  public static final ISingleOperandTypeChecker STRING = explicit(TypeName.STRING);
   public static final IOperandTypeChecker STRING_STRING =
-      family(TypeFamily.STRING, TypeFamily.STRING);
+      explicit(TypeName.STRING, TypeName.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING =
-      family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC =
-      family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC =
-      family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC_NUMERIC =
-      family(
-          TypeFamily.STRING,
-          TypeFamily.STRING,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_NUMERIC =
-      family(TypeFamily.STRING, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_NUMERIC_NUMERIC =
-      family(TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_NUMERIC_NUMERIC_STRING =
-      family(TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_NUMERIC_STRING =
-      family(TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC_STRING =
-      family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC_STRING =
-      family(
-          TypeFamily.STRING,
-          TypeFamily.STRING,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC_NUMERIC_STRING =
-      family(
-          TypeFamily.STRING,
-          TypeFamily.STRING,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC,
-          TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_DATE =
-      family(TypeFamily.STRING, TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker STRING_STRING_TEMPORAL =
-      family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.TEMPORAL);
+      explicit(TypeName.STRING, TypeName.STRING, TypeName.STRING);
+  public static final IOperandTypeChecker STRING_STRING_INTEGER =
+      explicit(TypeName.STRING, TypeName.STRING, TypeName.INTEGER);
+  public static final IOperandTypeChecker STRING_STRING_INTEGER_INTEGER =
+      explicit(TypeName.STRING, TypeName.STRING, TypeName.INTEGER, TypeName.INTEGER);
+  public static final IOperandTypeChecker STRING_STRING_INTEGER_INTEGER_INTEGER =
+      explicit(
+          TypeName.STRING, TypeName.STRING, TypeName.INTEGER, TypeName.INTEGER, TypeName.INTEGER);
+  public static final IOperandTypeChecker STRING_INTEGER =
+      explicit(TypeName.STRING, TypeName.INTEGER);
+  public static final IOperandTypeChecker STRING_INTEGER_INTEGER =
+      explicit(TypeName.STRING, TypeName.INTEGER, TypeName.INTEGER);
+  public static final IOperandTypeChecker STRING_INTEGER_INTEGER_STRING =
+      explicit(TypeName.STRING, TypeName.INTEGER, TypeName.INTEGER, TypeName.STRING);
+  public static final IOperandTypeChecker STRING_INTEGER_STRING =
+      explicit(TypeName.STRING, TypeName.INTEGER, TypeName.STRING);
+  public static final IOperandTypeChecker STRING_STRING_INTEGER_STRING =
+      explicit(TypeName.STRING, TypeName.STRING, TypeName.INTEGER, TypeName.STRING);
+  public static final IOperandTypeChecker STRING_STRING_INTEGER_INTEGER_STRING =
+      explicit(
+          TypeName.STRING, TypeName.STRING, TypeName.INTEGER, TypeName.INTEGER, TypeName.STRING);
+  public static final IOperandTypeChecker STRING_STRING_INTEGER_INTEGER_INTEGER_STRING =
+      explicit(
+          TypeName.STRING,
+          TypeName.STRING,
+          TypeName.INTEGER,
+          TypeName.INTEGER,
+          TypeName.INTEGER,
+          TypeName.STRING);
+  public static final IOperandTypeChecker STRING_DATE = explicit(TypeName.STRING, TypeName.DATE);
+  public static final IOperandTypeChecker STRING_STRING_DATE =
+      explicit(TypeName.STRING, TypeName.STRING, TypeName.DATE);
   public static final IOperandTypeChecker STRING_VARIADIC =
       repeat(OperandCountRange.between(1, -1), STRING);
   public static final IOperandTypeChecker STRING_STRING_VARIADIC =
       repeat(OperandCountRange.between(2, -1), STRING);
 
-  public static final IOperandTypeChecker TEMPORAL_TIMEUNIT = sequence(TEMPORAL, TIMEUNIT);
-  public static final IOperandTypeChecker TEMPORAL_TEXT = sequence(TEMPORAL, TEXT);
+  public static final IOperandTypeChecker DATE_TIMEUNIT = sequence(DATE, TIMEUNIT);
+  public static final IOperandTypeChecker DATE_TEXT = sequence(DATE, TEXT);
   public static final IOperandTypeChecker STRING_TEXT = sequence(STRING, TEXT);
 
-  public static final IOperandTypeChecker INET = family(TypeFamily.INET);
+  public static final IOperandTypeChecker INET = explicit(TypeName.INET);
 
-  public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
-  public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
+  public static final IOperandTypeChecker JSON = explicit(TypeName.JSON);
+  public static final IOperandTypeChecker JSON_STRING = explicit(TypeName.JSON, TypeName.STRING);
 
-  public static final ISingleOperandTypeChecker ARRAY = family(TypeFamily.ARRAY);
-  public static final IOperandTypeChecker ARRAY_NUMERIC =
-      family(TypeFamily.ARRAY, TypeFamily.NUMERIC);
+  public static final ISingleOperandTypeChecker ARRAY = explicit(TypeName.ARRAY);
+  public static final IOperandTypeChecker ARRAY_INTEGER =
+      explicit(TypeName.ARRAY, TypeName.INTEGER);
   public static final IOperandTypeChecker ARRAY_VARIADIC =
       repeat(OperandCountRange.between(1, -1), ARRAY);
 

@@ -35,7 +35,7 @@ public class DayNameFunction extends Function {
     super(
         "DAYNAME",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/dayname.html");
   }

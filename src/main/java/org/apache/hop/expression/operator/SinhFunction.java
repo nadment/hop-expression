@@ -33,7 +33,7 @@ public class SinhFunction extends Function {
     super(
         "SINH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/sinh.html");
   }

@@ -35,7 +35,7 @@ public class FactorialFunction extends Function {
     super(
         "FACTORIAL",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/factorial.html");
   }

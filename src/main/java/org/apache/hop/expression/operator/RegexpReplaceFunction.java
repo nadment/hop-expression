@@ -28,7 +28,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.Regexp;
 
 /** */
@@ -36,13 +36,13 @@ import org.apache.hop.expression.util.Regexp;
 public class RegexpReplaceFunction extends Function {
 
   private static final IOperandTypeChecker OTC =
-      OperandTypes.family(
-              TypeFamily.STRING,
-              TypeFamily.STRING,
-              TypeFamily.STRING,
-              TypeFamily.NUMERIC,
-              TypeFamily.NUMERIC,
-              TypeFamily.STRING)
+      OperandTypes.explicit(
+              TypeName.STRING,
+              TypeName.STRING,
+              TypeName.STRING,
+              TypeName.INTEGER,
+              TypeName.INTEGER,
+              TypeName.STRING)
           .optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {

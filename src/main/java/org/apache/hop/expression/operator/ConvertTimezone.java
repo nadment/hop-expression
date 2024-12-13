@@ -34,7 +34,7 @@ public class ConvertTimezone extends Function {
     super(
         "CONVERT_TIMEZONE",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING_STRING_TEMPORAL.or(OperandTypes.STRING_DATE),
+        OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE),
         OperatorCategory.DATE,
         "/docs/convert_timezone.html");
   }

@@ -38,10 +38,10 @@ public class RegexpInstrFunction extends Function {
         "REGEXP_INSTR",
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING_STRING
-            .or(OperandTypes.STRING_STRING_NUMERIC)
-            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC)
-            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC)
-            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC_STRING),
+            .or(OperandTypes.STRING_STRING_INTEGER)
+            .or(OperandTypes.STRING_STRING_INTEGER_INTEGER)
+            .or(OperandTypes.STRING_STRING_INTEGER_INTEGER_INTEGER)
+            .or(OperandTypes.STRING_STRING_INTEGER_INTEGER_INTEGER_STRING),
         OperatorCategory.STRING,
         "/docs/regexp_instr.html");
   }

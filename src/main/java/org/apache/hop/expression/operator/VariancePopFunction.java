@@ -29,7 +29,7 @@ public class VariancePopFunction extends AggregateFunction {
     super(
         "VARIANCE_POP",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         "/docs/variance_pop.html");
   }
 

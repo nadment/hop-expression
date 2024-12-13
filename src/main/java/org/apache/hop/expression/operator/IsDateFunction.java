@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /** Check if a value is a valid date. */
@@ -50,7 +50,7 @@ public class IsDateFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().is(TypeId.STRING)) {
+    if (Types.isString(call.getOperand(0).getType())) {
       Object value = call.getOperand(1).getValue();
       if (value instanceof DateTimeFormat) {
         // format already compiled

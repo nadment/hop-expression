@@ -35,7 +35,7 @@ public class CosFunction extends Function {
     super(
         "COS",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/cos.html");
   }

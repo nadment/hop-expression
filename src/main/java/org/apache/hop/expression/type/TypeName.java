@@ -33,12 +33,10 @@ import org.apache.hop.expression.TimeUnit;
  * <p>If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
-public enum TypeId {
+public enum TypeName {
 
-  /** A unknown type */
+  /** The null value. It has its own special type. */
   UNKNOWN(TypeFamily.UNKNOWN, false, false, -1, -1, -1, -1, Void.class),
-
-  TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class),
 
   ANY(TypeFamily.ANY, false, false, -1, -1, -1, -1, Object.class),
 
@@ -64,23 +62,25 @@ public enum TypeId {
   JSON(TypeFamily.JSON, false, false, -1, -1, -1, -1, JsonNode.class),
 
   /** A INET type */
-  INET(TypeFamily.INET, false, false, -1, -1, -1, -1, InetAddress.class),
+  INET(TypeFamily.NETWORK, false, false, -1, -1, -1, -1, InetAddress.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
 
   /** A Array type */
-  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class);
+  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class),
 
-  protected static final Set<TypeId> STRING_TYPES = Set.of(STRING);
-  protected static final Set<TypeId> BINARY_TYPES = Set.of(BINARY);
-  protected static final Set<TypeId> BOOLEAN_TYPES = Set.of(BOOLEAN);
-  protected static final Set<TypeId> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
-  protected static final Set<TypeId> TEMPORAL_TYPES = Set.of(DATE);
-  protected static final Set<TypeId> JSON_TYPES = Set.of(JSON);
-  protected static final Set<TypeId> INTERVAL_TYPES = Set.of(INTERVAL);
+  TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class);
 
-  protected static final Set<TypeId> PRIMARY_TYPES =
+  protected static final Set<TypeName> STRING_TYPES = Set.of(STRING);
+  protected static final Set<TypeName> BINARY_TYPES = Set.of(BINARY);
+  protected static final Set<TypeName> BOOLEAN_TYPES = Set.of(BOOLEAN);
+  protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
+  protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
+  protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
+  protected static final Set<TypeName> INTERVAL_TYPES = Set.of(INTERVAL);
+
+  protected static final Set<TypeName> PRIMARY_TYPES =
       Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, INTERVAL, BINARY, JSON);
 
   /** If the precision parameter is supported. */
@@ -109,7 +109,7 @@ public enum TypeId {
       Set.of(
           "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
 
-  private TypeId(
+  private TypeName(
       TypeFamily family,
       boolean supportsPrecision,
       boolean supportsScale,
@@ -132,30 +132,81 @@ public enum TypeId {
     return javaClass;
   }
 
-  /** Gets the {@link TypeFamily} containing this {@link TypeId}. */
+  /** Gets the {@link TypeFamily} containing this {@link TypeName}. */
   public TypeFamily getFamily() {
     return family;
   }
 
   /** Returns whether type are in same type family. */
   public boolean isFamily(TypeFamily family) {
-    return this.family.isFamily(family);
+    return this.family == family;
   }
 
   /**
-   * Returns whether this {@link TypeId} support implicit coercion to the specified {@link
-   * TypeFamily}.
+   * Returns whether this {@link TypeName} support explicit cast to the specified {@link TypeName}.
    */
-  public boolean isCoercible(TypeFamily family) {
-    return this.family.isCoercible(family);
+  public boolean isCastable(final TypeName name) {
+    if (name == null) return false;
+    if (ANY == this || name == ANY || this.equals(name)) return true;
+
+    switch (this) {
+      case BOOLEAN:
+        return name.is(INTEGER, NUMBER, BINARY, STRING);
+      case STRING:
+        return name.is(BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON, INET);
+      case DATE:
+        return name.is(INTEGER, NUMBER, STRING);
+      case INTEGER:
+        return name.is(NUMBER, BOOLEAN, BINARY, STRING, DATE);
+      case NUMBER:
+        return name.is(INTEGER, BOOLEAN, BINARY, STRING, DATE);
+      case BINARY:
+        return name.is(STRING);
+      case JSON:
+        return name.is(STRING);
+      case UNKNOWN, ANY:
+        return true;
+      case INTERVAL:
+      case INET:
+      case TIMEUNIT:
+      default:
+        return false;
+    }
   }
 
   /**
-   * Returns whether this {@link TypeId} support implicit coercion to the specified {@link TypeId}.
+   * Returns whether this {@link TypeName} support implicit coercion to the specified {@link
+   * TypeName}. Implicit coercions is generally only possible when the cast cannot fail.
    */
-  public boolean isCoercible(final TypeId id) {
-    if (id == null) return false;
-    return isCoercible(id.family);
+  public boolean isCoercible(final TypeName name) {
+    if (name == null) return false;
+    if (ANY == this || name == ANY || this.equals(name)) return true;
+    switch (this) {
+      case BOOLEAN:
+        return name.is(INTEGER, NUMBER, STRING);
+      case DATE:
+        return name.is(STRING);
+      case INTEGER:
+        return name.is(NUMBER, BOOLEAN, STRING);
+      case NUMBER:
+        // TODO: NUMBER to INTEGER can overflow, not sure it's a good choice to coerce
+        return name.is(INTEGER, BOOLEAN, STRING);
+      case BINARY:
+        return name.is(STRING);
+      case STRING:
+        return name.is(BINARY);
+      case JSON:
+        return name.is(STRING);
+      case INTERVAL:
+        return name.is(STRING);
+      case INET:
+        return name.is(STRING);
+      case UNKNOWN, ANY:
+        return true;
+      case ARRAY:
+      default:
+        return false;
+    }
   }
 
   public boolean supportsPrecision() {
@@ -206,13 +257,13 @@ public enum TypeId {
   }
 
   /**
-   * Returns a {@link TypeId} with a given name (ignore case).
+   * Returns a {@link TypeName} with a given name (ignore case).
    *
    * @param name The name of the data name
    * @return data name, or null if not valid
    */
-  public static TypeId of(final String name) {
-    for (TypeId type : TypeId.values()) {
+  public static TypeName of(final String name) {
+    for (TypeName type : TypeName.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
@@ -223,12 +274,12 @@ public enum TypeId {
   /**
    * Search a data type identifier from a java class.
    *
-   * @return The {@link TypeId} or 'UNKNOWN' if not found
+   * @return The {@link TypeName} or 'UNKNOWN' if not found
    */
-  public static TypeId fromJavaClass(final Class<?> clazz) {
+  public static TypeName fromJavaClass(final Class<?> clazz) {
     if (clazz == null) return UNKNOWN;
 
-    for (TypeId id : values()) {
+    for (TypeName id : values()) {
 
       // Ignore ANY
       if (id.equals(ANY)) continue;
@@ -245,7 +296,7 @@ public enum TypeId {
    *
    * @return The type id or 'UNKNOWN' if not found
    */
-  public static TypeId fromValue(final Object value) {
+  public static TypeName fromValue(final Object value) {
     if (value == null) return UNKNOWN;
 
     if (value instanceof Integer) {
@@ -256,5 +307,14 @@ public enum TypeId {
     }
 
     return fromJavaClass(value.getClass());
+  }
+
+  /** Returns whether type are in same type. */
+  public boolean is(final TypeName... names) {
+    if (names == null) return false;
+    for (TypeName name : names) {
+      if (ANY == this || name == ANY || this.equals(name)) return true;
+    }
+    return false;
   }
 }

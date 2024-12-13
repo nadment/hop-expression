@@ -33,7 +33,7 @@ public final class TypeTransforms {
 
   public static final ITypeTransform TO_MAX_PRECISION =
       typeToTransform -> {
-        switch (requireNonNull(typeToTransform).getId()) {
+        switch (requireNonNull(typeToTransform).getName()) {
           case STRING:
             return Types.STRING;
           case BINARY:

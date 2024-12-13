@@ -34,7 +34,7 @@ public class SqrtFunction extends Function {
     super(
         "SQRT",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/sqrt.html");
   }

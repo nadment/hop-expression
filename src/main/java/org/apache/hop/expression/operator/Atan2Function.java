@@ -33,7 +33,7 @@ public class Atan2Function extends Function {
     super(
         "ATAN2",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/atan2.html");
   }

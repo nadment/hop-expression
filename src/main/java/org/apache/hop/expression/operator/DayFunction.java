@@ -32,7 +32,7 @@ public class DayFunction extends Function {
     super(
         "DAY",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/day.html");
   }

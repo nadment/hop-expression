@@ -35,8 +35,8 @@ public final class AnyType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.ANY;
+  public TypeName getName() {
+    return TypeName.ANY;
   }
 
   @Override

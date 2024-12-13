@@ -44,7 +44,7 @@ public class RandomFunction extends Function {
     super(
         "RANDOM",
         ReturnTypes.NUMBER_NOT_NULL,
-        OperandTypes.NILADIC.or(OperandTypes.NUMERIC),
+        OperandTypes.NILADIC.or(OperandTypes.INTEGER),
         OperatorCategory.MATHEMATICAL,
         "/docs/random.html");
     this.random = random;

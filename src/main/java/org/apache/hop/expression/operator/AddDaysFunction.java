@@ -37,7 +37,7 @@ public class AddDaysFunction extends Function {
     super(
         "ADD_DAYS",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_NUMERIC,
+        OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
         "/docs/add_days.html");
   }

@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
 /** Expression representing a named column in an input row. */
@@ -60,7 +60,7 @@ public class Identifier implements IExpression {
 
     if (name.indexOf(' ') >= 0
         || ExpressionParser.isReservedWord(name)
-        || TypeId.of(name) != null
+        || TypeName.of(name) != null
         || TimeUnit.of(name) != null
         || FunctionRegistry.isFunction(name)) {
       return '\"' + name + '\"';
@@ -190,7 +190,7 @@ public class Identifier implements IExpression {
             if (date == null) {
               return null;
             }
-            return clazz.cast(date.toInstant().atZone(ZoneOffset.UTC));
+            return type.convert(date.toInstant().atZone(ZoneOffset.UTC), clazz);
           }
 
         case IValueMeta.TYPE_STRING:
@@ -323,7 +323,7 @@ public class Identifier implements IExpression {
     if (name.indexOf(' ') >= 0
         || ExpressionParser.isReservedWord(name)
         || FunctionRegistry.isFunction(name)
-        || TypeId.of(name) != null
+        || TypeName.of(name) != null
         || TimeUnit.of(name) != null) {
       writer.append('\"');
       writer.append(name);

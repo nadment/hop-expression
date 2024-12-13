@@ -32,7 +32,7 @@ public class MinuteFunction extends Function {
     super(
         "MINUTE",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/minute.html");
   }

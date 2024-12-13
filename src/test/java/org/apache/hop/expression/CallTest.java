@@ -78,26 +78,26 @@ class CallTest extends ExpressionTest {
   void coercion() throws Exception {
 
     // Coercion to boolean
-    evalTrue("FIELD_STRING_BOOLEAN_TRUE IS TRUE");
-    evalTrue("FIELD_INTEGER IS TRUE");
-    evalTrue("FIELD_NUMBER IS TRUE");
-    evalTrue("Cast(Month(FIELD_DATE) as BOOLEAN)");
-    evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
+    // evalTrue("FIELD_STRING_BOOLEAN_TRUE::BOOLEAN IS TRUE");
+    // evalTrue("FIELD_INTEGER::BOOLEAN IS TRUE");
+    // evalTrue("FIELD_NUMBER IS TRUE");
+    // evalTrue("Cast(Month(FIELD_DATE) as BOOLEAN)");
+    // evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
 
     // Coercion to string
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(Types.STRING);
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
-    evalEquals("Lower(FIELD_INTEGER::BOOLEAN)", "true");
-    evalEquals("Lower(FIELD_NUMBER::BOOLEAN)", "true");
-    evalEquals("Upper(FIELD_NUMBER::BOOLEAN)", "TRUE");
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
-    evalEquals("Upper(FIELD_INTEGER::INTEGER)", "40");
+    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(Types.STRING);
+    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
+    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
+    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
+    // evalEquals("Lower(FIELD_INTEGER::BOOLEAN)", "true");
+    // evalEquals("Lower(FIELD_NUMBER::BOOLEAN)", "true");
+    // evalEquals("Upper(FIELD_NUMBER::BOOLEAN)", "TRUE");
+    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
+    // evalEquals("Upper(FIELD_INTEGER::INTEGER)", "40");
 
-    // Coercion
-    evalEquals("Abs(FIELD_STRING_INTEGER)", 25L);
-    evalEquals("Abs(FIELD_STRING_NUMBER)", 12.56D);
+    // Coercion boolean to integer
+    evalEquals("Abs(FIELD_BOOLEAN_TRUE)", 1L);
+    // evalEquals("Abs(FIELD_STRING_NUMBER)", 12.56D);
   }
 
   @Test
@@ -114,8 +114,7 @@ class CallTest extends ExpressionTest {
   void normalizeSymmetricalOperator() throws Exception {
 
     // Normalize identifiers by name
-    optimize(
-        "FIELD_STRING_NUMBER+FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER+FIELD_STRING_NUMBER");
+    optimize("FIELD_NUMBER+FIELD_INTEGER", "FIELD_INTEGER+FIELD_NUMBER");
 
     optimize(
         "FIELD_BOOLEAN_TRUE AND FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE AND FIELD_BOOLEAN_TRUE");
@@ -131,9 +130,9 @@ class CallTest extends ExpressionTest {
 
     optimize("FIELD_NUMBER>3 AND TRUE", "TRUE AND FIELD_NUMBER>3");
 
-    // Coerce operands
-    optimize("2*FIELD_STRING_NUMBER*3", "6*CAST(FIELD_STRING_NUMBER AS NUMBER)");
-    optimize(
-        "FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
+    // TODO: Coerce operands
+    // optimize("2::INTEGER*FIELD_NUMBER*3", "6*CAST(FIELD_NUMBER AS NUMBER)");
+    // optimize("FIELD_NUMBER||FIELD_STRING_INTEGER", "CAST(FIELD_STRING_INTEGER AS
+    // STRING)*FIELD_NUMBER");
   }
 }

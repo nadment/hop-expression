@@ -32,7 +32,7 @@ public class YearFunction extends Function {
     super(
         "YEAR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/year.html");
   }

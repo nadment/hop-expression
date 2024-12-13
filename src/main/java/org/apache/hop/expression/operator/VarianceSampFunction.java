@@ -30,7 +30,7 @@ public class VarianceSampFunction extends AggregateFunction {
     super(
         "VARIANCE_SAMP",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         "/docs/variance_samp.html");
   }
 

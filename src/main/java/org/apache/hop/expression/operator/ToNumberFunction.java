@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.NumberFormat;
 
 /** Converts a string expression to a number value with optional format. */
@@ -39,7 +39,7 @@ public class ToNumberFunction extends Function {
     super(
         "TO_NUMBER",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.TEMPORAL),
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.DATE),
         OperatorCategory.CONVERSION,
         "/docs/to_number.html");
   }
@@ -49,7 +49,7 @@ public class ToNumberFunction extends Function {
       throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.DATE)) {
+    if (Types.isDate(type)) {
       return new Call(ToNumberDate.INSTANCE, call.getOperands());
     }
 

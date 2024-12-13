@@ -36,7 +36,7 @@ public class NextDayFunction extends Function {
     super(
         "NEXT_DAY",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_STRING,
+        OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
         "/docs/next_day.html");
   }

@@ -49,11 +49,11 @@ public class Types {
   public static final AnyType ANY = new AnyType(true);
 
   /** Default BINARY type with maximum precision. */
-  public static final BinaryType BINARY = new BinaryType(TypeId.BINARY.getMaxPrecision(), true);
+  public static final BinaryType BINARY = new BinaryType(TypeName.BINARY.getMaxPrecision(), true);
 
   /** Default BINARY NOT NULLtype with maximum precision. */
   public static final BinaryType BINARY_NOT_NULL =
-      new BinaryType(TypeId.BINARY.getMaxPrecision(), false);
+      new BinaryType(TypeName.BINARY.getMaxPrecision(), false);
 
   /** Default BOOLEAN type. */
   public static final BooleanType BOOLEAN = new BooleanType(true);
@@ -62,26 +62,27 @@ public class Types {
   public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
 
   /** Default STRING type with maximum precision. */
-  public static final StringType STRING = new StringType(TypeId.STRING.getMaxPrecision(), true);
+  public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision(), true);
 
   /** Default STRING NOT NULL type with maximum precision. */
   public static final StringType STRING_NOT_NULL =
-      new StringType(TypeId.STRING.getMaxPrecision(), false);
+      new StringType(TypeName.STRING.getMaxPrecision(), false);
 
   /** Default INTEGER type with maximum precision. */
-  public static final IntegerType INTEGER = new IntegerType(TypeId.INTEGER.getMaxPrecision(), true);
+  public static final IntegerType INTEGER =
+      new IntegerType(TypeName.INTEGER.getMaxPrecision(), true);
 
   /** Default INTEGER NOT NULL type with maximum precision. */
   public static final IntegerType INTEGER_NOT_NULL =
-      new IntegerType(TypeId.INTEGER.getMaxPrecision(), false);
+      new IntegerType(TypeName.INTEGER.getMaxPrecision(), false);
 
   /** Default NUMBER(38,9) type with max precision and default scale. */
   public static final NumberType NUMBER =
-      new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), true);
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), true);
 
   /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
   public static final NumberType NUMBER_NOT_NULL =
-      new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), false);
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), false);
 
   /** Default DATE type with default parameters. */
   public static final DateType DATE = new DateType(true);
@@ -134,7 +135,7 @@ public class Types {
   public static Type getLeastRestrictive(final Type type1, final Type type2) {
     if (type1 == null) return type2;
     if (type2 == null) return type1;
-    if (type1.getId().ordinal() > type2.getId().ordinal()
+    if (type1.getName().ordinal() > type2.getName().ordinal()
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
     }
@@ -222,7 +223,7 @@ public class Types {
 
     if (type1 == null || type2 == null) return null;
 
-    if (type2.is(TypeId.UNKNOWN)) return type1;
+    if (type2.is(TypeName.UNKNOWN)) return type1;
 
     // DATE compare STRING -> DATE
     if (isDate(type1) && isString(type2)) {
@@ -254,7 +255,7 @@ public class Types {
 
   /** Returns whether a IExpression should be cast to a target type. */
   public static boolean needToCast(IExpression expression, Type toType) {
-    return expression.getType().getId().ordinal() < toType.getId().ordinal();
+    return expression.getType().getName().ordinal() < toType.getName().ordinal();
   }
 
   /** Coerces the operands of a addition or subtract expression into numeric type. */
@@ -263,7 +264,7 @@ public class Types {
     Type left = call.getOperand(0).getType();
     Type right = call.getOperand(1).getType();
 
-    if (left.getId() == right.getId()) return false;
+    if (left.getName() == right.getName()) return false;
 
     // STRING <operator> numeric -> NUMBER
     if (isString(left) && isNumeric(right)) {
@@ -291,7 +292,7 @@ public class Types {
     Type left = call.getOperand(0).getType();
     Type right = call.getOperand(1).getType();
 
-    if (left.getId() == right.getId()) return false;
+    if (left.getName() == right.getName()) return false;
 
     // STRING <operator> numeric -> NUMBER
     if (isString(left) && isNumeric(right)) {
@@ -334,7 +335,7 @@ public class Types {
    */
   public static boolean isLosslessCast(Type source, Type target) {
 
-    if (source.getId() == target.getId()) {
+    if (source.getName() == target.getName()) {
       if (source.getPrecision() <= target.getPrecision()
           && source.getScale() <= target.getScale()) {
         return true;
@@ -377,17 +378,22 @@ public class Types {
   /** Returns whether a type is atomic (date, numeric, string or BOOLEAN). */
   public static boolean isAtomic(final Type type) {
     if (type == null) return false;
-    TypeId id = type.getId();
-    return id == TypeId.STRING
-        || id == TypeId.DATE
-        || id == TypeId.INTEGER
-        || id == TypeId.NUMBER
-        || id == TypeId.BOOLEAN;
+    TypeName id = type.getName();
+    return id == TypeName.STRING
+        || id == TypeName.DATE
+        || id == TypeName.INTEGER
+        || id == TypeName.NUMBER
+        || id == TypeName.BOOLEAN;
+  }
+
+  public static boolean isBinary(final Type type) {
+    if (type == null) return false;
+    return type.is(TypeName.BINARY);
   }
 
   public static boolean isBoolean(final Type type) {
     if (type == null) return false;
-    return type.is(TypeId.BOOLEAN);
+    return type.is(TypeName.BOOLEAN);
   }
 
   public static boolean isNumeric(final Type type) {
@@ -397,25 +403,30 @@ public class Types {
 
   public static boolean isInteger(final Type type) {
     if (type == null) return false;
-    return type.is(TypeId.INTEGER);
+    return type.is(TypeName.INTEGER);
   }
 
   public static boolean isNumber(final Type type) {
     if (type == null) return false;
-    return type.is(TypeId.NUMBER);
+    return type.is(TypeName.NUMBER);
   }
 
   public static boolean isString(final Type type) {
     if (type == null) return false;
-    return type.is(TypeId.STRING);
+    return type.is(TypeName.STRING);
   }
 
   public static boolean isDate(final Type type) {
     if (type == null) return false;
-    return type.is(TypeId.DATE);
+    return type.is(TypeName.DATE);
   }
 
-  /** Return the default {@link Type} that belongs to this {@link TypeId}. */
+  public static boolean isInterval(final Type type) {
+    if (type == null) return false;
+    return type.is(TypeName.INTERVAL);
+  }
+
+  /** Return the default {@link Type} that belongs to this {@link TypeName}. */
   // public Type getDefaultType(TypeIdTypes.STRINGch (id) {
   // case BOOLEAN:
   // return Types.BOOLEAN;
@@ -436,7 +447,7 @@ public class Types {
   // }
   // }
 
-  public static IValueMeta createValueMeta(final String name, final TypeId typeId) {
+  public static IValueMeta createValueMeta(final String name, final TypeName typeId) {
 
     if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
@@ -475,7 +486,7 @@ public class Types {
     if (type == null) {
       throw new IllegalArgumentException("Type must not be null");
     }
-    switch (type.getId()) {
+    switch (type.getName()) {
       case BOOLEAN:
         return new ValueMetaBoolean(name);
       case INTEGER:

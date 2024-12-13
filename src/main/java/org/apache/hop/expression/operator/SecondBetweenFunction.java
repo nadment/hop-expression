@@ -33,7 +33,7 @@ public class SecondBetweenFunction extends Function {
     super(
         "SECONDS_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL_TEMPORAL,
+        OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
         "/docs/seconds_between.html");
   }

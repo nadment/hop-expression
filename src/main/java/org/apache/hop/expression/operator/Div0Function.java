@@ -43,7 +43,7 @@ public class Div0Function extends Function {
     super(
         "DIV0",
         ReturnTypes.DIVIDE_OPERATOR,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/div0.html");
   }

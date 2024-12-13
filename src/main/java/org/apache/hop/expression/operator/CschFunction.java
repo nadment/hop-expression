@@ -35,7 +35,7 @@ public class CschFunction extends Function {
     super(
         "CSCH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/csch.html");
   }

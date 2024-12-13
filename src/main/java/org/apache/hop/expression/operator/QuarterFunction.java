@@ -33,7 +33,7 @@ public class QuarterFunction extends Function {
     super(
         "QUARTER",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/quarter.html");
   }

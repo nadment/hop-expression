@@ -50,7 +50,7 @@ public abstract class Type {
    */
   protected String generateSignature() {
     StringBuilder builder = new StringBuilder();
-    TypeId id = getId();
+    TypeName id = getName();
     builder.append(id.name());
     if (precision != id.getMaxPrecision() || (scale > 0 && scale != id.getDefaultScale())) {
       builder.append('(');
@@ -66,7 +66,7 @@ public abstract class Type {
 
   /** Check precision and scale. */
   protected void checkPrecisionAndScale() {
-    TypeId id = getId();
+    TypeName id = getName();
     if (id.supportsPrecision()
         && (precision < id.getMinPrecision() || precision > id.getMaxPrecision())) {
       throw new ExpressionException(
@@ -82,11 +82,11 @@ public abstract class Type {
   }
 
   /**
-   * Gets the {@link TypeId} of this type.
+   * Gets the {@link TypeName} of this type.
    *
    * @return name, never null
    */
-  public abstract TypeId getId();
+  public abstract TypeName getName();
 
   /**
    * Gets the {@link TypeFamily} of this type.
@@ -94,20 +94,20 @@ public abstract class Type {
    * @return family, never null
    */
   public TypeFamily getFamily() {
-    return getId().getFamily();
+    return getName().getFamily();
   }
 
-  public boolean is(final TypeId id) {
-    return getId() == id;
+  public boolean is(final TypeName name) {
+    return getName() == name;
   }
 
   public boolean isFamily(final TypeFamily family) {
-    return getId().isFamily(family);
+    return getName().isFamily(family);
   }
 
   /** Returns whether this {@link Type} support implicit coercion to the specified {@link Type}. */
   public boolean isCoercible(final Type type) {
-    return getId().isCoercible(type.getId());
+    return getName().isCoercible(type.getName());
   }
 
   /**
@@ -192,8 +192,8 @@ public abstract class Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION,
         value,
-        TypeId.fromValue(value),
-        TypeId.fromJavaClass(clazz));
+        TypeName.fromValue(value),
+        TypeName.fromJavaClass(clazz));
   }
 
   /**

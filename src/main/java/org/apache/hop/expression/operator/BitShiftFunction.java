@@ -31,7 +31,7 @@ public class BitShiftFunction extends Function {
     super(
         "BIT_SHIFT",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_shift.html");
   }

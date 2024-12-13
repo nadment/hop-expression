@@ -16,13 +16,19 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /** Converts a string or numeric expression to a boolean value. */
@@ -35,20 +41,68 @@ public class TryToBooleanFunction extends Function {
     super(
         "TRY_TO_BOOLEAN",
         ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.NUMERIC),
+        OperandTypes.STRING.or(OperandTypes.INTEGER).or(OperandTypes.NUMBER),
         OperatorCategory.CONVERSION,
         "/docs/to_boolean.html");
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
-    if (value == null) return null;
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    Type type = call.getOperand(0).getType();
+    if (Types.isInteger(type)) {
+      return new Call(TryToBooleanInteger.INSTANCE, call.getOperands());
+    }
+    if (Types.isNumber(type)) {
+      return new Call(TryToBooleanNumber.INSTANCE, call.getOperands());
+    }
 
-    try {
-      return Types.BOOLEAN.cast(value, null);
-    } catch (ConversionException e) {
-      return null;
+    return new Call(TryToBooleanString.INSTANCE, call.getOperands());
+  }
+
+  private static final class TryToBooleanString extends TryToBooleanFunction {
+    private static final TryToBooleanString INSTANCE = new TryToBooleanString();
+
+    private TryToBooleanString() {
+      super();
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String value = operands[0].getValue(String.class);
+      try {
+        return BooleanType.convert(value);
+      } catch (ConversionException e) {
+        return null;
+      }
+    }
+  }
+
+  private static final class TryToBooleanInteger extends TryToBooleanFunction {
+    private static final TryToBooleanInteger INSTANCE = new TryToBooleanInteger();
+
+    private TryToBooleanInteger() {
+      super();
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long value = operands[0].getValue(Long.class);
+      return BooleanType.convert(value);
+    }
+  }
+
+  private static final class TryToBooleanNumber extends TryToBooleanFunction {
+    private static final TryToBooleanNumber INSTANCE = new TryToBooleanNumber();
+
+    private TryToBooleanNumber() {
+      super();
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      BigDecimal value = operands[0].getValue(BigDecimal.class);
+      return BooleanType.convert(value);
     }
   }
 }

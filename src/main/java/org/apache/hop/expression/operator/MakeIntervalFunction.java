@@ -35,7 +35,7 @@ public class MakeIntervalFunction extends Function {
     super(
         "MAKE_INTERVAL",
         ReturnTypes.INTERVAL_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER_INTEGER_INTEGER_INTEGER_NUMBER,
         OperatorCategory.DATE,
         "/docs/make_interval.html");
   }

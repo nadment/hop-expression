@@ -33,7 +33,7 @@ public class JulianDayFunction extends Function {
     super(
         "JULIAN_DAY",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TEMPORAL,
+        OperandTypes.DATE,
         OperatorCategory.DATE,
         "/docs/julian_day.html");
   }

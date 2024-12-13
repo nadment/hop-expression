@@ -41,7 +41,7 @@ public class FloorFunction extends Function {
     super(
         "FLOOR",
         ReturnTypes.CEIL_FLOOR_FUNCTION,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/floor.html");
   }

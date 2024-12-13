@@ -40,7 +40,7 @@ public class RoundFunction extends Function {
     super(
         "ROUND",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
+        OperandTypes.NUMBER.or(OperandTypes.NUMBER_NUMBER),
         OperatorCategory.MATHEMATICAL,
         "/docs/round.html");
   }

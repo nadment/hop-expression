@@ -36,8 +36,8 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.JSON;
+  public TypeName getName() {
+    return TypeName.JSON;
   }
 
   @Override
@@ -63,7 +63,7 @@ public final class JsonType extends Type {
     //    }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.JSON);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.JSON);
   }
 
   @Override
@@ -111,7 +111,7 @@ public final class JsonType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   /**
@@ -127,7 +127,7 @@ public final class JsonType extends Type {
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return mapper.readTree(str);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_JSON, TypeId.STRING, str);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_JSON, TypeName.STRING, str);
     }
   }
 }

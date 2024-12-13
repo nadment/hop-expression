@@ -27,7 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The function left-pads a string or binary with another string or binary, to a certain length.
@@ -44,9 +44,9 @@ public class LPadFunction extends Function {
     super(
         "LPAD",
         ReturnTypes.ARG0_MAX_PRECISION,
-        OperandTypes.STRING_NUMERIC
-            .or(OperandTypes.STRING_NUMERIC_STRING)
-            .or(OperandTypes.BINARY_NUMERIC_BINARY),
+        OperandTypes.STRING_INTEGER
+            .or(OperandTypes.STRING_INTEGER_STRING)
+            .or(OperandTypes.BINARY_INTEGER_BINARY),
         OperatorCategory.STRING,
         "/docs/lpad.html");
   }
@@ -55,7 +55,7 @@ public class LPadFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeId.BINARY)) {
+    if (Types.isBinary(type)) {
       return new Call(LPadBinary.INSTANCE, call.getOperands());
     }
 

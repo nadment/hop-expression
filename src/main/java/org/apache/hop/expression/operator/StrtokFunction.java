@@ -36,8 +36,8 @@ public class StrtokFunction extends Function {
   private static final IOperandTypeChecker OTC =
       OperandTypes.STRING
           .or(OperandTypes.STRING_STRING)
-          .or(OperandTypes.STRING_NUMERIC)
-          .or(OperandTypes.STRING_STRING_NUMERIC);
+          .or(OperandTypes.STRING_INTEGER)
+          .or(OperandTypes.STRING_STRING_INTEGER);
 
   public StrtokFunction() {
     super("STRTOK", ReturnTypes.STRING_NULLABLE, OTC, OperatorCategory.STRING, "/docs/strtok.html");

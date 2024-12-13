@@ -58,11 +58,11 @@ public final class NumberType extends Type {
    * @return
    */
   public static NumberType of(int precision, int scale, boolean nullable) {
-    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeId.NUMBER.getMaxPrecision();
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.NUMBER.getMaxPrecision();
     if (scale == SCALE_NOT_SPECIFIED) scale = 0;
 
-    if (precision == TypeId.NUMBER.getMaxPrecision()
-        && scale == TypeId.NUMBER.getDefaultScale()
+    if (precision == TypeName.NUMBER.getMaxPrecision()
+        && scale == TypeName.NUMBER.getDefaultScale()
         && nullable) return Types.NUMBER;
 
     return new NumberType(precision, scale, nullable);
@@ -80,8 +80,8 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.NUMBER;
+  public TypeName getName() {
+    return TypeName.NUMBER;
   }
 
   @Override
@@ -156,7 +156,7 @@ public final class NumberType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   /**
@@ -179,21 +179,22 @@ public final class NumberType extends Type {
       return convert(str);
     }
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.NUMBER);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.NUMBER);
   }
 
   public static final BigDecimal convert(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
     } catch (FormatParseException e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.STRING, TypeId.NUMBER, str);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.NUMBER, str);
     }
   }
 
   public static final BigDecimal convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, TypeId.BINARY, TypeId.NUMBER, bytes);
+          ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

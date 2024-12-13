@@ -32,7 +32,6 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -145,7 +144,7 @@ public class MultiplyOperator extends BinaryOperator {
       call.inferReturnType();
 
       // Optimize data type
-      if (call.getType().is(TypeId.INTEGER)) {
+      if (Types.isInteger(call.getType())) {
         call.setOperator(MultiplyInteger.INSTANCE);
       } else {
         call.setOperator(MultiplyNumber.INSTANCE);

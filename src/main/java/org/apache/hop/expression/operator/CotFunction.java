@@ -34,7 +34,7 @@ public class CotFunction extends Function {
     super(
         "COT",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/cot.html");
   }

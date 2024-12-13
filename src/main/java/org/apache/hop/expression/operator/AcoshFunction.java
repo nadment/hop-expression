@@ -33,7 +33,7 @@ public class AcoshFunction extends Function {
     super(
         "ACOSH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/acosh.html");
   }

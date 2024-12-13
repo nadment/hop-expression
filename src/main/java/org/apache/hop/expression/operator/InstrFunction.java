@@ -36,8 +36,8 @@ public class InstrFunction extends Function {
         "INSTR",
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING_STRING
-            .or(OperandTypes.STRING_STRING_NUMERIC)
-            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC),
+            .or(OperandTypes.STRING_STRING_INTEGER)
+            .or(OperandTypes.STRING_STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
         "/docs/instr.html");
   }

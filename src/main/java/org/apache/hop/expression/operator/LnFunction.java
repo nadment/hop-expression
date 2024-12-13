@@ -34,7 +34,7 @@ public class LnFunction extends Function {
     super(
         "LN",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/ln.html");
   }

@@ -37,7 +37,7 @@ public class AcosFunction extends Function {
     super(
         "ACOS",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/acos.html");
   }

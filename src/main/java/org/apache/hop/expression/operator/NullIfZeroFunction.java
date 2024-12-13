@@ -36,7 +36,7 @@ public class NullIfZeroFunction extends Function {
     super(
         "NULLIFZERO",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.CONDITIONAL,
         "/docs/nullifzero.html");
   }

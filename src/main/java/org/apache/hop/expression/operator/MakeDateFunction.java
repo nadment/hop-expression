@@ -33,7 +33,7 @@ public class MakeDateFunction extends Function {
     super(
         "MAKE_DATE",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC_NUMERIC,
+        OperandTypes.INTEGER_INTEGER_INTEGER,
         OperatorCategory.DATE,
         "/docs/make_date.html");
   }

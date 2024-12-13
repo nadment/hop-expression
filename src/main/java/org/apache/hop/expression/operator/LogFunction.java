@@ -34,7 +34,7 @@ public class LogFunction extends Function {
     super(
         "LOG",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/log.html");
   }

@@ -27,7 +27,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /** Comparison not equals operator '<code>!=</code>' or '<code><></code>'. */
@@ -88,7 +87,7 @@ public class NotEqualOperator extends BinaryOperator {
     // Simplify comparison when operands is of boolean type
     // x<>TRUE → x
     // x<>FALSE → NOT x
-    if (left.getType().is(TypeId.BOOLEAN)) {
+    if (Types.isBoolean(left.getType())) {
       if (right == Literal.TRUE) {
         return new Call(Operators.BOOLNOT, left);
       }

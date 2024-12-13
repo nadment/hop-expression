@@ -33,7 +33,7 @@ public class AsinFunction extends Function {
     super(
         "ASIN",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/asin.html");
   }

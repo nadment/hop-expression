@@ -37,7 +37,7 @@ public class AddQuartersFunction extends Function {
     super(
         "ADD_QUARTERS",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_NUMERIC,
+        OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
         "/docs/add_quarters.html");
   }

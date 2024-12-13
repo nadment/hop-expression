@@ -33,7 +33,7 @@ public class TanFunction extends Function {
     super(
         "TAN",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/tan.html");
   }

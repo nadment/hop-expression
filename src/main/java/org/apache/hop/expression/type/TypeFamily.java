@@ -36,7 +36,7 @@ public enum TypeFamily {
   //
   JSON,
   //
-  INET,
+  NETWORK,
   // -------------------------------------------
   // Secondary
   // -------------------------------------------
@@ -47,79 +47,4 @@ public enum TypeFamily {
   ANY,
   //
   ARRAY;
-
-  /** Returns whether type are in same type family. */
-  public boolean isFamily(final TypeFamily... families) {
-    if (families == null) return false;
-    for (TypeFamily family : families) {
-      if (ANY == this || family == ANY || this == family) return true;
-    }
-    return false;
-  }
-
-  /**
-   * Returns whether this {@link TypeFamily} support implicit coercion to the specified {@link
-   * TypeFamily}. Implicit coercions is generally only possible when the cast cannot fail.
-   */
-  public boolean isCoercible(final TypeFamily family) {
-    if (family == null) return false;
-
-    switch (this) {
-      case BOOLEAN:
-        return family.isFamily(BOOLEAN, NUMERIC, STRING);
-      case STRING:
-        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL);
-      case TEMPORAL:
-        return family.isFamily(TEMPORAL);
-      case NUMERIC:
-        return family.isFamily(NUMERIC, BOOLEAN, STRING);
-      case BINARY:
-        return family.isFamily(BINARY);
-      case JSON:
-        return family.isFamily(JSON);
-      case INTERVAL:
-        return family.isFamily(INTERVAL);
-      case INET:
-        return family.isFamily(INET);
-      case ARRAY:
-        return family.isFamily(ARRAY);
-      case UNKNOWN, ANY:
-        return true;
-      case SYMBOL:
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * Returns whether this {@link TypeFamily} support explicit cast to the specified {@link
-   * TypeFamily}.
-   */
-  public boolean isCastable(final TypeFamily family) {
-    if (family == null) return false;
-
-    switch (this) {
-      case BOOLEAN:
-        return family.isFamily(BOOLEAN, NUMERIC, BINARY, STRING);
-      case STRING:
-        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON, INET);
-      case TEMPORAL:
-        return family.isFamily(TEMPORAL, STRING, NUMERIC);
-      case NUMERIC:
-        return family.isFamily(NUMERIC, BOOLEAN, BINARY, STRING, TEMPORAL);
-      case BINARY:
-        return family.isFamily(BINARY, STRING);
-      case JSON:
-        return family.isFamily(JSON, STRING);
-      case INTERVAL:
-        return family.isFamily(INTERVAL);
-      case INET:
-        return family.isFamily(INET, STRING);
-      case UNKNOWN, ANY:
-        return true;
-      case SYMBOL:
-      default:
-        return false;
-    }
-  }
 }

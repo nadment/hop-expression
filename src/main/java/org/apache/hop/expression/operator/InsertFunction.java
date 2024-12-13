@@ -27,7 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Replaces a substring of the specified length, starting at the specified position, with a new
@@ -40,7 +40,7 @@ public class InsertFunction extends Function {
     super(
         "INSERT",
         ReturnTypes.ARG0_MAX_PRECISION,
-        OperandTypes.STRING_NUMERIC_NUMERIC_STRING.or(OperandTypes.BINARY_NUMERIC_NUMERIC_BINARY),
+        OperandTypes.STRING_INTEGER_INTEGER_STRING.or(OperandTypes.BINARY_INTEGER_INTEGER_BINARY),
         OperatorCategory.STRING,
         "/docs/insert.html");
   }
@@ -49,11 +49,10 @@ public class InsertFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getType();
-
-    if (type.is(TypeId.STRING)) {
+    if (Types.isString(type)) {
       return new Call(InsertString.INSTANCE, call.getOperands());
     }
-    if (type.is(TypeId.BINARY)) {
+    if (Types.isBinary(type)) {
       return new Call(InsertBinary.INSTANCE, call.getOperands());
     }
 

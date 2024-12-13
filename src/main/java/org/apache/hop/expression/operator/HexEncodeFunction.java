@@ -32,7 +32,7 @@ public class HexEncodeFunction extends Function {
     super(
         "HEX_ENCODE",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.NUMERIC.or(OperandTypes.BINARY),
+        OperandTypes.INTEGER.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
         "/docs/hex_encode.html");
   }

@@ -42,7 +42,7 @@ public class ModFunction extends Function {
     super(
         "MOD",
         ReturnTypes.MOD_OPERATOR,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/mod.html");
   }
@@ -54,7 +54,7 @@ public class ModFunction extends Function {
         50,
         true,
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC,
+        OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/mod.html");
   }

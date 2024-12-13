@@ -35,7 +35,7 @@ public class SplitPartFunction extends Function {
     super(
         "SPLIT_PART",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_STRING_NUMERIC,
+        OperandTypes.STRING_STRING_INTEGER,
         OperatorCategory.STRING,
         "/docs/split_part.html");
   }

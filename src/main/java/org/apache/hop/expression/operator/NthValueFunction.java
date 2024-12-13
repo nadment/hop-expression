@@ -42,7 +42,7 @@ public class NthValueFunction extends AggregateFunction {
   }
 
   public NthValueFunction(boolean ignoreNulls) {
-    super("NTH_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_NUMERIC, "/docs/nth_value.html");
+    super("NTH_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_INTEGER, "/docs/nth_value.html");
 
     this.ignoreNulls = ignoreNulls;
   }

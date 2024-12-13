@@ -28,8 +28,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 
 /** String or binary concatenation function with separator */
 @FunctionPlugin
@@ -47,8 +46,7 @@ public class ConcatWsFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Type type = call.getType();
-    if (type.is(TypeId.BINARY)) {
+    if (Types.isBinary(call.getType())) {
       return new Call(ConcatWsBinary.INSTANCE, call.getOperands());
     }
 

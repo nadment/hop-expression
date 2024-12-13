@@ -33,7 +33,7 @@ public class AtanhFunction extends Function {
     super(
         "ATANH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/atanh.html");
   }

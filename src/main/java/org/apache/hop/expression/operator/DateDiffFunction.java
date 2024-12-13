@@ -46,7 +46,7 @@ public class DateDiffFunction extends Function {
     super(
         "DATE_DIFF",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TIMEUNIT_TEMPORAL_TEMPORAL,
+        OperandTypes.TIMEUNIT_DATE_DATE,
         OperatorCategory.DATE,
         "/docs/date_diff.html");
   }

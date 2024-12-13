@@ -40,7 +40,7 @@ public class AtTimeZoneOperator extends Operator {
         10,
         true,
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL_STRING,
+        OperandTypes.DATE_STRING,
         OperatorCategory.CONVERSION,
         "/docs/attimezone.html");
   }

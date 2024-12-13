@@ -44,7 +44,7 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
     // Check type if function has a default value
     if ((call.getOperandCount() - 1) > count
-        && !result.isFamily(call.getOperand(count + 1).getType().getFamily())) {
+        && !call.getOperand(count + 1).getType().isCoercible(result)) {
       return false;
     }
 

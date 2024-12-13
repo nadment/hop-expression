@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -1253,13 +1253,13 @@ public class ExpressionParser {
   }
 
   private IExpression parseLiteralDataType(Token token) throws ExpressionException {
-    return Literal.of(parseDataType(token));
+    return Literal.of(parseType(token));
   }
 
-  private Type parseDataType(Token token) throws ExpressionException {
+  private Type parseType(Token token) throws ExpressionException {
 
-    TypeId typeId = TypeId.of(token.text());
-    if (typeId != null) {
+    TypeName name = TypeName.of(token.text());
+    if (name != null) {
       int precision = Type.PRECISION_NOT_SPECIFIED;
       int scale = Type.SCALE_NOT_SPECIFIED;
 
@@ -1279,13 +1279,13 @@ public class ExpressionParser {
           throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
         }
 
-        if (!typeId.supportsPrecision())
+        if (!name.supportsPrecision())
           throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
-        if (!typeId.supportsScale() && scaleFound)
+        if (!name.supportsScale() && scaleFound)
           throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
       }
 
-      switch (typeId) {
+      switch (name) {
         case BOOLEAN:
           return Types.BOOLEAN;
         case INTEGER:
@@ -1732,7 +1732,7 @@ public class ExpressionParser {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (TypeId.of(name) != null) {
+          if (TypeName.of(name) != null) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 

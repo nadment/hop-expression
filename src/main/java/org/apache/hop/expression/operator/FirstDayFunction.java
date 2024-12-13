@@ -50,7 +50,7 @@ public class FirstDayFunction extends Function {
     super(
         "FIRST_DAY",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
+        OperandTypes.DATE.or(OperandTypes.DATE_TIMEUNIT),
         OperatorCategory.DATE,
         "/docs/first_day.html");
   }

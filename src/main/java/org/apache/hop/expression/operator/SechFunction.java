@@ -34,7 +34,7 @@ public class SechFunction extends Function {
     super(
         "SECH",
         ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMERIC,
+        OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/sech.html");
   }

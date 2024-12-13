@@ -39,8 +39,8 @@ public final class DateType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.DATE;
+  public TypeName getName() {
+    return TypeName.DATE;
   }
 
   @Override
@@ -102,7 +102,7 @@ public final class DateType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   /**
@@ -121,7 +121,7 @@ public final class DateType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value), TypeId.DATE);
+        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.DATE);
   }
 
   public static final ZonedDateTime convert(final String value) throws ConversionException {
@@ -136,11 +136,17 @@ public final class DateType extends Type {
    * @return
    */
   public static final ZonedDateTime convert(final Long seconds) {
+    if (seconds == null) {
+      return null;
+    }
     Instant instant = Instant.ofEpochSecond(seconds);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }
 
   public static final ZonedDateTime convert(final BigDecimal number) {
+    if (number == null) {
+      return null;
+    }
     long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
     Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);

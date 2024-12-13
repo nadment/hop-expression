@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /**
@@ -43,7 +43,7 @@ public class ToDateFunction extends Function {
     super(
         "TO_DATE",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMERIC),
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMBER),
         OperatorCategory.CONVERSION,
         "/docs/to_date.html");
   }
@@ -53,10 +53,10 @@ public class ToDateFunction extends Function {
       throws ExpressionException {
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeId.INTEGER)) {
+    if (Types.isInteger(type)) {
       return new Call(ToDateInteger.INSTANCE, call.getOperands());
     }
-    if (type.is(TypeId.NUMBER)) {
+    if (Types.isNumber(type)) {
       return new Call(ToDateNumber.INSTANCE, call.getOperands());
     }
 

@@ -35,8 +35,8 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public TypeId getId() {
-    return TypeId.INTERVAL;
+  public TypeName getName() {
+    return TypeName.INTERVAL;
   }
 
   @Override
@@ -73,7 +73,7 @@ public final class IntervalType extends Type {
     }
 
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value), this);
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   /**

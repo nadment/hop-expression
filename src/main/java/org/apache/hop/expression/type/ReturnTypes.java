@@ -120,7 +120,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARRAY_ELEMENT =
       call -> {
         Type type = call.getOperand(0).getType();
-        if (type.is(TypeId.ARRAY)) {
+        if (type.is(TypeName.ARRAY)) {
           ArrayType arrayType = (ArrayType) type;
           return arrayType.getElementType();
         }
@@ -148,10 +148,10 @@ public final class ReturnTypes {
       call -> {
         Type type = call.getOperand(0).getType();
 
-        int precision = TypeId.NUMBER.getMaxPrecision();
-        if (type.is(TypeId.INTEGER)) {
+        int precision = TypeName.NUMBER.getMaxPrecision();
+        if (type.is(TypeName.INTEGER)) {
           precision = type.getPrecision();
-        } else if (type.is(TypeId.NUMBER)) {
+        } else if (type.is(TypeName.NUMBER)) {
           precision = type.getPrecision() - type.getScale();
           if (precision == 0) precision = 1;
         }
@@ -169,7 +169,7 @@ public final class ReturnTypes {
         Type type = call.getOperand(0).getType();
 
         // Keep ARG0 type
-        if (type.is(TypeId.INTEGER) || type.is(TypeId.INTERVAL)) return type;
+        if (type.is(TypeName.INTEGER) || type.is(TypeName.INTERVAL)) return type;
 
         // By default coerce to Number
         return Types.NUMBER.withNullability(type.isNullable());
@@ -183,22 +183,22 @@ public final class ReturnTypes {
    */
   public static final IReturnTypeInference CONCAT_FUNCTION =
       call -> {
-        TypeId typeId = TypeId.STRING;
+        TypeName typeId = TypeName.STRING;
         Type elementType = Types.UNKNOWN;
         int precision = 0;
 
         for (IExpression operand : call.getOperands()) {
           Type type = operand.getType();
           precision += type.getPrecision();
-          if (type.is(TypeId.ARRAY)) {
-            typeId = TypeId.ARRAY;
+          if (type.is(TypeName.ARRAY)) {
+            typeId = TypeName.ARRAY;
             elementType = Types.getLeastRestrictive((Array) operand);
-          } else if (type.is(TypeId.BINARY)) {
-            typeId = TypeId.BINARY;
+          } else if (type.is(TypeName.BINARY)) {
+            typeId = TypeName.BINARY;
           }
         }
 
-        if (typeId == TypeId.ARRAY) {
+        if (typeId == TypeName.ARRAY) {
           return ArrayType.of(elementType);
         }
 
@@ -206,7 +206,7 @@ public final class ReturnTypes {
           precision = typeId.getMaxPrecision();
         }
 
-        if (typeId == TypeId.BINARY) {
+        if (typeId == TypeName.BINARY) {
           return BinaryType.of(precision);
         }
 
@@ -217,7 +217,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference CONCATWS_FUNCTION =
       call -> {
         Type separatorType = call.getOperand(0).getType();
-        TypeId id = separatorType.getId();
+        TypeName id = separatorType.getName();
         int precision = 0;
 
         if (separatorType.getPrecision() != -1) {
@@ -234,8 +234,8 @@ public final class ReturnTypes {
               }
             }
 
-            if (type.is(TypeId.BINARY)) {
-              id = TypeId.BINARY;
+            if (type.is(TypeName.BINARY)) {
+              id = TypeName.BINARY;
             }
           }
         } else precision = id.getMaxPrecision();
@@ -243,7 +243,7 @@ public final class ReturnTypes {
         if (precision > id.getMaxPrecision()) {
           precision = id.getMaxPrecision();
         }
-        if (id == TypeId.BINARY) {
+        if (id == TypeName.BINARY) {
           return BinaryType.of(precision);
         }
 
@@ -283,7 +283,7 @@ public final class ReturnTypes {
           return transform.transformType(type1);
         }
         Type type2 = call.getOperand(2).getType();
-        if (type1.getId().ordinal() < type2.getId().ordinal()) {
+        if (type1.getName().ordinal() < type2.getName().ordinal()) {
           return transform.transformType(type2);
         }
 
@@ -308,16 +308,16 @@ public final class ReturnTypes {
    */
   protected static Type deriveAdditiveType(final Type type1, final Type type2) {
 
-    if (type1.is(TypeId.DATE) && type2.is(TypeId.INTERVAL)) {
+    if (type1.is(TypeName.DATE) && type2.is(TypeName.INTERVAL)) {
       return type1;
     }
-    if (type1.is(TypeId.INTERVAL) && type2.is(TypeId.DATE)) {
+    if (type1.is(TypeName.INTERVAL) && type2.is(TypeName.DATE)) {
       return type2;
     }
-    if (type1.is(TypeId.INTERVAL) && type2.is(TypeId.INTERVAL)) {
+    if (type1.is(TypeName.INTERVAL) && type2.is(TypeName.INTERVAL)) {
       return type1;
     }
-    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+    if (type1.is(TypeName.STRING) || type2.is(TypeName.STRING)) {
       return Types.NUMBER;
     }
 
@@ -325,9 +325,9 @@ public final class ReturnTypes {
     int p2 = type2.getPrecision();
 
     // Preserve integer type and adjust precision
-    if ((type1.is(TypeId.INTEGER) || type1.is(TypeId.BOOLEAN))
-        && (type2.is(TypeId.INTEGER) || type2.is(TypeId.BOOLEAN))) {
-      int p = Math.min(TypeId.INTEGER.getMaxPrecision(), Math.max(p1, p2) + 1);
+    if ((type1.is(TypeName.INTEGER) || type1.is(TypeName.BOOLEAN))
+        && (type2.is(TypeName.INTEGER) || type2.is(TypeName.BOOLEAN))) {
+      int p = Math.min(TypeName.INTEGER.getMaxPrecision(), Math.max(p1, p2) + 1);
       return IntegerType.of(p);
     }
 
@@ -336,11 +336,11 @@ public final class ReturnTypes {
 
     // Return type scale
     int s = Math.max(s1, s2);
-    s = Math.min(s, TypeId.NUMBER.getMaxScale());
+    s = Math.min(s, TypeName.NUMBER.getMaxScale());
 
     // Return type precision
     int p = Math.max(p1 - s1, p2 - s2) + s + 1;
-    p = Math.min(p, TypeId.NUMBER.getMaxPrecision());
+    p = Math.min(p, TypeName.NUMBER.getMaxPrecision());
 
     return NumberType.of(p, s);
   }
@@ -362,8 +362,7 @@ public final class ReturnTypes {
    * </ul>
    */
   protected static Type deriveMultiplyType(final Type type1, final Type type2) {
-
-    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+    if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
     }
 
@@ -371,18 +370,18 @@ public final class ReturnTypes {
     int p2 = type2.getPrecision();
 
     // Preserve integer type and adjust precision
-    if (type1.is(TypeId.INTEGER) && type2.is(TypeId.INTEGER)) {
-      int p = Math.min(TypeId.INTEGER.getMaxPrecision(), p1 + p2);
+    if (type1.is(TypeName.INTEGER) && type2.is(TypeName.INTEGER)) {
+      int p = Math.min(TypeName.INTEGER.getMaxPrecision(), p1 + p2);
       return IntegerType.of(p);
     }
 
     // Return type precision
-    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), p1 + p2);
+    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), p1 + p2);
 
     // Return type scale
     int s1 = type1.getScale();
     int s2 = type2.getScale();
-    int s = Math.min(TypeId.NUMBER.getMaxScale(), s1 + s2);
+    int s = Math.min(TypeName.NUMBER.getMaxScale(), s1 + s2);
 
     return NumberType.of(p, s);
   }
@@ -406,7 +405,7 @@ public final class ReturnTypes {
    */
   protected static Type deriveDivideType(final Type type1, final Type type2) {
 
-    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+    if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
     }
 
@@ -419,10 +418,10 @@ public final class ReturnTypes {
 
     // Return type scale
     int s = Math.max(6, s1 + p2 + 1);
-    s = Math.min(TypeId.NUMBER.getMaxScale(), s);
+    s = Math.min(TypeName.NUMBER.getMaxScale(), s);
 
     // Return type precision
-    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), d + s);
+    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), d + s);
 
     return NumberType.of(p, s);
   }
@@ -445,7 +444,7 @@ public final class ReturnTypes {
    */
   protected static Type deriveModType(final Type type1, final Type type2) {
 
-    if (type1.is(TypeId.STRING) || type2.is(TypeId.STRING)) {
+    if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
     }
 
@@ -460,7 +459,7 @@ public final class ReturnTypes {
     // Return type precision
     int p = Math.min(p1 - s1, p2 - s2) + s;
 
-    p = Math.min(TypeId.NUMBER.getMaxPrecision(), p);
+    p = Math.min(TypeName.NUMBER.getMaxPrecision(), p);
 
     return NumberType.of(p, s);
   }

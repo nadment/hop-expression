@@ -48,7 +48,7 @@ public class DateAddFunction extends Function {
     super(
         "DATE_ADD",
         ReturnTypes.DATE_NULLABLE,
-        OperandTypes.TIMEUNIT_NUMERIC_TEMPORAL,
+        OperandTypes.TIMEUNIT_INTEGER_DATE,
         OperatorCategory.DATE,
         "/docs/date_add.html");
   }

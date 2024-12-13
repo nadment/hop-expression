@@ -27,7 +27,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 
 /** Comparison greater than or equal operator '<code>&gt;=</code>'. */
@@ -92,12 +91,12 @@ public class GreaterThanOrEqualOperator extends BinaryOperator {
     }
 
     // Simplify only if x is data type boolean TRUE>=x → x IS NOT NULL
-    if (left.equals(Literal.TRUE) && right.getType().is(TypeId.BOOLEAN)) {
+    if (left.equals(Literal.TRUE) && Types.isBoolean(right.getType())) {
       return new Call(Operators.IS_NOT_NULL, right);
     }
 
     // Simplify only if x is data type boolean x>=FALSE → x IS NOT NULL
-    if (right.equals(Literal.FALSE) && left.getType().is(TypeId.BOOLEAN)) {
+    if (right.equals(Literal.FALSE) && Types.isBoolean(left.getType())) {
       return new Call(Operators.IS_NOT_NULL, left);
     }
 

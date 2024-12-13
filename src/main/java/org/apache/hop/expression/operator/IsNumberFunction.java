@@ -28,8 +28,8 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
 /** Check if a string or a numeric is a valid number. */
 @FunctionPlugin
@@ -48,12 +48,13 @@ public class IsNumberFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().is(TypeId.STRING)) {
+    Type type = call.getOperand(0).getType();
+    if (Types.isString(type)) {
       return call;
     }
 
     // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
-    if (call.getOperand(0).getType().isFamily(TypeFamily.NUMERIC)) {
+    if (Types.isNumeric(type)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
 
