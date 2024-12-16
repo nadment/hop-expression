@@ -2088,6 +2088,14 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void ArrayValue() throws Exception {
+    optimize("ARRAY_VALUE(1,2,3)", "[1,2,3]");
+
+    // Construct an empty array
+    optimize("ARRAY_VALUE()", "[]");
+  }
+
+  @Test
   void ArrayToString() throws Exception {
     evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world").returnType(Types.STRING);
     evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(Types.STRING);
