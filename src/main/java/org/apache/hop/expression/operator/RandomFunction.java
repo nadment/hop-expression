@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -68,17 +69,17 @@ public class RandomFunction extends Function {
       return call;
     }
 
-    RandomFunction function = new RandomFunction(new Random());
-
     if (call.getOperandCount() == 1) {
       try {
         Long seed = call.getOperand(0).getValue(Long.class);
-        function.random.setSeed(seed);
+        RandomFunction function = new RandomFunction(new Random(seed));
+        return new Call(function, call.getOperands());
       } catch (Exception e) {
         throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
       }
     }
 
+    RandomFunction function = new RandomFunction(ThreadLocalRandom.current());
     return new Call(function, call.getOperands());
   }
 
