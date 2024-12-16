@@ -553,8 +553,6 @@ public class ExpressionParser {
         return parseLiteralTimeUnit(token);
       case LITERAL_DATATYPE:
         return parseLiteralDataType(token);
-      case ARRAY:
-        return parseArray(token);
       case DATE:
         checkEndOfExpression(Id.DATE);
         token = next();
@@ -587,6 +585,8 @@ public class ExpressionParser {
         return parseCase();
       case FUNCTION:
         return parseFunction(token);
+      case LBRACKET:
+        return parseArray(token);
       case LPARENTHESIS:
         if (hasNext()) {
           IExpression expression = this.parseLogicalOr();
@@ -654,14 +654,14 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** ARRAY[exp1, exp2...] * */
+  /** [exp1, exp2...] * */
   private IExpression parseArray(final Token token) throws ExpressionException {
 
-    List<IExpression> operands = new ArrayList<>();
-
-    if (isNotThenNext(Id.LBRACKET)) {
-      throw new ExpressionParseException(token.start(), ErrorCode.MISSING_LEFT_BRACKET);
+    if (!hasNext()) {
+      throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_BRACKET);
     }
+
+    List<IExpression> operands = new ArrayList<>();
 
     // Empty array
     if (isThenNext(Id.RBRACKET)) {

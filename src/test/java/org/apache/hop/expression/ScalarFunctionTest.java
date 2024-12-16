@@ -2084,18 +2084,17 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Cardinality() throws Exception {
-    evalEquals("Cardinality(Array[1,4,8+2])", 3L).returnType(Types.INTEGER);
+    evalEquals("Cardinality([1,FIELD_INTEGER,8+2])", 3L).returnType(Types.INTEGER);
   }
 
   @Test
   void ArrayToString() throws Exception {
-    evalEquals("ARRAY_TO_STRING(Array['Hello','world'],' ')", "Hello world")
-        .returnType(Types.STRING);
-    evalEquals("ARRAY_TO_STRING(Array[1.2,4,8+2],',')", "1.2,4,10").returnType(Types.STRING);
-    evalEquals("ARRAY_TO_STRING(Array['A',ARRAY[4,8+2],'B'],'')", "A410B");
+    evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world").returnType(Types.STRING);
+    evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(Types.STRING);
+    evalEquals("ARRAY_TO_STRING(['A',[4,8+2],'B'],'')", "A410B");
 
     // Check operands
-    evalFails("ARRAY_TO_STRING(Array[1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_TO_STRING([1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3678,8 +3677,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     // TODO:Mix String and Binary
 
     // Array
-    evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
-    optimize("ARRAY[1,2,3] || ARRAY[4,5] || ARRAY[6,7]", "ARRAY[1,2,3,4,5,6,7]");
+    evalEquals("CARDINALITY([1,2,3] || [4,5])", 5L);
+    optimize("[1,2,3] || [4,5] || [6,7]", "[1,2,3,4,5,6,7]");
 
     // Check syntax
     evalFails("||'text'", ErrorCode.SYNTAX_ERROR);

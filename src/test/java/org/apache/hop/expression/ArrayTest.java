@@ -54,7 +54,7 @@ class ArrayTest extends ExpressionTest {
         new Array(Literal.of("B"), Literal.of("A")), new Array(Literal.of("A"), Literal.of("B")));
     assertEquals(array4.hashCode(), array4.hashCode());
     assertEquals(array1.hashCode(), array2.hashCode());
-    assertEquals("ARRAY[1,0,NULL]", array1.toString());
+    assertEquals("[1,0,NULL]", array1.toString());
 
     // Not evaluable alone
     assertThrows(UnsupportedOperationException.class, () -> array1.getValue(String.class));

@@ -107,24 +107,24 @@ public class ParserTest extends ExpressionTest {
   @Test
   void array() throws Exception {
     // Empty array
-    optimize("ARRAY[]");
+    optimize("[]");
 
     // Simple array values
-    optimize("ARRAY[1]");
-    optimize("ARRAY[1,2.5,3+2]", "ARRAY[1,2.5,5]");
+    optimize("[1]");
+    optimize("[1,2.5,3+2]", "[1,2.5,5]");
 
     // Multidimensional array values
-    optimize("ARRAY[ARRAY[1,2],ARRAY[3,4]]");
+    optimize("[[1,2],[3,4]]");
 
-    evalFails("ARRAY[1", ErrorCode.MISSING_RIGHT_BRACKET);
-    evalFails("ARRAY[1,", ErrorCode.SYNTAX_ERROR);
-    evalFails("ARRAY[1,]", ErrorCode.SYNTAX_ERROR);
+    evalFails("[1", ErrorCode.MISSING_RIGHT_BRACKET);
+    evalFails("[1,", ErrorCode.SYNTAX_ERROR);
+    evalFails("[1,]", ErrorCode.SYNTAX_ERROR);
   }
 
   @Test
   void arrayElementAt() throws Exception {
-    evalEquals("ARRAY['A','B','C'][1]", "A").returnType(StringType.of(1));
-    evalEquals("ARRAY[1,4,8][2]", 4L).returnType(IntegerType.of(1));
+    evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1));
+    evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1));
   }
 
   @Test

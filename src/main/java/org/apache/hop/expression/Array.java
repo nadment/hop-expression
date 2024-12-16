@@ -140,7 +140,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   @Override
   public void unparse(final StringWriter writer, int leftPrec, int rightPrec) {
-    writer.append("ARRAY[");
+    writer.append('[');
     this.unparseValues(writer);
     writer.append(']');
   }

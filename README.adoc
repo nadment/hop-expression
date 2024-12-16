@@ -60,7 +60,7 @@ end
 ----
 * Supports 8 data types: `Boolean` `Integer` `Number` `String` `Date` `Binary` `Json` `Inet` 
 * Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `DATE` '2022-04-25', `TIMESTAMP` '2022-04-25 05:28:59', `BINARY` 'FA6CB', `JSON` '{"name":"John"}', `INTERVAL` 3 `YEAR`
-* Array `ARRAY[1,4,8]`
+* Array `[1,4,8]` and element at `<array>[1]`
 * Logical operators `NOT` `AND` `OR` `XOR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`

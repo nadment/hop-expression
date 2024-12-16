@@ -237,6 +237,13 @@ The following subtracts 4 months from March 31, 2023 and the result is November 
 DATE '2023-03-31' - INTERVAL 4 MONTHS
 ----
 
+=== Array
+
+New array values can be constructed using brackets [].
+
+----
+[1,5,9]
+----
 
 === Json
 

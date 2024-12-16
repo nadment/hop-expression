@@ -32,16 +32,16 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void ElementAt() throws Exception {
-    evalEquals("ARRAY[1,3,5][1]", 1L);
-    evalEquals("ARRAY[1,3.5,5][3]", 5L);
-    evalEquals("ARRAY['A','B',FIELD_STRING][3]", "TEST");
+    evalEquals("[1,3,5][1]", 1L);
+    evalEquals("[1,3.5,5][3]", 5L);
+    evalEquals("['A','B',FIELD_STRING][3]", "TEST");
 
     // Negative index
-    evalEquals("ARRAY[1,3,5][-1]", 5L);
-    evalEquals("ARRAY[1,3,5][-3]", 1L);
+    evalEquals("[1,3,5][-1]", 5L);
+    evalEquals("[1,3,5][-3]", 1L);
 
-    evalFails("ARRAY[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
-    evalFails("ARRAY[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
+    evalFails("[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
+    evalFails("[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
   }
 
   @Test
