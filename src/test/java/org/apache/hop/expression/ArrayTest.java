@@ -38,6 +38,8 @@ class ArrayTest extends ExpressionTest {
     assertEquals(Types.ARRAY, array3.getType());
     assertEquals(ArrayType.of(Types.STRING), array4.getType());
 
+    assertEquals(0, array0.size());
+    assertEquals(3, array1.size());
     assertTrue(array0.isEmpty());
     assertFalse(array1.isEmpty());
     assertTrue(array1.isConstant());

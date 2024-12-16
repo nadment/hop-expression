@@ -239,8 +239,8 @@ DATE '2023-03-31' - INTERVAL 4 MONTHS
 
 === Array
 
-New array values can be constructed using brackets [].
-
+Array values can be constructed using square brackets `[<value> [, <value> , ...]]`
+ 
 ----
 [1,5,9]
 ----
