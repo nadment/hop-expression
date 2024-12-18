@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.hop.ui.expression;
+package org.apache.hop.expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,6 @@ import org.apache.hop.core.search.ISearchResult;
 import org.apache.hop.core.search.ISearchable;
 import org.apache.hop.core.search.ISearchableAnalyser;
 import org.apache.hop.core.search.SearchableAnalyserPlugin;
-import org.apache.hop.expression.UserDefinedFunctionMeta;
 
 @SearchableAnalyserPlugin(
     id = "UserDefinedFunctionSearchableAnalyser",
@@ -46,8 +45,9 @@ public class UserDefinedFunctionSearchableAnalyser
     String component = getMetadataComponent();
 
     List<ISearchResult> results = new ArrayList<>();
-
     matchProperty(searchable, results, searchQuery, "Function name", meta.getName(), component);
+    matchProperty(
+        searchable, results, searchQuery, "Function description", meta.getDescription(), component);
     matchProperty(searchable, results, searchQuery, "Function source", meta.getSource(), component);
     return results;
   }
