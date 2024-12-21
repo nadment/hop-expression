@@ -100,7 +100,9 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public static final String ID_TOOLBAR_COPY = "expression-editor-toolbar-10400-copy";
   public static final String ID_TOOLBAR_PASTE = "expression-editor-toolbar-10410-paste";
   public static final String ID_TOOLBAR_CUT = "expression-editor-toolbar-10420-cut";
-  public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10420-simplify";
+  public static final String ID_TOOLBAR_UNDO = "expression-editor-toolbar-10430-undo";
+  public static final String ID_TOOLBAR_REDO = "expression-editor-toolbar-10440-redo";
+  public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10450-simplify";
 
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
@@ -234,21 +236,21 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     undoItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/undo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    undoItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.UNDO));
+    undoItem.addListener(SWT.Selection, e -> doUndo());
 
     MenuItem redoItem = new MenuItem(menu, SWT.PUSH);
     redoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Redo.Label"));
     redoItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/redo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    redoItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.REDO));
+    redoItem.addListener(SWT.Selection, e -> doRedo());
     new MenuItem(menu, SWT.SEPARATOR);
     MenuItem cutItem = new MenuItem(menu, SWT.PUSH);
     cutItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Cut.Label"));
     cutItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/cut.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    cutItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.CUT));
+    cutItem.addListener(SWT.Selection, e -> doCut());
     MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
     copyItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Copy.Label"));
     copyItem.setImage(
@@ -260,7 +262,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     pasteItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/paste.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    pasteItem.addListener(SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.PASTE));
+    pasteItem.addListener(SWT.Selection, e -> doPaste());
     new MenuItem(menu, SWT.SEPARATOR);
     MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
     selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.SelectAll.Label"));
@@ -268,8 +270,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         GuiResource.getInstance()
             .getImage(
                 "ui/images/select-all.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    selectAllItem.addListener(
-        SWT.Selection, e -> viewer.doOperation(ITextOperationTarget.SELECT_ALL));
+    selectAllItem.addListener(SWT.Selection, e -> doSelectAll());
 
     widget.setMenu(menu);
     widget.addListener(
@@ -568,11 +569,30 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   @GuiToolbarElement(
       root = ID_TOOLBAR,
+      id = ID_TOOLBAR_UNDO,
+      image = "ui/images/undo.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Undo.ToolTip",
+      separator = true)
+  public void doUndo() {
+    viewer.doOperation(ITextOperationTarget.UNDO);
+  }
+
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_REDO,
+      image = "ui/images/redo.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Redo.ToolTip")
+  public void doRedo() {
+    viewer.doOperation(ITextOperationTarget.REDO);
+  }
+
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
       id = ID_TOOLBAR_OPTIMIZE,
       image = "evaluate.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Evaluate.ToolTip",
       separator = true)
-  public void doOptimize() {
+  public void doEvaluate() {
 
     String source = viewer.getTextWidget().getText();
 
