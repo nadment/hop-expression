@@ -179,6 +179,9 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         event -> {
           if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
             viewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
+          }
+          if (event.keyCode == 'a' && (event.stateMask & SWT.MOD1) != 0) {
+            doSelectAll();
           } else if (event.keyCode == SWT.F1) {
             // TODO: Help
             event.doit = false;
