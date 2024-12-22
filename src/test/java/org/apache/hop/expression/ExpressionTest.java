@@ -460,5 +460,7 @@ public class ExpressionTest {
     // String result = variables.resolve("$[0]['name']");
     // System.out.print(result);
     // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+
+    optimize("ARRAY_SLICE([1,2,3,4,5,6],0,2)", "[1,2]");
   }
 }

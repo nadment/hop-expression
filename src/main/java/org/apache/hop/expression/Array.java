@@ -26,6 +26,8 @@ import org.apache.hop.expression.type.Types;
 /** A array is a immutable ordered list of expressions. */
 public final class Array implements IExpression, Iterable<IExpression> {
 
+  public static final Array EMPTY = new Array();
+
   /**
    * Iterator implementation used to efficiently expose contents of an Array as read-only iterator.
    */
@@ -101,6 +103,11 @@ public final class Array implements IExpression, Iterable<IExpression> {
     return this;
   }
 
+  @Override
+  public <T> T getValue(final Class<T> clazz) {
+    return type.convert(this, clazz);
+  }
+
   public IExpression get(int index) {
     return values[index];
   }
@@ -111,6 +118,10 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   public int size() {
     return values.length;
+  }
+
+  public Array slice(int form, int to) {
+    return new Array(type, Arrays.copyOfRange(values, form, to));
   }
 
   @Override

@@ -2088,7 +2088,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  void ArrayValue() throws Exception {
+  void Array_Value() throws Exception {
     optimize("ARRAY_VALUE(1,2,3)", "[1,2,3]");
 
     // Construct an empty array
@@ -2096,7 +2096,24 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  void ArrayToString() throws Exception {
+  void Array_Slice() throws Exception {
+    optimize("ARRAY_SLICE([1,2,3,4,5,6],0,2)", "[1,2]");
+
+    optimize("ARRAY_SLICE(['FOO','APACHE','HOP','BAR'], 1, 3)", "['APACHE','HOP']");
+
+    optimize("ARRAY_SLICE([1,2,3,4,5,6],0,-2)", "[1,2,3,4]");
+    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -5, -3)", "[2,3]");
+
+    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], 10, 12)", "[]");
+    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -10, -12)", "[]");
+
+    evalNull("ARRAY_SLICE(NULL, 2, 3)");
+    evalNull("ARRAY_SLICE([1,2,3,4,5,6],NULL,3)");
+    evalNull("ARRAY_SLICE([1,2,3,4,5,6],1,NULL)");
+  }
+
+  @Test
+  void Array_To_String() throws Exception {
     evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world").returnType(Types.STRING);
     evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(Types.STRING);
     evalEquals("ARRAY_TO_STRING(['A',[4,8+2],'B'],'')", "A410B");

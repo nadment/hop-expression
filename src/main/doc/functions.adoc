@@ -31,6 +31,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/add_weeks.adoc[ADD_WEEKS]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/add_years.adoc[ADD_YEARS]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/any_value.adoc[ANY_VALUE] aggregate
+* https://github.com/nadment/hop-expression/blob/master/src/main/doc/array_slice.adoc[ARRAY_SLICE]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/array_to_string.adoc[ARRAY_TO_STRING]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/array_value.adoc[ARRAY_VALUE]
 * https://github.com/nadment/hop-expression/blob/master/src/main/doc/ascii.adoc[ASCII]

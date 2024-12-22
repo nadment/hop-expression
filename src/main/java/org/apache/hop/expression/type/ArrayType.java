@@ -18,6 +18,7 @@
 package org.apache.hop.expression.type;
 
 import java.util.Objects;
+import org.apache.hop.expression.ConversionException;
 
 public final class ArrayType extends Type {
 
@@ -68,5 +69,16 @@ public final class ArrayType extends Type {
     builder.append(elementType.generateSignature());
     builder.append("[]");
     return builder.toString();
+  }
+
+  @Override
+  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    return super.convert(value, clazz);
   }
 }

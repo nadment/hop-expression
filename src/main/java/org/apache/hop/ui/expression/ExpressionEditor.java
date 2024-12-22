@@ -110,7 +110,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private ExpressionLabelProvider labelProvider;
   private IVariables variables;
   private CompletableFuture<IRowMeta> rowMetaFutur;
-  private SourceViewer viewer;
+  private SourceViewer wViewer;
   private SashForm wSashForm;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
@@ -159,13 +159,13 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     toolbarWidgets.registerGuiPluginObject(this);
     toolbarWidgets.createToolbarWidgets(toolbar, ID_TOOLBAR);
 
-    viewer =
+    wViewer =
         new SourceViewer(composite, createVerticalRuler(), SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
-    viewer
+    wViewer
         .getControl()
         .setLayoutData(new FormDataBuilder().top(toolbar).bottom().fullWidth().result());
 
-    final StyledText widget = viewer.getTextWidget();
+    final StyledText widget = wViewer.getTextWidget();
 
     widget.setFont(GuiResource.getInstance().getFontFixed());
 
@@ -178,7 +178,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         SWT.KeyDown,
         event -> {
           if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
-            viewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
+            wViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
           }
           if (event.keyCode == 'a' && (event.stateMask & SWT.MOD1) != 0) {
             doSelectAll();
@@ -227,7 +227,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           public void drop(DropTargetEvent event) {
             if (textTransfer.isSupportedType(event.currentDataType)) {
               String str = (String) event.data;
-              StyledText styledText = viewer.getTextWidget();
+              StyledText styledText = wViewer.getTextWidget();
               styledText.insert(str);
             }
           }
@@ -279,11 +279,11 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     widget.addListener(
         SWT.MenuDetect,
         event -> {
-          undoItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.UNDO));
-          redoItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.REDO));
-          cutItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.CUT));
-          copyItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.COPY));
-          pasteItem.setEnabled(viewer.canDoOperation(ITextOperationTarget.PASTE));
+          undoItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.UNDO));
+          redoItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.REDO));
+          cutItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.CUT));
+          copyItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.COPY));
+          pasteItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.PASTE));
         });
 
     Document document = new Document();
@@ -293,12 +293,12 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
     IDocumentPartitioner partitioner =
         new FastPartitioner(
-            new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(viewer));
+            new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(wViewer));
     partitioner.connect(document);
     document.setDocumentPartitioner(partitioner);
 
-    viewer.setDocument(document, new AnnotationModel());
-    viewer.configure(configuration);
+    wViewer.setDocument(document, new AnnotationModel());
+    wViewer.configure(configuration);
   }
 
   protected void createTree(final Composite parent) {
@@ -499,7 +499,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     TreeItem item = wTree.getItem(point);
 
     if (item != null && item.getData() != null) {
-      StyledText styledText = viewer.getTextWidget();
+      StyledText styledText = wViewer.getTextWidget();
 
       // When a selection is already there we need to subtract the position
       int start = styledText.getCaretOffset() - styledText.getSelectionCount();
@@ -525,11 +525,11 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public void setText(String expression) {
     if (expression == null) return;
 
-    viewer.getDocument().set(expression);
+    wViewer.getDocument().set(expression);
   }
 
   public String getText() {
-    return viewer.getDocument().get();
+    return wViewer.getDocument().get();
   }
 
   @GuiToolbarElement(
@@ -539,7 +539,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Copy.ToolTip",
       separator = true)
   public void doCopy() {
-    viewer.doOperation(ITextOperationTarget.COPY);
+    wViewer.doOperation(ITextOperationTarget.COPY);
   }
 
   @GuiToolbarElement(
@@ -548,7 +548,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       image = "ui/images/paste.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Paste.ToolTip")
   public void doPaste() {
-    viewer.doOperation(ITextOperationTarget.PASTE);
+    wViewer.doOperation(ITextOperationTarget.PASTE);
   }
 
   @GuiToolbarElement(
@@ -557,7 +557,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       image = "ui/images/cut.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Cut.ToolTip")
   public void doCut() {
-    viewer.doOperation(ITextOperationTarget.CUT);
+    wViewer.doOperation(ITextOperationTarget.CUT);
   }
 
   @GuiToolbarElement(
@@ -567,7 +567,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip",
       separator = true)
   public void doSelectAll() {
-    viewer.doOperation(ITextOperationTarget.SELECT_ALL);
+    wViewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
 
   @GuiToolbarElement(
@@ -577,7 +577,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Undo.ToolTip",
       separator = true)
   public void doUndo() {
-    viewer.doOperation(ITextOperationTarget.UNDO);
+    wViewer.doOperation(ITextOperationTarget.UNDO);
   }
 
   @GuiToolbarElement(
@@ -586,7 +586,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       image = "ui/images/redo.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Redo.ToolTip")
   public void doRedo() {
-    viewer.doOperation(ITextOperationTarget.REDO);
+    wViewer.doOperation(ITextOperationTarget.REDO);
   }
 
   @GuiToolbarElement(
@@ -597,7 +597,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       separator = true)
   public void doEvaluate() {
 
-    String source = viewer.getTextWidget().getText();
+    String source = wViewer.getTextWidget().getText();
 
     RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
 
@@ -655,7 +655,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   @Override
   public void addListener(int eventType, Listener listener) {
-    viewer.getTextWidget().addListener(eventType, listener);
+    wViewer.getTextWidget().addListener(eventType, listener);
   }
 
   @Override
@@ -664,7 +664,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   @Override
   public void documentChanged(DocumentEvent event) {
     // Remove all annotations
-    IAnnotationModel annotationModel = viewer.getAnnotationModel();
+    IAnnotationModel annotationModel = wViewer.getAnnotationModel();
     Iterator<Annotation> iter = annotationModel.getAnnotationIterator();
     while (iter.hasNext()) {
       annotationModel.removeAnnotation(iter.next());
