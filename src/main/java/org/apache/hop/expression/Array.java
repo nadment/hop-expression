@@ -20,7 +20,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
 /** A array is a immutable ordered list of expressions. */
@@ -58,7 +60,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
     }
   }
 
-  private final Type type;
+  private Type type;
   private final IExpression[] values;
 
   public Array(IExpression... expressions) {
@@ -174,9 +176,30 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
+
+    // Empty array
+    if (values.length == 0) {
+      type = ArrayType.of(Types.ANY);
+      return;
+    }
+
     // Validate all elements
     for (IExpression expression : this) {
       expression.validate(context);
+    }
+
+    type = ArrayType.of(Types.getLeastRestrictive(this));
+
+    // Don't validate multi-dimensional array
+    if (type.is(TypeName.ARRAY)) {
+      return;
+    }
+
+    // All elements of an array should be coercible
+    for (IExpression expression : this) {
+      if (!type.getElementType().isCoercible(expression.getType())) {
+        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, expression);
+      }
     }
   }
 

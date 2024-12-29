@@ -23,12 +23,12 @@ Returns array converted to a string by casting all values to strings and concate
 ARRAY_VALUE( [ expression1 ] [, expression2 [, ... ] ] )
 ----
 
-Return:: The data type of the returned value is ARRAY.
+Return:: Array
 
 == Usage
 
-- Returns NULL if one of the arguments is NULL.
-- NULL in an array is converted to an empty string in the result.
+* Returns NULL if one of the arguments is NULL.
+* NULL in an array is converted to an empty string in the result.
 
 == Example
 

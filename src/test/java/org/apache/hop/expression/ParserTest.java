@@ -113,7 +113,7 @@ public class ParserTest extends ExpressionTest {
     optimize("[1]");
     optimize("[1,2.5,3+2]", "[1,2.5,5]");
 
-    // Multidimensional array values
+    // Multi-dimensional array values
     optimize("[[1,2],[3,4]]");
 
     evalFails("[1", ErrorCode.MISSING_RIGHT_BRACKET);

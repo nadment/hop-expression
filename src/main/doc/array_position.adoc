@@ -14,24 +14,27 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= ARRAY_TO_STRING
+= ARRAY_POSITION
 
-Returns array converted to a string by casting all values to strings and concatenating them using the string to separate the elements.
-
+Return a 1-based index of the first occurrence of an element in the input array.
+Optionally, starts searching at the specified index.
+ 
 == Syntax
 ----
-ARRAY_TO_STRING( array, separator )
+ARRAY_POSITION( array, element [, index]  )
 ----
 
-Return:: String
+Return:: Integer
 
 == Usage
 
+* The first position in the array is 1.
+* The optional third parameter specifies the inclusive index value at which to start the search.
 * Returns NULL if one of the arguments is NULL.
-* NULL in an array is converted to an empty string in the result.
+* If the value is not contained in the ARRAY, the function returns NULL.
 
 == Example
 
 ----
-ARRAY_TO_STRING(['Hello','world'],' ')
+ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon') = 2
 ----

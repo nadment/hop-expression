@@ -85,7 +85,7 @@ public class Comparison {
       return BooleanType.coerce(left).compareTo(BooleanType.coerce(right));
     }
 
-    return StringType.coerce(left).compareTo(StringType.coerce(right));
+    return compareTo(StringType.coerce(left), StringType.coerce(right));
   }
 
   protected static boolean equalsTo(final JsonNode left, final JsonNode right) {

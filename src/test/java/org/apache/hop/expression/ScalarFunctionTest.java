@@ -713,8 +713,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Normalize() throws Exception {
-    evalEquals("Normalize('\u00ea')", "ê").returnType(Types.STRING);
-    evalEquals("Normalize('\u0065\u0302')", "ê");
+    evalEquals("Normalize('\u00ea')", "ê").returnType(Types.STRING);
+    evalEquals("Normalize('\u0065\u0302')", "ê");
     evalEquals("Normalize('Jane\u2004Doe', 'NFKC')", "Jane Doe");
     evalEquals("Normalize('Jane\u2006Doe', 'NFKC')", "Jane Doe");
     evalEquals("Normalize('¼', 'NFKC')", "1⁄4");
@@ -2093,6 +2093,27 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Construct an empty array
     optimize("ARRAY_VALUE()", "[]");
+  }
+
+  @Test
+  void Array_Position() throws Exception {
+    evalEquals("ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon')", 2L)
+        .returnType(Types.INTEGER);
+    evalEquals("ARRAY_POSITION([1,2,3],2.0)", 2L).returnType(Types.INTEGER);
+
+    evalNull("ARRAY_POSITION([],4)");
+    evalNull("ARRAY_POSITION([1,2,3],NULL_INTEGER)");
+    evalNull("ARRAY_POSITION([1,2,3],4)");
+    evalNull("ARRAY_POSITION([1,2,3],2,10)");
+    evalNull("ARRAY_POSITION([1,2,3],2,NULL_INTEGER)");
+
+    // TODO: The position of a sub-array in a multi-dimensional array
+    // evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6]], [4,5,6])", 2L).returnType(Types.INTEGER);
+
+    // Check operands
+    evalFails("ARRAY_POSITION()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_POSITION('test','test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_POSITION([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test

@@ -23,13 +23,13 @@ Returns an array constructed from a specified subset of elements of the input ar
 ARRAY_SLICE( array, from, to )
 ----
 
-Return:: The data type of the returned value is ARRAY.
+Return:: Array
 
 == Usage
 
-- Returns NULL if one of the arguments is NULL.
-- A negative position is interpreted as an index from the back of the array. 
-- If both of the of the `from` or `to` parameters are beyond the upper or lower end of the array, the result is an empty array.
+* Returns NULL if one of the arguments is NULL.
+* A negative position is interpreted as an index from the back of the array. 
+* If both of the of the `from` or `to` parameters are beyond the upper or lower end of the array, the result is an empty array.
 
 == Example
 

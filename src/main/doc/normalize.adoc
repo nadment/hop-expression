@@ -16,17 +16,18 @@ under the License.
 ////
 = NORMALIZE
 
-Returns a string as a normalized string, allowing for easier  sorting and searching of text.
+Returns a string as a normalized string, allowing for easier sorting and searching of text.
 
 == Syntax
 ----
-NORMALIZE( string [, mode] )
+NORMALIZE( string [, form] )
 ----
 
-mode:: 
+Specifies the encoding format to use for the result. The default format is NFC.
+
 [options="header"]
 |===
-|Mode|Description
+|Form|Description
 |NFD|Canonical decomposition
 |NFC|Canonical decomposition, followed by canonical composition
 |NFKD|Compatibility decomposition

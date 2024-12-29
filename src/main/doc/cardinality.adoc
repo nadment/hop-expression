@@ -25,6 +25,12 @@ CARDINALITY( array )
 
 Returns:: Integer between 0 and 2^31-1.
 
+== Usage
+
+* Returns 0 for an empty array.
+* Returns NULL if the `array` is NULL.
+
+
 == Examples
 
 ----

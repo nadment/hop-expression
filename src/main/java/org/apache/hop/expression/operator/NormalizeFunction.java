@@ -27,7 +27,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** The function returns a string as a normalized string. */
+/**
+ * The function returns a string as a normalized string.
+ *
+ * <p>Form must be one of NFC, NFD, NFKC, NFKD, which are the four Unicode normalization methods
+ * (NFC is default).
+ */
 @FunctionPlugin
 public class NormalizeFunction extends Function {
 
@@ -45,7 +50,7 @@ public class NormalizeFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    Form form = Form.NFD;
+    Form form = Form.NFC;
 
     if (operands.length == 2) {
       String name = operands[1].getValue(String.class);
