@@ -29,9 +29,9 @@ Return:: Integer
 == Usage
 
 * The first position in the array is 1.
+* If the element is not found in the array, a 0 is returned.
 * The optional third parameter specifies the inclusive index value at which to start the search.
 * Returns NULL if one of the arguments is NULL.
-* If the value is not contained in the ARRAY, the function returns NULL.
 
 == Example
 

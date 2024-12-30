@@ -2090,6 +2090,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   void Array() throws Exception {
     optimize("ARRAY(1,2,3)", "[1,2,3]");
+    optimize("ARRAY('sun','mon','tue')", "['sun','mon','tue']");
 
     // Construct an empty array
     optimize("ARRAY()", "[]");
@@ -2101,10 +2102,13 @@ public class ScalarFunctionTest extends ExpressionTest {
         .returnType(Types.INTEGER);
     evalEquals("ARRAY_POSITION([1,2,3],2.0)", 2L).returnType(Types.INTEGER);
 
-    evalNull("ARRAY_POSITION([],4)");
-    evalNull("ARRAY_POSITION([1,2,3],NULL_INTEGER)");
-    evalNull("ARRAY_POSITION([1,2,3],4)");
-    evalNull("ARRAY_POSITION([1,2,3],2,10)");
+    // Element is not found in the array
+    evalEquals("ARRAY_POSITION([1,2,3],4)", 0L);
+    evalEquals("ARRAY_POSITION([],4)", 0L);
+    evalEquals("ARRAY_POSITION([1,2,3],2,10)", 0L);
+
+    // Function cannot be used to find the position of a NULL element.
+    evalNull("ARRAY_POSITION([1,2,NULL_INTEGER,3],NULL_INTEGER)");
     evalNull("ARRAY_POSITION([1,2,3],2,NULL_INTEGER)");
 
     // TODO: The position of a sub-array in a multi-dimensional array

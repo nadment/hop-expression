@@ -40,7 +40,6 @@ public class ExpressionParser {
   private static final Set<String> RESERVED_WORDS =
       Set.of(
           "AND",
-          "ARRAY",
           "AS",
           "ASYMMETRIC",
           "AT",

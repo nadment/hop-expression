@@ -461,6 +461,5 @@ public class ExpressionTest {
     // System.out.print(result);
     // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    evalNull("ARRAY_POSITION([],4)");
   }
 }

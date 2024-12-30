@@ -32,8 +32,6 @@ public class Token {
     CASE,
     /** Concat operator <code>||<code>. */
     CONCAT("||"),
-    /** Array of values */
-    ARRAY,
     /** Used by function CAST(value AS type) */
     AS,
     /** Used by operator AT TIME ZONE */
