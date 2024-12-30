@@ -4178,6 +4178,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     assertFalse(FunctionRegistry.getFunction("UUID").isDeterministic());
 
     evalEquals("Length(Uuid())", 36L);
+    evalEquals("Substr(Uuid(),15,1)", "7");
 
     returnType("UUID()", Types.STRING);
 

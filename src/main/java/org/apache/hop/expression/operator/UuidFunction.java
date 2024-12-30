@@ -16,15 +16,15 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.util.UUID;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.UUIDv7;
 
-/** Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122) */
+/** Returns a randomly generated UUID (Universal Unique Identifier version 7 defined by RFC 9562) */
 @FunctionPlugin
 public class UuidFunction extends Function {
 
@@ -39,7 +39,7 @@ public class UuidFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return UUID.randomUUID().toString();
+    return UUIDv7.randomUUID().toString();
   }
 
   @Override
