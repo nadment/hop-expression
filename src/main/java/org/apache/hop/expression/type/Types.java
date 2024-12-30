@@ -180,7 +180,7 @@ public class Types {
     // If the operand is a array, coercion of all its elements
     if (operand.is(Kind.ARRAY)) {
       Array array = coerceOperandType((Array) operand, type);
-      if (!array.equals((Array) operand)) {
+      if (!array.equals(operand)) {
         call.setOperand(index, array);
         return true;
       }

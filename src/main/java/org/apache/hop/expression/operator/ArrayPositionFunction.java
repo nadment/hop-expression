@@ -92,11 +92,11 @@ public class ArrayPositionFunction extends Function {
     for (int index = start; index < size; index++) {
       IExpression element = array.get(index);
       if (Comparison.compare(element.getValue(), value) == 0) {
-        return Long.valueOf(index + 1);
+        return Long.valueOf(index + 1L);
       }
     }
 
     // If the element is not found in the array.
-    return Long.valueOf(0);
+    return Long.valueOf(0L);
   }
 }

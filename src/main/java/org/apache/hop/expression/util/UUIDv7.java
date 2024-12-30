@@ -23,6 +23,10 @@ import java.util.UUID;
 public class UUIDv7 {
   private static final SecureRandom random = new SecureRandom();
 
+  private UUIDv7() {
+    // Utility class
+  }
+
   public static UUID randomUUID() {
     byte[] value = randomBytes();
     ByteBuffer buf = ByteBuffer.wrap(value);
