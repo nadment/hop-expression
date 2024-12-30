@@ -14,24 +14,28 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= ARRAY_VALUE
+= ARRAY
 
-Returns array converted to a string by casting all values to strings and concatenating them using the string to separate the elements.
+Returns an array with the argument values.
 
 == Syntax
 ----
-ARRAY_VALUE( [ expression1 ] [, expression2 [, ... ] ] )
+ARRAY( [ expression1 ] [, expression2 [, ... ] ] )
+----
+
+The `[]` provides alternative syntax.
+----
+[expression1, expression2]
 ----
 
 Return:: Array
 
 == Usage
 
-* Returns NULL if one of the arguments is NULL.
-* NULL in an array is converted to an empty string in the result.
+* If the array is empty or all elements are NULL the result type is an array of type null.
 
 == Example
 
 ----
-ARRAY_VALUE(1,2,3)
+ARRAY(1,2,3) = [1,2,3]
 ----

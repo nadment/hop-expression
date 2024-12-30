@@ -2088,11 +2088,11 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  void Array_Value() throws Exception {
-    optimize("ARRAY_VALUE(1,2,3)", "[1,2,3]");
+  void Array() throws Exception {
+    optimize("ARRAY(1,2,3)", "[1,2,3]");
 
     // Construct an empty array
-    optimize("ARRAY_VALUE()", "[]");
+    optimize("ARRAY()", "[]");
   }
 
   @Test

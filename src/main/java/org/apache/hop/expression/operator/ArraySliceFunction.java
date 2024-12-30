@@ -17,33 +17,51 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Array;
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** The ARRAY_VALUE create an ARRAY containing the argument values. */
+/** Returns an array constructed from a specified subset of elements of the input array. */
 @FunctionPlugin
-public class ArrayValue extends Function {
+public class ArraySliceFunction extends Function {
 
-  public static final Function INSTANCE = new ArrayValue();
+  public static final Function INSTANCE = new ArraySliceFunction();
 
-  public ArrayValue() {
+  public ArraySliceFunction() {
     super(
-        "ARRAY_VALUE",
+        "ARRAY_SLICE",
         ReturnTypes.ARRAY,
-        OperandTypes.SAME_VARIADIC,
+        OperandTypes.ARRAY_INTEGER_INTEGER,
         OperatorCategory.ARRAY,
-        "/docs/array_value.html");
+        "/docs/array_slice.html");
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return new Array(call.getOperands());
+  public Object eval(final IExpression[] operands) {
+    Array array = operands[0].getValue(Array.class);
+    if (array == null) return null;
+    Long fromLong = operands[1].getValue(Long.class);
+    if (fromLong == null) return null;
+    Long toLong = operands[2].getValue(Long.class);
+    if (toLong == null) return null;
+
+    int size = array.size();
+
+    int from = fromLong.intValue();
+    if (from < 0) {
+      from = size + from;
+    }
+
+    int to = toLong.intValue();
+    if (to < 0) {
+      to = size + to;
+    }
+
+    if (to < 0 || to <= from || to > size) return Array.EMPTY;
+
+    return array.slice(from, to);
   }
 }

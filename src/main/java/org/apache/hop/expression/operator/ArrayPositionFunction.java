@@ -34,11 +34,11 @@ import org.apache.hop.expression.type.TypeName;
  * starts searching at the specified index.
  */
 @FunctionPlugin
-public class ArrayPosition extends Function {
+public class ArrayPositionFunction extends Function {
 
-  public static final Function INSTANCE = new ArrayPosition();
+  public static final Function INSTANCE = new ArrayPositionFunction();
 
-  public ArrayPosition() {
+  public ArrayPositionFunction() {
     super(
         "ARRAY_POSITION",
         ReturnTypes.INTEGER_NULLABLE,

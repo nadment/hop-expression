@@ -164,14 +164,14 @@ public class ConcatFunction extends Function {
     }
   }
 
-  /** Array concatenation */
+  /** Array to array concatenation concatenation */
   private static final class ConcatArray extends ConcatFunction {
     public static final ConcatFunction INSTANCE = new ConcatArray();
 
     @Override
     public Object eval(final IExpression[] operands) {
-      Array array0 = (Array) operands[0];
-      Array array1 = (Array) operands[1];
+      Array array0 = operands[0].getValue(Array.class);
+      Array array1 = operands[1].getValue(Array.class);
 
       int size0 = array0.size();
       int size1 = array1.size();
