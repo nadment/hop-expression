@@ -19,18 +19,21 @@ under the License.
 Converts the input text or numeric expression to a Boolean value.
 
 == Syntax
+
 ----
 TO_BOOLEAN( {string | numeric} )
 TRY_TO_BOOLEAN( {string | numeric} )
 ----
 
-Return:: Boolean
+== Returns
+
+Boolean
 
 == Usage
 
 If the conversion is not possible, TO_BOOLEAN raises an error and TRY_TO_BOOLEAN returns a NULL value.
 
-For a text expression, string must be::
+=== For a text expression, string must be
 
 * 'true', 't', 'yes', 'y', 'on', '1' return TRUE
 * 'false', 'f', 'no', 'n', 'off', '0' return FALSE
@@ -39,7 +42,14 @@ For a text expression, string must be::
 
 Strings are case-insensitive.
 
-For a numeric expression::
+=== For a numeric expression
 * 0 returns FALSE.
 * All non-zero values return TRUE.
+
+== Examples
+
+----
+TO_BOOLEAN('NO') -> FALSE
+TO_BOOLEAN(2) -> TRUE
+----
 

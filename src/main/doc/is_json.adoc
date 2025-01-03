@@ -19,17 +19,21 @@ under the License.
 Check if a value is a valid JSON.
 
 == Syntax
+
 ----
 IS_JSON( value )
 ----
 
-Returns:: Boolean
+== Returns
+
+Boolean
 
 == Usage
 
 Return FALSE if a value is NULL. 
 
-== Demo
+== Examples
+
 ----
 IS_JSON('{name:"Smith", age:29}')
 ----

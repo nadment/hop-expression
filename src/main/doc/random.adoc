@@ -19,13 +19,17 @@ under the License.
 Return a random number between 0 (inclusive) and 1 (exclusive).
 
 == Syntax
+
 ----
 RANDOM( [ seed ] )
 RAND( [ seed ] )
 ----
 
-Returns:: Number
+== Returns
+
+Number
 
 == Usage
+
 * If seed is specified, it returns a repeatable sequence of random numbers.
 * If no seed is specified, it returns a completely random number.

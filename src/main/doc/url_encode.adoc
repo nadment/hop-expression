@@ -19,8 +19,11 @@ under the License.
 Encode a string to be used in a query part of a URL.
 
 == Syntax
+
 ----
 URL_ENCODE( string )
 ----
 
-Return:: String
+== Return
+
+String

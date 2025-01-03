@@ -19,6 +19,11 @@ under the License.
 Returns the name of the month (in English).
 
 == Syntax
+
 ----
 MONTHNAME( {date | timestamp} )
 ----
+
+== Returns
+
+String

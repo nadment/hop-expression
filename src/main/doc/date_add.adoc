@@ -19,6 +19,7 @@ under the License.
 Adds or subtracts a specified number of time unit to a date or timestamp. 
 
 == Syntax
+
 ----
 DATE_ADD( unit, value, {date | timestamp} )
 ----
@@ -34,13 +35,15 @@ Supported unit of date and time:
 - SECOND
 - NANOSECOND
 
-Returns:: Date
+== Returns
+
+Date
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 ----
 DATE_ADD(DAY, 5, DATE '2023-02-01')
 ----

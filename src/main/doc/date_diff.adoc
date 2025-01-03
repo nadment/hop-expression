@@ -19,6 +19,7 @@ under the License.
 Returns the difference in time unit between two date or timestamp.
 
 == Syntax
+
 ----
 DATE_DIFF( unit, startDate, endEnd  )
 ----
@@ -40,13 +41,15 @@ Supported unit of date and time:
 - MICROSECOND
 - NANOSECOND
 
-Returns:: Integer
+== Returns
+
+Integer
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 ----
 DATE_DIFF(DAY, DATE '2023-02-01', CURRENT_DATE())
 ----

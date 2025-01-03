@@ -19,12 +19,15 @@ under the License.
 Returns the portion of the string from string, starting from the character/byte specified by start, with optionally limited	length.
 		
 == Syntax
+
 ----
 SUBSTRING( string, start [, length ] )
 SUBSTR( String, start [, length ] )
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

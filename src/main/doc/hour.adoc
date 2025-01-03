@@ -19,11 +19,14 @@ under the License.
 Returns the hour of the specified timestamp.
 
 == Syntax
+
 ----
 HOUR( timestamp )
 ----
 
-Returns:: Integer between 0 and 23.
+== Returns
+
+Integer between 0 and 23.
 
 == Usage
 

@@ -19,6 +19,11 @@ under the License.
 First expression is greater than or equal to the second expression.
 
 == Syntax
+
 ----
 expression1 >= expression2
 ----
+
+== Returns
+
+Boolean

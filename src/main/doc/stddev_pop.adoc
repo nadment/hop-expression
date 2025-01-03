@@ -19,11 +19,14 @@ under the License.
 Returns the population standard deviation (square root of population variance) of non-null values.
 
 == Syntax
+
 ----
 STDDEV_POP( expression )
 ----
 
-Return:: Number 
+== Returns
+
+Number 
 
 == Usage
 

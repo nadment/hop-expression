@@ -19,6 +19,7 @@ under the License.
 Returns the current date and time in the context time zone (System time zone by default).
 
 == Syntax
+
 ----
 CURRENT_TIMESTAMP()
 ----
@@ -26,8 +27,11 @@ CURRENT_TIMESTAMP()
 NOW()
 ----
 
+== Returns
+
+Date
+
 == Usage
 
-This function always return the same value within a execution context like running a pipeline.
-
-The CURRENT_DATE() function is similar but returns the date only.
+* This function always return the same value within a execution context like running a pipeline.
+* The CURRENT_DATE() function is similar but returns the date only.

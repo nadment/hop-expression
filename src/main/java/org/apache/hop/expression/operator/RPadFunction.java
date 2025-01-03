@@ -56,15 +56,15 @@ public class RPadFunction extends Function {
 
     Type type = call.getType();
     if (Types.isBinary(type)) {
-      return new Call(RPadBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryRPadFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(RPadString.INSTANCE, call.getOperands());
+    return new Call(StringRPadFunction.INSTANCE, call.getOperands());
   }
 
   /** The function right-pads a string with another string, to a certain length. */
-  private static final class RPadString extends RPadFunction {
-    public static final RPadFunction INSTANCE = new RPadString();
+  private static final class StringRPadFunction extends RPadFunction {
+    public static final RPadFunction INSTANCE = new StringRPadFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -119,8 +119,8 @@ public class RPadFunction extends Function {
   }
 
   /** The function right-pads a binary with another binary, to a certain length. */
-  private static final class RPadBinary extends RPadFunction {
-    public static final RPadFunction INSTANCE = new RPadBinary();
+  private static final class BinaryRPadFunction extends RPadFunction {
+    public static final RPadFunction INSTANCE = new BinaryRPadFunction();
 
     private static final byte[] DEFAULT = new byte[] {0x00};
 

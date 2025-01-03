@@ -18,10 +18,12 @@ under the License.
 
 Decode special HTML entities.
 
-
 == Syntax
+
 ----
 HTML_DECODE( string )
 ----
 
-Returns:: String
+== Returns
+
+String

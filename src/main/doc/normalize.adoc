@@ -19,6 +19,7 @@ under the License.
 Returns a string as a normalized string, allowing for easier sorting and searching of text.
 
 == Syntax
+
 ----
 NORMALIZE( string [, form] )
 ----
@@ -34,8 +35,9 @@ Specifies the encoding format to use for the result. The default format is NFC.
 |NFKC|Compatibility decomposition, followed by canonical composition
 |===
 
-Returns:: STRING
+== Returns
 
+STRING
 
 == Usage
 

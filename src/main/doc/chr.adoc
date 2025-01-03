@@ -19,8 +19,11 @@ under the License.
 Converts a Unicode code point (including 7-bit ASCII) into the character that matches the input Unicode.
 
 == Syntax
+
 ----
 CHR( integer )
 ----
 
-Return:: String
+== Returns
+
+String

@@ -19,6 +19,7 @@ under the License.
 Calculates the natural logarithm of number.
 
 == Syntax
+
 ----
 LN( numeric )
 ----

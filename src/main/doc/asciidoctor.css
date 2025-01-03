@@ -60,24 +60,24 @@ h1, h2, h3, h4, h5, h6 {
 
 h1{
   border-bottom: 2px solid silver;
-  font-size: 1.5em;
+  font-size: 1.3em;
 }
 
 h2 {
   padding-top: 0.5em;
-  font-size: 1.3em;
+  font-size: 1.1em;
 }
 
 h3 {
   float: left;
-  font-size: 1.1em;
+  font-size: 0.9em;
 }
 h3 + * {
   clear: left;
 }
 
-h4{font-size: 1em}
-h5{font-size: 0.9em}
+h4{font-size: 0.8em}
+h5{font-size: 0.8em}
 
 div.sectionbody {
   margin-left: 0;

@@ -19,11 +19,14 @@ under the License.
 Returns the first day of the specified time unit.
 
 == Syntax
+
 ----
 FIRST_DAY( date [, unit ] )
 ----
 
-Return type:: Date
+== Returns
+
+Date
 
 == Usage
 
@@ -31,8 +34,13 @@ Return type:: Date
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
+
 ----
 FIRST_DAY(Date '2021-06-15', QUARTER)
 ----
 
-See also xref:last_day.adoc[LAST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]
+== See also
+
+* xref:last_day.adoc[LAST_DAY]
+* xref:next_day.adoc[NEXT_DAY]
+* xref:previous_day.adoc[PREVIOUS_DAY]

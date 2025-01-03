@@ -19,8 +19,11 @@ under the License.
 Encode special characters in a strings using HTML entities.
 
 == Syntax
+
 ----
 HTML_ENCODE( string )
 ----
 
-Return:: String
+== Returns
+
+String

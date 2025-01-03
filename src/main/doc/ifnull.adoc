@@ -18,8 +18,8 @@ under the License.
 
 Returns the second value if first value is null. This function replace the null with value.
 		
-
 == Syntax
+
 ----
 IFNULL( condition, expression )
 ----

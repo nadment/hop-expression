@@ -19,8 +19,11 @@ under the License.
 Compresses the input data using the GZIP algorithm and returns a value of type BINARY.
 
 == Syntax
+
 ----
 COMPRESS( string )
 ----
 
-Returns:: Binary
+== Returns
+
+Binary

@@ -19,6 +19,7 @@ under the License.
 Substitutes a value when a null value is encountered as well as when a non-null value is encountered.
 
 == Syntax
+
 ----
 NVL2( expression, value_if_not_null, value_if_null )
 ----

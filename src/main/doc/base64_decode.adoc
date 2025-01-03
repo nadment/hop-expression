@@ -19,9 +19,15 @@ under the License.
 Decodes a Base64-encoded string to a string.
 
 == Syntax
+
 ----
 BASE64_DECODE( string )
 ----
 
+== Arguments
+
 input:: A Base64-encoded string expression.
-Returns:: String
+
+== Returns
+
+String

@@ -19,6 +19,7 @@ under the License.
 Throws the given error message and abort execution of the pipeline or workflow.
 
 == Syntax
+
 ----
 ERROR( message )
 ----
@@ -27,7 +28,7 @@ ERROR( message )
 
 * Use ERROR within an CASE or DECODE function to set rules for aborting a pipeline.
 
-== Example
+== Examples
 
 ----
 DECODE(value,1,'Flag 1',2,'Flag 2',ERROR('Unsupported value'))

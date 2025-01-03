@@ -23,9 +23,17 @@ Returns the date of the first specified day of week that occurs after the input 
 NEXT_DAY( date, weekday )
 ----
 
+== Returns
+
+Date
+
 == Examples
 ----
 NEXT_DAY(Date '2021-06-15', 'Friday')
 ----
 
-See also xref:first_day.adoc[PREVIOUS_DAY], xref:first_day.adoc[FIRST_DAY], xref:last_day.adoc[LAST_DAY]
+== See also 
+
+* xref:first_day.adoc[PREVIOUS_DAY]
+* xref:first_day.adoc[FIRST_DAY]
+* xref:last_day.adoc[LAST_DAY]

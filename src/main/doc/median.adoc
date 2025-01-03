@@ -25,7 +25,9 @@ MEDIAN( expression )
 
 expression:: An expression that evaluates to a numeric.
  
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 
@@ -34,7 +36,7 @@ Return:: Number
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
-== Example
+== Examples
 
 ----
 MEDIAN( Age )

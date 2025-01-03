@@ -19,18 +19,20 @@ under the License.
 Splits a string on the specified string delimiter and returns the part at the specified position.
 
 == Syntax
+
 ----
 SPLIT_PART( string, delimiter, part )
 ----
 
-Returns:: String
+== Returns
+
+String
 
 == Usage
 
 * If the requested part does not exist, the returned value is an empty string.
 * If any parameter is NULL, then NULL is returned.
 * If the part number is negative, the parts are counted backward from the end of the string.
-
 
 == Examples
 

@@ -35,10 +35,10 @@ import org.apache.hop.expression.util.Hex;
 @FunctionPlugin
 public class TryToBinaryFunction extends Function {
 
-  private static final class TryToBinaryHex extends TryToBinaryFunction {
-    private static final TryToBinaryFunction INSTANCE = new TryToBinaryHex();
+  private static final class StringHexTryToBinaryFunction extends TryToBinaryFunction {
+    private static final TryToBinaryFunction INSTANCE = new StringHexTryToBinaryFunction();
 
-    private TryToBinaryHex() {
+    private StringHexTryToBinaryFunction() {
       super();
     }
 
@@ -56,11 +56,11 @@ public class TryToBinaryFunction extends Function {
     }
   }
 
-  private static final class TryToBinaryUtf8 extends TryToBinaryFunction {
+  private static final class StringUtf8TryToBinaryFunction extends TryToBinaryFunction {
 
-    private static final TryToBinaryFunction INSTANCE = new TryToBinaryUtf8();
+    private static final TryToBinaryFunction INSTANCE = new StringUtf8TryToBinaryFunction();
 
-    private TryToBinaryUtf8() {
+    private StringUtf8TryToBinaryFunction() {
       super();
     }
 
@@ -78,10 +78,10 @@ public class TryToBinaryFunction extends Function {
     }
   }
 
-  private static final class TryToBinaryBase64 extends TryToBinaryFunction {
-    private static final TryToBinaryFunction INSTANCE = new TryToBinaryBase64();
+  private static final class StringBase64TryToBinaryFunction extends TryToBinaryFunction {
+    private static final TryToBinaryFunction INSTANCE = new StringBase64TryToBinaryFunction();
 
-    private TryToBinaryBase64() {
+    private StringBase64TryToBinaryFunction() {
       super();
     }
 
@@ -124,13 +124,13 @@ public class TryToBinaryFunction extends Function {
       format = format.toUpperCase();
 
       if (format.equals("HEX")) {
-        return new Call(TryToBinaryHex.INSTANCE, call.getOperands());
+        return new Call(StringHexTryToBinaryFunction.INSTANCE, call.getOperands());
       }
       if (format.equals("BASE64")) {
-        return new Call(TryToBinaryBase64.INSTANCE, call.getOperands());
+        return new Call(StringBase64TryToBinaryFunction.INSTANCE, call.getOperands());
       }
       if (format.equals("UTF8") || format.equals("UTF-8")) {
-        return new Call(TryToBinaryUtf8.INSTANCE, call.getOperands());
+        return new Call(StringUtf8TryToBinaryFunction.INSTANCE, call.getOperands());
       }
     }
 

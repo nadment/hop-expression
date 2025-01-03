@@ -19,6 +19,7 @@ under the License.
 Creates a timestamp from individual numeric components.
 		
 == Syntax
+
 ----
 MAKE_TIMESTAMP( year, month, day, hour, minute, second[.fractional] )
 ----
@@ -27,6 +28,10 @@ The literal value with ISO format provides alternative syntax.
 ----
 TIMESTAMP 'YYYY-MM-DD HH:MM:SS.fffffffff'
 ----
+
+== Returns
+
+Date
 
 == Usage
 

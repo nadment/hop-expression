@@ -19,6 +19,7 @@ under the License.
 Combines multiple strings or binaries into one with separator.
 
 == Syntax
+
 ----
 CONCAT_WS( separator, string2 [, string3...])
 ----

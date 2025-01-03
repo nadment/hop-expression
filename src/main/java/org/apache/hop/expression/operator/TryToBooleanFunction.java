@@ -51,19 +51,19 @@ public class TryToBooleanFunction extends Function {
       throws ExpressionException {
     Type type = call.getOperand(0).getType();
     if (Types.isInteger(type)) {
-      return new Call(TryToBooleanInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerTryToBooleanFunction.INSTANCE, call.getOperands());
     }
     if (Types.isNumber(type)) {
-      return new Call(TryToBooleanNumber.INSTANCE, call.getOperands());
+      return new Call(NumberTryToBooleanFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(TryToBooleanString.INSTANCE, call.getOperands());
+    return new Call(StringTryToBooleanFunction.INSTANCE, call.getOperands());
   }
 
-  private static final class TryToBooleanString extends TryToBooleanFunction {
-    private static final TryToBooleanString INSTANCE = new TryToBooleanString();
+  private static final class StringTryToBooleanFunction extends TryToBooleanFunction {
+    private static final StringTryToBooleanFunction INSTANCE = new StringTryToBooleanFunction();
 
-    private TryToBooleanString() {
+    private StringTryToBooleanFunction() {
       super();
     }
 
@@ -78,10 +78,10 @@ public class TryToBooleanFunction extends Function {
     }
   }
 
-  private static final class TryToBooleanInteger extends TryToBooleanFunction {
-    private static final TryToBooleanInteger INSTANCE = new TryToBooleanInteger();
+  private static final class IntegerTryToBooleanFunction extends TryToBooleanFunction {
+    private static final IntegerTryToBooleanFunction INSTANCE = new IntegerTryToBooleanFunction();
 
-    private TryToBooleanInteger() {
+    private IntegerTryToBooleanFunction() {
       super();
     }
 
@@ -92,10 +92,10 @@ public class TryToBooleanFunction extends Function {
     }
   }
 
-  private static final class TryToBooleanNumber extends TryToBooleanFunction {
-    private static final TryToBooleanNumber INSTANCE = new TryToBooleanNumber();
+  private static final class NumberTryToBooleanFunction extends TryToBooleanFunction {
+    private static final NumberTryToBooleanFunction INSTANCE = new NumberTryToBooleanFunction();
 
-    private TryToBooleanNumber() {
+    private NumberTryToBooleanFunction() {
       super();
     }
 

@@ -19,11 +19,14 @@ under the License.
 Returns the sample standard deviation (square root of sample variance) of non-null values.
 
 == Syntax
+
 ----
 STDDEV_SAMP( expression )
 ----
 
-Return:: Number 
+== Returns
+
+Number 
 
 == Usage
 

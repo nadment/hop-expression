@@ -19,11 +19,15 @@ under the License.
 Returns the day of month of the specified date or timestamp.
 		
 == Syntax
+
 [source,sql]
 ----
 DAY( {date | timestamp} )
 ----
-Returns:: Integer between 1 and 31.
+
+== Returns
+
+Integer between 1 and 31.
 
 == Usage
 

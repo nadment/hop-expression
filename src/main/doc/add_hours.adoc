@@ -19,14 +19,23 @@ under the License.
 Adds or subtracts a specified number of hours to a date or timestamp.
 		
 == Syntax
+
 ----
 ADD_HOURS( timestamp, integer )
 ----
 
-Returns:: Date
+== Returns
+
+Date
 
 == Usage
 
 * Decimals are rounded before adding that number.
 * The number of hours, can be a positive or negative integer to either add or subtract hours, respectively.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+ADD_HOURS(TIMESTAMP '2024-02-18 22.58.59', 4) -> 2024-02-19 02.58.59
+----

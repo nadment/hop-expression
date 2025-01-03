@@ -19,12 +19,16 @@ under the License.
 Calculates a cyclic redundancy check (CRC) value using the Castagnoli polynomial.
 
 == Syntax
+
 ----
 CRC32( {string | binary} )
 ----
 
 {string | binary}:: A string or binary expression.
-Returns::  A hexadecimal string
+
+== Returns
+
+A hexadecimal string
 
 == Usage
 

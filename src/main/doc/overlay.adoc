@@ -33,7 +33,7 @@ Returns:: String
 * If `length` is omitted, it defaults to the length of replace.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 OVERLAY('Apxxxe','ach',3) = 'Apache'

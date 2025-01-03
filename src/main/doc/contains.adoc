@@ -19,9 +19,14 @@ under the License.
 Returns true if expr1 contains expr2. Both expressions must be string or binary expressions.
 
 == Syntax
+
 ----
 CONTAINS( expr1, expr2 )
 ----
+
+== Returns
+
+String
 
 == Usage
 

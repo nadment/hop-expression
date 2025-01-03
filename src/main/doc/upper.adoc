@@ -23,6 +23,10 @@ Converts a string to upper case.
 UPPER( string )
 ----
 
-Returns:: String
+== Returns
 
-See also xref:lower.adoc[LOWER]
+String
+
+== See also
+
+* xref:lower.adoc[LOWER]

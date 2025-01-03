@@ -18,13 +18,13 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -67,6 +67,9 @@ public class ConcatFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    call.getOperand(0).is(Kind.ARRAY);
+
     Type type = null;
     // Combine chained CONCAT operator and remove NULL
     // This is especially useful for the || operator
@@ -83,12 +86,12 @@ public class ConcatFunction extends Function {
       case 1: // Concat(X) → X
         return operands.get(0);
       default:
-        Operator operator = ConcatString.INSTANCE;
+        Operator operator = StringConcatFunction.INSTANCE;
         if (type != null) {
           if (type.is(TypeName.ARRAY)) {
-            operator = ConcatArray.INSTANCE;
+            operator = ArrayConcatFunction.INSTANCE;
           } else if (type.is(TypeName.BINARY)) {
-            operator = ConcatBinary.INSTANCE;
+            operator = BinaryConcatFunction.INSTANCE;
           }
         }
         return new Call(operator, operands);
@@ -106,8 +109,8 @@ public class ConcatFunction extends Function {
   }
 
   /** String concatenation */
-  private static final class ConcatString extends ConcatFunction {
-    public static final ConcatFunction INSTANCE = new ConcatString();
+  private static final class StringConcatFunction extends ConcatFunction {
+    public static final ConcatFunction INSTANCE = new StringConcatFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -134,8 +137,8 @@ public class ConcatFunction extends Function {
   }
 
   /** Binary concatenation */
-  private static final class ConcatBinary extends ConcatFunction {
-    public static final ConcatFunction INSTANCE = new ConcatBinary();
+  private static final class BinaryConcatFunction extends ConcatFunction {
+    public static final ConcatFunction INSTANCE = new BinaryConcatFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -161,31 +164,6 @@ public class ConcatFunction extends Function {
         }
       }
       return result;
-    }
-  }
-
-  /** Array to array concatenation concatenation */
-  private static final class ConcatArray extends ConcatFunction {
-    public static final ConcatFunction INSTANCE = new ConcatArray();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      Array array0 = operands[0].getValue(Array.class);
-      Array array1 = operands[1].getValue(Array.class);
-
-      int size0 = array0.size();
-      int size1 = array1.size();
-
-      IExpression[] values = new IExpression[size0 + size1];
-      int i = 0;
-      for (; i < size0; i++) {
-        values[i] = array0.get(i);
-      }
-      for (int j = 0; j < size1; i++, j++) {
-        values[i] = array1.get(j);
-      }
-
-      return new Array(array0.getType(), values);
     }
   }
 }

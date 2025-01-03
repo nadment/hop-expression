@@ -19,18 +19,26 @@ under the License.
 Returns the string with trailing characters removed.
 
 == Syntax
+
 ----
-RTRIM( <string> [, <characters> ] )
+RTRIM( string [, characters ] )
 ----
 
-<string>:: The string expression to be trimmed
-<characters>::  One or more characters to remove from the right side. If the parameter is omitted, the function will remove space characters.
-Return:: String
+== Arguments
+
+string:: The string expression to be trimmed
+characters::  One or more characters to remove from the right side. If the parameter is omitted, the function will remove space characters.
+
+== Returns
+
+String
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+* You can specify the characters in `characters` in any order.
 
-See also
+== See also
+
 * xref:ltrim.adoc[LTRIM]
 * xref:trim.adoc[TRIM]

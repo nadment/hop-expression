@@ -19,11 +19,14 @@ under the License.
 Returns the sample variance of non-null values over a group of rows.
 
 == Syntax
+
 ----
 VARIANCE_SAMP( expression )
 ----
 
-Return:: Number 
+== Returns
+
+Number 
 
 == Usage
 

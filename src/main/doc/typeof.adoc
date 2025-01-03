@@ -19,11 +19,14 @@ under the License.
 Returns the data type of the input expression.
 
 == Syntax
+
 ----
 TYPEOF( expression )
 ----
 
-Returns: String, for example, `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
+== Returns
+
+String, for example, `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
 
 == Examples
 

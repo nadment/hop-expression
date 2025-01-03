@@ -19,11 +19,14 @@ under the License.
 Calculates the trigonometric cotangent of the angle in radians.
 
 == Syntax
+
 ----
 COT( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 

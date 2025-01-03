@@ -19,11 +19,14 @@ under the License.
 Decodes a hexadecimal string to a string.
 
 == Syntax
+
 ----
 HEX_DECODE( string )
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

@@ -19,11 +19,14 @@ under the License.
 Returns the day of week of the specified date or timestamp.
 
 == Syntax
+
 ----
 DAYOFWEEK( {date | timestamp} )
 ----
 
-Returns:: Integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
+== Returns
+
+Integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
 
 == Usage
 

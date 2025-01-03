@@ -19,9 +19,16 @@ under the License.
 Decodes a Base32-encoded string to a string.
 
 == Syntax
+
 ----
 BASE32_DECODE( string )
 ----
 
+== Arguments
+
 input:: A Base32-encoded string expression.
-Returns:: String
+
+
+== Returns
+
+String

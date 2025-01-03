@@ -20,6 +20,7 @@ Searches a string using a regular expression pattern and returns an integer that
 position or ending position of the matched substring. 
 
 == Syntax
+
 ----
 REGEXP_INSTR( subject, pattern [, position [, occurrence [, return_options [, parameters ]]]] )
 ----

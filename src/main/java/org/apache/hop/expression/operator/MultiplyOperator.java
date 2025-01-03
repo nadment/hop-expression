@@ -145,9 +145,9 @@ public class MultiplyOperator extends BinaryOperator {
 
       // Optimize data type
       if (Types.isInteger(call.getType())) {
-        call.setOperator(MultiplyInteger.INSTANCE);
+        call.setOperator(IntegerMultiplyOperator.INSTANCE);
       } else {
-        call.setOperator(MultiplyNumber.INSTANCE);
+        call.setOperator(NumberMultiplyOperator.INSTANCE);
       }
 
       operand = call;
@@ -165,8 +165,8 @@ public class MultiplyOperator extends BinaryOperator {
     return Types.coercionMultiplyOperator(call);
   }
 
-  private static final class MultiplyInteger extends MultiplyOperator {
-    private static final MultiplyOperator INSTANCE = new MultiplyInteger();
+  private static final class IntegerMultiplyOperator extends MultiplyOperator {
+    private static final MultiplyOperator INSTANCE = new IntegerMultiplyOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -183,8 +183,8 @@ public class MultiplyOperator extends BinaryOperator {
     }
   }
 
-  private static final class MultiplyNumber extends MultiplyOperator {
-    private static final MultiplyOperator INSTANCE = new MultiplyNumber();
+  private static final class NumberMultiplyOperator extends MultiplyOperator {
+    private static final MultiplyOperator INSTANCE = new NumberMultiplyOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {

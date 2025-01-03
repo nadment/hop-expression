@@ -19,14 +19,21 @@ under the License.
 Determines whether the value of one expression is in an interval defined by two other expressions.
 
 == Syntax
+
 ----
 expression [NOT] BETWEEN [ASYMMETRIC|SYMMETRIC] lower_bound AND upper_bound
 ----
+
+== Returns
+
+Boolean
 
 == Usage
 
 The ASYMMETRIC keyword is just a verbose way of expressing the default behaviour that upper boundary must be greater than the lower boundary,
 SYMMETRIC has the useful property of indicating that the order is irrelevant
+
+== Examples
 
 The following statements are all equivalent: 
 ----

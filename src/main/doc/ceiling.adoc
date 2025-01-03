@@ -19,6 +19,7 @@ under the License.
 Returns the value rounded to the nearest equal or larger integer.
 
 == Syntax
+
 ----
 CEILING( numeric )
 CEIL( numeric )
@@ -28,10 +29,13 @@ CEIL( numeric )
 
 * Returns NULL if the argument is NULL.
 
-== Example
+== Examples
+
 ----
 CEILING( 28.05 ) = 29
 ----
 
+== See also
 
-See also xref:floor.adoc[FLOOR], xref:round.adoc[ROUND]
+* xref:floor.adoc[FLOOR]
+* xref:round.adoc[ROUND]

@@ -54,10 +54,10 @@ public class TryToDateFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (Types.isInteger(type)) {
-      return new Call(TryToDateInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerTryToDateFunction.INSTANCE, call.getOperands());
     }
     if (Types.isNumber(type)) {
-      return new Call(TryToDateNumber.INSTANCE, call.getOperands());
+      return new Call(NumberTryToDateFunction.INSTANCE, call.getOperands());
     }
 
     // String with specified format
@@ -72,13 +72,13 @@ public class TryToDateFunction extends Function {
     DateTimeFormat format = DateTimeFormat.of(pattern);
     format.setTwoDigitYearStart(twoDigitYearStart);
 
-    return new Call(new TryToDateString(format), call.getOperands());
+    return new Call(new StringTryToDateFunction(format), call.getOperands());
   }
 
-  private static final class TryToDateString extends TryToDateFunction {
+  private static final class StringTryToDateFunction extends TryToDateFunction {
     private final DateTimeFormat format;
 
-    public TryToDateString(DateTimeFormat format) {
+    public StringTryToDateFunction(DateTimeFormat format) {
       super();
       this.format = format;
     }
@@ -95,10 +95,10 @@ public class TryToDateFunction extends Function {
     }
   }
 
-  private static final class TryToDateInteger extends TryToDateFunction {
-    private static final TryToDateFunction INSTANCE = new TryToDateInteger();
+  private static final class IntegerTryToDateFunction extends TryToDateFunction {
+    private static final TryToDateFunction INSTANCE = new IntegerTryToDateFunction();
 
-    private TryToDateInteger() {
+    private IntegerTryToDateFunction() {
       super();
     }
 
@@ -109,10 +109,10 @@ public class TryToDateFunction extends Function {
     }
   }
 
-  private static final class TryToDateNumber extends TryToDateFunction {
-    private static final TryToDateFunction INSTANCE = new TryToDateNumber();
+  private static final class NumberTryToDateFunction extends TryToDateFunction {
+    private static final TryToDateFunction INSTANCE = new NumberTryToDateFunction();
 
-    private TryToDateNumber() {
+    private NumberTryToDateFunction() {
       super();
     }
 

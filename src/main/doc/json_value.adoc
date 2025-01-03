@@ -19,9 +19,14 @@ under the License.
 Extracts scalar value from JSON object or string representing a Json.
 
 == Syntax
+
 ----
 JSON_VALUE( {string | json}, path )
 ----
+
+== Returns
+
+Json
 
 == Usage
 

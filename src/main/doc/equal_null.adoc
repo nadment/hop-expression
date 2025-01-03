@@ -19,9 +19,14 @@ under the License.
 Compares whether two expressions are equal. The function is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator (=), which treats NULLs as unknown values.
 
 == Syntax
+
 ----
 EQUAL_NULL( expression, expression )
 ----
+
+== Returns
+
+Boolean
 
 TIP: Note that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown values.
 

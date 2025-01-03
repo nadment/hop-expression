@@ -19,25 +19,28 @@ under the License.
 Converts the input string to binary value.
 
 == Syntax
+
 ----
 TO_BINARY( string [, format ] )
 ----
 
+== Arguments
+
 string:: A string expression
 
 format:: The format of the input string (case-insensitive): HEX, BASE64, UTF-8 or UTF8
-    
-Return:: Binary
-
 
 include::binaryformat.adoc[]
+    
+== Returns
 
+Binary
 
 == Usage
 
 * Returns NULL if argument is NULL. 
 
-== Example
+== Examples
 ----
 TO_BINARY('QXBhY2hlIEhvcA==','BASE64')
 ----

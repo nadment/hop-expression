@@ -19,11 +19,14 @@ under the License.
 Returns the day of year of the date or timestamp.
 
 == Syntax
+
 ----
 DAYOFYEAR( {date | timestamp} )
 ----
 
-Returns:: Integer between 1 and 366.
+== Returns
+
+Integer between 1 and 366.
 
 == Usage
 

@@ -19,14 +19,13 @@ under the License.
 Returns the remainder division. Equivalent to the modulo function MOD.
 
 == Syntax
+
 ----
 numeric1 % numeric2
 ----
 
-== Usage
-
-
-
-Returns::
+== Returns
 
 numeric
+
+== Usage

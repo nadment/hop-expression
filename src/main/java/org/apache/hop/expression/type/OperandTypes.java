@@ -83,6 +83,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ANY_ANY_ANY =
       explicit(TypeName.ANY, TypeName.ANY, TypeName.ANY);
   public static final IOperandTypeChecker ANY_STRING = explicit(TypeName.ANY, TypeName.STRING);
+  public static final IOperandTypeChecker ANY_ARRAY = explicit(TypeName.ANY, TypeName.ARRAY);
   public static final IOperandTypeChecker ANY_SAME_SAME =
       ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 

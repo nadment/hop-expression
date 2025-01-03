@@ -19,11 +19,14 @@ under the License.
 Encodes a string to a hexadecimal string.
 
 == Syntax
+
 ----
 HEX_ENCODE( string )
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

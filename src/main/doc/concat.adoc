@@ -29,14 +29,14 @@ The `||` operator provides alternative syntax.
 string1 || string2 [ || ... ]
 ----
 
-
 == Usage
 
 * All arguments must be of the same string or binary type.
 * Null arguments are ignored.
 
-== Example
+== Examples
 
 ----
 CONCAT('AB','CD','12') = 'ABCD12'
+'AB' || 'CD' = 'ABCD'
 ----

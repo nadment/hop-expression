@@ -19,6 +19,7 @@ under the License.
 Sum of 2 numeric values.
 
 == Syntax
+
 ----
 numeric1 + numeric2
 ----

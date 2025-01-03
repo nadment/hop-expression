@@ -19,14 +19,12 @@ under the License.
 First expression is less than or equal to the second expression.
 
 == Syntax
+
 ----
 expression1 <= expression2
 ----
 
-== Usage
-
-
-
-Returns::
+== Returns
 
 Boolean
+

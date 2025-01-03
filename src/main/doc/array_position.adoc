@@ -24,7 +24,9 @@ Optionally, starts searching at the specified index.
 ARRAY_POSITION( array, element [, index]  )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 
@@ -33,7 +35,7 @@ Return:: Integer
 * The optional third parameter specifies the inclusive index value at which to start the search.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon') = 2

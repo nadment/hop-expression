@@ -54,19 +54,19 @@ public class ToBooleanFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (Types.isInteger(type)) {
-      return new Call(ToBooleanInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerToBooleanFunction.INSTANCE, call.getOperands());
     }
     if (Types.isNumber(type)) {
-      return new Call(ToBooleanNumber.INSTANCE, call.getOperands());
+      return new Call(NumberToBooleanFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(ToBooleanString.INSTANCE, call.getOperands());
+    return new Call(StringToBooleanFunction.INSTANCE, call.getOperands());
   }
 
-  private static final class ToBooleanString extends ToBooleanFunction {
-    private static final ToBooleanString INSTANCE = new ToBooleanString();
+  private static final class StringToBooleanFunction extends ToBooleanFunction {
+    private static final StringToBooleanFunction INSTANCE = new StringToBooleanFunction();
 
-    private ToBooleanString() {
+    private StringToBooleanFunction() {
       super();
     }
 
@@ -77,10 +77,10 @@ public class ToBooleanFunction extends Function {
     }
   }
 
-  private static final class ToBooleanInteger extends ToBooleanFunction {
-    private static final ToBooleanInteger INSTANCE = new ToBooleanInteger();
+  private static final class IntegerToBooleanFunction extends ToBooleanFunction {
+    private static final IntegerToBooleanFunction INSTANCE = new IntegerToBooleanFunction();
 
-    private ToBooleanInteger() {
+    private IntegerToBooleanFunction() {
       super();
     }
 
@@ -91,10 +91,10 @@ public class ToBooleanFunction extends Function {
     }
   }
 
-  private static final class ToBooleanNumber extends ToBooleanFunction {
-    private static final ToBooleanNumber INSTANCE = new ToBooleanNumber();
+  private static final class NumberToBooleanFunction extends ToBooleanFunction {
+    private static final NumberToBooleanFunction INSTANCE = new NumberToBooleanFunction();
 
-    private ToBooleanNumber() {
+    private NumberToBooleanFunction() {
       super();
     }
 

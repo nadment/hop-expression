@@ -19,6 +19,7 @@ under the License.
 Converts a value of one data type into another data type.
 
 == Syntax
+
 ----
 CAST( value AS type [ FORMAT format ] )
 TRY_CAST( value AS type [ FORMAT format ] )

@@ -19,6 +19,7 @@ under the License.
 Specifies which time zone to use with a TIMESTAMP.
 
 == Syntax
+
 ----
 timestamp A TIME ZONE timezone
 ----
@@ -27,7 +28,7 @@ timestamp A TIME ZONE timezone
 
 Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
 
-== Example
+== Examples
 
 ----
 TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'

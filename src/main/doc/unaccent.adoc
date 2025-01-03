@@ -19,11 +19,14 @@ under the License.
 The function removes accents (diacritic marks) from a given string.
 
 == Syntax
+
 ----
 UNACCENT( string )
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

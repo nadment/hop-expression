@@ -19,8 +19,11 @@ under the License.
 Returns TRUE if the first expression starts with second expression. Both values must be of the same string or binary type.
 
 == Syntax
+
 ----
 STARTSWITH( value, prefix )
 ----
 
-Returns:: Boolean
+== Returns
+
+Boolean

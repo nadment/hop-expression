@@ -74,7 +74,7 @@ public class ArrayPositionFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Array array = operands[0].getValue(Array.class);
+    Array array = (Array) operands[0];
     if (array == null) return null;
     Object value = operands[1].getValue();
     if (value == null) return null;

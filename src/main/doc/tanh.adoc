@@ -19,8 +19,12 @@ under the License.
 Calculates the hyperbolic tangent.
 
 == Syntax
+
 ----
 TANH( numeric )
 ----
 
-Returns:: Number
+== Returns
+
+Number
+

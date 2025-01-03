@@ -61,7 +61,7 @@ public class SubtractOperator extends BinaryOperator {
         return new Call(
             AddDaysFunction.INSTANCE, left, new Call(call.getPosition(), Operators.NEGATE, right));
       }
-      return new Call(SubtractIntervalFromTemporal.INSTANCE, call.getOperands());
+      return new Call(IntervalFromTemporalSubtractOperator.INSTANCE, call.getOperands());
     }
 
     // Simplify arithmetic A-0 → A
@@ -81,14 +81,14 @@ public class SubtractOperator extends BinaryOperator {
 
     // Optimize data type
     if (Types.isInteger(call.getType())) {
-      return new Call(SubtractInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerSubtractOperator.INSTANCE, call.getOperands());
     }
 
-    return new Call(SubtractNumber.INSTANCE, call.getOperands());
+    return new Call(NumberSubtractOperator.INSTANCE, call.getOperands());
   }
 
-  private static final class SubtractInteger extends SubtractOperator {
-    private static final SubtractInteger INSTANCE = new SubtractInteger();
+  private static final class IntegerSubtractOperator extends SubtractOperator {
+    private static final IntegerSubtractOperator INSTANCE = new IntegerSubtractOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -105,8 +105,8 @@ public class SubtractOperator extends BinaryOperator {
     }
   }
 
-  private static final class SubtractNumber extends SubtractOperator {
-    private static final SubtractNumber INSTANCE = new SubtractNumber();
+  private static final class NumberSubtractOperator extends SubtractOperator {
+    private static final NumberSubtractOperator INSTANCE = new NumberSubtractOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -125,8 +125,9 @@ public class SubtractOperator extends BinaryOperator {
   }
 
   /** Subtracts a specified interval to a date or timestamp */
-  public static final class SubtractIntervalFromTemporal extends SubtractOperator {
-    private static final SubtractOperator INSTANCE = new SubtractIntervalFromTemporal();
+  public static final class IntervalFromTemporalSubtractOperator extends SubtractOperator {
+    private static final IntervalFromTemporalSubtractOperator INSTANCE =
+        new IntervalFromTemporalSubtractOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -145,8 +146,9 @@ public class SubtractOperator extends BinaryOperator {
     }
   }
 
-  public static final class SubtractIntervalFromInterval extends SubtractOperator {
-    private static final SubtractOperator INSTANCE = new SubtractIntervalFromInterval();
+  public static final class IntervalFromIntervalSubtractOperator extends SubtractOperator {
+    private static final IntervalFromIntervalSubtractOperator INSTANCE =
+        new IntervalFromIntervalSubtractOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {

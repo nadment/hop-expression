@@ -19,11 +19,14 @@ under the License.
 Returns a string consisting of a the specified number of blank spaces.
 
 == Syntax
+
 ----
 SPACE( length )
 ----
 
-Returns:: String
+== Returns
+
+String
 
 == Usage
 

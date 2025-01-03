@@ -52,7 +52,7 @@ public class TryToNumberFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (Types.isDate(type)) {
-      return new Call(TryToNumberDate.INSTANCE, call.getOperands());
+      return new Call(DateTryToNumberFunction.INSTANCE, call.getOperands());
     }
 
     String pattern = "TM";
@@ -63,13 +63,13 @@ public class TryToNumberFunction extends Function {
 
     // Compile format to check it
     NumberFormat format = NumberFormat.of(pattern);
-    return new Call(new TryToNumberString(format), call.getOperands());
+    return new Call(new StringTryToNumberFunction(format), call.getOperands());
   }
 
-  private static final class TryToNumberString extends TryToNumberFunction {
+  private static final class StringTryToNumberFunction extends TryToNumberFunction {
     private final NumberFormat format;
 
-    public TryToNumberString(NumberFormat format) {
+    public StringTryToNumberFunction(NumberFormat format) {
       super();
       this.format = format;
     }
@@ -87,10 +87,10 @@ public class TryToNumberFunction extends Function {
     }
   }
 
-  private static final class TryToNumberDate extends TryToNumberFunction {
-    private static final TryToNumberFunction INSTANCE = new TryToNumberDate();
+  private static final class DateTryToNumberFunction extends TryToNumberFunction {
+    private static final TryToNumberFunction INSTANCE = new DateTryToNumberFunction();
 
-    private TryToNumberDate() {
+    private DateTryToNumberFunction() {
       super();
     }
 

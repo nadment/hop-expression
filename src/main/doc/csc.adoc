@@ -19,11 +19,14 @@ under the License.
 Calculates the trigonometric cosecant of the angle in radians.
 
 == Syntax
+
 ----
 CSC( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 

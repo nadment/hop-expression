@@ -54,20 +54,20 @@ public class AbsFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (Types.isInterval(type)) {
-      return new Call(AbsInterval.INSTANCE, call.getOperands());
+      return new Call(IntervalAbsFunction.INSTANCE, call.getOperands());
     }
 
     if (Types.isInteger(type)) {
-      return new Call(AbsInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerAbsFunction.INSTANCE, call.getOperands());
     }
 
     // If type Number or String
-    return new Call(AbsNumber.INSTANCE, call.getOperands());
+    return new Call(NumberAbsFunction.INSTANCE, call.getOperands());
   }
 
   /** Returns the absolute value of the integer value. */
-  private static final class AbsInteger extends AbsFunction {
-    public static final AbsFunction INSTANCE = new AbsInteger();
+  private static final class IntegerAbsFunction extends AbsFunction {
+    public static final IntegerAbsFunction INSTANCE = new IntegerAbsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -79,8 +79,8 @@ public class AbsFunction extends Function {
   }
 
   /** Returns the absolute value of the number value. */
-  private static final class AbsNumber extends AbsFunction {
-    public static final AbsFunction INSTANCE = new AbsNumber();
+  private static final class NumberAbsFunction extends AbsFunction {
+    public static final NumberAbsFunction INSTANCE = new NumberAbsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -92,8 +92,8 @@ public class AbsFunction extends Function {
   }
 
   /** Returns the absolute value of the interval value. */
-  private static final class AbsInterval extends AbsFunction {
-    public static final AbsFunction INSTANCE = new AbsInterval();
+  private static final class IntervalAbsFunction extends AbsFunction {
+    public static final IntervalAbsFunction INSTANCE = new IntervalAbsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -19,17 +19,20 @@ under the License.
 Returns the numeric value of the first character in a string that is the numeric representation of the ASCII character.
 
 == Syntax
+
 ----
 ASCII( char )
 ----
 
-Return:: Integer
+== Returns
+
+This function returns a value of type INTEGER.
 
 == Usage
 
 * If the string is empty, a value of 0 is returned.
 
-== Example
+== Examples
 
 ----
 ASCII('X')

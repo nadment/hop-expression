@@ -19,11 +19,14 @@ under the License.
 Returns the integer that specifies the year following the ISO-8601 standard.
 
 == Syntax
+
 ----
 ISOYEAR( date )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

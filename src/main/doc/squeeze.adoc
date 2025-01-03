@@ -19,11 +19,14 @@ under the License.
 Trims white space from the beginning and end of the string, and replaces all other white space with single blanks.
 
 == Syntax
+
 ----
 SQUEEZE( string )
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

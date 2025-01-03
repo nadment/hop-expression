@@ -23,7 +23,9 @@ Right-pads a string with characters from another string, or right-pads a binary 
 RPAD( value, length [, pad ] )
 ----
 
-Returns:: The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
+== Returns
+
+The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
 
 == Usage
 
@@ -38,4 +40,6 @@ Returns:: The data type of the returned value is the same as the data type of th
 RPAD('123',5,'*') = '123**'
 ----
 
-See also xref:lpad.adoc[LPAD]
+== See also
+
+* xref:lpad.adoc[LPAD]

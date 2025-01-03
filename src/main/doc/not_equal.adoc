@@ -18,6 +18,7 @@ under the License.
 First expression is not equal than second expression. 
 
 == Syntax
+
 ----
 expression1 <> expression2
 ----

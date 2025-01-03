@@ -19,13 +19,19 @@ under the License.
 Calculates the SHA-512 hash of a value.
 
 == Syntax
+
 ----
 SHA512( {string | binary} )
 ----
 
-<string>:: A string expression, the message to be hashed.
-Returns:: String
+== Arguments
+
+string:: A string expression, the message to be hashed.
+
+== Returns
+
+Returns a 128 characters hex-encoded string (512 bits).
 
 == Usage
 
-* The hash will be returned as a 128 characters hex-encoded string (512 bit).
+* Returns NULL if the argument is NULL.

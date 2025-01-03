@@ -126,6 +126,24 @@ public final class Array implements IExpression, Iterable<IExpression> {
     return new Array(type, Arrays.copyOfRange(values, form, to));
   }
 
+  /** Prepends an element to the beginning of an array. */
+  public Array prepend(IExpression element) {
+    int size = size();
+    IExpression[] expressions = new IExpression[size + 1];
+    System.arraycopy(values, 0, expressions, 1, size);
+    expressions[0] = element;
+    return new Array(type, expressions);
+  }
+
+  /** Appends an element to the end of an array. */
+  public Array append(IExpression element) {
+    int size = size();
+    IExpression[] expressions = new IExpression[size + 1];
+    System.arraycopy(values, 0, expressions, 0, size);
+    expressions[size] = element;
+    return new Array(type, expressions);
+  }
+
   @Override
   public <E> E accept(IExpressionVisitor<E> visitor) {
     return visitor.visitArray(this);

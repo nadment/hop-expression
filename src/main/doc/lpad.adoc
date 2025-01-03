@@ -24,7 +24,9 @@ Left-pads a string with characters from another string, or right-pads a binary v
 LPAD( value, length [, pad ] )
 ----
 
-Returns:: The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
+== Returns
+
+The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
 
 == Usage 
 
@@ -33,10 +35,12 @@ Returns:: The data type of the returned value is the same as the data type of th
 * If the padding argument is omitted, the function will pad spaces for string or 0x00 for binary.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 LPAD('123',5,'*') = '**123'
 ----
 
-See also xref:rpad.adoc[RPAD]
+== See also
+
+* xref:rpad.adoc[RPAD]

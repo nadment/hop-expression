@@ -19,6 +19,7 @@ under the License.
 Truncate a date or datetime value to the start of a given unit of duration. 
 
 == Syntax
+
 ----
 DATE_TRUNC( unit, {date | timestamp} )
 ----
@@ -39,6 +40,10 @@ Supported unit of date and time:
 - MILLISECOND
 - MICROSECOND
 - NANOSECOND
+
+== Returns
+
+Date
 
 == Usage
 

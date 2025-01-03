@@ -19,9 +19,12 @@ under the License.
 Check if the value is true.
 
 == Syntax
+
 [source,sql]
 ----
 expression IS [NOT] TRUE
 ----
 
-Returns:: Boolean
+== Returns
+
+Boolean

@@ -19,8 +19,11 @@ under the License.
 Replaces a substring of the specified length, starting at the specified position, with a new string or binary value.
 
 == Syntax
+
 ----
 INSERT( source_string_or_binary, position, length, replacement )
 ----
 
-Returns:: String or binary
+== Returns
+
+String or binary

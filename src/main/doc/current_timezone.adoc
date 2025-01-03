@@ -19,6 +19,11 @@ under the License.
 Returns the current time zone.
 
 == Syntax
+
 ----
 CURRENT_TIMEZONE()
 ----
+
+== Returns
+
+String

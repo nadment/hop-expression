@@ -19,6 +19,7 @@ under the License.
 Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
 
 == Syntax
+
 ----
 IF( condition, true_value [, false_value] )
 ----
@@ -26,6 +27,8 @@ IF( condition, true_value [, false_value] )
 == Usage
 
 If the false_value is omitted, return NULL.
+
+== Examples
 
 The following IF and CASE expressions are equivalent:
 

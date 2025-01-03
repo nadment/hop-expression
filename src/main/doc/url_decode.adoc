@@ -18,10 +18,12 @@ under the License.
 
 Decode a string used in a query part of a URL.
 
-
 == Syntax
+
 ----
 URL_DECODE( string )
 ----
 
-Returns:: String
+== Returns
+
+String

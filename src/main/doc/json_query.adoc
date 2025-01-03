@@ -19,15 +19,20 @@ under the License.
 Extracts a JSON fragment from a JSON object by using JsonPath query language.
 
 == Syntax
+
 ----
 JSON_QUERY( json [, path] )
 ----
+
+== Arguments
 
 json:: JSON value or a JSON-formatted string
 
 path:: A xref:jsonpath.adoc[JsonPath] expression that identifies the data that you want to get
 
-Returns:: Json
+== Returns
+
+Json
 
 == Usage
 

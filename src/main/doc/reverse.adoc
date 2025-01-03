@@ -30,7 +30,7 @@ Returns:: String or binary
 
 * Returns NULL if the argument is NULL.
 
-== Example
+== Examples
 
 ----
 REVERSE('ABC') = 'CBA'

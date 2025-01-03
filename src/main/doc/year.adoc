@@ -19,11 +19,14 @@ under the License.
 Returns the integer that specifies the year of the specified date or timestamp.
 
 == Syntax
+
 ----
 YEAR( date )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

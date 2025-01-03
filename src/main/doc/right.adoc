@@ -30,10 +30,12 @@ RIGHT( value, length )
 * If the length argument is zero or negative, the function returns an empty string or binary.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 RIGHT('ABCDEF',3) = 'DEF'
 ----
 
-See also xref:left.adoc[LEFT]
+== See also
+
+* xref:left.adoc[LEFT]

@@ -19,15 +19,20 @@ under the License.
 Splits a string on the specified list of delimiter characters and returns the part at the specified position.
 
 == Syntax
+
 ----
 STRTOK( string [, delimiters ] [, part ] )
 ----
+
+== Arguments
 
 string:: A string expression to be tokenized.
 delimiters:: Each character in the string is considered a delimiter character. If not specified, the default is a space character.
 part:: The ordinal token to return. If not specified, the default value is 1. The maximum limit of any token returned is 256.
 
-Returns:: String
+== Returns
+
+String
 
 == Usage
 

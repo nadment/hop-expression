@@ -19,6 +19,7 @@ under the License.
 Match a string based on a regular expression pattern.
 
 == Syntax
+
 ----
 REGEXP_LIKE( subject, pattern [, parameters ] )
 ----

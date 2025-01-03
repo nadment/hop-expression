@@ -79,7 +79,7 @@ public class ToCharFunction extends Function {
 
       // Compile format to check it
       DateTimeFormat format = DateTimeFormat.of(pattern);
-      return new Call(new ToCharDate(format), call.getOperands());
+      return new Call(new DateToCharFunction(format), call.getOperands());
     }
 
     if (Types.isNumeric(type)) {
@@ -89,11 +89,11 @@ public class ToCharFunction extends Function {
 
       // Compile format to check it
       NumberFormat format = NumberFormat.of(pattern);
-      return new Call(new ToCharNumber(format), call.getOperand(0), Literal.of(pattern));
+      return new Call(new NumberToCharFunction(format), call.getOperand(0), Literal.of(pattern));
     }
 
     if (Types.isBoolean(type)) {
-      return new Call(ToCharBoolean.INSTANCE, call.getOperands());
+      return new Call(BooleanToCharFunction.INSTANCE, call.getOperands());
     }
 
     if (Types.isBinary(type)) {
@@ -105,13 +105,13 @@ public class ToCharFunction extends Function {
       pattern = pattern.toUpperCase();
 
       if (pattern.equals("HEX")) {
-        return new Call(ToCharHexBinary.INSTANCE, call.getOperands());
+        return new Call(BinaryHexToCharFunction.INSTANCE, call.getOperands());
       }
       if (pattern.equals("BASE64")) {
-        return new Call(ToCharBase64Binary.INSTANCE, call.getOperands());
+        return new Call(BinaryBase64ToCharFunction.INSTANCE, call.getOperands());
       }
       if (pattern.equals("UTF8") || pattern.equals("UTF-8")) {
-        return new Call(ToCharUtf8Binary.INSTANCE, call.getOperands());
+        return new Call(BinaryUtf8ToCharFunction.INSTANCE, call.getOperands());
       }
 
       throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
@@ -121,11 +121,11 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a date expression to a string value. */
-  private static final class ToCharDate extends ToCharFunction {
+  private static final class DateToCharFunction extends ToCharFunction {
 
     private final DateTimeFormat formatter;
 
-    public ToCharDate(DateTimeFormat formatter) {
+    public DateToCharFunction(DateTimeFormat formatter) {
       super();
       this.formatter = formatter;
     }
@@ -141,11 +141,11 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a numeric expression to a string value. */
-  private static final class ToCharNumber extends ToCharFunction {
+  private static final class NumberToCharFunction extends ToCharFunction {
 
     private final NumberFormat formatter;
 
-    public ToCharNumber(NumberFormat formatter) {
+    public NumberToCharFunction(NumberFormat formatter) {
       super();
       this.formatter = formatter;
     }
@@ -161,10 +161,10 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a boolean expression to a string value. */
-  private static final class ToCharBoolean extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new ToCharBoolean();
+  private static final class BooleanToCharFunction extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new BooleanToCharFunction();
 
-    public ToCharBoolean() {
+    public BooleanToCharFunction() {
       super();
     }
 
@@ -179,8 +179,8 @@ public class ToCharFunction extends Function {
   }
 
   /** Converts a binary expression to a string value. */
-  private static final class ToCharHexBinary extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new ToCharHexBinary();
+  private static final class BinaryHexToCharFunction extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new BinaryHexToCharFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -192,8 +192,8 @@ public class ToCharFunction extends Function {
     }
   }
 
-  private static final class ToCharUtf8Binary extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new ToCharUtf8Binary();
+  private static final class BinaryUtf8ToCharFunction extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new BinaryUtf8ToCharFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -205,8 +205,8 @@ public class ToCharFunction extends Function {
     }
   }
 
-  private static final class ToCharBase64Binary extends ToCharFunction {
-    private static final ToCharFunction INSTANCE = new ToCharBase64Binary();
+  private static final class BinaryBase64ToCharFunction extends ToCharFunction {
+    private static final ToCharFunction INSTANCE = new BinaryBase64ToCharFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

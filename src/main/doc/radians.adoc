@@ -19,14 +19,15 @@ under the License.
 Converts degrees to radians.
 
 == Syntax
+
 ----
 RADIANS( numeric )
 ----
 
-== Usage
-
-
-
-Returns::
+== Returns
 
 Number
+
+== Usage
+
+* Returns NULL if the argument is NULL.

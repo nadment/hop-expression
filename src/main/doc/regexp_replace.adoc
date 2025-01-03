@@ -19,6 +19,7 @@ under the License.
 Replace substring in a string by a new substring using a regular expression.
 
 == Syntax
+
 ----
 REGEXP_REPLACE( source, pattern [, replacement [, position [, occurrence [, parameters ]]]] )
 ----

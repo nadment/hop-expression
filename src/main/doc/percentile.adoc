@@ -19,6 +19,7 @@ under the License.
 Returns the percentile of values at the specified percentage over a group of rows.
 
 == Syntax
+
 ----
 PERCENTILE( expression, percentage )
 ----
@@ -34,7 +35,7 @@ Return:: Number
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
-== Example
+== Examples
 
 ----
 PERCENTILE( Age, 0.25 )

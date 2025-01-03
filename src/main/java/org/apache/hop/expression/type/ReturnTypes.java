@@ -120,8 +120,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARRAY_ELEMENT =
       call -> {
         Type type = call.getOperand(0).getType();
-        if (type.is(TypeName.ARRAY)) {
-          ArrayType arrayType = (ArrayType) type;
+        if (type instanceof ArrayType arrayType) {
           return arrayType.getElementType();
         }
         return Types.UNKNOWN;

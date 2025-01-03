@@ -25,8 +25,10 @@ Compares the select expression to each search expression in order. As soon as a 
 DECODE( expr, search1, result1 [, search2, result2... ] [, default ] )
 ----
 
-<expr>::	This is the select expression.
-<searchN>:: The search expressions indicate the values to compare to the select expression. 
+== Arguments
+
+expr::	This is the select expression.
+searchN:: The search expressions indicate the values to compare to the select expression. 
 
 == Usage
 

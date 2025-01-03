@@ -17,28 +17,26 @@ under the License.
 = INSTR
 
 Returns the position in the string that is the first character of a specified occurrence of the substring.
-		
 
 == Syntax
+
 ----
 INSTR( string, substring [, position [, occurence] ] )
 ----
 
-Required::
+== Arguments
 
-`string`:: A string representing the value to look for.
+string:: A string representing the value to look for (Required).
 
-`substring`:: A string representing the value to search.
+substring:: A string representing the value to search (Required).
 
-Optional::
+position:: A number indicating the position from where to start the search. If the start position is negative, the function counts back position number of characters from the end of string and then searches towards the beginning of string (Optional).
 
-`position`:: A number indicating the position from where to start the search.
-If the start position is negative, the function counts back position number of characters from the end of string and then searches towards the beginning of string.
+occurence:: is an integer indicating which occurrence of string should search for. The value must be positive (Optional).
 
-`occurence`:: is an integer indicating which occurrence of string should search for. The value of `occurrence` must be positive.
+== Returns
 
-
-Returns:: Integer
+Integer
 
 == Usage
 

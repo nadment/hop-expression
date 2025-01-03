@@ -19,11 +19,14 @@ under the License.
 Calculates the hyperbolic cosecant of the angle in radians.
 
 == Syntax
+
 ----
 CSCH( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 

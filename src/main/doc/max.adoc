@@ -19,11 +19,14 @@ under the License.
 Returns the maximum value over a group of rows.
 
 == Syntax
+
 ----
 MAX( expression )
 ----
 
-Return:: The data type of the returned value is the same as the data type of the input values.
+== Returns
+
+The data type of the returned value is the same as the data type of the input values.
 
 == Usage
  
@@ -32,7 +35,7 @@ Return:: The data type of the returned value is the same as the data type of the
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
-== Example
+== Examples
 
 ----
 MAX( Age )

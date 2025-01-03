@@ -79,7 +79,8 @@ public class AddOperator extends BinaryOperator {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
       }
 
-      return new Call(call.getPosition(), AddIntervalToTemporal.INSTANCE, call.getOperands());
+      return new Call(
+          call.getPosition(), IntervalToTemporalAddOperator.INSTANCE, call.getOperands());
     } else if (Types.isDate(right.getType())) {
 
       // Normalize operands order DATE+NUMERIC
@@ -92,7 +93,7 @@ public class AddOperator extends BinaryOperator {
       if (Types.isInterval(left.getType())) {
         return new Call(
             call.getPosition(),
-            AddIntervalToTemporal.INSTANCE,
+            IntervalToTemporalAddOperator.INSTANCE,
             call.getOperand(1),
             call.getOperand(0));
       }
@@ -100,13 +101,14 @@ public class AddOperator extends BinaryOperator {
     } else if (Types.isInterval(left.getType())) {
 
       if (Types.isInterval(right.getType())) {
-        return new Call(call.getPosition(), AddIntervalToInterval.INSTANCE, call.getOperands());
+        return new Call(
+            call.getPosition(), IntervalToIntervalAddOperator.INSTANCE, call.getOperands());
       }
 
       // Normalize operands order DATE+INTERVAL
       return new Call(
           call.getPosition(),
-          AddIntervalToTemporal.INSTANCE,
+          IntervalToTemporalAddOperator.INSTANCE,
           call.getOperand(1),
           call.getOperand(0));
     }
@@ -123,16 +125,16 @@ public class AddOperator extends BinaryOperator {
 
     // Optimize data type
     if (Types.isInteger(call.getType())) {
-      return new Call(AddInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerAddOperator.INSTANCE, call.getOperands());
     }
 
-    return new Call(call.getPosition(), AddNumber.INSTANCE, call.getOperands());
+    return new Call(call.getPosition(), NumberAddOperator.INSTANCE, call.getOperands());
   }
 
-  private static final class AddInteger extends AddOperator {
-    private static final AddInteger INSTANCE = new AddInteger();
+  private static final class IntegerAddOperator extends AddOperator {
+    private static final IntegerAddOperator INSTANCE = new IntegerAddOperator();
 
-    private AddInteger() {
+    private IntegerAddOperator() {
       super();
     }
 
@@ -161,11 +163,11 @@ public class AddOperator extends BinaryOperator {
     }
   }
 
-  private static final class AddNumber extends AddOperator {
+  private static final class NumberAddOperator extends AddOperator {
 
-    private static final AddNumber INSTANCE = new AddNumber();
+    private static final NumberAddOperator INSTANCE = new NumberAddOperator();
 
-    private AddNumber() {
+    private NumberAddOperator() {
       super();
     }
 
@@ -191,10 +193,11 @@ public class AddOperator extends BinaryOperator {
   }
 
   /** Adds a specified interval to a date or timestamp */
-  private static final class AddIntervalToTemporal extends AddOperator {
-    private static final AddIntervalToTemporal INSTANCE = new AddIntervalToTemporal();
+  private static final class IntervalToTemporalAddOperator extends AddOperator {
+    private static final IntervalToTemporalAddOperator INSTANCE =
+        new IntervalToTemporalAddOperator();
 
-    private AddIntervalToTemporal() {
+    private IntervalToTemporalAddOperator() {
       super();
     }
 
@@ -225,10 +228,10 @@ public class AddOperator extends BinaryOperator {
     }
   }
 
-  private static final class AddIntervalToInterval extends AddOperator {
-    private static final AddOperator INSTANCE = new AddIntervalToInterval();
+  private static final class IntervalToIntervalAddOperator extends AddOperator {
+    private static final AddOperator INSTANCE = new IntervalToIntervalAddOperator();
 
-    private AddIntervalToInterval() {
+    private IntervalToIntervalAddOperator() {
       super();
     }
 

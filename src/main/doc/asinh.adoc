@@ -19,8 +19,11 @@ under the License.
 Calculates the inverse (arc) hyperbolic sine.
 
 == Syntax
+
 ----
 ASINH( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number

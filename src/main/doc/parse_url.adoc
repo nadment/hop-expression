@@ -32,7 +32,7 @@ Return:: String
 * If a requested part or key is not found, NULL is returned.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 PARSE_URL('http://hop.apache.org:80/path?id=1','HOST') → hop.apache.org

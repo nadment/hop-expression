@@ -19,9 +19,14 @@ under the License.
 Returns the number of minutes between two timestamps.
 
 == Syntax
+
 ----
 MINUTES_BETWEEN( timestamp1, timestamp2 )
 ----
+
+== Returns
+
+Integer
 
 == Usage
 

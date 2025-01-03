@@ -19,6 +19,7 @@ under the License.
 Performs a bitwise AND operation between two integer values.
 
 == Syntax
+
 ----
 BIT_AND( integer1, integer2 ) 
 ----
@@ -27,7 +28,10 @@ The `&` operator provides alternative syntax.
 ----
 integer1 & integer2
 ----
-Return:: Integer
+
+== Returns
+
+Integer
 
 == Usage
 

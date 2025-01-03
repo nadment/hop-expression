@@ -19,6 +19,7 @@ under the License.
 Calculates the logarithm of number with base.
 
 == Syntax
+
 ----
 LOG( base, numeric )
 ----

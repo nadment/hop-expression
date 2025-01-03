@@ -19,11 +19,14 @@ under the License.
 Translates string from the characters in <findChars> to the characters in <replaceChars>.
 
 == Syntax
+
 ----
 TRANSLATE( string, findChars, replaceChars )
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

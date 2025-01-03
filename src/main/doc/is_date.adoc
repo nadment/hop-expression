@@ -19,17 +19,21 @@ under the License.
 Check if a value is a valid date or timestamp.
 
 == Syntax
+
 ----
 IS_DATE( value, format )
 ----
 
-Returns:: Boolean
+== Returns
+
+Boolean
 
 == Usage
 
 Return FALSE if a value is NULL. 
 
-== Demo
+== Examples
+
 ----
 IS_DATE( INVOICE_DATE, 'YYYY-MM-DD' )
 ----

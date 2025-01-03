@@ -28,13 +28,15 @@ The `[]` provides alternative syntax.
 [expression1, expression2]
 ----
 
-Return:: Array
+== Returns
+
+This function returns an ARRAY
 
 == Usage
 
 * If the array is empty or all elements are NULL the result type is an array of type null.
 
-== Example
+== Examples
 
 ----
 ARRAY(1,2,3) = [1,2,3]

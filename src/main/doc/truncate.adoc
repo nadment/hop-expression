@@ -29,7 +29,7 @@ TRUNC( numeric [, scale] )
 * Truncation is performed towards 0, not towards the smaller number. For example, TRUNCATE(-9.6) results in -9, not -10.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 ----
 TRUNCATE( 28.52) = 28
 TRUNCATE( 28.52, 1 ) = 28.5

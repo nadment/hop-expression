@@ -19,6 +19,7 @@ under the License.
 Converts a string into a date or the epoch time value to a timestamp with UTC time zone.
 
 == Syntax
+
 ----
 TO_DATE( string [, format ] )
 TRY_TO_DATE( string [, format ] )
@@ -26,7 +27,9 @@ TO_DATE( numeric )
 TRY_TO_DATE( numeric )
 ----
 
-Return:: Date
+== Returns
+
+Date
 
 == Usage
 

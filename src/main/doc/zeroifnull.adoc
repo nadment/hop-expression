@@ -19,11 +19,14 @@ under the License.
 Returns 0 if its argument is null; otherwise, returns its argument.
 		
 == Syntax
+
 ----
 ZEROIFNULL( expression )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

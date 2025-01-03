@@ -19,11 +19,14 @@ under the License.
 Adds or subtracts a specified number of years to a date or timestamp.
 		
 == Syntax
+
 ----
 ADD_YEARS( date, integer )
 ----
 
-Returns:: Date
+== Returns
+
+Date
 
 == Usage
 

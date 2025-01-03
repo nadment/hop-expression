@@ -19,11 +19,14 @@ under the License.
 Returns the sign for the numeric expression.
 
 == Syntax
+
 ----
 SIGN(numeric)
 ----
 
-Returns:: Integer
+== Returns
+
+Integer
 
 == Usage
 

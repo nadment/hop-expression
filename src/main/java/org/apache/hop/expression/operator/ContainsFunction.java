@@ -47,15 +47,15 @@ public class ContainsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (Types.isBinary(type)) {
-      return new Call(ContainsBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryContainsFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(ContainsString.INSTANCE, call.getOperands());
+    return new Call(StringContainsFunction.INSTANCE, call.getOperands());
   }
 
   /** Contains string function */
-  private static final class ContainsString extends ContainsFunction {
-    public static final ContainsFunction INSTANCE = new ContainsString();
+  private static final class StringContainsFunction extends ContainsFunction {
+    public static final ContainsFunction INSTANCE = new StringContainsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -72,8 +72,8 @@ public class ContainsFunction extends Function {
   }
 
   /** Contains binary function */
-  private static final class ContainsBinary extends ContainsFunction {
-    public static final ContainsFunction INSTANCE = new ContainsBinary();
+  private static final class BinaryContainsFunction extends ContainsFunction {
+    public static final ContainsFunction INSTANCE = new BinaryContainsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

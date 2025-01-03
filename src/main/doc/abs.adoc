@@ -24,13 +24,15 @@ Returns the absolute (positive) value of the number or interval.
 ABS( value )
 ----
 
-Returns:: The data type of the returned value is the same as the data type of the input value (`INTEGER`, `NUMBER`  or `INTERVAL`).
+== Returns
+
+The data type of the returned value is the same as the data type of the input value (`INTEGER`, `NUMBER`  or `INTERVAL`).
 
 == Usage
 
 * Returns NULL if the value is NULL.
 
-== Example
+== Examples
 
 ----
 ABS(-123) = 123

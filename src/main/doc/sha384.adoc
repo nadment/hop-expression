@@ -19,13 +19,21 @@ under the License.
 Calculates the SHA-384 hash of a value.
 
 == Syntax
+
 ----
 SHA384( {string | binary} )
 ----
 
-<string>:: A string expression, the message to be hashed.
-Returns:: String
+== Arguments
+
+string:: A string expression, the message to be hashed.
+
+== Returns
+
+Returns a 96 characters hex-encoded string (384 bits).
 
 == Usage
 
-* The hash will be returned as a 96 characters hex-encoded string (384 bit).
+* Returns NULL if the argument is NULL.
+
+

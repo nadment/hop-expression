@@ -19,8 +19,15 @@ under the License.
 Encodes the input (string or binary) using Base64 encoding.
 
 == Syntax
+
 ----
 BASE64_ENCODE( input )
 ----
+
+== Arguments
+
 input:: A string or binary expression to be encoded.
-Returns:: String
+
+== Returns
+
+String

@@ -19,12 +19,15 @@ under the License.
 Converts a string into a Json.
 
 == Syntax
+
 ----
 TO_JSON( string )
 TRY_TO_JSON( string )
 ----
 
-Return:: Json
+== Returns
+
+Json
 
 == Usage
 

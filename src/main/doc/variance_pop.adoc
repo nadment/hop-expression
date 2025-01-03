@@ -19,11 +19,14 @@ under the License.
 Returns the population variance of non-null values over a group of rows.
 
 == Syntax
+
 ----
 VARIANCE_POP( expression )
 ----
 
-Return:: Number 
+== Returns
+
+Number 
 
 == Usage
 

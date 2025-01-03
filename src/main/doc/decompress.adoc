@@ -19,8 +19,11 @@ under the License.
 Decompresses the compressed BINARY input parameter to a string.
 
 == Syntax
+
 ----
 DECOMPRESS( binary )
 ----
 
-Returns:: String
+== Returns
+
+String

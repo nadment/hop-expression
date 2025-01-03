@@ -19,11 +19,14 @@ under the License.
 Compares two SOUNDEX values, and return the value of the integer.
 		
 == Syntax
+
 ----
 DIFFERENCE( string1, string2 )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == USAGE
 

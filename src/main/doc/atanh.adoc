@@ -19,8 +19,11 @@ under the License.
 Calculates the inverse (arc) hyperbolic tangent.
 
 == Syntax
+
 ----
 ATANH( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number

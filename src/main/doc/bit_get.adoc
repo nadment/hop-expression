@@ -19,11 +19,18 @@ under the License.
 Returns the value of a bit at a specified position.
 
 == Syntax
+
 ----
 BIT_GET( value, position )
 ----
+
+== Arguments
+
 value:: This expression must evaluate to a data type that can be cast to Integer.
-Return:: Boolean
+
+== Returns
+
+Boolean
 
 == Usage
 

@@ -19,9 +19,14 @@ under the License.
 Returns the number of months between two dates.
 
 == Syntax
+
 ----
 MONTHS_BETWEEN( date1, date2 )
 ----
+
+== Returns
+
+Integer
 
 == Usage
 

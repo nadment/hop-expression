@@ -19,7 +19,12 @@ under the License.
 Does not match the expression.
 
 == Syntax
+
 [source,sql]
 ----
 NOT boolean
 ----
+
+== Returns
+
+Boolean

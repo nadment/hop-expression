@@ -19,11 +19,14 @@ under the License.
 Calculates the tangent.
 
 == Syntax
+
 ----
 TAN( numeric )
 ----
 
-Returns:: Number
+== Returns
+
+Number
 
 == Usage
 

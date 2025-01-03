@@ -19,6 +19,7 @@ under the License.
 Converts a string into a number or a timestamp to Unix Epoch in seconds.
 
 == Syntax
+
 ----
 TO_NUMBER( string [, format ] )
 TO_NUMBER( timestamp )
@@ -26,16 +27,18 @@ TRY_TO_NUMBER( string [, format ] )
 TRY_TO_NUMBER( timestamp )
 ----
 
-Return:: BigNumber
+== Returns
+
+Number
 
 If the conversion is not possible, TO_NUMBER raises an error and TRY_TO_NUMBER returns a NULL value.
 
 == Usage
 
-
 include::numberformat.adoc[]
 
 === Alternate formats
+
 When parsing strings, it is possible to specify multiple alternative formats by separating format strings with the | character.
 ----
 TO_NUMBER('1234', 'S9999|9999S') result 1234

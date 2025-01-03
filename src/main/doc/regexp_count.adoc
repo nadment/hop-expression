@@ -19,10 +19,10 @@ under the License.
 Searches a string for a regular expression pattern and returns an integer that indicates the number of times the pattern occurs in the string.
 
 == Syntax
+
 ----
 REGEXP_COUNT( source, pattern [, position [, parameters ]] )
 ----
-
 
 == Arguments
 

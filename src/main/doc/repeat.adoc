@@ -19,6 +19,7 @@ under the License.
 Returns a string or binary repeated some number of times.
 
 == Syntax
+
 ----
 REPEAT( {string | binary} , <n> )
 ----

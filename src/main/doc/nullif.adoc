@@ -19,10 +19,13 @@ under the License.
 Returns a null value if the two specified expressions are equal, or <expression1> otherwise.
 
 == Syntax
+
 ----
 NULLIF( expression1, expression2 )
 ----
 
-Returns:: expression value
+== Returns
+
+Expression value
 
 == Usage

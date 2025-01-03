@@ -383,7 +383,9 @@ public class Types {
         || id == TypeName.DATE
         || id == TypeName.INTEGER
         || id == TypeName.NUMBER
-        || id == TypeName.BOOLEAN;
+        || id == TypeName.BOOLEAN
+        || id == TypeName.BINARY
+        || id == TypeName.INET;
   }
 
   public static boolean isBinary(final Type type) {

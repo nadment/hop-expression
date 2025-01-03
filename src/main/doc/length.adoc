@@ -24,11 +24,15 @@ LENGTH( {string | binary} )
 LEN( {string | binary} )
 ----
 
+== Returns
+
+Integer
+
 == Usage
 
 * Returns NULL if expression is NULL. 
 
-== Example
+== Examples
 
 ----
 LENGTH('ABC') = 3

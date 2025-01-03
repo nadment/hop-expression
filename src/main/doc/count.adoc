@@ -27,7 +27,9 @@ COUNT( [DISTINCT] expression )
 COUNT( * )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

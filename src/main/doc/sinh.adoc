@@ -19,8 +19,11 @@ under the License.
 Calculates the hyperbolic sine.
 
 == Syntax
+
 ----
 SINH( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number

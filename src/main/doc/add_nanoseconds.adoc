@@ -19,11 +19,14 @@ under the License.
 Adds or subtracts a specified number of nanoseconds to a date or timestamp.
 		
 == Syntax
+
 ----
 ADD_NANOSECONDS( timestamp, integer )
 ----
 
-Returns:: Date
+== Returns
+
+Date
 
 == Usage
 

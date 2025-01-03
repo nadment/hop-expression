@@ -19,11 +19,14 @@ under the License.
 Adds or subtracts a specified number of days to a date or timestamp.
 		
 == Syntax
+
 ----
 ADD_DAYS( date, integer )
 ----
 
-Returns:: Date
+== Returns
+
+Date
 
 == Usage
 
@@ -32,7 +35,7 @@ Returns:: Date
 * Returns NULL if one of the arguments is NULL.
 * Expression also supports the addition and subtraction of days to DATE values, in the form of { + | - } <integer>.
 
-== Example
+== Examples
 ----
 ADD_DAYS( Date '2022-05-24', -4 )
 Date '2022-05-24' - 4

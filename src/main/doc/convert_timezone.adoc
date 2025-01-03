@@ -19,6 +19,7 @@ under the License.
 Converts a timestamp to another time zone.
 
 == Syntax
+
 ----
 CONVERT_TIMEZONE ( [source_timezone,] target_timezone, timestamp)
 ----
@@ -27,7 +28,7 @@ CONVERT_TIMEZONE ( [source_timezone,] target_timezone, timestamp)
 
 Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
 
-== Example
+== Examples
 
 ----
 CONVERT_TIMEZONE('Europe/Paris','2020-05-25 20:48:00')

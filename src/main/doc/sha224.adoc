@@ -19,13 +19,20 @@ under the License.
 Calculate the SHA-224 hash of a value.
 
 == Syntax
+
 ----
 SHA224( {string | binary} )
 ----
 
+== Arguments
+
 {string | binary}:: A string expression, the message to be hashed.
-Returns:: String
+
+== Returns
+
+Returns a 56 characters hex-encoded string (224 bits).
 
 == Usage
 
-* The hash will be returned as a 56 characters hex-encoded string (224 bit).
+* Returns NULL if the argument is NULL.
+

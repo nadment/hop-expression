@@ -19,11 +19,18 @@ under the License.
 Returns the number of bits that are set
 
 == Syntax
+
 ----
 BIT_COUNT( value )
 ----
+
+== Arguments
+
 value:: This expression must evaluate to a data type that can be cast to Integer.
-Return:: Integer
+
+== Returns
+
+Integer
 
 == Usage
 

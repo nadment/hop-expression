@@ -16,11 +16,14 @@ under the License.
 ////
 = ACOSH
 
-Calculates the inverse hyberbolic cosine (arc hyperbolic cosine).
+Calculates the inverse hyperbolic cosine (arc hyperbolic cosine).
 
 == Syntax
+
 ----
 ACOSH( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number

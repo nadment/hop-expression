@@ -19,11 +19,14 @@ under the License.
 Calculates the inverse tangent (arc tangent) of the ratio of its two arguments.
 
 == Syntax
+
 ----
 ATAN2( y, x )
 ----
 
-Return type:: Number
+== Returns
+
+Number
 
 NOTE: The first parameter is the <y> coordinate, not the <x> coordinate.
 

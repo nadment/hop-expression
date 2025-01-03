@@ -19,6 +19,7 @@ under the License.
 Removes all occurrences of a specified substring, and optionally replaces them with another string.
 
 == Syntax
+
 ----
 REPLACE( source, pattern [, replacement ] )
 ----

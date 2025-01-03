@@ -19,6 +19,7 @@ under the License.
 Returns the substring that matches a regular expression within a string.
 
 == Syntax
+
 ----
 REGEXP_SUBSTR( source, pattern [, position [, occurrence [, parameters ]]] )
 ----

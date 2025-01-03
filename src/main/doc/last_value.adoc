@@ -34,10 +34,13 @@ Return:: The data type of the returned value is the same as the data type of the
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
 
-== Example
+== Examples
 
 ----
 LAST_VALUE( City ) IGNORE NULLS
 ----
 
-See also xref:last_value.adoc[FIRST_VALUE], xref:nth_value.adoc[NTH_VALUE]
+== See also
+
+* xref:last_value.adoc[FIRST_VALUE]
+* xref:nth_value.adoc[NTH_VALUE]

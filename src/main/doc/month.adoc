@@ -19,11 +19,14 @@ under the License.
 Returns the month of the specified date or timestamp.
 
 == Syntax
+
 ----
 MONTH( date )
 ----
 
-Returns:: Integer between 1 and 12.
+== Returns
+
+Integer between 1 and 12.
 
 == Usage
 

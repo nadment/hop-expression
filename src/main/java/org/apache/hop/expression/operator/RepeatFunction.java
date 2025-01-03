@@ -47,15 +47,15 @@ public class RepeatFunction extends Function {
 
     Type type = call.getType();
     if (Types.isBinary(type)) {
-      return new Call(RepeatBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryRepeatFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(RepeatString.INSTANCE, call.getOperands());
+    return new Call(StringRepeatFunction.INSTANCE, call.getOperands());
   }
 
   /** The function repeats a string as many times as specified. */
-  private static final class RepeatString extends RepeatFunction {
-    public static final RepeatFunction INSTANCE = new RepeatString();
+  private static final class StringRepeatFunction extends RepeatFunction {
+    public static final StringRepeatFunction INSTANCE = new StringRepeatFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -83,8 +83,8 @@ public class RepeatFunction extends Function {
   }
 
   /** The function repeats a binary as many times as specified. */
-  private static final class RepeatBinary extends RepeatFunction {
-    public static final RepeatFunction INSTANCE = new RepeatBinary();
+  private static final class BinaryRepeatFunction extends RepeatFunction {
+    public static final BinaryRepeatFunction INSTANCE = new BinaryRepeatFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

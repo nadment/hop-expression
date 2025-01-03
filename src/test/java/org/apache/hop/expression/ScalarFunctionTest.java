@@ -206,7 +206,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Coalesce() throws Exception {
     // Coalesce string
     evalEquals("Coalesce(NULL_STRING,'TEST','BIDON')", "TEST").returnType(Types.STRING);
-    // evalEquals("Coalesce('TEST','BIDON')", "TEST").returnType(StringType.of(5));
+    evalEquals("Coalesce('TEST','BIDON')", "TEST").returnType(Types.STRING);
 
     // Coalesce numeric
     evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1));
@@ -2097,6 +2097,32 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Array_Prepend() throws Exception {
+    optimize("ARRAY_PREPEND(0,[1,2,3])", "[0,1,2,3]");
+    optimize("ARRAY_PREPEND('sun',['mon','tue'])", "['sun','mon','tue']");
+    optimize("ARRAY_PREPEND(0,[])", "[0]");
+
+    // Check operands
+    evalFails("ARRAY_PREPEND()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_PREPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_PREPEND([1,2,3],4)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_PREPEND('test',[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
+  }
+
+  @Test
+  void Array_Append() throws Exception {
+    optimize("ARRAY_APPEND([1,2,3],4)", "[1,2,3,4]");
+    optimize("ARRAY_APPEND(['sun','mon'],'tue')", "['sun','mon','tue']");
+    optimize("ARRAY_APPEND([],0)", "[0]");
+
+    // Check operands
+    evalFails("ARRAY_APPEND()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_APPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_APPEND(0,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_APPEND([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT);
+  }
+
+  @Test
   void Array_Position() throws Exception {
     evalEquals("ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon')", 2L)
         .returnType(Types.INTEGER);
@@ -3726,9 +3752,16 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // TODO:Mix String and Binary
 
-    // Array
+    // Array to array concatenation
     evalEquals("CARDINALITY([1,2,3] || [4,5])", 5L);
     optimize("[1,2,3] || [4,5] || [6,7]", "[1,2,3,4,5,6,7]");
+
+    // optimize("[1,2,3] || [[4,5,6],[7,8,9]]", "[[1,2,3],[4,5,6],[7,8,9]]");
+
+    // TODO: Element to array concatenation
+    // optimize("1 || [2,3,4]", "[1,2,3,4]");
+    // TODO: Array to element concatenation
+    // optimize("[1,2,3] || 4", "[1,2,3,4]");
 
     // Check syntax
     evalFails("||'text'", ErrorCode.SYNTAX_ERROR);

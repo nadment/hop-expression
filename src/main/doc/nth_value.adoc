@@ -23,7 +23,9 @@ Returns the nth value in an ordered set of values over a group of rows.
 NTH_VALUE( expression, offset ) [ IGNORE NULLS | RESPECT NULLS ]
 ----
 
-Return:: The data type of the returned value is the same as the data type of the input values.
+== Returns
+
+The data type of the returned value is the same as the data type of the input values.
 
 == Usage
 
@@ -33,10 +35,13 @@ Return:: The data type of the returned value is the same as the data type of the
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
-== Example
+== Examples
 
 ----
 NTH_VALUE( City, 3 ) IGNORE NULLS
 ----
 
-See also xref:first_value.adoc[FIRST_VALUE], xref:last_value.adoc[LAST_VALUE]
+== See also
+
+* xref:first_value.adoc[FIRST_VALUE]
+* xref:last_value.adoc[LAST_VALUE]

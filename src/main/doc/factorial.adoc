@@ -19,8 +19,11 @@ under the License.
 Computes the factorial value of a numeric expression.
 
 == Syntax
+
 ----
 FACTORIAL( numeric )
 ----
 
-Returns:: Number
+== Returns
+
+Number

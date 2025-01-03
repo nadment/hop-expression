@@ -19,10 +19,15 @@ under the License.
 Case-sensitive matching of strings based on comparison with a pattern.
 
 == Syntax
+
 [source,sql]
 ----
 string [NOT] LIKE pattern [ ESCAPE escape ]
 ----
+
+== Returns
+
+Boolean
 
 == Usage
 
@@ -35,7 +40,7 @@ The escape character instructs the operator to treat the wildcard characters as 
 
 TIP: See ILIKE insensitive case operator
 
-== Example
+== Examples
 
 ----
 customer_name LIKE '%/_%' ESCAPE '/'

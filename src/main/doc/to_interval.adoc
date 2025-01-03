@@ -19,17 +19,20 @@ under the License.
 Converts the input text to a interval value.
 
 == Syntax
+
 ----
 TO_INTERVAL( string )
 ----
 
-Return:: Interval
+== Returns
+
+Interval
 
 == Usage
 
 * Returns NULL if argument is NULL. 
 
-== Example
+== Examples
 
 The following example illustrate use of the verbose syntax
 ----

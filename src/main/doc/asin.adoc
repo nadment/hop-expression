@@ -19,11 +19,14 @@ under the License.
 Calculates the inverse sine (arc sine).
 
 == Syntax
+
 ----
 ASIN( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 

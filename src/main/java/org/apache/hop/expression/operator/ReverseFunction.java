@@ -48,17 +48,17 @@ public class ReverseFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (Types.isBinary(type)) {
-      return new Call(ReverseBinary.INSTANCE, call.getOperand(0));
+      return new Call(BinaryReverseFunction.INSTANCE, call.getOperand(0));
     }
 
-    return new Call(ReverseString.INSTANCE, call.getOperand(0));
+    return new Call(StringReverseFunction.INSTANCE, call.getOperand(0));
   }
 
   /** The function reverses the order of characters in a string value. */
-  private static final class ReverseString extends ReverseFunction {
-    public static final ReverseFunction INSTANCE = new ReverseString();
+  private static final class StringReverseFunction extends ReverseFunction {
+    public static final ReverseFunction INSTANCE = new StringReverseFunction();
 
-    private ReverseString() {
+    private StringReverseFunction() {
       super();
     }
 
@@ -73,10 +73,10 @@ public class ReverseFunction extends Function {
   }
 
   /** The function reverses the order of bytes in a binary value. */
-  private static final class ReverseBinary extends ReverseFunction {
-    public static final ReverseFunction INSTANCE = new ReverseBinary();
+  private static final class BinaryReverseFunction extends ReverseFunction {
+    public static final ReverseFunction INSTANCE = new BinaryReverseFunction();
 
-    private ReverseBinary() {
+    private BinaryReverseFunction() {
       super();
     }
 

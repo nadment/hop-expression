@@ -19,6 +19,7 @@ under the License.
 Returns the values rounded to the nearest integer or decimal. 
 
 == Syntax
+
 ----
 ROUND( numeric [, scale] )
 ----
@@ -27,11 +28,15 @@ ROUND( numeric [, scale] )
 
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
+
 ----
 ROUND( 28.05) = 28
 ROUND( 28.05, 1 ) = 28.1
 ROUND( 28.05, -1 ) = 30
 ----
 
-See also xref:ceil.adoc[CEIL], xref:floor.adoc[FLOOR]
+== See also 
+
+* xref:ceil.adoc[CEIL]
+* xref:floor.adoc[FLOOR]

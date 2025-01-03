@@ -57,7 +57,7 @@ public class NegateOperator extends PrefixUnaryOperator {
 
     Type type = call.getOperand(0).getType();
     if (Types.isInterval(type)) {
-      return new Call(call.getPosition(), NegateInterval.INSTANCE, call.getOperands());
+      return new Call(call.getPosition(), IntervalNegateOperator.INSTANCE, call.getOperands());
     }
 
     // Simplify arithmetic -(A-B) → B-A
@@ -66,9 +66,9 @@ public class NegateOperator extends PrefixUnaryOperator {
       return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
     }
 
-    NegateOperator operator = NegateNumber.INSTANCE;
+    NegateOperator operator = NumberNegateOperator.INSTANCE;
     if (Types.isInteger(type)) {
-      operator = NegateInteger.INSTANCE;
+      operator = IntegerNegateOperator.INSTANCE;
     }
 
     return new Call(call.getPosition(), operator, call.getOperands());
@@ -80,10 +80,10 @@ public class NegateOperator extends PrefixUnaryOperator {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
   }
 
-  private static final class NegateInteger extends NegateOperator {
-    private static final NegateInteger INSTANCE = new NegateInteger();
+  private static final class IntegerNegateOperator extends NegateOperator {
+    private static final IntegerNegateOperator INSTANCE = new IntegerNegateOperator();
 
-    private NegateInteger() {
+    private IntegerNegateOperator() {
       super();
     }
 
@@ -99,10 +99,10 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
   }
 
-  private static final class NegateNumber extends NegateOperator {
-    private static final NegateNumber INSTANCE = new NegateNumber();
+  private static final class NumberNegateOperator extends NegateOperator {
+    private static final NumberNegateOperator INSTANCE = new NumberNegateOperator();
 
-    private NegateNumber() {
+    private NumberNegateOperator() {
       super();
     }
 
@@ -114,10 +114,10 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
   }
 
-  private static final class NegateInterval extends NegateOperator {
-    private static final NegateInterval INSTANCE = new NegateInterval();
+  private static final class IntervalNegateOperator extends NegateOperator {
+    private static final IntervalNegateOperator INSTANCE = new IntervalNegateOperator();
 
-    private NegateInterval() {
+    private IntervalNegateOperator() {
       super();
     }
 

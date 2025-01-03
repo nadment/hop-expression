@@ -49,15 +49,15 @@ public class LeftFunction extends Function {
 
     Type type = call.getType();
     if (Types.isBinary(type)) {
-      return new Call(LeftBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryLeftFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(LeftString.INSTANCE, call.getOperands());
+    return new Call(StringLeftFunction.INSTANCE, call.getOperands());
   }
 
   /** The function extracts a number of characters from a string starting from left. */
-  private static final class LeftString extends LeftFunction {
-    public static final LeftFunction INSTANCE = new LeftString();
+  private static final class StringLeftFunction extends LeftFunction {
+    public static final StringLeftFunction INSTANCE = new StringLeftFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -79,8 +79,8 @@ public class LeftFunction extends Function {
   }
 
   /** The function extracts a number of characters from a binary starting from left. */
-  private static final class LeftBinary extends LeftFunction {
-    public static final LeftFunction INSTANCE = new LeftBinary();
+  private static final class BinaryLeftFunction extends LeftFunction {
+    public static final BinaryLeftFunction INSTANCE = new BinaryLeftFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

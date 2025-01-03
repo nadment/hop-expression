@@ -19,11 +19,14 @@ under the License.
 Calculates the trigonometric secant of the angle in radians.
 
 == Syntax
+
 ----
 SEC( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 

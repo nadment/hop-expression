@@ -19,11 +19,14 @@ under the License.
 Returns the Levenshtein distance between the two strings.
 
 == Syntax
+
 ----
 LEVENSHTEIN( string1, string2 )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

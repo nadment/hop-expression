@@ -19,6 +19,7 @@ under the License.
 Returns the remainder of the division.
 
 == Syntax
+
 ----
 MOD( dividend, divisor )
 ----
@@ -27,7 +28,7 @@ The % operator provides alternative syntax.
 dividend % divisor
 ----
 
-== Example
+== Examples
 
 ----
 MOD(16,5) return 1

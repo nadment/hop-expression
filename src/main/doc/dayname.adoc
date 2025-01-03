@@ -19,8 +19,11 @@ under the License.
 Returns the name of the day of week (in English).
 
 == Syntax
+
 ----
 DAYNAME( {date | timestamp} )
 ----
 
-Returns: String
+== Returns
+
+String

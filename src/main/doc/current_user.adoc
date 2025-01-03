@@ -19,9 +19,14 @@ under the License.
 Returns the current user.
 
 == Syntax
+
 ----
 CURRENT_USER()
 ----
+
+== Returns
+
+String
 
 == Usage
 

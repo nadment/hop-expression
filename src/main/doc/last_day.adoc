@@ -19,11 +19,14 @@ under the License.
 Returns the last day of the specified time unit.
 
 == Syntax
+
 ----
 LAST_DAY( date [, unit] )
 ----
 
-Return type:: Date
+== Returns
+
+Date
 
 == Usage
 
@@ -31,8 +34,13 @@ Return type:: Date
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
+
 ----
 LAST_DAY(Date '2021-06-15', QUARTER)
 ----
 
-See also xref:first_day.adoc[FIRST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]
+== See also 
+
+* xref:first_day.adoc[FIRST_DAY]
+* xref:next_day.adoc[NEXT_DAY]
+* xref:previous_day.adoc[PREVIOUS_DAY]

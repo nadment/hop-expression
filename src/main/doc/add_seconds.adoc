@@ -19,11 +19,14 @@ under the License.
 Adds or subtracts a specified number of seconds to a date or timestamp.
 		
 == Syntax
+
 ----
 ADD_SECONDS( timestamp, integer )
 ----
 
-Returns:: Date
+== Returns
+
+Date
 
 == Usage
 

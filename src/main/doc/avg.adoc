@@ -19,6 +19,7 @@ under the License.
 Returns the average (arithmetic mean) of all non-null values over a group of rows.
  
 == Syntax
+
 ----
 AVG( numeric )
 ----

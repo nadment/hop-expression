@@ -54,10 +54,10 @@ public class ToDateFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (Types.isInteger(type)) {
-      return new Call(ToDateInteger.INSTANCE, call.getOperands());
+      return new Call(IntegerToDateFunction.INSTANCE, call.getOperands());
     }
     if (Types.isNumber(type)) {
-      return new Call(ToDateNumber.INSTANCE, call.getOperands());
+      return new Call(NumberToDateFunction.INSTANCE, call.getOperands());
     }
 
     // String with specified format
@@ -72,13 +72,13 @@ public class ToDateFunction extends Function {
     DateTimeFormat format = DateTimeFormat.of(pattern);
     format.setTwoDigitYearStart(twoDigitYearStart);
 
-    return new Call(new ToDateString(format), call.getOperands());
+    return new Call(new StringToDateFunction(format), call.getOperands());
   }
 
-  private static final class ToDateString extends ToDateFunction {
+  private static final class StringToDateFunction extends ToDateFunction {
     private final DateTimeFormat format;
 
-    public ToDateString(DateTimeFormat format) {
+    public StringToDateFunction(DateTimeFormat format) {
       super();
       this.format = format;
     }
@@ -91,10 +91,10 @@ public class ToDateFunction extends Function {
     }
   }
 
-  private static final class ToDateInteger extends ToDateFunction {
-    private static final ToDateInteger INSTANCE = new ToDateInteger();
+  private static final class IntegerToDateFunction extends ToDateFunction {
+    private static final IntegerToDateFunction INSTANCE = new IntegerToDateFunction();
 
-    private ToDateInteger() {
+    private IntegerToDateFunction() {
       super();
     }
 
@@ -106,10 +106,10 @@ public class ToDateFunction extends Function {
     }
   }
 
-  private static final class ToDateNumber extends ToDateFunction {
-    private static final ToDateFunction INSTANCE = new ToDateNumber();
+  private static final class NumberToDateFunction extends ToDateFunction {
+    private static final ToDateFunction INSTANCE = new NumberToDateFunction();
 
-    private ToDateNumber() {
+    private NumberToDateFunction() {
       super();
     }
 

@@ -23,10 +23,7 @@ First expression is less than second expression.
 expression1 < expression2
 ----
 
-== Usage
-
-
-
-Returns::
+== Returns
 
 Boolean
+

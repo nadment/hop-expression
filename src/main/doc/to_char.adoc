@@ -19,6 +19,7 @@ under the License.
 Converts the input (number, date, binary or boolean) to a string.
 
 == Syntax
+
 ----
 TO_CHAR( numeric [, format ] )
 TO_CHAR( date [, format ] )

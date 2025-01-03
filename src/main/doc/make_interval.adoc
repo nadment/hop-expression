@@ -19,6 +19,7 @@ under the License.
 Creates a interval from individual numeric components.
 		
 == Syntax
+
 ----
 MAKE_INTERVAL( year, month, day, hour, minute, second[.fractional] )
 ----
@@ -28,8 +29,14 @@ The literal provides alternative syntax.
 INTERVAL '3 years 6 months'
 ----
 
+== Returns
+
+Interval
+
 == Usage
 
 You can use interval to add or subtract a period of time to/from a date or timestamp.
 
-See also xref:to_interval.adoc[TO_INTERVAL]
+== See also
+
+* xref:to_interval.adoc[TO_INTERVAL]

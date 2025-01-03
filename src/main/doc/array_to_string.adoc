@@ -23,14 +23,21 @@ Returns array converted to a string by casting all values to strings and concate
 ARRAY_TO_STRING( array, separator )
 ----
 
-Return:: String
+== Arguments
+
+array:: The array of elements to convert to a string.
+separator:: The string to put between each element.
+
+== Returns
+
+This function returns a value of type STRING.
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
 * NULL in an array is converted to an empty string in the result.
 
-== Example
+== Examples
 
 ----
 ARRAY_TO_STRING(['Hello','world'],' ')

@@ -47,15 +47,15 @@ public class ConcatWsFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     if (Types.isBinary(call.getType())) {
-      return new Call(ConcatWsBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryConcatWsFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(ConcatWsString.INSTANCE, call.getOperands());
+    return new Call(StringConcatWsFunction.INSTANCE, call.getOperands());
   }
 
   /** String concatenation function with separator */
-  private static final class ConcatWsString extends ConcatWsFunction {
-    public static final ConcatWsFunction INSTANCE = new ConcatWsString();
+  private static final class StringConcatWsFunction extends ConcatWsFunction {
+    public static final ConcatWsFunction INSTANCE = new StringConcatWsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -81,8 +81,8 @@ public class ConcatWsFunction extends Function {
   }
 
   /** Binary concatenation function with separator */
-  private static final class ConcatWsBinary extends ConcatWsFunction {
-    public static final ConcatWsFunction INSTANCE = new ConcatWsBinary();
+  private static final class BinaryConcatWsFunction extends ConcatWsFunction {
+    public static final ConcatWsFunction INSTANCE = new BinaryConcatWsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

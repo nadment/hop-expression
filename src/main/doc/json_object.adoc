@@ -30,7 +30,6 @@ Return:: JSON object containing all the key-value pairs.
 * `KEY` is optional and is provided for semantic clarity.
 * If there are duplicate key-value pairs in the parameters, the last key-value pairs are retained in the final returned object.
 
-
 == Examples
 
 ----

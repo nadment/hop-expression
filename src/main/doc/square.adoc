@@ -19,10 +19,11 @@ under the License.
 Calculates the square of a numeric expression.
 
 == Syntax
+
 ----
 SQUARE( numeric )
 ----
 
-== Usage
+== Returns
 
-Return:: Number
+Number

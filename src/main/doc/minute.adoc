@@ -19,10 +19,14 @@ under the License.
 Returns the minute component of the specified timestamp.
 
 == Syntax
+
 ----
 MINUTE( timestamp )
 ----
-Returns:: Integer between 0 and 59.
+
+== Returns
+
+Integer between 0 and 59.
 
 == Usage
 

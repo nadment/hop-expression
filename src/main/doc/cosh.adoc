@@ -19,8 +19,11 @@ under the License.
 Calculates the hyperbolic cosine.
 
 == Syntax
+
 ----
 COSH( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number

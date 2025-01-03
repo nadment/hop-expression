@@ -19,12 +19,14 @@ under the License.
 Returns the element of an array at index.
 
 == Syntax
+
 ----
 array[index]
 ----
 
-Returns:: The result is of the type of the elements of the array
+== Returns
 
+The result is of the type of the elements of the array
 
 == Usage
 

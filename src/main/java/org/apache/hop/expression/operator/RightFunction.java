@@ -49,17 +49,17 @@ public class RightFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (Types.isBinary(type)) {
-      return new Call(RightBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryRightFunction.INSTANCE, call.getOperands());
     }
 
-    return new Call(RightString.INSTANCE, call.getOperands());
+    return new Call(StringRightFunction.INSTANCE, call.getOperands());
   }
 
   /** The function extracts a number of characters from a string (starting from right) */
-  private static final class RightString extends RightFunction {
-    public static final RightFunction INSTANCE = new RightString();
+  private static final class StringRightFunction extends RightFunction {
+    public static final RightFunction INSTANCE = new StringRightFunction();
 
-    private RightString() {
+    private StringRightFunction() {
       super();
     }
 
@@ -83,10 +83,10 @@ public class RightFunction extends Function {
   }
 
   /** The function extracts a number of bytes from a binary (starting from right) */
-  private static final class RightBinary extends RightFunction {
-    public static final RightFunction INSTANCE = new RightBinary();
+  private static final class BinaryRightFunction extends RightFunction {
+    public static final RightFunction INSTANCE = new BinaryRightFunction();
 
-    private RightBinary() {
+    private BinaryRightFunction() {
       super();
     }
 

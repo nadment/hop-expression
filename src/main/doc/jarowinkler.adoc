@@ -19,11 +19,14 @@ under the License.
 Returns the Jaro Winkler distance between the two strings.
 
 == Syntax
+
 ----
 JAROWINKLER( string1, string2 )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

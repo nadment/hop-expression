@@ -48,14 +48,14 @@ public class LengthFunction extends Function {
 
     // Binary first
     if (Types.isBinary(type)) {
-      return new Call(LengthBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryLengthFunction.INSTANCE, call.getOperands());
     }
-    return new Call(LengthString.INSTANCE, call.getOperands());
+    return new Call(StringLengthFunction.INSTANCE, call.getOperands());
   }
 
   /** The function returns the number of characters of the specified string. */
-  private static final class LengthString extends LengthFunction {
-    public static final LengthFunction INSTANCE = new LengthString();
+  private static final class StringLengthFunction extends LengthFunction {
+    public static final StringLengthFunction INSTANCE = new StringLengthFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -66,8 +66,8 @@ public class LengthFunction extends Function {
   }
 
   /** The function returns the number of characters of the specified binary. */
-  private static final class LengthBinary extends LengthFunction {
-    public static final LengthFunction INSTANCE = new LengthBinary();
+  private static final class BinaryLengthFunction extends LengthFunction {
+    public static final BinaryLengthFunction INSTANCE = new BinaryLengthFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -29,7 +29,9 @@ EXTRACT( unit FROM {date | timestamp | interval} )
 DATE_PART( unit, {date | timestamp | interval} )
 ----
 
-Return type:: Integer
+== Returns
+
+Integer
 
 == Usage
 

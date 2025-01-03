@@ -19,6 +19,7 @@ under the License.
 Performs a bitwise exclusive OR operation between two integer values.
 
 == Syntax
+
 ----
 BIT_XOR( integer1, integer2 ) 
 ----
@@ -26,7 +27,10 @@ The `^` operator provides alternative syntax.
 ----
 integer1 ^ integer2
 ----
-Return:: Integer
+
+== Returns
+
+Integer
 
 == Usage
 

@@ -18,7 +18,6 @@ under the License.
 
 A CASE expression consists of a set of WHEN/THEN clauses and an optional ELSE clause.
 
-
 == Syntax
 
 Simple CASE expressions

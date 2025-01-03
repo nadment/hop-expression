@@ -24,16 +24,22 @@ Extracts a number of characters from a string or bytes from binary starting from
 LEFT( value, length )
 ----
 
+== Returns
+
+String or Binary
+
 == Usage
 
 * If the length argument is larger than the value, the function will return the value.
 * If the length argument is zero or negative, the function returns an empty string or binary.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 LEFT('ABCDEF',3) = 'ABC'
 ----
 
-See also xref:right.adoc[RIGHT]
+== See also 
+
+* xref:right.adoc[RIGHT]

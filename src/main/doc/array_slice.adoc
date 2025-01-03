@@ -23,7 +23,9 @@ Returns an array constructed from a specified subset of elements of the input ar
 ARRAY_SLICE( array, from, to )
 ----
 
-Return:: Array
+== Return
+
+This function returns an ARRAY.
 
 == Usage
 
@@ -31,7 +33,7 @@ Return:: Array
 * A negative position is interpreted as an index from the back of the array. 
 * If both of the of the `from` or `to` parameters are beyond the upper or lower end of the array, the result is an empty array.
 
-== Example
+== Examples
 
 ----
 ARRAY_SLICE([0,1,2,3,4,5,6], 0, 2)

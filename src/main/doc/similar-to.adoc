@@ -23,8 +23,14 @@ Match a string based on a regular expression pattern.
 subject [NOT] SIMILAR TO pattern
 ----
 
+== Arguments
+
 subject:: The string to be searched for.
 pattern:: The regular expression pattern.
+
+== Returns
+
+Boolean
 
 == Usage
 
@@ -49,7 +55,7 @@ Regular expression pattern
 |[...]|A bracket expression specifies a character class, just as in POSIX regular expressions.
 |===
 
-== Example
+== Examples
 
 ----
 'xyz' SIMILAR TO '%(y|a)%'

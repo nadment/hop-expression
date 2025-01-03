@@ -50,7 +50,7 @@ public class ToNumberFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (Types.isDate(type)) {
-      return new Call(ToNumberDate.INSTANCE, call.getOperands());
+      return new Call(DateToNumberFunction.INSTANCE, call.getOperands());
     }
 
     String pattern = "TM";
@@ -61,13 +61,13 @@ public class ToNumberFunction extends Function {
 
     // Compile format to check it
     NumberFormat format = NumberFormat.of(pattern);
-    return new Call(new ToNumberString(format), call.getOperands());
+    return new Call(new StringToNumberFunction(format), call.getOperands());
   }
 
-  private static final class ToNumberString extends ToNumberFunction {
+  private static final class StringToNumberFunction extends ToNumberFunction {
     private final NumberFormat format;
 
-    public ToNumberString(NumberFormat format) {
+    public StringToNumberFunction(NumberFormat format) {
       super();
       this.format = format;
     }
@@ -80,8 +80,8 @@ public class ToNumberFunction extends Function {
     }
   }
 
-  private static final class ToNumberDate extends ToNumberFunction {
-    private static final ToNumberFunction INSTANCE = new ToNumberDate();
+  private static final class DateToNumberFunction extends ToNumberFunction {
+    private static final ToNumberFunction INSTANCE = new DateToNumberFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

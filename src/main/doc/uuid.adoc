@@ -19,12 +19,14 @@ under the License.
 Return a Universal Unique Identifier (UUID version 7) generated according to RFC 9562.
 		
 == Syntax
+
 ----
 UUID()
 ----
 
-Return:: String
+== Returns
 
+String
 
 == Usage
 

@@ -24,12 +24,14 @@ Returns the number rows that satisfy the condition over a group of rows.
 COUNTIF( condition )
 ----
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 
 
-== Example
+== Examples
 
 ----
 COUNTIF(Amount>=1000)

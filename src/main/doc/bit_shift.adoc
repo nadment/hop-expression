@@ -19,15 +19,21 @@ under the License.
 Shifts the bits for a numeric by the specified number of bits to the left or to the right.
 
 == Syntax
+
 ----
 BIT_SHIFT( value, distance )
 ----
+
+== Arguments
+
 value:: This expression must evaluate to a data type that can be cast to Integer.
 distance::
 If distance is positive, it will shift to the left.
 If distance is negative, it will shift to the right.
 
-Return:: Integer
+== Returns
+
+Integer
 
 == Usage
 

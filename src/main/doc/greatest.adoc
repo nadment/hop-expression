@@ -19,6 +19,7 @@ under the License.
 Returns the largest value of all arguments, ignore null values.
 
 == Syntax
+
 ----
 GREATEST( expression1 [, expressionN... ] )
 ----
@@ -27,4 +28,6 @@ GREATEST( expression1 [, expressionN... ] )
 
 * Returns NULL only if all arguments are NULL. 
 
-See also xref:least.adoc[LEAST]
+== See also
+
+* xref:least.adoc[LEAST]

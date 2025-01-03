@@ -19,9 +19,14 @@ under the License.
 Returns the number of hours between two dates.
 
 == Syntax
+
 ----
 HOURS_BETWEEN( timestamp1, timestamp2 )
 ----
+
+== Returns
+
+Integer
 
 == Usage
 

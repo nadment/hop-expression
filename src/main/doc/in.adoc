@@ -19,10 +19,15 @@ under the License.
 The IN operator is a shorthand for multiple OR conditions.
 
 == Syntax
+
 [source,sql]
 ----
 field [NOT] IN (expression1 [,expressionN ,...])
 ----
+
+== Returns
+
+Boolean
 
 == Usage
 

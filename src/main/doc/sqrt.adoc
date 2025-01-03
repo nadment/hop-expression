@@ -19,11 +19,14 @@ under the License.
 Calculate the square-root of a non-negative numeric value.
 
 == Syntax
+
 ----
 SQRT( numeric )
 ----
 
-Return:: Number
+== Returns
+
+Number
 
 == Usage
 

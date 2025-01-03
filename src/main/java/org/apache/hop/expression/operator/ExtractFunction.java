@@ -56,9 +56,9 @@ public class ExtractFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(1).getType();
     if (Types.isInterval(type)) {
-      return new Call(ExtractInterval.INSTANCE, call.getOperands());
+      return new Call(IntervalExtractFunction.INSTANCE, call.getOperands());
     }
-    return new Call(ExtractDate.INSTANCE, call.getOperands());
+    return new Call(DateExtractFunction.INSTANCE, call.getOperands());
   }
 
   @Override
@@ -71,8 +71,8 @@ public class ExtractFunction extends Function {
   }
 
   /** Extracts the specified date or time part from a date, time, or timestamp. */
-  private static final class ExtractDate extends ExtractFunction {
-    public static final ExtractDate INSTANCE = new ExtractDate();
+  private static final class DateExtractFunction extends ExtractFunction {
+    public static final DateExtractFunction INSTANCE = new DateExtractFunction();
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
@@ -100,8 +100,8 @@ public class ExtractFunction extends Function {
   }
 
   /** Extracts the specified time unit from a interval. */
-  private static final class ExtractInterval extends ExtractFunction {
-    public static final ExtractInterval INSTANCE = new ExtractInterval();
+  private static final class IntervalExtractFunction extends ExtractFunction {
+    public static final IntervalExtractFunction INSTANCE = new IntervalExtractFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

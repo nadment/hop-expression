@@ -19,7 +19,12 @@ under the License.
 Matches both expression.
 
 == Syntax
+
 [source,sql]
 ----
 boolean1 AND boolean2
 ----
+
+== Returns
+
+Boolean

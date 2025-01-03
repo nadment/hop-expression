@@ -19,7 +19,12 @@ under the License.
 Returns the Apache Hop version.
 
 == Syntax
+
 ----
 CURRENT_VERSION()
 ----
+
+== Returns
+
+String
 
