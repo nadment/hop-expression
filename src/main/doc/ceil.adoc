@@ -14,18 +14,30 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= %
+= CEIL
 
-Returns the remainder division. Equivalent to the modulo function MOD.
+Returns the value rounded to the nearest equal or larger integer.
 
 == Syntax
 
 ----
-numeric1 % numeric2
+CEIL( numeric )
 ----
-
 == Returns
 
-numeric
+Number
 
 == Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+CEIL( 28.05 ) = 29
+----
+
+== See also
+
+* xref:floor.adoc[FLOOR]
+* xref:round.adoc[ROUND]

@@ -60,7 +60,7 @@ String literals are always surrounded by single quotes `'`.
 'O' || CHR(13) || 'Reilly' <2>
 ----
 <1> The simplest method to escape single quotes in expression is to use two single quotes.
-<2> Use function https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/chr.adoc[CHR] to add special characters.
+<2> Use function xref:chr.adoc[CHR] to add special characters.
 
 === Boolean
 
@@ -275,30 +275,26 @@ The operator precedence and associativity, highest to lowest.
 |===
 |Associativity|Operator|Description
 |left|()|Parenthesis
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[function](args...)|Function
-|right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[::]|Cast
-|right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[[]]|Array element selection
-|right|+, -|Positive, Negative
-|right|~|Bitwise NOT
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/multiply.adoc[*], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/divide.adoc[/], %|Multiplication, Division, Modulus
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add.adoc[+], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/subtract.adoc[-]|Addition, Subtraction
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_and.adoc[&]|Bitwise AND
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_xor.adoc[&circ;]|Bitwise XOR (exclusive OR)
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_or.adoc[\|]|Bitwise OR (inclusive OR)
-|left|
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-null.adoc[IS NULL],
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-true.adoc[IS TRUE],
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-false.adoc[IS FALSE],
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-distinct-from.adoc[IS DISTINCT FROM]|Conditional
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Membership
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE],  https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/similarto.adoc[SIMILAR TO]|Pattern matching
-|left|=, >, <, >=, <=, <>, != |Comparison
-|right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[AND]|Logical conjunction
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolxor.adoc[XOR]|Logical exclusive disjunction 
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Logical disjunction 
+|left|xref:functions.adoc[function](args...)|Function
+|right|xref:cast.adoc[::]|Cast
+|right|xref:element_at.adoc[\[\]]|Array element selection
+|right|+, xref:negate.adoc[-]|Positive, Negative
+|right|xref:bit_or.adoc[~]|Bitwise NOT
+|left|xref:multiply.adoc[*], xref:div.adoc[/], xref:mod.adoc[%]|Multiplication, Division, Modulus
+|left|xref:add.adoc[+], xref:subtract.adoc[-]|Addition, Subtraction
+|left|xref:concat.adoc[\|\|]|Concatenation
+|left|xref:bit_and.adoc[&]|Bitwise AND
+|left|xref:bit_xor.adoc[&circ;]|Bitwise XOR (exclusive OR)
+|left|xref:bit_or.adoc[\|]|Bitwise OR (inclusive OR)
+|left|xref:is-null.adoc[IS NULL], xref:is-true.adoc[IS TRUE], xref:is-false.adoc[IS FALSE], xref:is-distinct-from.adoc[IS DISTINCT FROM]|Conditional
+|left|xref:in.adoc[IN]|Membership
+|left|xref:between.adoc[BETWEEN]|Range containment
+|left|xref:like.adoc[LIKE], xref:ilike.adoc[ILIKE], xref:similar-to.adoc[SIMILAR TO]|Pattern matching
+|left|xref:equal.adoc[=], xref:greater_than.adoc[>], xref:less_than.adoc[<], xref:greater_than_or_equal.adoc[>=], xref:less_than_or_equal.adoc[<=], xref:not_equal.adoc[<>], xref:not_equal.adoc[!=] |Comparison
+|right|xref:boolnot.adoc[NOT]|Logical negation 
+|left|xref:booland.adoc[AND]|Logical conjunction
+|left|xref:boolxor.adoc[XOR]|Logical exclusive disjunction 
+|left|xref:boolor.adoc[OR]|Logical disjunction 
 |===
 
 NOTE: An operator on higher levels is evaluated before an operator on a lower level. You can enclose an expression in parentheses to force precedence or clarify precedence, for example, (5 + 2) * 3.
@@ -309,20 +305,20 @@ NOTE: When an operator combines expressions of different data types, the data ty
 
 Expression supports both implicit and explicit conversion between data types.
 
-Explicit conversion is supported by using the `CAST` function or specific functions.
+Explicit conversion is supported by using the xref:cast.adoc[CAST] function or specific functions.
 
 When there is no ambiguity about the data type of an expression value, it is implicitly coerced to match the expected data type.
 
 [cols="^5,^1,^1,^1,^1,^1,^1,^1,^1", options="header"]
 |===
 |From / To|Binary|Boolean|Date|Integer|Number|String|Json|Inet
-|Function|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]||https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_json.adoc[TO_JSON]|
+|Function|xref:to_binary.adoc[TO_BINARY]|xref:to_boolean.adoc[TO_BOOLEAN]|xref:to_date.adoc[TO_DATE]||xref:to_number.adoc[TO_NUMBER]|xref:to_char.adoc[TO_CHAR]|xref:to_json.adoc[TO_JSON]|
 |Binary|-|❌|❌|❌|❌|✅|❌|❌
 |Boolean|❌|-|❌|✅|✅|✅|❌|❌
 |Date|❌|❌|-|☑️|☑️|✅|❌|❌
 |Integer|❌|✅|☑️|-|✅|✅|❌|❌
 |Number|❌|✅|☑️|☑️|-|✅|❌|❌
-|String|☑️|☑️|☑️|☑️|☑️|-|☑️|❌
+|String|☑️|☑️|☑️|☑️|☑️|-|☑️|☑️
 |Json|❌|❌|❌|❌|❌|✅|-|❌
 |Inet|❌|❌|❌|❌|❌|✅|❌|-
 |===

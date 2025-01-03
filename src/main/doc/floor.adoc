@@ -24,6 +24,10 @@ Returns the values rounded to the nearest equal or smaller integer.
 FLOOR( numeric )
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * Returns NULL if the argument is NULL.

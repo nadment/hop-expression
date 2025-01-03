@@ -24,6 +24,10 @@ Returns the values rounded to the nearest integer or decimal.
 ROUND( numeric [, scale] )
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * Returns NULL if one of the arguments is NULL.

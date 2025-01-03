@@ -21,7 +21,7 @@ Returns the position in the string that is the first character of a specified oc
 == Syntax
 
 ----
-INSTR( string, substring [, position [, occurence] ] )
+INSTR( string, substring [, position [, occurrence] ] )
 ----
 
 == Arguments
@@ -32,7 +32,7 @@ substring:: A string representing the value to search (Required).
 
 position:: A number indicating the position from where to start the search. If the start position is negative, the function counts back position number of characters from the end of string and then searches towards the beginning of string (Optional).
 
-occurence:: is an integer indicating which occurrence of string should search for. The value must be positive (Optional).
+occurrence:: is an integer indicating which occurrence of string should search for. The value must be positive (Optional).
 
 == Returns
 

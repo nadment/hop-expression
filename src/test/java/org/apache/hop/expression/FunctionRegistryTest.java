@@ -30,12 +30,12 @@ class FunctionRegistryTest extends ExpressionTest {
     assertNotNull(FunctionRegistry.getFunctionNames());
     assertNull(FunctionRegistry.getFunction(null));
     assertEquals(
-        FunctionRegistry.getFunction("CEIL").getId(),
-        FunctionRegistry.getFunction("CEILING").getId());
+        FunctionRegistry.getFunction("TRUNC").getId(),
+        FunctionRegistry.getFunction("TRUNCATE").getId());
     assertEquals(
-        FunctionRegistry.getFunction("CEIL").getName(),
-        FunctionRegistry.getFunction("CEILING").getName());
-    assertEquals(FunctionRegistry.getFunction("CEIL"), FunctionRegistry.getFunction("CEILING"));
+        FunctionRegistry.getFunction("TRUNC").getName(),
+        FunctionRegistry.getFunction("TRUNCATE").getName());
+    assertEquals(FunctionRegistry.getFunction("TRUNC"), FunctionRegistry.getFunction("TRUNCATE"));
   }
 
   @Test

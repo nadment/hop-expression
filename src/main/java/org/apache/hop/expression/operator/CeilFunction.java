@@ -34,16 +34,16 @@ import org.apache.hop.expression.type.ReturnTypes;
  *
  * @see {@link FloorOperator}, {@link RoundOperator}, {@link TruncateOperator}
  */
-@FunctionPlugin(names = "CEIL")
-public class CeilingFunction extends Function {
+@FunctionPlugin
+public class CeilFunction extends Function {
 
-  public CeilingFunction() {
+  public CeilFunction() {
     super(
-        "CEILING",
+        "CEIL",
         ReturnTypes.CEIL_FLOOR_FUNCTION,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/ceiling.html");
+        "/docs/ceil.html");
   }
 
   @Override

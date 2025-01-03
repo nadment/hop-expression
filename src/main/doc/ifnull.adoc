@@ -21,9 +21,12 @@ Returns the second value if first value is null. This function replace the null 
 == Syntax
 
 ----
-IFNULL( condition, expression )
+IFNULL( expr1, expr2 )
 ----
 ----
-NVL( condition, expression )
+NVL( expr1, expr2 )
 ----
 
+== Returns
+
+The data type of the returned value is the data type of expr1.

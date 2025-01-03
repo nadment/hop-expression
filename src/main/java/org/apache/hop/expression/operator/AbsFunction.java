@@ -67,7 +67,7 @@ public class AbsFunction extends Function {
 
   /** Returns the absolute value of the integer value. */
   private static final class IntegerAbsFunction extends AbsFunction {
-    public static final IntegerAbsFunction INSTANCE = new IntegerAbsFunction();
+    private static final IntegerAbsFunction INSTANCE = new IntegerAbsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -80,7 +80,7 @@ public class AbsFunction extends Function {
 
   /** Returns the absolute value of the number value. */
   private static final class NumberAbsFunction extends AbsFunction {
-    public static final NumberAbsFunction INSTANCE = new NumberAbsFunction();
+    private static final NumberAbsFunction INSTANCE = new NumberAbsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -93,7 +93,7 @@ public class AbsFunction extends Function {
 
   /** Returns the absolute value of the interval value. */
   private static final class IntervalAbsFunction extends AbsFunction {
-    public static final IntervalAbsFunction INSTANCE = new IntervalAbsFunction();
+    private static final IntervalAbsFunction INSTANCE = new IntervalAbsFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -32,4 +32,4 @@ TIP: Note that this is different from the EQUAL comparison operator (=), which t
 
 == See also
 
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-distinct-from.adoc[IS NOT DISTINCT FORM]
+* xref:is-distinct-from.adoc[IS NOT DISTINCT FORM]

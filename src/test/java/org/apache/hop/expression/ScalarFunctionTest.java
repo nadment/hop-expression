@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
-  public void Error() throws Exception {
+  void Error() throws Exception {
     evalFails("ERROR('Custom error message')", ErrorCode.MESSAGE_ERROR);
   }
 
@@ -3976,11 +3976,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Ceil(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Ceil('12x')", ErrorCode.ILLEGAL_ARGUMENT);
 
-    // Alias
-    evalEquals("Ceiling(1)", 1L);
-
     // Function repetition
-    optimize("CEIL(CEILING(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
+    optimize("CEIL(CEIL(FIELD_NUMBER))", "CEIL(FIELD_NUMBER)");
     optimize("CEIL(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
   }
 
@@ -4007,7 +4004,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Function repetition
     optimize("FLOOR(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
-    optimize("FLOOR(CEIL(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
+    optimize("FLOOR(CEIL(FIELD_NUMBER))", "CEIL(FIELD_NUMBER)");
   }
 
   @Test
@@ -4448,6 +4445,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Extract(DAY DATE '2021-01-01')", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Extract(MONTH FROM DATE '2023-12-01'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
+    // Replace EXTRACT with the corresponding function
     optimize("EXTRACT(CENTURY FROM FIELD_DATE)");
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
     optimize("EXTRACT(ISOYEAR FROM FIELD_DATE)", "ISOYEAR(FIELD_DATE)");

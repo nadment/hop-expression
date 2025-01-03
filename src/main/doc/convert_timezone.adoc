@@ -24,6 +24,10 @@ Converts a timestamp to another time zone.
 CONVERT_TIMEZONE ( [source_timezone,] target_timezone, timestamp)
 ----
 
+== Returns
+
+Date
+
 == Usage
 
 Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
@@ -31,6 +35,6 @@ Time zone names are case-sensitive and must be enclosed in single quotes (e.g. '
 == Examples
 
 ----
-CONVERT_TIMEZONE('Europe/Paris','2020-05-25 20:48:00')
-CONVERT_TIMEZONE('Europe/Paris','Asia/Tokyo','2020-05-25 20:48:00')
+CONVERT_TIMEZONE('Europe/Paris',Timestamp '2020-05-25 20:48:00')
+CONVERT_TIMEZONE('Europe/Paris','Asia/Tokyo',Timestamp '2020-05-25 20:48:00')
 ----

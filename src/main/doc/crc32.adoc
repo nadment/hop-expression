@@ -24,6 +24,8 @@ Calculates a cyclic redundancy check (CRC) value using the Castagnoli polynomial
 CRC32( {string | binary} )
 ----
 
+== Arguments
+
 {string | binary}:: A string or binary expression.
 
 == Returns
