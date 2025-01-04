@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
+import java.util.EnumSet;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -47,6 +48,9 @@ public class LastDayFunction extends Function {
 
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
+  private static final EnumSet<TimeUnit> SUPPORTED_TIME_UNITS =
+      EnumSet.of(TimeUnit.YEAR, TimeUnit.QUARTER, TimeUnit.MONTH, TimeUnit.WEEK);
+
   public LastDayFunction() {
     super(
         "LAST_DAY",
@@ -62,11 +66,9 @@ public class LastDayFunction extends Function {
     // Validate time unit
     if (call.getOperandCount() == 2) {
       TimeUnit unit = call.getOperand(1).getValue(TimeUnit.class);
-      switch (unit) {
-        case YEAR, QUARTER, MONTH, WEEK:
-          break;
-        default:
-          throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+
+      if (!SUPPORTED_TIME_UNITS.contains(unit)) {
+        throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
       }
     }
 
@@ -82,22 +84,15 @@ public class LastDayFunction extends Function {
     TemporalAdjuster adjuster = TemporalAdjusters.lastDayOfMonth();
     if (operands.length == 2) {
       TimeUnit unit = operands[1].getValue(TimeUnit.class);
-      switch (unit) {
-        case YEAR:
-          adjuster = TemporalAdjusters.lastDayOfYear();
-          break;
-        case QUARTER:
-          adjuster = LastDayOfQuarter;
-          break;
-        case MONTH:
-          adjuster = TemporalAdjusters.lastDayOfMonth();
-          break;
-        case WEEK:
-          adjuster = TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
-          break;
-        default:
-          throw new IllegalArgumentException(ErrorCode.UNSUPPORTED_TIME_UNIT.message(unit));
-      }
+
+      adjuster =
+          switch (unit) {
+            case YEAR -> TemporalAdjusters.lastDayOfYear();
+            case MONTH -> TemporalAdjusters.lastDayOfMonth();
+            case WEEK -> TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
+            case QUARTER -> LastDayOfQuarter;
+            default -> throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+          };
     }
 
     // Remove time and adjust

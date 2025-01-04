@@ -67,7 +67,9 @@ public class RegexpReplaceFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (pattern.length() == 0) return input;
+    if (pattern.isEmpty()) {
+      return input;
+    }
 
     // Default empty string
     String replacement = "";

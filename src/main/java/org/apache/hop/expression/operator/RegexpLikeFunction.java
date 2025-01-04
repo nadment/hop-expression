@@ -56,7 +56,9 @@ public class RegexpLikeFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (pattern.length() == 0) return Boolean.FALSE;
+    if (pattern.isEmpty()) {
+      return Boolean.FALSE;
+    }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 3) {

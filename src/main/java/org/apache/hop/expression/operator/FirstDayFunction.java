@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
+import java.util.EnumSet;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -45,6 +46,8 @@ import org.apache.hop.expression.util.FirstDayOfQuarter;
 @FunctionPlugin
 public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
+  private static final EnumSet<TimeUnit> SUPPORTED_TIME_UNITS =
+      EnumSet.of(TimeUnit.YEAR, TimeUnit.QUARTER, TimeUnit.MONTH, TimeUnit.WEEK);
 
   public FirstDayFunction() {
     super(
@@ -61,11 +64,8 @@ public class FirstDayFunction extends Function {
     // Validate time unit
     if (call.getOperandCount() == 2) {
       TimeUnit unit = call.getOperand(1).getValue(TimeUnit.class);
-      switch (unit) {
-        case YEAR, QUARTER, MONTH, WEEK:
-          break;
-        default:
-          throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+      if (!SUPPORTED_TIME_UNITS.contains(unit)) {
+        throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
       }
     }
 
@@ -83,22 +83,14 @@ public class FirstDayFunction extends Function {
     if (operands.length == 2) {
       TimeUnit unit = operands[1].getValue(TimeUnit.class);
 
-      switch (unit) {
-        case YEAR:
-          adjuster = TemporalAdjusters.firstDayOfYear();
-          break;
-        case QUARTER:
-          adjuster = FirstDayOfQuarter;
-          break;
-        case MONTH:
-          adjuster = TemporalAdjusters.firstDayOfMonth();
-          break;
-        case WEEK:
-          adjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
-          break;
-        default:
-          throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
-      }
+      adjuster =
+          switch (unit) {
+            case YEAR -> TemporalAdjusters.firstDayOfYear();
+            case MONTH -> TemporalAdjusters.firstDayOfMonth();
+            case WEEK -> TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
+            case QUARTER -> FirstDayOfQuarter;
+            default -> throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+          };
     }
 
     // Remove time and adjust

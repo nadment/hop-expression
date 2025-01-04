@@ -122,7 +122,7 @@ public class ExpressionText extends Composite {
     wToolBar.setLayoutData(
         new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_CENTER));
 
-    wText.addListener(SWT.Modify, (e) -> updateTooltip(wText));
+    wText.addListener(SWT.Modify, e -> updateTooltip(wText));
 
     controlSpaceKeyAdapter =
         new ControlSpaceKeyAdapter(

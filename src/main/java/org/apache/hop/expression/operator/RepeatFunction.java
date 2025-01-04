@@ -92,10 +92,9 @@ public class RepeatFunction extends Function {
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
       if (repeat == null) return null;
-      // int count = repeat.intValue();
 
       final int len = value.length;
-      final long longSize = (long) len * repeat;
+      final long longSize = len * repeat;
       final int size = (int) longSize;
       if (size != longSize) {
         throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, longSize);

@@ -108,7 +108,7 @@ public class FunctionRegistry {
     }
   }
 
-  public static void unregisterFunctions() throws HopException {
+  public static void unregisterFunctions() {
     functions.clear();
   }
 

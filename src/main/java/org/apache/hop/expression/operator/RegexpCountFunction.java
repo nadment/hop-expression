@@ -64,7 +64,9 @@ public class RegexpCountFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (pattern.length() == 0) return count;
+    if (pattern.isEmpty()) {
+      return count;
+    }
 
     int start = 1;
     int parameters = Pattern.UNICODE_CASE;

@@ -623,11 +623,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wTree.setRedraw(true);
   }
 
-  @Override
-  public void dispose() {
-    super.dispose();
-  }
-
   public void setRowMeta(final IRowMeta rowMeta) {
     this.rowMeta = rowMeta;
 

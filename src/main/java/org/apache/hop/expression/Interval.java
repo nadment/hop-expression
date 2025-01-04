@@ -909,7 +909,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   protected static int parseField(String str) {
-    if (str == null || str.length() == 0) return 0;
+    if (str == null || str.isEmpty()) return 0;
     return Integer.parseInt(str);
   }
 

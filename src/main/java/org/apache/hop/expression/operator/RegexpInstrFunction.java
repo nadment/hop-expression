@@ -59,7 +59,9 @@ public class RegexpInstrFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (regexp.length() == 0) return 0L;
+    if (regexp.isEmpty()) {
+      return 0L;
+    }
 
     // Default position 1
     int position = 1;

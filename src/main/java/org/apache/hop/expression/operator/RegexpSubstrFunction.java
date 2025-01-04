@@ -58,7 +58,9 @@ public class RegexpSubstrFunction extends Function {
     }
 
     // An empty pattern matches nothing
-    if (regexp.length() == 0) return null;
+    if (regexp.isEmpty()) {
+      return null;
+    }
 
     // Default position 1
     int position = 1;

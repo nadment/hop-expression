@@ -1232,7 +1232,7 @@ public class ExpressionParser {
         endUnit = TimeUnit.of(end.text());
       }
 
-      if (text.length() > 0 && text.charAt(0) == '-') {
+      if (!text.isEmpty() && text.charAt(0) == '-') {
         negative = true;
         text = text.substring(1);
       }
@@ -1688,7 +1688,7 @@ public class ExpressionParser {
 
             String str = source.substring(start, position);
             // Empty, consecutive underscore or last char is underscore
-            if (str.length() == 0 || previous == '_' || error) {
+            if (str.isEmpty() || previous == '_' || error) {
               throw new ExpressionParseException(position, ErrorCode.INVALID_NUMBER, str);
             }
 
