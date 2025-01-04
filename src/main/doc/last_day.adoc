@@ -41,6 +41,6 @@ LAST_DAY(Date '2021-06-15', QUARTER)
 
 == See also 
 
-* xref:first_day.adoc[FIRST_DAY]
-* xref:next_day.adoc[NEXT_DAY]
-* xref:previous_day.adoc[PREVIOUS_DAY]
+* xref:first_day.adoc["FIRST_DAY",role=fun]
+* xref:next_day.adoc["NEXT_DAY",role=fun]
+* xref:previous_day.adoc["PREVIOUS_DAY",role=fun]

@@ -20,7 +20,6 @@ Returns TRUE if one or the other but not both is TRUE.
 
 == Syntax
 
-[source,sql]
 ----
 boolean1 XOR boolean2
 ----

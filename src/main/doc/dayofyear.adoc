@@ -30,4 +30,4 @@ Integer between 1 and 366.
 
 == Usage
 
-* Equivalent to xref:extract.adoc[EXTRACT](DAYOFYEAR FROM {date | timestamp}).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAYOFYEAR FROM {date | timestamp}).

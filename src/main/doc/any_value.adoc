@@ -19,6 +19,7 @@ under the License.
 Returns some value of the expression over a group of rows. The result is non-deterministic.
 
 == Syntax
+
 ----
 ANY_VALUE( expression )
 ----

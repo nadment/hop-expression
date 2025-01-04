@@ -30,6 +30,6 @@ PREVIOUS_DAY(Date '2021-06-15', 'Friday')
 
 == See also
 
-* xref:first_day.adoc[NEXT_DAY]
-* xref:first_day.adoc[FIRST_DAY]
-* xref:last_day.adoc[LAST_DAY]
+* xref:first_day.adoc["NEXT_DAY",role=fun]
+* xref:first_day.adoc["FIRST_DAY",role=fun]
+* xref:last_day.adoc["LAST_DAY",role=fun]

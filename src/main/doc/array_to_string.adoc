@@ -19,6 +19,7 @@ under the License.
 Returns array converted to a string by casting all values to strings and concatenating them using the string to separate the elements.
 
 == Syntax
+
 ----
 ARRAY_TO_STRING( array, separator )
 ----

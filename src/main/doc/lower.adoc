@@ -30,4 +30,4 @@ String
 
 == See also
 
-* xref:upper.adoc[UPPER]
+* xref:upper.adoc["UPPER",role=fun]

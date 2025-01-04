@@ -30,4 +30,4 @@ Integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday,
 
 == Usage
 
-* Equivalent to xref:extract.adoc[EXTRACT](DAYOFWEEK FROM {date | timestamp}). 
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAYOFWEEK FROM {date | timestamp}). 

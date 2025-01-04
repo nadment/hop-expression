@@ -60,4 +60,7 @@ TO_DATE(1284352323.123) result 2010-09-13 04:32:03.123
 TO_DATE(1284352323.000000123) result 2010-09-13 04:32:03.000000123 
 ----
 
-See also xref:make_date.adoc[MAKE_DATE], xref:make_timestamp.adoc[MAKE_TIMESTAMP]
+== See also 
+
+* xref:make_date.adoc["MAKE_DATE",role=fun]
+* xref:make_timestamp.adoc["MAKE_TIMESTAMP",role=fun]

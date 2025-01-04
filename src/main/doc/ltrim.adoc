@@ -27,7 +27,7 @@ LTRIM( string [, characters ] )
 == Arguments
 
 string:: The string expression to be trimmed
-characters::  One or more characters to remove from the left side. If the parameter is omitted, the function will remove space characters.
+characters::  One or more characters to remove from the left side. If the parameter is omitted, the function will remove space characters. You can specify the characters in any order.
 
 == Returns
 
@@ -36,9 +36,8 @@ String
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
-* You can specify the characters in `characters` in any order.
 
 == See also
 
-* xref:rtrim.adoc[RTRIM]
-* xref:trim.adoc[TRIM]
+* xref:rtrim.adoc["RTRIM",role=fun]
+* xref:trim.adoc["TRIM",role=fun]

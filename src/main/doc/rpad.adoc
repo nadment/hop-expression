@@ -42,4 +42,4 @@ RPAD('123',5,'*') = '123**'
 
 == See also
 
-* xref:lpad.adoc[LPAD]
+* xref:lpad.adoc["LPAD",role=fun]

@@ -24,7 +24,7 @@ Combines multiple strings or binaries into one.
 CONCAT( string1, string2 [, string3...])
 ----
 
-The `||` operator provides alternative syntax.
+The xref:concat.adoc["||",role=op] operator provides alternative syntax.
 ----
 string1 || string2 [ || ... ]
 ----

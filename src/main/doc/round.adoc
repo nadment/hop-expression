@@ -42,5 +42,5 @@ ROUND( 28.05, -1 ) = 30
 
 == See also 
 
-* xref:ceil.adoc[CEIL]
-* xref:floor.adoc[FLOOR]
+* xref:ceil.adoc["CEIL",role=fun]
+* xref:floor.adoc["FLOOR",role=fun]

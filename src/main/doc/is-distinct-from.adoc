@@ -16,7 +16,7 @@ under the License.
 ////
 = IS DISTINCT FROM
 
-Compares whether two expressions are equal or not equal. The operator is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator (=), which treats NULLs as unknown values.
+Compares whether two expressions are equal or not equal. The operator is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator xref:equal.adoc["=",role=op], which treats NULLs as unknown values.
 
 == Syntax
 
@@ -30,4 +30,5 @@ Boolean
 
 == See also
 
-* xref:equal_null.adoc[EQUAL_NULL]
+* xref:equal.adoc["=",role=op]
+* xref:equal_null.adoc["EQUAL_NULL",role=fun]

@@ -30,4 +30,4 @@ dividend / divisor
 
 == See also
 
- * xref:div0.adoc[DIV0]
+ * xref:div0.adoc["DIV0",role=fun]

@@ -39,5 +39,5 @@ CEIL( 28.05 ) = 29
 
 == See also
 
-* xref:floor.adoc[FLOOR]
-* xref:round.adoc[ROUND]
+* xref:floor.adoc["FLOOR",role=fun]
+* xref:round.adoc["ROUND",role=fun]

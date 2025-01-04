@@ -44,4 +44,6 @@ The following example illustrate use of the short syntax
 TO_INTERVAL('1-6 0 12:00:00')
 ----
 
-See also xref:make_interval.adoc[MAKE_INTERVAL]
+== See also 
+
+* xref:make_interval.adoc["MAKE_INTERVAL",role=fun]

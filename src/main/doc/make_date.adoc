@@ -42,4 +42,4 @@ MAKE_DATE is typically used to handle values in normal ranges (e.g. months 1-12,
 
 == See also 
 
-* xref:make_timestamp.adoc[MAKE_TIMESTAMP]
+* xref:make_timestamp.adoc["MAKE_TIMESTAMP",role=fun]

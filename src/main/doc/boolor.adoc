@@ -20,7 +20,6 @@ Matches either expression.
 
 == Syntax
 
-[source,sql]
 ----
 boolean1 OR boolean2
 ----

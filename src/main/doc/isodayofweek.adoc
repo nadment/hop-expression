@@ -30,4 +30,4 @@ Integer between 1 and 7 (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday,
 
 == Usage
 
-* Equivalent to xref:extract.adoc[EXTRACT](ISODAYOFWEEK FROM {date | timestamp}). 
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](ISODAYOFWEEK FROM {date | timestamp}). 

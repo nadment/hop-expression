@@ -30,4 +30,4 @@ Integer between 1 and 54.
 
 == Usage
 
-* Equivalent to xref:extract.adoc[EXTRACT](WEEK FROM <date>). 
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](WEEK FROM <date>). 

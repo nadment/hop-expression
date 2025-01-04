@@ -38,4 +38,4 @@ RIGHT('ABCDEF',3) = 'DEF'
 
 == See also
 
-* xref:left.adoc[LEFT]
+* xref:left.adoc["LEFT",role=fun]

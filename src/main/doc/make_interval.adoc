@@ -39,4 +39,4 @@ You can use interval to add or subtract a period of time to/from a date or times
 
 == See also
 
-* xref:to_interval.adoc[TO_INTERVAL]
+* xref:to_interval.adoc["TO_INTERVAL",role=fun]

@@ -31,5 +31,5 @@ Integer between 1 and 52 or 53 full weeks.
 == Usage
 
 * The first week of the ISO year is the week that contains January 4.  
-* Equivalent to xref:extract.adoc[EXTRACT](ISOWEEK FROM <date>). 
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](ISOWEEK FROM <date>). 
  

@@ -28,7 +28,6 @@ BASE32_DECODE( string )
 
 input:: A Base32-encoded string expression.
 
-
 == Returns
 
 String

@@ -30,4 +30,4 @@ LEAST( expression1 [, expressionN... ] )
 
 == See also
 
-* xref:greatest.adoc[GREATEST]
+* xref:greatest.adoc["GREATEST",role=fun]

@@ -23,7 +23,7 @@ Returns the remainder of the division.
 ----
 MOD( dividend, divisor )
 ----
-The % operator provides alternative syntax.
+The xref:mod.adoc["%",role=op] operator provides alternative syntax.
 ----
 dividend % divisor
 ----

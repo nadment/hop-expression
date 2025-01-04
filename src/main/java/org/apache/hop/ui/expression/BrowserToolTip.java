@@ -24,15 +24,19 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 /** Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget. */
 public class BrowserToolTip extends ToolTip {
   /** Minimal size constraints. */
-  private static final int MIN_WIDTH = 500;
+  private static final int MIN_WIDTH = 800;
 
-  private static final int MIN_HEIGHT = 500;
+  private static final int MIN_HEIGHT = 600;
+
+  private static final int DEFAULT_SHIFT_X = -3;
+  private static final int DEFAULT_SHIFT_Y = -3;
 
   private IToolTipProvider tooltipProvider;
 
@@ -41,19 +45,20 @@ public class BrowserToolTip extends ToolTip {
 
     this.tooltipProvider = provider;
 
-    this.setShift(new Point(-3, -3));
+    this.setShift(new Point(DEFAULT_SHIFT_X, DEFAULT_SHIFT_Y));
     this.setRespectMonitorBounds(true);
     this.setRespectDisplayBounds(true);
-    this.setHideOnMouseDown(false);
-
-    control.addListener(SWT.MouseHover, e -> this.hide());
+    this.setHideOnMouseDown(true);
   }
 
   @Override
   protected Composite createToolTipContentArea(Event event, Composite parent) {
 
+    if (parent instanceof Shell shell) {
+      shell.setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+    }
+
     Browser browser = new Browser(parent, SWT.NONE);
-    browser.setSize(MIN_WIDTH, MIN_HEIGHT);
 
     // Cancel opening of new windows
     browser.addOpenWindowListener(e -> e.required = true);

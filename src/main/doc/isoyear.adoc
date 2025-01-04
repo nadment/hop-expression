@@ -30,4 +30,4 @@ Integer
 
 == Usage
 
-* Equivalent to xref:extract.adoc[EXTRACT](ISOYEAR FROM <date>).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](ISOYEAR FROM <date>).

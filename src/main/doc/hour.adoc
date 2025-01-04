@@ -30,4 +30,4 @@ Integer between 0 and 23.
 
 == Usage
 
-* Equivalent to xref:extract.adoc[EXTRACT](HOUR FROM <timestamp>). 
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](HOUR FROM <timestamp>). 

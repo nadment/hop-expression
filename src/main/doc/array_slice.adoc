@@ -19,6 +19,7 @@ under the License.
 Returns an array constructed from a specified subset of elements of the input array.
 
 == Syntax
+
 ----
 ARRAY_SLICE( array, from, to )
 ----

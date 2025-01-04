@@ -40,5 +40,5 @@ FLOOR( 28.05 ) = 28
 
 == See also
 
-* xref:ceil.adoc[CEIL]
-* xref:round.adoc[ROUND]
+* xref:ceil.adoc["CEIL",role=fun]
+* xref:round.adoc["ROUND",role=fun]

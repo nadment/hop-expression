@@ -39,26 +39,26 @@ Integer
 |===
 |Unit|Synonyms|Description|Function
 |CENTURY||The Gregorian century is the year divided by 100|
-|DAYOFMONTH|DAY, DAYS|The day of the month (1-31)|xref:day.adoc[DAY]
-|DAYOFWEEK||The day of week (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)|xref:dayofweek.adoc[DAYOFWEEK]
-|DAYOFYEAR||The day of year (1-365/366)|xref:dayofyear.adoc[DAYOFYEAR]
+|DAYOFMONTH|DAY, DAYS|The day of the month (1-31)|xref:day.adoc["DAY",role=fun]
+|DAYOFWEEK||The day of week (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)|xref:dayofweek.adoc["DAYOFWEEK",role=fun]
+|DAYOFYEAR||The day of year (1-365/366)|xref:dayofyear.adoc["DAYOFYEAR",role=fun]
 |DECADE|DECADES|The Gregorian decade is the year divided by 10|
 |EPOCH||The number of seconds since 1970-01-01 00:00:00 UTC|
-|HOUR|HOURS|The hour (0-23)|xref:hour.adoc[HOUR]
-|ISODAYOFWEEK||The day of week following the ISO-8601 standard (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)|xref:isodayofweek.adoc[ISODAYOFWEEK]
-|ISOWEEKOFYEAR|ISOWEEK|The week of year (01-52 or 01-53) based on the ISO-8601 standard. The first week of each ISO year begins on the Monday before the first Thursday of the Gregorian calendar year.|xref:isoweek.adoc[ISOWEEK]
-|ISOYEAR||The ISO year of week|xref:isoyear.adoc[ISOYEAR]
+|HOUR|HOURS|The hour (0-23)|xref:hour.adoc["HOUR",role=fun]
+|ISODAYOFWEEK||The day of week following the ISO-8601 standard (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)|xref:isodayofweek.adoc["ISODAYOFWEEK",role=fun]
+|ISOWEEKOFYEAR|ISOWEEK|The week of year (01-52 or 01-53) based on the ISO-8601 standard. The first week of each ISO year begins on the Monday before the first Thursday of the Gregorian calendar year.|xref:isoweek.adoc["ISOWEEK",role=fun]
+|ISOYEAR||The ISO year of week|xref:isoyear.adoc["ISOYEAR",role=fun]
 |MILLENNIUM|MILLENNIUMS|The Gregorian millennium is the year divided by 1000|
 |MILLISECOND|MILLISECONDS|Seconds (and fractional seconds) multiplied by 1,000|
 |MICROSECOND|MICROSECONDS|Seconds (and fractional seconds) multiplied by 1,000,000|
-|MINUTE|MINUTES|The minute (0-59)|xref:minute.adoc[MINUTE]
-|MONTH|MONTHS|The Gregorian month (1-12)|xref:month.adoc[MONTH]
+|MINUTE|MINUTES|The minute (0-59)|xref:minute.adoc["MINUTE",role=fun]
+|MONTH|MONTHS|The Gregorian month (1-12)|xref:month.adoc["MONTH",role=fun]
 |NANOSECOND|NANOSECONDS|The nanosecond|
-|QUARTER|QUARTERS|The quarter of the year (1-4)|xref:quarter.adoc[QUARTER]
-|SECOND|SECONDS|The second (and fractional seconds)|xref:second.adoc[SECOND]
+|QUARTER|QUARTERS|The quarter of the year (1-4)|xref:quarter.adoc["QUARTER",role=fun]
+|SECOND|SECONDS|The second (and fractional seconds)|xref:second.adoc["SECOND",role=fun]
 |TIMEZONE_HOUR||The hour of the time zone offset|
 |TIMEZONE_MINUTE||The minute of the time zone offset|
-|WEEKOFYEAR|WEEK|The aligned week of year (01-53) where week 1 starts on the first day of the year.|xref:week.adoc[WEEK]
-|YEAR|YEARS|The Gregorian year|xref:year.adoc[YEAR]
+|WEEKOFYEAR|WEEK|The aligned week of year (01-53) where week 1 starts on the first day of the year.|xref:week.adoc["WEEK",role=fun]
+|YEAR|YEARS|The Gregorian year|xref:year.adoc["YEAR",role=fun]
 
 |===

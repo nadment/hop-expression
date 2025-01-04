@@ -43,5 +43,5 @@ NTH_VALUE( City, 3 ) IGNORE NULLS
 
 == See also
 
-* xref:first_value.adoc[FIRST_VALUE]
-* xref:last_value.adoc[LAST_VALUE]
+* xref:first_value.adoc["FIRST_VALUE",role=fun]
+* xref:last_value.adoc["LAST_VALUE",role=fun]
