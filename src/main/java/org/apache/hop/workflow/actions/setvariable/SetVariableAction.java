@@ -26,8 +26,8 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopWorkflowException;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -98,8 +98,8 @@ public class SetVariableAction extends ActionBase implements IAction {
         String name = definition.getName();
 
         try {
-          IExpressionContext context = new ExpressionContext(this);
-          IExpression expression = context.createExpression(definition.getExpression());
+          IExpression expression =
+              ExpressionFactory.create(new ExpressionContext(this), definition.getExpression());
           String value = expression.getValue(String.class);
 
           // OK, where do we set this value...

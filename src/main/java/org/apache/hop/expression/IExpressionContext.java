@@ -20,8 +20,6 @@ import org.apache.hop.core.variables.IVariables;
 
 public interface IExpressionContext extends IVariables {
 
-  public IExpression createExpression(String source) throws ExpressionException;
-
   /**
    * Gets the value of an attribute.
    *

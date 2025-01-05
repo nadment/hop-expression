@@ -95,7 +95,7 @@ public class ExpressionTest {
     public Evaluator(IExpressionContext context, String source) {
 
       try {
-        this.expression = context.createExpression(source);
+        this.expression = ExpressionFactory.create(context, source);
       } catch (Exception ex) {
         System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
         throw ex;
@@ -118,11 +118,11 @@ public class ExpressionTest {
     }
   }
 
-  protected IExpressionContext createExpressionContext() throws Exception {
+  protected IRowExpressionContext createExpressionContext() throws Exception {
     return this.createExpressionContext(true);
   }
 
-  protected IExpressionContext createExpressionContext(boolean withData) throws Exception {
+  protected IRowExpressionContext createExpressionContext(boolean withData) throws Exception {
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
 
@@ -243,8 +243,7 @@ public class ExpressionTest {
   }
 
   protected void returnType(String source, Type expected) throws Exception {
-    IExpressionContext context = createExpressionContext(false);
-    IExpression expression = context.createExpression(source);
+    IExpression expression = ExpressionFactory.create(createExpressionContext(false), source);
     assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
   }
 
@@ -303,21 +302,21 @@ public class ExpressionTest {
 
   protected Evaluator evalEquals(IExpressionContext context, String source, Interval expected)
       throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(context, source);
     assertEquals(expected, evaluator.eval(Interval.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(IExpressionContext context, String source, InetAddress expected)
       throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(context, source);
     assertEquals(expected, evaluator.eval(InetAddress.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(IExpressionContext context, String source, Double expected)
       throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(context, source);
     BigDecimal result = evaluator.eval(BigDecimal.class);
     assertEquals(BigDecimal.valueOf(expected).stripTrailingZeros(), result.stripTrailingZeros());
     return evaluator;
@@ -408,8 +407,7 @@ public class ExpressionTest {
 
   protected IExpression compile(String source) throws Exception {
 
-    IExpressionContext context = createExpressionContext(false);
-    IExpression expression = context.createExpression(source);
+    IExpression expression = ExpressionFactory.create(createExpressionContext(false), source);
 
     String color = ANSI_YELLOW;
     if (expression.getType() == Types.UNKNOWN) {

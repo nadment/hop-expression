@@ -29,6 +29,7 @@ import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
@@ -137,7 +138,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           IValueMeta valueMeta = data.outputRowMeta.searchValueMeta(field.getName());
           data.aggregateMeta.addValueMeta(valueMeta);
 
-          IExpression expression = data.context.createExpression(source);
+          IExpression expression = ExpressionFactory.create(data.context, source);
           Call call = null;
           AggregateFunction function = null;
           if (expression.is(Kind.CALL)) {

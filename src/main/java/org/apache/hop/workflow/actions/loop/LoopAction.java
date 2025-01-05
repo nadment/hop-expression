@@ -30,8 +30,8 @@ import org.apache.hop.core.file.IHasFilename;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.resource.IResourceExport;
@@ -175,8 +175,7 @@ public class LoopAction extends ActionBase implements IAction {
   }
 
   private boolean isConditionTrue(IVariables variables) {
-    IExpressionContext context = new ExpressionContext(variables);
-    IExpression expression = context.createExpression(condition);
+    IExpression expression = ExpressionFactory.create(new ExpressionContext(variables), condition);
 
     boolean result = expression.getValue(Boolean.class);
 

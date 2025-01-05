@@ -68,7 +68,7 @@ public class ExpressionBenchmark {
     new Runner(opt).run();
   }
 
-  public ExpressionContext createExpressionContext() {
+  public RowExpressionContext createExpressionContext() {
 
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
@@ -115,8 +115,7 @@ public class ExpressionBenchmark {
   }
 
   protected Object eval(String source) throws Exception {
-    IExpressionContext context = createExpressionContext();
-    IExpression expression = context.createExpression(source);
+    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
     return expression.getValue();
   }
 

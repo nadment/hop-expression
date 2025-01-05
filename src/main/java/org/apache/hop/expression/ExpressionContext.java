@@ -23,7 +23,6 @@ import java.util.Objects;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.type.TypeName;
 
 public class ExpressionContext extends Variables implements IExpressionContext {
 
@@ -93,24 +92,24 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     return attributes.get(id);
   }
 
-  public IExpression createExpression(String source) throws ExpressionException {
-
-    // Syntax analysis
-    ExpressionParser parser = new ExpressionParser(resolve(source));
-    IExpression expression = parser.parse();
-
-    // Semantic analysis
-    expression.validate(this);
-
-    // Compile expression
-    ExpressionCompiler compiler = new ExpressionCompiler(this);
-    expression = compiler.compile(expression);
-
-    // Return type Unknown is not expected here
-    if (!expression.isNull() && expression.getType().is(TypeName.UNKNOWN)) {
-      throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
-    }
-
-    return expression;
-  }
+  //  public IExpression createExpression(String source) throws ExpressionException {
+  //
+  //    // Syntax analysis
+  //    ExpressionParser parser = new ExpressionParser(resolve(source));
+  //    IExpression expression = parser.parse();
+  //
+  //    // Semantic analysis
+  //    expression.validate(this);
+  //
+  //    // Compile expression
+  //    ExpressionCompiler compiler = new ExpressionCompiler(this);
+  //    expression = compiler.compile(expression);
+  //
+  //    // Return type Unknown is not expected here
+  //    if (!expression.isNull() && expression.getType().is(TypeName.UNKNOWN)) {
+  //      throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
+  //    }
+  //
+  //    return expression;
+  //  }
 }

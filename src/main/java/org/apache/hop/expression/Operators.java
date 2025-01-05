@@ -62,7 +62,7 @@ import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
 
-public class Operators {
+public final class Operators {
   // -------------------------------------------------------------
   // BITWISE OPERATORS
   // -------------------------------------------------------------

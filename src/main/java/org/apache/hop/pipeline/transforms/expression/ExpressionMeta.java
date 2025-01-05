@@ -27,6 +27,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -179,7 +180,7 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
                 transformMeta));
       } else
         try {
-          context.createExpression(field.getExpression());
+          ExpressionFactory.create(context, field.getExpression());
         } catch (Exception e) {
           remarks.add(
               new CheckResult(
