@@ -72,17 +72,6 @@ public enum TypeName {
 
   TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class);
 
-  protected static final Set<TypeName> STRING_TYPES = Set.of(STRING);
-  protected static final Set<TypeName> BINARY_TYPES = Set.of(BINARY);
-  protected static final Set<TypeName> BOOLEAN_TYPES = Set.of(BOOLEAN);
-  protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
-  protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
-  protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
-  protected static final Set<TypeName> INTERVAL_TYPES = Set.of(INTERVAL);
-
-  protected static final Set<TypeName> PRIMARY_TYPES =
-      Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, INTERVAL, BINARY, JSON);
-
   /** If the precision parameter is supported. */
   private boolean supportsPrecision;
 
@@ -137,9 +126,12 @@ public enum TypeName {
     return family;
   }
 
-  /** Returns whether type are in same type family. */
-  public boolean isFamily(TypeFamily family) {
-    return this.family == family;
+  /**
+   * Returns whether {@link TypeName} are in same type family. The ANY {@link TypeName} is in the
+   * same family as any other {@link TypeName} type.
+   */
+  public boolean isFamily(TypeFamily other) {
+    return this.family == TypeFamily.ANY || this.family == other;
   }
 
   /**
@@ -147,7 +139,7 @@ public enum TypeName {
    */
   public boolean isCastable(final TypeName name) {
     if (name == null) return false;
-    if (ANY == this || name == ANY || this.equals(name)) return true;
+    if (name == this) return true;
 
     switch (this) {
       case BOOLEAN:
@@ -164,10 +156,11 @@ public enum TypeName {
         return name.is(STRING);
       case JSON:
         return name.is(STRING);
+      case INET:
+        return name.is(STRING);
       case UNKNOWN, ANY:
         return true;
       case INTERVAL:
-      case INET:
       case TIMEUNIT:
       default:
         return false;
@@ -276,7 +269,7 @@ public enum TypeName {
    *
    * @return The {@link TypeName} or 'UNKNOWN' if not found
    */
-  public static TypeName fromJavaClass(final Class<?> clazz) {
+  public static TypeName fromClass(final Class<?> clazz) {
     if (clazz == null) return UNKNOWN;
 
     for (TypeName id : values()) {
@@ -306,7 +299,7 @@ public enum TypeName {
       return NUMBER;
     }
 
-    return fromJavaClass(value.getClass());
+    return fromClass(value.getClass());
   }
 
   /** Returns whether type are in same type. */

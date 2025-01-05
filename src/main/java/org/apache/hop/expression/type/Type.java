@@ -193,7 +193,7 @@ public abstract class Type {
         ErrorCode.UNSUPPORTED_COERCION,
         value,
         TypeName.fromValue(value),
-        TypeName.fromJavaClass(clazz));
+        TypeName.fromClass(clazz));
   }
 
   /**

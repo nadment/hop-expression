@@ -33,7 +33,7 @@ public interface IExpression {
    */
   public Kind getKind();
 
-  public default boolean is(Kind kind) {
+  public default boolean is(final Kind kind) {
     return getKind() == kind;
   }
 

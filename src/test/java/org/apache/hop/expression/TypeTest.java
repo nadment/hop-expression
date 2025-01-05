@@ -39,6 +39,7 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
@@ -138,25 +139,25 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeNameFromJavaClass() throws Exception {
-    assertEquals(TypeName.UNKNOWN, TypeName.fromJavaClass(null));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromJavaClass(Void.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromJavaClass(Float.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromJavaClass(Type.class));
-    assertEquals(TypeName.TIMEUNIT, TypeName.fromJavaClass(TimeUnit.class));
-    assertEquals(TypeName.BOOLEAN, TypeName.fromJavaClass(Boolean.class));
-    assertEquals(TypeName.STRING, TypeName.fromJavaClass(String.class));
-    assertEquals(TypeName.DATE, TypeName.fromJavaClass(ZonedDateTime.class));
-    assertEquals(TypeName.NUMBER, TypeName.fromJavaClass(BigDecimal.class));
-    assertEquals(TypeName.BINARY, TypeName.fromJavaClass(byte[].class));
-    assertEquals(TypeName.JSON, TypeName.fromJavaClass(JsonNode.class));
-    assertEquals(TypeName.INET, TypeName.fromJavaClass(InetAddress.class));
-    assertEquals(TypeName.INTEGER, TypeName.fromJavaClass(Long.class));
-    assertEquals(TypeName.ARRAY, TypeName.fromJavaClass(Array.class));
+  void typeNameFromClass() throws Exception {
+    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(null));
+    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Void.class));
+    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Float.class));
+    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Type.class));
+    assertEquals(TypeName.TIMEUNIT, TypeName.fromClass(TimeUnit.class));
+    assertEquals(TypeName.BOOLEAN, TypeName.fromClass(Boolean.class));
+    assertEquals(TypeName.STRING, TypeName.fromClass(String.class));
+    assertEquals(TypeName.DATE, TypeName.fromClass(ZonedDateTime.class));
+    assertEquals(TypeName.NUMBER, TypeName.fromClass(BigDecimal.class));
+    assertEquals(TypeName.BINARY, TypeName.fromClass(byte[].class));
+    assertEquals(TypeName.JSON, TypeName.fromClass(JsonNode.class));
+    assertEquals(TypeName.INET, TypeName.fromClass(InetAddress.class));
+    assertEquals(TypeName.INTEGER, TypeName.fromClass(Long.class));
+    assertEquals(TypeName.ARRAY, TypeName.fromClass(Array.class));
   }
 
   @Test
-  void typeIdFromValue() throws Exception {
+  void typeNameFromValue() throws Exception {
     assertEquals(TypeName.UNKNOWN, TypeName.fromValue(null));
     assertEquals(TypeName.UNKNOWN, TypeName.fromValue(new Random()));
     assertEquals(TypeName.BOOLEAN, TypeName.fromValue(true));
@@ -173,58 +174,27 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeName.JSON, TypeName.fromValue(JsonType.convert("{\"name\":\"Smith\"}")));
   }
 
-  //  @Test
-  //  void isFamily() throws Exception {
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.ANY));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.BINARY));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.BOOLEAN));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.TEMPORAL));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.STRING));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.INTERVAL));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.JSON));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.INET));
-  //    assertTrue(TypeId.ANY.isFamily(TypeFamily.ARRAY));
-  //
-  //    assertTrue(TypeId.INTEGER.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(TypeId.NUMBER.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(TypeId.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
-  //    assertTrue(TypeId.STRING.isFamily(TypeFamily.STRING));
-  //    assertTrue(TypeId.DATE.isFamily(TypeFamily.TEMPORAL));
-  //    assertTrue(TypeId.INTERVAL.isFamily(TypeFamily.INTERVAL));
-  //    assertTrue(TypeId.BINARY.isFamily(TypeFamily.BINARY));
-  //    assertTrue(TypeId.INET.isFamily(TypeFamily.INET));
-  //
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.BINARY));
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.BOOLEAN));
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.TEMPORAL));
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.STRING));
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.JSON));
-  //    assertTrue(Types.ANY.isFamily(TypeFamily.ANY));
-  //
-  //    assertTrue(Types.BINARY.isFamily(TypeFamily.ANY));
-  //    assertTrue(Types.BINARY.isFamily(TypeFamily.BINARY));
-  //    assertFalse(Types.BINARY.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(Types.BINARY.isFamily(TypeFamily.ANY));
-  //    assertFalse(Types.BINARY.isFamily(TypeFamily.SYMBOL));
-  //    assertTrue(Types.BINARY.isFamily(TypeFamily.BINARY));
-  //
-  //    assertTrue(Types.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
-  //    assertTrue(Types.DATE.isFamily(TypeFamily.TEMPORAL));
-  //    assertTrue(Types.INTEGER.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(Types.NUMBER.isFamily(TypeFamily.NUMERIC));
-  //    assertTrue(Types.STRING.isFamily(TypeFamily.STRING));
-  //
-  //    assertEquals(TypeFamily.BINARY, Types.BINARY.getFamily());
-  //    assertEquals(TypeFamily.BOOLEAN, Types.BOOLEAN.getFamily());
-  //    assertEquals(TypeFamily.TEMPORAL, Types.DATE.getFamily());
-  //    assertEquals(TypeFamily.JSON, Types.JSON.getFamily());
-  //    assertEquals(TypeFamily.NUMERIC, Types.INTEGER.getFamily());
-  //    assertEquals(TypeFamily.NUMERIC, Types.NUMBER.getFamily());
-  //    assertEquals(TypeFamily.STRING, Types.STRING.getFamily());
-  //    assertEquals(TypeFamily.INTERVAL, Types.INTERVAL.getFamily());
-  //  }
+  @Test
+  void isFamily() throws Exception {
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.ANY));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.BINARY));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.BOOLEAN));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.NUMERIC));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.TEMPORAL));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.STRING));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.INTERVAL));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.JSON));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.NETWORK));
+    assertTrue(TypeName.ANY.isFamily(TypeFamily.ARRAY));
+    assertTrue(TypeName.INTEGER.isFamily(TypeFamily.NUMERIC));
+    assertTrue(TypeName.NUMBER.isFamily(TypeFamily.NUMERIC));
+    assertTrue(TypeName.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
+    assertTrue(TypeName.STRING.isFamily(TypeFamily.STRING));
+    assertTrue(TypeName.DATE.isFamily(TypeFamily.TEMPORAL));
+    assertTrue(TypeName.INTERVAL.isFamily(TypeFamily.INTERVAL));
+    assertTrue(TypeName.BINARY.isFamily(TypeFamily.BINARY));
+    assertTrue(TypeName.INET.isFamily(TypeFamily.NETWORK));
+  }
 
   @Test
   void javaClass() throws Exception {
