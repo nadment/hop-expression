@@ -74,7 +74,7 @@ public class ToCharFunction extends Function {
 
     if (Types.isDate(type)) {
       if (pattern == null) {
-        pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+        pattern = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
 
       // Compile format to check it
@@ -98,7 +98,7 @@ public class ToCharFunction extends Function {
 
     if (Types.isBinary(type)) {
       if (pattern == null) {
-        pattern = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT, "HEX");
+        pattern = (String) context.getAttribute(ExpressionContext.EXPRESSION_BINARY_FORMAT);
       }
 
       // Normalize pattern

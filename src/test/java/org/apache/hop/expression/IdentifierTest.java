@@ -29,7 +29,7 @@ public class IdentifierTest extends ExpressionTest {
     Identifier identifier1 = new Identifier(0, "FIELD_STRING");
     Identifier identifier2 = new Identifier(10, "FIELD_STRING");
     Identifier identifier3 = new Identifier("FIELD_STRING");
-    identifier3.validate(this.createExpressionContext(true));
+    identifier3.validate(createExpressionContext());
     assertEquals("FIELD_STRING", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());

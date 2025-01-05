@@ -16,9 +16,7 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.variables.IVariables;
-
-public interface IExpressionContext extends IVariables {
+public interface IExpressionContext {
 
   /**
    * Gets the value of an attribute.
@@ -29,39 +27,4 @@ public interface IExpressionContext extends IVariables {
    * @throws NullPointerException if the name is null.
    */
   public Object getAttribute(String name);
-
-  /**
-   * Gets the value of an attribute.
-   *
-   * @param name The name of the attribute to set
-   * @param value The value of the attribute
-   * @throws IllegalArgumentException if the name is empty or if the scope is invalid.
-   * @throws NullPointerException if the name is null.
-   */
-  // public void setAttribute(String name, Object value);
-
-  /**
-   * Get the value of a variable with a default in case the variable is not found.
-   *
-   * @param name The name of the variable
-   * @param defaultValue The default value in case the variable could not be found
-   * @return the String value of a variable
-   */
-  String getVariable(String name, String defaultValue);
-
-  /**
-   * Get the value of a variable.
-   *
-   * @param name The name of the variable
-   * @return the String value of a variable or null in case the variable could not be found.
-   */
-  String getVariable(String name);
-
-  /**
-   * Substitute the string using the current variable variables.
-   *
-   * @param string The string to substitute.
-   * @return The substituted string.
-   */
-  String resolve(String string);
 }

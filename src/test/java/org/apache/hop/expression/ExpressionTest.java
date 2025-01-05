@@ -113,17 +113,16 @@ public class ExpressionTest {
     }
 
     public void returnType(Type expectedType) {
-      // assertTrue(expectedType.equalsIgnoreNullability(expression.getType()));
       assertEquals(expectedType.withNullability(true), expression.getType().withNullability(true));
     }
   }
 
   protected IRowExpressionContext createExpressionContext() throws Exception {
-    return this.createExpressionContext(true);
+    return this.createExpressionContext(new Variables());
   }
 
-  protected IRowExpressionContext createExpressionContext(boolean withData) throws Exception {
-    IVariables variables = new Variables();
+  protected IRowExpressionContext createExpressionContext(IVariables variables) throws Exception {
+
     variables.setVariable("TEST", "12345");
 
     IRowMeta rowMeta = new RowMeta();
@@ -177,120 +176,118 @@ public class ExpressionTest {
 
     RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
 
-    if (withData) {
-      Calendar calendar = Calendar.getInstance();
-      calendar.set(1981, 5, 23);
-      calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(1981, 5, 23);
+    calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 
-      Object[] row = new Object[37];
-      row[0] = "TEST";
-      row[1] = calendar.getTime();
-      row[2] = 40L;
-      row[3] = -5.12D;
-      row[4] = BigDecimal.valueOf(123456.789);
-      row[5] = calendar.getTime();
-      row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
-      row[7] = true;
-      row[8] = false;
-      row[9] = "TEST".getBytes(Charsets.UTF_8);
-      row[10] = InetAddress.getByName("10.10.10.1");
-      // row[11] = JsonType.convertToJson("{\"sstudent\": [{\"id\":\"01\",name:\"Tom\",\"lastname\":
-      // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+    Object[] row = new Object[37];
+    row[0] = "TEST";
+    row[1] = calendar.getTime();
+    row[2] = 40L;
+    row[3] = -5.12D;
+    row[4] = BigDecimal.valueOf(123456.789);
+    row[5] = calendar.getTime();
+    row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
+    row[7] = true;
+    row[8] = false;
+    row[9] = "TEST".getBytes(Charsets.UTF_8);
+    row[10] = InetAddress.getByName("10.10.10.1");
+    // row[11] = JsonType.convertToJson("{\"sstudent\": [{\"id\":\"01\",name:\"Tom\",\"lastname\":
+    // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
-      row[11] =
-          JsonType.convert(
-              "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
+    row[11] =
+        JsonType.convert(
+            "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
 
-      // Null values
-      row[12] = null;
-      row[13] = null;
-      row[14] = null;
-      row[16] = null;
-      row[16] = null;
-      row[17] = null;
-      row[18] = null;
-      row[19] = null;
-      row[20] = null;
+    // Null values
+    row[12] = null;
+    row[13] = null;
+    row[14] = null;
+    row[16] = null;
+    row[16] = null;
+    row[17] = null;
+    row[18] = null;
+    row[19] = null;
+    row[20] = null;
 
-      // Zero values
-      row[21] = 0L;
-      row[22] = 0D;
-      row[23] = BigDecimal.ZERO;
+    // Zero values
+    row[21] = 0L;
+    row[22] = 0D;
+    row[23] = BigDecimal.ZERO;
 
-      // String
-      row[24] = "True";
-      row[25] = "False";
-      row[26] = "25";
-      row[27] = "-12.56";
-      row[28] = "{id:\"01\",name:\"John\",age:29}";
+    // String
+    row[24] = "True";
+    row[25] = "False";
+    row[26] = "25";
+    row[27] = "-12.56";
+    row[28] = "{id:\"01\",name:\"John\",age:29}";
 
-      // Reserved words
-      row[29] = 2020L;
-      row[30] = "Paris";
-      row[31] = true;
-      row[32] = "A";
-      row[33] = 2;
+    // Reserved words
+    row[29] = 2020L;
+    row[30] = "Paris";
+    row[31] = true;
+    row[32] = "A";
+    row[33] = 2;
 
-      // Identifier
-      row[34] = "SPACE";
-      row[35] = "UNDERSCORE";
-      row[36] = "lower";
+    // Identifier
+    row[34] = "SPACE";
+    row[35] = "UNDERSCORE";
+    row[36] = "lower";
 
-      context.setRow(row);
-    }
+    context.setRow(row);
 
     return context;
   }
 
   protected void returnType(String source, Type expected) throws Exception {
-    IExpression expression = ExpressionFactory.create(createExpressionContext(false), source);
+    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
     assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
   }
 
   protected Evaluator evalNull(String source) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertNull(evaluator.eval(Object.class));
     return evaluator;
   }
 
   protected Evaluator evalTrue(String source) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(Boolean.TRUE, evaluator.eval(Object.class));
     return evaluator;
   }
 
   protected Evaluator evalFalse(String source) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(Boolean.FALSE, evaluator.eval(Object.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, byte[] expected) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertArrayEquals(expected, evaluator.eval(byte[].class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, JsonNode expected) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(expected, evaluator.eval(JsonNode.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, Interval expected) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(expected, evaluator.eval(Interval.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, String expected) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(expected, evaluator.eval(String.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, Long expected) throws Exception {
-    return evalEquals(createExpressionContext(true), source, expected);
+    return evalEquals(createExpressionContext(), source, expected);
   }
 
   protected Evaluator evalEquals(IExpressionContext context, String source, Long expected)
@@ -323,27 +320,27 @@ public class ExpressionTest {
   }
 
   protected Evaluator evalEquals(String source, BigInteger expected) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(new BigDecimal(expected), evaluator.eval(BigDecimal.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, Double expected) throws Exception {
-    return evalEquals(createExpressionContext(true), source, expected);
+    return evalEquals(createExpressionContext(), source, expected);
   }
 
   protected Evaluator evalEquals(String source, BigDecimal expected) throws Exception {
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
     assertEquals(expected, evaluator.eval(BigDecimal.class));
     return evaluator;
   }
 
   protected Evaluator evalEquals(String source, Temporal expected) throws Exception {
-    return evalEquals(createExpressionContext(true), source, expected);
+    return evalEquals(createExpressionContext(), source, expected);
   }
 
   protected Evaluator evalEquals(String source, InetAddress expected) throws Exception {
-    return evalEquals(createExpressionContext(true), source, expected);
+    return evalEquals(createExpressionContext(), source, expected);
   }
 
   protected Evaluator evalEquals(IExpressionContext context, String source, Temporal expected)
@@ -377,7 +374,7 @@ public class ExpressionTest {
   /** Check if expression fails with the supplied {@code ErrorCode}. */
   protected void evalFails(final String source, ErrorCode error) throws Exception {
     try {
-      Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+      Evaluator evaluator = new Evaluator(createExpressionContext(), source);
       evaluator.eval(Object.class);
     } catch (Throwable exception) {
       if (exception instanceof ExpressionException ee) {
@@ -407,7 +404,7 @@ public class ExpressionTest {
 
   protected IExpression compile(String source) throws Exception {
 
-    IExpression expression = ExpressionFactory.create(createExpressionContext(false), source);
+    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
 
     String color = ANSI_YELLOW;
     if (expression.getType() == Types.UNKNOWN) {

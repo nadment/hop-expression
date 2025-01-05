@@ -180,7 +180,7 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
                 transformMeta));
       } else
         try {
-          ExpressionFactory.create(context, field.getExpression());
+          ExpressionFactory.create(context, variables.resolve(field.getExpression()));
         } catch (Exception e) {
           remarks.add(
               new CheckResult(

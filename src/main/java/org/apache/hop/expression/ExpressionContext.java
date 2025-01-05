@@ -19,12 +19,10 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
-import org.apache.hop.core.variables.Variables;
 
-public class ExpressionContext extends Variables implements IExpressionContext {
+public class ExpressionContext implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
@@ -70,9 +68,6 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   public ExpressionContext(IVariables variables) {
     super();
 
-    // Initialize variables
-    this.initializeFrom(Objects.requireNonNull(variables));
-
     // Initialize attributes
     this.attributes = new HashMap<>();
 
@@ -81,6 +76,24 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     this.setAttribute(Attribute.CURRENT_TIMEZONE.name(), ZoneId.systemDefault().getId());
     this.setAttribute(Attribute.CURRENT_TIMESTAMP.name(), now);
     this.setAttribute(Attribute.CURRENT_DATE.name(), now.truncatedTo(ChronoUnit.DAYS));
+    this.setAttribute(variables, EXPRESSION_TWO_DIGIT_YEAR_START, 1970);
+    this.setAttribute(variables, EXPRESSION_DATE_FORMAT, "YYYY-MM-DD");
+    this.setAttribute(variables, EXPRESSION_TIMESTAMP_FORMAT, "YYYY-MM-DD H24:MI:SS");
+    this.setAttribute(variables, EXPRESSION_BINARY_FORMAT, "HEX");
+  }
+
+  protected void setAttribute(IVariables variables, String name, String defaultValue) {
+    attributes.put(name, variables.getVariable(name, defaultValue));
+  }
+
+  protected void setAttribute(IVariables variables, String name, int defaultValue) {
+    int value;
+    try {
+      value = Integer.parseInt(variables.getVariable(name));
+    } catch (Exception e) {
+      value = defaultValue;
+    }
+    attributes.put(name, value);
   }
 
   public void setAttribute(String id, Object value) {
@@ -91,25 +104,4 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   public Object getAttribute(String id) {
     return attributes.get(id);
   }
-
-  //  public IExpression createExpression(String source) throws ExpressionException {
-  //
-  //    // Syntax analysis
-  //    ExpressionParser parser = new ExpressionParser(resolve(source));
-  //    IExpression expression = parser.parse();
-  //
-  //    // Semantic analysis
-  //    expression.validate(this);
-  //
-  //    // Compile expression
-  //    ExpressionCompiler compiler = new ExpressionCompiler(this);
-  //    expression = compiler.compile(expression);
-  //
-  //    // Return type Unknown is not expected here
-  //    if (!expression.isNull() && expression.getType().is(TypeName.UNKNOWN)) {
-  //      throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
-  //    }
-  //
-  //    return expression;
-  //  }
 }

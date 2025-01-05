@@ -29,6 +29,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.JsonType;
@@ -2978,12 +2980,14 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
     evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1));
 
-    IExpressionContext context = createExpressionContext();
-    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    IVariables variables = new Variables();
+    variables.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    IExpressionContext context = createExpressionContext(variables);
     evalEquals(context, "To_Date('01/02/69','DD/MM/YY')", LocalDate.of(2069, 2, 1));
-    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     evalEquals(context, "To_Date('01/02/70','DD/MM/YY')", LocalDate.of(1970, 2, 1));
-    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+
+    variables.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+    context = createExpressionContext(variables);
     evalEquals(context, "To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1));
 
     // TO VERIFY
@@ -4183,7 +4187,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Keep the same context
     // Warning Random implementation is not the same on each JVM
-    Evaluator evaluator = new Evaluator(createExpressionContext(true), "Random()");
+    Evaluator evaluator = new Evaluator(createExpressionContext(), "Random()");
     evaluator.returnType(Types.NUMBER);
 
     // Evaluate should execute

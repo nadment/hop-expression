@@ -26,7 +26,7 @@ public final class ExpressionFactory {
       throws ExpressionException {
 
     // Syntax analysis
-    ExpressionParser parser = new ExpressionParser(context.resolve(source));
+    ExpressionParser parser = new ExpressionParser(source);
     IExpression expression = parser.parse();
 
     // Semantic analysis

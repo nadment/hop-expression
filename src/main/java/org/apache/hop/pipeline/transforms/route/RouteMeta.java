@@ -157,7 +157,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
         remarks.add(cr);
       } else
         try {
-          ExpressionFactory.create(context, route.getCondition());
+          ExpressionFactory.create(context, variables.resolve(route.getCondition()));
         } catch (Exception e) {
           remarks.add(
               new CheckResult(

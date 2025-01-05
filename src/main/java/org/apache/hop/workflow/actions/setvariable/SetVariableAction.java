@@ -99,7 +99,8 @@ public class SetVariableAction extends ActionBase implements IAction {
 
         try {
           IExpression expression =
-              ExpressionFactory.create(new ExpressionContext(this), definition.getExpression());
+              ExpressionFactory.create(
+                  new ExpressionContext(this), resolve(definition.getExpression()));
           String value = expression.getValue(String.class);
 
           // OK, where do we set this value...

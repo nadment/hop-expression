@@ -64,13 +64,10 @@ public class TryToDateFunction extends Function {
     String pattern =
         (call.getOperandCount() == 1) ? "AUTO" : call.getOperand(1).getValue(String.class);
 
-    int twoDigitYearStart =
-        Integer.parseInt(
-            context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
-
     // Compile format to check it
     DateTimeFormat format = DateTimeFormat.of(pattern);
-    format.setTwoDigitYearStart(twoDigitYearStart);
+    format.setTwoDigitYearStart(
+        (int) context.getAttribute(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START));
 
     return new Call(new StringTryToDateFunction(format), call.getOperands());
   }

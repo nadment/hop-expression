@@ -87,7 +87,7 @@ public class ToBinaryFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     // Default format
-    String format = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT, "HEX");
+    String format = (String) context.getAttribute(ExpressionContext.EXPRESSION_BINARY_FORMAT);
 
     // With specified format
     if (call.getOperandCount() == 2) {

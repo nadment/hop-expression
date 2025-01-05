@@ -97,7 +97,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
         // Compile expression
         try {
-          data.expressions[index] = ExpressionFactory.create(data.context, source);
+          data.expressions[index] = ExpressionFactory.create(data.context, resolve(source));
         } catch (Exception e) {
           String message =
               BaseMessages.getString(

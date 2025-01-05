@@ -82,7 +82,8 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
         // Compile expression
         try {
-          IExpression expression = ExpressionFactory.create(data.context, route.getCondition());
+          IExpression expression =
+              ExpressionFactory.create(data.context, resolve(route.getCondition()));
           data.targets.add(new RouteTarget(route, expression, rowSet));
         } catch (Exception e) {
           String message =

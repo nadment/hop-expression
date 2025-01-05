@@ -175,11 +175,12 @@ public class LoopAction extends ActionBase implements IAction {
   }
 
   private boolean isConditionTrue(IVariables variables) {
-    IExpression expression = ExpressionFactory.create(new ExpressionContext(variables), condition);
+    String source = variables.resolve(condition);
+    IExpression expression = ExpressionFactory.create(new ExpressionContext(variables), source);
 
     boolean result = expression.getValue(Boolean.class);
 
-    this.logBasic("Evaluate expression '" + condition + "'=" + result);
+    this.logBasic("Evaluate expression '" + source + "'=" + result);
 
     return result;
   }
