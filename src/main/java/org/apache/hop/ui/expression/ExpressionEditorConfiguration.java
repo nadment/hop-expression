@@ -105,16 +105,25 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     assistant.setContentAssistProcessor(variableProcessor, ExpressionPartitionScanner.STRING);
     assistant.setAutoActivationDelay(300);
     assistant.setShowEmptyList(false);
-    assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_STACKED);
     assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
+
+    assistant.enablePrefixCompletion(true);
     assistant.enableAutoInsert(true);
     assistant.enableAutoActivation(true);
-    assistant.enableColoredLabels(true);
+    // TODO implements colored labels
+    assistant.enableColoredLabels(false);
 
-    assistant.setContextSelectorBackground(GuiResource.getInstance().getColor(8, 154, 0));
+    assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_REMOVE);
+    assistant.setProposalSelectorForeground(GuiResource.getInstance().getColorBlack());
+    assistant.setProposalSelectorBackground(GuiResource.getInstance().getColorBackground());
+
+    assistant.setContextSelectorForeground(GuiResource.getInstance().getColorBlack());
+    assistant.setContextSelectorBackground(GuiResource.getInstance().getColorBackground());
+
     assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
-    // assistant.setContextInformationPopupBackground(GuiResource.getInstance().getColor(8, 154,
-    // 0));
+    assistant.setContextInformationPopupForeground(GuiResource.getInstance().getColorBlack());
+    assistant.setContextInformationPopupBackground(GuiResource.getInstance().getColorBackground());
+
     assistant.setStatusLineVisible(true);
     assistant.setStatusMessage("Press 'Ctrl+Space' to show variables");
     return assistant;

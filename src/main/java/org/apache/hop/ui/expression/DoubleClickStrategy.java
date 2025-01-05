@@ -26,10 +26,8 @@ public class DoubleClickStrategy implements ITextDoubleClickStrategy {
 
     if (position < 0) return;
 
-    if (!selectVariable(viewer, position)) {
-      if (!selectIdentifier(viewer, position)) {
-        selectWord(viewer, position);
-      }
+    if (!selectVariable(viewer, position) && !selectIdentifier(viewer, position)) {
+      selectWord(viewer, position);
     }
   }
 

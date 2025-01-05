@@ -335,11 +335,10 @@ public class Types {
    */
   public static boolean isLosslessCast(Type source, Type target) {
 
-    if (source.getName() == target.getName()) {
-      if (source.getPrecision() <= target.getPrecision()
-          && source.getScale() <= target.getScale()) {
-        return true;
-      }
+    if (source.getName() == target.getName()
+        && source.getPrecision() <= target.getPrecision()
+        && source.getScale() <= target.getScale()) {
+      return true;
     }
 
     // Return FALSE by default

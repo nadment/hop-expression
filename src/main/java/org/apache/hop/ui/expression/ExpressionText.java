@@ -49,8 +49,6 @@ import org.eclipse.swt.widgets.ToolItem;
 public class ExpressionText extends Composite {
   protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes
 
-  // protected String toolTipText;
-
   protected IGetCaretPosition getCaretPositionInterface;
 
   protected IInsertText insertTextInterface;

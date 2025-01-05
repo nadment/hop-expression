@@ -103,10 +103,8 @@ public class BoolAndOperator extends BinaryOperator {
         if (term.isOperator(Operators.IS_NOT_NULL)) {
           notNullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(Operators.EQUAL)) {
-          if (term.getOperand(1).is(Kind.LITERAL)) {
-            inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
-          }
+        if (term.isOperator(Operators.EQUAL) && term.getOperand(1).is(Kind.LITERAL)) {
+          inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(Operators.NOT_EQUAL)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
