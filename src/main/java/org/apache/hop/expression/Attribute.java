@@ -18,23 +18,18 @@ import java.time.ZonedDateTime;
 
 public enum Attribute {
   //
-  CURRENT_TIMEZONE(String.class),
+  CURRENT_TIMEZONE,
   //
-  CURRENT_TIMESTAMP(ZonedDateTime.class),
+  CURRENT_TIMESTAMP,
   //
-  CURRENT_DATE(ZonedDateTime.class);
+  CURRENT_DATE;
 
-  private final Class<?> clazz;
-
-  Attribute(Class<?> clazz) {
-    this.clazz = clazz;
-  }
-
-  /** Returns the value of this attribute in a given context. */
+  /** Returns the value of the attribute as string in a given context. */
   public String getString(IExpressionContext context) {
     return (String) context.getAttribute(name());
   }
 
+  /** Returns the value of the attribute as date in a given context. */
   public ZonedDateTime getDate(IExpressionContext context) {
     return (ZonedDateTime) context.getAttribute(name());
   }

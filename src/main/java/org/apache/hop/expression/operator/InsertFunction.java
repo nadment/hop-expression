@@ -50,10 +50,10 @@ public class InsertFunction extends Function {
 
     Type type = call.getType();
     if (Types.isString(type)) {
-      return new Call(InsertString.INSTANCE, call.getOperands());
+      return new Call(StringInsertFunction.INSTANCE, call.getOperands());
     }
     if (Types.isBinary(type)) {
-      return new Call(InsertBinary.INSTANCE, call.getOperands());
+      return new Call(BinaryInsertFunction.INSTANCE, call.getOperands());
     }
 
     return call;
@@ -63,8 +63,8 @@ public class InsertFunction extends Function {
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * string value.
    */
-  private static final class InsertString extends InsertFunction {
-    public static final InsertFunction INSTANCE = new InsertString();
+  private static final class StringInsertFunction extends InsertFunction {
+    public static final InsertFunction INSTANCE = new StringInsertFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -101,9 +101,9 @@ public class InsertFunction extends Function {
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * binary value.
    */
-  private static final class InsertBinary extends InsertFunction {
+  private static final class BinaryInsertFunction extends InsertFunction {
 
-    public static final InsertFunction INSTANCE = new InsertBinary();
+    public static final InsertFunction INSTANCE = new BinaryInsertFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
