@@ -21,6 +21,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.util.BinaryConverter;
+import org.apache.hop.expression.util.BooleanConverter;
+import org.apache.hop.expression.util.IntegerConverter;
+import org.apache.hop.expression.util.JsonConverter;
+import org.apache.hop.expression.util.NumberConverter;
+import org.apache.hop.expression.util.StringConverter;
 
 public final class AnyType extends Type {
 
@@ -57,19 +63,19 @@ public final class AnyType extends Type {
     // JSon function return type ANY
     if (value instanceof String str) {
       if (clazz == Boolean.class) {
-        return clazz.cast(BooleanType.convert(str));
+        return clazz.cast(BooleanConverter.convert(str));
       }
       if (clazz == Long.class) {
-        return clazz.cast(IntegerType.convert(str));
+        return clazz.cast(IntegerConverter.convert(str));
       }
       if (clazz == BigDecimal.class) {
-        return clazz.cast(NumberType.convert(str));
+        return clazz.cast(NumberConverter.convert(str));
       }
       if (clazz == byte[].class) {
-        return clazz.cast(BinaryType.convert(str));
+        return clazz.cast(BinaryConverter.convert(str));
       }
       if (clazz == JsonNode.class) {
-        return clazz.cast(JsonType.convert(str));
+        return clazz.cast(JsonConverter.convert(str));
       }
     }
     if (value instanceof BigDecimal number) {
@@ -80,12 +86,12 @@ public final class AnyType extends Type {
         return clazz.cast(number.longValue());
       }
       if (clazz == String.class) {
-        return clazz.cast(StringType.convert(number));
+        return clazz.cast(StringConverter.convert(number));
       }
     }
     if (value instanceof Boolean bool) {
       if (clazz == String.class) {
-        return clazz.cast(StringType.convert(bool));
+        return clazz.cast(StringConverter.convert(bool));
       }
       if (clazz == Long.class) {
         return clazz.cast(bool ? 1L : 0L);

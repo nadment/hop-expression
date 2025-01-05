@@ -23,7 +23,7 @@ import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.FormatParseException;
+import org.apache.hop.expression.util.NumberConverter;
 import org.apache.hop.expression.util.NumberFormat;
 
 /** Number type with an optional precision and scale: */
@@ -146,13 +146,13 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(l);
     }
     if (value instanceof String str) {
-      return convert(str);
+      return NumberConverter.convert(str);
     }
     if (value instanceof byte[] bytes) {
-      return convert(bytes);
+      return NumberConverter.convert(bytes);
     }
     if (value instanceof ZonedDateTime dt) {
-      return convert(dt);
+      return NumberConverter.convert(dt);
     }
 
     throw new ConversionException(
@@ -176,41 +176,9 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(number);
     }
     if (value instanceof String str) {
-      return convert(str);
+      return NumberConverter.convert(str);
     }
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.NUMBER);
-  }
-
-  public static final BigDecimal convert(final String str) throws ConversionException {
-    try {
-      return FORMAT.parse(str);
-    } catch (FormatParseException e) {
-      throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.NUMBER, str);
-    }
-  }
-
-  public static final BigDecimal convert(final byte[] bytes) throws ConversionException {
-    if (bytes.length > 8)
-      throw new ConversionException(
-          ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
-    long result = 0;
-    for (int i = 0; i < bytes.length; i++) {
-      result <<= Byte.SIZE;
-      result |= (bytes[i] & 0xFF);
-    }
-    return new BigDecimal(result);
-  }
-
-  public static final BigDecimal convert(final ZonedDateTime datetime) throws ConversionException {
-
-    BigDecimal result = new BigDecimal(datetime.toEpochSecond());
-    int nanos = datetime.getNano();
-    if (nanos != 0) {
-      BigDecimal fraction = BigDecimal.valueOf(nanos).movePointLeft(9);
-      result = result.add(fraction).stripTrailingZeros();
-    }
-    return result;
   }
 }

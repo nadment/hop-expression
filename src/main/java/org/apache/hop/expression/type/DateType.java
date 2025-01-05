@@ -18,12 +18,14 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.DateConverter;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.IntegerConverter;
+import org.apache.hop.expression.util.NumberConverter;
+import org.apache.hop.expression.util.StringConverter;
 
 public final class DateType extends Type {
 
@@ -57,13 +59,13 @@ public final class DateType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convert((ZonedDateTime) value));
+      return clazz.cast(StringConverter.convert((ZonedDateTime) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerType.convert((ZonedDateTime) value));
+      return clazz.cast(IntegerConverter.convert((ZonedDateTime) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberType.convert((ZonedDateTime) value));
+      return clazz.cast(NumberConverter.convert((ZonedDateTime) value));
     }
     return super.convert(value, clazz);
   }
@@ -95,10 +97,10 @@ public final class DateType extends Type {
       return DateTimeFormat.of(pattern).parse(str);
     }
     if (value instanceof Long number) {
-      return convert(number);
+      return DateConverter.convert(number);
     }
     if (value instanceof BigDecimal number) {
-      return convert(number);
+      return DateConverter.convert(number);
     }
 
     throw new ConversionException(
@@ -122,33 +124,5 @@ public final class DateType extends Type {
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.DATE);
-  }
-
-  public static final ZonedDateTime convert(final String value) throws ConversionException {
-    return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
-  }
-
-  /**
-   * Convert the epoch time value to a timestamp with UTC time zone.
-   *
-   * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
-   *     1970)
-   * @return
-   */
-  public static final ZonedDateTime convert(final Long seconds) {
-    if (seconds == null) {
-      return null;
-    }
-    Instant instant = Instant.ofEpochSecond(seconds);
-    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
-  }
-
-  public static final ZonedDateTime convert(final BigDecimal number) {
-    if (number == null) {
-      return null;
-    }
-    long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
-    Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
-    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }
 }

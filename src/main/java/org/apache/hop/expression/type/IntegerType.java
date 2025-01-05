@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.IntegerConverter;
 import org.apache.hop.expression.util.NumberFormat;
 
 public final class IntegerType extends Type {
@@ -92,7 +93,7 @@ public final class IntegerType extends Type {
       return number.longValue();
     }
     if (value instanceof String str) {
-      return IntegerType.convert(str);
+      return IntegerConverter.convert(str);
     }
 
     throw new ConversionException(
@@ -136,58 +137,23 @@ public final class IntegerType extends Type {
       return integer;
     }
     if (value instanceof BigDecimal number) {
-      return convert(number);
+      return IntegerConverter.convert(number);
     }
     if (value instanceof Boolean bool) {
       return (bool) ? 1L : 0L;
     }
     if (value instanceof String str) {
-      return convert(str);
+      return IntegerConverter.convert(str);
     }
     if (value instanceof byte[] bytes) {
-      return convert(bytes);
+      return IntegerConverter.convert(bytes);
     }
     if (value instanceof ZonedDateTime datetime) {
-      return convert(datetime);
+      return IntegerConverter.convert(datetime);
     }
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-  }
-
-  public static final Long convert(final BigDecimal number) throws ConversionException {
-    try {
-      BigInteger integer = number.toBigInteger();
-      if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
-        throw new ConversionException(ErrorCode.ARITHMETIC_OVERFLOW, "CONVERT");
-      return number.longValue();
-    } catch (Exception e) {
-      throw new ConversionException(ErrorCode.ARITHMETIC_OVERFLOW, "CONVERT");
-    }
-  }
-
-  public static final Long convert(final String str) throws ConversionException {
-    try {
-      BigDecimal number = numberFormat.parse(str);
-      return convert(number);
-    } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.STRING, str);
-    }
-  }
-
-  public static final Long convert(final byte[] bytes) throws ConversionException {
-    if (bytes.length > 8)
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.BINARY, bytes);
-    long result = 0;
-    for (int i = 0; i < bytes.length; i++) {
-      result <<= Byte.SIZE;
-      result |= (bytes[i] & 0xFF);
-    }
-    return result;
-  }
-
-  public static final Long convert(final ZonedDateTime datetime) throws ConversionException {
-    return datetime.toEpochSecond();
   }
 
   protected static int numberOfDigit(int number) {

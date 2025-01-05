@@ -25,12 +25,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.JsonConverter;
 
 /** Check if a string is a valid JSON. */
 @FunctionPlugin
@@ -71,7 +71,7 @@ public class IsJsonFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     try {
-      JsonType.convert(value);
+      JsonConverter.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

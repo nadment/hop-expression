@@ -25,11 +25,11 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.BooleanConverter;
 
 /** Converts a string or numeric expression to a boolean value. */
 @FunctionPlugin
@@ -71,7 +71,7 @@ public class TryToBooleanFunction extends Function {
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       try {
-        return BooleanType.convert(value);
+        return BooleanConverter.convert(value);
       } catch (ConversionException e) {
         return null;
       }
@@ -88,7 +88,7 @@ public class TryToBooleanFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
-      return BooleanType.convert(value);
+      return BooleanConverter.convert(value);
     }
   }
 
@@ -102,7 +102,7 @@ public class TryToBooleanFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
-      return BooleanType.convert(value);
+      return BooleanConverter.convert(value);
     }
   }
 }

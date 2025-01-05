@@ -25,11 +25,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.NumberConverter;
 
 /** Check if a string or a numeric is a valid number. */
 @FunctionPlugin
@@ -70,7 +70,7 @@ public class IsNumberFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     try {
-      NumberType.convert(value);
+      NumberConverter.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

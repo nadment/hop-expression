@@ -32,12 +32,12 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Hex;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.StringConverter;
 
 /** Converts a numeric or date expression to a string value. */
 @FunctionPlugin
@@ -174,7 +174,7 @@ public class ToCharFunction extends Function {
       if (value == null) {
         return null;
       }
-      return StringType.convert(value);
+      return StringConverter.convert(value);
     }
   }
 

@@ -25,12 +25,12 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.FormatParseException;
+import org.apache.hop.expression.util.NumberConverter;
 import org.apache.hop.expression.util.NumberFormat;
 
 /** Converts a string expression to a number value with optional format. */
@@ -99,7 +99,7 @@ public class TryToNumberFunction extends Function {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) return null;
       try {
-        return NumberType.convert(value);
+        return NumberConverter.convert(value);
       } catch (RuntimeException e) {
         return null;
       }

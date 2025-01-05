@@ -18,15 +18,22 @@
 package org.apache.hop.expression.type;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.BinaryConverter;
+import org.apache.hop.expression.util.BooleanConverter;
+import org.apache.hop.expression.util.DateConverter;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.InetConverter;
+import org.apache.hop.expression.util.IntegerConverter;
+import org.apache.hop.expression.util.JsonConverter;
+import org.apache.hop.expression.util.NumberConverter;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.StringConverter;
 
 public final class StringType extends Type {
 
@@ -78,25 +85,25 @@ public final class StringType extends Type {
       return clazz.cast(value);
     }
     if (clazz == Boolean.class) {
-      return clazz.cast(BooleanType.convert((String) value));
+      return clazz.cast(BooleanConverter.convert((String) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerType.convert((String) value));
+      return clazz.cast(IntegerConverter.convert((String) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberType.convert((String) value));
+      return clazz.cast(NumberConverter.convert((String) value));
     }
     if (clazz == byte[].class) {
-      return clazz.cast(BinaryType.convert((String) value));
+      return clazz.cast(BinaryConverter.convert((String) value));
     }
     if (clazz == ZonedDateTime.class) {
-      return clazz.cast(DateType.convert((String) value));
+      return clazz.cast(DateConverter.convert((String) value));
     }
     if (clazz == JsonNode.class) {
-      return clazz.cast(JsonType.convert((String) value));
+      return clazz.cast(JsonConverter.convert((String) value));
     }
     if (clazz == InetAddress.class) {
-      return clazz.cast(InetType.convert((String) value));
+      return clazz.cast(InetConverter.convert((String) value));
     }
     return super.convert(value, clazz);
   }
@@ -127,7 +134,7 @@ public final class StringType extends Type {
     if (value instanceof String str) {
       result = str;
     } else if (value instanceof Boolean bool) {
-      result = convert(bool);
+      result = StringConverter.convert(bool);
     } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
@@ -145,9 +152,9 @@ public final class StringType extends Type {
     } else if (value instanceof byte[] bytes) {
       result = new String(bytes, StandardCharsets.UTF_8);
     } else if (value instanceof JsonNode json) {
-      return convert(json);
+      return StringConverter.convert(json);
     } else if (value instanceof InetAddress inet) {
-      return convert(inet);
+      return StringConverter.convert(inet);
     }
 
     if (result == null) {
@@ -182,47 +189,12 @@ public final class StringType extends Type {
       return str;
     }
     if (value instanceof Boolean bool) {
-      return convert(bool);
+      return StringConverter.convert(bool);
     }
     if (value instanceof BigDecimal number) {
-      return convert(number);
+      return StringConverter.convert(number);
     }
 
     return String.valueOf(value);
-  }
-
-  public static String convert(final boolean value) {
-    return value ? "TRUE" : "FALSE";
-  }
-
-  public static String convert(final BigDecimal value) {
-    return NumberFormat.of("TM").format(value);
-  }
-
-  public static String convert(final byte[] bytes) {
-    return new String(bytes, StandardCharsets.UTF_8);
-  }
-
-  public static String convert(final ZonedDateTime value) {
-    return DateTimeFormat.of("YYYY-MM-DD").format(value);
-  }
-
-  public static String convert(final InetAddress value) {
-    return value.getHostAddress();
-  }
-
-  /**
-   * Convert Json value to String.
-   *
-   * @param json the json to convert
-   * @return String
-   */
-  public static String convert(final JsonNode json) throws ConversionException {
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      return objectMapper.writeValueAsString(json);
-    } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_STRING, TypeName.JSON, json);
-    }
   }
 }

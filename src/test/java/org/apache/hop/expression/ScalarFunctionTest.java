@@ -33,10 +33,10 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.JsonConverter;
 import org.junit.jupiter.api.Test;
 
 public class ScalarFunctionTest extends ExpressionTest {
@@ -190,10 +190,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalEquals(
             "Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
-            JsonType.convert("{\"name\":\"Smith\",\"age\":29}"))
+            JsonConverter.convert("{\"name\":\"Smith\",\"age\":29}"))
         .returnType(Types.JSON);
-    evalEquals("Try_To_Json('true')", JsonType.convert("true"));
-    evalEquals("Try_To_Json('null')", JsonType.convert("null"));
+    evalEquals("Try_To_Json('true')", JsonConverter.convert("true"));
+    evalEquals("Try_To_Json('null')", JsonConverter.convert("null"));
 
     evalNull("Try_To_Json(NULL_STRING)");
     evalNull("Try_To_Json('BAD JSON ;')");
@@ -3214,10 +3214,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalEquals(
             "To_Json('{\"name\":\"Smith\", \"age\":29}')",
-            JsonType.convert("{\"name\":\"Smith\",\"age\":29}"))
+            JsonConverter.convert("{\"name\":\"Smith\",\"age\":29}"))
         .returnType(Types.JSON);
-    evalEquals("To_Json('true')", JsonType.convert("true"));
-    evalEquals("To_Json('null')", JsonType.convert("null"));
+    evalEquals("To_Json('true')", JsonConverter.convert("true"));
+    evalEquals("To_Json('null')", JsonConverter.convert("null"));
 
     evalNull("To_Json(NULL_STRING)").returnType(Types.JSON);
 
@@ -3277,45 +3277,46 @@ public class ScalarFunctionTest extends ExpressionTest {
     // No Json path
     evalEquals(
             "Json_Query('{name:\"Smith\",age:29}'::JSON)",
-            JsonType.convert("{name:\"Smith\",age:29}"))
+            JsonConverter.convert("{name:\"Smith\",age:29}"))
         .returnType(Types.JSON);
 
     // Root Json path
     evalEquals(
         "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}'::JSON,'$.Suspect.Hobbies')",
-        JsonType.convert("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
-    evalEquals("Json_Query('null'::JSON,'$')", JsonType.convert("null"));
+        JsonConverter.convert("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
+    evalEquals("Json_Query('null'::JSON,'$')", JsonConverter.convert("null"));
 
     // Wildcard all elements
     evalEquals(
         "Json_Query(FIELD_JSON, '$.store.book[*].author')",
-        JsonType.convert(
+        JsonConverter.convert(
             "[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
 
     // Child property at any level deeper
     evalEquals(
         "Json_Query(FIELD_JSON, '$..author')",
-        JsonType.convert(
+        JsonConverter.convert(
             "[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
 
     // Array indexes
     evalEquals(
-        "Json_Query(FIELD_JSON, '$.store.book[2].title')", JsonType.convert("\"Moby Dick\""));
+        "Json_Query(FIELD_JSON, '$.store.book[2].title')", JsonConverter.convert("\"Moby Dick\""));
     evalEquals(
         "Json_Query(FIELD_JSON, '$.store.book[0,1,2].title')",
-        JsonType.convert("[\"Sayings of the Century\",\"Sword of Honour\",\"Moby Dick\"]"));
+        JsonConverter.convert("[\"Sayings of the Century\",\"Sword of Honour\",\"Moby Dick\"]"));
 
     // Array slice
     evalEquals(
         "Json_Query(FIELD_JSON, '$.store.book[0:2].title')",
-        JsonType.convert("[\"Sayings of the Century\",\"Sword of Honour\"]"));
+        JsonConverter.convert("[\"Sayings of the Century\",\"Sword of Honour\"]"));
 
     // Filter predicate
     evalEquals(
         "Json_Query(FIELD_JSON, '$..book[?(@.isbn)].title')",
-        JsonType.convert("[\"Moby Dick\",\"The Lord of the Rings\"]"));
+        JsonConverter.convert("[\"Moby Dick\",\"The Lord of the Rings\"]"));
     evalEquals(
-        "Json_Query(FIELD_JSON, '$..book[?(@.price<10)].price')", JsonType.convert("[8.95,8.99]"));
+        "Json_Query(FIELD_JSON, '$..book[?(@.price<10)].price')",
+        JsonConverter.convert("[8.95,8.99]"));
 
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 
@@ -3328,24 +3329,25 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Json_Object() throws Exception {
-    evalEquals("Json_Object(KEY 'name' VALUE 'Smith')", JsonType.convert("{\"name\":\"Smith\"}"))
+    evalEquals(
+            "Json_Object(KEY 'name' VALUE 'Smith')", JsonConverter.convert("{\"name\":\"Smith\"}"))
         .returnType(Types.JSON);
     evalEquals(
         "Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')",
-        JsonType.convert("{\"name\":\"Smith\",\"langue\":\"english\"}"));
+        JsonConverter.convert("{\"name\":\"Smith\",\"langue\":\"english\"}"));
 
     // Support null
     evalEquals(
         "Json_Object(KEY 'name' VALUE 'Smith', KEY 'empty' VALUE null)",
-        JsonType.convert("{\"name\":\"Smith\",\"empty\":null}"));
+        JsonConverter.convert("{\"name\":\"Smith\",\"empty\":null}"));
 
     // Support duplicate key
     evalEquals(
         "Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'John')",
-        JsonType.convert("{\"name\":\"Smith\", \"name\":\"John\"}"));
+        JsonConverter.convert("{\"name\":\"Smith\", \"name\":\"John\"}"));
 
     // Accept missing KEY
-    evalEquals("Json_Object('name' VALUE 'Smith')", JsonType.convert("{\"name\":\"Smith\"}"));
+    evalEquals("Json_Object('name' VALUE 'Smith')", JsonConverter.convert("{\"name\":\"Smith\"}"));
 
     evalFails("Json_Object(KEY 'name' VALUE )", ErrorCode.SYNTAX_ERROR);
     evalFails("Json_Object(KEY VALUE 'Smith')", ErrorCode.SYNTAX_ERROR);

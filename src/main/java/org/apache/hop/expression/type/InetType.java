@@ -18,9 +18,10 @@
 package org.apache.hop.expression.type;
 
 import java.net.InetAddress;
-import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.InetConverter;
+import org.apache.hop.expression.util.StringConverter;
 
 public final class InetType extends Type {
 
@@ -72,7 +73,7 @@ public final class InetType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convert((InetAddress) value));
+      return clazz.cast(StringConverter.convert((InetAddress) value));
     }
 
     return super.convert(value, clazz);
@@ -103,26 +104,10 @@ public final class InetType extends Type {
     }
 
     if (value instanceof String str) {
-      return convert(str);
+      return InetConverter.convert(str);
     }
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-  }
-
-  /**
-   * Convert String value to Inet.
-   *
-   * @param str the string to convert
-   * @return InetAddress
-   */
-  public static InetAddress convert(final String str) throws ConversionException {
-    if (str == null || Utils.isEmpty(str)) return null;
-
-    try {
-      return InetAddress.getByName(str);
-    } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeName.STRING, str);
-    }
   }
 }

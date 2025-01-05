@@ -49,9 +49,9 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.JsonConverter;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -196,7 +196,7 @@ public class ExpressionTest {
     // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
     row[11] =
-        JsonType.convert(
+        JsonConverter.convert(
             "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
 
     // Null values

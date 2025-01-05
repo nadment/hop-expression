@@ -25,11 +25,11 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.DateConverter;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /**
@@ -99,7 +99,7 @@ public class ToDateFunction extends Function {
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
-      return DateType.convert(value);
+      return DateConverter.convert(value);
     }
   }
 
@@ -114,7 +114,7 @@ public class ToDateFunction extends Function {
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) return null;
-      return DateType.convert(value);
+      return DateConverter.convert(value);
     }
   }
 }

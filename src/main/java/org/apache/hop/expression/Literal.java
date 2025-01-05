@@ -30,6 +30,7 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.BaseFormat;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.StringConverter;
 
 /** Constant value in a expression. */
 public class Literal implements IExpression {
@@ -247,13 +248,13 @@ public class Literal implements IExpression {
           writer.append('\'');
           break;
         case BOOLEAN:
-          writer.append(StringType.convert((boolean) value));
+          writer.append(StringConverter.convert((boolean) value));
           break;
         case INTEGER:
           writer.append(((Long) value).toString());
           break;
         case NUMBER:
-          writer.append(StringType.convert((BigDecimal) value));
+          writer.append(StringConverter.convert((BigDecimal) value));
           break;
         case BINARY:
           writer.append("BINARY '");
@@ -332,12 +333,12 @@ public class Literal implements IExpression {
           }
         case JSON:
           writer.append("JSON '");
-          writer.append(StringType.convert((JsonNode) value));
+          writer.append(StringConverter.convert((JsonNode) value));
           writer.append('\'');
           break;
         case INET:
           writer.append("INET '");
-          writer.append(StringType.convert((InetAddress) value));
+          writer.append(StringConverter.convert((InetAddress) value));
           writer.append('\'');
           break;
         case UNKNOWN:

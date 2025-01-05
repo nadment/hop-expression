@@ -17,11 +17,11 @@
 
 package org.apache.hop.expression.type;
 
-import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.JsonConverter;
+import org.apache.hop.expression.util.StringConverter;
 
 public final class JsonType extends Type {
 
@@ -76,7 +76,7 @@ public final class JsonType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convert((JsonNode) value));
+      return clazz.cast(StringConverter.convert((JsonNode) value));
     }
 
     return super.convert(value, clazz);
@@ -107,27 +107,10 @@ public final class JsonType extends Type {
     }
 
     if (value instanceof String str) {
-      return convert(str);
+      return JsonConverter.convert(str);
     }
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-  }
-
-  /**
-   * Convert String value to Json.
-   *
-   * @param str the string to convert
-   * @return JsonNode
-   */
-  public static JsonNode convert(final String str) throws ConversionException {
-    if (str == null) return null;
-    try {
-      JsonMapper mapper =
-          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
-      return mapper.readTree(str);
-    } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_JSON, TypeName.STRING, str);
-    }
   }
 }
