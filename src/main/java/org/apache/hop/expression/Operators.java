@@ -28,8 +28,8 @@ import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
-import org.apache.hop.expression.operator.CaseOperator;
-import org.apache.hop.expression.operator.CaseOperator.When;
+import org.apache.hop.expression.operator.CaseSearchOperator;
+import org.apache.hop.expression.operator.CaseSimpleOperator;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
@@ -82,8 +82,8 @@ public final class Operators {
   // -------------------------------------------------------------
   // CONDITIONAL OPERATORS
   // -------------------------------------------------------------
-  public static final Operator CASE_SEARCH = new CaseOperator(When.SEARCH);
-  public static final Operator CASE_SIMPLE = new CaseOperator(When.SIMPLE);
+  public static final Operator CASE_SEARCH = new CaseSearchOperator();
+  public static final Operator CASE_SIMPLE = new CaseSimpleOperator();
 
   // -------------------------------------------------------------
   // CAST OPERATOR

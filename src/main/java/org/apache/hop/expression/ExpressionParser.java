@@ -33,6 +33,8 @@ import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.InetConverter;
+import org.apache.hop.expression.util.JsonConverter;
 import org.apache.hop.expression.util.NumberFormat;
 
 public class ExpressionParser {
@@ -481,15 +483,13 @@ public class ExpressionParser {
   }
 
   /** Literal Json */
-  private IExpression parseLiteralJson(Token token) throws ExpressionException {
-    return new Call(
-        token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(Types.JSON));
+  private IExpression parseLiteralJson(Token token) {
+    return Literal.of(JsonConverter.convert(token.text()));
   }
 
   /** Literal Inet */
-  private IExpression parseLiteralInet(Token token) throws ExpressionException {
-    return new Call(
-        token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(Types.INET));
+  private IExpression parseLiteralInet(Token token) {
+    return Literal.of(InetConverter.convert(token.text()));
   }
 
   /** Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>] */
