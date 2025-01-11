@@ -26,6 +26,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The function convert a string value to lower case. @See {@link InitCapFunction}, {@link
@@ -43,6 +44,11 @@ public class LowerFunction extends Function {
         OperandTypes.STRING,
         OperatorCategory.STRING,
         "/docs/lower.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override

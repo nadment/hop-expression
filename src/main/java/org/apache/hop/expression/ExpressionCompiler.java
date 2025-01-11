@@ -75,11 +75,11 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
     if (expression instanceof Call call) {
 
-      // Coerce operands data type
-      changed |= call.getOperator().coerceOperandsType(call);
-
       // Inferring return type
       call.inferReturnType();
+
+      // Coerce operands data type
+      changed |= call.getOperator().coerceOperandsType(call);
 
       // If something changed
       if (!call.equals(original)) {

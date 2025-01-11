@@ -28,10 +28,12 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Types;
 
 /** String or binary concatenation operator '<code>||</code>' */
 @FunctionPlugin
@@ -63,6 +65,17 @@ public class ConcatFunction extends Function {
             OperandTypes.ARRAY_VARIADIC),
         OperatorCategory.STRING,
         "/docs/concat.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+
+    Type type = call.getType();
+    if (type instanceof ArrayType arrayType) {
+      type = arrayType.getElementType();
+    }
+
+    return Types.coerceOperandsType(call, type);
   }
 
   @Override

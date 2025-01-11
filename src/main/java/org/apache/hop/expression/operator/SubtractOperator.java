@@ -91,6 +91,11 @@ public class SubtractOperator extends BinaryOperator {
     private static final IntegerSubtractOperator INSTANCE = new IntegerSubtractOperator();
 
     @Override
+    public boolean coerceOperandsType(Call call) {
+      return Types.coercionArithmeticOperator(call);
+    }
+
+    @Override
     public Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
       if (left == null) return null;
@@ -109,6 +114,11 @@ public class SubtractOperator extends BinaryOperator {
     private static final NumberSubtractOperator INSTANCE = new NumberSubtractOperator();
 
     @Override
+    public boolean coerceOperandsType(Call call) {
+      return Types.coercionArithmeticOperator(call);
+    }
+
+    @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);
       if (left == null) return null;
@@ -117,17 +127,17 @@ public class SubtractOperator extends BinaryOperator {
 
       return left.subtract(right);
     }
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
-    }
   }
 
   /** Subtracts a specified interval to a date or timestamp */
   public static final class IntervalFromTemporalSubtractOperator extends SubtractOperator {
     private static final IntervalFromTemporalSubtractOperator INSTANCE =
         new IntervalFromTemporalSubtractOperator();
+
+    @Override
+    public boolean coerceOperandsType(Call call) {
+      return Types.coercionArithmeticOperator(call);
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -138,11 +148,6 @@ public class SubtractOperator extends BinaryOperator {
       if (interval == null) return null;
 
       return interval.subtractFrom(datetime);
-    }
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
     }
   }
 

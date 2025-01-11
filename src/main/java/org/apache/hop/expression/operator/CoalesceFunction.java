@@ -29,6 +29,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The COALESCE function returns the first of its arguments that is not null. Null is returned only
@@ -48,6 +49,11 @@ public class CoalesceFunction extends Function {
         OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.CONDITIONAL,
         "/docs/coalesce.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsType(call, call.getType());
   }
 
   @Override

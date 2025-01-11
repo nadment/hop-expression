@@ -83,7 +83,7 @@ public class CastFunction extends Function {
     if (call.getOperandCount() == 2) {
 
       // Cast constant value
-      if (call.getOperand(0).isConstant()) {
+      if (call.getOperand(0).isConstant() && Types.isAtomic(call.getOperand(0).getType())) {
         return new Literal(call.getValue(), call.getType());
       }
 

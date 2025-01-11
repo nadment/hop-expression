@@ -50,12 +50,18 @@ public class LengthFunction extends Function {
     if (Types.isBinary(type)) {
       return new Call(BinaryLengthFunction.INSTANCE, call.getOperands());
     }
+
     return new Call(StringLengthFunction.INSTANCE, call.getOperands());
   }
 
   /** The function returns the number of characters of the specified string. */
   private static final class StringLengthFunction extends LengthFunction {
     public static final StringLengthFunction INSTANCE = new StringLengthFunction();
+
+    @Override
+    public boolean coerceOperandsType(Call call) {
+      return Types.coerceOperandType(call, Types.STRING, 0);
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -28,6 +28,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Returns the values rounded to the nearest equal or larger integer.
@@ -44,6 +45,11 @@ public class CeilFunction extends Function {
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/ceil.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override

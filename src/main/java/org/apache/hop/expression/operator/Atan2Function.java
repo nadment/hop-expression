@@ -18,12 +18,14 @@ package org.apache.hop.expression.operator;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /** Calculates the arc tangent (inverted tangent) of y / x in the range -pi to pi. */
 @FunctionPlugin
@@ -36,6 +38,11 @@ public class Atan2Function extends Function {
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/atan2.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override

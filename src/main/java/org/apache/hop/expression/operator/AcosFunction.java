@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -25,6 +26,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Calculates the inverse cosine (arc cosine) of a number in radians; the result is a number in the
@@ -40,6 +42,11 @@ public class AcosFunction extends Function {
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/acos.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override

@@ -47,6 +47,11 @@ public class NegateOperator extends PrefixUnaryOperator {
   }
 
   @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
+  }
+
+  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
 

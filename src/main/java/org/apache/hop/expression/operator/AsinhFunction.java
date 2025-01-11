@@ -18,12 +18,14 @@ package org.apache.hop.expression.operator;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /** Compute the inverse hyperbolic sine of a number. */
 @FunctionPlugin
@@ -36,6 +38,11 @@ public class AsinhFunction extends Function {
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
         "/docs/asinh.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(final Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override

@@ -85,15 +85,15 @@ class CallTest extends ExpressionTest {
     // evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
 
     // Coercion to string
-    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(Types.STRING);
-    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
-    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
-    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
-    // evalEquals("Lower(FIELD_INTEGER::BOOLEAN)", "true");
-    // evalEquals("Lower(FIELD_NUMBER::BOOLEAN)", "true");
-    // evalEquals("Upper(FIELD_NUMBER::BOOLEAN)", "TRUE");
-    // evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
-    // evalEquals("Upper(FIELD_INTEGER::INTEGER)", "40");
+    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(Types.STRING);
+    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
+    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
+    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
+    //    evalEquals("Lower(FIELD_INTEGER::BOOLEAN)", "true");
+    //    evalEquals("Lower(FIELD_NUMBER::BOOLEAN)", "true");
+    //    evalEquals("Upper(FIELD_NUMBER::BOOLEAN)", "TRUE");
+    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
+    //    evalEquals("Upper(FIELD_INTEGER::INTEGER)", "40");
 
     // Coercion boolean to integer
     evalEquals("Abs(FIELD_BOOLEAN_TRUE)", 1L);

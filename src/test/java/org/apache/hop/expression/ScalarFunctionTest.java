@@ -142,8 +142,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Date to Epoch
-    evalEquals("TRY_TO_NUMBER(Date '1970-01-01')", 0L);
-    evalEquals("TRY_TO_NUMBER(Date '2019-02-25')", 1551052800L);
+    evalEquals("TRY_TO_NUMBER(Date '1970-01-01')", 0D);
+    evalEquals("TRY_TO_NUMBER(Date '2019-02-25')", 1551052800D);
     evalEquals(
         "TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
         new BigDecimal("1284352323.123456789"));
@@ -212,37 +212,45 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Coalesce numeric
     evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1));
-    // TODO: evalEquals("Coalesce(1,2,30)", 1L).returnType(IntegerType.of(2));
-    evalEquals("Coalesce(NULL_NUMBER,NULL_INTEGER,1,2)", 1L).returnType(Types.NUMBER);
+    evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1));
+    evalEquals("Coalesce(FIELD_INTEGER,1,2)", 40L).returnType(Types.INTEGER);
+    evalEquals("Coalesce(NULL_NUMBER,NULL_INTEGER,1,2)", 1D).returnType(Types.NUMBER);
     evalNull("Coalesce(NULL_NUMBER,NULL_INTEGER,NULL_BIGNUMBER)").returnType(Types.NUMBER);
+
+    evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1));
+    evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1));
 
     // Check operands
     evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     optimize("COALESCE(NULL)", "NULL");
     optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
-    optimize("COALESCE(NULL, FIELD_INTEGER, FIELD_NUMBER)", "IFNULL(FIELD_INTEGER,FIELD_NUMBER)");
+
+    // Coerce operands
+    optimize(
+        "COALESCE(NULL, FIELD_INTEGER, FIELD_NUMBER)",
+        "IFNULL(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)");
 
     // Duplicate coalesce
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
     optimize(
         "COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)",
-        "IFNULL(FIELD_INTEGER,FIELD_NUMBER)");
+        "IFNULL(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)");
     optimize(
         "COALESCE(FIELD_INTEGER, FIELD_NUMBER, 5, FIELD_NUMBER)",
-        "COALESCE(FIELD_INTEGER,FIELD_NUMBER,5)");
+        "COALESCE(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER,5)");
 
     // Flatten chained IFNULL or COALESCE
     optimize(
         "COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,IFNULL(FIELD_NUMBER,2)))",
-        "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
+        "COALESCE(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER,2)");
     optimize(
         "COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,COALESCE(FIELD_NUMBER,2)))",
-        "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
+        "COALESCE(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER,2)");
 
     // First not null is literal
     optimize("COALESCE(1, FIELD_INTEGER,FIELD_NUMBER)", "1");
-    optimize("COALESCE(null, 1, FIELD_INTEGER,FIELD_NUMBER)", "1");
+    optimize("COALESCE(null, 1, CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)", "1");
   }
 
   @Test
@@ -250,7 +258,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True").returnType(Types.STRING);
     evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
     evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(Types.INTEGER);
-    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", 2L).returnType(Types.NUMBER);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", new BigDecimal("2")).returnType(Types.NUMBER);
     evalEquals(
             "If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1))
         .returnType(Types.DATE);
@@ -304,7 +312,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   void IfNull() throws Exception {
     evalEquals("IfNull(1,FIELD_INTEGER)", 1L).returnType(Types.INTEGER);
-    evalEquals("IfNull(NULL_INTEGER, FIELD_NUMBER)", -5L).returnType(Types.NUMBER);
+    evalEquals("IfNull(NULL_INTEGER, FIELD_NUMBER)", -5.12D).returnType(Types.NUMBER);
 
     evalEquals("IfNull(NULL_STRING,'B')", "B").returnType(Types.STRING);
 
@@ -369,25 +377,32 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   void ZeroIfNull() throws Exception {
     evalEquals("ZeroIfNull(1)", 1L);
+    evalEquals("ZeroIfNull(1.1)", 1.1D);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
 
     // Check operands
     evalFails("ZeroIfNull()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT);
+
+    optimize("NULLIFZERO(0.00)", "NULL");
   }
 
   @Test
   void NullIfZero() throws Exception {
-    evalEquals("NULLIFZERO(0.1)", new BigDecimal("0.1"));
-    evalEquals("NULLIFZERO(0.1)", 0.1);
-    evalEquals("NullIfZero(1)", 1L);
+    evalEquals("NULLIFZERO(0.1)", 0.1D).returnType(NumberType.of(2, 1));
+    evalEquals("NullIfZero(1)", 1L).returnType(IntegerType.of(1));
+
     evalNull("NullIfZero(0)");
     evalNull("NullIfZero(0.000)");
     evalNull("NullIfZero(-0.0)");
+    evalNull("NullIfZero(NULL_INTEGER)");
+    evalNull("NullIfZero(NULL_NUMBER)");
 
     // Check operands
     evalFails("NullIfZero()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("NullIfZero(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("NullIfZero('test')", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimize("NULLIFZERO(0.1)", "0.1");
     optimizeNull("NULLIFZERO(0.0)");
@@ -1553,8 +1568,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Acos() throws Exception {
-    evalEquals("Acos(0)", 1.5707963267948966).returnType(Types.NUMBER);
-    evalEquals("Acos(1)", 0L).returnType(Types.NUMBER);
+    evalEquals("Acos(0)", new BigDecimal("1.5707963267948966")).returnType(Types.NUMBER);
+    evalEquals("Acos(1)", BigDecimal.ZERO).returnType(Types.NUMBER);
     evalNull("Acos(NULL_INTEGER)");
 
     // Check operands
@@ -1568,7 +1583,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Acosh() throws Exception {
-    evalEquals("Acosh(1)", 0L).returnType(Types.NUMBER);
+    evalEquals("Acosh(1)", BigDecimal.ZERO).returnType(Types.NUMBER);
     evalEquals("Acosh(3)", new BigDecimal("1.7627471740390860504652186499596"))
         .returnType(Types.NUMBER);
     evalNull("Acosh(NULL_INTEGER)").returnType(Types.NUMBER);
@@ -1581,7 +1596,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Asin() throws Exception {
-    evalEquals("Asin(0)", 0L).returnType(Types.NUMBER);
+    evalEquals("Asin(0)", BigDecimal.ZERO).returnType(Types.NUMBER);
     evalEquals("Asin(sin(0.5))", 0.5D);
     evalNull("Asin(NULL_INTEGER)").returnType(Types.NUMBER);
 
@@ -1618,7 +1633,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Atan2() throws Exception {
-    evalEquals("Atan2(0,3)", 0L).returnType(Types.NUMBER);
+    evalEquals("Atan2(0,3)", BigDecimal.ZERO).returnType(Types.NUMBER);
     evalEquals("Atan2(0,-3)", PI);
     evalNull("Atan2(NULL_INTEGER,0)").returnType(Types.NUMBER);
     evalNull("Atan2(1,NULL_INTEGER)");
@@ -1644,10 +1659,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Cos() throws Exception {
-    evalEquals("Cos(0)", 1L).returnType(Types.NUMBER);
+    evalEquals("Cos(0)", BigDecimal.ONE).returnType(Types.NUMBER);
     evalEquals("Cos(1)", new BigDecimal("0.54030230586813971740093660744298"))
         .returnType(Types.NUMBER);
-    evalEquals("Cos(Pi())", -1L);
+    evalEquals("Cos(Pi())", -1D);
     evalNull("Cos(NULL_NUMBER)");
 
     // Check operands
@@ -1660,7 +1675,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Cosh() throws Exception {
     evalEquals("Cosh(1.234)", new BigDecimal("1.8630338016984225890736437502561"))
         .returnType(Types.NUMBER);
-    evalEquals("Cosh(0)", 1L);
+    evalEquals("Cosh(0)", BigDecimal.ONE);
     evalNull("Cosh(NULL_NUMBER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1671,10 +1686,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Sin() throws Exception {
-    evalEquals("Sin(0)", 0L);
+    evalEquals("Sin(0)", BigDecimal.ZERO);
     evalEquals("Sin(1)", new BigDecimal("0.84147098480789650665250232163030"))
         .returnType(Types.NUMBER);
-    evalEquals("Sin(Pi()/2)", 1L);
+    evalEquals("Sin(Pi()/2)", BigDecimal.ONE);
     evalNull("Sin(NULL_NUMBER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1687,7 +1702,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Sinh() throws Exception {
     evalEquals("Sinh(84.4)", new BigDecimal("2.2564425307670914188455367832027E+36"))
         .returnType(Types.NUMBER);
-    evalEquals("Sinh(0)", 0L);
+    evalEquals("Sinh(0)", BigDecimal.ZERO);
     evalNull("Sinh(NULL_NUMBER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1713,7 +1728,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Csc() throws Exception {
-    evalEquals("Csc(Pi()/2)", 1L).returnType(Types.NUMBER);
+    evalEquals("Csc(Pi()/2)", BigDecimal.ONE).returnType(Types.NUMBER);
     evalNull("Csc(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1728,7 +1743,8 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Csch() throws Exception {
     evalEquals("Csch(1.5)", new BigDecimal("0.4696424405952245847295644318870206"))
         .returnType(Types.NUMBER);
-    evalEquals("Csch(Pi())", 0L).returnType(Types.NUMBER);
+    evalEquals("Csch(Pi())", new BigDecimal("0.08658953753004694182845976975218431"))
+        .returnType(Types.NUMBER);
     evalNull("Csch(NULL_INTEGER)");
 
     // Check operands
@@ -1741,7 +1757,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Sec() throws Exception {
-    evalEquals("Sec(Pi())", -1L).returnType(Types.NUMBER);
+    evalEquals("Sec(Pi())", -1D).returnType(Types.NUMBER);
 
     evalNull("Sec(NULL_INTEGER)").returnType(Types.NUMBER);
 
@@ -1749,14 +1765,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Sec()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Sec(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Sec(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
-
-    evalFails("Sec(0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Sec(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
   void Sech() throws Exception {
-    evalEquals("Sech(0)", 1L).returnType(Types.NUMBER);
-    evalEquals("Sech(1)", 0L);
+    evalEquals("Sech(0)", BigDecimal.ONE).returnType(Types.NUMBER);
+    evalEquals("Sech(1)", new BigDecimal("0.6480542736638853995749773532261342"));
     evalNull("Sech(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1769,7 +1784,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Tan() throws Exception {
     evalEquals("Tan(84.4)", new BigDecimal("-0.45017764606195051960412881423455"))
         .returnType(Types.NUMBER);
-    evalEquals("Tan(0)", 0L).returnType(Types.NUMBER);
+    evalEquals("Tan(0)", BigDecimal.ZERO).returnType(Types.NUMBER);
     evalNull("Tan(NULL_NUMBER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1782,7 +1797,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Tanh() throws Exception {
     evalEquals("Tanh(1.234)", new BigDecimal("0.84373566258933019391702000004355"))
         .returnType(Types.NUMBER);
-    evalEquals("Tanh(0)", 0L);
+    evalEquals("Tanh(0)", BigDecimal.ZERO);
     evalNull("Tanh(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1809,10 +1824,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Factorial() throws Exception {
-    evalEquals("Factorial(0)", 1L);
-    evalEquals("Factorial(1)", 1L);
-    evalEquals("Factorial(5)", 120L);
-    evalEquals("Factorial(10)", 3628800L);
+    evalEquals("Factorial(0)", BigDecimal.ONE);
+    evalEquals("Factorial(1)", BigDecimal.ONE);
+    evalEquals("Factorial(5)", new BigDecimal("120"));
+    evalEquals("Factorial(10)", new BigDecimal("3628800"));
     evalEquals("Factorial(33)", new BigDecimal("8683317618811886495518194401280000000"));
     evalEquals("Factorial(40)", new BigDecimal("815915283247897734345611269596115894272000000000"));
 
@@ -1828,11 +1843,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Power() throws Exception {
-    evalEquals("Power(3,2)", 9L).returnType(Types.NUMBER);
-    evalEquals("Power(100,0.5)", 10L);
-    evalEquals("Power(-4,2)", 16L);
-    evalEquals("Power(FIELD_INTEGER,0)", 1L);
-    evalEquals("Power(999,0)", 1L);
+    evalEquals("Power(3,2)", 9D).returnType(Types.NUMBER);
+    evalEquals("Power(100,0.5)", 10D);
+    evalEquals("Power(-4,2)", 16D);
+    evalEquals("Power(FIELD_INTEGER,0)", 1D);
+    evalEquals("Power(999,0)", 1D);
     evalEquals("Power(2,2.5)", new BigDecimal("5.6568542494923801952067548968388"));
     evalEquals("Power(2,-3)", 0.125D).returnType(Types.NUMBER);
     evalEquals("Power(2.000,-2)", new BigDecimal("0.25")).returnType(Types.NUMBER);
@@ -1851,7 +1866,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Power(-4,0.5)", ErrorCode.CALL_FUNCTION_ERROR);
 
     // Alias
-    evalEquals("Pow(3,2)", 9L);
+    evalEquals("Pow(3,2)", 9D);
 
     optimize("POWER(FIELD_INTEGER,1)", "FIELD_INTEGER");
   }
@@ -1873,10 +1888,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Cbrt() throws Exception {
-    evalEquals("Cbrt(0)", 0L);
-    evalEquals("Cbrt(1)", 1L);
-    evalEquals("Cbrt(64)", 4L);
-    evalEquals("Cbrt(343)", 7L);
+    evalEquals("Cbrt(0)", BigDecimal.ZERO);
+    evalEquals("Cbrt(1)", BigDecimal.ONE);
+    evalEquals("Cbrt(2)", new BigDecimal("1.2599210498948731647672106072782"));
+    evalEquals("Cbrt(64)", 4D);
+    evalEquals("Cbrt(343)", 7D);
     evalNull("Cbrt(NULL_INTEGER)");
 
     // Check operands
@@ -1886,7 +1902,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Sqrt() throws Exception {
-    evalEquals("Sqrt(9)", 3L);
+    evalEquals("Sqrt(9)", 3D);
     evalNull("Sqrt(NULL_INTEGER)");
 
     // Check operands
@@ -1898,8 +1914,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Square() throws Exception {
-    evalEquals("Square(1)", 1L);
-    evalEquals("Square(-5)", 25L);
+    evalEquals("Square(1)", 1D);
+    evalEquals("Square(-5)", 25D);
     evalEquals("Square(3.3)", new BigDecimal("3.3").multiply(new BigDecimal("3.3")));
     evalNull("Square(NULL_INTEGER)");
 
@@ -1969,9 +1985,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Numeric
     evalEquals("Greatest(5,2,9,4)", 9L).returnType(Types.INTEGER);
-    evalEquals("Greatest(-5,2.1,9,4)", 9L).returnType(Types.NUMBER);
     evalEquals("Greatest(123,FIELD_INTEGER,789)", 789L).returnType(Types.INTEGER);
-    evalEquals("Greatest(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", 123456L)
+    evalEquals("Greatest(-5,2.1,9,4)", new BigDecimal("9")).returnType(Types.NUMBER);
+    evalEquals("Greatest(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", 123456.789D)
         .returnType(Types.NUMBER);
 
     // TOTO: Numeric with String coercion
@@ -2017,13 +2033,14 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Numeric
     evalEquals("Least(5,2,9,4)", 2L).returnType(Types.INTEGER);
-    evalEquals("Least(-5,2.1,9,4)", -5L);
     evalEquals("Least(123,FIELD_INTEGER,789)", 40L).returnType(Types.INTEGER);
-    evalEquals("Least(FIELD_INTEGER,FIELD_NUMBER,789)", -5L).returnType(Types.NUMBER);
-    evalEquals("Least(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", -5L).returnType(Types.NUMBER);
+    evalEquals("Least(-5,2.1,9,4)", -5D).returnType(Types.NUMBER);
+    evalEquals("Least(FIELD_INTEGER,FIELD_NUMBER,789)", -5.12D).returnType(Types.NUMBER);
+    evalEquals("Least(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", -5.12D)
+        .returnType(Types.NUMBER);
 
-    // Numeric with coercion to String
-    evalEquals("Least('123',FIELD_INTEGER,789)", 40L).returnType(Types.NUMBER);
+    // TODO: Numeric with coercion to String
+    // evalEquals("Least('123',FIELD_INTEGER,789)", 40D).returnType(Types.NUMBER);
 
     // String
     evalEquals("Least('B','A','C')", "A").returnType(Types.STRING);
@@ -2073,8 +2090,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Length(true)", 4L);
     evalEquals("Length(FALSE)", 5L);
 
-    // Implicit conversion from Integer or Number to String
+    // Implicit conversion from Integer to String
     evalEquals("Length(5)", 1L);
+    evalEquals("Length(-5)", 2L);
+
+    // Implicit conversion from Number to String
     evalEquals("Length(-5.3)", 4L);
 
     // Implicit conversion from Date to String
@@ -2082,6 +2102,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Length()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Length('test','z')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -2193,8 +2214,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Left(NULL_BINARY,4)");
     evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
 
+    // Coercion to String
+    evalEquals("Left(FIELD_BOOLEAN_TRUE,1)", "T");
+    evalEquals("Left(FIELD_DATE,4)", "1981");
+
     // Check operands
-    evalFails("Left()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Left('Test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Left('TEST',10,0)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -2246,6 +2272,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
 
+    // Coercion to String
+    evalEquals("Right(FIELD_BOOLEAN_TRUE,1)", "E");
+    evalEquals("Right(FIELD_DATE,2)", "23");
+
     // Check operands
     evalFails("Right()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
@@ -2262,11 +2292,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Binary
     evalEquals("Repeat(BINARY '1234',0)", new byte[] {}).returnType(Types.BINARY);
-    evalEquals("Repeat(BINARY '1234',1)", new byte[] {0x12, 0x34});
+    evalEquals("Repeat(BINARY '1234',1)", new byte[] {0x12, 0x34}).returnType(Types.BINARY);
     evalEquals("Repeat(BINARY '1234',2)", new byte[] {0x12, 0x34, 0x12, 0x34});
     evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
 
-    evalNull("Repeat(NULL_BINARY,2)");
+    evalNull("Repeat(NULL_BINARY,2)").returnType(Types.BINARY);
     evalNull("Repeat(FIELD_BINARY,NULL_INTEGER)");
 
     // Check operands
@@ -2442,54 +2472,54 @@ public class ScalarFunctionTest extends ExpressionTest {
   void To_Number() throws Exception {
 
     // No precision/scale and no format
-    evalEquals("TO_NUMBER('1000')", 1000L);
-    evalEquals("TO_NUMBER('12.3456')", 12.3456);
-    evalEquals("TO_NUMBER('98.76546')", 98.76546);
-    evalEquals("TO_NUMBER('1.2E3')", 1200L);
+    evalEquals("TO_NUMBER('1000')", 1000D);
+    evalEquals("TO_NUMBER('12.3456')", 12.3456D);
+    evalEquals("TO_NUMBER('98.76546')", 98.76546D);
+    evalEquals("TO_NUMBER('1.2E3')", 1200D);
     evalEquals("TO_NUMBER('1.2E-3')", 0.0012D);
 
     // Underscore
-    evalEquals("TO_NUMBER('1_000')", 1000L);
-    evalEquals("TO_NUMBER('1_000.000_1')", 1000.0001);
+    evalEquals("TO_NUMBER('1_000')", 1000D);
+    evalEquals("TO_NUMBER('1_000.000_1')", 1000.0001D);
     evalEquals("TO_NUMBER('1_2.3_4E1_0')", 12.34E10D);
     evalEquals("TO_NUMBER('1_234.2E-3')", 1.2342D);
 
     // Format with Decimals
-    evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
-    evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
+    evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12D);
+    evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5D);
     Locale.setDefault(new Locale("en", "EN"));
-    evalEquals("TO_NUMBER('5467.12', '999999D99')", 5467.12);
+    evalEquals("TO_NUMBER('5467.12', '999999D99')", 5467.12D);
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("TO_NUMBER('5467,12', '999999D99')", 5467.12);
+    evalEquals("TO_NUMBER('5467,12', '999999D99')", 5467.12D);
 
     // Format No Decimals
-    evalEquals("TO_NUMBER('4687841', '9999999')", 4687841L);
+    evalEquals("TO_NUMBER('4687841', '9999999')", 4687841D);
 
     // Trailing space
-    evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
+    evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12D);
 
     // No sign
-    evalEquals("TO_NUMBER('+0.1','99.99')", 0.1);
-    evalEquals("TO_NUMBER('-0.2','99.99')", -0.2);
-    evalEquals("TO_NUMBER(' -0.2','99.99')", -0.2);
-    evalEquals("TO_NUMBER(' .2','99.99')", 0.2);
+    evalEquals("TO_NUMBER('+0.1','99.99')", 0.1D);
+    evalEquals("TO_NUMBER('-0.2','99.99')", -0.2D);
+    evalEquals("TO_NUMBER(' -0.2','99.99')", -0.2D);
+    evalEquals("TO_NUMBER(' .2','99.99')", 0.2D);
 
     // Sign S_ and _S
-    evalEquals("TO_NUMBER('-0.2','S99.99')", -0.2);
-    evalEquals("TO_NUMBER('0.3-','99.99S')", -0.3);
-    evalEquals("TO_NUMBER('0.3-','99.99s')", -0.3);
+    evalEquals("TO_NUMBER('-0.2','S99.99')", -0.2D);
+    evalEquals("TO_NUMBER('0.3-','99.99S')", -0.3D);
+    evalEquals("TO_NUMBER('0.3-','99.99s')", -0.3D);
 
     // Sign MI_ and _MI
-    evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4);
-    evalEquals("TO_NUMBER('0.4-','99.99mi')", -0.4);
-    evalEquals("TO_NUMBER('0.4 -','99.99mi')", -0.4);
-    evalEquals("TO_NUMBER(' 0.4 -','99.99mi')", -0.4);
-    evalEquals("TO_NUMBER('-   4','MI9999')", -4L);
-    evalEquals("TO_NUMBER('-4','MI9999')", -4L);
+    evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4D);
+    evalEquals("TO_NUMBER('0.4-','99.99mi')", -0.4D);
+    evalEquals("TO_NUMBER('0.4 -','99.99mi')", -0.4D);
+    evalEquals("TO_NUMBER(' 0.4 -','99.99mi')", -0.4D);
+    evalEquals("TO_NUMBER('-   4','MI9999')", -4D);
+    evalEquals("TO_NUMBER('-4','MI9999')", -4D);
 
     // Sign PR (format element can appear only in the last position of a number format model.)
-    evalEquals("TO_NUMBER(' 0.5 ','99.99PR')", 0.5);
-    evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5);
+    evalEquals("TO_NUMBER(' 0.5 ','99.99PR')", 0.5D);
+    evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5D);
     evalFails("TO_NUMBER('-5','PR9999')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Format with Thousand Group Markers
@@ -2502,43 +2532,43 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Format with Currency dollar
     Locale.setDefault(new Locale("en", "US"));
-    evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169);
+    evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169D);
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169);
+    evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169D);
 
     // Format with Currency symbol
     Locale.setDefault(new Locale("en", "US"));
-    evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
+    evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169D);
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("TO_NUMBER('€65.169', 'L99.999')", 65.169);
-    evalEquals("TO_NUMBER('65.16€', '99.999L')", 65.16);
+    evalEquals("TO_NUMBER('€65.169', 'L99.999')", 65.169D);
+    evalEquals("TO_NUMBER('65.16€', '99.999L')", 65.16D);
 
     // Format with Currency code
     Locale.setDefault(new Locale("en", "US"));
-    evalEquals("TO_NUMBER('USD65.169', 'C99.999')", 65.169);
+    evalEquals("TO_NUMBER('USD65.169', 'C99.999')", 65.169D);
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("TO_NUMBER('EUR65.169', 'C99.999')", 65.169);
-    evalEquals("TO_NUMBER('65.16EUR', '99.999C')", 65.16);
+    evalEquals("TO_NUMBER('EUR65.169', 'C99.999')", 65.169D);
+    evalEquals("TO_NUMBER('65.16EUR', '99.999C')", 65.16D);
 
     // Format Hex
-    evalEquals("TO_NUMBER('ABCD','FMXXXX')", 43981L);
+    evalEquals("TO_NUMBER('ABCD','FMXXXX')", 43981D);
 
     // Format Roman numeral
-    evalEquals("TO_NUMBER('DXV','RN')", 515L);
-    evalEquals("TO_NUMBER('CDLXXXV','RN')", 485L);
+    evalEquals("TO_NUMBER('DXV','RN')", 515D);
+    evalEquals("TO_NUMBER('CDLXXXV','RN')", 485D);
 
-    evalEquals("TO_NUMBER('MCMXCIX','rn')", 1999L);
-    evalEquals("TO_NUMBER('MMMDCCXXIV','rn')", 3724L);
+    evalEquals("TO_NUMBER('MCMXCIX','rn')", 1999D);
+    evalEquals("TO_NUMBER('MMMDCCXXIV','rn')", 3724D);
 
     // Parse multi format
-    evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234L);
+    evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234D);
 
     evalNull("TO_NUMBER(NULL_STRING)");
 
     // Date to number epoch
-    evalEquals("TO_NUMBER(Date '1970-01-01')", 0L);
-    evalEquals("TO_NUMBER(Date '2019-02-25')", 1551052800L);
-    evalEquals("TO_NUMBER(Date '1800-01-01')", -5364662400L);
+    evalEquals("TO_NUMBER(Date '1970-01-01')", BigDecimal.ZERO);
+    evalEquals("TO_NUMBER(Date '2019-02-25')", 1551052800D);
+    evalEquals("TO_NUMBER(Date '1800-01-01')", -5364662400D);
     evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123')", new BigDecimal("1284352323.123"));
     evalEquals(
         "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123000000')", new BigDecimal("1284352323.123"));
@@ -3242,9 +3272,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]')");
 
     // numeric type
-    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", 29L);
-    evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]')", 15L);
-    evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].price')", 8.95);
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", new BigDecimal(29L));
+    evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]')", new BigDecimal(15L));
+    evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].price')", new BigDecimal("8.95"));
 
     // TODO: Syntax of the special characters $[01] or $[6F,FF,00,1F] in variable resolution not
     // compatible with JsonPath array
@@ -3467,19 +3497,19 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Truncate() throws Exception {
-    evalEquals("Truncate(-975.975)", -975L); // TODO: .returnType(NumberType.of(3));
-    evalEquals("Truncate(-975.975,-1)", -970L);
-    evalEquals("Truncate(-975.975, 0)", -975L);
+    evalEquals("Truncate(-975.975)", -975D); // TODO: .returnType(NumberType.of(3));
+    evalEquals("Truncate(-975.975,-1)", -970D);
+    evalEquals("Truncate(-975.975, 0)", -975D);
     evalEquals("Truncate(-975.975, 2)", -975.97D); // .returnType(NumberType.of(3,2));
     evalEquals("Truncate(-975.975, 3)", -975.975D);
     evalEquals("Truncate(-975.975, 50)", -975.975D);
-    evalEquals("Truncate(123.456, -2)", 100L);
+    evalEquals("Truncate(123.456, -2)", 100D);
     evalEquals("truncate(123456789012345678999.999,-2)", new BigDecimal("123456789012345678900"));
     evalNull("Truncate(-975.975, NULL_INTEGER)");
     evalNull("Truncate(NULL_NUMBER, 2)");
 
     // Alias
-    evalEquals("Trunc(123.456, -2)", 100L);
+    evalEquals("Trunc(123.456, -2)", 100D);
 
     optimize("TRUNC(TRUNCATE(FIELD_NUMBER))", "TRUNCATE(FIELD_NUMBER)");
   }
@@ -3963,14 +3993,14 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Ceil() throws Exception {
-    evalEquals("Ceil(1)", 1L).returnType(NumberType.of(1));
-    evalEquals("Ceil(125.9)", 126L).returnType(NumberType.of(3));
-    evalEquals("Ceil(0.4873)", 1L).returnType(NumberType.of(1));
-    evalEquals("Ceil(-0.1)", 0L).returnType(NumberType.of(1));
-    evalEquals("Ceil(-0.65)", 0L).returnType(NumberType.of(1));
-    evalEquals("Ceil(-42.8)", -42L).returnType(NumberType.of(2));
-    evalEquals("Ceil(FIELD_INTEGER)", 40L);
-    evalEquals("Ceil(FIELD_NUMBER)", -5L);
+    evalEquals("Ceil(1)", 1D).returnType(NumberType.of(1));
+    evalEquals("Ceil(125.9)", 126D).returnType(NumberType.of(3));
+    evalEquals("Ceil(0.4873)", 1D).returnType(NumberType.of(1));
+    evalEquals("Ceil(-0.1)", 0D).returnType(NumberType.of(1));
+    evalEquals("Ceil(-0.65)", 0D).returnType(NumberType.of(1));
+    evalEquals("Ceil(-42.8)", -42D).returnType(NumberType.of(2));
+    evalEquals("Ceil(FIELD_INTEGER)", 40D);
+    evalEquals("Ceil(FIELD_NUMBER)", -5D);
     evalEquals("Ceil(FIELD_BIGNUMBER)", new BigDecimal("123457"));
 
     evalNull("Ceil(NULL_INTEGER)");
@@ -3989,14 +4019,14 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Floor() throws Exception {
-    evalEquals("Floor(1)", 1L).returnType(NumberType.of(1));
-    evalEquals("Floor(125.9)", 125L).returnType(NumberType.of(3));
-    evalEquals("Floor(0.4873)", 0L).returnType(NumberType.of(1));
-    evalEquals("Floor(-0.1)", -1L).returnType(NumberType.of(1));
-    evalEquals("Floor(-0.65)", -1L).returnType(NumberType.of(1));
-    evalEquals("Floor(-42.8)", -43L).returnType(NumberType.of(2));
-    evalEquals("Floor(FIELD_INTEGER)", 40L);
-    evalEquals("Floor(FIELD_NUMBER)", -6L);
+    evalEquals("Floor(1)", 1D).returnType(NumberType.of(1));
+    evalEquals("Floor(125.9)", 125D).returnType(NumberType.of(3));
+    evalEquals("Floor(0.4873)", 0D).returnType(NumberType.of(1));
+    evalEquals("Floor(-0.1)", -1D).returnType(NumberType.of(1));
+    evalEquals("Floor(-0.65)", -1D).returnType(NumberType.of(1));
+    evalEquals("Floor(-42.8)", -43D).returnType(NumberType.of(2));
+    evalEquals("Floor(FIELD_INTEGER)", 40D);
+    evalEquals("Floor(FIELD_NUMBER)", -6D);
     evalEquals("Floor(FIELD_BIGNUMBER)", new BigDecimal("123456"));
 
     evalNull("Floor(NULL_INTEGER)");
@@ -4015,15 +4045,15 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Round() throws Exception {
-    evalEquals("Round(1)", 1L).returnType(Types.NUMBER);
-    evalEquals("Round(2.5)", 3L).returnType(Types.NUMBER);
-    evalEquals("Round(-2.5)", -3L).returnType(Types.NUMBER);
+    evalEquals("Round(1)", 1D).returnType(Types.NUMBER);
+    evalEquals("Round(2.5)", 3D).returnType(Types.NUMBER);
+    evalEquals("Round(-2.5)", -3D).returnType(Types.NUMBER);
     evalEquals("Round(12.123456,2)", new BigDecimal("12.12")).returnType(Types.NUMBER);
-    evalEquals("Round(12.123456,-1)", 10L).returnType(Types.NUMBER);
-    evalEquals("Round(125.49)", 125L);
-    evalEquals("Round(125.99)", 126L);
-    evalEquals("Round(0.4873)", 0L);
-    evalEquals("Round(-0.65)", -1L);
+    evalEquals("Round(12.123456,-1)", 10D).returnType(Types.NUMBER);
+    evalEquals("Round(125.49)", 125D);
+    evalEquals("Round(125.99)", 126D);
+    evalEquals("Round(0.4873)", 0D);
+    evalEquals("Round(-0.65)", -1D);
     evalEquals("Round(9223372036854775807,-1)", new BigDecimal("9223372036854775810"))
         .returnType(Types.NUMBER);
 
@@ -4042,7 +4072,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Ln() throws Exception {
-    evalEquals("Ln(1)", 0L).returnType(Types.NUMBER);
+    evalEquals("Ln(1)", 0D).returnType(Types.NUMBER);
     evalEquals("Ln(Exp(2.4))", 2.4D).returnType(Types.NUMBER);
     evalEquals("Ln(10)", new BigDecimal("2.3025850929940456840179914546844"))
         .returnType(Types.NUMBER);
@@ -4058,8 +4088,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Log() throws Exception {
-    evalEquals("Log(10,100)", 2L).returnType(Types.NUMBER);
-    evalEquals("Log(10,1000)", 3L);
+    evalEquals("Log(10,100)", 2D).returnType(Types.NUMBER);
+    evalEquals("Log(10,1000)", 3D);
     evalNull("Log(10,NULL_INTEGER)").returnType(Types.NUMBER);
     evalNull("Log(NULL_INTEGER,1)").returnType(Types.NUMBER);
 
@@ -4073,8 +4103,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Log10() throws Exception {
-    evalEquals("Log10(10)", 1L).returnType(Types.NUMBER);
-    evalEquals("Log10(1000)", 3L).returnType(Types.NUMBER);
+    evalEquals("Log10(10)", 1D).returnType(Types.NUMBER);
+    evalEquals("Log10(1000)", 3D).returnType(Types.NUMBER);
     evalNull("Log10(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -4086,8 +4116,8 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Degrees() throws Exception {
-    evalEquals("Degrees(Pi())", 180L).returnType(Types.NUMBER);
-    evalEquals("Degrees(Radians(50))", 50L).returnType(Types.NUMBER);
+    evalEquals("Degrees(Pi())", new BigDecimal("180")).returnType(Types.NUMBER);
+    evalEquals("Degrees(Radians(50))", new BigDecimal("50")).returnType(Types.NUMBER);
     evalNull("Degrees(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands

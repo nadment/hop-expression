@@ -31,7 +31,7 @@ public class SpaceFunction extends Function {
     super(
         "SPACE",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.NUMBER,
+        OperandTypes.INTEGER,
         OperatorCategory.STRING,
         "/docs/space.html");
   }

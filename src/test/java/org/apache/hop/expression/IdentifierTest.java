@@ -47,8 +47,8 @@ public class IdentifierTest extends ExpressionTest {
 
   @Test
   void eval() throws Exception {
-    evalEquals("FIELD_INTEGER%2", 0L);
-    evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0L);
+    evalEquals("FIELD_INTEGER%2", 0D);
+    evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0D);
     evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
     evalEquals("\"IDENTIFIER_UNDERSCORE\"", "UNDERSCORE");
     evalEquals("\"IDENTIFIER lower\"", "lower");
@@ -80,7 +80,7 @@ public class IdentifierTest extends ExpressionTest {
         LocalDate.of(2025, Month.JANUARY, 1));
     evalEquals("Abs(FIELD_STRING_NUMBER::NUMBER)", new BigDecimal("12.56"));
     evalEquals("LOWER(FIELD_STRING_JSON)", "{id:\"01\",name:\"john\",age:29}");
-    evalEquals("Json_Value(FIELD_STRING_JSON, '$.age')", 29L);
+    evalEquals("Json_Value(FIELD_STRING_JSON, '$.age')", new BigDecimal("29"));
     // evalEquals("DECOMPRESS(FIELD_STRING)","");
   }
 

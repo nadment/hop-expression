@@ -170,6 +170,9 @@ public final class ReturnTypes {
         // Keep ARG0 type
         if (type.is(TypeName.INTEGER) || type.is(TypeName.INTERVAL)) return type;
 
+        // If boolean return integer
+        if (type.is(TypeName.BOOLEAN)) return Types.INTEGER.withNullability(type.isNullable());
+
         // By default coerce to Number
         return Types.NUMBER.withNullability(type.isNullable());
       };

@@ -228,7 +228,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals("BINARY", String.valueOf(Types.BINARY));
     assertEquals("BINARY", String.valueOf(BinaryType.of(-1)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
-    assertEquals("INTEGER(10)[]", String.valueOf(ArrayType.of(IntegerType.of(10))));
+    assertEquals("ARRAY<INTEGER(10)>", String.valueOf(ArrayType.of(IntegerType.of(10))));
   }
 
   @Test

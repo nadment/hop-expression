@@ -274,6 +274,17 @@ public class Types {
     if (isNumeric(left) && isString(right)) {
       return coerceOperandsType(call, NUMBER);
     }
+
+    // Numeric <operator> BOOLEAN -> Same type as left numeric
+    if (isNumeric(left) && isBoolean(right)) {
+      return Types.coerceOperandType(call, left, 1);
+    }
+
+    // BOOLEAN <operator> numeric -> Same type as right numeric
+    if (isBoolean(left) && isNumeric(right)) {
+      return Types.coerceOperandType(call, right, 0);
+    }
+
     // NUMBER <operator> INTEGER -> NUMBER
     //    if (Types.isNumber(left) && Types.isInteger(right)) {
     //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
@@ -302,6 +313,17 @@ public class Types {
     if (isNumeric(left) && isString(right)) {
       return Types.coerceOperandType(call, NUMBER, 1);
     }
+
+    // Numeric <operator> BOOLEAN -> Same type as left numeric
+    if (isNumeric(left) && isBoolean(right)) {
+      return Types.coerceOperandType(call, left, 1);
+    }
+
+    // BOOLEAN <operator> numeric -> Same type as right numeric
+    if (isBoolean(left) && isNumeric(right)) {
+      return Types.coerceOperandType(call, right, 0);
+    }
+
     // NUMBER <operator> INTEGER -> NUMBER
     //    if (Types.isNumber(left) && Types.isInteger(right)) {
     //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
@@ -426,27 +448,6 @@ public class Types {
     if (type == null) return false;
     return type.is(TypeName.INTERVAL);
   }
-
-  /** Return the default {@link Type} that belongs to this {@link TypeName}. */
-  // public Type getDefaultType(TypeIdTypes.STRINGch (id) {
-  // case BOOLEAN:
-  // return Types.BOOLEAN;
-  // case BINARY:
-  // return Types.BINARY;
-  // case STRING:
-  // return StringType.STRING;
-  // case TEMPORAL:
-  // return Types.DATE;
-  // case INTERVAL:
-  // return Types.INTERVAL;
-  // case NUMERIC:
-  // return Types.NUMBER;
-  // case JSON:
-  // return Types.JSON;
-  // default:
-  // return null;
-  // }
-  // }
 
   public static IValueMeta createValueMeta(final String name, final TypeName typeId) {
 

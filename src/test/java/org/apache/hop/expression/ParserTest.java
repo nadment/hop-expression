@@ -223,15 +223,15 @@ public class ParserTest extends ExpressionTest {
     evalEquals("8+(5-2)*8", 8L + (5 - 2) * 8L);
     evalEquals("1+10*2", 1 + 10 * 2L);
     evalEquals("10*(2+1)", 30L);
-    evalEquals("30/(5+5)", 3L);
-    evalEquals("42%(3+2)", 2L);
+    evalEquals("30/(5+5)", 3D);
+    evalEquals("42%(3+2)", 2D);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0L);
 
     // Operators with the same precedence and adjacent, respect associativity without parenthesis
     evalEquals("3*5/2", 3 * 5 / 2d);
-    evalEquals("9/3*3", 9L / 3L * 3L);
-    evalEquals("-10*2/4+1", -10L * 2L / 4L + 1L);
+    evalEquals("9/3*3", 9L / 3L * 3d);
+    evalEquals("-10*2/4+1", -10L * 2L / 4L + 1d);
 
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
@@ -251,7 +251,7 @@ public class ParserTest extends ExpressionTest {
     evalFalse("1 = 1 is null");
     evalTrue(" 3 > 5 IS FALSE");
 
-    // BETWEEN, IN, LIKE have higher precedence than comparison
+    // TODO: BETWEEN, IN, LIKE have higher precedence than comparison
     // evalFalse("5 between 4>=4 and 6<=6");
 
     // The cast operator has higher precedence than the unary minus (negation) operator,

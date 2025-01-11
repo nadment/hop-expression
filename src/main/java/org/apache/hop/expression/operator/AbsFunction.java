@@ -45,6 +45,11 @@ public class AbsFunction extends Function {
   }
 
   @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsType(call, call.getType());
+  }
+
+  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Idempotent function repetition ABS(ABS(x)) → ABS(x)
     if (call.getOperand(0).isOperator(call.getOperator())) {

@@ -29,6 +29,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The IFNULL function replace the null with value (Alias NVL).
@@ -89,5 +90,10 @@ public class IfNullFunction extends Function {
     Object value = operands[0].getValue();
     if (value == null) return operands[1].getValue();
     return value;
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsType(call, call.getType());
   }
 }

@@ -276,11 +276,14 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456", Literal.of(-123456L).toString());
 
     // Integer decimal
-    evalEquals("-9223372036854775808", Long.MIN_VALUE);
-    evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
     evalEquals("1_234", 1234L).returnType(IntegerType.of(4));
     evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4));
     evalEquals("-1234", -1234L).returnType(IntegerType.of(4));
+
+    // Integer decimal with 19 digits or more
+    evalEquals("-9223372036854775808", new BigDecimal(Long.MIN_VALUE))
+        .returnType(NumberType.of(19));
+    evalEquals("922_3372_0368_5477_5807", new BigDecimal(Long.MAX_VALUE));
 
     // Invalid integer
     evalFails("123_", ErrorCode.INVALID_NUMBER);
@@ -299,7 +302,8 @@ public class LiteralTest extends ExpressionTest {
     // Integer hexadecimal
     evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9));
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
-    evalEquals("0xFFFF_EEEE_0000_AAA0", 0xFFFF_EEEE_0000_AAA0L);
+    // Not a negative like  Java [0xffffeeee0000aaa0]=-18769007039840
+    evalEquals("0xFFFF_EEEE_0000_AAA0", new BigDecimal("18446725304702511776"));
     evalEquals("0X1F", 0x1FL);
     evalEquals("0x0F", 0xFL);
     evalEquals("0x0_F", 0xFL);
@@ -378,7 +382,7 @@ public class LiteralTest extends ExpressionTest {
     // Number binary
     evalEquals(
             "0b1010000101000101101000010100010110100001010001011010000101000101",
-            0b1010000101000101101000010100010110100001010001011010000101000101L)
+            new BigDecimal("11620871733929943365"))
         .returnType(NumberType.of(20));
 
     // Number with exponent

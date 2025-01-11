@@ -28,6 +28,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /** Returns a number raised to the specified power exponent. */
 @FunctionPlugin(names = "POW")
@@ -40,6 +41,11 @@ public class PowerFunction extends Function {
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/power.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsType(call, call.getType());
   }
 
   @Override

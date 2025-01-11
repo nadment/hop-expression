@@ -16,12 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * An operator describing the <code>IS FALSE</code> operator.
@@ -39,6 +41,11 @@ public class IsFalseOperator extends PostfixUnaryOperator {
         OperandTypes.BOOLEAN,
         OperatorCategory.COMPARISON,
         "/docs/is-false.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, Types.BOOLEAN, 0);
   }
 
   @Override

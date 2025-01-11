@@ -26,6 +26,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * The function convert a string value to upper case. @See {@link LowerFunction}, {@link
@@ -43,6 +44,11 @@ public class UpperFunction extends Function {
         OperandTypes.STRING,
         OperatorCategory.STRING,
         "/docs/upper.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override

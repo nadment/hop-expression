@@ -66,8 +66,9 @@ public final class ArrayType extends Type {
   @Override
   protected String generateSignature() {
     StringBuilder builder = new StringBuilder();
+    builder.append("ARRAY<");
     builder.append(elementType.generateSignature());
-    builder.append("[]");
+    builder.append(">");
     return builder.toString();
   }
 

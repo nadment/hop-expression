@@ -23,10 +23,11 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
 /** Returns NULL if the argument evaluates to 0; otherwise, returns the argument. */
 @FunctionPlugin
@@ -35,29 +36,45 @@ public class NullIfZeroFunction extends Function {
   public NullIfZeroFunction() {
     super(
         "NULLIFZERO",
-        ReturnTypes.NUMBER_NULLABLE,
-        OperandTypes.NUMBER,
+        ReturnTypes.ARG0,
+        OperandTypes.INTEGER.or(OperandTypes.NUMBER),
         OperatorCategory.CONDITIONAL,
         "/docs/nullifzero.html");
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
-    BigDecimal value = operands[0].getValue(BigDecimal.class);
-
-    if (value.signum() == 0) {
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    Type type = call.getOperand(0).getType();
+    if (Types.isInteger(type)) {
+      return new Call(IntegerNullIfZeroFunction.INSTANCE, call.getOperands());
     }
 
-    return value;
+    return new Call(NumberNullIfZeroFunction.INSTANCE, call.getOperands());
   }
 
-  @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    if (call.getOperand(0) == Literal.ZERO) {
-      return new Literal(null, call.getType());
-    }
+  private static final class NumberNullIfZeroFunction extends NullIfZeroFunction {
+    private static final NumberNullIfZeroFunction INSTANCE = new NumberNullIfZeroFunction();
 
-    return call;
+    @Override
+    public Object eval(final IExpression[] operands) {
+      BigDecimal value = operands[0].getValue(BigDecimal.class);
+      if (value == null || value.signum() == 0) {
+        return null;
+      }
+      return value;
+    }
+  }
+
+  private static final class IntegerNullIfZeroFunction extends NullIfZeroFunction {
+    private static final IntegerNullIfZeroFunction INSTANCE = new IntegerNullIfZeroFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long value = operands[0].getValue(Long.class);
+      if (value == null || value == 0) {
+        return null;
+      }
+      return value;
+    }
   }
 }

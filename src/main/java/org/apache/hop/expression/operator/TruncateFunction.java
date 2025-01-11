@@ -27,11 +27,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Round down numeric expressions or truncates.
  *
- * @see {@link CeilingOperator}, {@link FloorOperator}, {@link RoundOperator}
+ * @see {@link CeilOperator}, {@link FloorOperator}, {@link RoundOperator}
  */
 @FunctionPlugin(names = "TRUNC")
 public class TruncateFunction extends Function {
@@ -43,6 +44,11 @@ public class TruncateFunction extends Function {
         OperandTypes.NUMBER.or(OperandTypes.NUMBER_NUMBER),
         OperatorCategory.MATHEMATICAL,
         "/docs/truncate.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override
