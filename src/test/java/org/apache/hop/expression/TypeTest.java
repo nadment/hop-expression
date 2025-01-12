@@ -43,7 +43,7 @@ import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.FormatParseException;
-import org.apache.hop.expression.util.JsonConverter;
+import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 
 public class TypeTest extends ExpressionTest {
@@ -171,7 +171,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeName.NUMBER, TypeName.fromValue(BigDecimal.valueOf(123456789, 3)));
     assertEquals(TypeName.DATE, TypeName.fromValue(ZonedDateTime.now()));
     assertEquals(TypeName.INTERVAL, TypeName.fromValue(Interval.of(5)));
-    assertEquals(TypeName.JSON, TypeName.fromValue(JsonConverter.convert("{\"name\":\"Smith\"}")));
+    assertEquals(TypeName.JSON, TypeName.fromValue(JsonConversion.convert("{\"name\":\"Smith\"}")));
   }
 
   @Test
@@ -376,7 +376,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals("3.123", type.cast(new BigDecimal("3.123")));
     assertEquals("-3.123", type.cast(new BigDecimal("-3.123")));
     assertEquals("ABCD��", type.cast("ABCD��".getBytes(StandardCharsets.UTF_8)));
-    assertEquals("{\"name\":\"Smith\"}", type.cast(JsonConverter.convert("{\"name\":\"Smith\"}")));
+    assertEquals("{\"name\":\"Smith\"}", type.cast(JsonConversion.convert("{\"name\":\"Smith\"}")));
   }
 
   @Test

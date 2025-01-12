@@ -20,7 +20,7 @@ package org.apache.hop.expression.type;
 import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.StringConversion;
 
 public final class BinaryType extends Type {
 
@@ -86,7 +86,7 @@ public final class BinaryType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringConverter.convert((byte[]) value));
+      return clazz.cast(StringConversion.convert((byte[]) value));
     }
 
     return super.convert(value, clazz);

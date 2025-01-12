@@ -20,8 +20,8 @@ package org.apache.hop.expression.type;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.JsonConverter;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.JsonConversion;
+import org.apache.hop.expression.util.StringConversion;
 
 public final class JsonType extends Type {
 
@@ -76,7 +76,7 @@ public final class JsonType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringConverter.convert((JsonNode) value));
+      return clazz.cast(StringConversion.convert((JsonNode) value));
     }
 
     return super.convert(value, clazz);
@@ -107,7 +107,7 @@ public final class JsonType extends Type {
     }
 
     if (value instanceof String str) {
-      return JsonConverter.convert(str);
+      return JsonConversion.convert(str);
     }
 
     throw new ConversionException(

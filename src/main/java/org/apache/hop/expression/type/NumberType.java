@@ -23,7 +23,7 @@ import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.NumberConverter;
+import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 
 /** Number type with an optional precision and scale: */
@@ -146,13 +146,13 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(l);
     }
     if (value instanceof String str) {
-      return NumberConverter.convert(str);
+      return NumberConversion.convert(str);
     }
     if (value instanceof byte[] bytes) {
-      return NumberConverter.convert(bytes);
+      return NumberConversion.convert(bytes);
     }
     if (value instanceof ZonedDateTime dt) {
-      return NumberConverter.convert(dt);
+      return NumberConversion.convert(dt);
     }
 
     throw new ConversionException(
@@ -176,7 +176,7 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(number);
     }
     if (value instanceof String str) {
-      return NumberConverter.convert(str);
+      return NumberConversion.convert(str);
     }
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.NUMBER);

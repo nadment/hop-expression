@@ -21,12 +21,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.util.BinaryConverter;
-import org.apache.hop.expression.util.BooleanConverter;
-import org.apache.hop.expression.util.IntegerConverter;
-import org.apache.hop.expression.util.JsonConverter;
-import org.apache.hop.expression.util.NumberConverter;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.BinaryConversion;
+import org.apache.hop.expression.util.BooleanConversion;
+import org.apache.hop.expression.util.IntegerConversion;
+import org.apache.hop.expression.util.JsonConversion;
+import org.apache.hop.expression.util.NumberConversion;
+import org.apache.hop.expression.util.StringConversion;
 
 public final class AnyType extends Type {
 
@@ -63,19 +63,19 @@ public final class AnyType extends Type {
     // JSon function return type ANY
     if (value instanceof String str) {
       if (clazz == Boolean.class) {
-        return clazz.cast(BooleanConverter.convert(str));
+        return clazz.cast(BooleanConversion.convert(str));
       }
       if (clazz == Long.class) {
-        return clazz.cast(IntegerConverter.convert(str));
+        return clazz.cast(IntegerConversion.convert(str));
       }
       if (clazz == BigDecimal.class) {
-        return clazz.cast(NumberConverter.convert(str));
+        return clazz.cast(NumberConversion.convert(str));
       }
       if (clazz == byte[].class) {
-        return clazz.cast(BinaryConverter.convert(str));
+        return clazz.cast(BinaryConversion.convert(str));
       }
       if (clazz == JsonNode.class) {
-        return clazz.cast(JsonConverter.convert(str));
+        return clazz.cast(JsonConversion.convert(str));
       }
     }
     if (value instanceof BigDecimal number) {
@@ -86,12 +86,12 @@ public final class AnyType extends Type {
         return clazz.cast(number.longValue());
       }
       if (clazz == String.class) {
-        return clazz.cast(StringConverter.convert(number));
+        return clazz.cast(StringConversion.convert(number));
       }
     }
     if (value instanceof Boolean bool) {
       if (clazz == String.class) {
-        return clazz.cast(StringConverter.convert(bool));
+        return clazz.cast(StringConversion.convert(bool));
       }
       if (clazz == Long.class) {
         return clazz.cast(bool ? 1L : 0L);

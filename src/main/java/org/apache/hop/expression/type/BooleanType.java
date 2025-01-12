@@ -20,7 +20,7 @@ package org.apache.hop.expression.type;
 import java.math.BigDecimal;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.BooleanConverter;
+import org.apache.hop.expression.util.BooleanConversion;
 
 public final class BooleanType extends Type {
 
@@ -113,7 +113,7 @@ public final class BooleanType extends Type {
       return number.signum() != 0;
     }
     if (value instanceof String str) {
-      return BooleanConverter.convert(str);
+      return BooleanConversion.convert(str);
     }
 
     throw new ConversionException(

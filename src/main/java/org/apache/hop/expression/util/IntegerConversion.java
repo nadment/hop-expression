@@ -24,7 +24,7 @@ import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.type.TypeName;
 
-public final class IntegerConverter {
+public final class IntegerConversion extends Conversion<Long> {
 
   /** BigInteger equal to Long.MIN_VALUE. */
   private static final BigInteger LONGMIN = BigInteger.valueOf(Long.MIN_VALUE);
@@ -34,8 +34,18 @@ public final class IntegerConverter {
 
   private static NumberFormat numberFormat = NumberFormat.of("TM");
 
-  private IntegerConverter() {
+  private IntegerConversion() {
     // Utility class
+  }
+
+  @Override
+  public Class<Long> getConvertedType() {
+    return Long.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.INTEGER;
   }
 
   public static final Long convert(final BigDecimal number) throws ConversionException {

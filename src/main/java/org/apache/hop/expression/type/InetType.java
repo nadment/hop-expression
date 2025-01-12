@@ -20,8 +20,8 @@ package org.apache.hop.expression.type;
 import java.net.InetAddress;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.InetConverter;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.InetConversion;
+import org.apache.hop.expression.util.StringConversion;
 
 public final class InetType extends Type {
 
@@ -73,7 +73,7 @@ public final class InetType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringConverter.convert((InetAddress) value));
+      return clazz.cast(StringConversion.convert((InetAddress) value));
     }
 
     return super.convert(value, clazz);
@@ -104,7 +104,7 @@ public final class InetType extends Type {
     }
 
     if (value instanceof String str) {
-      return InetConverter.convert(str);
+      return InetConversion.convert(str);
     }
 
     throw new ConversionException(

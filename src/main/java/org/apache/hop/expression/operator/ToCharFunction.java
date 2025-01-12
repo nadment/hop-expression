@@ -37,7 +37,7 @@ import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Hex;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.StringConversion;
 
 /** Converts a numeric or date expression to a string value. */
 @FunctionPlugin
@@ -174,7 +174,7 @@ public class ToCharFunction extends Function {
       if (value == null) {
         return null;
       }
-      return StringConverter.convert(value);
+      return StringConversion.convert(value);
     }
   }
 

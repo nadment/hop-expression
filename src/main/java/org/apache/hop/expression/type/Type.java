@@ -110,6 +110,18 @@ public abstract class Type {
     return getName().isCoercible(type.getName());
   }
 
+  /** Returns whether a type is atomic (date, numeric, string or BOOLEAN). */
+  public boolean isAtomic() {
+    TypeName name = getName();
+    return name == TypeName.STRING
+        || name == TypeName.DATE
+        || name == TypeName.INTEGER
+        || name == TypeName.NUMBER
+        || name == TypeName.BOOLEAN
+        || name == TypeName.BINARY
+        || name == TypeName.INET;
+  }
+
   /**
    * Gets the {@link TypeComparability} of this type used by comparison operators.
    *

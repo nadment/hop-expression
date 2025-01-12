@@ -27,14 +27,28 @@ import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.type.TypeName;
 
-public final class StringConverter {
+public final class StringConversion extends Conversion<String> {
 
-  private StringConverter() {
+  private StringConversion() {
     // Utility class
+  }
+
+  @Override
+  public Class<String> getConvertedType() {
+    return String.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.STRING;
   }
 
   public static String convert(final boolean value) {
     return value ? "TRUE" : "FALSE";
+  }
+
+  public static String convert(final Long value) {
+    return value.toString();
   }
 
   public static String convert(final BigDecimal value) {

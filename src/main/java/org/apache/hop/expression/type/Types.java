@@ -396,19 +396,6 @@ public class Types {
     return false;
   }
 
-  /** Returns whether a type is atomic (date, numeric, string or BOOLEAN). */
-  public static boolean isAtomic(final Type type) {
-    if (type == null) return false;
-    TypeName id = type.getName();
-    return id == TypeName.STRING
-        || id == TypeName.DATE
-        || id == TypeName.INTEGER
-        || id == TypeName.NUMBER
-        || id == TypeName.BOOLEAN
-        || id == TypeName.BINARY
-        || id == TypeName.INET;
-  }
-
   public static boolean isBinary(final Type type) {
     if (type == null) return false;
     return type.is(TypeName.BINARY);

@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.util.NumberConverter;
+import org.apache.hop.expression.util.NumberConversion;
 
 /** Check if a string or a numeric is a valid number. */
 @FunctionPlugin
@@ -70,7 +70,7 @@ public class IsNumberFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     try {
-      NumberConverter.convert(value);
+      NumberConversion.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

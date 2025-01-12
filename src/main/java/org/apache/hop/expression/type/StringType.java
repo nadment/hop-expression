@@ -24,16 +24,16 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.BinaryConverter;
-import org.apache.hop.expression.util.BooleanConverter;
-import org.apache.hop.expression.util.DateConverter;
+import org.apache.hop.expression.util.BinaryConversion;
+import org.apache.hop.expression.util.BooleanConversion;
+import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.InetConverter;
-import org.apache.hop.expression.util.IntegerConverter;
-import org.apache.hop.expression.util.JsonConverter;
-import org.apache.hop.expression.util.NumberConverter;
+import org.apache.hop.expression.util.InetConversion;
+import org.apache.hop.expression.util.IntegerConversion;
+import org.apache.hop.expression.util.JsonConversion;
+import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.StringConversion;
 
 public final class StringType extends Type {
 
@@ -85,25 +85,25 @@ public final class StringType extends Type {
       return clazz.cast(value);
     }
     if (clazz == Boolean.class) {
-      return clazz.cast(BooleanConverter.convert((String) value));
+      return clazz.cast(BooleanConversion.convert((String) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerConverter.convert((String) value));
+      return clazz.cast(IntegerConversion.convert((String) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberConverter.convert((String) value));
+      return clazz.cast(NumberConversion.convert((String) value));
     }
     if (clazz == byte[].class) {
-      return clazz.cast(BinaryConverter.convert((String) value));
+      return clazz.cast(BinaryConversion.convert((String) value));
     }
     if (clazz == ZonedDateTime.class) {
-      return clazz.cast(DateConverter.convert((String) value));
+      return clazz.cast(DateTimeConversion.convert((String) value));
     }
     if (clazz == JsonNode.class) {
-      return clazz.cast(JsonConverter.convert((String) value));
+      return clazz.cast(JsonConversion.convert((String) value));
     }
     if (clazz == InetAddress.class) {
-      return clazz.cast(InetConverter.convert((String) value));
+      return clazz.cast(InetConversion.convert((String) value));
     }
     return super.convert(value, clazz);
   }
@@ -134,7 +134,7 @@ public final class StringType extends Type {
     if (value instanceof String str) {
       result = str;
     } else if (value instanceof Boolean bool) {
-      result = StringConverter.convert(bool);
+      result = StringConversion.convert(bool);
     } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
@@ -152,9 +152,9 @@ public final class StringType extends Type {
     } else if (value instanceof byte[] bytes) {
       result = new String(bytes, StandardCharsets.UTF_8);
     } else if (value instanceof JsonNode json) {
-      return StringConverter.convert(json);
+      return StringConversion.convert(json);
     } else if (value instanceof InetAddress inet) {
-      return StringConverter.convert(inet);
+      return StringConversion.convert(inet);
     }
 
     if (result == null) {
@@ -189,10 +189,10 @@ public final class StringType extends Type {
       return str;
     }
     if (value instanceof Boolean bool) {
-      return StringConverter.convert(bool);
+      return StringConversion.convert(bool);
     }
     if (value instanceof BigDecimal number) {
-      return StringConverter.convert(number);
+      return StringConversion.convert(number);
     }
 
     return String.valueOf(value);

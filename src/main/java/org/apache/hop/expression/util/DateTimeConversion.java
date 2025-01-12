@@ -22,11 +22,22 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.type.TypeName;
 
-public final class DateConverter {
+public final class DateTimeConversion extends Conversion<ZonedDateTime> {
 
-  private DateConverter() {
+  private DateTimeConversion() {
     // Utility class
+  }
+
+  @Override
+  public Class<ZonedDateTime> getConvertedType() {
+    return ZonedDateTime.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.DATE;
   }
 
   public static final ZonedDateTime convert(final String value) throws ConversionException {

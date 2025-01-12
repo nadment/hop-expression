@@ -17,22 +17,31 @@
 
 package org.apache.hop.expression.util;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.type.TypeName;
 
-public final class BinaryConverter {
+public final class BinaryConversion extends Conversion<byte[]> {
 
-  private BinaryConverter() {
+  private BinaryConversion() {
     // Utility class
   }
 
+  @Override
+  public Class<byte[]> getConvertedType() {
+    return byte[].class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.BINARY;
+  }
+
   public static byte[] convert(Long number) throws ConversionException {
-    byte[] result = new byte[Long.BYTES];
-    for (int i = Long.BYTES - 1; i >= 0; i--) {
-      result[i] = (byte) (number & 0xFF);
-      number >>= Byte.SIZE;
-    }
-    return result;
+    ByteBuffer bytes = ByteBuffer.allocate(Long.BYTES);
+    bytes.putLong(number);
+    return bytes.array();
   }
 
   public static byte[] convert(final String str) throws ConversionException {

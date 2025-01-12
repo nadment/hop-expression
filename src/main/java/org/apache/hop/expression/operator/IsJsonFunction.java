@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.util.JsonConverter;
+import org.apache.hop.expression.util.JsonConversion;
 
 /** Check if a string is a valid JSON. */
 @FunctionPlugin
@@ -71,7 +71,7 @@ public class IsJsonFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     try {
-      JsonConverter.convert(value);
+      JsonConversion.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

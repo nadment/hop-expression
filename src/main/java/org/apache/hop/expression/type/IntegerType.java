@@ -22,7 +22,7 @@ import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.IntegerConverter;
+import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.NumberFormat;
 
 public final class IntegerType extends Type {
@@ -93,7 +93,7 @@ public final class IntegerType extends Type {
       return number.longValue();
     }
     if (value instanceof String str) {
-      return IntegerConverter.convert(str);
+      return IntegerConversion.convert(str);
     }
 
     throw new ConversionException(
@@ -137,19 +137,19 @@ public final class IntegerType extends Type {
       return integer;
     }
     if (value instanceof BigDecimal number) {
-      return IntegerConverter.convert(number);
+      return IntegerConversion.convert(number);
     }
     if (value instanceof Boolean bool) {
       return (bool) ? 1L : 0L;
     }
     if (value instanceof String str) {
-      return IntegerConverter.convert(str);
+      return IntegerConversion.convert(str);
     }
     if (value instanceof byte[] bytes) {
-      return IntegerConverter.convert(bytes);
+      return IntegerConversion.convert(bytes);
     }
     if (value instanceof ZonedDateTime datetime) {
-      return IntegerConverter.convert(datetime);
+      return IntegerConversion.convert(datetime);
     }
 
     throw new ConversionException(

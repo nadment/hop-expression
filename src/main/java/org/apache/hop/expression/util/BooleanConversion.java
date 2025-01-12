@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
@@ -22,46 +21,66 @@ import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.type.TypeName;
 
-public final class BooleanConverter {
+public final class BooleanConversion extends Conversion<Boolean> {
 
-  private BooleanConverter() {
-    // Utility class
+  @Override
+  public Class<Boolean> getConvertedType() {
+    return Boolean.class;
   }
 
-  public static final Boolean convert(final String str) throws ConversionException {
-    if (str == null) return null;
-    switch (str.length()) {
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.BOOLEAN;
+  }
+
+  public static Boolean convert(final Boolean value) {
+    return value;
+  }
+
+  public static Boolean convert(final Long value) {
+    if (value == null) return null;
+    return value != 0;
+  }
+
+  public static Boolean convert(final BigDecimal value) {
+    if (value == null) return null;
+    return value.signum() != 0;
+  }
+
+  public static Boolean convert(final String value) {
+    if (value == null) return null;
+    switch (value.length()) {
       case 1:
-        if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
+        if (value.equals("1") || value.equalsIgnoreCase("t") || value.equalsIgnoreCase("y")) {
           return true;
         }
-        if (str.equals("0") || str.equalsIgnoreCase("f") || str.equalsIgnoreCase("n")) {
+        if (value.equals("0") || value.equalsIgnoreCase("f") || value.equalsIgnoreCase("n")) {
           return false;
         }
         break;
       case 2:
-        if (str.equalsIgnoreCase("on")) {
+        if (value.equalsIgnoreCase("on")) {
           return true;
         }
-        if (str.equalsIgnoreCase("no")) {
+        if (value.equalsIgnoreCase("no")) {
           return false;
         }
         break;
       case 3:
-        if (str.equalsIgnoreCase("yes")) {
+        if (value.equalsIgnoreCase("yes")) {
           return true;
         }
-        if (str.equalsIgnoreCase("off")) {
+        if (value.equalsIgnoreCase("off")) {
           return false;
         }
         break;
       case 4:
-        if (str.equalsIgnoreCase("true")) {
+        if (value.equalsIgnoreCase("true")) {
           return true;
         }
         break;
       case 5:
-        if (str.equalsIgnoreCase("false")) {
+        if (value.equalsIgnoreCase("false")) {
           return false;
         }
         break;
@@ -69,16 +88,6 @@ public final class BooleanConverter {
         break;
     }
 
-    throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeName.STRING, str);
-  }
-
-  public static final Boolean convert(final Long number) {
-    if (number == null) return null;
-    return number != 0;
-  }
-
-  public static final Boolean convert(final BigDecimal number) {
-    if (number == null) return null;
-    return number.signum() != 0;
+    throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeName.STRING, value);
   }
 }

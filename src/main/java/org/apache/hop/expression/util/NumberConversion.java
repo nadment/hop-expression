@@ -23,12 +23,22 @@ import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.type.TypeName;
 
-public final class NumberConverter {
+public final class NumberConversion extends Conversion<BigDecimal> {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
-  private NumberConverter() {
+  private NumberConversion() {
     // Utility class
+  }
+
+  @Override
+  public Class<BigDecimal> getConvertedType() {
+    return BigDecimal.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.NUMBER;
   }
 
   public static final BigDecimal convert(final String str) throws ConversionException {

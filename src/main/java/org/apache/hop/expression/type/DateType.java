@@ -21,11 +21,11 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.util.DateConverter;
+import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.IntegerConverter;
-import org.apache.hop.expression.util.NumberConverter;
-import org.apache.hop.expression.util.StringConverter;
+import org.apache.hop.expression.util.IntegerConversion;
+import org.apache.hop.expression.util.NumberConversion;
+import org.apache.hop.expression.util.StringConversion;
 
 public final class DateType extends Type {
 
@@ -59,13 +59,13 @@ public final class DateType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringConverter.convert((ZonedDateTime) value));
+      return clazz.cast(StringConversion.convert((ZonedDateTime) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerConverter.convert((ZonedDateTime) value));
+      return clazz.cast(IntegerConversion.convert((ZonedDateTime) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberConverter.convert((ZonedDateTime) value));
+      return clazz.cast(NumberConversion.convert((ZonedDateTime) value));
     }
     return super.convert(value, clazz);
   }
@@ -97,10 +97,10 @@ public final class DateType extends Type {
       return DateTimeFormat.of(pattern).parse(str);
     }
     if (value instanceof Long number) {
-      return DateConverter.convert(number);
+      return DateTimeConversion.convert(number);
     }
     if (value instanceof BigDecimal number) {
-      return DateConverter.convert(number);
+      return DateTimeConversion.convert(number);
     }
 
     throw new ConversionException(

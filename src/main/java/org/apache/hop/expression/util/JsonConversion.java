@@ -17,31 +17,43 @@
 
 package org.apache.hop.expression.util;
 
-import java.net.InetAddress;
-import org.apache.hop.core.util.Utils;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.type.TypeName;
 
-public final class InetConverter {
+public final class JsonConversion extends Conversion<JsonNode> {
 
-  private InetConverter() {
+  private JsonConversion() {
     // Utility class
   }
 
+  @Override
+  public Class<JsonNode> getConvertedType() {
+    return JsonNode.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.JSON;
+  }
+
   /**
-   * Convert String value to Inet.
+   * Convert String value to Json.
    *
    * @param str the string to convert
-   * @return InetAddress
+   * @return JsonNode
    */
-  public static InetAddress convert(final String str) throws ConversionException {
-    if (str == null || Utils.isEmpty(str)) return null;
-
+  public static JsonNode convert(final String str) throws ConversionException {
+    if (str == null) return null;
     try {
-      return InetAddress.getByName(str);
+      JsonMapper mapper =
+          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      return mapper.readTree(str);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeName.STRING, str);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_JSON, TypeName.STRING, str);
     }
   }
 }

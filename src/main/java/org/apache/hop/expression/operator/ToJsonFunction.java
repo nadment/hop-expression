@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.JsonConverter;
+import org.apache.hop.expression.util.JsonConversion;
 
 /** Converts a string expression to a Json value. */
 @FunctionPlugin
@@ -40,6 +40,6 @@ public class ToJsonFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    return JsonConverter.convert(value);
+    return JsonConversion.convert(value);
   }
 }

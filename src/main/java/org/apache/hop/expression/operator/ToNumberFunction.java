@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.util.NumberConverter;
+import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 
 /** Converts a string expression to a number value with optional format. */
@@ -87,7 +87,7 @@ public class ToNumberFunction extends Function {
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) return null;
-      return NumberConverter.convert(value);
+      return NumberConversion.convert(value);
     }
   }
 }
