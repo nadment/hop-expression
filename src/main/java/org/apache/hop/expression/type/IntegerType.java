@@ -76,30 +76,6 @@ public final class IntegerType extends Type {
     return TypeComparability.ALL;
   }
 
-  /**
-   * Coerce value to data type INTEGER
-   *
-   * @param value the value to coerce
-   * @return Long
-   */
-  public static final Long coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof Long number) {
-      return number;
-    }
-    if (value instanceof Number number) {
-      return number.longValue();
-    }
-    if (value instanceof String str) {
-      return IntegerConversion.convert(str);
-    }
-
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.INTEGER);
-  }
-
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 

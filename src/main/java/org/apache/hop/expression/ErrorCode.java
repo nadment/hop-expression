@@ -118,8 +118,6 @@ public enum ErrorCode {
   RETURN_TYPE_UNKNOWN,
   /** Error compile user defined function ''{0}'' */
   UDF_COMPILATION_ERROR,
-  /** Implicit conversion from {1} to {2} is not supported for value ''{0}'' */
-  UNSUPPORTED_COERCION,
   /** Conversion from {1} to {2} is not supported for value ''{0}'' */
   UNSUPPORTED_CONVERSION,
   /** Field ''{0}'' of type ''{1}'' not supported */

@@ -106,23 +106,4 @@ public final class DateType extends Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
-
-  /**
-   * Coerce value to data type {@link DateType}.
-   *
-   * @param value the value to coerce
-   * @return ZonedDateTime
-   */
-  public static final ZonedDateTime coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-
-    if (value instanceof ZonedDateTime datetime) {
-      return datetime;
-    }
-
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.DATE);
-  }
 }

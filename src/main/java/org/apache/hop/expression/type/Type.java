@@ -202,7 +202,7 @@ public abstract class Type {
    */
   public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
     throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION,
+        ErrorCode.UNSUPPORTED_CONVERSION,
         value,
         TypeName.fromValue(value),
         TypeName.fromClass(clazz));

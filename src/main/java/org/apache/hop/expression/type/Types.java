@@ -225,6 +225,14 @@ public class Types {
 
     if (type2.is(TypeName.UNKNOWN)) return type1;
 
+    // NUMBER compare INTEGER -> NUMBER
+    if (isNumber(type1) && isInteger(type2)) {
+      return type1;
+    }
+    // INTEGER compare NUMBER -> NUMBER
+    if (isInteger(type1) && isNumber(type2)) {
+      return type2;
+    }
     // DATE compare STRING -> DATE
     if (isDate(type1) && isString(type2)) {
       return type1;

@@ -478,6 +478,6 @@ public class ExpressionTest {
     // String result = variables.resolve("$[0]['name']");
     // System.out.print(result);
     // evalEquals("Length(true)", 4L);
-    optimize("[1,2,3] || [4,5] || [6,7]", "[1,2,3,4,5,6,7]");
+    evalTrue("FIELD_INTEGER>10.3");
   }
 }

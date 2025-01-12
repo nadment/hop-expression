@@ -45,27 +45,6 @@ public final class JsonType extends Type {
     return TypeComparability.UNORDERED;
   }
 
-  /**
-   * Coerce value to data type JSON
-   *
-   * @param value the value to coerce
-   * @return String
-   */
-  public static final JsonNode coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof JsonNode json) {
-      return json;
-    }
-    //    if (value instanceof String) {
-    //      return JsonType.convertStringToJson((String) value);
-    //    }
-
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.JSON);
-  }
-
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 

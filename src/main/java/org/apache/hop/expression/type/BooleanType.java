@@ -44,26 +44,6 @@ public final class BooleanType extends Type {
     return TypeComparability.ALL;
   }
 
-  /**
-   * Coerce value to data type BOOLEAN
-   *
-   * @param value the value to coerce
-   * @return Boolean
-   */
-  public static final Boolean coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof Boolean bool) {
-      return bool;
-    }
-    if (value instanceof Number number) {
-      return number.intValue() != 0;
-    }
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.BOOLEAN);
-  }
-
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 

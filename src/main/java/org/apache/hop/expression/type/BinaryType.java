@@ -61,24 +61,6 @@ public final class BinaryType extends Type {
     return TypeComparability.ALL;
   }
 
-  /**
-   * Coerce value to data type BINARY
-   *
-   * @param value the value to coerce
-   * @return bytes array
-   */
-  public static final byte[] coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof byte[] bytes) {
-      return bytes;
-    }
-
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.BINARY);
-  }
-
   @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
     if (value == null) return null;

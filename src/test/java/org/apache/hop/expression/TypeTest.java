@@ -250,19 +250,6 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void coerceToBoolean() throws Exception {
-    assertNull(BooleanType.coerce(null));
-    assertTrue(BooleanType.coerce(true));
-    assertTrue(BooleanType.coerce(3L));
-    assertTrue(BooleanType.coerce(1D));
-    assertFalse(BooleanType.coerce(0L));
-    assertFalse(BooleanType.coerce(false));
-
-    assertThrows(ConversionException.class, () -> BooleanType.coerce("True"));
-    assertThrows(ConversionException.class, () -> BooleanType.coerce(ZonedDateTime.now()));
-  }
-
-  @Test
   void castToBoolean() throws Exception {
     BooleanType type = Types.BOOLEAN;
     assertNull(type.cast(null));
@@ -297,15 +284,6 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void coerceToBinary() throws Exception {
-    assertNull(BinaryType.coerce(null));
-
-    assertThrows(ConversionException.class, () -> BinaryType.coerce(true));
-    assertThrows(ConversionException.class, () -> BinaryType.coerce(3L));
-    assertThrows(ConversionException.class, () -> BinaryType.coerce(3D));
-  }
-
-  @Test
   void castToBinary() throws Exception {
     BinaryType type = Types.BINARY;
     assertNull(type.cast(null));
@@ -316,18 +294,6 @@ public class TypeTest extends ExpressionTest {
     assertThrows(ConversionException.class, () -> type.cast(1D));
     assertThrows(ConversionException.class, () -> type.cast(BigDecimal.ONE));
     assertThrows(ConversionException.class, () -> type.cast(ZonedDateTime.now()));
-  }
-
-  @Test
-  void coerceToDate() throws Exception {
-    ZonedDateTime date =
-        LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
-
-    assertNull(DateType.coerce(null));
-    assertEquals(date, DateType.coerce(date));
-
-    assertThrows(ConversionException.class, () -> DateType.coerce(true));
-    assertThrows(ConversionException.class, () -> DateType.coerce("2022"));
   }
 
   @Test
@@ -349,18 +315,7 @@ public class TypeTest extends ExpressionTest {
         timestamp, type.cast("2022-12-28 13:32:55.123456789", "YYYY-MM-DD HH24:MI:SS.FF9"));
 
     assertThrows(ConversionException.class, () -> type.cast(true));
-  }
-
-  @Test
-  void coerceToString() throws Exception {
-    assertNull(StringType.coerce(null));
-    assertEquals("TRUE", StringType.coerce(true));
-    assertEquals("FALSE", StringType.coerce(false));
-    assertEquals("-1.0", StringType.coerce(-1.0D));
-    assertEquals("-1.2", StringType.coerce(-1.2));
-    assertEquals("0.1", StringType.coerce(0.1D));
-    assertEquals("-0.1", StringType.coerce(-0.1D));
-    assertEquals("1", StringType.coerce(BigDecimal.ONE));
+    assertThrows(FormatParseException.class, () -> type.cast("2022"));
   }
 
   @Test
@@ -380,24 +335,6 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void coerceToInteger() throws Exception {
-    assertNull(IntegerType.coerce(null));
-    assertEquals(Long.valueOf(1L), IntegerType.coerce(1));
-    assertEquals(Long.valueOf(1L), IntegerType.coerce(1L));
-    assertEquals(Long.valueOf(1L), IntegerType.coerce(1.2D));
-    assertEquals(Long.valueOf(0L), IntegerType.coerce(".2"));
-    assertEquals(Long.valueOf(1L), IntegerType.coerce("1.2"));
-    assertEquals(Long.valueOf(-1L), IntegerType.coerce("-1.6"));
-    assertEquals(Long.valueOf(1L), IntegerType.coerce(BigDecimal.ONE));
-    assertEquals(Long.valueOf(0L), IntegerType.coerce(BigDecimal.ZERO));
-
-    assertThrows(ConversionException.class, () -> IntegerType.coerce(true));
-    assertThrows(ConversionException.class, () -> IntegerType.coerce(new byte[] {0xF}));
-    assertThrows(ConversionException.class, () -> IntegerType.coerce(ZonedDateTime.now()));
-    assertThrows(ConversionException.class, () -> IntegerType.coerce("FALSE"));
-  }
-
-  @Test
   void castToInteger() throws Exception {
     IntegerType type = Types.INTEGER;
     assertNull(type.cast(null));
@@ -408,34 +345,13 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(0L), type.cast(BigDecimal.ZERO));
     assertEquals(Long.valueOf(1L), type.cast(BigDecimal.ONE));
     assertEquals(Long.valueOf(3L), type.cast(BigDecimal.valueOf(3.125)));
+    assertEquals(Long.valueOf(0L), type.cast("0.9"));
     assertEquals(Long.valueOf(5L), type.cast("5.9"));
     assertEquals(Long.valueOf(-5L), type.cast("-5.2"));
     assertEquals(Long.valueOf(15L), type.cast(new byte[] {0xF}));
     assertEquals(
         Long.valueOf(1672185600L),
         type.cast(LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC)));
-  }
-
-  @Test
-  void coerceToNumber() throws Exception {
-    assertNull(NumberType.coerce(null));
-    assertEquals(BigDecimal.ZERO, NumberType.coerce(0L));
-    assertEquals(BigDecimal.ZERO, NumberType.coerce(BigDecimal.ZERO));
-    assertEquals(BigDecimal.ZERO, NumberType.coerce("0"));
-    assertEquals(BigDecimal.ONE, NumberType.coerce(1L));
-    assertEquals(BigDecimal.ONE, NumberType.coerce(BigDecimal.ONE));
-    assertEquals(BigDecimal.ONE, NumberType.coerce("1"));
-    assertEquals(new BigDecimal("1.2"), NumberType.coerce("1.2"));
-    assertEquals(new BigDecimal("0.1"), NumberType.coerce(".1"));
-    assertEquals(new BigDecimal("-2.3E+2"), NumberType.coerce("-2.3E+2"));
-    assertEquals(new BigDecimal("-2.3E-2"), NumberType.coerce("-2.3E-2"));
-    assertEquals(new BigDecimal("-2.3E-2"), NumberType.coerce("-2.3e-2"));
-    assertEquals(new BigDecimal("3.123"), NumberType.coerce(new BigDecimal("3.123")));
-
-    assertThrows(ConversionException.class, () -> NumberType.coerce(true));
-    assertThrows(ConversionException.class, () -> NumberType.coerce(new byte[] {0xF}));
-    assertThrows(ConversionException.class, () -> NumberType.coerce(ZonedDateTime.now()));
-    assertThrows(ConversionException.class, () -> NumberType.coerce("FALSE"));
   }
 
   @Test
@@ -459,7 +375,11 @@ public class TypeTest extends ExpressionTest {
     // assertEquals(BigDecimal.valueOf(-3.56E2D), type.cast(-3.56E+2D));
     assertEquals(new BigDecimal("0.000"), type.cast("0.000"));
     assertEquals(new BigDecimal("-3.56E2"), type.cast("-3.56E+2"));
+    assertEquals(new BigDecimal("-2.3E-2"), type.cast("-2.3e-2"));
     assertEquals(BigDecimal.valueOf(15), type.cast(new byte[] {0xF}));
+    assertEquals(
+        new BigDecimal("1672234375.123456789"),
+        type.cast(ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneOffset.UTC)));
 
     assertThrows(ConversionException.class, () -> type.cast("TRUE"));
   }

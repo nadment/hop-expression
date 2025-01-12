@@ -68,7 +68,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return Date.from(dt.toInstant());
     }
     throw new IllegalArgumentException(
-        ErrorCode.UNSUPPORTED_COERCION.message(value, TypeName.fromValue(value), Types.DATE));
+        ErrorCode.UNSUPPORTED_CONVERSION.message(value, TypeName.fromValue(value), Types.DATE));
   }
 
   @Override

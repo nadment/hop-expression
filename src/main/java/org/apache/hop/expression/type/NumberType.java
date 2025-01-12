@@ -158,27 +158,4 @@ public final class NumberType extends Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
-
-  /**
-   * Coerce value to data type {@link NumberType}
-   *
-   * @param value the value to coerce
-   * @return BigDecimal
-   */
-  public static final BigDecimal coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof BigDecimal number) {
-      return number;
-    }
-    if (value instanceof Long number) {
-      return BigDecimal.valueOf(number);
-    }
-    if (value instanceof String str) {
-      return NumberConversion.convert(str);
-    }
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.NUMBER);
-  }
 }

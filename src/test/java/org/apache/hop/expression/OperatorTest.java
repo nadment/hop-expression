@@ -317,6 +317,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("9.4 >= 9.358");
     evalTrue("(4+2) >= 10-9");
     evalTrue("FIELD_INTEGER >= 10");
+    evalTrue("FIELD_INTEGER >= 10.3");
     evalTrue("5 >= 5");
 
     evalFalse("false >= true");
@@ -399,6 +400,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("9.358 < 9.4");
     evalTrue("10-9 < (4+2)");
     evalTrue("FIELD_INTEGER < 100");
+    evalTrue("FIELD_INTEGER < 100.12");
     evalFalse("5 < 5");
 
     evalFalse("true < false").returnType(Types.BOOLEAN);
@@ -472,6 +474,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("9.358 <= 9.4");
     evalTrue("10-9 <= (4+2)");
     evalTrue("FIELD_INTEGER <= 100");
+    evalTrue("FIELD_INTEGER <= 100.12");
     evalTrue("5 <= 5");
 
     evalTrue("false <= false");
@@ -597,7 +600,8 @@ public class OperatorTest extends ExpressionTest {
     optimizeTrue("25 in (1,25,66)");
     optimizeTrue("1.15 IN (1.1, 1.2, 1.3, 1.15)");
 
-    optimize("FIELD_INTEGER in (1,2,1,2,3,4.1)", "FIELD_INTEGER IN (1,2,3,4.1)");
+    optimize(
+        "FIELD_INTEGER in (1,2,1,2,3,4.1)", "CAST(FIELD_INTEGER AS NUMBER(2,1)) IN (1,2,3,4.1)");
     optimize("FIELD_NUMBER in (1,2,1,2,3,4.1)", "FIELD_NUMBER IN (1,2,3,4.1)");
     optimize("FIELD_STRING in ('1','2','1')", "FIELD_STRING IN ('1','2')");
 

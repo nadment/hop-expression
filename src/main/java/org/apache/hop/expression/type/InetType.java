@@ -45,24 +45,6 @@ public final class InetType extends Type {
     return TypeComparability.UNORDERED;
   }
 
-  /**
-   * Coerce value to data type INET
-   *
-   * @param value the value to coerce
-   * @return String
-   */
-  public static final InetAddress coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof InetAddress inet) {
-      return inet;
-    }
-
-    throw new ConversionException(
-        ErrorCode.UNSUPPORTED_COERCION, value, TypeName.fromValue(value), TypeName.JSON);
-  }
-
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 

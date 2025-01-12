@@ -28,7 +28,6 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -57,7 +56,7 @@ public class IsDateFunction extends Function {
         return call;
       }
 
-      String pattern = StringType.coerce(value);
+      String pattern = call.getOperand(1).getValue(String.class);
 
       // Compile format to check it
       DateTimeFormat format = DateTimeFormat.of(pattern);

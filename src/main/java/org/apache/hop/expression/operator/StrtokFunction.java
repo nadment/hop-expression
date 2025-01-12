@@ -24,7 +24,6 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 
 /**
  * Splits a string on the specified list of delimiter characters and returns the part at the
@@ -59,7 +58,7 @@ public class StrtokFunction extends Function {
       if (v1 instanceof Number number) {
         index = number.intValue();
       } else {
-        delimiter = StringType.coerce(v1);
+        delimiter = (String) v1;
       }
     } else if (operands.length == 3) {
       delimiter = operands[1].getValue(String.class);

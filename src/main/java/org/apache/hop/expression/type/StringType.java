@@ -174,27 +174,4 @@ public final class StringType extends Type {
 
     return this.precision < 0 || this.precision >= result.length();
   }
-
-  /**
-   * Coerce value to data type STRING
-   *
-   * @param value the value to coerce
-   * @return String
-   */
-  public static final String coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof String str) {
-      return str;
-    }
-    if (value instanceof Boolean bool) {
-      return StringConversion.convert(bool);
-    }
-    if (value instanceof BigDecimal number) {
-      return StringConversion.convert(number);
-    }
-
-    return String.valueOf(value);
-  }
 }

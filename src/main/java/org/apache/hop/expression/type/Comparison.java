@@ -17,7 +17,11 @@ package org.apache.hop.expression.type;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.util.JsonComparator;
 
 public class Comparison {
@@ -31,27 +35,33 @@ public class Comparison {
 
     if (left == null || right == null) return false;
 
-    // The lower order data type is converted
-    if (left instanceof byte[] || right instanceof byte[]) {
-      return equalsTo(BinaryType.coerce(left), BinaryType.coerce(right));
+    if (left instanceof Long l && right instanceof Long r) {
+      return l.equals(r);
     }
-    if (left instanceof JsonNode || right instanceof JsonNode) {
-      return equalsTo(JsonType.coerce(left), JsonType.coerce(right));
+    if (left instanceof BigDecimal l && right instanceof BigDecimal r) {
+      return l.compareTo(r) == 0;
     }
-    if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      return compareTo(DateType.coerce(left), DateType.coerce(right)) == 0;
+    if (left instanceof Boolean l && right instanceof Boolean r) {
+      return l.equals(r);
     }
-    if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return NumberType.coerce(left).compareTo(NumberType.coerce(right)) == 0;
+    if (left instanceof String l && right instanceof String r) {
+      return l.compareTo(r) == 0;
     }
-    if (left instanceof Long || right instanceof Long) {
-      return IntegerType.coerce(left).compareTo(IntegerType.coerce(right)) == 0;
+    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
+      return l.isEqual(r);
     }
-    if (left instanceof Boolean || right instanceof Boolean) {
-      return BooleanType.coerce(left).equals(BooleanType.coerce(right));
+    if (left instanceof Interval l && right instanceof Interval r) {
+      return l.compareTo(r) == 0;
+    }
+    if (left instanceof byte[] l && right instanceof byte[] r) {
+      return equalsTo(l, r);
+    }
+    if (left instanceof JsonNode l && right instanceof JsonNode r) {
+      // Ignores the order of attributes
+      return l.equals(JSON_COMPARATOR, r);
     }
 
-    return StringType.coerce(left).compareTo(StringType.coerce(right)) == 0;
+    throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Equals error");
   }
 
   /**
@@ -68,42 +78,31 @@ public class Comparison {
     if (left == null) return -1;
     if (right == null) return 1;
 
-    // The lower order data type is converted
-    if (left instanceof byte[] || right instanceof byte[]) {
-      return compareTo(BinaryType.coerce(left), BinaryType.coerce(right));
+    if (left instanceof Long l && right instanceof Long r) {
+      return l.compareTo(r);
     }
-    if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      return compareTo(DateType.coerce(left), DateType.coerce(right));
+    if (left instanceof BigDecimal l && right instanceof BigDecimal r) {
+      return l.compareTo(r);
     }
-    if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return NumberType.coerce(left).compareTo(NumberType.coerce(right));
+    if (left instanceof Boolean l && right instanceof Boolean r) {
+      return l.compareTo(r);
     }
-    if (left instanceof Long || right instanceof Long) {
-      return IntegerType.coerce(left).compareTo(IntegerType.coerce(right));
+    if (left instanceof String l && right instanceof String r) {
+      return l.compareTo(r);
     }
-    if (left instanceof Boolean || right instanceof Boolean) {
-      return BooleanType.coerce(left).compareTo(BooleanType.coerce(right));
+    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
+      // Two timestamp are equal if they represent the same moment in time:
+      // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
+      return l.compareTo(r);
+    }
+    if (left instanceof byte[] l && right instanceof byte[] r) {
+      return ByteBuffer.wrap(l).compareTo(ByteBuffer.wrap(r));
+    }
+    if (left instanceof Interval l && right instanceof Interval r) {
+      return l.compareTo(r);
     }
 
-    return compareTo(StringType.coerce(left), StringType.coerce(right));
-  }
-
-  protected static boolean equalsTo(final JsonNode left, final JsonNode right) {
-    // Ignores the order of attributes
-    return left.equals(JSON_COMPARATOR, right);
-  }
-
-  protected static int compareTo(final ZonedDateTime left, final ZonedDateTime right) {
-    // Two timestamp are equal if they represent the same moment in time:
-    // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
-    if (left.isEqual(right)) {
-      return 0;
-    }
-    return left.compareTo(right);
-  }
-
-  protected static int compareTo(final String left, final String right) {
-    return left.compareTo(right);
+    throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Compare error");
   }
 
   protected static boolean equalsTo(final byte[] left, final byte[] right) {
@@ -117,22 +116,5 @@ public class Comparison {
       }
     }
     return true;
-  }
-
-  public static int compareTo(final byte[] left, final byte[] right) {
-    if (left == right) {
-      return 0;
-    }
-    int len1 = left.length;
-    int len2 = right.length;
-    int len = len1 < len2 ? len1 : len2;
-    for (int i = 0; i < len; i++) {
-      int a = (left[i] & 0xff);
-      int b = (right[i] & 0xff);
-      if (a != b) {
-        return a - b;
-      }
-    }
-    return len1 - len2;
   }
 }
