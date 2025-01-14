@@ -23,9 +23,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -63,11 +63,12 @@ public class LeastFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     Object result = null;
+    Type type = operands[0].getType();
     for (IExpression operand : operands) {
       Object value = operand.getValue();
       // Null is always smaller
       if (value == null) continue;
-      if (result == null || Comparison.compare(value, result) < 0) {
+      if (result == null || type.compare(value, result) < 0) {
         result = value;
       }
     }

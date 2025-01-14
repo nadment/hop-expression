@@ -25,9 +25,9 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -56,10 +56,10 @@ public class EqualNullFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object v0 = operands[0].getValue();
-    Object v1 = operands[1].getValue();
-    if (v0 == null && v1 == null) return Boolean.TRUE;
-    return Comparison.equals(v0, v1);
+    Type type = operands[0].getType();
+    Object left = operands[0].getValue();
+    Object right = operands[1].getValue();
+    return type.compareEqualNull(left, right);
   }
 
   @Override

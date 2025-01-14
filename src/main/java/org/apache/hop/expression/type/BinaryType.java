@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.type;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
@@ -103,5 +104,34 @@ public final class BinaryType extends Type {
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof byte[] l && right instanceof byte[] r) {
+      return equalsTo(l, r);
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof byte[] l && right instanceof byte[] r) {
+      return ByteBuffer.wrap(l).compareTo(ByteBuffer.wrap(r));
+    }
+    return super.compare(left, right);
+  }
+
+  protected static boolean equalsTo(final byte[] left, final byte[] right) {
+
+    if (left.length != right.length) return false;
+
+    for (int i = 0; i < left.length; i++) {
+      int compare = left[i] - right[i];
+      if (compare != 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }

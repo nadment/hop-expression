@@ -16,7 +16,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Comparison;
+import org.apache.hop.expression.type.Type;
 
 /** Returns the maximum of an expression across all input rows. */
 public class MinProcessor implements IExpressionProcessor {
@@ -29,10 +29,10 @@ public class MinProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-
+    Type type = operands[0].getType();
     Object value = operands[0].getValue();
 
-    if (min == null || (value != null && Comparison.compare(value, min) < 0)) {
+    if (min == null || (value != null && type.compare(value, min) < 0)) {
       min = value;
     }
   }

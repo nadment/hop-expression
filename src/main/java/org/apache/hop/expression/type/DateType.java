@@ -106,4 +106,22 @@ public final class DateType extends Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
+      return l.isEqual(r);
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
+      // Two timestamp are equal if they represent the same moment in time:
+      // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
+      return l.compareTo(r);
+    }
+    return super.compare(left, right);
+  }
 }

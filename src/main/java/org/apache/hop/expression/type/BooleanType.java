@@ -99,4 +99,20 @@ public final class BooleanType extends Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof Boolean l && right instanceof Boolean r) {
+      return l.equals(r);
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof Boolean l && right instanceof Boolean r) {
+      return l.compareTo(r);
+    }
+    return super.compare(left, right);
+  }
 }

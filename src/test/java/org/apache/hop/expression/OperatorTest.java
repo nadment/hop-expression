@@ -562,7 +562,6 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("2 in (1,2.5,3)");
 
     evalFalse("2 in (NULL_INTEGER,NULL_NUMBER)");
-    evalNull("1 not in (NULL_INTEGER,2)");
     evalTrue("1 not in (2,3)");
     evalFalse("FIELD_INTEGER not in (40,2,3)");
 
@@ -574,7 +573,7 @@ public class OperatorTest extends ExpressionTest {
     // c1 NOT IN (c2, c3, NULL) evaluates to NULL
     // It is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
     evalNull("FIELD_STRING not in ('A','B',NULL_STRING)").returnType(Types.BOOLEAN);
-
+    evalNull("1 not in (NULL_INTEGER,2)");
     evalNull("NULL_INTEGER in (1,2,3)");
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
@@ -1028,6 +1027,9 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void compile() throws Exception {
       optimize("FIELD_INTEGER BETWEEN 10 AND 20");
+      optimize("FIELD_NUMBER BETWEEN 10.5 AND 20.12");
+      optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
+      optimize("FIELD_DATE BETWEEN DATE '2019-01-01' AND DATE '2019-12-31'");
 
       // By default BETWEEN is ASYMMETRIC
       optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
@@ -1037,7 +1039,6 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
 
-      optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
       optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
       optimizeFalse("2 between 3 and (5+1)");
       optimizeTrue("25.8 between 18 and 32");

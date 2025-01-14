@@ -24,9 +24,9 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -67,8 +67,8 @@ public class LessThanOperator extends BinaryOperator {
     if (right == null) {
       return null;
     }
-
-    return Comparison.compare(left, right) < 0;
+    Type type = operands[0].getType();
+    return type.compare(left, right) < 0;
   }
 
   @Override

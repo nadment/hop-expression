@@ -158,4 +158,20 @@ public final class NumberType extends Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof BigDecimal l && right instanceof BigDecimal r) {
+      return l.compareTo(r) == 0;
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof BigDecimal l && right instanceof BigDecimal r) {
+      return l.compareTo(r);
+    }
+    return super.compare(left, right);
+  }
 }

@@ -174,4 +174,20 @@ public final class StringType extends Type {
 
     return this.precision < 0 || this.precision >= result.length();
   }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof String l && right instanceof String r) {
+      return l.compareTo(r) == 0;
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof String l && right instanceof String r) {
+      return l.compareTo(r);
+    }
+    return super.compare(left, right);
+  }
 }

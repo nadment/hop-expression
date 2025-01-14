@@ -129,6 +129,23 @@ public abstract class Type {
    */
   public abstract TypeComparability getComparability();
 
+  public boolean compareEqual(final Object left, final Object right) {
+    throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Equals error");
+  }
+
+  public boolean compareEqualNull(final Object left, final Object right) {
+    if (left == null) {
+      return right == null;
+    }
+    if (right == null) return false;
+
+    return compareEqual(left, right);
+  }
+
+  public int compare(final Object left, final Object right) {
+    throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Compare error");
+  }
+
   /**
    * Queries whether this type allows null values.
    *

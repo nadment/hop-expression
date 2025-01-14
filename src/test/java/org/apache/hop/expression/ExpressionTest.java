@@ -469,15 +469,7 @@ public class ExpressionTest {
   @Test
   public void test() throws Exception {
     Locale.setDefault(new Locale("fr", "BE"));
-    // ExpressionContext context = createExpressionContext();
-    // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
-    // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
-    // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    // String jsonPath = "$[0]['gender']";
-    // Variables variables = new Variables();
-    // String result = variables.resolve("$[0]['name']");
-    // System.out.print(result);
-    // evalEquals("Length(true)", 4L);
-    evalTrue("FIELD_INTEGER>10.3");
+
+    evalEquals("ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon')", 2L);
   }
 }

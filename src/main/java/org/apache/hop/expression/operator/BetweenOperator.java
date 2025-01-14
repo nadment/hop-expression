@@ -26,9 +26,9 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /** <code>BETWEEN</code> operator. */
@@ -57,15 +57,18 @@ public class BetweenOperator extends Operator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    IExpression lowerBound = call.getOperand(1);
-    IExpression upperBound = call.getOperand(2);
 
     // Simplify SYMMETRIC qualifier if upper and lower bounds are constant
-    if (between == Between.SYMMETRIC && lowerBound.isConstant() && upperBound.isConstant()) {
-      Object start = call.getOperand(1).getValue();
-      Object end = call.getOperand(2).getValue();
+    if (between == Between.SYMMETRIC
+        && call.getOperand(1).isConstant()
+        && call.getOperand(2).isConstant()) {
 
-      if (Comparison.compare(start, end) < 0) {
+      coerceOperandsType(call);
+
+      Type type = call.getOperand(0).getType();
+      Object lowerBound = call.getOperand(1).getValue();
+      Object upperBound = call.getOperand(2).getValue();
+      if (type.compare(lowerBound, upperBound) < 0) {
         return new Call(Operators.BETWEEN_ASYMMETRIC, call.getOperands());
       }
 
@@ -92,12 +95,14 @@ public class BetweenOperator extends Operator {
       return null;
     }
 
+    Type type = operands[0].getType();
+
     // If lower bound is greater than upper bound
-    if (between == Between.SYMMETRIC && Comparison.compare(start, end) >= 0) {
-      return Comparison.compare(value, end) >= 0 && Comparison.compare(value, start) <= 0;
+    if (between == Between.SYMMETRIC && type.compare(start, end) >= 0) {
+      return type.compare(value, end) >= 0 && type.compare(value, start) <= 0;
     }
 
-    return Comparison.compare(value, start) >= 0 && Comparison.compare(value, end) <= 0;
+    return type.compare(value, start) >= 0 && type.compare(value, end) <= 0;
   }
 
   @Override

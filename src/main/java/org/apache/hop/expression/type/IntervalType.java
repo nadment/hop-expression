@@ -87,4 +87,20 @@ public final class IntervalType extends Type {
     Interval value = Interval.of(str);
     return value;
   }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof Interval l && right instanceof Interval r) {
+      return l.compareTo(r) == 0;
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof Interval l && right instanceof Interval r) {
+      return l.compareTo(r);
+    }
+    return super.compare(left, right);
+  }
 }

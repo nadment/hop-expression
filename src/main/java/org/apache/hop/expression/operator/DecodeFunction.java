@@ -25,9 +25,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 
 /**
  * Compares the select expression to each search expression in order. As soon as a search expression
@@ -78,13 +78,14 @@ public class DecodeFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
+    Type type = operands[0].getType();
+    Object search = operands[0].getValue();
 
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
-      Object search = operands[i].getValue();
-      // DECODE use compare to handle NULL value
-      if (Comparison.compare(value, search) == 0) {
+      Object value = operands[i].getValue();
+      // DECODE use compareEqualNull to handle NULL value
+      if (type.compareEqualNull(search, value)) {
         index = i + 1;
         break;
       }

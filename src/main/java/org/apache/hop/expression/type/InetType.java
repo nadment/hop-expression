@@ -92,4 +92,12 @@ public final class InetType extends Type {
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof InetAddress l && right instanceof InetAddress r) {
+      return l.equals(r);
+    }
+    return super.compareEqual(left, right);
+  }
 }

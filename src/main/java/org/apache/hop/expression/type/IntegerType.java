@@ -18,22 +18,12 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.util.IntegerConversion;
-import org.apache.hop.expression.util.NumberFormat;
 
 public final class IntegerType extends Type {
-
-  /** BigInteger equal to Long.MIN_VALUE. */
-  private static final BigInteger LONGMIN = BigInteger.valueOf(Long.MIN_VALUE);
-
-  /** BigInteger equal to Long.MAX_VALUE. */
-  private static final BigInteger LONGMAX = BigInteger.valueOf(Long.MAX_VALUE);
-
-  private static NumberFormat numberFormat = NumberFormat.of("TM");
 
   public static IntegerType from(final Long value) {
     return of(numberOfDigit(value), false);
@@ -179,5 +169,21 @@ public final class IntegerType extends Type {
       ++count;
     }
     return count;
+  }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof Long l && right instanceof Long r) {
+      return l.equals(r);
+    }
+    return super.compareEqual(left, right);
+  }
+
+  @Override
+  public int compare(Object left, Object right) {
+    if (left instanceof Long l && right instanceof Long r) {
+      return l.compareTo(r);
+    }
+    return super.compare(left, right);
   }
 }

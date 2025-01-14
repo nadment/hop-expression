@@ -24,9 +24,10 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
 /** The function NULLIF */
 @FunctionPlugin
@@ -44,10 +45,13 @@ public class NullIfFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
+
     Object value = operands[0].getValue();
+    if (value == null) return null;
+    Type type = operands[0].getType();
     Object compare = operands[1].getValue();
 
-    if (Comparison.equals(value, compare)) return null;
+    if (compare != null && type.compareEqual(value, compare)) return null;
 
     return value;
   }
@@ -59,5 +63,10 @@ public class NullIfFunction extends Function {
     }
 
     return call;
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coercionComparisonOperator(call);
   }
 }

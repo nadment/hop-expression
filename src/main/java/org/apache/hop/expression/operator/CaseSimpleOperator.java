@@ -30,7 +30,6 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
@@ -59,19 +58,21 @@ public class CaseSimpleOperator extends Operator {
 
     Object condition = valueExpression.getValue();
     if (condition != null) {
+      Type type = operands[0].getType();
+
       for (IExpression whenOperand : whenTerm) {
 
         // Multi-values
         if (whenOperand.is(Kind.ARRAY)) {
           for (IExpression expression : (Array) whenOperand) {
             Object value = expression.getValue();
-            if (Comparison.equals(condition, value)) {
+            if (type.compareEqual(condition, value)) {
               return thenTerm.get(index).getValue();
             }
           }
         } else {
           Object value = whenOperand.getValue();
-          if (Comparison.equals(condition, value)) {
+          if (type.compareEqual(condition, value)) {
             return thenTerm.get(index).getValue();
           }
         }

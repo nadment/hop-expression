@@ -25,9 +25,10 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Comparison <code>IS DISTINCT FROM</code> operator. <br>
@@ -69,7 +70,8 @@ public class IsDistinctFromOperator extends BinaryOperator {
     Object left = operands[0].getValue();
     Object right = operands[1].getValue();
 
-    return !Comparison.equals(left, right);
+    Type type = operands[0].getType();
+    return !type.compareEqualNull(left, right);
   }
 
   @Override
@@ -92,6 +94,11 @@ public class IsDistinctFromOperator extends BinaryOperator {
     }
 
     return call;
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coercionComparisonOperator(call);
   }
 
   @Override

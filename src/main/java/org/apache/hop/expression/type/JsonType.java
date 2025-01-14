@@ -20,10 +20,12 @@ package org.apache.hop.expression.type;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.util.JsonComparator;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.StringConversion;
 
 public final class JsonType extends Type {
+  private static final JsonComparator JSON_COMPARATOR = new JsonComparator();
 
   JsonType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
@@ -91,5 +93,14 @@ public final class JsonType extends Type {
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  }
+
+  @Override
+  public boolean compareEqual(Object left, Object right) {
+    if (left instanceof JsonNode l && right instanceof JsonNode r) {
+      // Ignores the order of attributes
+      return l.equals(JSON_COMPARATOR, r);
+    }
+    return super.compareEqual(left, right);
   }
 }

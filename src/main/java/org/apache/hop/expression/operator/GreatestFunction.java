@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -56,9 +56,13 @@ public class GreatestFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     Object result = null;
+    Type type = operands[0].getType();
     for (IExpression operand : operands) {
       Object value = operand.getValue();
-      if (Comparison.compare(result, value) < 0) result = value;
+
+      // Null is never greater
+      if (value == null) continue;
+      if (result == null || type.compare(result, value) < 0) result = value;
     }
 
     return result;

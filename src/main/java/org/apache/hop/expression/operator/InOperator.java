@@ -32,7 +32,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
@@ -181,6 +180,7 @@ public class InOperator extends Operator {
     }
 
     Array array = (Array) operands[1];
+    Type type = operands[0].getType();
 
     // c1 NOT IN (c2, c3, NULL) is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
     if (not) {
@@ -188,8 +188,7 @@ public class InOperator extends Operator {
       for (IExpression expression : array) {
         Object value = expression.getValue();
         if (value == null) return null;
-
-        if (Comparison.equals(left, value)) {
+        if (type.compareEqual(left, value)) {
           result = Boolean.FALSE;
         }
       }
@@ -199,7 +198,8 @@ public class InOperator extends Operator {
     // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
     for (IExpression expression : array) {
       Object value = expression.getValue();
-      if (Comparison.equals(left, value)) {
+      if (value == null) continue;
+      if (type.compareEqual(left, value)) {
         return Boolean.TRUE;
       }
     }

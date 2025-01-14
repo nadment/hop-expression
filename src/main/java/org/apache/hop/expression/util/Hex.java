@@ -27,9 +27,8 @@ public class Hex {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
   };
 
-  private Hex() {
-    // Utility class
-  }
+  /** Private constructor since this is a utility class. */
+  private Hex() {}
 
   /**
    * Converts a hexadecimal character to an integer.

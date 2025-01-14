@@ -22,7 +22,6 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -89,9 +88,10 @@ public class ArrayPositionFunction extends Function {
     }
 
     int size = array.size();
+    Type type = operands[1].getType();
     for (int index = start; index < size; index++) {
       IExpression element = array.get(index);
-      if (Comparison.compare(element.getValue(), value) == 0) {
+      if (type.compare(element.getValue(), value) == 0) {
         return Long.valueOf(index + 1L);
       }
     }
