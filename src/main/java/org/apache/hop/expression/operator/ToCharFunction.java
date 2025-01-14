@@ -164,10 +164,6 @@ public class ToCharFunction extends Function {
   private static final class BooleanToCharFunction extends ToCharFunction {
     private static final ToCharFunction INSTANCE = new BooleanToCharFunction();
 
-    public BooleanToCharFunction() {
-      super();
-    }
-
     @Override
     public Object eval(final IExpression[] operands) {
       Boolean value = operands[0].getValue(Boolean.class);

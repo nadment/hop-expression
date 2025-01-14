@@ -95,10 +95,6 @@ public class TryToDateFunction extends Function {
   private static final class IntegerTryToDateFunction extends TryToDateFunction {
     private static final TryToDateFunction INSTANCE = new IntegerTryToDateFunction();
 
-    private IntegerTryToDateFunction() {
-      super();
-    }
-
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -108,10 +104,6 @@ public class TryToDateFunction extends Function {
 
   private static final class NumberTryToDateFunction extends TryToDateFunction {
     private static final TryToDateFunction INSTANCE = new NumberTryToDateFunction();
-
-    private NumberTryToDateFunction() {
-      super();
-    }
 
     @Override
     public Object eval(final IExpression[] operands) {

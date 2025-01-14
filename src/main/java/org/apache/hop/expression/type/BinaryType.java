@@ -94,7 +94,6 @@ public final class BinaryType extends Type {
     if (value == null) {
       return null;
     }
-
     if (value instanceof byte[] bytes) {
       return bytes;
     }
@@ -109,7 +108,14 @@ public final class BinaryType extends Type {
   @Override
   public boolean compareEqual(Object left, Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
-      return equalsTo(l, r);
+      if (l.length != r.length) return false;
+      for (int i = 0; i < l.length; i++) {
+        int compare = l[i] - r[i];
+        if (compare != 0) {
+          return false;
+        }
+      }
+      return true;
     }
     return super.compareEqual(left, right);
   }
@@ -120,18 +126,5 @@ public final class BinaryType extends Type {
       return ByteBuffer.wrap(l).compareTo(ByteBuffer.wrap(r));
     }
     return super.compare(left, right);
-  }
-
-  protected static boolean equalsTo(final byte[] left, final byte[] right) {
-
-    if (left.length != right.length) return false;
-
-    for (int i = 0; i < left.length; i++) {
-      int compare = left[i] - right[i];
-      if (compare != 0) {
-        return false;
-      }
-    }
-    return true;
   }
 }

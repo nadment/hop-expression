@@ -49,11 +49,11 @@ public class DifferenceFunction extends Function {
     return Long.valueOf(difference(v0, v1));
   }
 
-  public static int difference(String s0, String s1) {
-    String result0 = SOUNDEX.soundex(s0);
-    String result1 = SOUNDEX.soundex(s1);
+  private static int difference(final String str0, final String str1) {
+    String soundex0 = SOUNDEX.soundex(str0);
+    String soundex1 = SOUNDEX.soundex(str1);
     for (int i = 0; i < SOUNDEX_LENGTH; i++) {
-      if (result0.charAt(i) != result1.charAt(i)) {
+      if (soundex0.charAt(i) != soundex1.charAt(i)) {
         return i;
       }
     }

@@ -42,6 +42,9 @@ public class OperatorTest extends ExpressionTest {
 
     evalFails("[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
     evalFails("[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
+
+    optimize("[FIELD_INTEGER,3,5][1]");
+    optimize("[FIELD_STRING,'A','B'][1]");
   }
 
   @Test
@@ -142,6 +145,7 @@ public class OperatorTest extends ExpressionTest {
 
     // Simplify comparison with arithmetic
     optimize("FIELD_INTEGER+1=3", "FIELD_INTEGER=2");
+    optimize("3=FIELD_INTEGER+1", "FIELD_INTEGER=2");
 
     // Simplify comparison with the same term when it is not nullable
     optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
@@ -1487,12 +1491,14 @@ public class OperatorTest extends ExpressionTest {
         "(TIMESTAMP '2023-05-25 10:48:00' AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Singapore'",
         ZonedDateTime.of(2023, 5, 25, 10, 48, 00, 0, ZoneId.of("Asia/Singapore")));
 
+    evalNull("NULL_DATE AT TIME ZONE 'CET'");
+
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'XYZ'", ErrorCode.INVALID_TIMEZONE);
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME 'Europe/Paris'", ErrorCode.SYNTAX_ERROR);
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE", ErrorCode.SYNTAX_ERROR);
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT ZONE 'Europe/Paris'", ErrorCode.SYNTAX_ERROR);
 
-    optimize("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
+    optimize("FIELD_DATE AT TIME ZONE 'Europe/Paris'");
   }
 
   @Test
@@ -1702,6 +1708,10 @@ public class OperatorTest extends ExpressionTest {
 
     // Simplify arithmetic (-A) / (-B) → A / B
     optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
+
+    optimize("-FIELD_NUMBER/FIELD_INTEGER", "-FIELD_NUMBER/FIELD_INTEGER");
+    optimize("-FIELD_NUMBER/FIELD_INTEGER", "-FIELD_NUMBER/FIELD_INTEGER");
+    optimize("FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/-FIELD_INTEGER");
   }
 
   @Test

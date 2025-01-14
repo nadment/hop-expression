@@ -90,10 +90,6 @@ public class TryToNumberFunction extends Function {
   private static final class DateTryToNumberFunction extends TryToNumberFunction {
     private static final TryToNumberFunction INSTANCE = new DateTryToNumberFunction();
 
-    private DateTryToNumberFunction() {
-      super();
-    }
-
     @Override
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);

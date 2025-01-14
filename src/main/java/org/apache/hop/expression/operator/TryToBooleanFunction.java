@@ -63,10 +63,6 @@ public class TryToBooleanFunction extends Function {
   private static final class StringTryToBooleanFunction extends TryToBooleanFunction {
     private static final StringTryToBooleanFunction INSTANCE = new StringTryToBooleanFunction();
 
-    private StringTryToBooleanFunction() {
-      super();
-    }
-
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -81,10 +77,6 @@ public class TryToBooleanFunction extends Function {
   private static final class IntegerTryToBooleanFunction extends TryToBooleanFunction {
     private static final IntegerTryToBooleanFunction INSTANCE = new IntegerTryToBooleanFunction();
 
-    private IntegerTryToBooleanFunction() {
-      super();
-    }
-
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -94,10 +86,6 @@ public class TryToBooleanFunction extends Function {
 
   private static final class NumberTryToBooleanFunction extends TryToBooleanFunction {
     private static final NumberTryToBooleanFunction INSTANCE = new NumberTryToBooleanFunction();
-
-    private NumberTryToBooleanFunction() {
-      super();
-    }
 
     @Override
     public Object eval(final IExpression[] operands) {

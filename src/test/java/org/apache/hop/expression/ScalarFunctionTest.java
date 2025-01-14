@@ -54,10 +54,28 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFalse("TRY_CAST('False' as Boolean)");
     evalNull("TRY_CAST('Fake' as Boolean)");
 
+    // String to Number
+    evalEquals("TRY_CAST('-12.5' as Number)", -12.5D).returnType(Types.NUMBER);
+    evalNull("TRY_CAST('X12.5' as Number)").returnType(Types.NUMBER);
+
+    // String to Date
+    evalEquals("TRY_CAST('2024' as DATE format 'YYYY')", LocalDate.of(2024, 1, 1))
+        .returnType(Types.DATE);
+    evalNull("TRY_CAST('XXXX' as DATE format 'YYYY')").returnType(Types.DATE);
+
+    // String to Json
+    evalEquals(
+            "TRY_CAST(FIELD_STRING_JSON as JSON)",
+            JsonConversion.convert("{id:\"01\",name:\"John\",age:29}"))
+        .returnType(Types.JSON);
+
     // Number to Boolean
     evalTrue("TRY_CAST(1 as Boolean)").returnType(Types.BOOLEAN);
     evalTrue("TRY_CAST(-12.1 as Boolean)");
     evalNull("TRY_CAST('test' as Boolean)");
+
+    // Boolean to String
+    evalEquals("TRY_CAST(True as String)", "TRUE").returnType(Types.STRING);
 
     // Date to String
     evalEquals("TRY_CAST(DATE '2019-02-25' AS STRING FORMAT 'DD/MM/YYYY')", "25/02/2019")
@@ -65,6 +83,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TRY_CAST('2019-99-25' AS DATE)").returnType(Types.DATE);
     evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
     evalNull("TRY_CAST(NULL_STRING AS DATE)");
+
+    // Date to String
+    evalEquals("TRY_CAST(FIELD_INET as STRING)", "10.10.10.1").returnType(Types.STRING);
 
     // Bad syntax
     evalFails(
@@ -87,9 +108,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Try_To_Binary() throws Exception {
-    evalEquals("TRY_TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes());
+    evalEquals("TRY_TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes())
+        .returnType(Types.BINARY);
+    ;
     evalEquals("TRY_TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
-    evalNull("TRY_TO_BINARY('Z4','HEX')");
+    evalNull("TRY_TO_BINARY('Z4','HEX')").returnType(Types.BINARY);
 
     evalEquals("TRY_TO_BINARY(BASE64_ENCODE('Apache Hop'),'BASE64')", "Apache Hop".getBytes());
     evalEquals("TRY_TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
@@ -113,7 +136,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   void Try_To_Boolean() throws Exception {
     evalTrue("TRY_TO_BOOLEAN('True')").returnType(Types.BOOLEAN);
-    evalFalse("TRY_TO_BOOLEAN('falSE')");
+    evalFalse("TRY_TO_BOOLEAN('falSE')").returnType(Types.BOOLEAN);
     evalFalse("TRY_TO_BOOLEAN(0)").returnType(Types.BOOLEAN);
     evalFalse("TRY_TO_BOOLEAN(-0.00)").returnType(Types.BOOLEAN);
     evalTrue("TRY_TO_BOOLEAN(1)").returnType(Types.BOOLEAN);
@@ -152,10 +175,11 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Try_To_Date() throws Exception {
-    evalEquals("TRY_TO_DATE('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
+    evalEquals("TRY_TO_DATE('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13))
+        .returnType(Types.DATE);
 
     // Return NULL if parsing failed
-    evalNull("TRY_TO_DATE('2019-01-42','YYYY-MM-DD')");
+    evalNull("TRY_TO_DATE('2019-01-42','YYYY-MM-DD')").returnType(Types.DATE);
     evalNull("TRY_TO_DATE('2019-01-0x','YYYY-MM-DD')");
     evalNull("TRY_TO_DATE('2019-13-13','YYYY-MM-DD')");
     evalNull("TRY_TO_DATE('20x9-13-13','YYYY-MM-DD')");
@@ -217,13 +241,17 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Coalesce(NULL_NUMBER,NULL_INTEGER,1,2)", 1D).returnType(Types.NUMBER);
     evalNull("Coalesce(NULL_NUMBER,NULL_INTEGER,NULL_BIGNUMBER)").returnType(Types.NUMBER);
 
-    evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1));
-    evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1));
+    // Coalesce date
+    evalEquals(
+            "Coalesce(NULL_DATE,FIELD_TIMESTAMP,Date '2024-01-01')",
+            LocalDateTime.of(2023, 2, 28, 22, 11, 1))
+        .returnType(Types.DATE);
 
     // Check operands
     evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     optimize("COALESCE(NULL)", "NULL");
+    optimize("COALESCE(NULL::INTEGER)", "NULL");
     optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
 
     // Coerce operands
@@ -345,12 +373,12 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void NullIf() throws Exception {
-    evalEquals("NullIf(1,NULL_INTEGER)", 1L);
-    evalNull("NullIf(1,1)");
-    evalNull("NULLIF(0.1,0.1)");
+    evalEquals("NullIf(1,NULL_INTEGER)", 1L).returnType(IntegerType.of(1));
+    evalNull("NullIf(1,1)").returnType(IntegerType.of(1));
+    evalNull("NULLIF(0.1,0.1)").returnType(NumberType.of(2, 1));
+    evalNull("NullIf('TEST','TEST')").returnType(StringType.of(4));
     evalNull("NullIf(NULL_INTEGER,1)");
-    evalNull("NullIf('TEST','TEST')");
-    evalNull("NullIf(DATE '2019-01-01',DATE '2019-01-01')");
+    evalNull("NullIf(DATE '2019-01-01',DATE '2019-01-01')").returnType(Types.DATE);
     evalEquals("NullIf(1,2)", 1L);
     evalEquals("NullIf('TEST','XXX')", "TEST");
     evalEquals("NullIf(DATE '2019-01-01',DATE '2018-12-31')", LocalDate.of(2019, Month.JANUARY, 1));
@@ -1237,7 +1265,26 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Add_Years()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Add_Years(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_Years(FIELD_DATE,0)", "FIELD_DATE");
+  }
+
+  @Test
+  void Add_Quarters() throws Exception {
+    evalEquals("Add_Quarters(DATE '2019-01-15',1)", LocalDate.of(2019, Month.APRIL, 15));
+    evalEquals("Add_Quarters(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.JULY, 15));
+    evalEquals("Add_Quarters(DATE '2019-11-15',3)", LocalDate.of(2020, Month.AUGUST, 15));
+
+    // the resulting month has fewer days
+    evalEquals("Add_Quarters(DATE '2019-01-31',1)", LocalDate.of(2019, Month.APRIL, 30));
+    evalNull("Add_Quarters(NULL_DATE,140)");
+    evalNull("Add_Quarters(DATE '2019-01-15',NULL_INTEGER)");
+
+    // Check operands
+    evalFails("Add_Quarters(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
+    // Simplify
+    optimize("Add_Quarters(FIELD_DATE,0)", "FIELD_DATE");
   }
 
   @Test
@@ -1254,6 +1301,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Add_Months(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_Months(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1268,6 +1316,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Add_Weeks(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_Weeks(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1285,6 +1334,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Add_Days(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_Days(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1301,6 +1351,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Add_Hours(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_Hours(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1315,6 +1366,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Add_Minutes(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_Minutes(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1329,6 +1381,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Seconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
+    // Simplify
+    optimize("Add_Seconds(FIELD_DATE,0)", "FIELD_DATE");
   }
 
   @Test
@@ -3457,10 +3512,17 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   void Difference() throws Exception {
+    evalEquals("Difference('Perfect', 'Perfect')", 4L).returnType(Types.INTEGER);
     evalEquals("Difference('Juice', 'Jucy')", 4L);
+    evalEquals("Difference('Apple', 'Orange')", 0L);
+
     evalNull("Difference(NULL_STRING,NULL_STRING)");
     evalNull("Difference(NULL_STRING,'Jucy')");
     evalNull("Difference('Juice',NULL_STRING)");
+
+    evalFails("Difference()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Difference('str')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Difference('str','bad','xx')", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -3728,7 +3790,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   }
 
   @Test
-  void EqualsNull() throws Exception {
+  void EqualNull() throws Exception {
     evalFalse("Equal_Null(1,NULL_INTEGER)").returnType(Types.BOOLEAN);
     evalTrue("Equal_Null(NULL_STRING,NULL_STRING)").returnType(Types.BOOLEAN);
     evalTrue("Equal_Null(NULL_INTEGER,NULL_NUMBER)");
