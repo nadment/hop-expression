@@ -1170,6 +1170,9 @@ public class OperatorTest extends ExpressionTest {
     // Accept DataType quoted like a String
     evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(Types.INTEGER);
 
+    // Conversion overflow
+    evalFails("CAST(9223372036854775807888 as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
+
     // Unsupported conversion
     evalFails("CAST(FIELD_JSON AS INTEGER)", ErrorCode.UNSUPPORTED_CONVERSION);
 
@@ -1540,7 +1543,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("-NULL_INTEGER").returnType(Types.INTEGER);
 
     // Arithmetic overflow
-    // evalFails("-CAST(9223372036854775807 as INTEGER)");
+    evalFails("-CAST(-9223372036854775808 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
 
     optimize("-FIELD_INTEGER", "-FIELD_INTEGER");
     optimize("-(10+2)", "-12");
@@ -1548,7 +1551,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("-(0)", "0");
 
     optimize("+(0 / 0)", "0/0");
-    // optimize("-(0 / 0)", "-(0/0)");
+    optimize("-(0 / 0)", "-(0/0)");
     optimize("-(-(0 / 0))", "0/0");
 
     optimize("-RANDOM()", "-RANDOM()");

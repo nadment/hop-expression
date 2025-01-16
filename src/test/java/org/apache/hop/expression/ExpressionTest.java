@@ -470,6 +470,6 @@ public class ExpressionTest {
   public void test() throws Exception {
     Locale.setDefault(new Locale("fr", "BE"));
 
-    evalEquals("ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon')", 2L);
+    evalFails("CAST(9223372036854775807888 as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
   }
 }

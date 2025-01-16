@@ -72,6 +72,8 @@ public enum ErrorCode {
   UNEXPECTED_DATA_TYPE,
   /** Arithmetic overflow in ''{0}'' operator (consider adding explicit CAST to NUMBER) */
   ARITHMETIC_OVERFLOW,
+  /** Integer conversion overflow with value ''{0}'' */
+  CONVERSION_OVERFLOW,
   /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE,
   /** Precision of {0} must be within the range {1} to {2} */

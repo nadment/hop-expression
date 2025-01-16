@@ -49,14 +49,10 @@ public final class IntegerConversion extends Conversion<Long> {
   }
 
   public static final Long convert(final BigDecimal number) throws ConversionException {
-    try {
-      BigInteger integer = number.toBigInteger();
-      if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
-        throw new ConversionException(ErrorCode.ARITHMETIC_OVERFLOW, "CONVERT");
-      return number.longValue();
-    } catch (Exception e) {
-      throw new ConversionException(ErrorCode.ARITHMETIC_OVERFLOW, "CONVERT");
-    }
+    BigInteger integer = number.toBigInteger();
+    if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
+      throw new ConversionException(ErrorCode.CONVERSION_OVERFLOW, number);
+    return number.longValue();
   }
 
   public static final Long convert(final String str) throws ConversionException {
