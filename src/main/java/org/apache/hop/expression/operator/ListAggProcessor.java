@@ -20,8 +20,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 
 public class ListAggProcessor implements IExpressionProcessor {
-  private String delimiter;
-  private Queue<String> values;
+  private final String delimiter;
+  private final Queue<String> values;
 
   public ListAggProcessor(String delimiter) {
     this.values = new LinkedList<>();

@@ -54,14 +54,14 @@ import org.apache.hop.pipeline.transform.stream.StreamIcon;
 public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
 
-  private static IStream newDefaultStream =
+  private static final IStream newDefaultStream =
       new Stream(
           StreamType.TARGET,
           null,
           BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"),
           StreamIcon.TARGET,
           null);
-  private static IStream newTargetStream =
+  private static final IStream newTargetStream =
       new Stream(
           StreamType.TARGET,
           null,

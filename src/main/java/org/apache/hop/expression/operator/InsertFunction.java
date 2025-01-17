@@ -89,11 +89,10 @@ public class InsertFunction extends Function {
       int start = Math.min(Math.max(0, pos.intValue() - 1), original.length());
       int length = Math.min(len.intValue(), original.length());
 
-      StringBuilder builder = new StringBuilder();
-      builder.append(original.substring(0, start));
-      builder.append(insert);
-      builder.append(original.substring(start + length));
-      return builder.toString();
+        String builder = original.substring(0, start) +
+                insert +
+                original.substring(start + length);
+      return builder;
     }
   }
 

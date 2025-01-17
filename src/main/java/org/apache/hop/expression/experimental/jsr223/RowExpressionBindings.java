@@ -25,7 +25,7 @@ import javax.script.Bindings;
 public class RowExpressionBindings implements Bindings {
 
   /** The <code>Map</code> field stores the attributes. */
-  private Map<String, Object> map;
+  private final Map<String, Object> map;
 
   /** Default constructor uses a <code>HashMap</code>. */
   public RowExpressionBindings() {

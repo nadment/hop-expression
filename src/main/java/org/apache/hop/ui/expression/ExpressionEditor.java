@@ -78,7 +78,6 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -108,11 +107,11 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
   private ExpressionMode mode = ExpressionMode.NONE;
-  private ExpressionLabelProvider labelProvider;
-  private IVariables variables;
-  private CompletableFuture<IRowMeta> rowMetaFutur;
+  private final ExpressionLabelProvider labelProvider;
+  private final IVariables variables;
+  private final CompletableFuture<IRowMeta> rowMetaFutur;
   private SourceViewer wViewer;
-  private SashForm wSashForm;
+  private final SashForm wSashForm;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
   private IRowMeta rowMeta;
@@ -194,7 +193,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     // Receive data in Text or File format
     final TextTransfer textTransfer = TextTransfer.getInstance();
-    dropTarget.setTransfer(new Transfer[] {textTransfer});
+    dropTarget.setTransfer(textTransfer);
 
     dropTarget.addDropListener(
         new DropTargetListener() {
@@ -328,7 +327,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wTree = new Tree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
     wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
     PropsUi.setLook(wTree);
-    wTree.addListener(SWT.MouseDoubleClick, e -> onTreeDoubleClick(e));
+    wTree.addListener(SWT.MouseDoubleClick, this::onTreeDoubleClick);
 
     // Create the drag source on the tree
     DragSource dragSource = new DragSource(wTree, DND.DROP_MOVE | DND.DROP_COPY);
@@ -339,9 +338,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           public void dragStart(DragSourceEvent event) {
             TreeItem item = wTree.getSelection()[0];
 
-            if (item != null && item.getData() != null) {
-              event.doit = true;
-            } else event.doit = false;
+              event.doit = item != null && item.getData() != null;
           }
 
           @Override
@@ -396,9 +393,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         continue;
       }
 
-      if (!categories.contains(operator.getCategory())) {
         categories.add(operator.getCategory());
-      }
 
       if (operator.getId().equals(operator.getName())) {
         primaryOperators.add(operator);

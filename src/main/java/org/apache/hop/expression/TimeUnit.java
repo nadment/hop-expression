@@ -582,12 +582,12 @@ public enum TimeUnit {
   private final String[] alias;
   private final Set<String> names;
 
-  private TimeUnit() {
+  TimeUnit() {
     this.alias = new String[0];
     this.names = Set.of(name());
   }
 
-  private TimeUnit(final String... alias) {
+  TimeUnit(final String... alias) {
     this.alias = alias;
     this.names = SetUtils.union(Set.of(name()), Set.of(alias));
   }

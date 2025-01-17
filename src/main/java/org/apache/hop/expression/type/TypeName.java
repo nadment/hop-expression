@@ -73,22 +73,22 @@ public enum TypeName {
   TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class);
 
   /** If the precision parameter is supported. */
-  private boolean supportsPrecision;
+  private final boolean supportsPrecision;
 
   /** If the scale parameter is supported. */
-  private boolean supportsScale;
+  private final boolean supportsScale;
 
   /** The minimum supported precision. */
-  private int minPrecision;
+  private final int minPrecision;
 
   /** The maximum supported precision. */
-  private int maxPrecision;
+  private final int maxPrecision;
 
   /** The lowest possible scale. */
-  private int minScale;
+  private final int minScale;
 
   /** The highest possible scale. */
-  private int maxScale;
+  private final int maxScale;
 
   private final TypeFamily family;
 
@@ -98,15 +98,15 @@ public enum TypeName {
       Set.of(
           "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
 
-  private TypeName(
-      TypeFamily family,
-      boolean supportsPrecision,
-      boolean supportsScale,
-      int maxPrecision,
-      int minPrecision,
-      int maxScale,
-      int minScale,
-      Class<?> javaClass) {
+  TypeName(
+          TypeFamily family,
+          boolean supportsPrecision,
+          boolean supportsScale,
+          int maxPrecision,
+          int minPrecision,
+          int maxScale,
+          int minScale,
+          Class<?> javaClass) {
     this.family = family;
     this.supportsPrecision = supportsPrecision;
     this.supportsScale = supportsScale;

@@ -54,9 +54,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     }
   }
 
-  private CompletableFuture<IRowMeta> rowMeta;
-  private IVariables variables;
-  private ExpressionMode mode;
+  private final CompletableFuture<IRowMeta> rowMeta;
+  private final IVariables variables;
+  private final ExpressionMode mode;
   private String message;
 
   public ExpressionCompletionProcessor(IVariables variables) {
@@ -266,13 +266,12 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           }
 
           Image image = GuiResource.getInstance().getImage(valueMeta);
-          StringBuilder description = new StringBuilder();
-          description.append("<b>Type:</b> ");
-          description.append(valueMeta.getTypeDesc());
-          description.append("<br><b>Step origin:</b> ");
-          description.append(valueMeta.getOrigin());
-          description.append("<br><b>Comment:</b> ");
-          description.append(StringUtils.defaultString(valueMeta.getComments()));
+            String description = "<b>Type:</b> " +
+                    valueMeta.getTypeDesc() +
+                    "<br><b>Step origin:</b> " +
+                    valueMeta.getOrigin() +
+                    "<br><b>Comment:</b> " +
+                    StringUtils.defaultString(valueMeta.getComments());
 
           CompletionProposal proposal =
               new CompletionProposal(
@@ -283,7 +282,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
                   image,
                   name,
                   null,
-                  description.toString());
+                      description);
           proposals.add(proposal);
         }
       }

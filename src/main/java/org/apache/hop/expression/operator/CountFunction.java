@@ -32,7 +32,7 @@ public class CountFunction extends AggregateFunction {
     ALL
   }
 
-  private Count count;
+  private final Count count;
 
   /**
    * Default constructor to register function but not used. The different count mode are detected by

@@ -26,5 +26,5 @@ public interface IExpressionContext {
    * @throws IllegalArgumentException if the name is empty.
    * @throws NullPointerException if the name is null.
    */
-  public Object getAttribute(String name);
+  Object getAttribute(String name);
 }

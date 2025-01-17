@@ -20,9 +20,9 @@ import org.apache.hop.core.row.IRowMeta;
 
 public interface IRowExpressionContext extends IExpressionContext {
 
-  public IRowMeta getRowMeta();
+  IRowMeta getRowMeta();
 
-  public Object[] getRow();
+  Object[] getRow();
 
-  public void setRow(Object[] row);
+  void setRow(Object[] row);
 }

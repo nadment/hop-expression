@@ -87,9 +87,8 @@ public final class Range<T extends Comparable<? super T>> {
       return false;
     } else if (this == obj) {
       return true;
-    } else if (obj instanceof Range) {
-      Range<?> other = (Range<?>) obj;
-      return lowerBound.equals(other.lowerBound) && upperBound.equals(other.upperBound);
+    } else if (obj instanceof Range<?> other) {
+        return lowerBound.equals(other.lowerBound) && upperBound.equals(other.upperBound);
     }
     return false;
   }

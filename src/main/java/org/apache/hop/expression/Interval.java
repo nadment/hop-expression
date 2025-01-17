@@ -461,14 +461,7 @@ public class Interval implements Serializable, Comparable<Interval> {
     this.nanos = nanos;
   }
 
-  /**
-   * Load a {@link Double} representation of a <code>INTERVAL YEAR TO SECOND</code> by assuming
-   * standard 24 hour days and 60 second minutes.
-   *
-   * @param milli The number of milliseconds as a fractional number
-   * @return The loaded <code>INTERVAL DAY TO SECOND</code> object
-   */
-  // public static Interval of(BigDecimal value) {
+    // public static Interval of(BigDecimal value) {
   //
   // BigDecimal abs = value.abs();
   // long decimal = abs.longValue();
@@ -634,8 +627,7 @@ public class Interval implements Serializable, Comparable<Interval> {
       if (months != other.months) return false;
       if (seconds != other.seconds) return false;
       if (nanos != other.nanos) return false;
-      if (negative != other.negative && !isZero()) return false;
-      return true;
+        return negative == other.negative || isZero();
     } else return false;
   }
 
@@ -829,23 +821,23 @@ public class Interval implements Serializable, Comparable<Interval> {
 
     if (negative) {
       if (months != 0) {
-        temporal = temporal.minus(months, ChronoUnit.MONTHS);
+        temporal = temporal.minusMonths(months);
       }
       if (seconds != 0) {
-        temporal = temporal.minus(seconds, ChronoUnit.SECONDS);
+        temporal = temporal.minusSeconds(seconds);
       }
       if (nanos != 0) {
-        temporal = temporal.minus(nanos, ChronoUnit.NANOS);
+        temporal = temporal.minusNanos(nanos);
       }
     } else {
       if (months != 0) {
-        temporal = temporal.plus(months, ChronoUnit.MONTHS);
+        temporal = temporal.plusMonths(months);
       }
       if (seconds != 0) {
-        temporal = temporal.plus(seconds, ChronoUnit.SECONDS);
+        temporal = temporal.plusSeconds(seconds);
       }
       if (nanos != 0) {
-        temporal = temporal.plus(nanos, ChronoUnit.NANOS);
+        temporal = temporal.plusNanos(nanos);
       }
     }
     return temporal;
@@ -886,23 +878,23 @@ public class Interval implements Serializable, Comparable<Interval> {
 
     if (negative) {
       if (months != 0) {
-        temporal = temporal.plus(months, ChronoUnit.MONTHS);
+        temporal = temporal.plusMonths(months);
       }
       if (seconds != 0) {
-        temporal = temporal.plus(seconds, ChronoUnit.SECONDS);
+        temporal = temporal.plusSeconds(seconds);
       }
       if (nanos != 0) {
-        temporal = temporal.plus(nanos, ChronoUnit.NANOS);
+        temporal = temporal.plusNanos(nanos);
       }
     } else {
       if (months != 0) {
-        temporal = temporal.minus(months, ChronoUnit.MONTHS);
+        temporal = temporal.minusMonths(months);
       }
       if (seconds != 0) {
-        temporal = temporal.minus(seconds, ChronoUnit.SECONDS);
+        temporal = temporal.minusSeconds(seconds);
       }
       if (nanos != 0) {
-        temporal = temporal.minus(nanos, ChronoUnit.NANOS);
+        temporal = temporal.minusNanos(nanos);
       }
     }
     return temporal;

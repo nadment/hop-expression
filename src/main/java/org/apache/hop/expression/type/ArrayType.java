@@ -37,7 +37,7 @@ public final class ArrayType extends Type {
     return new ArrayType(type, true);
   }
 
-  protected ArrayType(Type elementType, boolean nullable) {
+  ArrayType(Type elementType, boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
     this.elementType = Objects.requireNonNull(elementType);
     this.signature = generateSignature();
@@ -65,11 +65,10 @@ public final class ArrayType extends Type {
 
   @Override
   protected String generateSignature() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("ARRAY<");
-    builder.append(elementType.generateSignature());
-    builder.append(">");
-    return builder.toString();
+      String builder = "ARRAY<" +
+              elementType.generateSignature() +
+              ">";
+    return builder;
   }
 
   @Override

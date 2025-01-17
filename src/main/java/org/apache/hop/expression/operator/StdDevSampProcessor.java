@@ -27,7 +27,7 @@ import org.apache.hop.expression.IExpressionProcessor;
  */
 public class StdDevSampProcessor implements IExpressionProcessor {
 
-  private List<Double> values;
+  private final List<Double> values;
 
   public StdDevSampProcessor() {
     values = new ArrayList<>();

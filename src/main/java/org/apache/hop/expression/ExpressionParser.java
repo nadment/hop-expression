@@ -100,7 +100,7 @@ public class ExpressionParser {
   // Index in tokens
   private int index = 0;
 
-  private List<Token> tokens = new ArrayList<>();
+  private final List<Token> tokens = new ArrayList<>();
 
   public ExpressionParser(final String source) {
     super();
@@ -319,12 +319,9 @@ public class ExpressionParser {
     IExpression expression = this.parseBitwiseOr();
 
     // Special case NOT before operation: <exp> [NOT] LIKE|ILIKE|IN|BETWEEN|SIMILAR <primaryExp>
-    boolean not = false;
-    if (isThenNext(Id.NOT)) {
-      not = true;
-    }
+    boolean not = isThenNext(Id.NOT);
 
-    if (isThenNext(Id.LIKE)) {
+      if (isThenNext(Id.LIKE)) {
       IExpression pattern = this.parseBitwiseOr();
 
       if (isThenNext(Id.ESCAPE)) {

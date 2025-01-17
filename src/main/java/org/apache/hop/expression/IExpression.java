@@ -31,9 +31,9 @@ public interface IExpression {
    * @return a {@link Kind} value, never null
    * @see #is
    */
-  public Kind getKind();
+  Kind getKind();
 
-  public default boolean is(final Kind kind) {
+  default boolean is(final Kind kind) {
     return getKind() == kind;
   }
 
@@ -42,10 +42,10 @@ public interface IExpression {
    *
    * @return a {@link Type} value
    */
-  public Type getType();
+  Type getType();
 
   /** Check if the expression is a call to this operator or an alias of this operator. */
-  public default boolean isOperator(Operator operator) {
+  default boolean isOperator(Operator operator) {
     return false;
   }
 
@@ -54,7 +54,7 @@ public interface IExpression {
    *
    * @return {@code true} if the expression is constant NULL value
    */
-  public default boolean isNull() {
+  default boolean isNull() {
     return false;
   }
 
@@ -64,7 +64,7 @@ public interface IExpression {
    *
    * @return {@code true} if this is a constant expression.
    */
-  public default boolean isConstant() {
+  default boolean isConstant() {
     return false;
   }
 
@@ -73,14 +73,14 @@ public interface IExpression {
    *
    * @return the estimated cost
    */
-  public int getCost();
+  int getCost();
 
   /**
    * Evaluates the value of this expression.
    *
    * @return The result of evaluating the expression.
    */
-  public default Object getValue() {
+  default Object getValue() {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
@@ -91,7 +91,7 @@ public interface IExpression {
    * @param <T> Value type
    * @return The result of evaluating the expression in desired type
    */
-  public default <T extends Object> T getValue(Class<T> clazz) {
+  default <T extends Object> T getValue(Class<T> clazz) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
@@ -101,13 +101,13 @@ public interface IExpression {
    * @param context The context against which the expression will be validated.
    * @throws ExpressionException if an error occurs.
    */
-  public void validate(IExpressionContext context) throws ExpressionException;
+  void validate(IExpressionContext context) throws ExpressionException;
 
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.
    */
-  public abstract <E> E accept(IExpressionVisitor<E> visitor);
+  <E> E accept(IExpressionVisitor<E> visitor);
 
   /**
    * Appends this expression statement to the specified writer. This may not always be the original
@@ -122,5 +122,5 @@ public interface IExpression {
    * @param leftPrec The precedence of the {@link IExpression} immediately preceding
    * @param rightPrec The precedence of the {@link IExpression} immediately
    */
-  public void unparse(final StringWriter writer, int leftPrec, int rightPrec);
+  void unparse(final StringWriter writer, int leftPrec, int rightPrec);
 }

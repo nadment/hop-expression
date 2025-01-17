@@ -32,7 +32,7 @@ public class VariancePopProcessor implements IExpressionProcessor {
 
   private static final Variance VARIANCE = new Variance(false);
 
-  private List<Double> values;
+  private final List<Double> values;
 
   public VariancePopProcessor() {
     values = new ArrayList<>();

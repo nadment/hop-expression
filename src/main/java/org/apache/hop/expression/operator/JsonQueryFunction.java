@@ -68,7 +68,7 @@ public class JsonQueryFunction extends Function {
 
     try {
       JsonPath jsonPath = JsonPath.compile(path);
-      JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+      JsonNode result = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
       return result;
     } catch (Exception e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);

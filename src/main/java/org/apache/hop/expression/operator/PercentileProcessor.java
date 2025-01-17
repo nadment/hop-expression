@@ -28,8 +28,8 @@ import org.apache.hop.expression.IExpressionProcessor;
 public class PercentileProcessor implements IExpressionProcessor {
 
   private static final Percentile PERCENTILE = new Percentile();
-  private double quantile;
-  private List<Double> values;
+  private final double quantile;
+  private final List<Double> values;
 
   public PercentileProcessor(BigDecimal quantile) {
     this.values = new ArrayList<>();

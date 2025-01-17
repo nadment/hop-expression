@@ -46,5 +46,5 @@ public enum TypeFamily {
   //
   ANY,
   //
-  ARRAY;
+  ARRAY
 }

@@ -55,7 +55,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
   private static final Class<?> PKG = CloneRowDialog.class; // for i18n purposes, needed by
   // Translator!!
 
-  private CloneRowMeta input;
+  private final CloneRowMeta input;
 
   // nr clones
   private ExpressionText wnrClone;

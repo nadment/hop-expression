@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 class CallTest extends ExpressionTest {
 
   @Test
-  void testCall() throws Exception {
+  void testCall() {
     Call call1 = new Call(3, Operators.ADD, Literal.of(3), Literal.of(5));
     Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
 
@@ -65,7 +65,7 @@ class CallTest extends ExpressionTest {
     // Data type is unknown before validation
     assertEquals(Types.UNKNOWN, call1.getType());
     assertEquals(Types.UNKNOWN, call3.getType());
-    assertNotEquals(call1, null);
+    assertNotEquals(null, call1);
     assertEquals("3+5", call1.toString());
 
     assertEquals(call1, call2);

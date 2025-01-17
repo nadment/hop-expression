@@ -173,7 +173,7 @@ public final class ReturnTypes {
         // If boolean return integer
         if (type.is(TypeName.BOOLEAN)) return Types.INTEGER.withNullability(type.isNullable());
 
-        // By default coerce to Number
+        // By default, coerce to Number
         return Types.NUMBER.withNullability(type.isNullable());
       };
 
@@ -308,7 +308,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  protected static Type deriveAdditiveType(final Type type1, final Type type2) {
+  private static Type deriveAdditiveType(final Type type1, final Type type2) {
 
     if (type1.is(TypeName.DATE) && type2.is(TypeName.INTERVAL)) {
       return type1;
@@ -363,7 +363,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  protected static Type deriveMultiplyType(final Type type1, final Type type2) {
+  private static Type deriveMultiplyType(final Type type1, final Type type2) {
     if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
     }
@@ -405,7 +405,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  protected static Type deriveDivideType(final Type type1, final Type type2) {
+  private static Type deriveDivideType(final Type type1, final Type type2) {
 
     if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
@@ -444,7 +444,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  protected static Type deriveModType(final Type type1, final Type type2) {
+  private static Type deriveModType(final Type type1, final Type type2) {
 
     if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;

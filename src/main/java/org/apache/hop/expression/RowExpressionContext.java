@@ -20,7 +20,7 @@ import org.apache.hop.core.variables.IVariables;
 
 public class RowExpressionContext extends ExpressionContext implements IRowExpressionContext {
 
-  private IRowMeta rowMeta;
+  private final IRowMeta rowMeta;
   private Object[] row;
 
   public RowExpressionContext(IVariables variables, IRowMeta rowMeta) {

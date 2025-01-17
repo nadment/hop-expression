@@ -16,11 +16,11 @@ package org.apache.hop.expression;
 
 /** Visitor pattern for traversing a tree of {@link IExpression} objects. */
 public interface IExpressionVisitor<E> {
-  public E visitIdentifier(Identifier identifier);
+  E visitIdentifier(Identifier identifier);
 
-  public E visitCall(Call call);
+  E visitCall(Call call);
 
-  public E visitArray(Array array);
+  E visitArray(Array array);
 
-  public E visitLiteral(Literal literal);
+  E visitLiteral(Literal literal);
 }

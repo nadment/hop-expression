@@ -23,7 +23,7 @@ import org.apache.hop.expression.IExpressionProcessor;
 
 public class StdDevPopProcessor implements IExpressionProcessor {
 
-  private List<Double> values;
+  private final List<Double> values;
 
   public StdDevPopProcessor() {
     values = new ArrayList<>();

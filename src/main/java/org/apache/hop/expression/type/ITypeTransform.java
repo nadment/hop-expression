@@ -24,5 +24,5 @@ public interface ITypeTransform {
    * @param type to transform
    * @return type
    */
-  public Type transformType(Type type);
+  Type transformType(Type type);
 }

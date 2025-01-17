@@ -169,7 +169,7 @@ public final class StringType extends Type {
     return result;
   }
 
-  protected boolean checkPrecision(final String result) {
+  private boolean checkPrecision(final String result) {
     if (result == null) return true;
 
     return this.precision < 0 || this.precision >= result.length();

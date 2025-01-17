@@ -70,7 +70,7 @@ public class OverlayFunction extends Function {
     int end = start + count;
 
     StringBuilder builder = new StringBuilder();
-    builder.append(str.substring(0, start));
+    builder.append(str, 0, start);
     builder.append(replace);
     if (end < len) {
       builder.append(str.substring(end));

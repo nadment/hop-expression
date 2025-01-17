@@ -27,7 +27,7 @@ final class RomanNumberFormat extends NumberFormat {
   // Fill mode suppress padding blanks.
   private boolean fillMode = true;
 
-  private boolean lowerCase;
+  private final boolean lowerCase;
 
   public RomanNumberFormat(final String pattern) {
 

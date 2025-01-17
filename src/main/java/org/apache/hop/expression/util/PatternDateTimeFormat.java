@@ -335,8 +335,8 @@ import org.apache.hop.expression.ExpressionException;
   private static class AdBcFormat extends Format {
     private static final String[] AD_BC = {"AD", "A.D.", "BC", "B.C."};
 
-    private String ad;
-    private String bc;
+    private final String ad;
+    private final String bc;
 
     public AdBcFormat(Capitalization cap, String ad, String bc) {
       super(true, true);
@@ -1221,7 +1221,7 @@ import org.apache.hop.expression.ExpressionException;
   private final Locale locale;
 
   /** The parsed formats. */
-  private transient Format[] formats;
+  private final transient Format[] formats;
 
   public PatternDateTimeFormat(final String pattern) {
     this(pattern, Locale.getDefault());

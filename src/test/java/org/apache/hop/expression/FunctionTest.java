@@ -14,9 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +36,9 @@ import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 
-public class ScalarFunctionTest extends ExpressionTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class FunctionTest extends ExpressionTest {
 
   @Test
   void Error() throws Exception {
@@ -110,7 +109,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   void Try_To_Binary() throws Exception {
     evalEquals("TRY_TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes())
         .returnType(Types.BINARY);
-    ;
+
     evalEquals("TRY_TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
     evalNull("TRY_TO_BINARY('Z4','HEX')").returnType(Types.BINARY);
 
@@ -556,17 +555,17 @@ public class ScalarFunctionTest extends ExpressionTest {
   void ConvertTimeZone() throws Exception {
     evalEquals(
             "CONVERT_TIMEZONE('America/Los_Angeles', 'America/New_York', TIMESTAMP '2023-01-01 14:00:00')",
-            LocalDateTime.of(2023, Month.JANUARY, 1, 17, 00, 00))
+            LocalDateTime.of(2023, Month.JANUARY, 1, 17, 0, 0))
         .returnType(Types.DATE);
     evalEquals(
         "CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')",
-        LocalDateTime.of(2023, Month.JANUARY, 1, 04, 00, 00));
+        LocalDateTime.of(2023, Month.JANUARY, 1, 4, 0, 0));
     evalEquals(
         "CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00')",
-        LocalDateTime.of(2023, Month.JANUARY, 1, 23, 00, 00));
+        LocalDateTime.of(2023, Month.JANUARY, 1, 23, 0, 0));
     evalEquals(
         "CONVERT_TIMEZONE('+00:00','+10:00', TIMESTAMP '2023-01-01 12:00:00')",
-        ZonedDateTime.of(2023, 1, 1, 22, 00, 00, 00000000, ZoneOffset.ofHoursMinutes(10, 0)));
+        ZonedDateTime.of(2023, 1, 1, 22, 0, 0, 0, ZoneOffset.ofHoursMinutes(10, 0)));
 
     evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)").returnType(Types.DATE);
     evalNull("CONVERT_TIMEZONE('Europe/Paris', 'America/New_York', NULL_TIMESTAMP)");
@@ -732,7 +731,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Next_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2))
         .returnType(Types.DATE);
     evalEquals("Next_Day(FIELD_DATE,'monday')", LocalDate.of(1981, Month.JUNE, 29));
-    evalEquals("Next_Day(FIELD_TIMESTAMP,'monday')", LocalDate.of(2023, Month.MARCH, 06));
+    evalEquals("Next_Day(FIELD_TIMESTAMP,'monday')", LocalDate.of(2023, Month.MARCH, 6));
 
     evalNull("Next_Day(NULL_DATE, 'monday')").returnType(Types.DATE);
     evalNull("Next_Day(FIELD_DATE, NULL_STRING)");
@@ -774,7 +773,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Normalize()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Normalize('\u00ea','BAD')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Normalize('ê','BAD')", ErrorCode.INVALID_ARGUMENT);
   }
 
   @Test
@@ -4291,14 +4290,16 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalTrue("Random() between 0 and 1");
 
-    // Keep the same context
-    // Warning Random implementation is not the same on each JVM
-    Evaluator evaluator = new Evaluator(createExpressionContext(), "Random()");
+    /*
+     Keep the same context
+     Warning Random implementation is not the same on each JVM
+    */
+      Evaluator evaluator = new Evaluator(createExpressionContext(), "Random()");
     evaluator.returnType(Types.NUMBER);
 
     // Evaluate should execute
     Object value = evaluator.eval(Object.class);
-    assertTrue(value instanceof BigDecimal);
+    assertInstanceOf(BigDecimal.class, value);
     double randomValue = ((BigDecimal) value).doubleValue();
     assertTrue(0 <= randomValue && randomValue < 1);
 

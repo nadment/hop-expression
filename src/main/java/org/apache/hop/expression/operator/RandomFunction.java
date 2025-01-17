@@ -85,14 +85,13 @@ public class RandomFunction extends Function {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof RandomFunction)) {
+    if (!(obj instanceof RandomFunction other)) {
       return false;
     }
 
     if (random == null) return super.equals(obj);
 
-    RandomFunction other = (RandomFunction) obj;
-    return super.equals(other) && this.random.equals(other.random);
+      return super.equals(other) && this.random.equals(other.random);
   }
 
   @Override

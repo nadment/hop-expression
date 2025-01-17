@@ -51,7 +51,7 @@ public class Types {
   /** Default BINARY type with maximum precision. */
   public static final BinaryType BINARY = new BinaryType(TypeName.BINARY.getMaxPrecision(), true);
 
-  /** Default BINARY NOT NULLtype with maximum precision. */
+  /** Default BINARY NOT NULL type with maximum precision. */
   public static final BinaryType BINARY_NOT_NULL =
       new BinaryType(TypeName.BINARY.getMaxPrecision(), false);
 
@@ -154,7 +154,7 @@ public class Types {
    * Coerce all the operands to a common {@code Type}.
    *
    * @param call the call
-   * @param commonType common type to coerce to
+   * @param type common type to coerce to
    */
   public static boolean coerceOperandsType(final Call call, final Type type) {
     boolean coerced = false;
@@ -177,7 +177,7 @@ public class Types {
 
     IExpression operand = call.getOperand(index);
 
-    // If the operand is a array, coercion of all its elements
+    // If the operand is an array, coercion of all its elements
     if (operand.is(Kind.ARRAY)) {
       Array array = coerceOperandType((Array) operand, type);
       if (!array.equals(operand)) {
@@ -266,7 +266,7 @@ public class Types {
     return expression.getType().getName().ordinal() < toType.getName().ordinal();
   }
 
-  /** Coerces the operands of a addition or subtract expression into numeric type. */
+  /** Coerces the operands of an addition or subtract expression into numeric type. */
   public static boolean coercionArithmeticOperator(Call call) {
 
     Type left = call.getOperand(0).getType();
@@ -365,14 +365,11 @@ public class Types {
    */
   public static boolean isLosslessCast(Type source, Type target) {
 
-    if (source.getName() == target.getName()
-        && source.getPrecision() <= target.getPrecision()
-        && source.getScale() <= target.getScale()) {
-      return true;
-    }
+      return source.getName() == target.getName()
+              && source.getPrecision() <= target.getPrecision()
+              && source.getScale() <= target.getScale();
 
     // Return FALSE by default
-    return false;
   }
 
   /**
@@ -391,17 +388,13 @@ public class Types {
     }
 
     // If one of the arguments is of type 'ANY', return true.
-    if (family1 == TypeFamily.ANY || family2 == TypeFamily.ANY) {
-      return true;
-    }
+      return family1 == TypeFamily.ANY || family2 == TypeFamily.ANY;
 
     // If one of the arguments is of type 'NULL', return true.
     // if (family1 == TypeFamily.NULL
     // || family2 == TypeFamily.NULL) {
     // return true;
     // }
-
-    return false;
   }
 
   public static boolean isBinary(final Type type) {
@@ -453,27 +446,17 @@ public class Types {
       throw new IllegalArgumentException("TypeId must not be null");
     }
 
-    switch (typeId) {
-      case BOOLEAN:
-        return new ValueMetaBoolean(name);
-      case INTEGER:
-        return new ValueMetaInteger(name, 9, 0);
-      case NUMBER:
-        return new ValueMetaBigNumber(name, -1, -1);
-      case STRING:
-        return new ValueMetaString(name, -1, -1);
-      case DATE:
-        return new ValueMetaDate(name, -1, -1);
-      case BINARY:
-        return new ValueMetaBinary(name, -1, -1);
-      case JSON:
-        return new ValueMetaJson(name);
-      case INET:
-        return new ValueMetaInternetAddress(name);
-      case UNKNOWN:
-      default:
-        return new ValueMetaNone(name);
-    }
+      return switch (typeId) {
+          case BOOLEAN -> new ValueMetaBoolean(name);
+          case INTEGER -> new ValueMetaInteger(name, 9, 0);
+          case NUMBER -> new ValueMetaBigNumber(name, -1, -1);
+          case STRING -> new ValueMetaString(name, -1, -1);
+          case DATE -> new ValueMetaDate(name, -1, -1);
+          case BINARY -> new ValueMetaBinary(name, -1, -1);
+          case JSON -> new ValueMetaJson(name);
+          case INET -> new ValueMetaInternetAddress(name);
+          default -> new ValueMetaNone(name);
+      };
   }
 
   public static IValueMeta createValueMeta(final String name, final Type type) {
@@ -483,24 +466,15 @@ public class Types {
     if (type == null) {
       throw new IllegalArgumentException("Type must not be null");
     }
-    switch (type.getName()) {
-      case BOOLEAN:
-        return new ValueMetaBoolean(name);
-      case INTEGER:
-        return new ValueMetaInteger(name);
-      case NUMBER:
-        return new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
-      case STRING:
-        return new ValueMetaString(name, type.getPrecision(), type.getScale());
-      case DATE:
-        return new ValueMetaDate(name);
-      case JSON:
-        return new ValueMetaJson(name);
-      case INET:
-        return new ValueMetaInternetAddress(name);
-      case UNKNOWN:
-      default:
-        return new ValueMetaNone(name);
-    }
+      return switch (type.getName()) {
+          case BOOLEAN -> new ValueMetaBoolean(name);
+          case INTEGER -> new ValueMetaInteger(name);
+          case NUMBER -> new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
+          case STRING -> new ValueMetaString(name, type.getPrecision(), type.getScale());
+          case DATE -> new ValueMetaDate(name);
+          case JSON -> new ValueMetaJson(name);
+          case INET -> new ValueMetaInternetAddress(name);
+          default -> new ValueMetaNone(name);
+      };
   }
 }

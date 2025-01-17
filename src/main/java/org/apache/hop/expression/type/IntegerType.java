@@ -122,7 +122,7 @@ public final class IntegerType extends Type {
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
-  protected static int numberOfDigit(int number) {
+  private static int numberOfDigit(int number) {
     if (number < 100000) {
       if (number < 100) {
         if (number < 10) {
@@ -162,7 +162,7 @@ public final class IntegerType extends Type {
     }
   }
 
-  protected static int numberOfDigit(long number) {
+  private static int numberOfDigit(long number) {
     int count = 0;
     while (number != 0) {
       number = number / 10;

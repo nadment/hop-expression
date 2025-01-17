@@ -43,7 +43,7 @@ public class ParseUrlFunction extends Function {
     PROTOCOL,
     FILE,
     AUTHORITY,
-    USERINFO;
+    USERINFO
   }
 
   static Pattern keyToPattern(final String keyToExtract) {

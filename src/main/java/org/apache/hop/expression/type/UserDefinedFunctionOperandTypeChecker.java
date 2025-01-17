@@ -21,7 +21,7 @@ import org.apache.hop.expression.UserDefinedFunctionMeta;
 
 /** Operand type-checking strategy which checks operand type. */
 public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecker {
-  private UserDefinedFunctionMeta meta;
+  private final UserDefinedFunctionMeta meta;
 
   public UserDefinedFunctionOperandTypeChecker(UserDefinedFunctionMeta meta) {
     this.meta = meta;

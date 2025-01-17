@@ -41,7 +41,7 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     return TypeName.NUMBER;
   }
 
-  public static final BigDecimal convert(final String str) throws ConversionException {
+  public static BigDecimal convert(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
     } catch (FormatParseException e) {
@@ -50,7 +50,7 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     }
   }
 
-  public static final BigDecimal convert(final byte[] bytes) throws ConversionException {
+  public static BigDecimal convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
@@ -62,7 +62,7 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     return new BigDecimal(result);
   }
 
-  public static final BigDecimal convert(final ZonedDateTime datetime) throws ConversionException {
+  public static BigDecimal convert(final ZonedDateTime datetime) throws ConversionException {
 
     BigDecimal result = new BigDecimal(datetime.toEpochSecond());
     int nanos = datetime.getNano();

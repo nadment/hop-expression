@@ -27,10 +27,10 @@ public interface IReturnTypeInference {
    * @param call
    * @return type
    */
-  public Type inferReturnType(Call call);
+  Type inferReturnType(Call call);
 
   /** Returns a return-type inference that applies this rule then a transform. */
-  public default IReturnTypeInference andThen(ITypeTransform... transforms) {
+  default IReturnTypeInference andThen(ITypeTransform... transforms) {
     return ReturnTypes.cascade(this, transforms);
   }
 }

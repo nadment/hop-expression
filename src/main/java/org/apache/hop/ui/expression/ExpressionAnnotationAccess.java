@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Canvas;
 
 public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotationAccessExtension {
 
-  private static Image image = GuiResource.getInstance().getImageError();
+  private static final Image image = GuiResource.getInstance().getImageError();
 
   @Override
   public String getTypeLabel(Annotation annotation) {

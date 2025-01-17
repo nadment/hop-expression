@@ -31,7 +31,7 @@ import org.apache.hop.pipeline.transform.ITransformData;
 
 public class AggregateData extends BaseTransformData implements ITransformData {
   public class AggregateKey {
-    private Object[] values;
+    private final Object[] values;
 
     public AggregateKey(Object[] groupData) {
       this.values = groupData;

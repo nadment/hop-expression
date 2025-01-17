@@ -38,7 +38,7 @@ public class BrowserToolTip extends ToolTip {
   private static final int DEFAULT_SHIFT_X = -3;
   private static final int DEFAULT_SHIFT_Y = -3;
 
-  private IToolTipProvider tooltipProvider;
+  private final IToolTipProvider tooltipProvider;
 
   public BrowserToolTip(Tree control, IToolTipProvider provider) {
     super(control, ToolTip.NO_RECREATE, false);

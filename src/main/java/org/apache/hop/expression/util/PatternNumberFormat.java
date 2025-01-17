@@ -169,7 +169,7 @@ final class PatternNumberFormat extends NumberFormat {
   // Fill mode suppress padding blanks and zeroes.
   private boolean fillMode = true;
 
-  private boolean exactMode = false;
+  private final boolean exactMode = false;
 
   private boolean blank = true;
 
@@ -193,7 +193,7 @@ final class PatternNumberFormat extends NumberFormat {
   private String pattern = "";
   private int v = 0;
 
-  protected PatternNumberFormat(final String format) {
+  PatternNumberFormat(final String format) {
 
     this.format = format;
     int index = 0;

@@ -33,7 +33,7 @@ public class VarianceSampProcessor implements IExpressionProcessor {
 
   private static final Variance VARIANCE = new Variance(true);
 
-  private List<Double> values;
+  private final List<Double> values;
 
   public VarianceSampProcessor() {
     values = new ArrayList<>();

@@ -32,7 +32,7 @@ public final class IntegerConversion extends Conversion<Long> {
   /** BigInteger equal to Long.MAX_VALUE. */
   private static final BigInteger LONGMAX = BigInteger.valueOf(Long.MAX_VALUE);
 
-  private static NumberFormat numberFormat = NumberFormat.of("TM");
+  private static final NumberFormat numberFormat = NumberFormat.of("TM");
 
   private IntegerConversion() {
     // Utility class
@@ -48,14 +48,14 @@ public final class IntegerConversion extends Conversion<Long> {
     return TypeName.INTEGER;
   }
 
-  public static final Long convert(final BigDecimal number) throws ConversionException {
+  public static Long convert(final BigDecimal number) throws ConversionException {
     BigInteger integer = number.toBigInteger();
     if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
       throw new ConversionException(ErrorCode.CONVERSION_OVERFLOW, number);
     return number.longValue();
   }
 
-  public static final Long convert(final String str) throws ConversionException {
+  public static Long convert(final String str) throws ConversionException {
     try {
       BigDecimal number = numberFormat.parse(str);
       return convert(number);
@@ -64,7 +64,7 @@ public final class IntegerConversion extends Conversion<Long> {
     }
   }
 
-  public static final Long convert(final byte[] bytes) throws ConversionException {
+  public static Long convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.BINARY, bytes);
     long result = 0;
@@ -75,7 +75,7 @@ public final class IntegerConversion extends Conversion<Long> {
     return result;
   }
 
-  public static final Long convert(final ZonedDateTime datetime) throws ConversionException {
+  public static Long convert(final ZonedDateTime datetime) throws ConversionException {
     return datetime.toEpochSecond();
   }
 }

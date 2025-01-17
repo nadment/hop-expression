@@ -115,7 +115,7 @@ public enum IntervalQualifier {
 
   private final String string;
 
-  private IntervalQualifier() {
+  IntervalQualifier() {
     this.string = name().replace('_', ' ').intern();
   }
 

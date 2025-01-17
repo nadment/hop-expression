@@ -65,9 +65,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
   private static final int MAX_UNDO_LEVEL = 25;
 
-  private IVariables variables;
-  private ExpressionMode mode;
-  private CompletableFuture<IRowMeta> futurRowMeta;
+  private final IVariables variables;
+  private final ExpressionMode mode;
+  private final CompletableFuture<IRowMeta> futurRowMeta;
 
   public ExpressionEditorConfiguration(
       IVariables variables, CompletableFuture<IRowMeta> futurRowMeta, ExpressionMode mode) {

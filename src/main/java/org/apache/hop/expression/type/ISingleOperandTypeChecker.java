@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
 
 public interface ISingleOperandTypeChecker extends IOperandTypeChecker {
 
-  public boolean checkSingleOperandType(IExpression operand);
+  boolean checkSingleOperandType(IExpression operand);
 
   default IOperandCountRange getOperandCountRange() {
     return OperandCountRange.any();

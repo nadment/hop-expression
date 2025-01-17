@@ -25,7 +25,7 @@ public class MedianProcessor implements IExpressionProcessor {
 
   private static final Median MEDIAN = new Median();
 
-  private List<Double> values;
+  private final List<Double> values;
 
   public MedianProcessor() {
     values = new ArrayList<>();

@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 public class LiteralTest extends ExpressionTest {
 
   @Test
-  void testEquals() throws Exception {
+  void testEquals() {
     assertEquals(Literal.ZERO, Literal.of(0L));
     assertEquals(Literal.ONE, Literal.of(1L));
     assertEquals(Literal.of(new BigDecimal("5")), Literal.of(5L));
@@ -48,20 +48,20 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  void Null() throws Exception {
+  void Null() {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Objects.hash(null, Types.UNKNOWN), Literal.NULL.hashCode());
-    assertFalse(Literal.NULL.is((Kind) null));
-    assertFalse(Literal.NULL.isOperator((Operator) null));
+    assertFalse(Literal.NULL.is(null));
+    assertFalse(Literal.NULL.isOperator(null));
     assertTrue(Literal.NULL.isConstant());
     assertNotEquals(Literal.NULL, null);
     assertNotEquals(Literal.NULL, Literal.ZERO);
-    assertEquals(Literal.NULL.getType(), Types.UNKNOWN);
+    assertEquals(Types.UNKNOWN, Literal.NULL.getType());
     assertNull(Literal.NULL.getValue());
   }
 
   @Test
-  void TimeUnit() throws Exception {
+  void TimeUnit() {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
 
@@ -174,7 +174,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  void Type() throws Exception {
+  void Type() {
     assertEquals(Types.NUMBER, Literal.of(Types.NUMBER).getValue());
   }
 
@@ -192,7 +192,6 @@ public class LiteralTest extends ExpressionTest {
 
     // Minimum precision for empty string is 1
     evalEquals("''", "").returnType(StringType.of(1));
-    ;
 
     optimize("'Test ''Bla'' string'");
   }
@@ -268,8 +267,8 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.ONE, Literal.of(1L));
 
     // For internal use int.class are supported
-    assertEquals(Literal.ZERO, Literal.of((int) 0));
-    assertEquals(Literal.ONE, Literal.of((int) 1));
+    assertEquals(Literal.ZERO, Literal.of(0));
+    assertEquals(Literal.ONE, Literal.of(1));
 
     assertEquals(-123456L, Literal.of(-123456L).getValue());
 
@@ -418,7 +417,7 @@ public class LiteralTest extends ExpressionTest {
   @Test
   void Date() throws Exception {
     ZonedDateTime datetime =
-        ZonedDateTime.of(2021, 2, 25, 2, 59, 00, 000000, ZoneId.systemDefault());
+        ZonedDateTime.of(2021, 2, 25, 2, 59, 0, 0, ZoneId.systemDefault());
 
     assertEquals(datetime, Literal.of(datetime).getValue());
     assertEquals(Literal.of(datetime), Literal.of(datetime));
@@ -470,16 +469,16 @@ public class LiteralTest extends ExpressionTest {
     // Timestamp with fraction seconds
     evalEquals(
         "TIMESTAMP '2021-12-01 5:01:01.123456789'",
-        LocalDateTime.of(2021, 12, 1, 5, 01, 01, 123456789));
+        LocalDateTime.of(2021, 12, 1, 5, 1, 1, 123456789));
     evalEquals(
         "TIMESTAMP '2021-12-01 12:01:01.123456789'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456789));
+        LocalDateTime.of(2021, 12, 1, 12, 1, 1, 123456789));
     evalEquals(
         "TIMESTAMP '2021-12-01 12:01:01.123456'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456000));
+        LocalDateTime.of(2021, 12, 1, 12, 1, 1, 123456000));
     evalEquals(
         "TIMESTAMP '2021-12-01 12:01:01.123'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123000000));
+        LocalDateTime.of(2021, 12, 1, 12, 1, 1, 123000000));
 
     // Timestamp with time zone offset
     evalEquals(

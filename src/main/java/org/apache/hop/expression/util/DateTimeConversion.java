@@ -40,7 +40,7 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     return TypeName.DATE;
   }
 
-  public static final ZonedDateTime convert(final String value) throws ConversionException {
+  public static ZonedDateTime convert(final String value) throws ConversionException {
     return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
   }
 
@@ -49,9 +49,8 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
    *
    * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
    *     1970)
-   * @return
    */
-  public static final ZonedDateTime convert(final Long seconds) {
+  public static ZonedDateTime convert(final Long seconds) {
     if (seconds == null) {
       return null;
     }
@@ -59,7 +58,7 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }
 
-  public static final ZonedDateTime convert(final BigDecimal number) {
+  public static ZonedDateTime convert(final BigDecimal number) {
     if (number == null) {
       return null;
     }

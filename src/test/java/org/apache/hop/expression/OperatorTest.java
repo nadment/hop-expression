@@ -2162,7 +2162,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("'ADD_MONTHS' like '%ADD!_%' escape '!'");
 
     // Ensure regex chars are escaped
-    evalTrue("'\' LIKE '\'");
+    evalTrue("'' LIKE ''");
     evalTrue("'.*' LIKE '.*'");
     evalTrue("'[' LIKE '['");
     evalTrue("']' LIKE ']'");

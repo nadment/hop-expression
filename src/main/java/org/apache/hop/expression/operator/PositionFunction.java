@@ -49,7 +49,7 @@ public class PositionFunction extends Function {
       return null;
     }
 
-    return Long.valueOf(str.indexOf(substr, 0) + 1L);
+    return Long.valueOf(str.indexOf(substr) + 1L);
   }
 
   @Override

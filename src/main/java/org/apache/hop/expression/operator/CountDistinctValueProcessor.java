@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpressionProcessor;
 /** Returns the number of distinct values. */
 public class CountDistinctValueProcessor implements IExpressionProcessor {
 
-  private Set<Object> values;
+  private final Set<Object> values;
 
   public CountDistinctValueProcessor() {
     values = new HashSet<>();
@@ -31,7 +31,7 @@ public class CountDistinctValueProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
     Object value = operands[0].getValue();
-    if (value != null && !values.contains(value)) {
+    if (value != null) {
       values.add(value);
     }
   }

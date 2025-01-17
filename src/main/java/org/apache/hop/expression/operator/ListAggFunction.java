@@ -31,7 +31,7 @@ public class ListAggFunction extends AggregateFunction {
     DISTINCT
   }
 
-  private ListAgg option;
+  private final ListAgg option;
 
   /**
    * Default constructor to register function but not used. The different options are detected by

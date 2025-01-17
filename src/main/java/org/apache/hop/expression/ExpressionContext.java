@@ -63,7 +63,7 @@ public class ExpressionContext implements IExpressionContext {
   public static final String EXPRESSION_FIRST_DAY_OF_WEEK = "EXPRESSION_FIRST_DAY_OF_WEEK";
 
   /** The {@code Map} field stores the attributes. */
-  private Map<String, Object> attributes;
+  private final Map<String, Object> attributes;
 
   public ExpressionContext(IVariables variables) {
     super();

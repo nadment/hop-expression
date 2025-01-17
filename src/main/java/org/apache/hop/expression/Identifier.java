@@ -44,7 +44,7 @@ public class Identifier implements IExpression {
   // The data type when resolved or UNKNOWN if unresolved.
   private Type type;
   // The position in the expression source
-  private int position;
+  private final int position;
   // The index in IRowMeta when resolved or -1 if unresolved.
   private int ordinal;
   // The IValueMeta when resolved or null if unresolved.
