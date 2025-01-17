@@ -1478,22 +1478,22 @@ public class OperatorTest extends ExpressionTest {
   void AtTimeZone() throws Exception {
     evalEquals(
         "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'",
-        ZonedDateTime.of(2023, 5, 25, 20, 48, 00, 0, ZoneId.of("Europe/Paris")));
+        ZonedDateTime.of(2023, 5, 25, 20, 48, 0, 0, ZoneId.of("Europe/Paris")));
     evalEquals(
         "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Singapore'",
-        ZonedDateTime.of(2023, 5, 25, 20, 48, 00, 0, ZoneId.of("Singapore")));
+        ZonedDateTime.of(2023, 5, 25, 20, 48, 0, 0, ZoneId.of("Singapore")));
     evalEquals(
         "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'GMT+0'",
-        ZonedDateTime.of(2023, 5, 25, 20, 48, 00, 0, ZoneId.of("GMT+0")));
+        ZonedDateTime.of(2023, 5, 25, 20, 48, 0, 0, ZoneId.of("GMT+0")));
     evalEquals(
         "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'CET'",
-        ZonedDateTime.of(2023, 5, 25, 20, 48, 00, 0, ZoneId.of("CET")));
+        ZonedDateTime.of(2023, 5, 25, 20, 48, 0, 0, ZoneId.of("CET")));
     evalEquals(
         "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'EET'",
-        ZonedDateTime.of(2023, 5, 25, 20, 48, 00, 0, ZoneId.of("EET")));
+        ZonedDateTime.of(2023, 5, 25, 20, 48, 0, 0, ZoneId.of("EET")));
     evalEquals(
         "(TIMESTAMP '2023-05-25 10:48:00' AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Singapore'",
-        ZonedDateTime.of(2023, 5, 25, 10, 48, 00, 0, ZoneId.of("Asia/Singapore")));
+        ZonedDateTime.of(2023, 5, 25, 10, 48, 0, 0, ZoneId.of("Asia/Singapore")));
 
     evalNull("NULL_DATE AT TIME ZONE 'CET'");
 
@@ -1509,7 +1509,7 @@ public class OperatorTest extends ExpressionTest {
   void ConvertTimeZone() throws Exception {
     evalEquals(
         "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')",
-        ZonedDateTime.of(2020, 5, 25, 22, 48, 00, 0, ZoneId.of("Europe/Paris")));
+        ZonedDateTime.of(2020, 5, 25, 22, 48, 0, 0, ZoneId.of("Europe/Paris")));
     // evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE
     // 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
 
@@ -1675,7 +1675,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  void Dot() throws Exception {}
+  void Dot() {}
 
   @Test
   void Div() throws Exception {

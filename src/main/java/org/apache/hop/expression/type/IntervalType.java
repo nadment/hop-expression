@@ -84,8 +84,7 @@ public final class IntervalType extends Type {
    */
   public static Interval convert(final String str) throws ConversionException {
     if (str == null) return null;
-    Interval value = Interval.of(str);
-    return value;
+    return Interval.of(str);
   }
 
   @Override

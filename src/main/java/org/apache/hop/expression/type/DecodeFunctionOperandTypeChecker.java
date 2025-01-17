@@ -43,8 +43,8 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
     }
 
     // Check type if function has a default value
-      return (call.getOperandCount() - 1) <= count
-              || call.getOperand(count + 1).getType().isCoercible(result);
+    return (call.getOperandCount() - 1) <= count
+        || call.getOperand(count + 1).getType().isCoercible(result);
   }
 
   private IExpression firstNonNull(IExpression[] operands) {

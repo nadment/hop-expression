@@ -45,7 +45,7 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
 
     StringBuilder builder = new StringBuilder();
     for (String str : values) {
-      if (builder.length() > 0) {
+      if (!builder.isEmpty()) {
         builder.append(delimiter);
       }
       builder.append(str);

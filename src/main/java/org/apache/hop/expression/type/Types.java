@@ -365,9 +365,9 @@ public class Types {
    */
   public static boolean isLosslessCast(Type source, Type target) {
 
-      return source.getName() == target.getName()
-              && source.getPrecision() <= target.getPrecision()
-              && source.getScale() <= target.getScale();
+    return source.getName() == target.getName()
+        && source.getPrecision() <= target.getPrecision()
+        && source.getScale() <= target.getScale();
 
     // Return FALSE by default
   }
@@ -388,7 +388,7 @@ public class Types {
     }
 
     // If one of the arguments is of type 'ANY', return true.
-      return family1 == TypeFamily.ANY || family2 == TypeFamily.ANY;
+    return family1 == TypeFamily.ANY || family2 == TypeFamily.ANY;
 
     // If one of the arguments is of type 'NULL', return true.
     // if (family1 == TypeFamily.NULL
@@ -446,17 +446,17 @@ public class Types {
       throw new IllegalArgumentException("TypeId must not be null");
     }
 
-      return switch (typeId) {
-          case BOOLEAN -> new ValueMetaBoolean(name);
-          case INTEGER -> new ValueMetaInteger(name, 9, 0);
-          case NUMBER -> new ValueMetaBigNumber(name, -1, -1);
-          case STRING -> new ValueMetaString(name, -1, -1);
-          case DATE -> new ValueMetaDate(name, -1, -1);
-          case BINARY -> new ValueMetaBinary(name, -1, -1);
-          case JSON -> new ValueMetaJson(name);
-          case INET -> new ValueMetaInternetAddress(name);
-          default -> new ValueMetaNone(name);
-      };
+    return switch (typeId) {
+      case BOOLEAN -> new ValueMetaBoolean(name);
+      case INTEGER -> new ValueMetaInteger(name, 9, 0);
+      case NUMBER -> new ValueMetaBigNumber(name, -1, -1);
+      case STRING -> new ValueMetaString(name, -1, -1);
+      case DATE -> new ValueMetaDate(name, -1, -1);
+      case BINARY -> new ValueMetaBinary(name, -1, -1);
+      case JSON -> new ValueMetaJson(name);
+      case INET -> new ValueMetaInternetAddress(name);
+      default -> new ValueMetaNone(name);
+    };
   }
 
   public static IValueMeta createValueMeta(final String name, final Type type) {
@@ -466,15 +466,15 @@ public class Types {
     if (type == null) {
       throw new IllegalArgumentException("Type must not be null");
     }
-      return switch (type.getName()) {
-          case BOOLEAN -> new ValueMetaBoolean(name);
-          case INTEGER -> new ValueMetaInteger(name);
-          case NUMBER -> new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
-          case STRING -> new ValueMetaString(name, type.getPrecision(), type.getScale());
-          case DATE -> new ValueMetaDate(name);
-          case JSON -> new ValueMetaJson(name);
-          case INET -> new ValueMetaInternetAddress(name);
-          default -> new ValueMetaNone(name);
-      };
+    return switch (type.getName()) {
+      case BOOLEAN -> new ValueMetaBoolean(name);
+      case INTEGER -> new ValueMetaInteger(name);
+      case NUMBER -> new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
+      case STRING -> new ValueMetaString(name, type.getPrecision(), type.getScale());
+      case DATE -> new ValueMetaDate(name);
+      case JSON -> new ValueMetaJson(name);
+      case INET -> new ValueMetaInternetAddress(name);
+      default -> new ValueMetaNone(name);
+    };
   }
 }

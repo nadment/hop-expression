@@ -91,7 +91,7 @@ public interface IExpression {
    * @param <T> Value type
    * @return The result of evaluating the expression in desired type
    */
-  default <T extends Object> T getValue(Class<T> clazz) {
+  default <T> T getValue(Class<T> clazz) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
@@ -104,7 +104,7 @@ public interface IExpression {
   void validate(IExpressionContext context) throws ExpressionException;
 
   /**
-   * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
+   * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#accept}
    * method.
    */
   <E> E accept(IExpressionVisitor<E> visitor);

@@ -266,23 +266,17 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           }
 
           Image image = GuiResource.getInstance().getImage(valueMeta);
-            String description = "<b>Type:</b> " +
-                    valueMeta.getTypeDesc() +
-                    "<br><b>Step origin:</b> " +
-                    valueMeta.getOrigin() +
-                    "<br><b>Comment:</b> " +
-                    StringUtils.defaultString(valueMeta.getComments());
+          String description =
+              "<b>Type:</b> "
+                  + valueMeta.getTypeDesc()
+                  + "<br><b>Step origin:</b> "
+                  + valueMeta.getOrigin()
+                  + "<br><b>Comment:</b> "
+                  + StringUtils.defaultString(valueMeta.getComments());
 
           CompletionProposal proposal =
               new CompletionProposal(
-                  content,
-                  start,
-                  end - start,
-                  content.length(),
-                  image,
-                  name,
-                  null,
-                      description);
+                  content, start, end - start, content.length(), image, name, null, description);
           proposals.add(proposal);
         }
       }

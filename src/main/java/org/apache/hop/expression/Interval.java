@@ -18,7 +18,6 @@ package org.apache.hop.expression;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -27,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.util.Characters;
 
 /** A interval represents a duration of time which can be used in date/time arithmetic. */
-@SuppressWarnings("serial")
 public class Interval implements Serializable, Comparable<Interval> {
 
   private static final EnumSet<TimeUnit> UNITS =
@@ -461,7 +459,7 @@ public class Interval implements Serializable, Comparable<Interval> {
     this.nanos = nanos;
   }
 
-    // public static Interval of(BigDecimal value) {
+  // public static Interval of(BigDecimal value) {
   //
   // BigDecimal abs = value.abs();
   // long decimal = abs.longValue();
@@ -627,7 +625,8 @@ public class Interval implements Serializable, Comparable<Interval> {
       if (months != other.months) return false;
       if (seconds != other.seconds) return false;
       if (nanos != other.nanos) return false;
-        return negative == other.negative || isZero();
+
+      return negative == other.negative || isZero();
     } else return false;
   }
 

@@ -416,8 +416,7 @@ public class LiteralTest extends ExpressionTest {
 
   @Test
   void Date() throws Exception {
-    ZonedDateTime datetime =
-        ZonedDateTime.of(2021, 2, 25, 2, 59, 0, 0, ZoneId.systemDefault());
+    ZonedDateTime datetime = ZonedDateTime.of(2021, 2, 25, 2, 59, 0, 0, ZoneId.systemDefault());
 
     assertEquals(datetime, Literal.of(datetime).getValue());
     assertEquals(Literal.of(datetime), Literal.of(datetime));
@@ -477,8 +476,7 @@ public class LiteralTest extends ExpressionTest {
         "TIMESTAMP '2021-12-01 12:01:01.123456'",
         LocalDateTime.of(2021, 12, 1, 12, 1, 1, 123456000));
     evalEquals(
-        "TIMESTAMP '2021-12-01 12:01:01.123'",
-        LocalDateTime.of(2021, 12, 1, 12, 1, 1, 123000000));
+        "TIMESTAMP '2021-12-01 12:01:01.123'", LocalDateTime.of(2021, 12, 1, 12, 1, 1, 123000000));
 
     // Timestamp with time zone offset
     evalEquals(

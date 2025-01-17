@@ -23,7 +23,7 @@ http://www.apache.org/licenses/LICENSE-2.0
     <artifactId>hop-expression</artifactId>
     <packaging>jar</packaging>
     <name>Hop Plugins Expression</name>
-    <url>http://hop.apache.org</url>
+    <url>https://hop.apache.org</url>
 
     <properties>
         <asciidoctor.version>3.0.0</asciidoctor.version>
@@ -42,14 +42,13 @@ http://www.apache.org/licenses/LICENSE-2.0
         <org.eclipse.jface.version>3.33.0</org.eclipse.jface.version>
         <org.eclipse.osgi.version>3.20.0</org.eclipse.osgi.version>
         <org.eclipse.text.version>3.14.0</org.eclipse.text.version>
-        <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${basedir}${sure}</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>nadment</sonar.organization>
         <sonar.projectKey>${project.artifactId}</sonar.projectKey>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>ch.obermuhlner</groupId>
             <artifactId>big-math</artifactId>
@@ -182,10 +181,8 @@ http://www.apache.org/licenses/LICENSE-2.0
     </dependencies>
 
     <build>
-
         <pluginManagement>
             <plugins>
-
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
@@ -252,7 +249,7 @@ http://www.apache.org/licenses/LICENSE-2.0
                         </goals>
                         <phase>prepare-package</phase>
                         <configuration>
-                            <sourceDirectory>src/main/doc</sourceDirectory>
+                            <sourceDirectory>${basedir}/src/main/doc</sourceDirectory>
                             <backend>html5</backend>
                             <preserveDirectories>true</preserveDirectories>
                             <attributes>

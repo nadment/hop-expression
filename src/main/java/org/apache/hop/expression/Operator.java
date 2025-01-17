@@ -14,6 +14,8 @@
  */
 package org.apache.hop.expression;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,12 +23,14 @@ import java.lang.invoke.MethodType;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
+import org.apache.commons.io.IOUtils;
+import org.apache.hop.core.logging.ILogChannel;
+import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.util.Documentations;
 
 /**
  * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ...
@@ -36,6 +40,7 @@ import org.apache.hop.expression.util.Documentations;
  * operator on a lower level
  */
 public abstract class Operator {
+  private static final ILogChannel LOG = new LogChannel("Expression");
 
   /**
    * A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link
@@ -56,12 +61,12 @@ public abstract class Operator {
   private final int leftPrec;
 
   /**
-   * The precedence with which this operator binds to the expression to the right. This is great
+   * The precedence with which this operator binds to the expression to the right. This is greater
    * than the left precedence if the operator is left-associative.
    */
   private final int rightPrec;
 
-  /** Used to infer the return type of a call to this operator. */
+  /** Used to infer the return type of call to this operator. */
   private final IReturnTypeInference returnTypeInference;
 
   /** Used to validate operand types. */
@@ -83,8 +88,6 @@ public abstract class Operator {
    * @param precedence The precedence value of the operator
    * @param isLeftAssociative Set to true if the operator is left associative, false if it is right
    *     associative
-   * @param isDeterministic Set to true if the operator always returns the same result for the same
-   *     parameters
    * @param category The category to group operator
    */
   protected Operator(
@@ -104,8 +107,8 @@ public abstract class Operator {
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;
-    this.documentation = Documentations.loadDocumention(id, documentationUrl);
-    this.description = Documentations.findDocumentionDescription(documentation);
+    this.documentation = loadDocumentation();
+    this.description = findDocumentationDescription();
   }
 
   protected Operator(
@@ -160,7 +163,7 @@ public abstract class Operator {
   }
 
   /**
-   * Returns whethe the operator always returns the same result for the same parameters.
+   * Returns whether the operator always returns the same result for the same parameters.
    *
    * @return {@code true} if this is a deterministic function
    */
@@ -344,8 +347,8 @@ public abstract class Operator {
   }
 
   /**
-   * Infers the return type of an invocation of this operator; only called after the number and
-   * types of operands have already been validated.
+   * Infers the return type of invocation of this operator; only called after the number and types
+   * of operands have already been validated.
    *
    * @return inferred return type
    */
@@ -416,7 +419,7 @@ public abstract class Operator {
    *
    * <ul>
    *   <li>swap term to identifier operator literal 1>A → A<1
-   *   <li>ordering identifiers by name with case sensitive B>A → A<B
+   *   <li>ordering identifiers by name with case-sensitive B>A → A<B
    *   <li>ordering the low-cost operand to the left
    * </ul>
    *
@@ -464,7 +467,7 @@ public abstract class Operator {
    *
    * <ul>
    *   <li>swap term to identifier operator literal 1=A → A=1
-   *   <li>ordering identifiers by name (case sensitive) B=A → A=B
+   *   <li>ordering identifiers by name (case-sensitive) B=A → A=B
    *   <li>ordering the low-cost operand to the left
    * </ul>
    *
@@ -532,5 +535,36 @@ public abstract class Operator {
    */
   protected static Array array(final IExpression expression) {
     return (Array) expression;
+  }
+
+  private String loadDocumentation() {
+    try (StringWriter writer = new StringWriter()) {
+      InputStream is = this.getClass().getResourceAsStream(documentationUrl);
+      if ( is!=null ) {
+        InputStreamReader reader = new InputStreamReader(is);
+        IOUtils.copy(reader, writer);
+      }
+      return writer.toString();
+    } catch (Exception e) {
+      LOG.logError("Missing operator documentation: {0}", id);
+      return null;
+    }
+  }
+
+  private String findDocumentationDescription() {
+    if (documentation == null) {
+      return "";
+    }
+
+    int beginIndex = documentation.indexOf("id=\"preamble\"");
+    beginIndex = documentation.indexOf("<p>", beginIndex);
+
+    if (beginIndex > 0) {
+      int endIndex = documentation.indexOf("</p>", beginIndex);
+
+      return documentation.substring(beginIndex + 3, endIndex);
+    }
+
+    return "";
   }
 }

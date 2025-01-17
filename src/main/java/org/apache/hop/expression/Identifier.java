@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.Objects;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
@@ -140,7 +139,7 @@ public class Identifier implements IExpression {
           return valueMeta.getInteger(row[ordinal]);
         case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER:
           return valueMeta.getBigNumber(row[ordinal]);
-        case ValueMetaJson.TYPE_JSON:
+        case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON:
           return valueMeta.getNativeDataType(row[ordinal]);
         case IValueMeta.TYPE_BINARY:
           return valueMeta.getBinary(row[ordinal]);
@@ -232,7 +231,7 @@ public class Identifier implements IExpression {
             return type.convert(value, clazz);
           }
 
-        case ValueMetaJson.TYPE_JSON:
+        case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON:
           {
             Object value = row[ordinal];
             return type.convert(value, clazz);
@@ -289,27 +288,20 @@ public class Identifier implements IExpression {
   }
 
   protected Type createDataType(final IValueMeta meta) {
-    switch (meta.getType()) {
-      case IValueMeta.TYPE_BOOLEAN:
-        return Types.BOOLEAN;
-      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP:
-        return Types.DATE;
-      case IValueMeta.TYPE_STRING:
-        return StringType.of(meta.getLength());
-      case IValueMeta.TYPE_INTEGER:
-        return IntegerType.of(meta.getLength());
-      case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER:
-        return NumberType.of(meta.getLength(), meta.getPrecision());
-      case ValueMetaJson.TYPE_JSON:
-        return Types.JSON;
-      case IValueMeta.TYPE_INET:
-        return Types.INET;
-      case IValueMeta.TYPE_BINARY:
-        return BinaryType.of(meta.getLength());
-      default:
-        throw new ExpressionException(
-            ErrorCode.UNSUPPORTED_VALUEMETA, getName(), meta.getTypeDesc());
-    }
+    return switch (meta.getType()) {
+      case IValueMeta.TYPE_BOOLEAN -> Types.BOOLEAN;
+      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP -> Types.DATE;
+      case IValueMeta.TYPE_STRING -> StringType.of(meta.getLength());
+      case IValueMeta.TYPE_INTEGER -> IntegerType.of(meta.getLength());
+      case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER ->
+          NumberType.of(meta.getLength(), meta.getPrecision());
+      case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON -> Types.JSON;
+      case IValueMeta.TYPE_INET -> Types.INET;
+      case IValueMeta.TYPE_BINARY -> BinaryType.of(meta.getLength());
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_VALUEMETA, getName(), meta.getTypeDesc());
+    };
   }
 
   @Override

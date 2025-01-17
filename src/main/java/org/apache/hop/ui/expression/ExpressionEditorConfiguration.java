@@ -31,7 +31,6 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
@@ -58,7 +57,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Shell;
 
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
@@ -131,11 +129,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
-    return new IInformationControlCreator() {
-      public IInformationControl createInformationControl(Shell parent) {
-        return new DefaultInformationControl(parent, new HTMLTextPresenter());
-      }
-    };
+    return parent -> new DefaultInformationControl(parent, new HTMLTextPresenter());
   }
 
   @Override

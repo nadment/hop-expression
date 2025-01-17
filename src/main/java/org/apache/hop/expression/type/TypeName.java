@@ -99,14 +99,14 @@ public enum TypeName {
           "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
 
   TypeName(
-          TypeFamily family,
-          boolean supportsPrecision,
-          boolean supportsScale,
-          int maxPrecision,
-          int minPrecision,
-          int maxScale,
-          int minScale,
-          Class<?> javaClass) {
+      TypeFamily family,
+      boolean supportsPrecision,
+      boolean supportsScale,
+      int maxPrecision,
+      int minPrecision,
+      int maxScale,
+      int minScale,
+      Class<?> javaClass) {
     this.family = family;
     this.supportsPrecision = supportsPrecision;
     this.supportsScale = supportsScale;
@@ -141,30 +141,18 @@ public enum TypeName {
     if (name == null) return false;
     if (name == this) return true;
 
-    switch (this) {
-      case BOOLEAN:
-        return name.is(INTEGER, NUMBER, BINARY, STRING);
-      case STRING:
-        return name.is(BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON, INET);
-      case DATE:
-        return name.is(INTEGER, NUMBER, STRING);
-      case INTEGER:
-        return name.is(NUMBER, BOOLEAN, BINARY, STRING, DATE);
-      case NUMBER:
-        return name.is(INTEGER, BOOLEAN, BINARY, STRING, DATE);
-      case BINARY:
-        return name.is(STRING);
-      case JSON:
-        return name.is(STRING);
-      case INET:
-        return name.is(STRING);
-      case UNKNOWN, ANY:
-        return true;
-      case INTERVAL:
-      case TIMEUNIT:
-      default:
-        return false;
-    }
+    return switch (this) {
+      case BOOLEAN -> name.is(INTEGER, NUMBER, BINARY, STRING);
+      case STRING -> name.is(BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON, INET);
+      case DATE -> name.is(INTEGER, NUMBER, STRING);
+      case INTEGER -> name.is(NUMBER, BOOLEAN, BINARY, STRING, DATE);
+      case NUMBER -> name.is(INTEGER, BOOLEAN, BINARY, STRING, DATE);
+      case BINARY -> name.is(STRING);
+      case JSON -> name.is(STRING);
+      case INET -> name.is(STRING);
+      case UNKNOWN, ANY -> true;
+      default -> false;
+    };
   }
 
   /**
@@ -239,14 +227,11 @@ public enum TypeName {
   }
 
   public int getDefaultScale() {
-    switch (this) {
-      case NUMBER:
-        return 9;
-      case BOOLEAN:
-        return 0;
-      default:
-        return -1;
-    }
+    return switch (this) {
+      case NUMBER -> 9;
+      case BOOLEAN -> 0;
+      default -> -1;
+    };
   }
 
   /**

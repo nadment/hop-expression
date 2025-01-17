@@ -190,7 +190,7 @@ final class PatternNumberFormat extends NumberFormat {
 
   private CurrencyMode currency = CurrencyMode.NONE;
   private SignMode sign = SignMode.DEFAULT;
-  private String pattern = "";
+  private final String pattern;
   private int v = 0;
 
   PatternNumberFormat(final String format) {

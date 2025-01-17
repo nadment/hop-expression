@@ -14,6 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -35,8 +39,6 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class FunctionTest extends ExpressionTest {
 
@@ -4294,7 +4296,7 @@ public class FunctionTest extends ExpressionTest {
      Keep the same context
      Warning Random implementation is not the same on each JVM
     */
-      Evaluator evaluator = new Evaluator(createExpressionContext(), "Random()");
+    Evaluator evaluator = new Evaluator(createExpressionContext(), "Random()");
     evaluator.returnType(Types.NUMBER);
 
     // Evaluate should execute

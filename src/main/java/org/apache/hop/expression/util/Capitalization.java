@@ -60,16 +60,13 @@ public enum Capitalization {
     if (str == null || str.isEmpty()) {
       return str;
     }
-    switch (this) {
-      case UPPER:
-        return StringUtils.upperCase(str);
-      case LOWER:
-        return StringUtils.lowerCase(str);
-      case CAPITALIZE:
-        return Character.toUpperCase(str.charAt(0))
-            + (str.length() > 1 ? StringUtils.lowerCase(str).substring(1) : "");
-      default:
-        throw new IllegalArgumentException("Unknown capitalization strategy: " + this);
-    }
+    return switch (this) {
+      case UPPER -> StringUtils.upperCase(str);
+      case LOWER -> StringUtils.lowerCase(str);
+      case CAPITALIZE ->
+          Character.toUpperCase(str.charAt(0))
+              + (str.length() > 1 ? StringUtils.lowerCase(str).substring(1) : "");
+      default -> throw new IllegalArgumentException("Unknown capitalization strategy: " + this);
+    };
   }
 }

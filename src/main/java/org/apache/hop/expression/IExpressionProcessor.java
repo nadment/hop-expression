@@ -19,17 +19,10 @@ public interface IExpressionProcessor {
   /**
    * This method is called once for each row
    *
-   * @param context
-   * @param operands
-   * @return
+   * @param operands The operands to process
    */
   void process(IExpression[] operands) throws Exception;
 
-  /**
-   * This method returns the computed aggregate value.
-   *
-   * @param context
-   * @return
-   */
+  /** This method returns the computed aggregate value. */
   Object getValue() throws Exception;
 }

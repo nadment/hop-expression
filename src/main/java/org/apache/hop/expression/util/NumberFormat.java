@@ -139,7 +139,7 @@ public abstract class NumberFormat extends BaseFormat {
 
   public static NumberFormat of(final String pattern) {
 
-    if (pattern == null || pattern.length() == 0) {
+    if (pattern == null || pattern.isEmpty()) {
       throw new NumberFormatException("Pattern is null or empty");
     }
 

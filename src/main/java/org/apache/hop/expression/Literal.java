@@ -168,6 +168,7 @@ public class Literal implements IExpression {
   /**
    * Create a typed literal value
    *
+   * @param value
    * @param type
    */
   public Literal(final Object value, final Type type) {

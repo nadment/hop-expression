@@ -321,7 +321,7 @@ public class ExpressionParser {
     // Special case NOT before operation: <exp> [NOT] LIKE|ILIKE|IN|BETWEEN|SIMILAR <primaryExp>
     boolean not = isThenNext(Id.NOT);
 
-      if (isThenNext(Id.LIKE)) {
+    if (isThenNext(Id.LIKE)) {
       IExpression pattern = this.parseBitwiseOr();
 
       if (isThenNext(Id.ESCAPE)) {

@@ -65,10 +65,7 @@ public final class ArrayType extends Type {
 
   @Override
   protected String generateSignature() {
-      String builder = "ARRAY<" +
-              elementType.generateSignature() +
-              ">";
-    return builder;
+    return "ARRAY<" + elementType.generateSignature() + ">";
   }
 
   @Override

@@ -27,7 +27,6 @@ public abstract class Function extends Operator {
    * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
    *
    * @param id The unique identifier of the function
-   * @param name The name of function
    */
   protected Function(
       String id,
@@ -38,6 +37,14 @@ public abstract class Function extends Operator {
     super(id, id, 10, true, returnTypeInference, operandTypeChecker, category, documentationUrl);
   }
 
+  /**
+   * Creates an function.
+   *
+   * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
+   *
+   * @param id The unique identifier of the function
+   * @param name The name of function
+   */
   protected Function(
       String id,
       String name,

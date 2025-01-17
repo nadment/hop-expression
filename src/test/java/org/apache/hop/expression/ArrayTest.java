@@ -50,7 +50,7 @@ class ArrayTest extends ExpressionTest {
         new Array(Literal.TRUE, Literal.FALSE, Literal.NULL));
     assertEquals(
         new Array(Literal.of("A"), Literal.of("B")), new Array(Literal.of("A"), Literal.of("B")));
-    assertNotEquals(array1, null);
+    assertNotEquals(null, array1);
     assertNotEquals(array1, array3);
     assertNotEquals(
         new Array(Literal.of("B"), Literal.of("A")), new Array(Literal.of("A"), Literal.of("B")));

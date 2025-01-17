@@ -43,7 +43,6 @@ import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaInternetAddress;
-import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
@@ -121,7 +120,7 @@ public class ExpressionTest {
       }
     }
 
-    public IExpression getExpresssion() {
+    public IExpression getExpression() {
       return expression;
     }
 
@@ -150,7 +149,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN_FALSE"));
     rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
     rowMeta.addValueMeta(new ValueMetaInternetAddress("FIELD_INET"));
-    rowMeta.addValueMeta(new ValueMetaJson("FIELD_JSON"));
+    rowMeta.addValueMeta(new org.apache.hop.core.row.value.ValueMetaJson("FIELD_JSON"));
 
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
@@ -161,7 +160,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
     rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
     rowMeta.addValueMeta(new ValueMetaBinary("NULL_BINARY"));
-    rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
+    rowMeta.addValueMeta(new org.apache.hop.core.row.value.ValueMetaJson("NULL_JSON"));
 
     // Zero values
     rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER_ZERO"));
@@ -190,7 +189,7 @@ public class ExpressionTest {
     RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
 
     Calendar calendar = Calendar.getInstance();
-    calendar.set(1981, 5, 23);
+    calendar.set(1981, Calendar.JUNE, 23);
     calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 
     Object[] row = new Object[37];
@@ -216,7 +215,7 @@ public class ExpressionTest {
     row[12] = null;
     row[13] = null;
     row[14] = null;
-    row[16] = null;
+    row[15] = null;
     row[16] = null;
     row[17] = null;
     row[18] = null;
@@ -470,9 +469,7 @@ public class ExpressionTest {
   public void test() throws Exception {
     Locale.setDefault(new Locale("fr", "BE"));
 
-    // Locale.setDefault(new Locale("en", "US"));
-    // evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678D);
-    Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("TO_NUMBER('12 345 678', '999G999G999')", 12_345_678D);
+    FunctionRegistry.getFunction("CEIL");
+    evalTrue("2.0=2");
   }
 }

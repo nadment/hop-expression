@@ -338,7 +338,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           public void dragStart(DragSourceEvent event) {
             TreeItem item = wTree.getSelection()[0];
 
-              event.doit = item != null && item.getData() != null;
+            event.doit = item != null && item.getData() != null;
           }
 
           @Override
@@ -393,7 +393,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         continue;
       }
 
-        categories.add(operator.getCategory());
+      categories.add(operator.getCategory());
 
       if (operator.getId().equals(operator.getName())) {
         primaryOperators.add(operator);

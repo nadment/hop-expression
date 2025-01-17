@@ -91,7 +91,7 @@ public class RandomFunction extends Function {
 
     if (random == null) return super.equals(obj);
 
-      return super.equals(other) && this.random.equals(other.random);
+    return super.equals(other) && this.random.equals(other.random);
   }
 
   @Override

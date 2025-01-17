@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
 public class TypeTest extends ExpressionTest {
 
   @Test
-  void isCoercible() throws Exception {
+  void isCoercible() {
     assertFalse(TypeName.NUMBER.isCoercible(null));
     assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.INTEGER));
     assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.NUMBER));
@@ -61,7 +61,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void isCastable() throws Exception {
+  void isCastable() {
     assertTrue(TypeName.BINARY.isCastable(TypeName.STRING));
     assertFalse(TypeName.BINARY.isCastable(null));
     assertFalse(TypeName.BINARY.isCastable(TypeName.DATE));
@@ -109,7 +109,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeOf() throws Exception {
+  void typeOf() {
     assertThrows(ExpressionException.class, () -> IntegerType.of(20));
     assertThrows(ExpressionException.class, () -> NumberType.of(39));
     assertThrows(ExpressionException.class, () -> StringType.of(16_777_217));
@@ -122,7 +122,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeNameOf() throws Exception {
+  void typeNameOf() {
     assertEquals(TypeName.ANY, TypeName.of("Any"));
     assertEquals(TypeName.UNKNOWN, TypeName.of("UNKNOWN"));
     assertEquals(TypeName.BOOLEAN, TypeName.of("BOOLEAN"));
@@ -139,7 +139,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeNameFromClass() throws Exception {
+  void typeNameFromClass() {
     assertEquals(TypeName.UNKNOWN, TypeName.fromClass(null));
     assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Void.class));
     assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Float.class));
@@ -157,7 +157,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeNameFromValue() throws Exception {
+  void typeNameFromValue() {
     assertEquals(TypeName.UNKNOWN, TypeName.fromValue(null));
     assertEquals(TypeName.UNKNOWN, TypeName.fromValue(new Random()));
     assertEquals(TypeName.BOOLEAN, TypeName.fromValue(true));
@@ -175,7 +175,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void isFamily() throws Exception {
+  void isFamily() {
     assertTrue(TypeName.ANY.isFamily(TypeFamily.ANY));
     assertTrue(TypeName.ANY.isFamily(TypeFamily.BINARY));
     assertTrue(TypeName.ANY.isFamily(TypeFamily.BOOLEAN));
@@ -197,7 +197,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void javaClass() throws Exception {
+  void javaClass() {
     assertEquals(byte[].class, TypeName.BINARY.getJavaClass());
     assertEquals(Boolean.class, TypeName.BOOLEAN.getJavaClass());
     assertEquals(Long.class, TypeName.INTEGER.getJavaClass());
@@ -210,7 +210,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void signature() throws Exception {
+  void signature() {
     assertEquals("BOOLEAN", String.valueOf(Types.BOOLEAN));
     assertEquals("DATE", String.valueOf(Types.DATE));
     assertEquals("JSON", String.valueOf(Types.JSON));
@@ -250,7 +250,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToBoolean() throws Exception {
+  void castToBoolean() {
     BooleanType type = Types.BOOLEAN;
     assertNull(type.cast(null));
     assertEquals(Boolean.TRUE, type.cast(3L));
@@ -284,7 +284,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToBinary() throws Exception {
+  void castToBinary() {
     BinaryType type = Types.BINARY;
     assertNull(type.cast(null));
     // assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
@@ -297,7 +297,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToDate() throws Exception {
+  void castToDate() {
     DateType type = Types.DATE;
     ZonedDateTime date =
         LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
@@ -319,7 +319,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToString() throws Exception {
+  void castToString() {
     StringType type = Types.STRING;
     assertNull(type.cast(null));
     assertEquals("TRUE", type.cast(true));
@@ -335,7 +335,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToInteger() throws Exception {
+  void castToInteger() {
     IntegerType type = Types.INTEGER;
     assertNull(type.cast(null));
     assertEquals(Long.valueOf(1L), type.cast(true));
@@ -355,7 +355,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToNumber() throws Exception {
+  void castToNumber() {
     NumberType type = Types.NUMBER;
     assertNull(type.cast(null));
     assertEquals(BigDecimal.ZERO, type.cast(false));
@@ -385,7 +385,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToUnknown() throws Exception {
+  void castToUnknown() {
     UnknownType type = Types.UNKNOWN;
     assertThrows(ConversionException.class, () -> type.cast(null));
     assertThrows(ConversionException.class, () -> type.cast(true));
@@ -418,7 +418,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToBoolean() throws Exception {
+  void convertToBoolean() {
     BooleanType type = Types.BOOLEAN;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
@@ -437,7 +437,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToInteger() throws Exception {
+  void convertToInteger() {
     IntegerType type = Types.INTEGER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
@@ -455,7 +455,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToNumber() throws Exception {
+  void convertToNumber() {
     NumberType type = Types.NUMBER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
@@ -474,7 +474,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToString() throws Exception {
+  void convertToString() {
     StringType type = Types.STRING;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
@@ -492,7 +492,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToDate() throws Exception {
+  void convertToDate() {
     DateType type = Types.DATE;
 
     ZonedDateTime date =

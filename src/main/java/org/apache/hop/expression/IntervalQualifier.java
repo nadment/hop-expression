@@ -124,89 +124,55 @@ public enum IntervalQualifier {
    * SECOND}.
    */
   public TimeUnit getStartUnit() {
-    switch (this) {
-      case YEAR, YEAR_TO_MONTH:
-        return TimeUnit.YEAR;
-      case QUARTER:
-        return TimeUnit.QUARTER;
-      case MONTH:
-        return TimeUnit.MONTH;
-      case WEEK:
-        return TimeUnit.WEEK;
-      case DAY, DAY_TO_HOUR, DAY_TO_MINUTE, DAY_TO_SECOND:
-        return TimeUnit.DAY;
-      case HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND:
-        return TimeUnit.HOUR;
-      case MINUTE, MINUTE_TO_SECOND:
-        return TimeUnit.MINUTE;
-      case SECOND:
-        return TimeUnit.SECOND;
-      default:
-        throw new AssertionError(this);
-    }
+    return switch (this) {
+      case YEAR, YEAR_TO_MONTH -> TimeUnit.YEAR;
+      case QUARTER -> TimeUnit.QUARTER;
+      case MONTH -> TimeUnit.MONTH;
+      case WEEK -> TimeUnit.WEEK;
+      case DAY, DAY_TO_HOUR, DAY_TO_MINUTE, DAY_TO_SECOND -> TimeUnit.DAY;
+      case HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND -> TimeUnit.HOUR;
+      case MINUTE, MINUTE_TO_SECOND -> TimeUnit.MINUTE;
+      case SECOND -> TimeUnit.SECOND;
+      default -> throw new AssertionError(this);
+    };
   }
 
   /**
    * Returns {@code SECOND} for both {@code HOUR TO SECOND} and {@code SECOND} for {@code SECOND}.
    */
   public TimeUnit getEndUnit() {
-    switch (this) {
-      case YEAR:
-        return TimeUnit.YEAR;
-      case QUARTER:
-        return TimeUnit.QUARTER;
-      case YEAR_TO_MONTH, MONTH:
-        return TimeUnit.MONTH;
-      case WEEK:
-        return TimeUnit.WEEK;
-      case DAY:
-        return TimeUnit.DAY;
-      case DAY_TO_HOUR, HOUR:
-        return TimeUnit.HOUR;
-      case DAY_TO_MINUTE, HOUR_TO_MINUTE, MINUTE:
-        return TimeUnit.MINUTE;
-      case DAY_TO_SECOND, HOUR_TO_SECOND, MINUTE_TO_SECOND, SECOND:
-        return TimeUnit.SECOND;
-      default:
-        throw new AssertionError(this);
-    }
+    return switch (this) {
+      case YEAR -> TimeUnit.YEAR;
+      case QUARTER -> TimeUnit.QUARTER;
+      case YEAR_TO_MONTH, MONTH -> TimeUnit.MONTH;
+      case WEEK -> TimeUnit.WEEK;
+      case DAY -> TimeUnit.DAY;
+      case DAY_TO_HOUR, HOUR -> TimeUnit.HOUR;
+      case DAY_TO_MINUTE, HOUR_TO_MINUTE, MINUTE -> TimeUnit.MINUTE;
+      case DAY_TO_SECOND, HOUR_TO_SECOND, MINUTE_TO_SECOND, SECOND -> TimeUnit.SECOND;
+      default -> throw new AssertionError(this);
+    };
   }
 
   public Interval parse(final String text) {
-    switch (this) {
-      case YEAR:
-        return Interval.year(text);
-      case YEAR_TO_MONTH:
-        return Interval.yearToMonth(text);
-      case QUARTER:
-        return Interval.quarter(text);
-      case MONTH:
-        return Interval.month(text);
-      case WEEK:
-        return Interval.week(text);
-      case DAY:
-        return Interval.day(text);
-      case DAY_TO_HOUR:
-        return Interval.dayToHour(text);
-      case DAY_TO_MINUTE:
-        return Interval.dayToMinute(text);
-      case DAY_TO_SECOND:
-        return Interval.dayToSecond(text);
-      case HOUR:
-        return Interval.hour(text);
-      case HOUR_TO_MINUTE:
-        return Interval.hourToMinute(text);
-      case HOUR_TO_SECOND:
-        return Interval.hourToSecond(text);
-      case MINUTE:
-        return Interval.minute(text);
-      case MINUTE_TO_SECOND:
-        return Interval.minuteToSecond(text);
-      case SECOND:
-        return Interval.second(text);
-      default:
-    }
-    return null;
+    return switch (this) {
+      case YEAR -> Interval.year(text);
+      case YEAR_TO_MONTH -> Interval.yearToMonth(text);
+      case QUARTER -> Interval.quarter(text);
+      case MONTH -> Interval.month(text);
+      case WEEK -> Interval.week(text);
+      case DAY -> Interval.day(text);
+      case DAY_TO_HOUR -> Interval.dayToHour(text);
+      case DAY_TO_MINUTE -> Interval.dayToMinute(text);
+      case DAY_TO_SECOND -> Interval.dayToSecond(text);
+      case HOUR -> Interval.hour(text);
+      case HOUR_TO_MINUTE -> Interval.hourToMinute(text);
+      case HOUR_TO_SECOND -> Interval.hourToSecond(text);
+      case MINUTE -> Interval.minute(text);
+      case MINUTE_TO_SECOND -> Interval.minuteToSecond(text);
+      case SECOND -> Interval.second(text);
+      default -> null;
+    };
   }
 
   /**

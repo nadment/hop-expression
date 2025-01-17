@@ -161,7 +161,8 @@ public final class StringType extends Type {
       throw new ConversionException(
           ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), this, value);
     }
-    // adjust length
+
+    // Adjust length
     if (precision < result.length()) {
       result = result.substring(0, precision);
     }

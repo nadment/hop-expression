@@ -25,7 +25,6 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
@@ -194,7 +193,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         return expression.getValue(Boolean.class);
       case IValueMeta.TYPE_BINARY:
         return expression.getValue(byte[].class);
-      case ValueMetaJson.TYPE_JSON:
+      case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON:
         return expression.getValue(JsonNode.class);
       case IValueMeta.TYPE_INET:
         return expression.getValue(InetAddress.class);

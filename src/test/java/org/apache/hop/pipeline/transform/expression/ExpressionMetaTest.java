@@ -32,6 +32,6 @@ public class ExpressionMetaTest {
         TransformSerializationTestUtil.testSerialization(
             "/expression-transform.xml", ExpressionMeta.class);
 
-    assertEquals(meta.getFields().size(), 9);
+    assertEquals(9, meta.getFields().size());
   }
 }
