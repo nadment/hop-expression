@@ -2587,10 +2587,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678D);
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("TO_NUMBER('12 345 678', '999G999G999')", 12_345_678L);
+    evalEquals("TO_NUMBER('12 345 678', '999G999G999')", 12_345_678D);
     evalEquals("TO_NUMBER('12 345 678,123', '999G999G999D000')", 12_345_678.123D);
     Locale.setDefault(new Locale("de", "DE"));
-    evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678L);
+    evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678D);
 
     // Format with Currency dollar
     Locale.setDefault(new Locale("en", "US"));

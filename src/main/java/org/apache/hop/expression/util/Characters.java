@@ -149,7 +149,14 @@ public class Characters {
    * @return
    */
   public static boolean isSpace(char ch) {
-    return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
+    return ch == ' '
+        || ch == '\t'
+        || ch == '\n'
+        || ch == '\r'
+        // No-break space
+        || ch == '\u00a0'
+        // Narrow no-break space
+        || ch == '\u202f';
   }
 
   public static boolean isExponent(char ch) {

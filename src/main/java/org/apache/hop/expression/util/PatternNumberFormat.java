@@ -563,6 +563,7 @@ final class PatternNumberFormat extends NumberFormat {
       }
 
       char decimalSeparator = (this.localSymbols) ? symbols.getDecimalSeparator() : '.';
+      char groupingSeparator = (this.localSymbols) ? symbols.getGroupingSeparator() : ',';
 
       int dot = text.indexOf(decimalSeparator);
 
@@ -582,8 +583,12 @@ final class PatternNumberFormat extends NumberFormat {
         } else if (p == ',') {
           if (c == ',') continue;
         } else if (p == 'G') {
-          if (c == symbols.getGroupingSeparator()) continue;
-          else if (!this.exactMode && c == ',') continue;
+
+          if (c == groupingSeparator
+              // If grouping is non-breaking space or narrow non-breaking space (special case for
+              // fr-FR locale)
+              || (Characters.isSpace(groupingSeparator) && Characters.isSpace(c))
+              || (!this.exactMode && c == ',')) continue;
         }
 
         throw createUnparsableNumber(format, text, i);
