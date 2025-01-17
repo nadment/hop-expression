@@ -167,10 +167,6 @@ public class AddOperator extends BinaryOperator {
 
     private static final NumberAddOperator INSTANCE = new NumberAddOperator();
 
-    private NumberAddOperator() {
-      super();
-    }
-
     @Override
     public boolean isSymmetrical() {
       return true;
@@ -196,10 +192,6 @@ public class AddOperator extends BinaryOperator {
   private static final class IntervalToTemporalAddOperator extends AddOperator {
     private static final IntervalToTemporalAddOperator INSTANCE =
         new IntervalToTemporalAddOperator();
-
-    private IntervalToTemporalAddOperator() {
-      super();
-    }
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
@@ -230,10 +222,6 @@ public class AddOperator extends BinaryOperator {
 
   private static final class IntervalToIntervalAddOperator extends AddOperator {
     private static final AddOperator INSTANCE = new IntervalToIntervalAddOperator();
-
-    private IntervalToIntervalAddOperator() {
-      super();
-    }
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

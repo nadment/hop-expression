@@ -882,6 +882,7 @@ public class OperatorTest extends ExpressionTest {
     // Add interval to interval
     optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1' YEAR TO MONTH");
     optimize("INTERVAL 4 HOUR+INTERVAL 1 HOUR", "INTERVAL 5 HOUR");
+    optimize("INTERVAL 4 MONTHS+INTERVAL 0 MONTH", "INTERVAL 4 MONTH");
   }
 
   @Test
@@ -1632,6 +1633,8 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER*1*1");
     evalNull("1*NULL_INTEGER");
     evalNull("FIELD_STRING_INTEGER::INTEGER*NULL_INTEGER");
+    evalNull("NULL_NUMBER*3.12");
+    evalNull("3.12*NULL_NUMBER");
 
     optimize("FIELD_INTEGER*4", "4*FIELD_INTEGER");
     optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
@@ -1658,7 +1661,7 @@ public class OperatorTest extends ExpressionTest {
     // Simplify arithmetic (-A) * (-B) → A*B
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
-    // optimize("-FIELD_INTEGER*FIELD_NUMBER", "-FIELD_INTEGER*FIELD_NUMBER");
+    optimize("-FIELD_INTEGER*FIELD_NUMBER", "FIELD_NUMBER*-FIELD_INTEGER");
     // optimize("-FIELD_INTEGER*(-2)", "2*FIELD_INTEGER");
 
     // Simplify arithmetic A * A → SQUARE(A)

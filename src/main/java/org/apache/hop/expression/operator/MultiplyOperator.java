@@ -103,7 +103,6 @@ public class MultiplyOperator extends BinaryOperator {
 
     // Simplify arithmetic 1 * A → A
     if (!oneTerms.isEmpty()) {
-      // operands.removeAll(oneTerms);
       for (IExpression term : oneTerms) {
         if (operands.size() > 1) {
           operands.remove(term);

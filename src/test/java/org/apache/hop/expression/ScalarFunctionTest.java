@@ -147,6 +147,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("TRY_TO_BOOLEAN('yes',3)", ErrorCode.TOO_MANY_ARGUMENT);
   }
 
   @Test
@@ -308,18 +309,23 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");
+
     // Simplify IF(x IS NULL,y,z) → NVL2(x, z, y)
     optimize(
         "IF(FIELD_INTEGER IS NULL,\"YEAR\",NULL_INTEGER)",
         "NVL2(FIELD_INTEGER,NULL_INTEGER,\"YEAR\")");
+
     // Simplify IF(x IS NOT NULL,y,z) → NVL2(x, y, z)
     optimize(
         "IF(FIELD_INTEGER IS NOT NULL,\"YEAR\",NULL_INTEGER)",
         "NVL2(FIELD_INTEGER,\"YEAR\",NULL_INTEGER)");
+
     // Simplify IF(x=y,NULL,x) → NULLIF(x, y)
     optimize("IF(FIELD_NUMBER=0,NULL,FIELD_NUMBER)", "NULLIF(FIELD_NUMBER,0)");
+
     // Simplify IF(x=y,NULL,y) → NULLIF(y, x)
     optimize("IF(0=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,0)");
+
     // No simplify
     optimize("IF(FIELD_INTEGER=10,NULL,FIELD_NUMBER)");
   }
@@ -2581,9 +2587,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678D);
     Locale.setDefault(new Locale("fr", "BE"));
-    // Fail with sonar build
-    // evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
-    // evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
+    evalEquals("TO_NUMBER('12 345 678', '999G999G999')", 12_345_678L);
+    evalEquals("TO_NUMBER('12 345 678,123', '999G999G999D000')", 12_345_678.123D);
+    Locale.setDefault(new Locale("de", "DE"));
+    evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678L);
 
     // Format with Currency dollar
     Locale.setDefault(new Locale("en", "US"));
@@ -2655,7 +2662,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(12923)", "12923").returnType(Types.STRING);
 
     // Format fixed length with decimal
-    Locale.setDefault(new Locale("en", "EN"));
+    Locale.setDefault(Locale.ENGLISH);
     evalEquals("TO_CHAR(0.1,'90.99')", "  0.1 ").returnType(Types.STRING);
     evalEquals("TO_CHAR(-0.2,'90.90')", " -0.20");
     evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
@@ -2681,11 +2688,13 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(-0.2,'99.90')", "  -.20");
     evalEquals("TO_CHAR(-0.2,'99.99')", "  -.2 ");
 
+    // TODO: Format element text with double quotes
     // evalEquals("TO_CHAR(485.8, '\"Pre:\"999\" Post:\" .999')", "Pre: 485 Post: .800");
 
     evalEquals("TO_CHAR(12345.567,'9,999')", "######");
     evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
     evalEquals("TO_CHAR(555.0, 'FM999.009')", "555.00");
+
     Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
     evalEquals("TO_CHAR(0,'90D99')", "  0,  ");
@@ -2695,8 +2704,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     Locale.setDefault(new Locale("en", "EN"));
     evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
     Locale.setDefault(new Locale("fr", "FR"));
-    // evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5 ");
-    // evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3.148,500");
+    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3 148,5  ");
+    evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3 148,500");
+    Locale.setDefault(new Locale("de", "DE"));
+    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5  ");
 
     // Sign
     evalEquals("TO_CHAR(12,'S99')", "+12");
@@ -2731,16 +2742,17 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(12,'C99')", " GBP12");
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_CHAR(-7,'C99')", " -USD7");
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "FR"));
     evalEquals("TO_CHAR(-77,'99C')", "-77EUR");
     Locale.setDefault(new Locale("et", "EE"));
     evalEquals("TO_CHAR(-7,'99C')", " -7EUR");
-    evalEquals("TO_CHAR(0,'FMC')", "EUR"); // Only currency ISO code
+    // Only currency ISO code
+    evalEquals("TO_CHAR(0,'FMC')", "EUR");
 
     // Currency symbol
     Locale.setDefault(new Locale("en", "GB"));
     evalEquals("TO_CHAR(12,'FML99')", "£12");
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "FR"));
     evalEquals("TO_CHAR(-7,'L99')", " -€7");
     evalEquals("TO_CHAR(-7,'99L')", " -7€");
     evalEquals("TO_CHAR(123.45,'L999.99')", " €123.45");
@@ -2983,7 +2995,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Short date and time
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "Jul 23, 2019 2:52:00 PM");
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "FR"));
     evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "Jul 23, 2019 2:52:00 PM");
 
     // Long date
@@ -4577,5 +4589,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Position('abc' IN ", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Position('abc' IN 'abcd'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Position( IN 'fsd'", ErrorCode.SYNTAX_ERROR);
+
+    optimize("POSITION('abc' IN FIELD_STRING)");
   }
 }
