@@ -50,7 +50,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
       try {
         return format.parse(text);
       } catch (Exception e) {
-        // Ignore, try an other format
+        // Ignore, try another format
       }
     }
 

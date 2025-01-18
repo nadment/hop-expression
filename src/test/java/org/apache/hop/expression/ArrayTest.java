@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 class ArrayTest extends ExpressionTest {
 
   @Test
-  void array() throws Exception {
+  void array() {
     Array array0 = new Array();
     Array array1 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
     Array array2 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);

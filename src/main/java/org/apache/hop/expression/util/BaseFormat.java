@@ -88,7 +88,7 @@ public abstract class BaseFormat {
    *
    * @param value the string to parse
    * @param position the start index for the integer in the string
-   * @param lenght number of digits to parse in the string
+   * @param length number of digits to parse in the string
    * @return the signed int
    * @throws NumberFormatException if the value is not a number
    */

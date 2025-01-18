@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function encode the input (string or binary) using Base64 encoding.
  *
- * @see {@link Base64EncodeFunction}
+ * @see Base64EncodeFunction
  */
 @FunctionPlugin
 public class Base64DecodeFunction extends Function {

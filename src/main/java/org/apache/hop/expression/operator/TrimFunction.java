@@ -30,7 +30,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function removes leading and trailing characters from a string.
  *
- * @see {@link LTrimFunction}, {@link RTrimFunction}
+ * @see LTrimFunction
+ * @see RTrimFunction
  */
 @FunctionPlugin
 public class TrimFunction extends Function {

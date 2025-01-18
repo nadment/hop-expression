@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function encode the string as a URL.
  *
- * @see {@link UrlDecodeFunction}
+ * @see UrlDecodeFunction
  */
 @FunctionPlugin
 public class UrlEncodeFunction extends Function {

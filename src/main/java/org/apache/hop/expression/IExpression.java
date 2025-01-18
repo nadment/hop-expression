@@ -85,7 +85,7 @@ public interface IExpression {
   }
 
   /**
-   * Evaluates the value of this expressions a given Java type.
+   * Evaluates the value of this expression a given Java type.
    *
    * @param clazz Desired value type
    * @param <T> Value type
@@ -104,8 +104,7 @@ public interface IExpression {
   void validate(IExpressionContext context) throws ExpressionException;
 
   /**
-   * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#accept}
-   * method.
+   * Accepts a visitor and dispatching to the right overloaded {@link IExpressionVisitor} method.
    */
   <E> E accept(IExpressionVisitor<E> visitor);
 

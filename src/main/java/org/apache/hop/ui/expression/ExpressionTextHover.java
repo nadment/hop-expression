@@ -85,7 +85,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
     // if a mouse is hovered over an invalid word
     if (start >= -1 && end > -1) {
-      // if hovered over an one-letter identifier
+      // if hovered over a one-letter identifier
       if (start == offset && end == offset) return new Region(offset, 0);
       else if (start == offset) return new Region(start, end - start);
       else return new Region(start + 1, end - start - 1);

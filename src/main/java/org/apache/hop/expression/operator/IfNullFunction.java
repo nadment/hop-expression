@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.Types;
 /**
  * The IFNULL function replace the null with value (Alias NVL).
  *
- * @see {@link CoalesceFunction}
+ * @see CoalesceFunction
  */
 @FunctionPlugin(names = "NVL")
 public class IfNullFunction extends Function {

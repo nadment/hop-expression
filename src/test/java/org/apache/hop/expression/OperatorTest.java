@@ -950,7 +950,7 @@ public class OperatorTest extends ExpressionTest {
 
   // @Test
   void SubtractIntervalFromInterval() throws Exception {
-    // Subtraction of interval to a interval
+    // Subtraction of interval to an interval
     evalEquals("INTERVAL 5 HOUR - INTERVAL 1 HOUR", Interval.of(0, 0, 0, 4));
 
     optimize("INTERVAL 5 HOUR - INTERVAL 1 HOUR", "INTERVAL 4 HOURS");
@@ -1036,7 +1036,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
       optimize("FIELD_DATE BETWEEN DATE '2019-01-01' AND DATE '2019-12-31'");
 
-      // By default BETWEEN is ASYMMETRIC
+      // By default, BETWEEN is ASYMMETRIC
       optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
       optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 50 AND 20");
 

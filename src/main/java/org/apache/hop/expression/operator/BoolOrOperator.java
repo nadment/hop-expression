@@ -156,14 +156,14 @@ public class BoolOrOperator extends BinaryOperator {
       if (equalTerms.containsKey(pair)) {
         predicates.remove(equalTerms.get(pair));
         predicates.remove(lessThanTerms.get(pair));
-        predicates.add(new Call(Operators.LESS_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
+        predicates.add(new Call(Operators.LESS_THAN_OR_EQUAL, pair.left(), pair.right()));
       }
 
       // x<a OR x>a → x!=a
       if (greaterThanTerms.containsKey(pair)) {
         predicates.remove(lessThanTerms.get(pair));
         predicates.remove(greaterThanTerms.get(pair));
-        predicates.add(new Call(Operators.NOT_EQUAL, pair.getLeft(), pair.getRight()));
+        predicates.add(new Call(Operators.NOT_EQUAL, pair.left(), pair.right()));
       }
     }
 
@@ -178,7 +178,7 @@ public class BoolOrOperator extends BinaryOperator {
       if (equalTerms.containsKey(pair)) {
         predicates.remove(equalTerms.get(pair));
         predicates.remove(greaterThanTerms.get(pair));
-        predicates.add(new Call(Operators.GREATER_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
+        predicates.add(new Call(Operators.GREATER_THAN_OR_EQUAL, pair.left(), pair.right()));
       }
     }
 
@@ -187,7 +187,7 @@ public class BoolOrOperator extends BinaryOperator {
     for (IExpression reference : notInTerms.keySet()) {
       Collection<IExpression> values = new LinkedList<>();
       for (Pair<Call, IExpression> pair : notInTerms.get(reference)) {
-        IExpression term = pair.getRight();
+        IExpression term = pair.right();
         if (values.isEmpty()) {
           if (term.is(Kind.ARRAY)) {
             array(term).forEach(values::add);
@@ -199,7 +199,7 @@ public class BoolOrOperator extends BinaryOperator {
             values = CollectionUtils.intersection(values, List.of(term));
           }
         }
-        predicates.remove(pair.getLeft());
+        predicates.remove(pair.left());
       }
 
       if (values.isEmpty()) {
@@ -225,8 +225,8 @@ public class BoolOrOperator extends BinaryOperator {
       if (pairs.size() > 1) {
         List<IExpression> values = new ArrayList<>();
         for (Pair<Call, IExpression> pair : pairs) {
-          values.add(pair.getRight());
-          predicates.remove(pair.getLeft());
+          values.add(pair.right());
+          predicates.remove(pair.left());
         }
         Call predicate = new Call(Operators.IN, reference, new Array(values));
         predicate.inferReturnType();
@@ -247,7 +247,7 @@ public class BoolOrOperator extends BinaryOperator {
 
     // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
     for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {
-      if (notNullTerms.contains(pair.getLeft()) || notNullTerms.contains(pair.getRight())) {
+      if (notNullTerms.contains(pair.left()) || notNullTerms.contains(pair.right())) {
         predicates.remove(strongTerms.get(pair));
       }
     }

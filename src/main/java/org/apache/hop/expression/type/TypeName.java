@@ -67,7 +67,7 @@ public enum TypeName {
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
 
-  /** A Array type */
+  /** An Array type */
   ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class),
 
   TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class);
@@ -147,9 +147,7 @@ public enum TypeName {
       case DATE -> name.is(INTEGER, NUMBER, STRING);
       case INTEGER -> name.is(NUMBER, BOOLEAN, BINARY, STRING, DATE);
       case NUMBER -> name.is(INTEGER, BOOLEAN, BINARY, STRING, DATE);
-      case BINARY -> name.is(STRING);
-      case JSON -> name.is(STRING);
-      case INET -> name.is(STRING);
+      case BINARY, JSON, INET -> name.is(STRING);
       case UNKNOWN, ANY -> true;
       default -> false;
     };
@@ -162,32 +160,21 @@ public enum TypeName {
   public boolean isCoercible(final TypeName name) {
     if (name == null) return false;
     if (ANY == this || name == ANY || this.equals(name)) return true;
-    switch (this) {
-      case BOOLEAN:
-        return name.is(INTEGER, NUMBER, STRING);
-      case DATE:
-        return name.is(STRING);
-      case INTEGER:
-        return name.is(NUMBER, BOOLEAN, STRING);
-      case NUMBER:
-        // TODO: NUMBER to INTEGER can overflow, not sure it's a good choice to coerce
-        return name.is(INTEGER, BOOLEAN, STRING);
-      case BINARY:
-        return name.is(STRING);
-      case STRING:
-        return name.is(BINARY);
-      case JSON:
-        return name.is(STRING);
-      case INTERVAL:
-        return name.is(STRING);
-      case INET:
-        return name.is(STRING);
-      case UNKNOWN, ANY:
-        return true;
-      case ARRAY:
-      default:
-        return false;
-    }
+    return switch (this) {
+      case BOOLEAN -> name.is(INTEGER, NUMBER, STRING);
+      case DATE -> name.is(STRING);
+      case INTEGER -> name.is(NUMBER, BOOLEAN, STRING);
+      case NUMBER ->
+          // TODO: NUMBER to INTEGER can overflow, not sure it's a good choice to coerce
+          name.is(INTEGER, BOOLEAN, STRING);
+      case BINARY -> name.is(STRING);
+      case STRING -> name.is(BINARY);
+      case JSON -> name.is(STRING);
+      case INTERVAL -> name.is(STRING);
+      case INET -> name.is(STRING);
+      case UNKNOWN -> true;
+      default -> false;
+    };
   }
 
   public boolean supportsPrecision() {

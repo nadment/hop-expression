@@ -30,7 +30,9 @@ import org.apache.hop.expression.type.Types;
 
 /**
  * The function extracts a number of characters from a string or bytes from binary starting from
- * right. @See {@link LeftFunction}
+ * right.
+ *
+ * @see LeftFunction
  */
 @FunctionPlugin
 public class RightFunction extends Function {

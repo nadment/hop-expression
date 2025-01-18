@@ -25,8 +25,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * The function calculate the SHA-1 hash of a data value. The hash will be returned as a 40
- * characters hex-encoded string.
+ * The function calculate the SHA-1 hash of a data value. The hash will be returned as 40 characters
+ * hex-encoded string.
  *
  * @see {@link Md5Function}, {@link Sha256Function}, {@link Sha384Function}, {@link Sha512Function}
  */

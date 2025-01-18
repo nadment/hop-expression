@@ -17,10 +17,7 @@ package org.apache.hop.expression.util;
 import java.util.Objects;
 
 /** Pair of objects. */
-public final class Pair<T1 extends Object, T2 extends Object> {
-  private final T1 left;
-  private final T2 right;
-
+public record Pair<T1, T2>(T1 left, T2 right) {
   public static <T1, T2> Pair<T1, T2> of(T1 left, T2 right) {
     return new Pair<>(left, right);
   }
@@ -37,25 +34,20 @@ public final class Pair<T1 extends Object, T2 extends Object> {
   }
 
   /** Get the left object. */
-  public T1 getLeft() {
+  @Override
+  public T1 left() {
     return left;
   }
 
   /** Get the right object. */
-  public T2 getRight() {
+  @Override
+  public T2 right() {
     return right;
   }
 
   @Override
   public String toString() {
     return "<" + left + ", " + right + ">";
-  }
-
-  @Override
-  public int hashCode() {
-    int l = (left == null) ? 0 : left.hashCode();
-    int r = (right == null) ? 0 : right.hashCode();
-    return ((l << 4) | l) ^ r;
   }
 
   @Override

@@ -39,8 +39,8 @@ import org.apache.hop.expression.util.Regexp;
  *   <li><code>field [NOT] LIKE pattern ESCAPE char</code>
  * </ul>
  *
- * <p><b>NOTE</b> If the <code>NOT</code> clause is present the parser will generate a equivalent to
- * <code>
+ * <p><b>NOTE</b> If the <code>NOT</code> clause is present the parser will generate an equivalent
+ * to <code>
  * NOT (field LIKE pattern ...)</code>
  */
 public class LikeOperator extends Operator {
@@ -62,7 +62,7 @@ public class LikeOperator extends Operator {
   }
 
   /**
-   * Simplifies LIKE expressions that do not need full regular expressions to evaluate the
+   * Simplifies LIKE expressions that do not need to full regular expressions to evaluate the
    * condition. For example, when the expression is just checking to see if a string starts with a
    * given pattern.
    */

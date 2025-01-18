@@ -34,8 +34,8 @@ public enum Capitalization {
    * Returns the capitalization strategy which should be used when the first and second letters have
    * the specified casing.
    *
-   * @param up1 whether or not the first letter is upper case
-   * @param up2 whether or not the second letter is upper case
+   * @param up1 whether the first letter is upper case
+   * @param up2 whether the second letter is upper case
    * @return the capitalization strategy
    */
   static Capitalization of(Boolean up1, Boolean up2) {
@@ -66,7 +66,6 @@ public enum Capitalization {
       case CAPITALIZE ->
           Character.toUpperCase(str.charAt(0))
               + (str.length() > 1 ? StringUtils.lowerCase(str).substring(1) : "");
-      default -> throw new IllegalArgumentException("Unknown capitalization strategy: " + this);
     };
   }
 }

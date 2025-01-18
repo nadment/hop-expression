@@ -24,7 +24,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Encodes special characters in a string using the Java string literal encoding format. */
+/**
+ * Encodes special characters in a string using the Java string literal encoding format.
+ *
+ * @see StringDecodeFunction
+ */
 @FunctionPlugin
 public class StringEncodeFunction extends Function {
 

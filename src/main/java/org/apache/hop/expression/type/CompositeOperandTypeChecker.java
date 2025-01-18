@@ -97,7 +97,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
       case AND, OR:
       default:
         final List<IOperandCountRange> ranges =
-            new AbstractList<IOperandCountRange>() {
+            new AbstractList<>() {
               @Override
               public IOperandCountRange get(int index) {
                 return rules.get(index).getOperandCountRange();

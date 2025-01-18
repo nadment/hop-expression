@@ -168,8 +168,8 @@ public class Literal implements IExpression {
   /**
    * Create a typed literal value
    *
-   * @param value
-   * @param type
+   * @param value the constant value
+   * @param type the type of the value
    */
   public Literal(final Object value, final Type type) {
     this.value = value;
@@ -343,8 +343,6 @@ public class Literal implements IExpression {
           writer.append('\'');
           break;
         case UNKNOWN:
-          writer.append(String.valueOf(value));
-          break;
         default:
           writer.append(String.valueOf(value));
       }

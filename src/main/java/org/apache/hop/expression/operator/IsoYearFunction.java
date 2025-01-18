@@ -25,7 +25,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Year of the week ISO semantics */
+/**
+ * Year of the week ISO semantics
+ *
+ * @see YearFunction
+ */
 @FunctionPlugin
 public class IsoYearFunction extends Function {
 

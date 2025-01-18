@@ -103,7 +103,7 @@ import org.apache.hop.expression.ErrorCode;
  * </tr>
  * <tr>
  * <td>RN</td>
- * <td>Returns values in Roman numerals (case sensitive).</td>
+ * <td>Returns values in Roman numerals (case-sensitive).</td>
  * <td>None.</td>
  * </tr>
  * <tr>

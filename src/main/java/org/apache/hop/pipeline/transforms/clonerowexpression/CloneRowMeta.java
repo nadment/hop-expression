@@ -141,7 +141,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
   public String evaluate(String source, IVariables variables) throws HopTransformException {
     String value = variables.resolve(source);
 
-    // If value start with '=' this is a expression
+    // If value start with '=' this is an expression
     if (value.charAt(0) != '=') {
       return value;
     }

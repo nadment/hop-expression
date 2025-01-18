@@ -45,7 +45,7 @@ public class AddWeeksFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Simplify arithmetic ADD_WEEEK(A,0) → A
+    // Simplify arithmetic ADD_WEEK(A,0) → A
     if (Literal.ZERO.equals(call.getOperand(1))) {
       return call.getOperand(0);
     }

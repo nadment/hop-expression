@@ -29,8 +29,6 @@ import org.apache.hop.expression.util.NumberFormat;
 /** Number type with an optional precision and scale: */
 public final class NumberType extends Type {
 
-  private static final NumberFormat FORMAT = NumberFormat.of("TM");
-
   public static NumberType from(final BigDecimal number) {
     int precision = number.precision();
     int scale = number.scale();
@@ -50,7 +48,7 @@ public final class NumberType extends Type {
   }
 
   /**
-   * Create a number data type
+   * Create a number of data type
    *
    * @param precision Total number of digits allowed.
    * @param scale Number of digits allowed to the right of the decimal point.

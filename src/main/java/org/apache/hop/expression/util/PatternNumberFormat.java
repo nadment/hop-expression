@@ -103,7 +103,7 @@ import org.apache.commons.lang.StringUtils;
  * </tr>
  * <tr>
  * <td>RN</td>
- * <td>Returns values in Roman numerals (case sensitive).</td>
+ * <td>Returns values in Roman numerals (case-sensitive).</td>
  * <td>None.</td>
  * </tr>
  * <tr>
@@ -700,7 +700,7 @@ final class PatternNumberFormat extends NumberFormat {
             output.insert(0, digit);
           } else {
             // If zero, output is empty
-            if (output.length() == 0 && scale > 0) {
+            if (output.isEmpty() && scale > 0) {
               // If blank mode ignore zero "0.12" => " .12"
               if (!this.blank) {
                 output.insert(0, '0');

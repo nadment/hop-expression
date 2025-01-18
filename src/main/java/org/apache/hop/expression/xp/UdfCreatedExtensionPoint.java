@@ -18,7 +18,6 @@
 
 package org.apache.hop.expression.xp;
 
-import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.extension.ExtensionPoint;
 import org.apache.hop.core.extension.IExtensionPoint;
 import org.apache.hop.core.logging.ILogChannel;
@@ -34,8 +33,7 @@ import org.apache.hop.metadata.api.IHopMetadata;
     description = "User Defined Function created")
 public class UdfCreatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override
-  public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object)
-      throws HopException {
+  public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object) {
 
     if (object instanceof UserDefinedFunctionMeta meta) {
       log.logBasic("User Defined Function created " + meta.getName());

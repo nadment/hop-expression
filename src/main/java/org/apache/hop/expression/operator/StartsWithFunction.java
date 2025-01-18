@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.Types;
  * The function returns TRUE if the first value starts with second value. Both values must be the
  * same data type string or binary.
  *
- * @see {@link EndsWithFunction}
+ * @see EndsWithFunction
  */
 @FunctionPlugin
 public class StartsWithFunction extends Function {

@@ -24,7 +24,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** The minute (0-59). @See {@link HourFunction}, {@link SecondFunction} */
+/**
+ * The minute (0-59).
+ *
+ * @see HourFunction
+ * @see SecondFunction
+ */
 @FunctionPlugin
 public class MinuteFunction extends Function {
 

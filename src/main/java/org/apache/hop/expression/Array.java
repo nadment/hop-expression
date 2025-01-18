@@ -17,7 +17,6 @@ package org.apache.hop.expression;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import org.apache.hop.expression.type.ArrayType;
@@ -25,7 +24,7 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
-/** A array is a immutable ordered list of expressions. */
+/** An array is an immutable-ordered list of expressions. */
 public final class Array implements IExpression, Iterable<IExpression> {
 
   public static final Array EMPTY = new Array();
@@ -242,8 +241,8 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   /** Returns {@code true} if this array contains the specified elements. */
   public boolean contains(IExpression element) {
-    for (int i = 0; i < values.length; i++) {
-      if (element.equals(values[i])) {
+    for (IExpression expression : values) {
+      if (element.equals(expression)) {
         return true;
       }
     }
@@ -251,16 +250,14 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   /**
-   * Returns {@code true} if this array contains all of the elements of the specified collection.
+   * Returns {@code true} if this array contains all the elements of the specified collection.
    *
-   * @param c collection to be checked for containment in this array
-   * @return {@code true} if this array contains all of the elements of the specified collection
-   * @see #contains(Object)
+   * @param collection to be checked for containment in this array
+   * @return {@code true} if this array contains all the elements of the specified collection
    */
   public boolean containsAll(Collection<IExpression> collection) {
-    Iterator<IExpression> iterator = collection.iterator();
-    while (iterator.hasNext()) {
-      if (!contains(iterator.next())) {
+    for (IExpression expression : collection) {
+      if (!contains(expression)) {
         return false;
       }
     }

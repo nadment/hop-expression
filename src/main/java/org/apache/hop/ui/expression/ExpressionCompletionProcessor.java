@@ -112,7 +112,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
         if (ch == '\"') {
           end++;
-          // If use another double quote to escape it
+          // If you use another double quote to escape it
           if (end < document.getLength() && document.getChar(end) != '\"') break;
         }
 
@@ -130,7 +130,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       String prefix = document.get(start, offset - start);
 
       List<ICompletionProposal> proposals = new LinkedList<>();
-      if (prefix.length() > 0) {
+      if (!prefix.isEmpty()) {
         if (prefix.charAt(0) == '$') {
 
           // If not a variable replacement then insert

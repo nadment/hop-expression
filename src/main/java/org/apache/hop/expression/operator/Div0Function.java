@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.Types;
  * Arithmetic division function. <br>
  * <strong>Syntax:</strong> <code>DIV0(x,y)</code>
  *
- * @see {@link DivOperator}
+ * @see DivOperator
  */
 @FunctionPlugin
 public class Div0Function extends Function {

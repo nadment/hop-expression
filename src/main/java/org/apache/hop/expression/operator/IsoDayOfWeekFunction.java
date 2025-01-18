@@ -25,7 +25,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Day of the week (Monday=1 to Sunday=7). */
+/**
+ * Day of the week (Monday=1 to Sunday=7).
+ *
+ * @see DayOfWeekFunction
+ */
 @FunctionPlugin
 public class IsoDayOfWeekFunction extends Function {
 

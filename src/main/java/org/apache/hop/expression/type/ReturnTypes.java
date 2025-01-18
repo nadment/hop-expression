@@ -53,55 +53,55 @@ public final class ReturnTypes {
 
   public static final IReturnTypeInference ANY = explicit(Types.ANY);
 
-  /** Type-inference strategy whereby the result type of a call is BOOLEAN. */
+  /** Type-inference strategy whereby the result type of call is BOOLEAN. */
   public static final IReturnTypeInference BOOLEAN_NULLABLE = explicit(Types.BOOLEAN);
 
-  /** Type-inference strategy whereby the result type of a call is BOOLEAN NOT NULL. */
+  /** Type-inference strategy whereby the result type of call is BOOLEAN NOT NULL. */
   public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of a call is BINARY. */
+  /** Type-inference strategy whereby the result type of call is BINARY. */
   public static final IReturnTypeInference BINARY_NULLABLE = explicit(Types.BINARY);
 
-  /** Type-inference strategy whereby the result type of a call is BINARY NOT NULL. */
+  /** Type-inference strategy whereby the result type of call is BINARY NOT NULL. */
   public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of a call is STRING. */
+  /** Type-inference strategy whereby the result type of call is STRING. */
   public static final IReturnTypeInference STRING_NULLABLE = explicit(Types.STRING);
 
-  /** Type-inference strategy whereby the result type of a call is STRING NOT NULL. */
+  /** Type-inference strategy whereby the result type of call is STRING NOT NULL. */
   public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of a call is INTEGER. */
+  /** Type-inference strategy whereby the result type of call is INTEGER. */
   public static final IReturnTypeInference INTEGER_NULLABLE = explicit(Types.INTEGER);
 
-  /** Type-inference strategy whereby the result type of a call is NUMBER. */
+  /** Type-inference strategy whereby the result type of call is NUMBER. */
   public static final IReturnTypeInference NUMBER_NULLABLE = explicit(Types.NUMBER);
 
-  /** Type-inference strategy whereby the result type of a call is NUMBER NOT NULL. */
+  /** Type-inference strategy whereby the result type of call is NUMBER NOT NULL. */
   public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of a call is DATE. */
+  /** Type-inference strategy whereby the result type of call is DATE. */
   public static final IReturnTypeInference DATE_NULLABLE = explicit(Types.DATE);
 
-  /** Type-inference strategy whereby the result type of a call is DATE NOT NULL. */
+  /** Type-inference strategy whereby the result type of call is DATE NOT NULL. */
   public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of a call is DATE. */
+  /** Type-inference strategy whereby the result type of call is DATE. */
   public static final IReturnTypeInference JSON_NULLABLE = explicit(Types.JSON);
 
-  /** Type-inference strategy whereby the result type of a call is INTERVAL. */
+  /** Type-inference strategy whereby the result type of call is INTERVAL. */
   public static final IReturnTypeInference INTERVAL_NULLABLE = explicit(Types.INTERVAL);
 
-  /** Type-inference strategy whereby the result type of a call is the type of the operand #0. */
+  /** Type-inference strategy whereby the result type of call is the type of the operand #0. */
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);
 
   public static final IReturnTypeInference ARG0_NOT_NULL =
       ARG0.andThen(TypeTransforms.TO_NOT_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of a call is the type of the operand #1. */
+  /** Type-inference strategy whereby the result type of call is the type of the operand #1. */
   public static final IReturnTypeInference ARG1 = new OrdinalReturnTypeInference(1);
 
-  /** Type-inference strategy whereby the result type of a call is the type of the operand #2. */
+  /** Type-inference strategy whereby the result type of call is the type of the operand #2. */
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
 
   public static final IReturnTypeInference ARG1_OR_ARG2 =

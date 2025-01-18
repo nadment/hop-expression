@@ -21,7 +21,7 @@ public interface IOperandCountRange {
   /** Returns whether {@code count} is a valid number of operands. */
   boolean isValid(int count);
 
-  /** Returns an lower bound. -1 if there is no lower bound. */
+  /** Returns a lower bound. -1 if there is no lower bound. */
   int getMin();
 
   /** Returns an upper bound. -1 if there is no upper bound. */

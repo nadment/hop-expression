@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * An operator describing the <code>IS NOT NULL</code> operator.
  *
- * @see {@link IstNullOperator}
+ * @see IsNotNullOperator
  */
 public class IsNotNullOperator extends PostfixUnaryOperator {
 

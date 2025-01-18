@@ -162,7 +162,7 @@ public enum ErrorCode {
   UNPARSABLE_DATE_WITH_FORMAT,
   /** Number ''{0}'' not recognized with format ''{1}'' */
   UNPARSABLE_NUMBER_WITH_FORMAT,
-  /** Unable to parse binary ''{0}' */
+  /** Unable to parse binary ''{0}'' */
   UNPARSABLE_BINARY;
 
   @Override

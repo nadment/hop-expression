@@ -30,7 +30,7 @@ import org.apache.hop.expression.FunctionRegistry;
 @ExtensionPoint(
     id = "FunctionRegistryExtensionPoint",
     extensionPointId = "HopEnvironmentAfterInit",
-    description = "Register the expression built-in and annoted functions")
+    description = "Register the expression built-in and annotated functions")
 public class FunctionRegistryExtensionPoint implements IExtensionPoint<PluginRegistry> {
   @Override
   public void callExtensionPoint(

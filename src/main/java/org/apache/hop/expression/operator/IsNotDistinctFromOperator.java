@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.Types;
  * Comparison <code>IS NOT DISTINCT FROM</code> operator. <br>
  * <strong>Syntax:</strong> <code>x IS NOT DISTINCT FROM y</code>
  *
- * @see {@link IsDistinctFromOperator}
+ * @see IsDistinctFromOperator
  */
 public class IsNotDistinctFromOperator extends BinaryOperator {
 

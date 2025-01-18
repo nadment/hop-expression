@@ -123,7 +123,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     Object[] outputRowData = r;
 
     if (data.addInfosToRow) {
-      // It's the original row..
+      // It's the original row.
       // We need here to add some infos in order to identify this row
       outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
       int rowIndex = data.NrPrevFields;

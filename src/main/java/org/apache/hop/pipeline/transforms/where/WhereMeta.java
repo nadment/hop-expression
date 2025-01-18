@@ -118,7 +118,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     checkTarget(transformMeta, false, getFalseTransformName(), output).ifPresent(remarks::add);
 
     // Look up fields in the input stream <prev>
-    if (prev != null && prev.size() > 0) {
+    if (prev != null && !prev.isEmpty()) {
       remarks.add(
           new CheckResult(
               ICheckResult.TYPE_RESULT_OK,
@@ -246,7 +246,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
   }
 
   /**
-   * When an optional stream is selected, this method is called to handled the ETL metadata
+   * When an optional stream is selected, this method is called to handle the ETL metadata
    * implications of that.
    *
    * @param stream The optional stream to handle.

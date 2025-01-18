@@ -35,16 +35,16 @@ public final class OperandTypes {
   }
 
   /** Creates a checker that passes if each operand is a member of a corresponding family. */
-  //  public static FamilyOperandTypeChecker family(TypeFamily... families) {
-  //    return new FamilyOperandTypeChecker(List.of(families), i -> false);
-  //  }
+  public static FamilyOperandTypeChecker family(TypeFamily... families) {
+    return new FamilyOperandTypeChecker(List.of(families), i -> false);
+  }
 
   /** Creates a checker that passes if any one of the rules passes. */
   public static IOperandTypeChecker or(IOperandTypeChecker... rules) {
     return new CompositeOperandTypeChecker(Composition.OR, List.of(rules), null);
   }
 
-  /** Creates a checker that passes if all of the rules pass. */
+  /** Creates a checker that passes if all the rules pass. */
   public static IOperandTypeChecker and(IOperandTypeChecker... rules) {
     return new CompositeOperandTypeChecker(Composition.AND, List.of(rules), null);
   }
@@ -55,7 +55,7 @@ public final class OperandTypes {
   }
 
   /**
-   * Creates a checker that passes if all of the rules pass for each operand, using a given operand
+   * Creates a checker that passes if all the rules pass for each operand, using a given operand
    * count strategy.
    */
   public static IOperandTypeChecker repeat(
@@ -270,7 +270,7 @@ public final class OperandTypes {
       repeat(OperandCountRange.between(1, -1), ARRAY);
 
   /**
-   * Operand type-checking strategy for BETWWEEN operator where operand types must allow ordered
+   * Operand type-checking strategy for BETWEEN operator where operand types must allow ordered
    * comparisons.
    */
   public static final IOperandTypeChecker BETWEEN =

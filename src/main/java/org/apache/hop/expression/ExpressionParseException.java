@@ -28,7 +28,7 @@ public class ExpressionParseException extends ExpressionException {
   /**
    * Construct a new expression exception.
    *
-   * @param error a error message
+   * @param error an error message
    */
   public ExpressionParseException(int position, ErrorCode error, Object... values) {
     super(error, values);

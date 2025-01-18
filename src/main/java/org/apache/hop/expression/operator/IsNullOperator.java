@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * An operator describing the <code>IS NULL</code> operator.
  *
- * @see {@link IsNotNullOperator}
+ * @see IsNotNullOperator
  */
 public class IsNullOperator extends PostfixUnaryOperator {
 

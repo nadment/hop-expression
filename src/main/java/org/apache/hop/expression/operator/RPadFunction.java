@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.Types;
 /**
  * The function right-pads a string or binary with another string or binary, to a certain length.
  *
- * @see {@link LPadFunction}
+ * @see LPadFunction
  */
 @FunctionPlugin
 public class RPadFunction extends Function {

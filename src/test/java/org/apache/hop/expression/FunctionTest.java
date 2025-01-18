@@ -482,32 +482,32 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void ParseUrl() throws Exception {
-    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PROTOCOL')", "http")
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','PROTOCOL')", "https")
         .returnType(Types.STRING);
-    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','HOST')", "hop.apache.org");
-    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PORT')", "80");
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','HOST')", "hop.apache.org");
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','PORT')", "80");
     evalEquals(
-        "Parse_Url('http://user:password@hop.apache.org:80/path?query=1','USERINFO')",
+        "Parse_Url('https://user:password@hop.apache.org:80/path?query=1','USERINFO')",
         "user:password");
     evalEquals(
-        "Parse_Url('http://user:password@hop.apache.org:80/path?query=1','AUTHORITY')",
+        "Parse_Url('https://user:password@hop.apache.org:80/path?query=1','AUTHORITY')",
         "user:password@hop.apache.org:80");
 
-    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1','PATH')", "/path");
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','PATH')", "/path");
     evalEquals(
-        "Parse_Url('http://hop.apache.org:80/path?query=1#fragment','FILE')", "/path?query=1");
+        "Parse_Url('https://hop.apache.org:80/path?query=1#fragment','FILE')", "/path?query=1");
     evalEquals(
-        "Parse_Url('http://hop.apache.org:80/path?query=1&lang=fr','QUERY')", "query=1&lang=fr");
-    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1&id=2','QUERY','id')", "2");
-    evalEquals("Parse_Url('http://hop.apache.org:80/path?query=1#fragment', 'REF')", "fragment");
+        "Parse_Url('https://hop.apache.org:80/path?query=1&lang=fr','QUERY')", "query=1&lang=fr");
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1&id=2','QUERY','id')", "2");
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1#fragment', 'REF')", "fragment");
 
     evalNull("Parse_Url(NULL_STRING,'PATH')");
-    evalNull("Parse_Url('http://hop.apache.org:80',NULL_STRING)");
-    evalNull("Parse_Url('http://hop.apache.org:80','PATH')");
-    evalNull("Parse_Url('http://hop.apache.org/path?query=1','PORT')");
-    evalNull("Parse_Url('http://hop.apache.org/path','QUERY')");
-    evalNull("Parse_Url('http://hop.apache.org/path?query=1','QUERY','xxx')");
-    evalNull("Parse_Url('http://hop.apache.org/path?query=1','QUERY',NULL_STRING)");
+    evalNull("Parse_Url('https://hop.apache.org:80',NULL_STRING)");
+    evalNull("Parse_Url('https://hop.apache.org:80','PATH')");
+    evalNull("Parse_Url('https://hop.apache.org/path?query=1','PORT')");
+    evalNull("Parse_Url('https://hop.apache.org/path','QUERY')");
+    evalNull("Parse_Url('https://hop.apache.org/path?query=1','QUERY','xxx')");
+    evalNull("Parse_Url('https://hop.apache.org/path?query=1','QUERY',NULL_STRING)");
   }
 
   @Test
@@ -1569,7 +1569,7 @@ public class FunctionTest extends ExpressionTest {
     evalNull("Strtok('127.1.2.3','.',5)").returnType(Types.STRING);
     evalNull("Strtok('','',1)");
 
-    // If one operands is null
+    // If one operand is null
     evalNull("Strtok(NULL_STRING,'.',5)").returnType(Types.STRING);
     evalNull("Strtok('127.1.2.3',NULL_STRING,5)").returnType(Types.STRING);
     evalNull("Strtok('127.1.2.3','.',NULL_INTEGER)").returnType(Types.STRING);
@@ -2584,7 +2584,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5D);
     evalFails("TO_NUMBER('-5','PR9999')", ErrorCode.INVALID_NUMBER_FORMAT);
 
-    // Format with Thousand Group Markers
+    // Format with a Thousand Group Markers
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678D);
     Locale.setDefault(new Locale("fr", "BE"));

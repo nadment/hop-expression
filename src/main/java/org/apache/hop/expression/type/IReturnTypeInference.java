@@ -19,10 +19,10 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Operator;
 
-/** Strategy interface to infer the type of an operator call from the type of the operands. */
+/** Strategy interface to infer the type of operator call from the type of the operands. */
 public interface IReturnTypeInference {
   /**
-   * Infers the return data type of a call to an {@link Operator}.
+   * Infers the return data type of call to an {@link Operator}.
    *
    * @param call
    * @return type

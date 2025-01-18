@@ -35,7 +35,7 @@ public class LiteralNumberRule implements IRule {
 
       if (c == '0') {
         c = scanner.read();
-        // Hexa
+        // Hexadecimal
         if (c == 'x') {
           do {
             c = scanner.read();

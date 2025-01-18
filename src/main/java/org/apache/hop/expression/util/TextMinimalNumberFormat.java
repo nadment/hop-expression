@@ -102,7 +102,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
         position++;
       }
 
-      // Last char should not be a underscore
+      // Last char should not be an underscore
       if (previous == '_') {
         createUnparsableNumber(format, text, position);
       }

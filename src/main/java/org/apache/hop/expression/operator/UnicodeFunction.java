@@ -47,7 +47,7 @@ public class UnicodeFunction extends Function {
     if (value == null) return null;
 
     int codePoint = 0;
-    if (value.length() > 0) {
+    if (!value.isEmpty()) {
       codePoint = value.codePointAt(0);
     }
     return Long.valueOf(codePoint);

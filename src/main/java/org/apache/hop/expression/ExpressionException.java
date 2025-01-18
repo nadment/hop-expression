@@ -24,7 +24,7 @@ public class ExpressionException extends RuntimeException {
   /**
    * Create a new expression exception.
    *
-   * @param error a error message
+   * @param error an error message
    */
   public ExpressionException(ErrorCode error, Object... values) {
     super(error.message(values));

@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.Types;
 /**
  * The function returns the smallest value that is not NULL, or NULL if all values are NULL.
  *
- * @see {@link GreatestFunction}
+ * @see GreatestFunction
  */
 @FunctionPlugin
 public class LeastFunction extends Function {

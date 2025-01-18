@@ -29,8 +29,10 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 
 /**
- * The function convert a string value to upper case. @See {@link LowerFunction}, {@link
- * InitCapFunction}
+ * The function convert a string value to upper case.
+ *
+ * @see LowerFunction
+ * @see InitCapFunction
  */
 @FunctionPlugin
 public class UpperFunction extends Function {

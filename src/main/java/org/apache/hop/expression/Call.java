@@ -195,9 +195,8 @@ public class Call implements IExpression {
   }
 
   /** Inferring the return type. */
-  public Type inferReturnType() {
+  public void inferReturnType() {
     type = operator.inferReturnType(this);
-    return type;
   }
 
   @Override
@@ -265,7 +264,6 @@ public class Call implements IExpression {
   /**
    * Swap the first and second operands, reverse the operator and preserve type.
    *
-   * @param call
    * @return call
    */
   protected Call reverse() {
@@ -277,7 +275,6 @@ public class Call implements IExpression {
   /**
    * Swap the first and second operands and preserve type.
    *
-   * @param call
    * @return call
    */
   protected Call swap() {

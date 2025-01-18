@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.Types;
 /**
  * An operator describing the <code>IS FALSE</code> operator.
  *
- * @see {@link IsNotFalseOperator}
+ * @see IsNotFalseOperator
  */
 public class IsFalseOperator extends PostfixUnaryOperator {
 

@@ -74,7 +74,7 @@ public class ExpressionTest {
 
   @BeforeAll
   static void setup() throws Throwable {
-    // Can't use RestoreHopEnvironment because it' for Junit 4
+    // Can't use RestoreHopEnvironment because it is for Junit 4
     // RestoreHopEnvironment env = new RestoreHopEnvironment();
 
     HopClientEnvironment.init();

@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * The function converts a Unicode code point (including 7-bit ASCII) into the character that
  * matches the input Unicode. If an invalid code point is specified, an error is returned.
  *
- * @see {@link AsciiFunction}
+ * @see AsciiFunction
  */
 @FunctionPlugin
 public class ChrFunction extends Function {

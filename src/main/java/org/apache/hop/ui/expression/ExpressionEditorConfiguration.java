@@ -183,9 +183,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // Add rule for operator
     rules.add(new OperatorRule(keyword));
 
-    // Add case sensitive rule for identifier without double quote
+    // Add case-sensitive rule for identifier without double quote
     if (futurRowMeta != null) {
-      WordRule rule = new WordRule(new IndentifierDetector(), Token.UNDEFINED, false);
+      WordRule rule = new WordRule(new IdentifierDetector(), Token.UNDEFINED, false);
       try {
         IRowMeta rowMeta = futurRowMeta.get();
         if (rowMeta != null) {
@@ -201,7 +201,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       rules.add(rule);
     }
 
-    // Add case insensitive rule for reserved world and function name
+    // Add case-insensitive rule for reserved world and function name
     // If word not found use Token.WHITESPACE to signal problem
     WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
     for (String name : FunctionRegistry.getFunctionNames()) {

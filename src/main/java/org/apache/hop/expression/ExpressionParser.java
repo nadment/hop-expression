@@ -286,26 +286,24 @@ public class ExpressionParser {
 
       checkEndOfExpression(Id.IS);
 
-      switch (next().id()) {
-        case TRUE:
-          return new Call(start, (not) ? Operators.IS_NOT_TRUE : Operators.IS_TRUE, expression);
-        case FALSE:
-          return new Call(start, (not) ? Operators.IS_NOT_FALSE : Operators.IS_FALSE, expression);
-        case NULL:
-          return new Call(start, (not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
-        case DISTINCT:
-          if (isThenNext(Id.FROM)) {
-            checkEndOfExpression(Id.DISTINCT);
-            return new Call(
+      return switch (next().id()) {
+        case TRUE -> new Call(start, (not) ? Operators.IS_NOT_TRUE : Operators.IS_TRUE, expression);
+        case FALSE ->
+            new Call(start, (not) ? Operators.IS_NOT_FALSE : Operators.IS_FALSE, expression);
+        case NULL -> new Call(start, (not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
+        case DISTINCT -> {
+          if (isThenNext(Token.Id.FROM)) {
+            checkEndOfExpression(Token.Id.DISTINCT);
+            yield new Call(
                 start,
                 (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
                 expression,
                 parseLogicalNot());
           }
-          throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Id.DISTINCT);
-        default:
-          throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Id.IS);
-      }
+          throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Token.Id.DISTINCT);
+        }
+        default -> throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Token.Id.IS);
+      };
     }
     return expression;
   }
@@ -804,7 +802,7 @@ public class ExpressionParser {
     throw new ExpressionParseException(getPosition(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
   }
 
-  /** Case When Then Else End ) */
+  /** Case When Then Else End */
   private IExpression parseCase() throws ExpressionException {
     IExpression valueExpression = Literal.NULL;
     IExpression elseExpression = Literal.NULL;
@@ -1137,24 +1135,33 @@ public class ExpressionParser {
 
     // Function with custom syntax
     switch (token.text()) {
-      case "CAST", "TRY_CAST":
+      case "CAST", "TRY_CAST" -> {
         return parseFunctionCast(token, function);
-      case "EXTRACT":
+      }
+      case "EXTRACT" -> {
         return parseFunctionExtract(token, function);
-      case "POSITION":
+      }
+      case "POSITION" -> {
         return parseFunctionPosition(token, function);
-      case "COUNT":
+      }
+      case "COUNT" -> {
         return parseFunctionCount(token, function);
-      case "FIRST_VALUE":
+      }
+      case "FIRST_VALUE" -> {
         return this.parseFunctionFirstValue(token, function);
-      case "LAST_VALUE":
+      }
+      case "LAST_VALUE" -> {
         return this.parseFunctionLastValue(token, function);
-      case "NTH_VALUE":
+      }
+      case "NTH_VALUE" -> {
         return this.parseFunctionNthValue(token, function);
-      case "LISTAGG":
+      }
+      case "LISTAGG" -> {
         return this.parseFunctionListAgg(token, function);
-      case "JSON_OBJECT":
+      }
+      case "JSON_OBJECT" -> {
         return this.parseFunctionJsonObject(token, function);
+      }
     }
 
     if (!hasNext()) {
@@ -1201,12 +1208,9 @@ public class ExpressionParser {
         throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL);
     }
 
-    TimeUnit startUnit = null;
-    TimeUnit endUnit = null;
-
     checkEndOfExpression(Id.INTERVAL);
     Token start = next();
-    startUnit = TimeUnit.of(start.text());
+    TimeUnit startUnit = TimeUnit.of(start.text());
 
     // Verbose format
     if (startUnit == null) {
@@ -1217,10 +1221,10 @@ public class ExpressionParser {
     }
 
     // Short format with qualifier
-
+    TimeUnit endUnit = null;
     String text = value.text();
     if (value.is(Id.LITERAL_STRING)) {
-      Token end = null;
+      Token end;
       if (this.isThenNext(Id.TO)) {
         checkEndOfExpression(Id.INTERVAL);
         end = next();
@@ -1626,7 +1630,7 @@ public class ExpressionParser {
               }
             }
 
-            // Last char should not be a underscore
+            // Last char should not be an underscore
             if (previous == '_') {
               error = true;
             }
@@ -1649,7 +1653,7 @@ public class ExpressionParser {
               }
             }
 
-            // Last char should not be a underscore
+            // Last char should not be an underscore
             if (previous == '_') {
               error = true;
             }

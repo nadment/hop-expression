@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Build a interval from its separate year, month, day, hour, minute, second[.fractional]) fields.
+ * Build an interval from its separate year, month, day, hour, minute, second[.fractional] fields.
  */
 @FunctionPlugin
 public class MakeIntervalFunction extends Function {

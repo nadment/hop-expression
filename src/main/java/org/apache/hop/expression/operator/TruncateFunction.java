@@ -32,7 +32,9 @@ import org.apache.hop.expression.type.Types;
 /**
  * Round down numeric expressions or truncates.
  *
- * @see {@link CeilOperator}, {@link FloorOperator}, {@link RoundOperator}
+ * @see CeilFunction
+ * @see FloorFunction
+ * @see RoundFunction
  */
 @FunctionPlugin(names = "TRUNC")
 public class TruncateFunction extends Function {

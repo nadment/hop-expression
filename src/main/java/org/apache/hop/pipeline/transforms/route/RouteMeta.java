@@ -306,7 +306,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
               stream.getTransformMeta().getName());
       getTransformIOMeta().addStream(newStream);
     } else if (stream == newTargetStream) {
-      // Add the target..
+      // Add the target.
       //
       Route route = new Route();
       route.setTransformName(stream.getTransformMeta().getName());

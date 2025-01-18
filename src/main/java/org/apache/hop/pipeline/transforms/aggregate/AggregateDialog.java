@@ -322,7 +322,7 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
       fields.add(rowMeta.getValueMeta(i).getName());
     }
 
-    String[] fieldNames = fields.toArray(new String[fields.size()]);
+    String[] fieldNames = fields.toArray(new String[0]);
 
     Const.sortStrings(fieldNames);
     columnInfoGroup[0].setComboValues(fieldNames);

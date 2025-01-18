@@ -23,7 +23,7 @@ import org.apache.hop.expression.ExpressionException;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
- * TO_CHAR(datetime, format)</code> functions..
+ * TO_CHAR(datetime, format)</code> functions.
  *
  * <p>
  *

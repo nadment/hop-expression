@@ -111,7 +111,7 @@ public class LoopAction extends ActionBase implements IAction {
         logError(
             "Workflow execution has encountered an error or has been stopped. This ends the loop.");
 
-        // On error or an false result, stop the loop
+        // On error or a false result, stop the loop
         //
         prevResult.setResult(false);
 
@@ -143,7 +143,7 @@ public class LoopAction extends ActionBase implements IAction {
     workflow.setParentVariables(this);
     workflow.initializeFrom(executionContext.variables);
 
-    // The internal variables need to be reset to be able use them properly.
+    // The internal variables need to be reset to be able to use them properly.
     workflow.getWorkflowMeta().setInternalHopVariables(workflow);
 
     // workflow.setVariables(getVariablesMap(workflow, previousResult));

@@ -16,22 +16,21 @@
  *
  */
 
-package org.apache.hop.pipeline.transform.expression;
+package org.apache.hop.pipeline.transforms.route;
 
 import static org.junit.Assert.assertEquals;
 
 import org.apache.hop.pipeline.transform.TransformSerializationTestUtil;
-import org.apache.hop.pipeline.transforms.expression.ExpressionMeta;
 import org.junit.Test;
 
-public class ExpressionMetaTest {
+public class RouteMetaTest {
 
   @Test
   public void testSerialization() throws Exception {
-    ExpressionMeta meta =
-        TransformSerializationTestUtil.testSerialization(
-            "/expression-transform.xml", ExpressionMeta.class);
+    RouteMeta meta =
+        TransformSerializationTestUtil.testSerialization("/route-transform.xml", RouteMeta.class);
 
-    assertEquals(9, meta.getFields().size());
+    assertEquals(meta.getDefaultTargetTransformName(), "Condition default");
+    assertEquals(meta.getRoutes().size(), 4);
   }
 }

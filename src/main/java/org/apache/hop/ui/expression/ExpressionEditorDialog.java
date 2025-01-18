@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-/** This dialogs allows you to edit expression. */
+/** This dialog allows you to edit expression. */
 public class ExpressionEditorDialog extends Dialog {
   private static final Class<?> PKG = ExpressionEditorDialog.class;
 

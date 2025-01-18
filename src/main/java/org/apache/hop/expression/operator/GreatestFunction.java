@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.Types;
 /**
  * The function returns the largest value that is not NULL, or NULL if all values are NULL.
  *
- * @see {@link LeastFunction}
+ * @see LeastFunction
  */
 @FunctionPlugin
 public class GreatestFunction extends Function {

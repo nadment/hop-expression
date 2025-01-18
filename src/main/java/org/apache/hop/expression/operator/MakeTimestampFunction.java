@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Build a timestamp from its separate year, month, day, hour, minute, second[.fractional]) fields.
+ * Build a timestamp from its separate year, month, day, hour, minute, second[.fractional] fields.
  */
 @FunctionPlugin
 public class MakeTimestampFunction extends Function {

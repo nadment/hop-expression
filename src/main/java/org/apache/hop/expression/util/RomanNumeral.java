@@ -34,7 +34,8 @@ public class RomanNumeral {
   /**
    * Convert an arabic integer value into a roman numeral string
    *
-   * @param n The arabic integer value
+   * @param number The arabic integer value
+   * @param lowerCase Set true to use lower case
    * @return The roman numeral string
    */
   public static String format(int number, boolean lowerCase) {

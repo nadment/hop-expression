@@ -25,7 +25,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Week of the year (number from 1-54). */
+/**
+ * Week of the year (number from 1-54).
+ *
+ * @see IsoWeekFunction
+ */
 @FunctionPlugin
 public class WeekFunction extends Function {
 

@@ -38,10 +38,10 @@ import org.apache.hop.expression.util.LastDayOfQuarter;
 /**
  * Returns the last day of the time unit.
  *
- * <p>The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH}, {@link
- * TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
+ * <p>The supported units of a time are: {@link TimeUnit#YEAR} {@link TimeUnit#MONTH} {@link
+ * TimeUnit#QUARTER} {@link TimeUnit#WEEK} {@link TimeUnit#DAY}.
  *
- * @see {@link FirstDayFunction}
+ * @see FirstDayFunction
  */
 @FunctionPlugin
 public class LastDayFunction extends Function {

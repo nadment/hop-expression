@@ -18,7 +18,7 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 
-/** Inference rule which returns a explicit data type. */
+/** Inference rule which returns an explicit data type. */
 public class ExplicitReturnTypeInference implements IReturnTypeInference {
 
   private final Type type;

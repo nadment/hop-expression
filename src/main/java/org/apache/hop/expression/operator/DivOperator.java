@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.Types;
  * Arithmetic division operator. <br>
  * <strong>Syntax:</strong> <code>x / y</code>
  *
- * @see {@link Div0Function}
+ * @see Div0Function
  */
 public class DivOperator extends BinaryOperator {
 

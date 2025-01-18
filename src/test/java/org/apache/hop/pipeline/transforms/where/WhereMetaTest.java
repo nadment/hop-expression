@@ -16,12 +16,11 @@
  *
  */
 
-package org.apache.hop.pipeline.transform.where;
+package org.apache.hop.pipeline.transforms.where;
 
 import static org.junit.Assert.assertEquals;
 
 import org.apache.hop.pipeline.transform.TransformSerializationTestUtil;
-import org.apache.hop.pipeline.transforms.where.WhereMeta;
 import org.junit.Test;
 
 public class WhereMetaTest {

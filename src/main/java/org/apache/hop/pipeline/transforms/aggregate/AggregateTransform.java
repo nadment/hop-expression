@@ -107,7 +107,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       data.functions = new AggregateFunction[meta.getAggregateFields().size()];
       data.context = new RowExpressionContext(this, data.inputRowMeta);
 
-      // If the transform does not receive any rows, we can not lookup field position indexes
+      // If the transform does not receive any rows, we can not look up field position indexes
       // if (row != null) {
       data.groupMeta = new RowMeta();
       for (int index = 0; index < meta.getGroupFields().size(); index++) {

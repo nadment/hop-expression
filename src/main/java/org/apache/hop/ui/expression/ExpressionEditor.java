@@ -111,7 +111,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private final IVariables variables;
   private final CompletableFuture<IRowMeta> rowMetaFutur;
   private SourceViewer wViewer;
-  private final SashForm wSashForm;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
   private IRowMeta rowMeta;
@@ -131,8 +130,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     PropsUi.setLook(this);
 
     this.setLayout(new FormLayout());
-    this.wSashForm = new SashForm(this, SWT.HORIZONTAL);
-    this.wSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
+    SashForm wSashForm = new org.eclipse.swt.custom.SashForm(this, org.eclipse.swt.SWT.HORIZONTAL);
+    wSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
     this.createTree(wSashForm);
     this.createEditor(wSashForm);
 

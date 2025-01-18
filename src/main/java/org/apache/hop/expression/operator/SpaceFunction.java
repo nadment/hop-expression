@@ -23,7 +23,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Returns a string consisting of a the specified number of blank spaces. */
+/** Returns a string consisting of a specified number of blank spaces. */
 @FunctionPlugin
 public class SpaceFunction extends Function {
 

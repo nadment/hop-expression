@@ -24,7 +24,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
 
-/** Converts a encoded hexadecimal string to a string. */
+/** Converts an encoded hexadecimal string to a string. */
 @FunctionPlugin
 public class HexDecodeFunction extends Function {
 

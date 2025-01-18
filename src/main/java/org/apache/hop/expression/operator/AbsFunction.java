@@ -77,7 +77,7 @@ public class AbsFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
-      if (value == null) return value;
+      if (value == null) return null;
 
       return FastMath.abs(value);
     }
@@ -90,7 +90,7 @@ public class AbsFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
-      if (value == null) return value;
+      if (value == null) return null;
 
       return value.abs();
     }
@@ -103,7 +103,7 @@ public class AbsFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       Interval value = operands[0].getValue(Interval.class);
-      if (value == null) return value;
+      if (value == null) return null;
 
       return value.abs();
     }

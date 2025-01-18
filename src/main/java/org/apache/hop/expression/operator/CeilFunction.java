@@ -33,7 +33,9 @@ import org.apache.hop.expression.type.Types;
 /**
  * Returns the values rounded to the nearest equal or larger integer.
  *
- * @see {@link FloorOperator}, {@link RoundOperator}, {@link TruncateOperator}
+ * @see FloorFunction
+ * @see RoundFunction
+ * @see TruncateFunction
  */
 @FunctionPlugin
 public class CeilFunction extends Function {

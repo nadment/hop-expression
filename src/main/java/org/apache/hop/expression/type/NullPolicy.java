@@ -24,7 +24,7 @@ package org.apache.hop.expression.type;
  * null. This means that we can check whether f returns null just by checking its arguments.
  */
 public enum NullPolicy {
-  /** Returns null if and only if all of the arguments are null. */
+  /** Returns null if and only if all the arguments are null. */
   ALL,
   /** If any of the arguments are null, return null. */
   ANY,

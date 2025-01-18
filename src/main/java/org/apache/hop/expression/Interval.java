@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.util.Characters;
 
-/** A interval represents a duration of time which can be used in date/time arithmetic. */
+/** An interval represents a duration of time which can be used in date/time arithmetic. */
 public class Interval implements Serializable, Comparable<Interval> {
 
   private static final EnumSet<TimeUnit> UNITS =

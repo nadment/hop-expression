@@ -24,7 +24,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** The year of a date */
+/**
+ * The year of a date
+ *
+ * @see YearFunction
+ */
 @FunctionPlugin
 public class YearFunction extends Function {
 

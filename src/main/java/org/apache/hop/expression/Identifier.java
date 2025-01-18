@@ -262,12 +262,12 @@ public class Identifier implements IExpression {
   }
 
   /**
-   * Validate a identifier in the context. A identifier is valid only if the context is
+   * Validate an identifier in the context. An identifier is valid only if the context is
    * IRowExpressionContext.
    *
    * <ul>
    *   <li>Resolve index in IRowMeta
-   *   <li>Determine data type of a value in row.
+   *   <li>Determine data type of value in row.
    * </ul>
    */
   @Override

@@ -96,7 +96,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
             return array;
           }
 
-          // Some operator don't known return type like JSON_VALUE.
+          // Some operator don't know return type like JSON_VALUE.
           if (TypeName.ANY.equals(type.getName())) {
             if (value == null) {
               type = Types.STRING;

@@ -29,7 +29,10 @@ import org.apache.hop.expression.util.Characters;
 
 /**
  * Returns a string with the first letter of each word in uppercase and the subsequent letters in
- * lowercase. @See {@link LowerFunction}, {@link UpperFunction}
+ * lowercase.
+ *
+ * @see LowerFunction
+ * @see UpperFunction
  */
 @FunctionPlugin
 public class InitCapFunction extends Function {

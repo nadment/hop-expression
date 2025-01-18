@@ -160,8 +160,8 @@ public class BoolAndOperator extends BinaryOperator {
       if (pairs.size() > 1) {
         List<IExpression> values = new ArrayList<>();
         for (Pair<Call, IExpression> pair : pairs) {
-          values.add(pair.getRight());
-          predicates.remove(pair.getLeft());
+          values.add(pair.right());
+          predicates.remove(pair.left());
         }
         Call predicate = new Call(Operators.NOT_IN, reference, new Array(values));
         predicate.inferReturnType();
@@ -177,7 +177,7 @@ public class BoolAndOperator extends BinaryOperator {
     for (IExpression reference : inTerms.keySet()) {
       Collection<IExpression> values = new LinkedList<>();
       for (Pair<Call, IExpression> pair : inTerms.get(reference)) {
-        IExpression term = pair.getRight();
+        IExpression term = pair.right();
         if (values.isEmpty()) {
           if (term.is(Kind.ARRAY)) {
             array(term).forEach(values::add);
@@ -189,14 +189,14 @@ public class BoolAndOperator extends BinaryOperator {
             values = CollectionUtils.intersection(values, List.of(term));
           }
         }
-        predicates.remove(pair.getLeft());
+        predicates.remove(pair.left());
       }
 
       // Remove exclusions NOT IN
       for (Pair<Call, IExpression> pair : notInTerms.get(reference)) {
-        IExpression term = pair.getRight();
+        IExpression term = pair.right();
         if (values.remove(term)) {
-          predicates.remove(pair.getLeft());
+          predicates.remove(pair.left());
         }
       }
 

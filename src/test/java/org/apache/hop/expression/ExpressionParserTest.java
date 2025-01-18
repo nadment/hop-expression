@@ -236,9 +236,9 @@ public class ExpressionParserTest extends ExpressionTest {
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
     evalTrue("NOT 5 = 5 OR NOT 'Test' = 'X' AND NOT 5 = 4");
-    // AND has higher precedence than XOR"
+    // AND has higher precedence than XOR
     evalTrue("true AND false XOR true");
-    // XOR has higher precedence than OR"
+    // XOR has higher precedence than OR
     evalTrue("false OR false XOR true");
 
     // Equals (=) has higher precedence than NOT "NOT (1=1)"

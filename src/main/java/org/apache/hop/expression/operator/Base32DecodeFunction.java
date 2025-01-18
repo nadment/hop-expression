@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function encode the input (string or binary) using Base32 encoding.
  *
- * @see {@link Base32EncodeFunction}
+ * @see Base32EncodeFunction
  */
 @FunctionPlugin
 public class Base32DecodeFunction extends Function {

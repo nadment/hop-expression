@@ -32,7 +32,9 @@ import org.apache.hop.expression.type.Types;
 /**
  * Returns the values rounded to the nearest integer or decimal.
  *
- * @see {@link CeilingOperator}, {@link FloorOperator}, {@link TruncateOperator}
+ * @see CeilFunction
+ * @see FloorFunction
+ * @see TruncateFunction
  */
 @FunctionPlugin
 public class RoundFunction extends Function {

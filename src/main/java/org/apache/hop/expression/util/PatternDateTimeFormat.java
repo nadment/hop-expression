@@ -35,7 +35,7 @@ import org.apache.hop.expression.ExpressionException;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
- * TO_CHAR(datetime, format)</code> functions..
+ * TO_CHAR(datetime, format)</code> functions.
  *
  * <p>
  *
@@ -678,7 +678,7 @@ import org.apache.hop.expression.ExpressionException;
     }
   }
 
-  /** Inner class to output the twelve hour field. */
+  /** Inner class to output the twelve-hour field. */
   private static class Hour12Format extends Format {
     public Hour12Format() {
       super(true, true);
@@ -1371,7 +1371,7 @@ import org.apache.hop.expression.ExpressionException;
         continue;
       }
 
-      // Last 1 digits of ISO year
+      // Last 1 digit of ISO year
       if (startsWithIgnoreCase(pattern, index, "I")) {
         list.add(new IsoYearFormat(fillMode, 1));
         index += 2;

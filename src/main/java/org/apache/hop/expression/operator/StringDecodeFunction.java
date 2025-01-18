@@ -27,6 +27,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * Converts an encoded string using the Java string literal encoding format. Special characters are
  * \b, \t, \n, \f, \r, \", \\, \\000, \\u0000
+ *
+ * @see StringEncodeFunction
  */
 @FunctionPlugin
 public class StringDecodeFunction extends Function {

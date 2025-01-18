@@ -182,7 +182,7 @@ public abstract class Operator {
   /**
    * Returns whether this function is an aggregate function.
    *
-   * @return {@code true} if this is a aggregate function.
+   * @return {@code true} if this is an aggregate function.
    */
   public boolean isAggregate() {
     return false;
@@ -357,7 +357,7 @@ public abstract class Operator {
   }
 
   /**
-   * Derives the operands type of a call for this operator.
+   * Derives the operands type of call for this operator.
    *
    * @param call The call to coerce
    */
@@ -540,7 +540,7 @@ public abstract class Operator {
   private String loadDocumentation() {
     try (StringWriter writer = new StringWriter()) {
       InputStream is = this.getClass().getResourceAsStream(documentationUrl);
-      if ( is!=null ) {
+      if (is != null) {
         InputStreamReader reader = new InputStreamReader(is);
         IOUtils.copy(reader, writer);
       }

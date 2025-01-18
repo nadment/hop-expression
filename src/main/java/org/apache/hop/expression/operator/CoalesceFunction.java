@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.Types;
  * The COALESCE function returns the first of its arguments that is not null. Null is returned only
  * if all arguments are null.
  *
- * @see {@link IfNullFunction}
+ * @see IfNullFunction
  */
 @FunctionPlugin
 public class CoalesceFunction extends Function {

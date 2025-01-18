@@ -38,7 +38,7 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
-/** An search case operator describing the <code>CASE</code> operator. */
+/** A search case operator describing the <code>CASE</code> operator. */
 public class CaseSearchOperator extends Operator {
 
   public CaseSearchOperator() {

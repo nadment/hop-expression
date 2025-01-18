@@ -22,7 +22,7 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 public abstract class Function extends Operator {
 
   /**
-   * Creates an function.
+   * Creates a function.
    *
    * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
    *
@@ -38,7 +38,7 @@ public abstract class Function extends Operator {
   }
 
   /**
-   * Creates an function.
+   * Creates a function.
    *
    * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
    *

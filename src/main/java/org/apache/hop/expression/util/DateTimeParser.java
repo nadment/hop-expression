@@ -135,7 +135,7 @@ import org.apache.hop.expression.ErrorCode;
   /**
    * Parse an integer at the given position in a string
    *
-   * @param lenght number of digits to parse in the string
+   * @param len number of digits to parse in the string
    * @return the int
    * @throws FormatParseException if the value is not a number
    */
@@ -203,8 +203,6 @@ import org.apache.hop.expression.ErrorCode;
   /**
    * Parse an integer at the given position in a string
    *
-   * @param value the string to parse
-   * @param position the start index for the integer in the string
    * @param len number of digits to parse in the string
    * @return the signed int
    * @throws NumberFormatException if the value is not a number
@@ -256,7 +254,7 @@ import org.apache.hop.expression.ErrorCode;
   public ZonedDateTime build() {
     try {
       // Build the date
-      LocalDate date = null;
+      LocalDate date;
       if (isEpochDay) {
         date = LocalDate.ofEpochDay(epochDay);
       } else {
