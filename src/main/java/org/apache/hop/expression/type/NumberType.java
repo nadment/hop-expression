@@ -97,7 +97,7 @@ public final class NumberType extends Type {
       return clazz.cast(value);
     }
     if (clazz == Boolean.class) {
-      return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
+      return clazz.cast(!BigInteger.ZERO.equals(((BigDecimal) value).unscaledValue()));
     }
     if (clazz == Long.class) {
       return clazz.cast(((BigDecimal) value).longValue());

@@ -67,7 +67,7 @@ public final class Range<T extends Comparable<? super T>> {
       // [lower, upper] includes this
       return this;
     } else {
-      return new Range<T>(cmpLower <= 0 ? lowerBound : lower, cmpUpper >= 0 ? upperBound : upper);
+      return new Range<>(cmpLower <= 0 ? lowerBound : lower, cmpUpper >= 0 ? upperBound : upper);
     }
   }
 

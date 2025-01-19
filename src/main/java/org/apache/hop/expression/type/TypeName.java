@@ -162,16 +162,12 @@ public enum TypeName {
     if (ANY == this || name == ANY || this.equals(name)) return true;
     return switch (this) {
       case BOOLEAN -> name.is(INTEGER, NUMBER, STRING);
-      case DATE -> name.is(STRING);
       case INTEGER -> name.is(NUMBER, BOOLEAN, STRING);
       case NUMBER ->
           // TODO: NUMBER to INTEGER can overflow, not sure it's a good choice to coerce
           name.is(INTEGER, BOOLEAN, STRING);
-      case BINARY -> name.is(STRING);
       case STRING -> name.is(BINARY);
-      case JSON -> name.is(STRING);
-      case INTERVAL -> name.is(STRING);
-      case INET -> name.is(STRING);
+      case DATE, BINARY, JSON, INTERVAL, INET -> name.is(STRING);
       case UNKNOWN -> true;
       default -> false;
     };

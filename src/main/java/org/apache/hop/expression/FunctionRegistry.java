@@ -46,8 +46,8 @@ public class FunctionRegistry {
   /**
    * Get function by name or alias (ignore case)
    *
-   * @param name
-   * @return
+   * @param name the name of the function to search
+   * @return the function or null of not found
    */
   public static Function getFunction(final String name) {
     if (name == null) return null;

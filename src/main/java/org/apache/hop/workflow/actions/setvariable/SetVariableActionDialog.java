@@ -131,7 +131,6 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     wlFields.setLayoutData(fdlFields);
 
     int rows = action.getVariableDefinitions().size();
-    final int FieldsRows = rows;
 
     ColumnInfo[] colinf = {
       new ColumnInfo(
@@ -174,7 +173,7 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
             shell,
             SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
             colinf,
-            FieldsRows,
+            rows,
             lsMod,
             props);
 

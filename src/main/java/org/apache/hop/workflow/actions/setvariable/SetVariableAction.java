@@ -140,8 +140,7 @@ public class SetVariableAction extends ActionBase implements IAction {
                 } else {
                   // if parameter, save the initial parameter value for use in reset/clear variables
                   // in future calls
-                  if (parameterValue != null
-                      && !parameterValue.equals(value)
+                  if (!parameterValue.equals(value)
                       && !entryTransformSetVariablesMap.containsKey(name)) {
                     setEntryTransformSetVariable(name, parameterValue);
                   }

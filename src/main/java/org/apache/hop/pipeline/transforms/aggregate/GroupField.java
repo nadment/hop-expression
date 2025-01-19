@@ -18,22 +18,19 @@
 package org.apache.hop.pipeline.transforms.aggregate;
 
 import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class GroupField {
 
+  /** The group field name */
   @HopMetadataProperty(
       injectionKey = "GROUP_FIELD",
       injectionKeyDescription = "AggregateMeta.Injection.GROUP_FIELD")
+  @Getter
+  @Setter
   private String name;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public GroupField() {}
 

@@ -29,7 +29,7 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
 
   @Override
   public IExpression visitIdentifier(final Identifier identifier) {
-    return operands[identifier.getIndex()];
+    return operands[identifier.getOrdinal()];
   }
 
   @Override

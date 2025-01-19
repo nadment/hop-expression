@@ -273,11 +273,11 @@ public class BoolOrOperator extends BinaryOperator {
 
     if (left == null) {
       if (!right) return null;
-      return right;
+      return Boolean.TRUE;
     }
     if (right == null) {
       if (!left) return null;
-      return left;
+      return Boolean.TRUE;
     }
     return Boolean.logicalOr(left, right);
   }

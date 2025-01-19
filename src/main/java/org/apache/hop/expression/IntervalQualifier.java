@@ -133,7 +133,6 @@ public enum IntervalQualifier {
       case HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND -> TimeUnit.HOUR;
       case MINUTE, MINUTE_TO_SECOND -> TimeUnit.MINUTE;
       case SECOND -> TimeUnit.SECOND;
-      default -> throw new AssertionError(this);
     };
   }
 
@@ -150,7 +149,6 @@ public enum IntervalQualifier {
       case DAY_TO_HOUR, HOUR -> TimeUnit.HOUR;
       case DAY_TO_MINUTE, HOUR_TO_MINUTE, MINUTE -> TimeUnit.MINUTE;
       case DAY_TO_SECOND, HOUR_TO_SECOND, MINUTE_TO_SECOND, SECOND -> TimeUnit.SECOND;
-      default -> throw new AssertionError(this);
     };
   }
 
@@ -171,7 +169,6 @@ public enum IntervalQualifier {
       case MINUTE -> Interval.minute(text);
       case MINUTE_TO_SECOND -> Interval.minuteToSecond(text);
       case SECOND -> Interval.second(text);
-      default -> null;
     };
   }
 

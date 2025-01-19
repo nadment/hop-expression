@@ -135,7 +135,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           return new Literal(value, type);
         } catch (Exception e) {
           // Ignore error like division by zero "X IN (1,3/0)" and continue
-          expression = call;
+          return call;
         }
       }
     }

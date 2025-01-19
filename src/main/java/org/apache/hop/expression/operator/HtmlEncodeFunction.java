@@ -27,9 +27,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function encode special characters in a strings using HTML entities.
  *
- * <p>https://www.w3.org/TR/html401/charset.html#h-5.3
+ * <p><a href="https://www.w3.org/TR/html401/charset.html#h-5.3">...</a>
  *
- * @see {@link HtmlDecodeFunction}
+ * @see HtmlDecodeFunction
  */
 @FunctionPlugin
 public class HtmlEncodeFunction extends Function {

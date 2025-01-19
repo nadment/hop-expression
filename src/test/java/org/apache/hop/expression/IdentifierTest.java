@@ -38,7 +38,7 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  void quoteIfNeeded() throws Exception {
+  void quoteIfNeeded() {
     assertEquals("NORMAL", Identifier.quoteIfNeeded("NORMAL"));
     assertEquals("\"TRIM\"", Identifier.quoteIfNeeded("TRIM"));
     assertEquals("\"OR\"", Identifier.quoteIfNeeded("OR"));

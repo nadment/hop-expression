@@ -82,7 +82,7 @@ public class ExpressionTest {
   }
 
   @AfterAll
-  static void clean() throws Throwable {
+  static void clean() {
     FunctionRegistry.unregisterFunctions();
     HopClientEnvironment.reset();
   }
@@ -394,7 +394,7 @@ public class ExpressionTest {
   }
 
   /** Check if expression fails with the supplied {@code ErrorCode}. */
-  protected void evalFails(final String source, ErrorCode error) throws Exception {
+  protected void evalFails(final String source, ErrorCode error) {
     try {
       Evaluator evaluator = new Evaluator(createExpressionContext(), source);
       evaluator.eval(Object.class);

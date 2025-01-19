@@ -216,14 +216,11 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         Object value = results[i];
 
         // Value meta doesn't support ZonedDateTime
-        switch (data.aggregateMeta.getValueMeta(i).getType()) {
-          case IValueMeta.TYPE_DATE:
-            value = convertToDate(value);
-            break;
-          case IValueMeta.TYPE_TIMESTAMP:
-            value = convertToDate(value);
-            break;
-          default:
+        int type = data.aggregateMeta.getValueMeta(i).getType();
+        if (type == IValueMeta.TYPE_DATE) {
+          value = convertToDate(value);
+        } else if (type == IValueMeta.TYPE_TIMESTAMP) {
+          value = convertToDate(value);
         }
 
         outputRow[index++] = data.aggregateMeta.getValueMeta(i).convertToNormalStorageType(value);

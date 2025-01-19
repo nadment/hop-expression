@@ -16,8 +16,12 @@
  */
 package org.apache.hop.workflow.actions.setvariable;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
+@Setter
+@Getter
 public final class SetVariableDefinition {
   public SetVariableDefinition() {
     super();
@@ -38,28 +42,4 @@ public final class SetVariableDefinition {
 
   @HopMetadataProperty(key = "scope")
   private SetVariableScope scope;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getExpression() {
-    return expression;
-  }
-
-  public void setExpression(String value) {
-    this.expression = value;
-  }
-
-  public SetVariableScope getScope() {
-    return scope;
-  }
-
-  public void setScope(SetVariableScope type) {
-    this.scope = type;
-  }
 }

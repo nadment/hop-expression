@@ -34,8 +34,8 @@ public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
   public boolean checkSingleOperandType(IExpression operand) {
     if (operand.is(Kind.LITERAL)) {
       Object value = operand.getValue();
-      return javaClass.isAssignableFrom((value == null) ? Void.class : value.getClass());
+      return !javaClass.isAssignableFrom((value == null) ? Void.class : value.getClass());
     }
-    return false;
+    return true;
   }
 }

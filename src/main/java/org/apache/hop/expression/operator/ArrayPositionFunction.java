@@ -97,6 +97,6 @@ public class ArrayPositionFunction extends Function {
     }
 
     // If the element is not found in the array.
-    return Long.valueOf(0L);
+    return 0L;
   }
 }

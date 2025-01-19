@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function decode special HTML entities.
  *
- * @see {@link HtmlEncodeFunction}
+ * @see HtmlEncodeFunction
  */
 @FunctionPlugin
 public class HtmlDecodeFunction extends Function {

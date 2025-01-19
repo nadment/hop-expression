@@ -68,9 +68,9 @@ public final class IntegerConversion extends Conversion<Long> {
     if (bytes.length > 8)
       throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.BINARY, bytes);
     long result = 0;
-    for (int i = 0; i < bytes.length; i++) {
+    for (byte aByte : bytes) {
       result <<= Byte.SIZE;
-      result |= (bytes[i] & 0xFF);
+      result |= (aByte & 0xFF);
     }
     return result;
   }

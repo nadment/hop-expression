@@ -82,6 +82,6 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
 
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
-    return operand.getType().getName().isFamily(families.get(0));
+    return !operand.getType().getName().isFamily(families.get(0));
   }
 }

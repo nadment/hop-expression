@@ -67,14 +67,14 @@ public class ConcatWsFunction extends Function {
       for (int i = 1; i < operands.length; i++) {
         String value = operands[i].getValue(String.class);
         if (value != null) {
-          if (builder.length() > 0) {
+          if (!builder.isEmpty()) {
             builder.append(separator);
           }
           builder.append(value);
         }
       }
 
-      if (builder.length() == 0) return null;
+      if (builder.isEmpty()) return null;
 
       return builder.toString();
     }

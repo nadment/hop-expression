@@ -17,10 +17,12 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.Objects;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 /** Contains the properties of the fields to set with expression. */
+@Getter
 public class ExpressionField {
 
   public ExpressionField() {
@@ -43,6 +45,7 @@ public class ExpressionField {
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
   private String name;
 
+  /** The expression source */
   @HopMetadataProperty(
       key = "expression",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
@@ -57,40 +60,20 @@ public class ExpressionField {
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
   private int precision = -1;
 
-  public String getName() {
-    return name;
-  }
-
   public void setName(final String name) {
     this.name = StringUtils.stripToNull(name);
-  }
-
-  public String getExpression() {
-    return expression;
   }
 
   public void setExpression(final String expression) {
     this.expression = expression;
   }
 
-  public String getType() {
-    return type;
-  }
-
   public void setType(String type) {
     this.type = StringUtils.stripToNull(type);
   }
 
-  public int getLength() {
-    return length;
-  }
-
   public void setLength(int length) {
     this.length = length;
-  }
-
-  public int getPrecision() {
-    return precision;
   }
 
   public void setPrecision(int precision) {

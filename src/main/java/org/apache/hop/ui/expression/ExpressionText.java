@@ -28,7 +28,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
@@ -208,19 +207,19 @@ public class ExpressionText extends Composite {
   /**
    * Add a modify listener to the text widget
    *
-   * @param modifyListener
+   * @param listener the listener to add
    */
-  public void addModifyListener(ModifyListener modifyListener) {
-    wText.addModifyListener(modifyListener);
+  public void addModifyListener(ModifyListener listener) {
+    wText.addModifyListener(listener);
   }
 
-  public void addSelectionListener(SelectionAdapter lsDef) {
-    wText.addSelectionListener(lsDef);
+  public void addSelectionListener(SelectionListener listener) {
+    wText.addSelectionListener(listener);
   }
 
   @Override
-  public void addKeyListener(KeyListener lsKey) {
-    wText.addKeyListener(lsKey);
+  public void addKeyListener(KeyListener listener) {
+    wText.addKeyListener(listener);
   }
 
   @Override

@@ -54,7 +54,7 @@ public class InstrFunction extends Function {
     }
 
     int start = 0;
-    int occurence = 1;
+    int occurrence = 1;
     int result = 0;
 
     // If 3 operands, indicate the position to start
@@ -67,24 +67,24 @@ public class InstrFunction extends Function {
 
       start -= 1;
 
-      // The occurence to find, must be positive
+      // The occurrence to find, must be positive
       if (operands.length == 4) {
-        occurence = operands[3].getValue(Long.class).intValue();
-        if (occurence < 1) {
-          throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(occurence));
+        occurrence = operands[3].getValue(Long.class).intValue();
+        if (occurrence < 1) {
+          throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(occurrence));
         }
       }
     }
 
     if (start >= 0) {
       while ((result = str.indexOf(substr, start)) > 0) {
-        if (--occurence <= 0) break;
+        if (--occurrence <= 0) break;
         start = result + substr.length();
       }
     } else if (start < 0) {
       start = str.length() + start;
       while ((result = str.lastIndexOf(substr, start)) > 0) {
-        if (--occurence <= 0) break;
+        if (--occurrence <= 0) break;
         start = result - substr.length();
       }
     }

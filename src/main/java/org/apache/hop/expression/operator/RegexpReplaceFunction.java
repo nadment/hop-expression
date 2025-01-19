@@ -124,7 +124,7 @@ public class RegexpReplaceFunction extends Function {
       if (occurrence == 0) {
         return matcher.replaceAll(replacement);
       } else {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         int index = 1;
         while (matcher.find()) {
           if (index == occurrence) {

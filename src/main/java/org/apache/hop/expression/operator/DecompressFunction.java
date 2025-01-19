@@ -54,7 +54,7 @@ public class DecompressFunction extends Function {
       GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));
 
       final byte[] buffer = new byte[8024];
-      int n = 0;
+      int n;
       while ((n = cis.read(buffer)) != -1) {
         output.write(buffer, 0, n);
       }

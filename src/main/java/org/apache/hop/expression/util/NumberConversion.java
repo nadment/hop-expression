@@ -55,9 +55,9 @@ public final class NumberConversion extends Conversion<BigDecimal> {
       throw new ConversionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
     long result = 0;
-    for (int i = 0; i < bytes.length; i++) {
+    for (byte aByte : bytes) {
       result <<= Byte.SIZE;
-      result |= (bytes[i] & 0xFF);
+      result |= (aByte & 0xFF);
     }
     return new BigDecimal(result);
   }

@@ -17,10 +17,17 @@
 
 package org.apache.hop.workflow.actions.loop;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
+@Getter
+@Setter
 public class Parameter {
+  /** The name of the parameter */
   @HopMetadataProperty private String name;
+
+  /** The value of the parameter */
   @HopMetadataProperty private String value;
 
   public Parameter() {}
@@ -28,41 +35,5 @@ public class Parameter {
   public Parameter(String name, String field) {
     this.name = name;
     this.value = field;
-  }
-
-  /**
-   * Get parameter name
-   *
-   * @return value of name
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Set parameter name
-   *
-   * @param name The name of the parameter
-   */
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  /**
-   * Get parameter value
-   *
-   * @return value
-   */
-  public String getValue() {
-    return value;
-  }
-
-  /**
-   * Set parameter value
-   *
-   * @param value The value to set
-   */
-  public void setValue(String value) {
-    this.value = value;
   }
 }

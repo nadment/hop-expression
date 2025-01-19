@@ -694,16 +694,14 @@ final class PatternNumberFormat extends NumberFormat {
             output.insert(0, '0');
           }
         } else if (c == '9') {
+          // If zero, output is empty
           if (j >= 0) {
             char digit = unscaled.charAt(j--);
             output.insert(0, digit);
-          } else {
-            // If zero, output is empty
-            if (output.isEmpty() && scale > 0) {
-              // If blank mode ignore zero "0.12" => " .12"
-              if (!this.blank) {
-                output.insert(0, '0');
-              }
+          } else if (output.isEmpty() && scale > 0) {
+            // If blank mode ignore zero "0.12" => " .12"
+            if (!this.blank) {
+              output.insert(0, '0');
             }
           }
         } else if (c == ',') {

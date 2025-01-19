@@ -23,6 +23,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
+import lombok.Getter;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
@@ -39,14 +40,18 @@ public class Identifier implements IExpression {
 
   private IRowExpressionContext context;
 
-  // The name of the identifier
-  private final String name;
-  // The data type when resolved or UNKNOWN if unresolved.
-  private Type type;
+  /** The name of the identifier */
+  @Getter private final String name;
+
+  /** The data type when resolved or UNKNOWN if unresolved */
+  @Getter private Type type;
+
   // The position in the expression source
   private final int position;
-  // The index in IRowMeta when resolved or -1 if unresolved.
-  private int ordinal;
+
+  /** The index in IRowMeta when resolved or -1 if unresolved */
+  @Getter private int ordinal;
+
   // The IValueMeta when resolved or null if unresolved.
   private IValueMeta valueMeta;
 
@@ -87,32 +92,9 @@ public class Identifier implements IExpression {
     return Kind.IDENTIFIER;
   }
 
-  /**
-   * Return the name of the identifier.
-   *
-   * @return
-   */
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public Type getType() {
-    return type;
-  }
-
   @Override
   public int getCost() {
     return 2;
-  }
-
-  /**
-   * Return the index in IRowMeta when resolved or -1 if unresolved identifier.
-   *
-   * @return
-   */
-  public int getIndex() {
-    return ordinal;
   }
 
   @Override

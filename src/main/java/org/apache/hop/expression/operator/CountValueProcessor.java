@@ -36,6 +36,6 @@ public class CountValueProcessor implements IExpressionProcessor {
 
   @Override
   public Object getValue() throws Exception {
-    return Long.valueOf(count);
+    return count;
   }
 }

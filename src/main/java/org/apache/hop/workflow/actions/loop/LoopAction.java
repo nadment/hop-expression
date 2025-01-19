@@ -236,8 +236,7 @@ public class LoopAction extends ActionBase implements IAction {
   private WorkflowMeta loadWorkflow(
       String realFilename, IHopMetadataProvider metadataProvider, IVariables variables)
       throws HopException {
-    WorkflowMeta workflowMeta = new WorkflowMeta(variables, realFilename, metadataProvider);
-    return workflowMeta;
+    return new WorkflowMeta(variables, realFilename, metadataProvider);
   }
 
   @Override

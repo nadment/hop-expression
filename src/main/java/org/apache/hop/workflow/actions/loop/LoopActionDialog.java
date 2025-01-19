@@ -252,7 +252,6 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     fdParameters.top = new FormAttachment(lastControl, margin);
     fdParameters.bottom = new FormAttachment(wOK, -margin * 2);
     wParameters.setLayoutData(fdParameters);
-    lastControl = wParameters;
 
     getData();
 

@@ -49,7 +49,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
         for (IOperandTypeChecker rule : rules) {
           ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
 
-          if (!checker.checkSingleOperandType(call.getOperand(0))) {
+          if (checker.checkSingleOperandType(call.getOperand(0))) {
             return false;
           }
         }
@@ -76,7 +76,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
           ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
 
           if (index < call.getOperandCount()
-              && !checker.checkSingleOperandType(call.getOperand(index++))) {
+              && checker.checkSingleOperandType(call.getOperand(index++))) {
             return false;
           }
         }

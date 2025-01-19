@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 public class TimeUnitTest extends ExpressionTest {
 
   @Test
-  void of() throws Exception {
+  void of() {
     assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUM"));
     assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUMs"));
     assertEquals(TimeUnit.CENTURY, TimeUnit.of("CeNTuRy"));

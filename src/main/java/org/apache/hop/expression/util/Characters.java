@@ -70,8 +70,7 @@ public class Characters {
   /**
    * Determines if the specified character is a digit.
    *
-   * @param ch
-   * @return
+   * @param ch the character to check
    */
   public static boolean isDigit(char ch) {
     if (ch > 255) {
@@ -104,8 +103,7 @@ public class Characters {
   /**
    * Determines if the specified character is alphabetic
    *
-   * @param ch
-   * @return
+   * @param ch the character to check
    */
   public static boolean isAlpha(char ch) {
     if (ch > 255) {
@@ -117,8 +115,7 @@ public class Characters {
   /**
    * Determines if the specified character is alphabetic or digit
    *
-   * @param ch
-   * @return
+   * @param ch the character to check
    */
   public static boolean isAlphaOrDigit(char ch) {
     if (ch > 255) {
@@ -145,8 +142,7 @@ public class Characters {
   /**
    * Determines if the specified character is space or tab
    *
-   * @param ch
-   * @return
+   * @param ch the character to check
    */
   public static boolean isSpace(char ch) {
     return ch == ' '

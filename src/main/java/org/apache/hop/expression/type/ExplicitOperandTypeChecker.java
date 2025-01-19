@@ -82,6 +82,6 @@ public class ExplicitOperandTypeChecker implements IOperandTypeChecker, ISingleO
 
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
-    return operand.getType().getName().isCoercible(names.get(0));
+    return !operand.getType().getName().isCoercible(names.get(0));
   }
 }

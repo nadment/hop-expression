@@ -181,7 +181,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
   /**
    * Set the condition expression
    *
-   * @param expression
+   * @param expression the condition expression
    */
   public void setCondition(String expression) {
     this.condition = expression;

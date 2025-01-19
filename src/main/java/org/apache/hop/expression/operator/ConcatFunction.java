@@ -128,23 +128,16 @@ public class ConcatFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
 
-      String firstNotNull = null;
-      String[] values = new String[operands.length];
-      int i = 0;
-      for (IExpression operand : operands) {
-        String value = operand.getValue(String.class);
-        if (firstNotNull == null && value != null) firstNotNull = value;
-        values[i++] = value;
-      }
-
-      if (firstNotNull == null) return null;
-
+      boolean nulls = true;
       StringBuilder builder = new StringBuilder();
       for (IExpression operand : operands) {
         String value = operand.getValue(String.class);
-        if (value != null) builder.append(value);
+        if (value != null) {
+          builder.append(value);
+          nulls = false;
+        }
       }
-
+      if (nulls) return null;
       return builder.toString();
     }
   }

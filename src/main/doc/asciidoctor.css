@@ -1637,52 +1637,6 @@ ol.decimal {
     list-style-type: decimal-leading-zero;
 }
 
-ol.loweralpha {
-    list-style-type: lower-alpha;
-}
-
-ol.upperalpha {
-    list-style-type: upper-alpha;
-}
-
-ol.lowerroman {
-    list-style-type: lower-roman;
-}
-
-ol.upperroman {
-    list-style-type: upper-roman;
-}
-
-ol.lowergreek {
-    list-style-type: lower-greek;
-}
-
-.hdlist > table,
-.colist > table {
-    border: 0;
-    background: none;
-}
-
-.hdlist > table > tbody > tr,
-.colist > table > tbody > tr {
-    background: none;
-}
-
-td.hdlist1,
-td.hdlist2 {
-    vertical-align: top;
-    padding: 0 0.625em;
-}
-
-td.hdlist1 {
-    font-weight: bold;
-    padding-bottom: 1.25em;
-}
-
-td.hdlist2 {
-    word-wrap: anywhere;
-}
-
 .literalblock + .colist,
 .listingblock + .colist {
     margin-top: -0.5em;
@@ -1755,24 +1709,6 @@ a.image {
 
 a.image object {
     pointer-events: none;
-}
-
-sup.footnote,
-sup.footnoteref {
-    font-size: 0.875em;
-    position: static;
-    vertical-align: super;
-}
-
-sup.footnote a,
-sup.footnoteref a {
-    text-decoration: none;
-}
-
-sup.footnote a:active,
-sup.footnoteref a:active,
-#footnotes .footnote a:first-of-type:active {
-    text-decoration: underline;
 }
 
 #footnotes {
@@ -1864,14 +1800,6 @@ div.unbreakable {
     background: #0000fa;
 }
 
-.fuchsia {
-    color: #bf00bf;
-}
-
-.fuchsia-background {
-    background: #fa00fa;
-}
-
 .gray {
     color: #606060;
 }
@@ -1910,14 +1838,6 @@ div.unbreakable {
 
 .navy-background {
     background: #00007d;
-}
-
-.olive {
-    color: #606000;
-}
-
-.olive-background {
-    background: #7d7d00;
 }
 
 .purple {
@@ -1968,25 +1888,6 @@ div.unbreakable {
     background: #fafa00;
 }
 
-span.icon > .fa {
-    cursor: default;
-}
-
-a span.icon > .fa {
-    cursor: inherit;
-}
-
-.admonitionblock td.icon [class^="fa icon-"] {
-    font-size: 2.5em;
-    text-shadow: 1px 1px 2px rgb(0 0 0 / 0.5);
-    cursor: default;
-}
-
-.admonitionblock td.icon .icon-note::before {
-    content: "\f05a";
-    color: #19407c;
-}
-
 .admonitionblock td.icon .icon-tip::before {
     content: "\f0eb";
     text-shadow: 1px 1px 2px rgb(155 155 0 / 0.8);
@@ -2008,46 +1909,6 @@ a span.icon > .fa {
     color: #bf0000;
 }
 
-.conum[data-value] {
-    display: inline-block;
-    color: #fff !important;
-    background: rgb(0 0 0 / 0.8);
-    border-radius: 50%;
-    text-align: center;
-    font-size: 0.75em;
-    width: 1.67em;
-    height: 1.67em;
-    line-height: 1.67em;
-    font-family: "Open Sans", "DejaVu Sans", sans-serif;
-    font-style: normal;
-    font-weight: bold;
-}
-
-.conum[data-value] * {
-    color: #fff !important;
-}
-
-.conum[data-value] + b {
-    display: none;
-}
-
-.conum[data-value]::after {
-    content: attr(data-value);
-}
-
-pre .conum[data-value] {
-    position: relative;
-    top: -0.125em;
-}
-
-b.conum * {
-    color: inherit !important;
-}
-
-.conum:not([data-value]):empty {
-    display: none;
-}
-
 dt,
 th.tableblock,
 td.content,
@@ -2059,7 +1920,6 @@ h1,
 h2,
 p,
 td.content,
-span.alt,
 summary {
     letter-spacing: -0.01em;
 }
@@ -2075,20 +1935,8 @@ blockquote,
 dt,
 td.content,
 td.hdlist1,
-span.alt,
 summary {
     font-size: 1.0625rem;
-}
-
-.sidebarblock p,
-.sidebarblock dt,
-.sidebarblock td.content,
-p.tableblock {
-    font-size: 1em;
-}
-
-.print-only {
-    display: none !important;
 }
 
 @page {

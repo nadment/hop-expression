@@ -106,7 +106,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
-  private ExpressionMode mode = ExpressionMode.NONE;
+  private final ExpressionMode mode;
   private final ExpressionLabelProvider labelProvider;
   private final IVariables variables;
   private final CompletableFuture<IRowMeta> rowMetaFutur;

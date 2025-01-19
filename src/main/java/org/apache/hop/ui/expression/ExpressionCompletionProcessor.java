@@ -226,7 +226,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
         String replacement = name;
         // TODO: add function arguments to proposal
-        String diplayName = name;
+        String displayName = name;
         CompletionProposal proposal =
             new CompletionProposal(
                 replacement,
@@ -234,7 +234,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
                 end - start,
                 replacement.length(),
                 image,
-                diplayName,
+                displayName,
                 null,
                 function.getDescription());
         proposals.add(proposal);

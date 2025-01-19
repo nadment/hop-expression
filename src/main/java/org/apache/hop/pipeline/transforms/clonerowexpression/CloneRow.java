@@ -158,7 +158,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
         if (meta.isAddCloneNum()) {
           // Let's add to clone number
           // Clone starts at number 1 (0 is for the original row)
-          Long clonenum = i + 1L;
+          long clonenum = i + 1L;
           outputRowData[rowIndex] = clonenum;
         }
       }

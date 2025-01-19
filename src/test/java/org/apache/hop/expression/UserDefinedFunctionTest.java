@@ -65,7 +65,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
   }
 
   @Test
-  void testCompilationError() throws Exception {
+  void testCompilationError() {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("ERROR_UDF");
     meta.setSource("case when v1 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");

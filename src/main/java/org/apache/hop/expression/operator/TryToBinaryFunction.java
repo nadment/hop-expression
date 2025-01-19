@@ -111,14 +111,16 @@ public class TryToBinaryFunction extends Function {
       // Normalize pattern
       format = format.toUpperCase();
 
-      if (format.equals("HEX")) {
-        return new Call(StringHexTryToBinaryFunction.INSTANCE, call.getOperands());
-      }
-      if (format.equals("BASE64")) {
-        return new Call(StringBase64TryToBinaryFunction.INSTANCE, call.getOperands());
-      }
-      if (format.equals("UTF8") || format.equals("UTF-8")) {
-        return new Call(StringUtf8TryToBinaryFunction.INSTANCE, call.getOperands());
+      switch (format) {
+        case "HEX" -> {
+          return new Call(StringHexTryToBinaryFunction.INSTANCE, call.getOperands());
+        }
+        case "BASE64" -> {
+          return new Call(StringBase64TryToBinaryFunction.INSTANCE, call.getOperands());
+        }
+        case "UTF8", "UTF-8" -> {
+          return new Call(StringUtf8TryToBinaryFunction.INSTANCE, call.getOperands());
+        }
       }
     }
 

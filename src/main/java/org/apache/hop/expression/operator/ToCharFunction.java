@@ -104,17 +104,12 @@ public class ToCharFunction extends Function {
       // Normalize pattern
       pattern = pattern.toUpperCase();
 
-      if (pattern.equals("HEX")) {
-        return new Call(BinaryHexToCharFunction.INSTANCE, call.getOperands());
-      }
-      if (pattern.equals("BASE64")) {
-        return new Call(BinaryBase64ToCharFunction.INSTANCE, call.getOperands());
-      }
-      if (pattern.equals("UTF8") || pattern.equals("UTF-8")) {
-        return new Call(BinaryUtf8ToCharFunction.INSTANCE, call.getOperands());
-      }
-
-      throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
+      return switch (pattern) {
+        case "HEX" -> new Call(BinaryHexToCharFunction.INSTANCE, call.getOperands());
+        case "BASE64" -> new Call(BinaryBase64ToCharFunction.INSTANCE, call.getOperands());
+        case "UTF8", "UTF-8" -> new Call(BinaryUtf8ToCharFunction.INSTANCE, call.getOperands());
+        default -> throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
+      };
     }
 
     return call;

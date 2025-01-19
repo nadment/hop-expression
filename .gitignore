@@ -2,4 +2,5 @@
 /bin/
 /.settings
 /.project
+/.idea
 .classpath
