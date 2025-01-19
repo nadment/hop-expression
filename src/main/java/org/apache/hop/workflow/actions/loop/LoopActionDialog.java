@@ -298,7 +298,7 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
             variables, getMetadataProvider(), WorkflowRunConfiguration.class, shell);
     List<String> entries = new ArrayList<>();
     try {
-      workflowMetaManager.getNames().forEach(name -> entries.add(name));
+      entries.addAll(workflowMetaManager.getNames());
     } catch (Exception e) {
       // Ignore
     }

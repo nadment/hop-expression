@@ -51,42 +51,32 @@ public class DateTruncFunction extends Function {
     ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
     if (datetime == null) return null;
 
-    switch (unit) {
-      case MILLENNIUM:
-        return datetime.withDayOfYear(1).minusYears(datetime.getYear() % 1000);
-      case CENTURY:
-        return datetime.withDayOfYear(1).minusYears(datetime.getYear() % 100);
-      case DECADE:
-        return datetime.withDayOfYear(1).minusYears(datetime.getYear() % 10);
-      case YEAR:
-        // First day of the year
-        return datetime.withDayOfYear(1);
-      case MONTH:
-        // First day of the month
-        return datetime.withDayOfMonth(1);
-      case QUARTER:
+    return switch (unit) {
+      case MILLENNIUM -> datetime.withDayOfYear(1).minusYears(datetime.getYear() % 1000);
+      case CENTURY -> datetime.withDayOfYear(1).minusYears(datetime.getYear() % 100);
+      case DECADE -> datetime.withDayOfYear(1).minusYears(datetime.getYear() % 10);
+      case YEAR ->
+          // First day of the year
+          datetime.withDayOfYear(1);
+      case MONTH ->
+          // First day of the month
+          datetime.withDayOfMonth(1);
+      case QUARTER -> {
         // First day of the quarter
         int month = (datetime.getMonthValue() / 3) * 3 + 1;
-        return datetime.withMonth(month).withDayOfMonth(1);
-      case WEEK:
-        // First day of the week (the week starts on Monday)
-        return datetime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-      case DAY:
-        return datetime.truncatedTo(ChronoUnit.DAYS);
-      case HOUR:
-        return datetime.truncatedTo(ChronoUnit.HOURS);
-      case MINUTE:
-        return datetime.truncatedTo(ChronoUnit.MINUTES);
-      case SECOND:
-        return datetime.truncatedTo(ChronoUnit.SECONDS);
-      case MILLISECOND:
-        return datetime.truncatedTo(ChronoUnit.MILLIS);
-      case MICROSECOND:
-        return datetime.truncatedTo(ChronoUnit.MICROS);
-      case NANOSECOND:
-        return datetime.truncatedTo(ChronoUnit.NANOS);
-      default:
-        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
-    }
+        yield datetime.withMonth(month).withDayOfMonth(1);
+      }
+      case WEEK ->
+          // First day of the week (the week starts on Monday)
+          datetime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+      case DAY -> datetime.truncatedTo(ChronoUnit.DAYS);
+      case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
+      case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
+      case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);
+      case MILLISECOND -> datetime.truncatedTo(ChronoUnit.MILLIS);
+      case MICROSECOND -> datetime.truncatedTo(ChronoUnit.MICROS);
+      case NANOSECOND -> datetime.truncatedTo(ChronoUnit.NANOS);
+      default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
+    };
   }
 }

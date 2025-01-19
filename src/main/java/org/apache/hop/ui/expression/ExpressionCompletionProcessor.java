@@ -48,7 +48,7 @@ import org.eclipse.swt.graphics.Image;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
-  class ProposalComparator implements Comparator<ICompletionProposal> {
+  static class ProposalComparator implements Comparator<ICompletionProposal> {
     public int compare(ICompletionProposal p1, ICompletionProposal p2) {
       return p1.getDisplayString().compareTo(p2.getDisplayString());
     }

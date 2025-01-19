@@ -66,7 +66,7 @@ public class LengthFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
-      if (value == null) return value;
+      if (value == null) return null;
       return Long.valueOf(value.length());
     }
   }
@@ -78,7 +78,7 @@ public class LengthFunction extends Function {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
-      if (value == null) return value;
+      if (value == null) return null;
       return Long.valueOf(value.length);
     }
   }

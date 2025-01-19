@@ -60,8 +60,8 @@ public class CaseSearchOperator extends Operator {
     IExpression elseTerm = operands[3];
 
     for (IExpression whenOperand : whenTerm) {
-      Boolean predicat = whenOperand.getValue(Boolean.class);
-      if (predicat != null && predicat) {
+      Boolean predicate = whenOperand.getValue(Boolean.class);
+      if (predicate != null && predicate) {
         return thenTerm.get(index).getValue();
       }
       index++;

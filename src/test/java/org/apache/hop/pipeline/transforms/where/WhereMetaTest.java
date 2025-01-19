@@ -30,6 +30,6 @@ public class WhereMetaTest {
     WhereMeta meta =
         TransformSerializationTestUtil.testSerialization("/where-transform.xml", WhereMeta.class);
 
-    assertEquals(meta.getCondition(), "Day(FIELD_DATE)%2=1");
+    assertEquals("Day(FIELD_DATE)%2=1", meta.getCondition());
   }
 }

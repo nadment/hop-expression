@@ -16,46 +16,35 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.math.BigDecimal;
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Returns the sign of a number. */
+/** Returns number of weeks between two date. */
 @FunctionPlugin
-public class SignFunction extends Function {
+public class WeeksBetweenFunction extends Function {
 
-  public SignFunction() {
+  public WeeksBetweenFunction() {
     super(
-        "SIGN",
+        "WEEKS_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER.or(OperandTypes.NUMBER),
-        OperatorCategory.MATHEMATICAL,
-        "/docs/sign.html");
+        OperandTypes.DATE_DATE,
+        OperatorCategory.DATE,
+        "/docs/weeks_between.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value == null) return null;
+    ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
+    if (startDateTime == null) return null;
+    ZonedDateTime endDateTime = operands[1].getValue(ZonedDateTime.class);
+    if (endDateTime == null) return null;
 
-    if (value.signum() == 0) return 0L;
-    return (value.signum() > 0L) ? 1L : -1L;
-  }
-
-  @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    // Idempotent function repetition
-    if (call.getOperand(0).isOperator(call.getOperator())) {
-      return call.getOperand(0);
-    }
-
-    return call;
+    return startDateTime.until(endDateTime, ChronoUnit.WEEKS);
   }
 }

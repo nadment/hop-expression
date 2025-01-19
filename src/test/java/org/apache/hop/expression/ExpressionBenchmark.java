@@ -90,7 +90,7 @@ public class ExpressionBenchmark {
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
     Calendar calendar = Calendar.getInstance();
-    calendar.set(1981, 5, 23);
+    calendar.set(1981, Calendar.JUNE, 23);
 
     Object[] row = new Object[14];
     row[0] = "TEST";

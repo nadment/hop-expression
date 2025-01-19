@@ -39,7 +39,7 @@ Boolean
 
 Regular expression pattern
 
-[cols="<1,<1", options="header"]
+[cols="<1,<1",options="header"]
 |===
 |Operator|Description
 |%|Matches any sequence of zero or more characters.
@@ -48,7 +48,7 @@ Regular expression pattern
 |*|Repeat the previous item zero or more times.
 |+|Repeat the previous item one or more times.
 |?|Repeat the previous item zero or one time.
-|{m}|Repeat the previous item exactly m times.
+|+{m}+|Repeat the previous item exactly m times.
 |{m,}|Repeat the previous item m or more times.
 |{m,n}|Repeat the previous item at least m and not more than n times.
 |()|Parentheses group items into a single logical item.

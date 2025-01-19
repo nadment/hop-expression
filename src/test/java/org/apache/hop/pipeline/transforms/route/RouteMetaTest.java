@@ -30,7 +30,7 @@ public class RouteMetaTest {
     RouteMeta meta =
         TransformSerializationTestUtil.testSerialization("/route-transform.xml", RouteMeta.class);
 
-    assertEquals(meta.getDefaultTargetTransformName(), "Condition default");
-    assertEquals(meta.getRoutes().size(), 4);
+    assertEquals("Condition default", meta.getDefaultTargetTransformName());
+    assertEquals(4, meta.getRoutes().size());
   }
 }

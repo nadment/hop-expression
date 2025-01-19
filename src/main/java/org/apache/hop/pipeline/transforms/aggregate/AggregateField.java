@@ -51,7 +51,7 @@ public class AggregateField {
   }
 
   /**
-   * @param aggregate The aggregate expression to set
+   * @param expression The aggregate expression to set
    */
   public void setExpression(String expression) {
     this.expression = expression;

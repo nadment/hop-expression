@@ -61,38 +61,25 @@ public class DateDiffFunction extends Function {
     ZonedDateTime endDateTime = operands[2].getValue(ZonedDateTime.class);
     if (endDateTime == null) return null;
 
-    switch (unit) {
-      case MILLENNIUM:
-        return startDateTime.until(endDateTime, ChronoUnit.MILLENNIA);
-      case CENTURY:
-        return startDateTime.until(endDateTime, ChronoUnit.CENTURIES);
-      case DECADE:
-        return startDateTime.until(endDateTime, ChronoUnit.DECADES);
-      case YEAR:
-        return startDateTime.until(endDateTime, ChronoUnit.YEARS);
-      case MONTH:
-        return startDateTime.until(endDateTime, ChronoUnit.MONTHS);
-      case QUARTER:
+    return switch (unit) {
+      case MILLENNIUM -> startDateTime.until(endDateTime, ChronoUnit.MILLENNIA);
+      case CENTURY -> startDateTime.until(endDateTime, ChronoUnit.CENTURIES);
+      case DECADE -> startDateTime.until(endDateTime, ChronoUnit.DECADES);
+      case YEAR -> startDateTime.until(endDateTime, ChronoUnit.YEARS);
+      case MONTH -> startDateTime.until(endDateTime, ChronoUnit.MONTHS);
+      case QUARTER -> {
         long months = startDateTime.until(endDateTime, ChronoUnit.MONTHS);
-        return Long.valueOf(months / 3);
-      case WEEK:
-        return startDateTime.until(endDateTime, ChronoUnit.WEEKS);
-      case DAY:
-        return startDateTime.until(endDateTime, ChronoUnit.DAYS);
-      case HOUR:
-        return startDateTime.until(endDateTime, ChronoUnit.HOURS);
-      case MINUTE:
-        return startDateTime.until(endDateTime, ChronoUnit.MINUTES);
-      case SECOND:
-        return startDateTime.until(endDateTime, ChronoUnit.SECONDS);
-      case MILLISECOND:
-        return startDateTime.until(endDateTime, ChronoUnit.MILLIS);
-      case MICROSECOND:
-        return startDateTime.until(endDateTime, ChronoUnit.MICROS);
-      case NANOSECOND:
-        return startDateTime.until(endDateTime, ChronoUnit.NANOS);
-      default:
-        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
-    }
+        yield months / 3L;
+      }
+      case WEEK -> startDateTime.until(endDateTime, ChronoUnit.WEEKS);
+      case DAY -> startDateTime.until(endDateTime, ChronoUnit.DAYS);
+      case HOUR -> startDateTime.until(endDateTime, ChronoUnit.HOURS);
+      case MINUTE -> startDateTime.until(endDateTime, ChronoUnit.MINUTES);
+      case SECOND -> startDateTime.until(endDateTime, ChronoUnit.SECONDS);
+      case MILLISECOND -> startDateTime.until(endDateTime, ChronoUnit.MILLIS);
+      case MICROSECOND -> startDateTime.until(endDateTime, ChronoUnit.MICROS);
+      case NANOSECOND -> startDateTime.until(endDateTime, ChronoUnit.NANOS);
+      default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
+    };
   }
 }

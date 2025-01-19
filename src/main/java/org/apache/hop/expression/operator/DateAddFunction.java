@@ -57,27 +57,17 @@ public class DateAddFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
-    switch (unit) {
-      case YEAR:
-        return new Call(AddYearsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case QUARTER:
-        return new Call(AddQuartersFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case MONTH:
-        return new Call(AddMonthsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case WEEK:
-        return new Call(AddWeeksFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case DAY:
-        return new Call(AddDaysFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case HOUR:
-        return new Call(AddHoursFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case MINUTE:
-        return new Call(AddMinutesFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case SECOND:
-        return new Call(AddSecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      case NANOSECOND:
-        return new Call(AddNanosecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      default:
-        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
-    }
+    return switch (unit) {
+      case YEAR -> new Call(AddYearsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case QUARTER -> new Call(AddQuartersFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case MONTH -> new Call(AddMonthsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case WEEK -> new Call(AddWeeksFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case DAY -> new Call(AddDaysFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case HOUR -> new Call(AddHoursFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case MINUTE -> new Call(AddMinutesFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case SECOND -> new Call(AddSecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case NANOSECOND -> new Call(AddNanosecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
+    };
   }
 }

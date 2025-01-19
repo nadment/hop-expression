@@ -33,16 +33,16 @@ public class IdentifierTest extends ExpressionTest {
     assertEquals("FIELD_STRING", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());
-    assertNotEquals(identifier1, null);
+    assertNotEquals(null, identifier1);
     assertNotEquals(identifier1, identifier3);
   }
 
   @Test
   void quoteIfNeeded() throws Exception {
-    assertEquals(Identifier.quoteIfNeeded("NORMAL"), "NORMAL");
-    assertEquals(Identifier.quoteIfNeeded("TRIM"), "\"TRIM\"");
-    assertEquals(Identifier.quoteIfNeeded("OR"), "\"OR\"");
-    assertEquals(Identifier.quoteIfNeeded("FIELD WITH SPACE"), "\"FIELD WITH SPACE\"");
+    assertEquals("NORMAL", Identifier.quoteIfNeeded("NORMAL"));
+    assertEquals("\"TRIM\"", Identifier.quoteIfNeeded("TRIM"));
+    assertEquals("\"OR\"", Identifier.quoteIfNeeded("OR"));
+    assertEquals("\"FIELD WITH SPACE\"", Identifier.quoteIfNeeded("FIELD WITH SPACE"));
   }
 
   @Test

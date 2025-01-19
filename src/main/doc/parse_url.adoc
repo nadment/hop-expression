@@ -35,10 +35,10 @@ Return:: String
 == Examples
 
 ----
-PARSE_URL('http://hop.apache.org:80/path?id=1','HOST') → hop.apache.org
-PARSE_URL('http://hop.apache.org:80/path?id=1','PATH') → /path
-PARSE_URL('http://hop.apache.org:80/path?id=1&lang=fr','FILE') → /path?id=1&lang=fr
-PARSE_URL('http://hop.apache.org:80/path?id=1&lang=fr','QUERY') → id=1&lang=fr
-PARSE_URL('http://hop.apache.org:80/path?id=1&lang=fr','QUERY','id') → 1
-PARSE_URL('http://hop.apache.org:80/path?id=1#fragment','FRAGMENT') → fragment
+PARSE_URL('https://hop.apache.org:80/path?id=1','HOST') → hop.apache.org
+PARSE_URL('https://hop.apache.org:80/path?id=1','PATH') → /path
+PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','FILE') → /path?id=1&lang=fr
+PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','QUERY') → id=1&lang=fr
+PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','QUERY','id') → 1
+PARSE_URL('https://hop.apache.org:80/path?id=1#fragment','FRAGMENT') → fragment
 ----

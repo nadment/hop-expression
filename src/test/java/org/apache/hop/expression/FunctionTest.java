@@ -1055,6 +1055,19 @@ public class FunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Weeks_Between() throws Exception {
+    evalEquals(
+            "Weeks_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')", -52L)
+        .returnType(Types.INTEGER);
+    evalNull("Weeks_Between(NULL_DATE, DATE '2007-11-09')");
+    evalNull("Weeks_Between(DATE '2007-11-09',NULL_DATE)");
+    evalNull("Weeks_Between(NULL_DATE, NULL_DATE)");
+
+    // Check operands
+    evalFails("Weeks_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+  }
+
+  @Test
   void Months_Between() throws Exception {
     evalEquals("Months_Between(DATE '2005-01-01',DATE '2005-02-02')", 1.032258064516129)
         .returnType(Types.NUMBER);

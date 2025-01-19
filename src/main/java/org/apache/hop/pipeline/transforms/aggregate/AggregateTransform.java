@@ -287,8 +287,6 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
   /**
    * Create new aggregate
    *
-   * @param r
-   * @param aggregate
    * @throws HopException
    */
   protected IExpressionProcessor[] createAggregate() throws HopException {

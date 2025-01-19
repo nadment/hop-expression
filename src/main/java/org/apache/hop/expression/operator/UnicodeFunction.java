@@ -27,7 +27,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  * The function return the Unicode code point for the first Unicode character in a string. If the
  * string is empty, a value of 0 is returned.
  *
- * @see {@link ChrFunction}, {@link AsciiFunction},
+ * @see ChrFunction
+ * @see AsciiFunction
  */
 @FunctionPlugin
 public class UnicodeFunction extends Function {

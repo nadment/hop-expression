@@ -82,7 +82,7 @@ public class Token {
     SYMMETRIC,
     /** The "TIME" word for literal time. */
     TIME,
-    /** The "TIMESTAMP" word for literal timesamp. */
+    /** The "TIMESTAMP" word for literal timestamp. */
     TIMESTAMP,
     /** The AT TIME ZONE */
     ZONE,
@@ -128,7 +128,7 @@ public class Token {
     OR,
     /** The logical "XOR" operator. */
     XOR,
-    /** The logical "AND" operator or keyword for BEETWEN value1 "AND" value2 . */
+    /** The logical "AND" operator or keyword for BETWEEN value1 "AND" value2 . */
     AND,
     /** The "LIKE" operator. */
     LIKE,

@@ -22,7 +22,7 @@ import org.apache.hop.metadata.api.IEnumHasCodeAndDescription;
 
 public enum SetVariableScope implements IEnumHasCodeAndDescription {
 
-  /** Java Virual Machine */
+  /** Java Virtual Machine */
   JVM(BaseMessages.getString(SetVariableAction.PKG, "SetVariableAction.VariableScope.JVM")),
   /** Set in current workflow */
   CURRENT_WORKFLOW(

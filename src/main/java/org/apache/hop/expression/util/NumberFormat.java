@@ -188,7 +188,6 @@ public abstract class NumberFormat extends BaseFormat {
    * Format number with number format.
    *
    * @param number the number to format
-   * @param locale the locale to use
    * @return the formatted number
    */
   public abstract String format(BigDecimal number);

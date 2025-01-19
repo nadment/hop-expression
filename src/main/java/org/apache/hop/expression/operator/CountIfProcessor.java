@@ -28,8 +28,8 @@ public class CountIfProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-    Boolean predicat = operands[0].getValue(Boolean.class);
-    if (predicat == Boolean.TRUE) {
+    Boolean predicate = operands[0].getValue(Boolean.class);
+    if (predicate == Boolean.TRUE) {
       count++;
     }
   }

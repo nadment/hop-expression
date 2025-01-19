@@ -1,4 +1,4 @@
- <transform>
+<transform>
     <name>Where</name>
     <type>Where</type>
     <description/>
@@ -6,15 +6,15 @@
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
-      <method>none</method>
-      <schema_name/>
+        <method>none</method>
+        <schema_name/>
     </partitioning>
     <condition>Day(FIELD_DATE)%2=1</condition>
     <send_false_to>FALSE</send_false_to>
     <send_true_to>TRUE</send_true_to>
     <attributes/>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>96</yloc>
+        <xloc>528</xloc>
+        <yloc>96</yloc>
     </GUI>
-  </transform>
+</transform>

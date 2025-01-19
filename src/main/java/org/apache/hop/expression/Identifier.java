@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Objects;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
@@ -231,7 +232,7 @@ public class Identifier implements IExpression {
             return type.convert(value, clazz);
           }
 
-        case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON:
+        case ValueMetaJson.TYPE_JSON:
           {
             Object value = row[ordinal];
             return type.convert(value, clazz);

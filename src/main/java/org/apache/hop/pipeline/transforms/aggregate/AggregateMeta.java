@@ -121,7 +121,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
   }
 
   /**
-   * @param groupField The group by field to set.
+   * @param groups The group by fields to set.
    */
   public void setGroupFields(List<GroupField> groups) {
     this.groupFields = groups;

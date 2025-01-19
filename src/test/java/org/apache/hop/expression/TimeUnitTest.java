@@ -58,7 +58,7 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.ISOYEAR, TimeUnit.of("IsoYEAR"));
 
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
-    assertNotEquals(TimeUnit.of("HOUR"), null);
+    assertNotEquals(null, TimeUnit.of("HOUR"));
     assertNull(TimeUnit.of("NOP"));
   }
 }

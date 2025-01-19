@@ -68,21 +68,22 @@ public class IfNullFunction extends Function {
       }
     }
 
-    switch (operands.size()) {
-      case 0: // Nothing to coalesce
-        return new Literal(null, call.getType());
-      case 1: // COALESCE(X) → X
-        return operands.get(0);
-      case 2: // COALESCE(X,Y) → IFNULL(X,Y)
-        return new Call(IfNullFunction.INSTANCE, operands);
-      default:
+    return switch (operands.size()) {
+      case 0 -> // Nothing to coalesce
+          new Literal(null, call.getType());
+      case 1 -> // COALESCE(X) → X
+          operands.get(0);
+      case 2 -> // COALESCE(X,Y) → IFNULL(X,Y)
+          new Call(IfNullFunction.INSTANCE, operands);
+      default -> {
         // First is literal COALESCE(1, a, b) → 1
         if (operands.get(0).isConstant()) {
-          return operands.get(0);
+          yield operands.get(0);
         }
 
-        return new Call(CoalesceFunction.INSTANCE, operands);
-    }
+        yield new Call(CoalesceFunction.INSTANCE, operands);
+      }
+    };
   }
 
   @Override

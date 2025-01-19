@@ -27,9 +27,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 /** Return the number of seconds between two timestamps */
 @FunctionPlugin
-public class SecondBetweenFunction extends Function {
+public class SecondsBetweenFunction extends Function {
 
-  public SecondBetweenFunction() {
+  public SecondsBetweenFunction() {
     super(
         "SECONDS_BETWEEN",
         ReturnTypes.INTEGER_NULLABLE,

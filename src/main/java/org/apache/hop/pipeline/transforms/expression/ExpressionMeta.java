@@ -43,7 +43,7 @@ import org.apache.hop.pipeline.transform.TransformMeta;
     description = "i18n::Expression.Description",
     image = "expression.svg",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
-    documentationUrl = "/pipeline/transforms/expresssion.html",
+    documentationUrl = "/pipeline/transforms/expression.html",
     keywords = "i18n::Expression.Keywords")
 public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, ExpressionData> {
 

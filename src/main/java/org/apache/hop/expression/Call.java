@@ -278,9 +278,9 @@ public class Call implements IExpression {
    * @return call
    */
   protected Call swap() {
-    Call swaped = new Call(operator, getOperand(1), getOperand(0));
-    swaped.inferReturnType();
-    return swaped;
+    Call swapped = new Call(operator, getOperand(1), getOperand(0));
+    swapped.inferReturnType();
+    return swapped;
   }
 
   public Deque<IExpression> getChainedOperands(boolean allowDuplicate) {

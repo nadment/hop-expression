@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.Arrays;
-import java.util.Objects;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -39,15 +38,6 @@ public class MethodCall extends Call {
     super(operator, operands);
     this.method = requireNonNull(method, "method");
     this.type = requireNonNull(type, "type");
-  }
-
-  /**
-   * Get the operator
-   *
-   * @return the operator
-   */
-  public Operator getOperator() {
-    return operator;
   }
 
   public Object getValue() {
@@ -79,10 +69,5 @@ public class MethodCall extends Call {
     return this.type.equals(call.type)
         && this.operator.equals(call.operator)
         && Arrays.equals(this.operands, call.operands);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type, operator, operands);
   }
 }

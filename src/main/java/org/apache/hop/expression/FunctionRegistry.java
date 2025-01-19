@@ -77,7 +77,7 @@ public class FunctionRegistry {
         register(name, function);
       }
     } catch (Exception e) {
-      log.logError("Error registring function " + classInfo.simpleName(), e);
+      log.logError("Error registering function " + classInfo.simpleName(), e);
     }
   }
 
@@ -132,7 +132,7 @@ public class FunctionRegistry {
 
     Function function = functions.remove(name);
     if (function == null) {
-      log.logError("Function ''{0}'' not registred", name);
+      log.logError("Function ''{0}'' not registered", name);
     }
 
     return function;
@@ -157,7 +157,7 @@ public class FunctionRegistry {
         registerUserDefinedFunction(serializer, name);
       }
     } catch (HopException e) {
-      log.logError("Error registring User-defined functions", e);
+      log.logError("Error registering User-defined functions", e);
     }
   }
 
@@ -170,7 +170,7 @@ public class FunctionRegistry {
       UserDefinedFunctionMeta udfMeta = serializer.load(name);
       register(name, new UserDefinedFunction(udfMeta));
     } catch (Exception e) {
-      log.logError("Error registring User-defined function " + name, e);
+      log.logError("Error registering User-defined function " + name, e);
     }
   }
 }

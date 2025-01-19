@@ -33,19 +33,12 @@ public final class TypeTransforms {
 
   public static final ITypeTransform TO_MAX_PRECISION =
       typeToTransform -> {
-        switch (requireNonNull(typeToTransform).getName()) {
-          case STRING:
-            return Types.STRING;
-          case BINARY:
-            return Types.BINARY;
-          case INTEGER:
-            return Types.INTEGER;
-          case NUMBER:
-            return Types.NUMBER;
-          default:
-            break;
-        }
-
-        return typeToTransform;
+        return switch (requireNonNull(typeToTransform).getName()) {
+          case STRING -> Types.STRING;
+          case BINARY -> Types.BINARY;
+          case INTEGER -> Types.INTEGER;
+          case NUMBER -> Types.NUMBER;
+          default -> typeToTransform;
+        };
       };
 }

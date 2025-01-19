@@ -148,7 +148,6 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:minute.adoc["MINUTE",role=fun]
 * xref:minutes_between.adoc["MINUTES_BETWEEN",role=fun]
 * xref:mod.adoc["MOD",role=fun]
-* xref:modulus.adoc["MODULUS",role=fun]
 * xref:month.adoc["MONTH",role=fun]
 * xref:monthname.adoc["MONTHNAME",role=fun]
 * xref:months_between.adoc["MONTHS_BETWEEN",role=fun]
@@ -225,6 +224,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:variance_pop.adoc["VARIANCE_POP",role=fun] aggregate
 * xref:variance_samp.adoc["VARIANCE_SAMP",role=fun] aggregate
 * xref:week.adoc["WEEK",role=fun]
+* xref:weeks_between.adoc["WEEKS_BETWEEN",role=fun]
 * xref:year.adoc["YEAR",role=fun]
 * xref:years_between.adoc["YEARS_BETWEEN",role=fun]
 * xref:zeroifnull.adoc["ZEROIFNULL",role=fun]

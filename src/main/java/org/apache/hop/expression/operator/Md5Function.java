@@ -28,8 +28,11 @@ import org.apache.hop.expression.type.ReturnTypes;
  * The function calculate the MD5 hash of a data value. The hash will be returned as 32 characters
  * hex-encoded string.
  *
- * @see {@link Sha1Function}, {@link Sha224Function}, {@link Sha256Function}, {@link
- *     Sha384Function}, {@link Sha512Function}
+ * @see Sha1Function
+ * @see Sha224Function
+ * @see Sha256Function
+ * @see Sha384Function
+ * @see Sha512Function
  */
 @FunctionPlugin
 public class Md5Function extends Function {

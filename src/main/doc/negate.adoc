@@ -23,3 +23,7 @@ Reverses the sign of a numeric expression.
 ----
 - expression
 ----
+
+== See also
+
+* xref:plus.adoc["+",role=fun]

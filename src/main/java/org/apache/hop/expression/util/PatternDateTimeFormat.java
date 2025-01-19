@@ -280,7 +280,7 @@ import org.apache.hop.expression.ExpressionException;
      * implementation.
      *
      * @param buffer the output buffer
-     * @param calendar calendar to be appended
+     * @param datetime calendar to be appended
      * @throws Exception if an error occurs.
      */
     public void append(StringBuilder buffer, ZonedDateTime datetime) throws DateTimeException {}
@@ -1023,7 +1023,7 @@ import org.apache.hop.expression.ExpressionException;
     }
   }
 
-  private class RoundYearFormat extends Format {
+  private static class RoundYearFormat extends Format {
     private final int length;
 
     public RoundYearFormat(boolean fillMode, int length) {
@@ -1233,7 +1233,7 @@ import org.apache.hop.expression.ExpressionException;
     this.formats = formats();
   }
 
-  protected Format[] formats() {
+  private Format[] formats() {
     final List<Format> list = new ArrayList<>();
     int length = pattern.length();
     int index = 0;
@@ -1655,7 +1655,6 @@ import org.apache.hop.expression.ExpressionException;
    * See also TO_CHAR(datetime) and datetime format models in the Oracle documentation.
    *
    * @param value the date-time value to format
-   * @param format the format pattern to use (if any)
    * @return the formatted timestamp
    */
   public String format(final ZonedDateTime value) {

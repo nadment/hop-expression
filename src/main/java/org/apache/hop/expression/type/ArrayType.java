@@ -30,7 +30,7 @@ public final class ArrayType extends Type {
   /**
    * Create an ARRAY data type with the specified element type.
    *
-   * @param elementType the type of elements
+   * @param type the type of elements
    * @return ARRAY data type
    */
   public static ArrayType of(final Type type) {

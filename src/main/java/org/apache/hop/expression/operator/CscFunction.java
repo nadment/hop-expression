@@ -51,7 +51,7 @@ public class CscFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
 
-    if (value == BigDecimal.ZERO)
+    if (BigDecimal.ZERO.equals(value))
       throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
 
     return BigDecimal.ONE.divide(BigDecimalMath.sin(value, MATH_CONTEXT), MATH_CONTEXT);

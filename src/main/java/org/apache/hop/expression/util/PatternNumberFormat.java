@@ -623,7 +623,6 @@ final class PatternNumberFormat extends NumberFormat {
    * Format number with number format.
    *
    * @param number the number to format
-   * @param locale the locale to use
    * @return the formatted number
    */
   public String format(BigDecimal number) {
