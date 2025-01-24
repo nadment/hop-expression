@@ -26,7 +26,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -88,7 +87,7 @@ public class CastFunction extends Function {
       }
 
       // Remove unnecessary chained cast CAST(CAST(x as type(10)) as type(5)) → CAST(x as type(5))
-      if (call.getOperand(0).isOperator(Operators.CAST)) {
+      if (call.getOperand(0).isOperator(CastOperator.INSTANCE)) {
         Type toType = call.getType();
         Type fromType = call.getOperand(0).getType();
         if (Types.isLosslessCast(toType, fromType)) {

@@ -37,7 +37,7 @@ public class Call implements IExpression {
   // The operator of this call
   protected Operator operator;
   // The operands of this call
-  protected IExpression[] operands;
+  protected final IExpression[] operands;
   // The return data type
   protected Type type = Types.UNKNOWN;
 
@@ -225,7 +225,7 @@ public class Call implements IExpression {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, operator, operands);
+    return Objects.hash(type, operator, Arrays.hashCode(operands));
   }
 
   @Override

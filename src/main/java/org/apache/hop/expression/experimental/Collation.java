@@ -19,11 +19,12 @@ package org.apache.hop.expression.experimental;
 import java.nio.charset.Charset;
 import java.text.Collator;
 import java.util.Locale;
+import lombok.Getter;
 
 public class Collation {
 
-  private final String name;
-  private final Charset charset;
+  @Getter private final String name;
+  @Getter private final Charset charset;
   private final Locale locale;
 
   public Collation(Locale locale, Charset charset) {
@@ -40,14 +41,6 @@ public class Collation {
   @Override
   public int hashCode() {
     return name.hashCode();
-  }
-
-  public Charset getCharset() {
-    return charset;
-  }
-
-  public final String getName() {
-    return name;
   }
 
   public final Locale getLocale() {

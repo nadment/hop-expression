@@ -37,6 +37,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 public class BoolXorOperator extends BinaryOperator {
 
+  public static final BoolXorOperator INSTANCE = new BoolXorOperator();
+
   public BoolXorOperator() {
     super(
         "BOOLXOR",

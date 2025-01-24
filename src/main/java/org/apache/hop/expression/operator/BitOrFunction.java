@@ -37,6 +37,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class BitOrFunction extends Function {
 
+  public static final BitOrFunction INSTANCE = new BitOrFunction("|");
+
   public BitOrFunction() {
     super(
         "BIT_OR",

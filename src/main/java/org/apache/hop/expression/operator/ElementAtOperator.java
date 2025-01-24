@@ -38,6 +38,8 @@ import org.apache.hop.expression.type.Types;
  */
 public class ElementAtOperator extends Operator {
 
+  public static final ElementAtOperator INSTANCE = new ElementAtOperator();
+
   public ElementAtOperator() {
     super(
         "ELEMENT_AT",

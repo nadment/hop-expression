@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -36,6 +35,8 @@ import org.apache.hop.expression.type.Types;
  * <p>NULL is not equal ( = ) to anything—not even to another NULL.
  */
 public class EqualOperator extends BinaryOperator {
+
+  public static final EqualOperator INSTANCE = new EqualOperator();
 
   public EqualOperator() {
     super(
@@ -56,12 +57,12 @@ public class EqualOperator extends BinaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.NOT_EQUAL;
+    return NotEqualOperator.INSTANCE;
   }
 
   @Override
   public Operator reverse() {
-    return Operators.EQUAL;
+    return EqualOperator.INSTANCE;
   }
 
   @Override
@@ -96,7 +97,7 @@ public class EqualOperator extends BinaryOperator {
         return left;
       }
       if (right == Literal.FALSE) {
-        return new Call(Operators.BOOLNOT, left);
+        return new Call(BoolNotOperator.INSTANCE, left);
       }
     }
 
@@ -112,11 +113,11 @@ public class EqualOperator extends BinaryOperator {
 
     // Simplify 3=X+1 → 3-1=X
     if (left.isConstant()
-        && right.isOperator(Operators.ADD)
+        && right.isOperator(AddOperator.INSTANCE)
         && call(right).getOperand(0).isConstant()) {
       return new Call(
           call.getOperator(),
-          new Call(Operators.SUBTRACT, left, call(right).getOperand(0)),
+          new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0)),
           call(right).getOperand(1));
     }
 

@@ -24,7 +24,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -55,7 +54,7 @@ public class IsNumberFunction extends Function {
 
     // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
     if (Types.isNumeric(type)) {
-      return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
+      return new Call(IsNotNullOperator.INSTANCE, call.getOperand(0));
     }
 
     // Other data type are always false

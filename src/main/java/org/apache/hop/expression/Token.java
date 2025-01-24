@@ -47,9 +47,9 @@ public class Token {
     /** Comma separator */
     COMMA(","),
     /** Left parenthesis */
-    LPARENTHESIS("("),
+    LPARENT("("),
     /** Right parenthesis */
-    RPARENTHESIS(")"),
+    RPARENT(")"),
     /** Left bracket */
     LBRACKET("]"),
     /** Right bracket */

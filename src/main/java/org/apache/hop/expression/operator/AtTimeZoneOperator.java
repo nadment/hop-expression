@@ -33,6 +33,8 @@ import org.apache.hop.expression.util.DateTimeFormat;
  */
 public class AtTimeZoneOperator extends Operator {
 
+  public static final AtTimeZoneOperator INSTANCE = new AtTimeZoneOperator();
+
   public AtTimeZoneOperator() {
     super(
         "TIMEZONE",

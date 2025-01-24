@@ -14,50 +14,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
-/**
- * An operator describing the <code>IS TRUE</code> operator.
- *
- * @see IsNotTrueOperator
- */
-public class IsTrueOperator extends PostfixUnaryOperator {
-  public static final IsTrueOperator INSTANCE = new IsTrueOperator();
+/** <code>BETWEEN ASYMMETRIC</code> operator. */
+public class BetweenAsymmetricOperator extends Operator {
+  public static final BetweenAsymmetricOperator INSTANCE = new BetweenAsymmetricOperator();
 
-  public IsTrueOperator() {
+  public BetweenAsymmetricOperator() {
     super(
-        "IS TRUE",
-        140,
+        "BETWEEN",
+        120,
         true,
-        ReturnTypes.BOOLEAN_NOT_NULL,
-        OperandTypes.BOOLEAN,
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.BETWEEN,
         OperatorCategory.COMPARISON,
-        "/docs/is-true.html");
+        "/docs/between.html");
   }
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coerceOperandType(call, Types.BOOLEAN, 0);
-  }
-
-  @Override
-  public Operator not() {
-    return IsNotTrueOperator.INSTANCE;
+    return Types.coercionComparisonOperator(call);
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Boolean value = operands[0].getValue(Boolean.class);
+    Object value = operands[0].getValue();
+    Object start = operands[1].getValue();
+    Object end = operands[2].getValue();
 
-    // NULL is never TRUE
-    return value == Boolean.TRUE;
+    if (value == null || start == null || end == null) {
+      return null;
+    }
+
+    Type type = operands[0].getType();
+    return type.compare(value, start) >= 0 && type.compare(value, end) <= 0;
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    writer.append(" BETWEEN ");
+    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    writer.append(" AND ");
+    operands[2].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

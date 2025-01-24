@@ -38,6 +38,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class BitAndFunction extends Function {
 
+  public static final BitAndFunction INSTANCE = new BitAndFunction("&");
+
   public BitAndFunction() {
     super(
         "BIT_AND",

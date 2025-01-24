@@ -40,7 +40,7 @@ public class MethodCall extends Call {
     this.type = requireNonNull(type, "type");
   }
 
-  public Object getValue() {
+  public Object value() {
     try {
       return method.invokeExact(operator, operands);
     } catch (Throwable e) {

@@ -31,7 +31,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
@@ -43,28 +42,27 @@ import org.apache.hop.expression.type.Types;
  * <p>Syntax of the operator:
  *
  * <ul>
- *   <li><code>field [NOT] IN (list of values)</code>
+ *   <li><code>field IN (list of values)</code>
  * </ul>
  */
 public class InOperator extends Operator {
 
-  private final boolean not;
+  public static final InOperator INSTANCE = new InOperator();
 
-  public InOperator(boolean not) {
+  public InOperator() {
     super(
-        not ? "NOT IN" : "IN",
+        "IN",
         120,
         true,
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
         OperatorCategory.COMPARISON,
         "/docs/in.html");
-    this.not = not;
   }
 
   @Override
   public Operator not() {
-    return not ? Operators.IN : Operators.NOT_IN;
+    return NotInOperator.INSTANCE;
   }
 
   @Override
@@ -110,13 +108,13 @@ public class InOperator extends Operator {
     // Remove null and duplicate element in list
     for (IExpression expression : array) {
 
-      if (!not && expression.isNull()) {
+      if (expression.isNull()) {
         continue;
       }
 
       // Simplify B in (A,B,C) → B=B (only if reference is not nullable)
       if (reference.equals(expression) && !reference.getType().isNullable()) {
-        return new Call(Operators.EQUAL, reference, reference);
+        return new Call(EqualOperator.INSTANCE, reference, reference);
       }
 
       // If this element is not present in new list then add it
@@ -127,7 +125,7 @@ public class InOperator extends Operator {
 
     // Simplify x IN (a) → x = a
     if (list.size() == 1) {
-      return new Call(Operators.EQUAL, reference, list.get(0));
+      return new Call(EqualOperator.INSTANCE, reference, list.get(0));
     }
 
     // Sort list on cost
@@ -182,19 +180,6 @@ public class InOperator extends Operator {
     Array array = (Array) operands[1];
     Type type = operands[0].getType();
 
-    // c1 NOT IN (c2, c3, NULL) is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
-    if (not) {
-      Boolean result = Boolean.TRUE;
-      for (IExpression expression : array) {
-        Object value = expression.getValue();
-        if (value == null) return null;
-        if (type.compareEqual(left, value)) {
-          result = Boolean.FALSE;
-        }
-      }
-      return result;
-    }
-
     // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
     for (IExpression expression : array) {
       Object value = expression.getValue();
@@ -209,7 +194,7 @@ public class InOperator extends Operator {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
-    writer.append(not ? " NOT IN (" : " IN (");
+    writer.append(" IN (");
     array(operands[1]).unparseValues(writer);
     writer.append(')');
   }

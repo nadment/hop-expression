@@ -38,6 +38,8 @@ import org.apache.hop.expression.type.Types;
 @FunctionPlugin
 public class ModFunction extends Function {
 
+  public static final ModFunction INSTANCE = new ModFunction("%");
+
   public ModFunction() {
     super(
         "MOD",

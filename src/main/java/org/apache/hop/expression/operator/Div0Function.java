@@ -25,7 +25,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
@@ -74,7 +73,7 @@ public class Div0Function extends Function {
     }
 
     // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
-    if (left.isOperator(Operators.NEGATE) && right.isOperator(Operators.NEGATE)) {
+    if (left.isOperator(NegateOperator.INSTANCE) && right.isOperator(NegateOperator.INSTANCE)) {
       return new Call(call.getOperator(), call(left).getOperand(0), call(right).getOperand(0));
     }
 

@@ -33,8 +33,8 @@ import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
@@ -241,7 +241,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
         Object value = null;
 
-        if (data.aggregates[i].getOperator().is(Operators.COUNT_VALUE)) {
+        if (data.aggregates[i].getOperator().is(CountFunction.COUNT_VALUE)) {
           value = 0L;
         }
         outputRow[index++] = value;

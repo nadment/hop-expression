@@ -17,8 +17,12 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
+@Setter
+@Getter
 public class AggregateField {
   /** The aggregate expression */
   @HopMetadataProperty(
@@ -39,37 +43,5 @@ public class AggregateField {
   public AggregateField(AggregateField t) {
     this.expression = t.expression;
     this.name = t.name;
-  }
-
-  /**
-   * Gets the aggregate expression
-   *
-   * @return aggregate expression
-   */
-  public String getExpression() {
-    return expression;
-  }
-
-  /**
-   * @param expression The aggregate expression to set
-   */
-  public void setExpression(String expression) {
-    this.expression = expression;
-  }
-
-  /**
-   * Gets aggregate name
-   *
-   * @return name
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * @param name The aggregate name to set
-   */
-  public void setName(String name) {
-    this.name = name;
   }
 }

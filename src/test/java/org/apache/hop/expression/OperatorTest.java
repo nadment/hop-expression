@@ -1018,7 +1018,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void syntax() throws Exception {
+    void syntax() {
       evalFails("'the' between 1 and 2", ErrorCode.CONVERSION_ERROR);
       evalFails("FIELD_INTEGER between 10 and", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and 10", ErrorCode.SYNTAX_ERROR);
@@ -1444,7 +1444,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void syntax() throws Exception {
+    void syntax() {
       // Operator syntax
       evalFails("'1234':", ErrorCode.UNEXPECTED_CHARACTER);
       evalFails("'1234':NUMBER", ErrorCode.UNEXPECTED_CHARACTER);
@@ -1464,7 +1464,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void invalidType() throws Exception {
+    void invalidType() {
       // Bad data type
       evalFails("Cast(123 as Nill)", ErrorCode.INVALID_TYPE);
       evalFails("Cast(123 as 1)", ErrorCode.INVALID_TYPE);
@@ -1673,9 +1673,6 @@ public class OperatorTest extends ExpressionTest {
 
     // TODO: optimize("-2*(FIELD_INTEGER-4)/2", "-FIELD_INTEGER+4");
   }
-
-  @Test
-  void Dot() {}
 
   @Test
   void Div() throws Exception {

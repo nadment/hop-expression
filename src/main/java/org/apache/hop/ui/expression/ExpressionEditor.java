@@ -37,13 +37,46 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.ExpressionParseException;
 import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.OperatorComparator;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.UserDefinedFunction;
+import org.apache.hop.expression.operator.AddOperator;
+import org.apache.hop.expression.operator.BetweenAsymmetricOperator;
+import org.apache.hop.expression.operator.BitAndFunction;
+import org.apache.hop.expression.operator.BitNotFunction;
+import org.apache.hop.expression.operator.BitOrFunction;
+import org.apache.hop.expression.operator.BitXorFunction;
+import org.apache.hop.expression.operator.BoolAndOperator;
+import org.apache.hop.expression.operator.BoolNotOperator;
+import org.apache.hop.expression.operator.BoolOrOperator;
+import org.apache.hop.expression.operator.BoolXorOperator;
+import org.apache.hop.expression.operator.CaseSearchOperator;
+import org.apache.hop.expression.operator.CastOperator;
+import org.apache.hop.expression.operator.ConcatFunction;
+import org.apache.hop.expression.operator.DivOperator;
+import org.apache.hop.expression.operator.ElementAtOperator;
+import org.apache.hop.expression.operator.EqualOperator;
+import org.apache.hop.expression.operator.GreaterThanOperator;
+import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
+import org.apache.hop.expression.operator.ILikeOperator;
+import org.apache.hop.expression.operator.InOperator;
+import org.apache.hop.expression.operator.IsDistinctFromOperator;
+import org.apache.hop.expression.operator.IsFalseOperator;
+import org.apache.hop.expression.operator.IsNullOperator;
+import org.apache.hop.expression.operator.IsTrueOperator;
+import org.apache.hop.expression.operator.LessThanOperator;
+import org.apache.hop.expression.operator.LessThanOrEqualOperator;
+import org.apache.hop.expression.operator.LikeOperator;
+import org.apache.hop.expression.operator.ModFunction;
+import org.apache.hop.expression.operator.MultiplyOperator;
+import org.apache.hop.expression.operator.NotEqualOperator;
+import org.apache.hop.expression.operator.SimilarToOperator;
+import org.apache.hop.expression.operator.SubtractOperator;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
@@ -105,6 +138,52 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10450-simplify";
 
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
+
+  /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
+  private static final Set<Operator> OPERATORS =
+      Set.of(
+          // BITWISE OPERATORS
+          BitAndFunction.INSTANCE,
+          BitOrFunction.INSTANCE,
+          BitNotFunction.INSTANCE,
+          BitXorFunction.INSTANCE,
+          // CAST OPERATOR
+          CastOperator.INSTANCE,
+          // ARITHMETIC OPERATORS
+          ModFunction.INSTANCE,
+          AddOperator.INSTANCE,
+          SubtractOperator.INSTANCE,
+          MultiplyOperator.INSTANCE,
+          DivOperator.INSTANCE,
+          // STRING OPERATOR
+          ConcatFunction.INSTANCE,
+          new ConcatFunction("||"),
+          // ARRAY OPERATOR
+          ElementAtOperator.INSTANCE,
+          // COMPARISON OPERATORS
+          EqualOperator.INSTANCE,
+          NotEqualOperator.INSTANCE,
+          new NotEqualOperator("<>"),
+          GreaterThanOperator.INSTANCE,
+          GreaterThanOrEqualOperator.INSTANCE,
+          LessThanOperator.INSTANCE,
+          LessThanOrEqualOperator.INSTANCE,
+          BetweenAsymmetricOperator.INSTANCE,
+          InOperator.INSTANCE,
+          IsDistinctFromOperator.INSTANCE,
+          IsNullOperator.INSTANCE,
+          SimilarToOperator.INSTANCE,
+          IsFalseOperator.INSTANCE,
+          IsTrueOperator.INSTANCE,
+          LikeOperator.INSTANCE,
+          ILikeOperator.INSTANCE,
+          // CONDITIONAL OPERATORS
+          CaseSearchOperator.INSTANCE,
+          // LOGICAL OPERATORS
+          BoolAndOperator.INSTANCE,
+          BoolNotOperator.INSTANCE,
+          BoolOrOperator.INSTANCE,
+          BoolXorOperator.INSTANCE);
 
   private final ExpressionMode mode;
   private final ExpressionLabelProvider labelProvider;
@@ -379,7 +458,10 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     List<Operator> primaryOperators = new ArrayList<>();
     HashMap<String, String> mapDisplay = new HashMap<>();
 
-    Set<Operator> operators = Operators.getOperators();
+    // Set of operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...)
+    Set<Operator> operators = new TreeSet<>(new OperatorComparator());
+    operators.addAll(OPERATORS);
+    operators.addAll(FunctionRegistry.getFunctions());
 
     // Inventory operator unique identifier and category
     for (Operator operator : operators) {

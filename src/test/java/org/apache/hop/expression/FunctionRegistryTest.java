@@ -20,12 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.apache.hop.expression.operator.CoalesceFunction;
+import org.apache.hop.expression.operator.TrimFunction;
 import org.junit.jupiter.api.Test;
 
 class FunctionRegistryTest extends ExpressionTest {
 
   @Test
-  void registry() throws Exception {
+  void registry() {
     assertNotNull(FunctionRegistry.getFunctions());
     assertNotNull(FunctionRegistry.getFunctionNames());
     assertNull(FunctionRegistry.getFunction(null));
@@ -39,7 +40,12 @@ class FunctionRegistryTest extends ExpressionTest {
   }
 
   @Test
-  void failOnAlreadyRegistredFucntion() throws Exception {
+  void unregistrer() throws Exception {
+    assertEquals(TrimFunction.INSTANCE, FunctionRegistry.unregister("TRIM"));
+  }
+
+  @Test
+  void failOnAlreadyRegistredFunction() throws Exception {
     FunctionRegistry.register("COALESCE", new CoalesceFunction());
   }
 }

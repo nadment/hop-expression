@@ -25,6 +25,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
 public class ListAggFunction extends AggregateFunction {
+  public static final ListAggFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
+  public static final ListAggFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);
 
   public enum ListAgg {
     ALL,

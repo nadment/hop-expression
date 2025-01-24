@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 public class FunctionTest extends ExpressionTest {
 
   @Test
-  void Error() throws Exception {
+  void Error() {
     evalFails("ERROR('Custom error message')", ErrorCode.MESSAGE_ERROR);
   }
 
@@ -2702,7 +2702,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(-0.2,'99.90')", "  -.20");
     evalEquals("TO_CHAR(-0.2,'99.99')", "  -.2 ");
 
-    // TODO: Format element text with double quotes
+    // TODO: Quoted text is reproduced in the result
     // evalEquals("TO_CHAR(485.8, '\"Pre:\"999\" Post:\" .999')", "Pre: 485 Post: .800");
 
     evalEquals("TO_CHAR(12345.567,'9,999')", "######");
@@ -3689,8 +3689,6 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    // evalFails("StartsWith(FIELD_DATE, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    // evalFails("StartsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -3710,8 +3708,6 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    // evalFails("EndsWith(FIELD_INET, FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    // evalFails("EndsWith(FIELD_STRING, FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test

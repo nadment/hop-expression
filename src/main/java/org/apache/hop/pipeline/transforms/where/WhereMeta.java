@@ -85,11 +85,6 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     this.condition = "";
   }
 
-  // @Override
-  // public Object clone() {
-  // return new WhereMeta(this);
-  // }
-
   @Override
   public void check(
       List<ICheckResult> remarks,

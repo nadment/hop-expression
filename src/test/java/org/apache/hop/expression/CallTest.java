@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import org.apache.hop.expression.operator.AddOperator;
+import org.apache.hop.expression.operator.InOperator;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -27,36 +29,38 @@ class CallTest extends ExpressionTest {
 
   @Test
   void testCall() {
-    Call call1 = new Call(3, Operators.ADD, Literal.of(3), Literal.of(5));
-    Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
+    Call call1 = new Call(3, AddOperator.INSTANCE, Literal.of(3), Literal.of(5));
+    Call call2 = new Call(AddOperator.INSTANCE, List.of(Literal.of(3), Literal.of(5)));
 
-    Call call3 = new Call(Operators.ADD, Literal.of(3), Literal.of(6));
+    Call call3 = new Call(AddOperator.INSTANCE, Literal.of(3), Literal.of(6));
 
     Call call4 =
         new Call(
-            Operators.ADD,
+            AddOperator.INSTANCE,
             Literal.of(3),
-            new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
+            new Call(AddOperator.INSTANCE, Literal.of(3), new Identifier("Field")));
     Call call5 =
         new Call(
-            Operators.ADD,
+            AddOperator.INSTANCE,
             Literal.of(3),
-            new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
+            new Call(AddOperator.INSTANCE, Literal.of(3), new Identifier("Field")));
 
     Call call6 =
-        new Call(Operators.IN, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
+        new Call(
+            InOperator.INSTANCE, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
     Call call7 =
-        new Call(Operators.IN, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
+        new Call(
+            InOperator.INSTANCE, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
     Call call8 = new Call(FunctionRegistry.getFunction("RANDOM"));
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
     assertTrue(call1.is(Kind.CALL));
-    assertTrue(call1.isOperator(Operators.ADD));
+    assertTrue(call1.isOperator(AddOperator.INSTANCE));
     assertTrue(call1.isConstant());
     assertFalse(call4.isConstant());
     assertFalse(call8.isConstant());
     // assertEquals(call1.hashCode(), call2.hashCode());
-    assertEquals(Operators.ADD, call1.getOperator());
+    assertEquals(AddOperator.INSTANCE, call1.getOperator());
     assertEquals(2, call1.getOperandCount());
     assertEquals(3, call1.getPosition());
     assertEquals(7, call1.getCost());

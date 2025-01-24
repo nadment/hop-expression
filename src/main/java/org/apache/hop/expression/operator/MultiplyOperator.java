@@ -29,7 +29,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
@@ -39,6 +38,8 @@ import org.apache.hop.expression.type.Types;
  * <strong>Syntax:</strong> <code>x * y</code>
  */
 public class MultiplyOperator extends BinaryOperator {
+
+  public static final MultiplyOperator INSTANCE = new MultiplyOperator();
 
   public MultiplyOperator() {
     super(
@@ -88,10 +89,10 @@ public class MultiplyOperator extends BinaryOperator {
       if (operand.getType().isNullable()) {
         nullableTerms.add(operand);
       }
-      if (operand.isOperator(Operators.NEGATE)) {
+      if (operand.isOperator(NegateOperator.INSTANCE)) {
         negateTerms.add((Call) operand);
       }
-      if (operand.isOperator(Operators.DIVIDE)) {
+      if (operand.isOperator(DivOperator.INSTANCE)) {
         divideTerms.add((Call) operand);
       }
     }
@@ -139,7 +140,7 @@ public class MultiplyOperator extends BinaryOperator {
 
     IExpression operand = operands.poll();
     while (!operands.isEmpty()) {
-      call = new Call(Operators.MULTIPLY, operand, operands.poll());
+      call = new Call(MultiplyOperator.INSTANCE, operand, operands.poll());
       call.inferReturnType();
 
       // Optimize data type

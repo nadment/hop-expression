@@ -23,7 +23,6 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -33,6 +32,7 @@ import org.apache.hop.expression.util.Regexp;
  * <strong>Syntax:</strong> <code>'abc' NOT SIMILAR TO 'regexp'</code>
  */
 public class NotSimilarToOperator extends BinaryOperator {
+  public static final NotSimilarToOperator INSTANCE = new NotSimilarToOperator();
 
   public NotSimilarToOperator() {
     super(
@@ -48,7 +48,7 @@ public class NotSimilarToOperator extends BinaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.SIMILAR_TO;
+    return SimilarToOperator.INSTANCE;
   }
 
   @Override

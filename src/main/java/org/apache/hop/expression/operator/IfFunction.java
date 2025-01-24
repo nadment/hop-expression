@@ -27,7 +27,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -62,7 +61,7 @@ public class IfFunction extends Function {
 
     IExpression condition = call.getOperand(0);
 
-    if (condition.isOperator(Operators.IS_NULL)) {
+    if (condition.isOperator(IsNullOperator.INSTANCE)) {
       // IF(x IS NULL,y,x) → IFNULL(x, y)
       if (call.getOperand(2).equals(call(condition).getOperand(0))) {
         return new Call(IfNullFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
@@ -76,7 +75,7 @@ public class IfFunction extends Function {
           call.getOperand(1));
     }
 
-    if (condition.isOperator(Operators.IS_NOT_NULL)) {
+    if (condition.isOperator(IsNotNullOperator.INSTANCE)) {
       // IF(x IS NOT NULL,y,z) → NVL2(x,y,z)
       return new Call(
           Nvl2Function.INSTANCE,
@@ -85,7 +84,7 @@ public class IfFunction extends Function {
           call.getOperand(2));
     }
 
-    if (condition.isOperator(Operators.EQUAL) && call.getOperand(1).isNull()) {
+    if (condition.isOperator(EqualOperator.INSTANCE) && call.getOperand(1).isNull()) {
 
       // IF(x=y,NULL,x) → NULLIF(x, y)
       if (call(condition).getOperand(0).equals(call.getOperand(2))) {

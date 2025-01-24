@@ -36,6 +36,8 @@ import org.apache.hop.expression.type.Type;
  */
 public class CastOperator extends Operator {
 
+  public static final CastOperator INSTANCE = new CastOperator();
+
   public CastOperator() {
     super(
         "CAST",

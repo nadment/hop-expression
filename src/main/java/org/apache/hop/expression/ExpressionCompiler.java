@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
@@ -121,7 +122,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
             }
           }
           // For CAST operator, it's important to return type
-          else if (expression.isOperator(Operators.CAST)) {
+          else if (expression.isOperator(CastOperator.INSTANCE)) {
             value = type.cast(value);
           }
 

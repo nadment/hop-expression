@@ -91,7 +91,7 @@ public class RPadFunction extends Function {
         // TODO: Fix me
         throw new IllegalArgumentException(
             ErrorCode.INVALID_ARGUMENT.message(
-                "Paddind length exceeds maximum limit: " + PAD_LIMIT));
+                "Padding length exceeds maximum limit: " + PAD_LIMIT));
       }
 
       final int size = pad.length();
@@ -146,7 +146,7 @@ public class RPadFunction extends Function {
       } else if (length > PAD_LIMIT) {
         throw new IllegalArgumentException(
             ErrorCode.INVALID_ARGUMENT.message(
-                "Paddind length exceeds maximum limit: " + PAD_LIMIT));
+                "Padding length exceeds maximum limit: " + PAD_LIMIT));
       }
 
       // nothing to pad

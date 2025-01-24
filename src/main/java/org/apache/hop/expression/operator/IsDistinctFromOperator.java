@@ -24,7 +24,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -37,6 +36,8 @@ import org.apache.hop.expression.type.Types;
  * @see IsNotDistinctFromOperator
  */
 public class IsDistinctFromOperator extends BinaryOperator {
+
+  public static final IsDistinctFromOperator INSTANCE = new IsDistinctFromOperator();
 
   public IsDistinctFromOperator() {
     super(
@@ -52,7 +53,7 @@ public class IsDistinctFromOperator extends BinaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.IS_NOT_DISTINCT_FROM;
+    return IsNotDistinctFromOperator.INSTANCE;
   }
 
   @Override
@@ -87,10 +88,10 @@ public class IsDistinctFromOperator extends BinaryOperator {
     // The DISTINCT predicate is a verbose way of NULL safe comparisons.
     // If one of the operands is NULL, then it can be simplified to the NULL predicate.
     if (left.isNull()) {
-      return new Call(Operators.IS_NOT_NULL, right);
+      return new Call(IsNotNullOperator.INSTANCE, right);
     }
     if (right.isNull()) {
-      return new Call(Operators.IS_NOT_NULL, left);
+      return new Call(IsNotNullOperator.INSTANCE, left);
     }
 
     return call;

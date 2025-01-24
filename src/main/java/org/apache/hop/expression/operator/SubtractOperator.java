@@ -26,7 +26,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
@@ -37,6 +36,9 @@ import org.apache.hop.expression.type.Types;
  * <strong>Syntax:</strong> <code>x - y</code>
  */
 public class SubtractOperator extends BinaryOperator {
+
+  public static final SubtractOperator INSTANCE = new SubtractOperator();
+
   public SubtractOperator() {
     super(
         "SUBTRACT",
@@ -59,7 +61,9 @@ public class SubtractOperator extends BinaryOperator {
       // Supports the basic subtraction of days to DATE values
       if (right.getType().isFamily(TypeFamily.NUMERIC)) {
         return new Call(
-            AddDaysFunction.INSTANCE, left, new Call(call.getPosition(), Operators.NEGATE, right));
+            AddDaysFunction.INSTANCE,
+            left,
+            new Call(call.getPosition(), NegateOperator.INSTANCE, right));
       }
       return new Call(IntervalFromTemporalSubtractOperator.INSTANCE, call.getOperands());
     }
@@ -71,12 +75,12 @@ public class SubtractOperator extends BinaryOperator {
 
     // Simplify arithmetic 0-A → -A
     if (Literal.ZERO.equals(left)) {
-      return new Call(Operators.NEGATE, right);
+      return new Call(NegateOperator.INSTANCE, right);
     }
 
     // Simplify arithmetic A-(-B) → A+B
-    if (right.isOperator(Operators.NEGATE)) {
-      return new Call(Operators.ADD, left, call(right).getOperand(0));
+    if (right.isOperator(NegateOperator.INSTANCE)) {
+      return new Call(AddOperator.INSTANCE, left, call(right).getOperand(0));
     }
 
     // Optimize data type

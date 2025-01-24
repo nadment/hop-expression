@@ -32,7 +32,6 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
@@ -40,6 +39,8 @@ import org.apache.hop.expression.type.Types;
 
 /** A search case operator describing the <code>CASE</code> operator. */
 public class CaseSearchOperator extends Operator {
+
+  public static final CaseSearchOperator INSTANCE = new CaseSearchOperator();
 
   public CaseSearchOperator() {
     super(
@@ -81,7 +82,7 @@ public class CaseSearchOperator extends Operator {
     //
     // When a searched CASE expression nests another CASE expression in its ELSE clause, that can
     // be flattened into the top level CASE expression.
-    if (elseTerm.isOperator(Operators.CASE_SEARCH)) {
+    if (elseTerm.isOperator(CaseSearchOperator.INSTANCE)) {
       List<IExpression> whenOperands = new ArrayList<>();
       whenTerm.forEach(whenOperands::add);
       array(call(elseTerm).getOperand(1)).forEach(whenOperands::add);
@@ -91,7 +92,7 @@ public class CaseSearchOperator extends Operator {
       array(call(elseTerm).getOperand(2)).forEach(thenOperands::add);
 
       return new Call(
-          Operators.CASE_SEARCH,
+          CaseSearchOperator.INSTANCE,
           Literal.NULL,
           new Array(whenOperands),
           new Array(thenOperands),
@@ -106,13 +107,13 @@ public class CaseSearchOperator extends Operator {
       IExpression thenTerm0 = thenTerm.get(0);
 
       // CASE WHEN x IS NULL THEN y ELSE x END → IFNULL(x,y)
-      if (whenTerm0.isOperator(Operators.IS_NULL)
+      if (whenTerm0.isOperator(IsNullOperator.INSTANCE)
           && call(whenTerm0).getOperand(0).equals(elseTerm)) {
         return new Call(IfNullFunction.INSTANCE, call(whenTerm0).getOperand(0), thenTerm0);
       }
 
       // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
-      if (whenTerm0.isOperator(Operators.EQUAL) && thenTerm0.isNull()) {
+      if (whenTerm0.isOperator(EqualOperator.INSTANCE) && thenTerm0.isNull()) {
 
         if (call(whenTerm0).getOperand(0).equals(elseTerm)) {
           return new Call(
@@ -130,12 +131,12 @@ public class CaseSearchOperator extends Operator {
       }
 
       // CASE WHEN x IS NOT NULL THEN y ELSE z END → NVL2(x,y,z)
-      if (whenTerm0.isOperator(Operators.IS_NOT_NULL)) {
+      if (whenTerm0.isOperator(IsNotNullOperator.INSTANCE)) {
         return new Call(Nvl2Function.INSTANCE, call(whenTerm0).getOperand(0), thenTerm0, elseTerm);
       }
 
       // CASE WHEN x IS NULL THEN y ELSE z END → NVL2(x,z,y)
-      if (whenTerm0.isOperator(Operators.IS_NULL)) {
+      if (whenTerm0.isOperator(IsNullOperator.INSTANCE)) {
         return new Call(Nvl2Function.INSTANCE, call(whenTerm0).getOperand(0), elseTerm, thenTerm0);
       }
 
@@ -154,9 +155,10 @@ public class CaseSearchOperator extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("CASE");
 
-    int index = 0;
     Array whenTerms = (Array) operands[1];
     Array thenTerms = (Array) operands[2];
+
+    int index = 0;
     for (IExpression whenOperand : whenTerms) {
       writer.append(" WHEN ");
       if (whenOperand instanceof Array array) {

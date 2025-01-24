@@ -38,10 +38,10 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
+import org.apache.hop.expression.util.Strong;
 
 /**
  * Logical disjunction <code>OR</code> operator.
@@ -50,6 +50,8 @@ import org.apache.hop.expression.util.Pair;
  * null; else false.
  */
 public class BoolOrOperator extends BinaryOperator {
+
+  public static final BoolOrOperator INSTANCE = new BoolOrOperator();
 
   public BoolOrOperator() {
     super(
@@ -107,37 +109,37 @@ public class BoolOrOperator extends BinaryOperator {
       if (predicate instanceof Identifier identifier) {
         identifiers.add(identifier);
       } else if (predicate instanceof Call term) {
-        if (term.isOperator(Operators.IS_NULL)) {
+        if (term.isOperator(IsNullOperator.INSTANCE)) {
           nullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(Operators.IS_NOT_NULL)) {
+        if (term.isOperator(IsNotNullOperator.INSTANCE)) {
           notNullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(Operators.EQUAL)) {
+        if (term.isOperator(EqualOperator.INSTANCE)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
             inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.isOperator(Operators.IN) && term.getOperand(1).isConstant()) {
+        if (term.isOperator(InOperator.INSTANCE) && term.getOperand(1).isConstant()) {
           for (IExpression operand : array(term.getOperand(1))) {
             inTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
-        if (term.isOperator(Operators.NOT_IN)) {
+        if (term.isOperator(NotInOperator.INSTANCE)) {
           notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(Operators.NOT_EQUAL)) {
+        if (term.isOperator(NotEqualOperator.INSTANCE)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(Operators.LESS_THAN)) {
+        if (term.isOperator(LessThanOperator.INSTANCE)) {
           lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
-        if (term.isOperator(Operators.GREATER_THAN)) {
+        if (term.isOperator(GreaterThanOperator.INSTANCE)) {
           greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
-        if (Operators.isStrong(term)) {
+        if (Strong.isStrong(term)) {
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
@@ -156,14 +158,14 @@ public class BoolOrOperator extends BinaryOperator {
       if (equalTerms.containsKey(pair)) {
         predicates.remove(equalTerms.get(pair));
         predicates.remove(lessThanTerms.get(pair));
-        predicates.add(new Call(Operators.LESS_THAN_OR_EQUAL, pair.left(), pair.right()));
+        predicates.add(new Call(LessThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
       }
 
       // x<a OR x>a → x!=a
       if (greaterThanTerms.containsKey(pair)) {
         predicates.remove(lessThanTerms.get(pair));
         predicates.remove(greaterThanTerms.get(pair));
-        predicates.add(new Call(Operators.NOT_EQUAL, pair.left(), pair.right()));
+        predicates.add(new Call(NotEqualOperator.INSTANCE, pair.left(), pair.right()));
       }
     }
 
@@ -178,7 +180,7 @@ public class BoolOrOperator extends BinaryOperator {
       if (equalTerms.containsKey(pair)) {
         predicates.remove(equalTerms.get(pair));
         predicates.remove(greaterThanTerms.get(pair));
-        predicates.add(new Call(Operators.GREATER_THAN_OR_EQUAL, pair.left(), pair.right()));
+        predicates.add(new Call(GreaterThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
       }
     }
 
@@ -206,15 +208,14 @@ public class BoolOrOperator extends BinaryOperator {
         return Literal.FALSE;
       }
 
+      Call predicate;
       if (values.size() == 1) {
-        Call predicate = new Call(Operators.NOT_EQUAL, reference, values.iterator().next());
-        predicate.inferReturnType();
-        predicates.add(predicate);
+        predicate = new Call(NotEqualOperator.INSTANCE, reference, values.iterator().next());
       } else {
-        Call predicate = new Call(Operators.NOT_IN, reference, new Array(values));
-        predicate.inferReturnType();
-        predicates.add(predicate);
+        predicate = new Call(NotInOperator.INSTANCE, reference, new Array(values));
       }
+      predicate.inferReturnType();
+      predicates.add(predicate);
     }
 
     // Simplify union
@@ -228,7 +229,7 @@ public class BoolOrOperator extends BinaryOperator {
           values.add(pair.right());
           predicates.remove(pair.left());
         }
-        Call predicate = new Call(Operators.IN, reference, new Array(values));
+        Call predicate = new Call(InOperator.INSTANCE, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }
@@ -258,7 +259,7 @@ public class BoolOrOperator extends BinaryOperator {
     }
     IExpression expression = predicates.poll();
     while (!predicates.isEmpty()) {
-      call = new Call(Operators.BOOLOR, expression, predicates.poll());
+      call = new Call(this, expression, predicates.poll());
       call.inferReturnType();
       expression = call;
     }

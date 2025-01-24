@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -39,6 +38,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * </ul>
  */
 public class BoolNotOperator extends PrefixUnaryOperator {
+  public static final BoolNotOperator INSTANCE = new BoolNotOperator();
 
   public BoolNotOperator() {
     super(
@@ -59,7 +59,7 @@ public class BoolNotOperator extends PrefixUnaryOperator {
     IExpression operand = call.getOperand(0);
 
     // NOT(NOT(x)) → x
-    if (operand.isOperator(Operators.BOOLNOT)) {
+    if (operand.isOperator(INSTANCE)) {
       return call(operand).getOperand(0);
     }
 

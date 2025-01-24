@@ -281,7 +281,7 @@ import org.apache.hop.expression.ExpressionException;
      *
      * @param buffer the output buffer
      * @param datetime calendar to be appended
-     * @throws Exception if an error occurs.
+     * @throws DateTimeException if an error occurs.
      */
     public void append(StringBuilder buffer, ZonedDateTime datetime) throws DateTimeException {}
 

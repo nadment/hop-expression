@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.hop.expression.Array;
 import org.apache.hop.expression.IExpression;
 
 /** A collection of strategies for return type inference. */
@@ -185,7 +184,7 @@ public final class ReturnTypes {
    */
   public static final IReturnTypeInference CONCAT_FUNCTION =
       call -> {
-        TypeName typeId = TypeName.STRING;
+        TypeName name = TypeName.STRING;
         Type elementType = Types.UNKNOWN;
         int precision = 0;
 
@@ -193,22 +192,22 @@ public final class ReturnTypes {
           Type type = operand.getType();
           precision += type.getPrecision();
           if (type.is(TypeName.ARRAY)) {
-            typeId = TypeName.ARRAY;
-            elementType = Types.getLeastRestrictive((Array) operand);
+            name = TypeName.ARRAY;
+            elementType = Types.getLeastRestrictive(operand);
           } else if (type.is(TypeName.BINARY)) {
-            typeId = TypeName.BINARY;
+            name = TypeName.BINARY;
           }
         }
 
-        if (typeId == TypeName.ARRAY) {
+        if (name == TypeName.ARRAY) {
           return ArrayType.of(elementType);
         }
 
-        if (precision > typeId.getMaxPrecision()) {
-          precision = typeId.getMaxPrecision();
+        if (precision > name.getMaxPrecision()) {
+          precision = name.getMaxPrecision();
         }
 
-        if (typeId == TypeName.BINARY) {
+        if (name == TypeName.BINARY) {
           return BinaryType.of(precision);
         }
 
@@ -219,7 +218,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference CONCATWS_FUNCTION =
       call -> {
         Type separatorType = call.getOperand(0).getType();
-        TypeName id = separatorType.getName();
+        TypeName typeName = separatorType.getName();
         int precision = 0;
 
         if (separatorType.getPrecision() != -1) {
@@ -237,15 +236,15 @@ public final class ReturnTypes {
             }
 
             if (type.is(TypeName.BINARY)) {
-              id = TypeName.BINARY;
+              typeName = TypeName.BINARY;
             }
           }
-        } else precision = id.getMaxPrecision();
+        } else precision = typeName.getMaxPrecision();
 
-        if (precision > id.getMaxPrecision()) {
-          precision = id.getMaxPrecision();
+        if (precision > typeName.getMaxPrecision()) {
+          precision = typeName.getMaxPrecision();
         }
-        if (id == TypeName.BINARY) {
+        if (typeName == TypeName.BINARY) {
           return BinaryType.of(precision);
         }
 

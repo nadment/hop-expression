@@ -22,7 +22,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
@@ -39,6 +38,8 @@ import org.apache.hop.expression.type.Types;
  */
 @FunctionPlugin
 public class FloorFunction extends Function {
+
+  public static final Function INSTANCE = new FloorFunction();
 
   public FloorFunction() {
     super(
@@ -71,7 +72,7 @@ public class FloorFunction extends Function {
       return call.getOperand(0);
     }
     // FLOOR(CEIL(x)) → CEIL(x)
-    if (call.getOperand(0).isOperator(FunctionRegistry.getFunction("CEIL"))) {
+    if (call.getOperand(0).isOperator(CeilFunction.INSTANCE)) {
       return call.getOperand(0);
     }
 

@@ -24,7 +24,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -78,19 +77,19 @@ public class EqualNullFunction extends Function {
 
     // Simplify if one of the operands is NULL, then it can be simplified to the IS NULL predicate.
     if (left.isNull()) {
-      return new Call(Operators.IS_NULL, right);
+      return new Call(IsNullOperator.INSTANCE, right);
     }
     if (right.isNull()) {
-      return new Call(Operators.IS_NULL, left);
+      return new Call(IsNullOperator.INSTANCE, left);
     }
 
     // Simplify EQUAL_NULL(x,TRUE) → x IS TRUE
     if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, left);
+      return new Call(IsTrueOperator.INSTANCE, left);
     }
     // Simplify EQUAL_NULL(x,FALSE) → x IS FALSE
     if (right.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, left);
+      return new Call(IsFalseOperator.INSTANCE, left);
     }
 
     return call;

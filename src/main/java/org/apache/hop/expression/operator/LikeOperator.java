@@ -25,7 +25,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -44,6 +43,8 @@ import org.apache.hop.expression.util.Regexp;
  * NOT (field LIKE pattern ...)</code>
  */
 public class LikeOperator extends Operator {
+
+  public static final LikeOperator INSTANCE = new LikeOperator();
 
   static final Pattern startsWith = Pattern.compile("^([^_%]+)%$");
   static final Pattern endsWith = Pattern.compile("^%([^_%]+)$");
@@ -113,7 +114,7 @@ public class LikeOperator extends Operator {
       // field LIKE 'Hello' → field='Hello'
       if (equalTo.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(Operators.EQUAL, value, Literal.of(search));
+        return new Call(EqualOperator.INSTANCE, value, Literal.of(search));
       }
     }
 

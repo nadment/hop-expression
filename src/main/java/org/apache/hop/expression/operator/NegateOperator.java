@@ -25,7 +25,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -33,6 +32,7 @@ import org.apache.hop.expression.type.Types;
 
 /** Prefix arithmetic minus (negative) operator '<code>-</code>' for numeric or interval. */
 public class NegateOperator extends PrefixUnaryOperator {
+  public static final NegateOperator INSTANCE = new NegateOperator();
 
   public NegateOperator() {
     super(
@@ -56,7 +56,7 @@ public class NegateOperator extends PrefixUnaryOperator {
     IExpression operand = call.getOperand(0);
 
     // Simplify -(-(A)) → A
-    if (operand.isOperator(Operators.NEGATE)) {
+    if (operand.isOperator(NegateOperator.INSTANCE)) {
       return call(operand).getOperand(0);
     }
 
@@ -66,9 +66,9 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
 
     // Simplify arithmetic -(A-B) → B-A
-    if (operand.isOperator(Operators.SUBTRACT)) {
+    if (operand.isOperator(SubtractOperator.INSTANCE)) {
       Call subtract = call(operand);
-      return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
+      return new Call(SubtractOperator.INSTANCE, subtract.getOperand(1), subtract.getOperand(0));
     }
 
     NegateOperator operator = NumberNegateOperator.INSTANCE;

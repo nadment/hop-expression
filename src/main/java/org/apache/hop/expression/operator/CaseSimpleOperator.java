@@ -29,13 +29,13 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 
 /** An operator describing the <code>CASE</code> operator. */
 public class CaseSimpleOperator extends Operator {
+  public static final CaseSimpleOperator INSTANCE = new CaseSimpleOperator();
 
   public CaseSimpleOperator() {
     super(
@@ -94,7 +94,7 @@ public class CaseSimpleOperator extends Operator {
       // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
       return new Call(
           IfFunction.INSTANCE,
-          new Call(Operators.EQUAL, call.getOperand(0), whenTerm.get(0)),
+          new Call(EqualOperator.INSTANCE, call.getOperand(0), whenTerm.get(0)),
           thenTerm.get(0),
           elseTerm);
     }

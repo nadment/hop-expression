@@ -232,7 +232,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void checkPrecisionScale() throws Exception {
+  void checkPrecisionScale() {
     // Check maximum precision
     evalFails("CAST(1 as INTEGER(20))", ErrorCode.PRECISION_OUT_OF_RANGE);
     evalFails("CAST(1 as NUMBER(39))", ErrorCode.PRECISION_OUT_OF_RANGE);

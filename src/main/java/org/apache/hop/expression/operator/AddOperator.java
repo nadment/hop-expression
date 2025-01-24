@@ -28,7 +28,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
@@ -38,6 +37,8 @@ import org.apache.hop.expression.type.Types;
  * <strong>Syntax:</strong> <code>x + y</code>
  */
 public class AddOperator extends BinaryOperator {
+
+  public static final AddOperator INSTANCE = new AddOperator();
 
   public AddOperator() {
     super(
@@ -119,8 +120,8 @@ public class AddOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A+(-B) → A-B
-    if (right.isOperator(Operators.NEGATE)) {
-      return new Call(Operators.SUBTRACT, left, call(right).getOperand(0));
+    if (right.isOperator(NegateOperator.INSTANCE)) {
+      return new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0));
     }
 
     // Optimize data type

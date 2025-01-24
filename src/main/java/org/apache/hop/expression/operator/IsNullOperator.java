@@ -24,7 +24,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -34,6 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see IsNotNullOperator
  */
 public class IsNullOperator extends PostfixUnaryOperator {
+
+  public static final IsNullOperator INSTANCE = new IsNullOperator();
 
   public IsNullOperator() {
     super(
@@ -48,7 +49,7 @@ public class IsNullOperator extends PostfixUnaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.IS_NOT_NULL;
+    return IsNotNullOperator.INSTANCE;
   }
 
   @Override

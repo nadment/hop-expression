@@ -39,6 +39,8 @@ import org.apache.hop.expression.type.Types;
 @FunctionPlugin
 public class ConcatFunction extends Function {
 
+  public static final ConcatFunction INSTANCE = new ConcatFunction();
+
   // Function
   public ConcatFunction() {
     super(

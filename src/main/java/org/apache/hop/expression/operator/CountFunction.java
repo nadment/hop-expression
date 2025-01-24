@@ -25,6 +25,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
 public class CountFunction extends AggregateFunction {
+  public static final CountFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
+  public static final CountFunction COUNT_VALUE = new CountFunction(Count.VALUE);
+  public static final CountFunction COUNT_ALL = new CountFunction(Count.ALL);
 
   public enum Count {
     VALUE,

@@ -450,7 +450,6 @@ final class PatternNumberFormat extends NumberFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws FormatParseException
    */
   public BigDecimal parse(final String text) throws FormatParseException {
 

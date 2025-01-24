@@ -22,7 +22,29 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.hop.expression.operator.BoolAndOperator;
+import org.apache.hop.expression.operator.BoolOrOperator;
+import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
+import org.apache.hop.expression.operator.EqualOperator;
+import org.apache.hop.expression.operator.GreaterThanOperator;
+import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
+import org.apache.hop.expression.operator.InOperator;
+import org.apache.hop.expression.operator.IsDistinctFromOperator;
+import org.apache.hop.expression.operator.IsFalseOperator;
+import org.apache.hop.expression.operator.IsNotDistinctFromOperator;
+import org.apache.hop.expression.operator.IsNotFalseOperator;
+import org.apache.hop.expression.operator.IsNotNullOperator;
+import org.apache.hop.expression.operator.IsNotTrueOperator;
+import org.apache.hop.expression.operator.IsNullOperator;
+import org.apache.hop.expression.operator.IsTrueOperator;
+import org.apache.hop.expression.operator.LessThanOperator;
+import org.apache.hop.expression.operator.LessThanOrEqualOperator;
+import org.apache.hop.expression.operator.MultiplyOperator;
+import org.apache.hop.expression.operator.NotEqualOperator;
+import org.apache.hop.expression.operator.NotInOperator;
+import org.apache.hop.expression.operator.NotSimilarToOperator;
+import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.Test;
@@ -131,79 +153,80 @@ public class ExpressionParserTest extends ExpressionTest {
   void operatorComparator() {
     // Primary operator first and alias last
     OperatorComparator comparator = new OperatorComparator();
-    assertTrue(comparator.compare(Operators.CONCAT, new ConcatFunction()) > 0);
+    assertTrue(comparator.compare(ConcatFunction.INSTANCE, new ConcatFunction()) > 0);
   }
 
   @Test
   void operator() {
-    assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
-    assertEquals(Operators.CONCAT, new ConcatFunction("||"));
-    assertEquals(51, Operators.MULTIPLY.getLeftPrec());
-    assertEquals(50, Operators.MULTIPLY.getRightPrec());
-    assertEquals("CONCAT", Operators.CONCAT.toString());
-    assertNotEquals(Operators.CONCAT, Operators.EQUAL);
-    assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
-    assertFalse(Operators.CONCAT.is(null));
-    assertFalse(Operators.CONCAT.isAggregate());
-    assertTrue(Operators.CONCAT.isDeterministic());
-    assertNotNull(Operators.CONCAT.getDescription());
-    assertNotEquals(Operators.CONCAT, null);
-    // assertNotNull(Operators.CONCAT.getDocumentation());
-    assertNotNull(Operators.CONCAT.getDocumentationUrl());
+    assertEquals("Mathematical", MultiplyOperator.INSTANCE.getCategory());
+    assertEquals(IsTrueOperator.INSTANCE, new IsTrueOperator());
+    assertEquals(ConcatFunction.INSTANCE, new ConcatFunction());
+    assertEquals(51, MultiplyOperator.INSTANCE.getLeftPrec());
+    assertEquals(50, MultiplyOperator.INSTANCE.getRightPrec());
+    assertEquals("CONCAT", ConcatFunction.INSTANCE.toString());
+    assertNotEquals(ConcatFunction.INSTANCE, EqualOperator.INSTANCE);
+    assertTrue(ConcatFunction.INSTANCE.is(FunctionRegistry.getFunction("CONCAT")));
+    assertFalse(ConcatFunction.INSTANCE.is(null));
+    assertFalse(ConcatFunction.INSTANCE.isAggregate());
+    assertTrue(ConcatFunction.INSTANCE.isDeterministic());
+    assertNotNull(ConcatFunction.INSTANCE.getDescription());
+    assertNotEquals(ConcatFunction.INSTANCE, null);
+    // assertNotNull(ConcatFunction.INSTANCE.getDocumentation());
+    assertNotNull(ConcatFunction.INSTANCE.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
-    assertNotEquals(Operators.IN, Operators.NOT_IN);
-    assertNotEquals(Operators.SIMILAR_TO, Operators.NOT_SIMILAR_TO);
+    assertNotEquals(InOperator.INSTANCE, NotInOperator.INSTANCE);
+    assertNotEquals(SimilarToOperator.INSTANCE, NotSimilarToOperator.INSTANCE);
   }
 
   @Test
   void operatorNot() {
-    assertEquals(Operators.IS_NOT_NULL, Operators.IS_NULL.not());
-    assertEquals(Operators.IS_NULL, Operators.IS_NOT_NULL.not());
-    assertEquals(Operators.IS_NOT_TRUE, Operators.IS_TRUE.not());
-    assertEquals(Operators.IS_TRUE, Operators.IS_NOT_TRUE.not());
-    assertEquals(Operators.IS_NOT_FALSE, Operators.IS_FALSE.not());
-    assertEquals(Operators.IS_FALSE, Operators.IS_NOT_FALSE.not());
-    assertEquals(Operators.EQUAL, Operators.NOT_EQUAL.not());
-    assertEquals(Operators.NOT_EQUAL, Operators.EQUAL.not());
-    assertEquals(Operators.LESS_THAN, Operators.GREATER_THAN_OR_EQUAL.not());
-    assertEquals(Operators.LESS_THAN_OR_EQUAL, Operators.GREATER_THAN.not());
-    assertEquals(Operators.GREATER_THAN, Operators.LESS_THAN_OR_EQUAL.not());
-    assertEquals(Operators.GREATER_THAN_OR_EQUAL, Operators.LESS_THAN.not());
-    assertEquals(Operators.IS_DISTINCT_FROM, Operators.IS_NOT_DISTINCT_FROM.not());
-    assertEquals(Operators.IS_NOT_DISTINCT_FROM, Operators.IS_DISTINCT_FROM.not());
-    assertEquals(Operators.SIMILAR_TO, Operators.NOT_SIMILAR_TO.not());
-    assertEquals(Operators.NOT_SIMILAR_TO, Operators.SIMILAR_TO.not());
+    assertEquals(IsNotNullOperator.INSTANCE, IsNullOperator.INSTANCE.not());
+    assertEquals(IsNullOperator.INSTANCE, IsNotNullOperator.INSTANCE.not());
+    assertEquals(IsNotTrueOperator.INSTANCE, IsTrueOperator.INSTANCE.not());
+    assertEquals(IsTrueOperator.INSTANCE, IsNotTrueOperator.INSTANCE.not());
+    assertEquals(IsNotFalseOperator.INSTANCE, IsFalseOperator.INSTANCE.not());
+    assertEquals(IsFalseOperator.INSTANCE, IsNotFalseOperator.INSTANCE.not());
+    assertEquals(EqualOperator.INSTANCE, NotEqualOperator.INSTANCE.not());
+    assertEquals(NotEqualOperator.INSTANCE, EqualOperator.INSTANCE.not());
+    assertEquals(LessThanOperator.INSTANCE, GreaterThanOrEqualOperator.INSTANCE.not());
+    assertEquals(LessThanOrEqualOperator.INSTANCE, GreaterThanOperator.INSTANCE.not());
+    assertEquals(GreaterThanOperator.INSTANCE, LessThanOrEqualOperator.INSTANCE.not());
+    assertEquals(GreaterThanOrEqualOperator.INSTANCE, LessThanOperator.INSTANCE.not());
+    assertEquals(IsDistinctFromOperator.INSTANCE, IsNotDistinctFromOperator.INSTANCE.not());
+    assertEquals(IsNotDistinctFromOperator.INSTANCE, IsDistinctFromOperator.INSTANCE.not());
+    assertEquals(SimilarToOperator.INSTANCE, NotSimilarToOperator.INSTANCE.not());
+    assertEquals(NotSimilarToOperator.INSTANCE, SimilarToOperator.INSTANCE.not());
   }
 
   @Test
   void operatorReverse() {
-    assertEquals(Operators.EQUAL, Operators.EQUAL.reverse());
-    assertEquals(Operators.NOT_EQUAL, Operators.NOT_EQUAL.reverse());
-    assertEquals(Operators.LESS_THAN_OR_EQUAL, Operators.GREATER_THAN_OR_EQUAL.reverse());
-    assertEquals(Operators.LESS_THAN, Operators.GREATER_THAN.reverse());
-    assertEquals(Operators.GREATER_THAN_OR_EQUAL, Operators.LESS_THAN_OR_EQUAL.reverse());
-    assertEquals(Operators.GREATER_THAN, Operators.LESS_THAN.reverse());
-    assertEquals(Operators.IS_DISTINCT_FROM, Operators.IS_DISTINCT_FROM.reverse());
-    assertEquals(Operators.IS_NOT_DISTINCT_FROM, Operators.IS_NOT_DISTINCT_FROM.reverse());
-    assertEquals(Operators.MULTIPLY, Operators.MULTIPLY.reverse());
-    assertEquals(Operators.BOOLAND, Operators.BOOLAND.reverse());
-    assertEquals(Operators.BOOLOR, Operators.BOOLOR.reverse());
-    assertEquals(Operators.BOOLXOR, Operators.BOOLXOR.reverse());
-    assertNull(Operators.CONCAT.reverse());
+    assertEquals(EqualOperator.INSTANCE, EqualOperator.INSTANCE.reverse());
+    assertEquals(NotEqualOperator.INSTANCE, NotEqualOperator.INSTANCE.reverse());
+    assertEquals(LessThanOrEqualOperator.INSTANCE, GreaterThanOrEqualOperator.INSTANCE.reverse());
+    assertEquals(LessThanOperator.INSTANCE, GreaterThanOperator.INSTANCE.reverse());
+    assertEquals(GreaterThanOrEqualOperator.INSTANCE, LessThanOrEqualOperator.INSTANCE.reverse());
+    assertEquals(GreaterThanOperator.INSTANCE, LessThanOperator.INSTANCE.reverse());
+    assertEquals(IsDistinctFromOperator.INSTANCE, IsDistinctFromOperator.INSTANCE.reverse());
+    assertEquals(IsNotDistinctFromOperator.INSTANCE, IsNotDistinctFromOperator.INSTANCE.reverse());
+    assertEquals(MultiplyOperator.INSTANCE, MultiplyOperator.INSTANCE.reverse());
+    assertEquals(BoolAndOperator.INSTANCE, BoolAndOperator.INSTANCE.reverse());
+    assertEquals(BoolOrOperator.INSTANCE, BoolOrOperator.INSTANCE.reverse());
+    assertEquals(BoolXorOperator.INSTANCE, BoolXorOperator.INSTANCE.reverse());
+    assertNull(ConcatFunction.INSTANCE.reverse());
   }
 
   @Test
   void operatorSymmetrical() {
-    assertTrue(Operators.BOOLAND.isSymmetrical());
-    assertTrue(Operators.BOOLOR.isSymmetrical());
-    assertTrue(Operators.BOOLXOR.isSymmetrical());
-    assertTrue(Operators.MULTIPLY.isSymmetrical());
-    assertTrue(Operators.EQUAL.isSymmetrical());
-    assertTrue(Operators.NOT_EQUAL.isSymmetrical());
-    assertTrue(Operators.IS_DISTINCT_FROM.isSymmetrical());
-    assertTrue(Operators.IS_NOT_DISTINCT_FROM.isSymmetrical());
-    assertFalse(Operators.GREATER_THAN.isSymmetrical());
+    assertTrue(BoolAndOperator.INSTANCE.isSymmetrical());
+    assertTrue(BoolOrOperator.INSTANCE.isSymmetrical());
+    assertTrue(BoolXorOperator.INSTANCE.isSymmetrical());
+    assertTrue(MultiplyOperator.INSTANCE.isSymmetrical());
+    assertTrue(EqualOperator.INSTANCE.isSymmetrical());
+    assertTrue(NotEqualOperator.INSTANCE.isSymmetrical());
+    assertTrue(IsDistinctFromOperator.INSTANCE.isSymmetrical());
+    assertTrue(IsNotDistinctFromOperator.INSTANCE.isSymmetrical());
+    assertFalse(GreaterThanOperator.INSTANCE.isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("EQUAL_NULL").isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("BIT_AND").isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("BIT_OR").isSymmetrical());

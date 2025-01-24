@@ -24,7 +24,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -34,6 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class BitNotFunction extends Function {
+
+  public static final BitNotFunction INSTANCE = new BitNotFunction("~");
 
   public BitNotFunction() {
     super(
@@ -61,7 +62,7 @@ public class BitNotFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Simplify reverses itself "~(~(A))" to "A"
-    if (operand.isOperator(Operators.BITNOT)) {
+    if (operand.isOperator(BitNotFunction.INSTANCE)) {
       return call(operand).getOperand(0);
     }
 

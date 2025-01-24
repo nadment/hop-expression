@@ -56,10 +56,9 @@ public class Identifier implements IExpression {
   private IValueMeta valueMeta;
 
   /**
-   * If identifier name contains space, is a reserved word or a function name must be quoted.
+   * If identifier name contains space, is a reserved word or is a function name must be quoted.
    *
-   * @param name
-   * @return
+   * @param name the name to quote
    */
   public static String quoteIfNeeded(final String name) {
 

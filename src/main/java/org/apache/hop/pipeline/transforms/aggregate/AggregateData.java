@@ -19,6 +19,7 @@ package org.apache.hop.pipeline.transforms.aggregate;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
@@ -30,15 +31,12 @@ import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
 public class AggregateData extends BaseTransformData implements ITransformData {
+  @Getter
   public class AggregateKey {
     private final Object[] values;
 
     public AggregateKey(Object[] groupData) {
       this.values = groupData;
-    }
-
-    public Object[] getValues() {
-      return values;
     }
 
     @Override

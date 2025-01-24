@@ -188,11 +188,7 @@ public abstract class Operator {
     return false;
   }
 
-  /**
-   * Return type inference strategy.
-   *
-   * @return
-   */
+  /** Return type inference strategy. */
   public final IReturnTypeInference getReturnTypeInference() {
     return this.returnTypeInference;
   }
@@ -231,8 +227,8 @@ public abstract class Operator {
   /**
    * Check if it's the same operator.
    *
-   * @param other
-   * @return
+   * @param other the operator to compare
+   * @return true if operator are the same
    */
   public boolean is(Operator other) {
     if (other == null) return false;
@@ -274,11 +270,7 @@ public abstract class Operator {
     return category;
   }
 
-  /**
-   * Get the description of this operator.
-   *
-   * @return
-   */
+  /** Get the description of this operator. */
   public String getDescription() {
     return description;
   }
@@ -286,7 +278,7 @@ public abstract class Operator {
   /**
    * Evaluate the result of operator with operands.
    *
-   * @return
+   * @return the result of the evaluation
    */
   public Object eval(final IExpression[] operands) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message());

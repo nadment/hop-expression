@@ -39,10 +39,10 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
+import org.apache.hop.expression.util.Strong;
 
 /**
  * Logical conjunction <code>AND</code> operator.
@@ -51,6 +51,8 @@ import org.apache.hop.expression.util.Pair;
  * null; else true.
  */
 public class BoolAndOperator extends BinaryOperator {
+
+  public static final BoolAndOperator INSTANCE = new BoolAndOperator();
 
   public BoolAndOperator() {
     super(
@@ -97,30 +99,30 @@ public class BoolAndOperator extends BinaryOperator {
       }
 
       if (predicate instanceof Call term) {
-        if (term.isOperator(Operators.IS_NULL)) {
+        if (term.isOperator(IsNullOperator.INSTANCE)) {
           nullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(Operators.IS_NOT_NULL)) {
+        if (term.isOperator(IsNotNullOperator.INSTANCE)) {
           notNullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(Operators.EQUAL) && term.getOperand(1).is(Kind.LITERAL)) {
+        if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1).is(Kind.LITERAL)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(Operators.NOT_EQUAL)) {
+        if (term.isOperator(NotEqualOperator.INSTANCE)) {
           notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
             notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.isOperator(Operators.IN)) {
+        if (term.isOperator(InOperator.INSTANCE)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(Operators.NOT_IN) && term.getOperand(1).isConstant()) {
+        if (term.isOperator(NotInOperator.INSTANCE) && term.getOperand(1).isConstant()) {
           for (IExpression operand : array(term.getOperand(1))) {
             notInTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
-        if (Operators.isStrong(term)) {
+        if (Strong.isStrong(term)) {
           if (term.getOperand(0).is(Kind.IDENTIFIER)) {
             strongTerms.add(term.getOperand(0));
           }
@@ -143,7 +145,7 @@ public class BoolAndOperator extends BinaryOperator {
         List<IExpression> unnecessary = new ArrayList<>();
         while (iterator.hasNext()) {
           IExpression condition = iterator.next();
-          if (condition.isOperator(Operators.IS_NOT_NULL)
+          if (condition.isOperator(IsNotNullOperator.INSTANCE)
               && call(condition).getOperand(0).equals(operand)) {
             unnecessary.add(condition);
           }
@@ -163,7 +165,7 @@ public class BoolAndOperator extends BinaryOperator {
           values.add(pair.right());
           predicates.remove(pair.left());
         }
-        Call predicate = new Call(Operators.NOT_IN, reference, new Array(values));
+        Call predicate = new Call(NotInOperator.INSTANCE, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }
@@ -205,11 +207,11 @@ public class BoolAndOperator extends BinaryOperator {
       }
 
       if (values.size() == 1) {
-        Call predicate = new Call(Operators.EQUAL, reference, values.iterator().next());
+        Call predicate = new Call(EqualOperator.INSTANCE, reference, values.iterator().next());
         predicate.inferReturnType();
         predicates.add(predicate);
       } else {
-        Call predicate = new Call(Operators.IN, reference, new Array(values));
+        Call predicate = new Call(InOperator.INSTANCE, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }
@@ -221,7 +223,7 @@ public class BoolAndOperator extends BinaryOperator {
     }
     IExpression expression = predicates.poll();
     while (!predicates.isEmpty()) {
-      call = new Call(Operators.BOOLAND, expression, predicates.poll());
+      call = new Call(BoolAndOperator.INSTANCE, expression, predicates.poll());
       call.inferReturnType();
       expression = call;
     }

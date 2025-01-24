@@ -32,7 +32,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.operator.CastOperator;
 
 public class Types {
 
@@ -120,16 +120,21 @@ public class Types {
     return result;
   }
 
-  public static Type getLeastRestrictive(Array array) {
-    Type result = null;
-    for (IExpression operand : array) {
-      Type type = operand.getType();
-      if (operand instanceof Array child) {
-        type = Types.getLeastRestrictive(child);
+  public static Type getLeastRestrictive(IExpression expression) {
+
+    if (expression instanceof Array array) {
+      Type result = null;
+      for (IExpression operand : array) {
+        Type type = operand.getType();
+        if (operand instanceof Array child) {
+          type = getLeastRestrictive(child);
+        }
+        result = getLeastRestrictive(result, type);
       }
-      result = Types.getLeastRestrictive(result, type);
+      return result;
     }
-    return result;
+
+    return expression.getType();
   }
 
   public static Type getLeastRestrictive(final Type type1, final Type type2) {
@@ -213,7 +218,7 @@ public class Types {
   }
 
   public static Call cast(IExpression expression, Type type) {
-    Call call = new Call(Operators.CAST, expression, Literal.of(type));
+    Call call = new Call(CastOperator.INSTANCE, expression, Literal.of(type));
     call.inferReturnType();
     return call;
   }

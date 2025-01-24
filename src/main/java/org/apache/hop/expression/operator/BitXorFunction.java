@@ -34,6 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class BitXorFunction extends Function {
+  public static final BitXorFunction INSTANCE = new BitXorFunction("^");
 
   public BitXorFunction() {
     super(

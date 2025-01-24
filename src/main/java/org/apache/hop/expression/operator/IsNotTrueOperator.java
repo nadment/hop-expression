@@ -20,7 +20,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
@@ -31,6 +30,8 @@ import org.apache.hop.expression.type.Types;
  * @see IsTrueOperator
  */
 public class IsNotTrueOperator extends PostfixUnaryOperator {
+
+  public static final IsNotTrueOperator INSTANCE = new IsNotTrueOperator();
 
   public IsNotTrueOperator() {
     super(
@@ -50,7 +51,7 @@ public class IsNotTrueOperator extends PostfixUnaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.IS_TRUE;
+    return IsTrueOperator.INSTANCE;
   }
 
   @Override

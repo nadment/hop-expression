@@ -469,7 +469,6 @@ public class ExpressionTest {
   public void test() throws Exception {
     Locale.setDefault(new Locale("fr", "BE"));
 
-    FunctionRegistry.getFunction("CEIL");
-    evalTrue("2.0=2");
+    optimize("[1,2,3] || [4,5] || [6,7]", "[1,2,3,4,5,6,7]");
   }
 }

@@ -74,11 +74,6 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
     this.fields = new ArrayList<>();
   }
 
-  // @Override
-  // public Object clone() {
-  // return new ExpressionMeta(this);
-  // }
-
   @Override
   public void getFields(
       IRowMeta rowMeta,

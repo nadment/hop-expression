@@ -27,6 +27,7 @@ import org.apache.hop.expression.util.Regexp;
 
 /** The ILIKE case-insensitive operator. */
 public class ILikeOperator extends Operator {
+  public static final ILikeOperator INSTANCE = new ILikeOperator();
 
   public ILikeOperator() {
     super(

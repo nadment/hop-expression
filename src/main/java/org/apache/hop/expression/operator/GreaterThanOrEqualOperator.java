@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -31,6 +30,7 @@ import org.apache.hop.expression.type.Types;
 
 /** Comparison greater than or equal operator '<code>&gt;=</code>'. */
 public class GreaterThanOrEqualOperator extends BinaryOperator {
+  public static final GreaterThanOrEqualOperator INSTANCE = new GreaterThanOrEqualOperator();
 
   public GreaterThanOrEqualOperator() {
     super(
@@ -46,12 +46,12 @@ public class GreaterThanOrEqualOperator extends BinaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.LESS_THAN;
+    return LessThanOperator.INSTANCE;
   }
 
   @Override
   public Operator reverse() {
-    return Operators.LESS_THAN_OR_EQUAL;
+    return LessThanOrEqualOperator.INSTANCE;
   }
 
   @Override
@@ -92,21 +92,21 @@ public class GreaterThanOrEqualOperator extends BinaryOperator {
 
     // Simplify only if x is data type boolean TRUE>=x → x IS NOT NULL
     if (left.equals(Literal.TRUE) && Types.isBoolean(right.getType())) {
-      return new Call(Operators.IS_NOT_NULL, right);
+      return new Call(IsNotNullOperator.INSTANCE, right);
     }
 
     // Simplify only if x is data type boolean x>=FALSE → x IS NOT NULL
     if (right.equals(Literal.FALSE) && Types.isBoolean(left.getType())) {
-      return new Call(Operators.IS_NOT_NULL, left);
+      return new Call(IsNotNullOperator.INSTANCE, left);
     }
 
     // Simplify 3>=X+1 → 3-1>= X
     if (left.isConstant()
-        && right.isOperator(Operators.ADD)
+        && right.isOperator(AddOperator.INSTANCE)
         && call(right).getOperand(0).isConstant()) {
       return new Call(
           call.getOperator(),
-          new Call(Operators.SUBTRACT, left, call(right).getOperand(0)),
+          new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0)),
           call(right).getOperand(1));
     }
 

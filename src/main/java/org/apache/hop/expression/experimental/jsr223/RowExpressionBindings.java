@@ -86,11 +86,11 @@ public class RowExpressionBindings implements Bindings {
   }
 
   @Override
-  public void putAll(Map<? extends String, ? extends Object> toMerge) {
+  public void putAll(Map<? extends String, ?> toMerge) {
     if (toMerge == null) {
       throw new NullPointerException("toMerge map is null");
     }
-    for (Map.Entry<? extends String, ? extends Object> entry : toMerge.entrySet()) {
+    for (Map.Entry<? extends String, ?> entry : toMerge.entrySet()) {
       String key = entry.getKey();
       put(key, entry.getValue());
     }

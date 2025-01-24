@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -31,6 +30,7 @@ import org.apache.hop.expression.type.Types;
 
 /** Comparison not equals operator '<code>!=</code>' or '<code><></code>'. */
 public class NotEqualOperator extends BinaryOperator {
+  public static final NotEqualOperator INSTANCE = new NotEqualOperator("!=");
 
   public NotEqualOperator(final String name) {
     super(
@@ -51,12 +51,12 @@ public class NotEqualOperator extends BinaryOperator {
 
   @Override
   public Operator not() {
-    return Operators.EQUAL;
+    return EqualOperator.INSTANCE;
   }
 
   @Override
   public Operator reverse() {
-    return Operators.NOT_EQUAL;
+    return NotEqualOperator.INSTANCE;
   }
 
   @Override
@@ -90,7 +90,7 @@ public class NotEqualOperator extends BinaryOperator {
     // x<>FALSE → NOT x
     if (Types.isBoolean(left.getType())) {
       if (right == Literal.TRUE) {
-        return new Call(Operators.BOOLNOT, left);
+        return new Call(BoolNotOperator.INSTANCE, left);
       }
       if (right == Literal.FALSE) {
         return left;
@@ -104,16 +104,17 @@ public class NotEqualOperator extends BinaryOperator {
 
     // Simplify x!=x → NULL AND x IS NULL
     if (left.equals(right)) {
-      return new Call(Operators.BOOLAND, Literal.NULL_BOOLEAN, new Call(Operators.IS_NULL, left));
+      return new Call(
+          BoolAndOperator.INSTANCE, Literal.NULL_BOOLEAN, new Call(IsNullOperator.INSTANCE, left));
     }
 
     // Simplify 3!=X+1 → 3-1!=X
     if (left.isConstant()
-        && right.isOperator(Operators.ADD)
+        && right.isOperator(AddOperator.INSTANCE)
         && call(right).getOperand(0).isConstant()) {
       return new Call(
           call.getOperator(),
-          new Call(Operators.SUBTRACT, left, call(right).getOperand(0)),
+          new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0)),
           call(right).getOperand(1));
     }
 
