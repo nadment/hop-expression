@@ -18,12 +18,12 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.Objects;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 /** Contains the properties of the fields to set with expression. */
-@Getter
-public class ExpressionField {
+public final class ExpressionField {
 
   public ExpressionField() {
     super();
@@ -40,23 +40,31 @@ public class ExpressionField {
   }
 
   /** The target field name */
+  @Getter
   @HopMetadataProperty(
       key = "name",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
   private String name;
 
   /** The expression source */
+  @Getter
+  @Setter
   @HopMetadataProperty(
       key = "expression",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
   private String expression;
 
+  @Getter
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Type")
   private String type;
 
+  @Getter
+  @Setter
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
   private int length = -1;
 
+  @Getter
+  @Setter
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
   private int precision = -1;
 
@@ -64,20 +72,8 @@ public class ExpressionField {
     this.name = StringUtils.stripToNull(name);
   }
 
-  public void setExpression(final String expression) {
-    this.expression = expression;
-  }
-
   public void setType(String type) {
     this.type = StringUtils.stripToNull(type);
-  }
-
-  public void setLength(int length) {
-    this.length = length;
-  }
-
-  public void setPrecision(int precision) {
-    this.precision = precision;
   }
 
   @Override

@@ -19,8 +19,7 @@ package org.apache.hop.expression;
 import java.io.Serial;
 
 public class ConversionException extends ExpressionException {
-  @Serial
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   /**
    * Construct a new expression exception.

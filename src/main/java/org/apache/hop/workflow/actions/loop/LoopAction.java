@@ -20,6 +20,8 @@ package org.apache.hop.workflow.actions.loop;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.base.AbstractMeta;
 import org.apache.hop.core.Const;
@@ -43,6 +45,8 @@ import org.apache.hop.workflow.action.IAction;
 import org.apache.hop.workflow.engine.IWorkflowEngine;
 import org.apache.hop.workflow.engine.WorkflowEngineFactory;
 
+@Setter
+@Getter
 @Action(
     id = "LOOP",
     name = "i18n::LoopAction.Name",
@@ -53,15 +57,19 @@ import org.apache.hop.workflow.engine.WorkflowEngineFactory;
     documentationUrl = "/workflow/actions/loop.html")
 public class LoopAction extends ActionBase implements IAction {
 
+  /** The workflow to execute */
   @HopMetadataProperty(key = "filename")
   private String filename;
 
+  /** The run configuration to use to execute workflow */
   @HopMetadataProperty(key = "run_configuration")
   private String runConfigurationName;
 
+  /** The condition expression to evaluate */
   @HopMetadataProperty(key = "condition")
   private String condition;
 
+  /** The parameters */
   @HopMetadataProperty(groupKey = "parameters", key = "parameter")
   private List<Parameter> parameters;
 
@@ -247,72 +255,5 @@ public class LoopAction extends ActionBase implements IAction {
   @Override
   public boolean isUnconditional() {
     return false;
-  }
-
-  /**
-   * Gets filename
-   *
-   * @return value of filename
-   */
-  @Override
-  public String getFilename() {
-    return filename;
-  }
-
-  /**
-   * @param filename The filename to set
-   */
-  public void setFilename(String filename) {
-    this.filename = filename;
-  }
-
-  /**
-   * Gets parameters
-   *
-   * @return value of parameters
-   */
-  public List<Parameter> getParameters() {
-    return parameters;
-  }
-
-  /**
-   * @param parameters The parameters to set
-   */
-  public void setParameters(List<Parameter> parameters) {
-    this.parameters = parameters;
-  }
-
-  /**
-   * Gets the condition expression to evaluate
-   *
-   * @return value of variableName
-   */
-  public String getCondition() {
-    return condition;
-  }
-
-  /**
-   * Set the condition expression to evaluate
-   *
-   * @param expression The expression to set
-   */
-  public void setCondition(String expression) {
-    this.condition = expression;
-  }
-
-  /**
-   * Gets runConfigurationName
-   *
-   * @return value of runConfigurationName
-   */
-  public String getRunConfigurationName() {
-    return runConfigurationName;
-  }
-
-  /**
-   * @param runConfigurationName The runConfigurationName to set
-   */
-  public void setRunConfigurationName(String runConfigurationName) {
-    this.runConfigurationName = runConfigurationName;
   }
 }

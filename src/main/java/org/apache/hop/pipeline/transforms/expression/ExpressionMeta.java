@@ -18,6 +18,8 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
@@ -37,6 +39,8 @@ import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
 /** This transform create field value with expression. */
+@Setter
+@Getter
 @Transform(
     id = "Expression",
     name = "i18n::Expression.Name",
@@ -188,13 +192,5 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
                   transformMeta));
         }
     }
-  }
-
-  public List<ExpressionField> getFields() {
-    return this.fields;
-  }
-
-  public void setFields(final List<ExpressionField> values) {
-    this.fields = values;
   }
 }

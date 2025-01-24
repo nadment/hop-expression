@@ -19,6 +19,8 @@ package org.apache.hop.pipeline.transforms.route;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
@@ -43,6 +45,8 @@ import org.apache.hop.pipeline.transform.stream.IStream.StreamType;
 import org.apache.hop.pipeline.transform.stream.Stream;
 import org.apache.hop.pipeline.transform.stream.StreamIcon;
 
+@Setter
+@Getter
 @Transform(
     id = "Route",
     image = "route.svg",
@@ -199,21 +203,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     }
   }
 
-  /**
-   * @return the defaultTargetTransformName
-   */
-  public String getDefaultTargetTransformName() {
-    return defaultTargetTransformName;
-  }
-
-  /**
-   * @param defaultTargetTransformName the defaultTargetTransformName to set
-   */
-  public void setDefaultTargetTransformName(String defaultTargetTransformName) {
-    this.defaultTargetTransformName = defaultTargetTransformName;
-  }
-
-  /** Returns the Input/Output metadata for this transform. */
+    /** Returns the Input/Output metadata for this transform. */
   @Override
   public ITransformIOMeta getTransformIOMeta() {
     ITransformIOMeta ioMeta = super.getTransformIOMeta(false);
@@ -338,21 +328,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     }
   }
 
-  /**
-   * @return the routes list
-   */
-  public List<Route> getRoutes() {
-    return routes;
-  }
-
-  /**
-   * @param routes the routes list to set
-   */
-  public void setRoutes(List<Route> routes) {
-    this.routes = routes;
-  }
-
-  @Override
+    @Override
   public boolean excludeFromCopyDistributeVerification() {
     return true;
   }

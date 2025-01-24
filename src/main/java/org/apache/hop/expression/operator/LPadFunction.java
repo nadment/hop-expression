@@ -63,7 +63,7 @@ public class LPadFunction extends Function {
   }
 
   /** The function left-pads a string with another string, to a certain length. */
-  private static final class StringLPadFunction extends LPadFunction {
+  public static final class StringLPadFunction extends LPadFunction {
     public static final StringLPadFunction INSTANCE = new StringLPadFunction();
 
     @Override
@@ -116,7 +116,7 @@ public class LPadFunction extends Function {
   }
 
   /** The function left-pads a binary with another binary, to a certain length. */
-  private static final class BinaryLPadFunction extends LPadFunction {
+  public static final class BinaryLPadFunction extends LPadFunction {
 
     public static final BinaryLPadFunction INSTANCE = new BinaryLPadFunction();
 

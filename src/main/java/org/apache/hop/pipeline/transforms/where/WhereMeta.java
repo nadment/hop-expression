@@ -18,6 +18,8 @@ package org.apache.hop.pipeline.transforms.where;
 
 import java.util.List;
 import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
@@ -39,6 +41,8 @@ import org.apache.hop.pipeline.transform.stream.Stream;
 import org.apache.hop.pipeline.transform.stream.StreamIcon;
 
 /** This transform filter rows with expression and keeps only rows where this expression is true. */
+@Setter
+@Getter
 @Transform(
     id = "Where",
     image = "where.svg",
@@ -51,18 +55,21 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class; // for i18n purposes
 
+  /** The target transform name if condition evaluate to true */
   @HopMetadataProperty(
       key = "send_true_to",
       injectionKey = "TRUE_TARGET_TRANSFORM_NAME",
       injectionKeyDescription = "WhereMeta.Injection.SEND_TRUE_TRANSFORM")
   private String trueTransformName;
 
+  /** The target transform name if condition evaluate to false */
   @HopMetadataProperty(
       key = "send_false_to",
       injectionKey = "FALSE_TARGET_TRANSFORM_NAME",
       injectionKeyDescription = "WhereMeta.Injection.SEND_FALSE_TRANSFORM")
   private String falseTransformName;
 
+  /** The condition expression */
   @HopMetadataProperty(
       key = "condition",
       injectionKey = "CONDITION",
@@ -168,21 +175,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     return Optional.empty();
   }
 
-  /** Get the condition expression */
-  public String getCondition() {
-    return condition;
-  }
-
-  /**
-   * Set the condition expression
-   *
-   * @param expression the condition expression
-   */
-  public void setCondition(String expression) {
-    this.condition = expression;
-  }
-
-  @Override
+    @Override
   public void convertIOMetaToTransformNames() {
     List<IStream> streams = getTransformIOMeta().getTargetStreams();
     trueTransformName = Const.NVL(streams.get(0).getTransformName(), "");
@@ -224,23 +217,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     return ioMeta;
   }
 
-  public String getTrueTransformName() {
-    return trueTransformName;
-  }
-
-  public void setTrueTransformName(final String transformName) {
-    this.trueTransformName = transformName;
-  }
-
-  public String getFalseTransformName() {
-    return falseTransformName;
-  }
-
-  public void setFalseTransformName(final String transformName) {
-    this.falseTransformName = transformName;
-  }
-
-  /**
+    /**
    * When an optional stream is selected, this method is called to handle the ETL metadata
    * implications of that.
    *

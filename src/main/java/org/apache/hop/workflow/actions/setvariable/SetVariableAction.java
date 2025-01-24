@@ -19,6 +19,8 @@ package org.apache.hop.workflow.actions.setvariable;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.Result;
 import org.apache.hop.core.annotations.Action;
@@ -41,6 +43,8 @@ import org.apache.hop.workflow.action.validator.ValidatorContext;
 import org.apache.hop.workflow.engine.IWorkflowEngine;
 
 /** This defines a 'Set variables' action. */
+@Setter
+@Getter
 @Action(
     id = "SET_VARIABLE",
     name = "i18n::SetVariableAction.Name",
@@ -211,15 +215,7 @@ public class SetVariableAction extends ActionBase implements IAction {
     return true;
   }
 
-  public List<SetVariableDefinition> getVariableDefinitions() {
-    return variableDefinitions;
-  }
-
-  public void setVariableDefinitions(List<SetVariableDefinition> variableDefinitions) {
-    this.variableDefinitions = variableDefinitions;
-  }
-
-  @Override
+    @Override
   public void check(
       List<ICheckResult> remarks,
       WorkflowMeta workflowMeta,

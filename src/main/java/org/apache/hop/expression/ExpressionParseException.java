@@ -19,8 +19,7 @@ package org.apache.hop.expression;
 import java.io.Serial;
 
 public class ExpressionParseException extends ExpressionException {
-  @Serial
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   /**
    * The zero-based character offset into the string being parsed at which the error was found

@@ -24,6 +24,8 @@
 package org.apache.hop.pipeline.transforms.clonerowexpression;
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
@@ -46,6 +48,8 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
+@Setter
+@Getter
 @Transform(
     id = "CloneRowExpression",
     name = "CloneRow.Name",
@@ -89,47 +93,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     super(); // allocate BaseTransformMeta
   }
 
-  public String getNrClones() {
-    return nrClones;
-  }
-
-  public void setNrClones(String nrclones) {
-    this.nrClones = nrclones;
-  }
-
-  public boolean isAddCloneFlag() {
-    return addCloneFlag;
-  }
-
-  public void setAddCloneFlag(boolean addcloneflag) {
-    this.addCloneFlag = addcloneflag;
-  }
-
-  public boolean isAddCloneNum() {
-    return addCloneNum;
-  }
-
-  public void setAddCloneNum(boolean addclonenum) {
-    this.addCloneNum = addclonenum;
-  }
-
-  public String getCloneNumField() {
-    return cloneNumField;
-  }
-
-  public void setCloneNumField(String clonenumfield) {
-    this.cloneNumField = clonenumfield;
-  }
-
-  public String getCloneFlagField() {
-    return cloneFlagField;
-  }
-
-  public void setCloneFlagField(String cloneflagfield) {
-    this.cloneFlagField = cloneflagfield;
-  }
-
-  @Override
+    @Override
   public void setDefault() {
     nrClones = "0";
     cloneFlagField = null;

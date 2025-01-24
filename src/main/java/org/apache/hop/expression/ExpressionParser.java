@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.Getter;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
@@ -136,7 +137,7 @@ public class ExpressionParser {
     return RESERVED_WORDS.contains(name.toUpperCase());
   }
 
-  private final String source;
+  @Getter private final String source;
 
   // Char position in source
   private int position = 0;
@@ -149,10 +150,6 @@ public class ExpressionParser {
   public ExpressionParser(final String source) {
     super();
     this.source = source;
-  }
-
-  public String getSource() {
-    return source;
   }
 
   protected int getPosition() {

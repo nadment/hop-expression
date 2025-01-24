@@ -85,8 +85,8 @@ public class NegateOperator extends PrefixUnaryOperator {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
   }
 
-  private static final class IntegerNegateOperator extends NegateOperator {
-    private static final IntegerNegateOperator INSTANCE = new IntegerNegateOperator();
+  public static final class IntegerNegateOperator extends NegateOperator {
+    public static final IntegerNegateOperator INSTANCE = new IntegerNegateOperator();
 
     private IntegerNegateOperator() {
       super();
@@ -104,8 +104,8 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
   }
 
-  private static final class NumberNegateOperator extends NegateOperator {
-    private static final NumberNegateOperator INSTANCE = new NumberNegateOperator();
+  public static final class NumberNegateOperator extends NegateOperator {
+    public static final NumberNegateOperator INSTANCE = new NumberNegateOperator();
 
     private NumberNegateOperator() {
       super();
@@ -119,8 +119,8 @@ public class NegateOperator extends PrefixUnaryOperator {
     }
   }
 
-  private static final class IntervalNegateOperator extends NegateOperator {
-    private static final IntervalNegateOperator INSTANCE = new IntervalNegateOperator();
+  public static final class IntervalNegateOperator extends NegateOperator {
+    public static final IntervalNegateOperator INSTANCE = new IntervalNegateOperator();
 
     private IntervalNegateOperator() {
       super();

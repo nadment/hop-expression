@@ -19,6 +19,8 @@ package org.apache.hop.pipeline.transforms.aggregate;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
@@ -44,6 +46,8 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
+@Setter
+@Getter
 @Transform(
     id = "Aggregate",
     image = "aggregate.svg",
@@ -63,7 +67,10 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       injectionGroupDescription = "AggregateMeta.Injection.GROUPS")
   private List<GroupField> groupFields;
 
-  @HopMetadataProperty(
+    /**
+     * The aggregate fields
+     */
+    @HopMetadataProperty(
       groupKey = "aggregates",
       key = "field",
       injectionGroupDescription = "AggregateMeta.Injection.AGGREGATES")
@@ -99,35 +106,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     this.aggregateFields = new ArrayList<>();
   }
 
-  /**
-   * @return Returns the list of aggregates.
-   */
-  public List<AggregateField> getAggregateFields() {
-    return aggregateFields;
-  }
-
-  /**
-   * @param aggregates The list of aggregates to set.
-   */
-  public void setAggregateFields(List<AggregateField> aggregates) {
-    this.aggregateFields = aggregates;
-  }
-
-  /**
-   * @return Returns the group by field.
-   */
-  public List<GroupField> getGroupFields() {
-    return groupFields;
-  }
-
-  /**
-   * @param groups The group by fields to set.
-   */
-  public void setGroupFields(List<GroupField> groups) {
-    this.groupFields = groups;
-  }
-
-  @Override
+    @Override
   public void getFields(
       IRowMeta rowMeta,
       String transformName,
@@ -216,19 +195,5 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
               transformMeta);
       remarks.add(cr);
     }
-  }
-
-  /**
-   * @return the alwaysGivingBackOneRow
-   */
-  public boolean isAlwaysGivingBackOneRow() {
-    return alwaysGivingBackOneRow;
-  }
-
-  /**
-   * @param alwaysGivingBackOneRow the alwaysGivingBackOneRow to set
-   */
-  public void setAlwaysGivingBackOneRow(boolean alwaysGivingBackOneRow) {
-    this.alwaysGivingBackOneRow = alwaysGivingBackOneRow;
   }
 }
