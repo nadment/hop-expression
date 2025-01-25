@@ -175,7 +175,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     return Optional.empty();
   }
 
-    @Override
+  @Override
   public void convertIOMetaToTransformNames() {
     List<IStream> streams = getTransformIOMeta().getTargetStreams();
     trueTransformName = Const.NVL(streams.get(0).getTransformName(), "");
@@ -217,7 +217,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     return ioMeta;
   }
 
-    /**
+  /**
    * When an optional stream is selected, this method is called to handle the ETL metadata
    * implications of that.
    *

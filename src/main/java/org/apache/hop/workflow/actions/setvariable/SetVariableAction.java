@@ -215,7 +215,7 @@ public class SetVariableAction extends ActionBase implements IAction {
     return true;
   }
 
-    @Override
+  @Override
   public void check(
       List<ICheckResult> remarks,
       WorkflowMeta workflowMeta,

@@ -42,7 +42,7 @@ public enum TypeFamily {
   // -------------------------------------------
   UNKNOWN,
   //
-  SYMBOL,
+  ENUM,
   //
   ANY,
   //

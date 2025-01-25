@@ -67,10 +67,8 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       injectionGroupDescription = "AggregateMeta.Injection.GROUPS")
   private List<GroupField> groupFields;
 
-    /**
-     * The aggregate fields
-     */
-    @HopMetadataProperty(
+  /** The aggregate fields */
+  @HopMetadataProperty(
       groupKey = "aggregates",
       key = "field",
       injectionGroupDescription = "AggregateMeta.Injection.AGGREGATES")
@@ -106,7 +104,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     this.aggregateFields = new ArrayList<>();
   }
 
-    @Override
+  @Override
   public void getFields(
       IRowMeta rowMeta,
       String transformName,

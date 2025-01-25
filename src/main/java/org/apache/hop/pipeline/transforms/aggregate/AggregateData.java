@@ -75,13 +75,13 @@ public final class AggregateData extends BaseTransformData implements ITransform
 
   public Map<AggregateKey, IExpressionProcessor[]> map;
 
-  protected IRowMeta groupMeta;
-  protected int[] groupIndex;
+  public IRowMeta groupMeta;
+  public int[] groupIndex;
 
-  protected IRowExpressionContext context;
-  protected Call[] aggregates;
-  protected AggregateFunction[] functions;
-  protected IRowMeta aggregateMeta;
+  public IRowExpressionContext context;
+  public Call[] aggregates;
+  public AggregateFunction[] functions;
+  public IRowMeta aggregateMeta;
 
   public boolean firstRead;
 

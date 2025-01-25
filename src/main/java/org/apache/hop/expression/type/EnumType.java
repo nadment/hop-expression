@@ -19,21 +19,21 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ConversionException;
 
-public final class TimeUnitType extends Type {
+public final class EnumType extends Type {
 
-  TimeUnitType(boolean nullable) {
+  EnumType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
     this.signature = generateSignature();
   }
 
   @Override
-  public TimeUnitType withNullability(boolean nullable) {
-    return new TimeUnitType(nullable);
+  public EnumType withNullability(boolean nullable) {
+    return new EnumType(nullable);
   }
 
   @Override
   public TypeName getName() {
-    return TypeName.TIMEUNIT;
+    return TypeName.ENUM;
   }
 
   @Override

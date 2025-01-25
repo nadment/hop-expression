@@ -93,7 +93,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     super(); // allocate BaseTransformMeta
   }
 
-    @Override
+  @Override
   public void setDefault() {
     nrClones = "0";
     cloneFlagField = null;

@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.TimeUnit;
 
 /**
  * Enumeration of the data type identifier which can be used to construct an expression.
@@ -70,7 +69,7 @@ public enum TypeName {
   /** An Array type */
   ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class),
 
-  TIMEUNIT(TypeFamily.SYMBOL, false, false, -1, -1, -1, -1, TimeUnit.class);
+  ENUM(TypeFamily.ENUM, false, false, -1, -1, -1, -1, Enum.class);
 
   /** If the precision parameter is supported. */
   private final boolean supportsPrecision;

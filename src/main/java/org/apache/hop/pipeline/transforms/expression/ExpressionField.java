@@ -19,7 +19,6 @@ package org.apache.hop.pipeline.transforms.expression;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 /** Contains the properties of the fields to set with expression. */
