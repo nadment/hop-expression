@@ -171,26 +171,46 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
               transformMeta);
     } else {
       // TODO: validate expression
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"), transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"),
+              transformMeta);
     }
     remarks.add(cr);
 
     if (addCloneFlag) {
       if (Utils.isEmpty(cloneFlagField)) {
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"), transformMeta);
+        cr =
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"),
+                transformMeta);
       } else {
         // TODO: validate expression
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"), transformMeta);
+        cr =
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_OK,
+                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"),
+                transformMeta);
       }
       remarks.add(cr);
     }
 
     if (addCloneNum) {
       if (Utils.isEmpty(cloneNumField)) {
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"), transformMeta);
+        cr =
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"),
+                transformMeta);
       } else {
         // TODO: validate expression
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"), transformMeta);
+        cr =
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_OK,
+                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"),
+                transformMeta);
       }
       remarks.add(cr);
     }

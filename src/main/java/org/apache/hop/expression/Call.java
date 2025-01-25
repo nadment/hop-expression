@@ -32,13 +32,13 @@ import org.apache.hop.expression.type.Types;
  */
 public class Call implements IExpression {
 
-  // The position of this expression in the source before compilation else 0.
+  /** The position of this expression in the source before compilation else 0. */
   protected final int position;
-  // The operator of this call
-  protected Operator operator;
-  // The operands of this call
+  /** The operator of this call */
+  protected final Operator operator;
+  /** The operands of this call */
   protected final IExpression[] operands;
-  // The return data type
+  /** The return data type */
   protected Type type = Types.UNKNOWN;
 
   public Call(Operator operator, IExpression... operands) {
@@ -97,15 +97,6 @@ public class Call implements IExpression {
    */
   public Operator getOperator() {
     return operator;
-  }
-
-  /**
-   * Change the operator, be very careful with this method!
-   *
-   * @param operator The operator to set
-   */
-  public void setOperator(Operator operator) {
-    this.operator = requireNonNull(operator, "operator");
   }
 
   /**

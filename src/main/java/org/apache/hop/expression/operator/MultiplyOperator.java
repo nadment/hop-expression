@@ -31,6 +31,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -73,7 +74,7 @@ public class MultiplyOperator extends BinaryOperator {
 
     for (IExpression operand : operands) {
 
-      // NULL as soon any operand is NULL
+      // NULL as soon any left is NULL
       if (operand.isNull()) {
         return Literal.NULL;
       }
@@ -138,21 +139,19 @@ public class MultiplyOperator extends BinaryOperator {
       return operands.peek();
     }
 
-    IExpression operand = operands.poll();
+    IExpression left = operands.poll();
     while (!operands.isEmpty()) {
-      call = new Call(MultiplyOperator.INSTANCE, operand, operands.poll());
+      IExpression right = operands.poll();
+      Type type = ReturnTypes.deriveMultiplyType(left.getType(), right.getType());
+      Operator operator =
+          (Types.isInteger(type))
+              ? IntegerMultiplyOperator.INSTANCE
+              : NumberMultiplyOperator.INSTANCE;
+      call = new Call(operator, left, right);
       call.inferReturnType();
-
-      // Optimize data type
-      if (Types.isInteger(call.getType())) {
-        call.setOperator(IntegerMultiplyOperator.INSTANCE);
-      } else {
-        call.setOperator(NumberMultiplyOperator.INSTANCE);
-      }
-
-      operand = call;
+      left = call;
     }
-    return operand;
+    return left;
   }
 
   @Override

@@ -307,7 +307,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  private static Type deriveAdditiveType(final Type type1, final Type type2) {
+  public static Type deriveAdditiveType(final Type type1, final Type type2) {
 
     if (type1.is(TypeName.DATE) && type2.is(TypeName.INTERVAL)) {
       return type1;
@@ -362,7 +362,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  private static Type deriveMultiplyType(final Type type1, final Type type2) {
+  public static Type deriveMultiplyType(final Type type1, final Type type2) {
     if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
     }
@@ -404,7 +404,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  private static Type deriveDivideType(final Type type1, final Type type2) {
+  public static Type deriveDivideType(final Type type1, final Type type2) {
 
     if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
@@ -443,7 +443,7 @@ public final class ReturnTypes {
    *   <li>p and s are capped at their maximum values
    * </ul>
    */
-  private static Type deriveModType(final Type type1, final Type type2) {
+  public static Type deriveModType(final Type type1, final Type type2) {
 
     if (Types.isString(type1) || Types.isString(type2)) {
       return Types.NUMBER;
