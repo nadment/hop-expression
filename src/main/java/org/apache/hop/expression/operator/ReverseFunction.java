@@ -55,7 +55,7 @@ public class ReverseFunction extends Function {
   }
 
   /** The function reverses the order of characters in a string value. */
-  private static final class StringReverseFunction extends ReverseFunction {
+  public static final class StringReverseFunction extends ReverseFunction {
     public static final ReverseFunction INSTANCE = new StringReverseFunction();
 
     @Override
@@ -69,7 +69,7 @@ public class ReverseFunction extends Function {
   }
 
   /** The function reverses the order of bytes in a binary value. */
-  private static final class BinaryReverseFunction extends ReverseFunction {
+  public static final class BinaryReverseFunction extends ReverseFunction {
     public static final ReverseFunction INSTANCE = new BinaryReverseFunction();
 
     @Override

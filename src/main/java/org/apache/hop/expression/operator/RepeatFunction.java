@@ -54,7 +54,7 @@ public class RepeatFunction extends Function {
   }
 
   /** The function repeats a string as many times as specified. */
-  private static final class StringRepeatFunction extends RepeatFunction {
+  public static final class StringRepeatFunction extends RepeatFunction {
     public static final StringRepeatFunction INSTANCE = new StringRepeatFunction();
 
     @Override
@@ -83,7 +83,7 @@ public class RepeatFunction extends Function {
   }
 
   /** The function repeats a binary as many times as specified. */
-  private static final class BinaryRepeatFunction extends RepeatFunction {
+  public static final class BinaryRepeatFunction extends RepeatFunction {
     public static final BinaryRepeatFunction INSTANCE = new BinaryRepeatFunction();
 
     @Override

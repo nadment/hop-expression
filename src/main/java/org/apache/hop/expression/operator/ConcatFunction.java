@@ -124,7 +124,7 @@ public class ConcatFunction extends Function {
   }
 
   /** String concatenation */
-  private static final class StringConcatFunction extends ConcatFunction {
+  public static final class StringConcatFunction extends ConcatFunction {
     public static final ConcatFunction INSTANCE = new StringConcatFunction();
 
     @Override
@@ -145,7 +145,7 @@ public class ConcatFunction extends Function {
   }
 
   /** Binary concatenation */
-  private static final class BinaryConcatFunction extends ConcatFunction {
+  public static final class BinaryConcatFunction extends ConcatFunction {
     public static final ConcatFunction INSTANCE = new BinaryConcatFunction();
 
     @Override

@@ -63,7 +63,7 @@ public class RPadFunction extends Function {
   }
 
   /** The function right-pads a string with another string, to a certain length. */
-  private static final class StringRPadFunction extends RPadFunction {
+  public static final class StringRPadFunction extends RPadFunction {
     public static final RPadFunction INSTANCE = new StringRPadFunction();
 
     @Override
@@ -119,7 +119,7 @@ public class RPadFunction extends Function {
   }
 
   /** The function right-pads a binary with another binary, to a certain length. */
-  private static final class BinaryRPadFunction extends RPadFunction {
+  public static final class BinaryRPadFunction extends RPadFunction {
     public static final RPadFunction INSTANCE = new BinaryRPadFunction();
 
     private static final byte[] DEFAULT = new byte[] {0x00};

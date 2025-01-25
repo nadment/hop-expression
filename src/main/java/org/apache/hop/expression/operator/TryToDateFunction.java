@@ -72,8 +72,8 @@ public class TryToDateFunction extends Function {
     return new Call(new StringTryToDateFunction(format), call.getOperands());
   }
 
-  private static final class StringTryToDateFunction extends TryToDateFunction {
-    private final DateTimeFormat format;
+  public static final class StringTryToDateFunction extends TryToDateFunction {
+    public final DateTimeFormat format;
 
     public StringTryToDateFunction(DateTimeFormat format) {
       super();
@@ -92,8 +92,8 @@ public class TryToDateFunction extends Function {
     }
   }
 
-  private static final class IntegerTryToDateFunction extends TryToDateFunction {
-    private static final TryToDateFunction INSTANCE = new IntegerTryToDateFunction();
+  public static final class IntegerTryToDateFunction extends TryToDateFunction {
+    public static final TryToDateFunction INSTANCE = new IntegerTryToDateFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -102,8 +102,8 @@ public class TryToDateFunction extends Function {
     }
   }
 
-  private static final class NumberTryToDateFunction extends TryToDateFunction {
-    private static final TryToDateFunction INSTANCE = new NumberTryToDateFunction();
+  public static final class NumberTryToDateFunction extends TryToDateFunction {
+    public static final TryToDateFunction INSTANCE = new NumberTryToDateFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

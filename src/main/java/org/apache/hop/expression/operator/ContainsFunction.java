@@ -54,7 +54,7 @@ public class ContainsFunction extends Function {
   }
 
   /** Contains string function */
-  private static final class StringContainsFunction extends ContainsFunction {
+  public static final class StringContainsFunction extends ContainsFunction {
     public static final ContainsFunction INSTANCE = new StringContainsFunction();
 
     @Override
@@ -72,7 +72,7 @@ public class ContainsFunction extends Function {
   }
 
   /** Contains binary function */
-  private static final class BinaryContainsFunction extends ContainsFunction {
+  public static final class BinaryContainsFunction extends ContainsFunction {
     public static final ContainsFunction INSTANCE = new BinaryContainsFunction();
 
     @Override

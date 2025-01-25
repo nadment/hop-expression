@@ -71,7 +71,7 @@ public class ExtractFunction extends Function {
   }
 
   /** Extracts the specified date or time part from a date, time, or timestamp. */
-  private static final class DateExtractFunction extends ExtractFunction {
+  public static final class DateExtractFunction extends ExtractFunction {
     public static final DateExtractFunction INSTANCE = new DateExtractFunction();
 
     @Override
@@ -100,7 +100,7 @@ public class ExtractFunction extends Function {
   }
 
   /** Extracts the specified time unit from a interval. */
-  private static final class IntervalExtractFunction extends ExtractFunction {
+  public static final class IntervalExtractFunction extends ExtractFunction {
     public static final IntervalExtractFunction INSTANCE = new IntervalExtractFunction();
 
     @Override

@@ -62,7 +62,7 @@ public class EndsWithFunction extends Function {
    * The function returns TRUE if the first value ends with second value. Both values must be data
    * type of string.
    */
-  private static final class StringEndsWithFunction extends EndsWithFunction {
+  public static final class StringEndsWithFunction extends EndsWithFunction {
     public static final StringEndsWithFunction INSTANCE = new StringEndsWithFunction();
 
     @Override
@@ -80,7 +80,7 @@ public class EndsWithFunction extends Function {
    * The function returns TRUE if the first value ends with second value. Both values must be data
    * type of binary.
    */
-  private static final class BinaryEndsWithFunction extends EndsWithFunction {
+  public static final class BinaryEndsWithFunction extends EndsWithFunction {
     public static final BinaryEndsWithFunction INSTANCE = new BinaryEndsWithFunction();
 
     @Override

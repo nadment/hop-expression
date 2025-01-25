@@ -35,8 +35,8 @@ import org.apache.hop.expression.util.Hex;
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
 
-  private static final class StringHexToBinaryFunction extends ToBinaryFunction {
-    private static final StringHexToBinaryFunction INSTANCE = new StringHexToBinaryFunction();
+  public static final class StringHexToBinaryFunction extends ToBinaryFunction {
+    public static final StringHexToBinaryFunction INSTANCE = new StringHexToBinaryFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -48,8 +48,8 @@ public class ToBinaryFunction extends Function {
     }
   }
 
-  private static final class StringUtf8ToBinaryFunction extends ToBinaryFunction {
-    private static final StringUtf8ToBinaryFunction INSTANCE = new StringUtf8ToBinaryFunction();
+  public static final class StringUtf8ToBinaryFunction extends ToBinaryFunction {
+    public static final StringUtf8ToBinaryFunction INSTANCE = new StringUtf8ToBinaryFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -61,8 +61,8 @@ public class ToBinaryFunction extends Function {
     }
   }
 
-  private static final class StringBase6ToBinaryFunction extends ToBinaryFunction {
-    private static final StringBase6ToBinaryFunction INSTANCE = new StringBase6ToBinaryFunction();
+  public static final class StringBase6ToBinaryFunction extends ToBinaryFunction {
+    public static final StringBase6ToBinaryFunction INSTANCE = new StringBase6ToBinaryFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

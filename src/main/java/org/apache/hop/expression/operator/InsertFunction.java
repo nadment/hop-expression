@@ -63,7 +63,7 @@ public class InsertFunction extends Function {
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * string value.
    */
-  private static final class StringInsertFunction extends InsertFunction {
+  public static final class StringInsertFunction extends InsertFunction {
     public static final InsertFunction INSTANCE = new StringInsertFunction();
 
     @Override
@@ -97,7 +97,7 @@ public class InsertFunction extends Function {
    * Replaces a substring of the specified length, starting at the specified position, with a new
    * binary value.
    */
-  private static final class BinaryInsertFunction extends InsertFunction {
+  public static final class BinaryInsertFunction extends InsertFunction {
 
     public static final InsertFunction INSTANCE = new BinaryInsertFunction();
 

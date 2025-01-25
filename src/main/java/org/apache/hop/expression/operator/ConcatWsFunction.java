@@ -54,7 +54,7 @@ public class ConcatWsFunction extends Function {
   }
 
   /** String concatenation function with separator */
-  private static final class StringConcatWsFunction extends ConcatWsFunction {
+  public static final class StringConcatWsFunction extends ConcatWsFunction {
     public static final ConcatWsFunction INSTANCE = new StringConcatWsFunction();
 
     @Override
@@ -81,7 +81,7 @@ public class ConcatWsFunction extends Function {
   }
 
   /** Binary concatenation function with separator */
-  private static final class BinaryConcatWsFunction extends ConcatWsFunction {
+  public static final class BinaryConcatWsFunction extends ConcatWsFunction {
     public static final ConcatWsFunction INSTANCE = new BinaryConcatWsFunction();
 
     @Override

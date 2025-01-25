@@ -64,8 +64,8 @@ public class ToNumberFunction extends Function {
     return new Call(new StringToNumberFunction(format), call.getOperands());
   }
 
-  private static final class StringToNumberFunction extends ToNumberFunction {
-    private final NumberFormat format;
+  public static final class StringToNumberFunction extends ToNumberFunction {
+    public final NumberFormat format;
 
     public StringToNumberFunction(NumberFormat format) {
       super();
@@ -80,8 +80,8 @@ public class ToNumberFunction extends Function {
     }
   }
 
-  private static final class DateToNumberFunction extends ToNumberFunction {
-    private static final ToNumberFunction INSTANCE = new DateToNumberFunction();
+  public static final class DateToNumberFunction extends ToNumberFunction {
+    public static final ToNumberFunction INSTANCE = new DateToNumberFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

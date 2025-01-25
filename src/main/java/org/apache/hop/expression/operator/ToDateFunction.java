@@ -72,8 +72,8 @@ public class ToDateFunction extends Function {
     return new Call(new StringToDateFunction(format), call.getOperands());
   }
 
-  private static final class StringToDateFunction extends ToDateFunction {
-    private final DateTimeFormat format;
+  public static final class StringToDateFunction extends ToDateFunction {
+    public final DateTimeFormat format;
 
     public StringToDateFunction(DateTimeFormat format) {
       super();
@@ -88,8 +88,8 @@ public class ToDateFunction extends Function {
     }
   }
 
-  private static final class IntegerToDateFunction extends ToDateFunction {
-    private static final IntegerToDateFunction INSTANCE = new IntegerToDateFunction();
+  public static final class IntegerToDateFunction extends ToDateFunction {
+    public static final IntegerToDateFunction INSTANCE = new IntegerToDateFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -99,8 +99,8 @@ public class ToDateFunction extends Function {
     }
   }
 
-  private static final class NumberToDateFunction extends ToDateFunction {
-    private static final ToDateFunction INSTANCE = new NumberToDateFunction();
+  public static final class NumberToDateFunction extends ToDateFunction {
+    public static final ToDateFunction INSTANCE = new NumberToDateFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -132,8 +132,8 @@ public class AddOperator extends BinaryOperator {
     return new Call(call.getPosition(), NumberAddOperator.INSTANCE, call.getOperands());
   }
 
-  private static final class IntegerAddOperator extends AddOperator {
-    private static final IntegerAddOperator INSTANCE = new IntegerAddOperator();
+  public static final class IntegerAddOperator extends AddOperator {
+    public static final IntegerAddOperator INSTANCE = new IntegerAddOperator();
 
     private IntegerAddOperator() {
       super();
@@ -164,9 +164,9 @@ public class AddOperator extends BinaryOperator {
     }
   }
 
-  private static final class NumberAddOperator extends AddOperator {
+  public static final class NumberAddOperator extends AddOperator {
 
-    private static final NumberAddOperator INSTANCE = new NumberAddOperator();
+    public static final NumberAddOperator INSTANCE = new NumberAddOperator();
 
     @Override
     public boolean isSymmetrical() {
@@ -190,8 +190,8 @@ public class AddOperator extends BinaryOperator {
   }
 
   /** Adds a specified interval to a date or timestamp */
-  private static final class IntervalToTemporalAddOperator extends AddOperator {
-    private static final IntervalToTemporalAddOperator INSTANCE =
+  public static final class IntervalToTemporalAddOperator extends AddOperator {
+    public static final IntervalToTemporalAddOperator INSTANCE =
         new IntervalToTemporalAddOperator();
 
     @Override
@@ -221,8 +221,8 @@ public class AddOperator extends BinaryOperator {
     }
   }
 
-  private static final class IntervalToIntervalAddOperator extends AddOperator {
-    private static final AddOperator INSTANCE = new IntervalToIntervalAddOperator();
+  public static final class IntervalToIntervalAddOperator extends AddOperator {
+    public static final AddOperator INSTANCE = new IntervalToIntervalAddOperator();
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

@@ -165,8 +165,8 @@ public class MultiplyOperator extends BinaryOperator {
     return Types.coercionMultiplyOperator(call);
   }
 
-  private static final class IntegerMultiplyOperator extends MultiplyOperator {
-    private static final MultiplyOperator INSTANCE = new IntegerMultiplyOperator();
+  public static final class IntegerMultiplyOperator extends MultiplyOperator {
+    public static final MultiplyOperator INSTANCE = new IntegerMultiplyOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -183,8 +183,8 @@ public class MultiplyOperator extends BinaryOperator {
     }
   }
 
-  private static final class NumberMultiplyOperator extends MultiplyOperator {
-    private static final MultiplyOperator INSTANCE = new NumberMultiplyOperator();
+  public static final class NumberMultiplyOperator extends MultiplyOperator {
+    public static final MultiplyOperator INSTANCE = new NumberMultiplyOperator();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -62,7 +62,7 @@ public class StartsWithFunction extends Function {
    * The function returns TRUE if the first value starts with second value. Both values must be data
    * type string or binary.
    */
-  private static final class StringStartsWithFunction extends StartsWithFunction {
+  public static final class StringStartsWithFunction extends StartsWithFunction {
     public static final StringStartsWithFunction INSTANCE = new StringStartsWithFunction();
 
     @Override
@@ -81,7 +81,7 @@ public class StartsWithFunction extends Function {
    * The function returns TRUE if the first value starts with second value. Both values must be data
    * type binary.
    */
-  private static final class BinaryStartsWithFunction extends StartsWithFunction {
+  public static final class BinaryStartsWithFunction extends StartsWithFunction {
     public static final BinaryStartsWithFunction INSTANCE = new BinaryStartsWithFunction();
 
     @Override

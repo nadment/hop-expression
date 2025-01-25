@@ -66,8 +66,8 @@ public class TryToNumberFunction extends Function {
     return new Call(new StringTryToNumberFunction(format), call.getOperands());
   }
 
-  private static final class StringTryToNumberFunction extends TryToNumberFunction {
-    private final NumberFormat format;
+  public static final class StringTryToNumberFunction extends TryToNumberFunction {
+    public final NumberFormat format;
 
     public StringTryToNumberFunction(NumberFormat format) {
       super();
@@ -87,8 +87,8 @@ public class TryToNumberFunction extends Function {
     }
   }
 
-  private static final class DateTryToNumberFunction extends TryToNumberFunction {
-    private static final TryToNumberFunction INSTANCE = new DateTryToNumberFunction();
+  public static final class DateTryToNumberFunction extends TryToNumberFunction {
+    public static final TryToNumberFunction INSTANCE = new DateTryToNumberFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

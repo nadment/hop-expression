@@ -63,8 +63,8 @@ public class ToBooleanFunction extends Function {
     return new Call(StringToBooleanFunction.INSTANCE, call.getOperands());
   }
 
-  private static final class StringToBooleanFunction extends ToBooleanFunction {
-    private static final StringToBooleanFunction INSTANCE = new StringToBooleanFunction();
+  public static final class StringToBooleanFunction extends ToBooleanFunction {
+    public static final StringToBooleanFunction INSTANCE = new StringToBooleanFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -73,8 +73,8 @@ public class ToBooleanFunction extends Function {
     }
   }
 
-  private static final class IntegerToBooleanFunction extends ToBooleanFunction {
-    private static final IntegerToBooleanFunction INSTANCE = new IntegerToBooleanFunction();
+  public static final class IntegerToBooleanFunction extends ToBooleanFunction {
+    public static final IntegerToBooleanFunction INSTANCE = new IntegerToBooleanFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -83,8 +83,8 @@ public class ToBooleanFunction extends Function {
     }
   }
 
-  private static final class NumberToBooleanFunction extends ToBooleanFunction {
-    private static final NumberToBooleanFunction INSTANCE = new NumberToBooleanFunction();
+  public static final class NumberToBooleanFunction extends ToBooleanFunction {
+    public static final NumberToBooleanFunction INSTANCE = new NumberToBooleanFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {

@@ -91,8 +91,8 @@ public class SubtractOperator extends BinaryOperator {
     return new Call(NumberSubtractOperator.INSTANCE, call.getOperands());
   }
 
-  private static final class IntegerSubtractOperator extends SubtractOperator {
-    private static final IntegerSubtractOperator INSTANCE = new IntegerSubtractOperator();
+  public static final class IntegerSubtractOperator extends SubtractOperator {
+    public static final IntegerSubtractOperator INSTANCE = new IntegerSubtractOperator();
 
     @Override
     public boolean coerceOperandsType(Call call) {
@@ -114,8 +114,8 @@ public class SubtractOperator extends BinaryOperator {
     }
   }
 
-  private static final class NumberSubtractOperator extends SubtractOperator {
-    private static final NumberSubtractOperator INSTANCE = new NumberSubtractOperator();
+  public static final class NumberSubtractOperator extends SubtractOperator {
+    public static final NumberSubtractOperator INSTANCE = new NumberSubtractOperator();
 
     @Override
     public boolean coerceOperandsType(Call call) {

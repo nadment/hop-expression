@@ -55,7 +55,7 @@ public class LengthFunction extends Function {
   }
 
   /** The function returns the number of characters of the specified string. */
-  private static final class StringLengthFunction extends LengthFunction {
+  public static final class StringLengthFunction extends LengthFunction {
     public static final StringLengthFunction INSTANCE = new StringLengthFunction();
 
     @Override
@@ -72,7 +72,7 @@ public class LengthFunction extends Function {
   }
 
   /** The function returns the number of characters of the specified binary. */
-  private static final class BinaryLengthFunction extends LengthFunction {
+  public static final class BinaryLengthFunction extends LengthFunction {
     public static final BinaryLengthFunction INSTANCE = new BinaryLengthFunction();
 
     @Override

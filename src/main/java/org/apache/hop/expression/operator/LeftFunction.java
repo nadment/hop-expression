@@ -58,7 +58,7 @@ public class LeftFunction extends Function {
   }
 
   /** The function extracts a number of characters from a string starting from left. */
-  private static final class StringLeftFunction extends LeftFunction {
+  public static final class StringLeftFunction extends LeftFunction {
     public static final StringLeftFunction INSTANCE = new StringLeftFunction();
 
     @Override
@@ -81,7 +81,7 @@ public class LeftFunction extends Function {
   }
 
   /** The function extracts a number of characters from a binary starting from left. */
-  private static final class BinaryLeftFunction extends LeftFunction {
+  public static final class BinaryLeftFunction extends LeftFunction {
     public static final BinaryLeftFunction INSTANCE = new BinaryLeftFunction();
 
     @Override

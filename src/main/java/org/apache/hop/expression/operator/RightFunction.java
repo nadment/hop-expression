@@ -58,7 +58,7 @@ public class RightFunction extends Function {
   }
 
   /** The function extracts a number of characters from a string (starting from right) */
-  private static final class StringRightFunction extends RightFunction {
+  public static final class StringRightFunction extends RightFunction {
     public static final RightFunction INSTANCE = new StringRightFunction();
 
     @Override
@@ -81,7 +81,7 @@ public class RightFunction extends Function {
   }
 
   /** The function extracts a number of bytes from a binary (starting from right) */
-  private static final class BinaryRightFunction extends RightFunction {
+  public static final class BinaryRightFunction extends RightFunction {
     public static final RightFunction INSTANCE = new BinaryRightFunction();
 
     @Override

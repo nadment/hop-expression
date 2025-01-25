@@ -52,8 +52,8 @@ public class NullIfZeroFunction extends Function {
     return new Call(NumberNullIfZeroFunction.INSTANCE, call.getOperands());
   }
 
-  private static final class NumberNullIfZeroFunction extends NullIfZeroFunction {
-    private static final NumberNullIfZeroFunction INSTANCE = new NumberNullIfZeroFunction();
+  public static final class NumberNullIfZeroFunction extends NullIfZeroFunction {
+    public static final NumberNullIfZeroFunction INSTANCE = new NumberNullIfZeroFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -65,8 +65,8 @@ public class NullIfZeroFunction extends Function {
     }
   }
 
-  private static final class IntegerNullIfZeroFunction extends NullIfZeroFunction {
-    private static final IntegerNullIfZeroFunction INSTANCE = new IntegerNullIfZeroFunction();
+  public static final class IntegerNullIfZeroFunction extends NullIfZeroFunction {
+    public static final IntegerNullIfZeroFunction INSTANCE = new IntegerNullIfZeroFunction();
 
     @Override
     public Object eval(final IExpression[] operands) {
