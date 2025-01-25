@@ -1221,7 +1221,7 @@ import org.apache.hop.expression.ExpressionException;
   private final Locale locale;
 
   /** The parsed formats. */
-  private final transient Format[] formats;
+  private final Format[] formats;
 
   public PatternDateTimeFormat(final String pattern) {
     this(pattern, Locale.getDefault());
