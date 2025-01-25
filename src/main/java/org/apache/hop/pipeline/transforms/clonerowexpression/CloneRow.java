@@ -84,7 +84,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     if (first) {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
-      data.NrPrevFields = getInputRowMeta().size();
+      data.nrPrevFields = getInputRowMeta().size();
       meta.getFields(data.outputRowMeta, getTransformName(), null, null, this, metadataProvider);
       data.addInfosToRow = (meta.isAddCloneFlag() || meta.isAddCloneNum());
 
@@ -126,7 +126,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
       // It's the original row.
       // We need here to add some infos in order to identify this row
       outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
-      int rowIndex = data.NrPrevFields;
+      int rowIndex = data.nrPrevFields;
       if (meta.isAddCloneFlag()) {
         // This row is not a clone but the original row
         outputRowData[rowIndex] = false;
@@ -149,7 +149,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
       if (data.addInfosToRow) {
         // We need here to add more infos about clone rows
         outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
-        int rowIndex = data.NrPrevFields;
+        int rowIndex = data.nrPrevFields;
         if (meta.isAddCloneFlag()) {
           // This row is a clone row
           outputRowData[rowIndex] = true;
