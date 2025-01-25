@@ -23,7 +23,7 @@ Performs a bitwise NOT operation on an integer value.
 ----
 BIT_NOT( integer )
 ----
-The `~` operator provides alternative syntax.
+The xref:bit_not.adoc["~",role=op] operator provides alternative syntax.
 ----
 ~ integer
 ----

@@ -24,7 +24,7 @@ Performs a bitwise AND operation between two integer values.
 BIT_AND( integer1, integer2 ) 
 ----
 
-The `&` operator provides alternative syntax.
+The xref:bit_and.adoc["&",role=op] operator provides alternative syntax.
 ----
 integer1 & integer2
 ----

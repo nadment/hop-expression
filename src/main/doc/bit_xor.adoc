@@ -23,7 +23,7 @@ Performs a bitwise exclusive OR operation between two integer values.
 ----
 BIT_XOR( integer1, integer2 ) 
 ----
-The `^` operator provides alternative syntax.
+The xref:bit_xor.adoc["^",role=op] operator provides alternative syntax.
 ----
 integer1 ^ integer2
 ----

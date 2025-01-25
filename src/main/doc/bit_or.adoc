@@ -23,7 +23,7 @@ Performs a bitwise OR operation between two integer values.
 ----
 BIT_OR( integer1, integer2 )
 ----
-The `|` operator provides alternative syntax.
+The xref:bit_or.adoc["|",role=op] operator provides alternative syntax.
 ----
 integer1 | integer2
 ----

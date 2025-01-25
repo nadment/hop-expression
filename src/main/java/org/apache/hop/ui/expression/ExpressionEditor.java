@@ -156,7 +156,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           MultiplyOperator.INSTANCE,
           DivOperator.INSTANCE,
           // STRING OPERATOR
-          ConcatFunction.INSTANCE,
           new ConcatFunction("||"),
           // ARRAY OPERATOR
           ElementAtOperator.INSTANCE,
