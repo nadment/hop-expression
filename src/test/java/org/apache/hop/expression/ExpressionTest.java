@@ -469,6 +469,6 @@ public class ExpressionTest {
   public void test() throws Exception {
     Locale.setDefault(new Locale("fr", "BE"));
 
-    optimize("[1,2,3] || [4,5] || [6,7]", "[1,2,3,4,5,6,7]");
+    optimize("2*-FIELD_INTEGER", "2*(-FIELD_INTEGER)");
   }
 }

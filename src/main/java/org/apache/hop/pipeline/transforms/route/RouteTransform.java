@@ -32,7 +32,7 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
-/** Route input rows base on conditions. */
+/** Route input rows base on conditions expressions. */
 public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
 
@@ -118,9 +118,9 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     for (RouteTarget target : data.targets) {
 
       try {
-        Boolean predicat = target.expression.getValue(Boolean.class);
+        boolean predicate = target.expression.getValue(Boolean.class);
 
-        if (predicat) {
+        if (predicate) {
           toDefault = false;
           putRowTo(data.rowMeta, row, target.rowSet);
           break;

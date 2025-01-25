@@ -35,11 +35,11 @@ public class CloneRowData extends BaseTransformData implements ITransformData {
   protected IExpression numberOfClones;
   protected IRowMeta outputRowMeta;
   protected boolean addInfosToRow;
-  protected int NrPrevFields;
+  protected int nrPrevFields;
 
   public CloneRowData() {
     super();
     addInfosToRow = false;
-    NrPrevFields = 0;
+    nrPrevFields = 0;
   }
 }
