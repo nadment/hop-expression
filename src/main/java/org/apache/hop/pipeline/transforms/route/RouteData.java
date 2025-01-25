@@ -24,7 +24,7 @@ import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
-public class RouteData extends BaseTransformData implements ITransformData {
+public final class RouteData extends BaseTransformData implements ITransformData {
 
   public IRowMeta rowMeta;
   public IRowSet defaultRowSet;

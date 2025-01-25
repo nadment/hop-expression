@@ -55,7 +55,7 @@ import org.apache.hop.pipeline.transform.stream.StreamIcon;
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
     keywords = "i18n::Route.Keywords",
     documentationUrl = "/pipeline/transforms/route.html")
-public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
+public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
 
   private static final IStream newDefaultStream =

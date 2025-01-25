@@ -23,6 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 /** Contains the properties of the fields to set with expression. */
+@Getter
+@Setter
 public final class ExpressionField {
 
   public ExpressionField() {
@@ -40,41 +42,25 @@ public final class ExpressionField {
   }
 
   /** The target field name */
-  @Getter
   @HopMetadataProperty(
       key = "name",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
   private String name;
 
   /** The expression source */
-  @Getter
-  @Setter
   @HopMetadataProperty(
       key = "expression",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
   private String expression;
 
-  @Getter
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Type")
   private String type;
 
-  @Getter
-  @Setter
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
   private int length = -1;
 
-  @Getter
-  @Setter
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
   private int precision = -1;
-
-  public void setName(final String name) {
-    this.name = StringUtils.stripToNull(name);
-  }
-
-  public void setType(String type) {
-    this.type = StringUtils.stripToNull(type);
-  }
 
   @Override
   public boolean equals(Object o) {

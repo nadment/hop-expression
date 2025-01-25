@@ -30,7 +30,7 @@ import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
-public class AggregateData extends BaseTransformData implements ITransformData {
+public final class AggregateData extends BaseTransformData implements ITransformData {
   @Getter
   public class AggregateKey {
     private final Object[] values;

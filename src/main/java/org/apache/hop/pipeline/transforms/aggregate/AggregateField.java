@@ -23,7 +23,7 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 
 @Setter
 @Getter
-public class AggregateField {
+public final class AggregateField {
   /** The aggregate expression */
   @HopMetadataProperty(
       key = "expression",

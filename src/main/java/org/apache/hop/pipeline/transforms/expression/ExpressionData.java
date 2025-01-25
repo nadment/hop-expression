@@ -22,11 +22,11 @@ import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
-public class ExpressionData extends BaseTransformData implements ITransformData {
+public final class ExpressionData extends BaseTransformData implements ITransformData {
 
-  protected IRowMeta outputRowMeta;
-  protected IRowExpressionContext context;
-  protected IExpression[] expressions;
+  public IRowMeta outputRowMeta;
+  public IRowExpressionContext context;
+  public IExpression[] expressions;
 
   public ExpressionData() {
     super();

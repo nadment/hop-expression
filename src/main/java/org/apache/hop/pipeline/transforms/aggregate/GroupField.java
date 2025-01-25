@@ -22,14 +22,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
-public class GroupField {
+@Setter
+@Getter
+public final class GroupField {
 
   /** The group field name */
   @HopMetadataProperty(
       injectionKey = "GROUP_FIELD",
       injectionKeyDescription = "AggregateMeta.Injection.GROUP_FIELD")
-  @Getter
-  @Setter
   private String name;
 
   public GroupField() {}

@@ -162,7 +162,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
       ExpressionField value = new ExpressionField();
       value.setName(StringUtils.stripToNull(item.getText(1)));
       value.setExpression(item.getText(2));
-      value.setType(item.getText(3));
+      value.setType(StringUtils.stripToNull(item.getText(3)));
       value.setLength(Const.toInt(item.getText(4), -1));
       value.setPrecision(Const.toInt(item.getText(5), -1));
       fields.add(value);

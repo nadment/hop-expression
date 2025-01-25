@@ -20,7 +20,7 @@ package org.apache.hop.pipeline.transforms.route;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.expression.IExpression;
 
-public class RouteTarget {
+public final class RouteTarget {
   final Route route;
   final IExpression expression;
   final IRowSet rowSet;
