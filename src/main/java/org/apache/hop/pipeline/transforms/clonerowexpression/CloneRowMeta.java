@@ -162,40 +162,35 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
     CheckResult cr;
-    String error_message = "";
 
     if (Utils.isEmpty(nrClones)) {
-      error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing");
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
+      cr =
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing"),
+              transformMeta);
     } else {
       // TODO: validate expression
-      error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK");
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, error_message, transformMeta);
+      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"), transformMeta);
     }
     remarks.add(cr);
 
     if (addCloneFlag) {
       if (Utils.isEmpty(cloneFlagField)) {
-        error_message =
-            BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing");
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"), transformMeta);
       } else {
         // TODO: validate expression
-        error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk");
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, error_message, transformMeta);
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"), transformMeta);
       }
       remarks.add(cr);
     }
 
     if (addCloneNum) {
       if (Utils.isEmpty(cloneNumField)) {
-        error_message =
-            BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing");
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"), transformMeta);
       } else {
         // TODO: validate expression
-        error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk");
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, error_message, transformMeta);
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"), transformMeta);
       }
       remarks.add(cr);
     }

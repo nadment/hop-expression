@@ -174,7 +174,7 @@ public class CaseSimpleOperator extends Operator {
   public boolean coerceOperandsType(Call call) {
     boolean coerced = false;
 
-    Type type = getLeastRestrictive((Array) call.getOperand(1));
+    Type type = getLeastRestrictive(call.getOperand(1));
     type = getLeastRestrictive(type, call.getOperand(0).getType());
 
     // Coerce value operand

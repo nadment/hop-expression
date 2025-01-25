@@ -147,35 +147,35 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     PropsUi.setLook(wnrClone);
     wnrClone.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.nrClone.Tooltip"));
     wnrClone.addModifyListener(lsMod);
-    FormData fdNrClone = new FormData();
-    fdNrClone.left = new FormAttachment(middle, 0);
-    fdNrClone.top = new FormAttachment(wTransformName, margin * 2);
-    fdNrClone.right = new FormAttachment(100, 0);
-    wnrClone.setLayoutData(fdNrClone);
+    FormData fdnrClone = new FormData();
+    fdnrClone.left = new FormAttachment(middle, 0);
+    fdnrClone.top = new FormAttachment(wTransformName, margin * 2);
+    fdnrClone.right = new FormAttachment(100, 0);
+    wnrClone.setLayoutData(fdnrClone);
 
     // ///////////////////////////////
     // START OF Origin files GROUP //
     // ///////////////////////////////
 
-    Group wOutputFields = new Group(shell, SWT.SHADOW_NONE);
-    PropsUi.setLook(wOutputFields);
-    wOutputFields.setText(BaseMessages.getString(PKG, "CloneRowDialog.wOutpuFields.Label"));
+    Group wOutpuFields = new Group(shell, SWT.SHADOW_NONE);
+    PropsUi.setLook(wOutpuFields);
+    wOutpuFields.setText(BaseMessages.getString(PKG, "CloneRowDialog.wOutpuFields.Label"));
 
-    FormLayout fdOutpuFieldsgroupLayout = new FormLayout();
-    fdOutpuFieldsgroupLayout.marginWidth = 10;
-    fdOutpuFieldsgroupLayout.marginHeight = 10;
-    wOutputFields.setLayout(fdOutpuFieldsgroupLayout);
+    FormLayout OutpuFieldsgroupLayout = new FormLayout();
+    OutpuFieldsgroupLayout.marginWidth = 10;
+    OutpuFieldsgroupLayout.marginHeight = 10;
+    wOutpuFields.setLayout(OutpuFieldsgroupLayout);
 
     // add clone flag?
-    wladdCloneFlag = new Label(wOutputFields, SWT.RIGHT);
+    wladdCloneFlag = new Label(wOutpuFields, SWT.RIGHT);
     wladdCloneFlag.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Label"));
     PropsUi.setLook(wladdCloneFlag);
-    FormData fdlAddCloneFlag = new FormData();
-    fdlAddCloneFlag.left = new FormAttachment(0, 0);
-    fdlAddCloneFlag.top = new FormAttachment(0, 0);
-    fdlAddCloneFlag.right = new FormAttachment(middle, -margin);
-    wladdCloneFlag.setLayoutData(fdlAddCloneFlag);
-    waddCloneFlag = new Button(wOutputFields, SWT.CHECK);
+    FormData fdladdCloneFlag = new FormData();
+    fdladdCloneFlag.left = new FormAttachment(0, 0);
+    fdladdCloneFlag.top = new FormAttachment(0, 0);
+    fdladdCloneFlag.right = new FormAttachment(middle, -margin);
+    wladdCloneFlag.setLayoutData(fdladdCloneFlag);
+    waddCloneFlag = new Button(wOutpuFields, SWT.CHECK);
     waddCloneFlag.setToolTipText(
         BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Tooltip"));
     PropsUi.setLook(waddCloneFlag);
@@ -194,17 +194,17 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     waddCloneFlag.addSelectionListener(lsSelR);
 
     // clone falg field line
-    wlcloneFlagField = new Label(wOutputFields, SWT.RIGHT);
+    wlcloneFlagField = new Label(wOutpuFields, SWT.RIGHT);
     wlcloneFlagField.setText(BaseMessages.getString(PKG, "CloneRowDialog.cloneFlagField.Label"));
     PropsUi.setLook(wlcloneFlagField);
-    FormData fdlCloneFlagField = new FormData();
-    fdlCloneFlagField.left = new FormAttachment(0, 0);
-    fdlCloneFlagField.right = new FormAttachment(middle, -margin);
-    fdlCloneFlagField.top = new FormAttachment(waddCloneFlag, margin * 2);
-    wlcloneFlagField.setLayoutData(fdlCloneFlagField);
+    FormData fdlcloneFlagField = new FormData();
+    fdlcloneFlagField.left = new FormAttachment(0, 0);
+    fdlcloneFlagField.right = new FormAttachment(middle, -margin);
+    fdlcloneFlagField.top = new FormAttachment(waddCloneFlag, margin * 2);
+    wlcloneFlagField.setLayoutData(fdlcloneFlagField);
 
     wcloneFlagField =
-        new ExpressionText(getVariables(), wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        new ExpressionText(getVariables(), wOutpuFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     PropsUi.setLook(wcloneFlagField);
     wcloneFlagField.setToolTipText(
         BaseMessages.getString(PKG, "CloneRowDialog.cloneFlagField.Tooltip"));
@@ -216,22 +216,22 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     wcloneFlagField.setLayoutData(fdcloneFlagField);
 
     // add clone num?
-    wladdCloneNum = new Label(wOutputFields, SWT.RIGHT);
+    wladdCloneNum = new Label(wOutpuFields, SWT.RIGHT);
     wladdCloneNum.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneNum.Label"));
     PropsUi.setLook(wladdCloneNum);
-    FormData fdlAddCloneNum = new FormData();
-    fdlAddCloneNum.left = new FormAttachment(0, 0);
-    fdlAddCloneNum.top = new FormAttachment(wcloneFlagField, margin);
-    fdlAddCloneNum.right = new FormAttachment(middle, -margin);
-    wladdCloneNum.setLayoutData(fdlAddCloneNum);
-    waddCloneNum = new Button(wOutputFields, SWT.CHECK);
+    FormData fdladdCloneNum = new FormData();
+    fdladdCloneNum.left = new FormAttachment(0, 0);
+    fdladdCloneNum.top = new FormAttachment(wcloneFlagField, margin);
+    fdladdCloneNum.right = new FormAttachment(middle, -margin);
+    wladdCloneNum.setLayoutData(fdladdCloneNum);
+    waddCloneNum = new Button(wOutpuFields, SWT.CHECK);
     waddCloneNum.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneNum.Tooltip"));
     PropsUi.setLook(waddCloneNum);
-    FormData fdAddCloneNum = new FormData();
-    fdAddCloneNum.left = new FormAttachment(middle, 0);
-    fdAddCloneNum.top = new FormAttachment(wcloneFlagField, margin);
-    fdAddCloneNum.right = new FormAttachment(100, 0);
-    waddCloneNum.setLayoutData(fdAddCloneNum);
+    FormData fdaddCloneNum = new FormData();
+    fdaddCloneNum.left = new FormAttachment(middle, 0);
+    fdaddCloneNum.top = new FormAttachment(wcloneFlagField, margin);
+    fdaddCloneNum.right = new FormAttachment(100, 0);
+    waddCloneNum.setLayoutData(fdaddCloneNum);
     waddCloneNum.addSelectionListener(
         new SelectionAdapter() {
           public void widgetSelected(SelectionEvent arg0) {
@@ -241,17 +241,17 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
         });
 
     // clone num field line
-    wlCloneNumField = new Label(wOutputFields, SWT.RIGHT);
+    wlCloneNumField = new Label(wOutpuFields, SWT.RIGHT);
     wlCloneNumField.setText(BaseMessages.getString(PKG, "CloneRowDialog.cloneNumField.Label"));
     PropsUi.setLook(wlCloneNumField);
-    fdlCloneFlagField = new FormData();
-    fdlCloneFlagField.left = new FormAttachment(0, 0);
-    fdlCloneFlagField.right = new FormAttachment(middle, -margin);
-    fdlCloneFlagField.top = new FormAttachment(waddCloneNum, margin);
-    wlCloneNumField.setLayoutData(fdlCloneFlagField);
+    fdlcloneFlagField = new FormData();
+    fdlcloneFlagField.left = new FormAttachment(0, 0);
+    fdlcloneFlagField.right = new FormAttachment(middle, -margin);
+    fdlcloneFlagField.top = new FormAttachment(waddCloneNum, margin);
+    wlCloneNumField.setLayoutData(fdlcloneFlagField);
 
     wCloneNumField =
-        new ExpressionText(getVariables(), wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        new ExpressionText(getVariables(), wOutpuFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     PropsUi.setLook(wCloneNumField);
     wCloneNumField.setToolTipText(
         BaseMessages.getString(PKG, "CloneRowDialog.cloneNumField.Tooltip"));
@@ -266,7 +266,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     fdOutpuFields.left = new FormAttachment(0, margin);
     fdOutpuFields.top = new FormAttachment(wlnrClone, 2 * margin);
     fdOutpuFields.right = new FormAttachment(100, -margin);
-    wOutputFields.setLayoutData(fdOutpuFields);
+    wOutpuFields.setLayoutData(fdOutpuFields);
 
     // ///////////////////////////////////////////////////////////
     // / END OF Origin files GROUP
@@ -279,7 +279,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     wCancel = new Button(shell, SWT.PUSH);
     wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
     wCancel.addListener(SWT.Selection, e -> cancel());
-    setButtonPositions(new Button[] {wOk, wCancel}, margin, wOutputFields);
+    setButtonPositions(new Button[] {wOk, wCancel}, margin, wOutpuFields);
 
     getData();
     activeaddCloneFlag();
