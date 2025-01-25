@@ -33,28 +33,26 @@ import org.apache.hop.expression.type.Types;
 
 public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
+  private static final int MAX_LOOP_ATTEMPTS = 1000;
   private final IExpressionContext context;
-  private boolean changed;
+  private boolean hasChanged;
 
   public ExpressionCompiler(IExpressionContext context) {
     this.context = context;
   }
 
   public IExpression compile(IExpression expression) throws ExpressionException {
-
-    int loop = 0;
+    int attemptCount = 0;
     do {
-      changed = false;
+      hasChanged = false;
       expression = expression.accept(this);
-
-      // Check a maximum loop to avoid infinite loop
-      if (loop++ > 1000) {
+      // Vérification pour éviter une boucle infinie
+      if (attemptCount++ > MAX_LOOP_ATTEMPTS) {
         throw new ExpressionException(
             ErrorCode.INTERNAL_ERROR,
-            "compilation: Too many try for expression %1$s".formatted(expression));
+            "compilation: Too many attempts for expression %1$s".formatted(expression));
       }
-    } while (changed);
-
+    } while (hasChanged);
     return expression;
   }
 
@@ -78,13 +76,14 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
       // Inferring return type
       call.inferReturnType();
+      hasChanged |= call.getOperator().coerceOperandsType(call);
 
       // Coerce operands data type
-      changed |= call.getOperator().coerceOperandsType(call);
+      hasChanged |= call.getOperator().coerceOperandsType(call);
 
       // If something changed
       if (!call.equals(original)) {
-        changed = true;
+        hasChanged = true;
       }
 
       // Evaluate if the call is constant
@@ -99,25 +98,8 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
           // Some operator don't know return type like JSON_VALUE.
           if (TypeName.ANY.equals(type.getName())) {
-            if (value == null) {
-              type = Types.STRING;
-            } else if (value instanceof Boolean) {
-              type = Types.BOOLEAN;
-            } else if (value instanceof Long integer) {
-              type = IntegerType.from(integer);
-            } else if (value instanceof BigDecimal number) {
-              type = NumberType.from(number);
-            } else if (value instanceof String string) {
-              type = StringType.from(string);
-            } else if (value instanceof ZonedDateTime) {
-              type = Types.DATE;
-            } else if (value instanceof Interval) {
-              type = Types.INTERVAL;
-            } else if (value instanceof JsonNode) {
-              type = Types.JSON;
-            } else if (value instanceof byte[] bytes) {
-              type = BinaryType.from(bytes);
-            } else {
+            type = Types.inferTypeFromValue(value);
+            if (type == null) {
               return call;
             }
           }
@@ -126,7 +108,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
             value = type.cast(value);
           }
 
-          changed = true;
+          hasChanged = true;
 
           // If the value is null, change nullability of the type.
           if (value == null) {
@@ -147,18 +129,17 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   @Override
   public IExpression visitArray(final Array array) {
     int size = array.size();
-
     List<IExpression> expressions = new ArrayList<>(size);
     List<Type> types = new ArrayList<>(size);
+
     for (IExpression expression : array) {
       expression = expression.accept(this);
       expressions.add(expression);
       types.add(expression.getType());
     }
 
-    Type type = Types.getLeastRestrictive(types);
-
-    return new Array(ArrayType.of(type), expressions);
+    Type elementType = Types.getLeastRestrictive(types);
+    return new Array(ArrayType.of(elementType), expressions);
   }
 
   @Override

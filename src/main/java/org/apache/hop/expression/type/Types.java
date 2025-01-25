@@ -15,8 +15,11 @@
 
 package org.apache.hop.expression.type;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBinary;
@@ -30,6 +33,7 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.operator.CastOperator;
@@ -437,9 +441,45 @@ public class Types {
     return type.is(TypeName.DATE);
   }
 
+  /**
+   * Determines whether the given {@code Type} is of type INTERVAL.
+   *
+   * @param type the {@code Type} to be checked, which may be null
+   * @return {@code true} if the type is INTERVAL; {@code false} otherwise
+   */
   public static boolean isInterval(final Type type) {
     if (type == null) return false;
     return type.is(TypeName.INTERVAL);
+  }
+
+  /**
+   * Infers the type of the given value and returns the corresponding {@code Type}.
+   *
+   * @param value the value from which the type is inferred.
+   * @return the inferred {@code Type} corresponding to the value. Returns {@code null} if
+   *         the type cannot be determined or the value's type is unsupported.
+   */
+  public static Type inferTypeFromValue(Object value) {
+    if (value == null) {
+      return Types.STRING;
+    } else if (value instanceof Boolean) {
+      return Types.BOOLEAN;
+    } else if (value instanceof Long integer) {
+      return IntegerType.from(integer);
+    } else if (value instanceof BigDecimal number) {
+      return NumberType.from(number);
+    } else if (value instanceof String string) {
+      return StringType.from(string);
+    } else if (value instanceof ZonedDateTime) {
+      return Types.DATE;
+    } else if (value instanceof Interval) {
+      return Types.INTERVAL;
+    } else if (value instanceof JsonNode) {
+      return Types.JSON;
+    } else if (value instanceof byte[] bytes) {
+      return BinaryType.from(bytes);
+    }
+    return null;
   }
 
   public static IValueMeta createValueMeta(final String name, final TypeName typeId) {

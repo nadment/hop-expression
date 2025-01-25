@@ -34,11 +34,14 @@ public class Call implements IExpression {
 
   /** The position of this expression in the source before compilation else 0. */
   protected final int position;
-  /** The operator of this call */
+
+  /** The operator of this call. */
   protected final Operator operator;
-  /** The operands of this call */
+
+  /** The operands of this call. */
   protected final IExpression[] operands;
-  /** The return data type */
+
+  /** The return type. The type is unknown before validation. */
   protected Type type = Types.UNKNOWN;
 
   public Call(Operator operator, IExpression... operands) {

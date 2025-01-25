@@ -36,7 +36,7 @@ public final class ExpressionFactory {
     ExpressionCompiler compiler = new ExpressionCompiler(context);
     expression = compiler.compile(expression);
 
-    // Return type Unknown is not expected here
+    // Check return type, Unknown is not expected here
     if (!expression.isNull() && expression.getType().is(TypeName.UNKNOWN)) {
       throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
     }
