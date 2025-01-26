@@ -19,6 +19,7 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.widget.ControlSpaceKeyAdapter;
 import org.apache.hop.ui.core.widget.IGetCaretPosition;
@@ -108,7 +109,11 @@ public class ExpressionText extends Composite {
     // add button
     Image image =
         SwtSvgImageUtil.getImage(
-            Display.getCurrent(), getClass().getClassLoader(), "expression.svg", 14, 14);
+            Display.getCurrent(),
+            getClass().getClassLoader(),
+            "expression.svg",
+            ConstUi.MEDIUM_ICON_SIZE,
+            ConstUi.MEDIUM_ICON_SIZE);
 
     wToolBar = new ToolBar(this, SWT.FLAT);
     final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);

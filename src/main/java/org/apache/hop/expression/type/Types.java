@@ -15,11 +15,12 @@
 
 package org.apache.hop.expression.type;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBinary;
@@ -456,8 +457,8 @@ public class Types {
    * Infers the type of the given value and returns the corresponding {@code Type}.
    *
    * @param value the value from which the type is inferred.
-   * @return the inferred {@code Type} corresponding to the value. Returns {@code null} if
-   *         the type cannot be determined or the value's type is unsupported.
+   * @return the inferred {@code Type} corresponding to the value. Returns {@code null} if the type
+   *     cannot be determined or the value's type is unsupported.
    */
   public static Type inferTypeFromValue(Object value) {
     if (value == null) {
@@ -476,50 +477,52 @@ public class Types {
       return Types.INTERVAL;
     } else if (value instanceof JsonNode) {
       return Types.JSON;
+    } else if (value instanceof InetAddress) {
+      return Types.INET;
     } else if (value instanceof byte[] bytes) {
       return BinaryType.from(bytes);
     }
     return null;
   }
 
-  public static IValueMeta createValueMeta(final String name, final TypeName typeId) {
+  public static IValueMeta createValueMeta(final String valueMetaName, final TypeName typeName) {
 
-    if (name == null) {
-      throw new IllegalArgumentException("Name must not be null");
+    if (valueMetaName == null) {
+      throw new IllegalArgumentException("Value meta name must not be null");
     }
-    if (typeId == null) {
-      throw new IllegalArgumentException("TypeId must not be null");
+    if (typeName == null) {
+      throw new IllegalArgumentException("Type name must not be null");
     }
 
-    return switch (typeId) {
-      case BOOLEAN -> new ValueMetaBoolean(name);
-      case INTEGER -> new ValueMetaInteger(name, 9, 0);
-      case NUMBER -> new ValueMetaBigNumber(name, -1, -1);
-      case STRING -> new ValueMetaString(name, -1, -1);
-      case DATE -> new ValueMetaDate(name, -1, -1);
-      case BINARY -> new ValueMetaBinary(name, -1, -1);
-      case JSON -> new ValueMetaJson(name);
-      case INET -> new ValueMetaInternetAddress(name);
-      default -> new ValueMetaNone(name);
+    return switch (typeName) {
+      case BOOLEAN -> new ValueMetaBoolean(valueMetaName);
+      case INTEGER -> new ValueMetaInteger(valueMetaName, 9, 0);
+      case NUMBER -> new ValueMetaBigNumber(valueMetaName, -1, -1);
+      case STRING -> new ValueMetaString(valueMetaName, -1, -1);
+      case DATE -> new ValueMetaDate(valueMetaName, -1, -1);
+      case BINARY -> new ValueMetaBinary(valueMetaName, -1, -1);
+      case JSON -> new ValueMetaJson(valueMetaName);
+      case INET -> new ValueMetaInternetAddress(valueMetaName);
+      default -> new ValueMetaNone(valueMetaName);
     };
   }
 
-  public static IValueMeta createValueMeta(final String name, final Type type) {
-    if (name == null) {
-      throw new IllegalArgumentException("Name must not be null");
+  public static IValueMeta createValueMeta(final String valueMetaName, final Type type) {
+    if (valueMetaName == null) {
+      throw new IllegalArgumentException("Value meta name must not be null");
     }
     if (type == null) {
       throw new IllegalArgumentException("Type must not be null");
     }
     return switch (type.getName()) {
-      case BOOLEAN -> new ValueMetaBoolean(name);
-      case INTEGER -> new ValueMetaInteger(name);
-      case NUMBER -> new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
-      case STRING -> new ValueMetaString(name, type.getPrecision(), type.getScale());
-      case DATE -> new ValueMetaDate(name);
-      case JSON -> new ValueMetaJson(name);
-      case INET -> new ValueMetaInternetAddress(name);
-      default -> new ValueMetaNone(name);
+      case BOOLEAN -> new ValueMetaBoolean(valueMetaName);
+      case INTEGER -> new ValueMetaInteger(valueMetaName);
+      case NUMBER -> new ValueMetaBigNumber(valueMetaName, type.getPrecision(), type.getScale());
+      case STRING -> new ValueMetaString(valueMetaName, type.getPrecision(), type.getScale());
+      case DATE -> new ValueMetaDate(valueMetaName);
+      case JSON -> new ValueMetaJson(valueMetaName);
+      case INET -> new ValueMetaInternetAddress(valueMetaName);
+      default -> new ValueMetaNone(valueMetaName);
     };
   }
 }

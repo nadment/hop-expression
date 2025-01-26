@@ -1922,7 +1922,9 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Power(100,0.5)", 10D);
     evalEquals("Power(-4,2)", 16D);
     evalEquals("Power(FIELD_INTEGER,0)", 1D);
-    evalEquals("Power(999,0)", 1D);
+    evalEquals("Power(0,0)", 1D);
+    evalEquals("Power(99,0)", 1D);
+    evalEquals("Power(-2,1)", -2D);
     evalEquals("Power(2,2.5)", new BigDecimal("5.6568542494923801952067548968388"));
     evalEquals("Power(2,-3)", 0.125D).returnType(Types.NUMBER);
     evalEquals("Power(2.000,-2)", new BigDecimal("0.25")).returnType(Types.NUMBER);
@@ -1968,7 +1970,10 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Cbrt(2)", new BigDecimal("1.2599210498948731647672106072782"));
     evalEquals("Cbrt(64)", 4D);
     evalEquals("Cbrt(343)", 7D);
+    // TODO: CBRT(-64)=-4 Work in DuckDb
+    // evalEquals("Cbrt(-64)", -4D);
     evalNull("Cbrt(NULL_INTEGER)");
+    evalNull("Cbrt(NULL_NUMBER)");
 
     // Check operands
     evalFails("Cbrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);

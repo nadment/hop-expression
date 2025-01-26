@@ -16,17 +16,10 @@
  */
 package org.apache.hop.expression;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.type.ArrayType;
-import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.NumberType;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;

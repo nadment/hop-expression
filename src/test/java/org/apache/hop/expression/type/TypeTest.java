@@ -157,7 +157,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeNameFromValue() {
+  void typeNameFromValue() throws Exception {
     assertEquals(TypeName.UNKNOWN, TypeName.fromValue(null));
     assertEquals(TypeName.UNKNOWN, TypeName.fromValue(new Random()));
     assertEquals(TypeName.BOOLEAN, TypeName.fromValue(true));
@@ -172,6 +172,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeName.NUMBER, TypeName.fromValue(BigDecimal.valueOf(123456789, 3)));
     assertEquals(TypeName.DATE, TypeName.fromValue(ZonedDateTime.now()));
     assertEquals(TypeName.INTERVAL, TypeName.fromValue(Interval.of(5)));
+    assertEquals(TypeName.INET, TypeName.fromValue(InetAddress.getByName("127.0.0.1")));
     assertEquals(TypeName.JSON, TypeName.fromValue(JsonConversion.convert("{\"name\":\"Smith\"}")));
   }
 

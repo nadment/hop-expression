@@ -88,7 +88,7 @@ public class RPadFunction extends Function {
         return "";
       }
       if (length > PAD_LIMIT) {
-        // TODO: Fix me
+        // TODO: Fix i18n message
         throw new IllegalArgumentException(
             ErrorCode.INVALID_ARGUMENT.message(
                 "Padding length exceeds maximum limit: " + PAD_LIMIT));
