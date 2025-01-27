@@ -558,8 +558,12 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     LineNumberRulerColumn lineNumberRulerColumn = new LineNumberRulerColumn();
     lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
 
+    PropsUi props = PropsUi.getInstance();
+    // Adapte annotation ruler to zoom factor
     AnnotationRulerColumn annotationRulerColumn =
-        new AnnotationRulerColumn(ConstUi.SMALL_ICON_SIZE + 2, new ExpressionAnnotationAccess());
+        new AnnotationRulerColumn(
+            (int) (ConstUi.SMALL_ICON_SIZE * props.getZoomFactor() + 2),
+            new ExpressionAnnotationAccess());
     annotationRulerColumn.addAnnotationType(ANNOTATION_ERROR_TYPE);
 
     CompositeRuler ruler = new CompositeRuler(1);

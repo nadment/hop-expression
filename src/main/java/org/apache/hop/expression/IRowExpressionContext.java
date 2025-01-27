@@ -18,6 +18,13 @@ package org.apache.hop.expression;
 
 import org.apache.hop.core.row.IRowMeta;
 
+/**
+ * Interface representing a context that provides information about rows and their associated
+ * metadata for expression evaluations.
+ *
+ * <p>This interface extends {@link IExpressionContext} and adds functionality specific to handling
+ * row data and metadata within an expression context.
+ */
 public interface IRowExpressionContext extends IExpressionContext {
 
   IRowMeta getRowMeta();

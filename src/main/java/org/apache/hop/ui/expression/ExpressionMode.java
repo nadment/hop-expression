@@ -16,6 +16,7 @@
  */
 package org.apache.hop.ui.expression;
 
+/** This enum defines different modes in which an expression can operate. */
 public enum ExpressionMode {
   /** No IRowMeta available in the context */
   NONE,

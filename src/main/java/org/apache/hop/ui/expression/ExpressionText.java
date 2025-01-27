@@ -22,8 +22,6 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.widget.ControlSpaceKeyAdapter;
-import org.apache.hop.ui.core.widget.IGetCaretPosition;
-import org.apache.hop.ui.core.widget.IInsertText;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusListener;
@@ -49,10 +47,6 @@ import org.eclipse.swt.widgets.ToolItem;
 public class ExpressionText extends Composite {
   protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes
 
-  protected IGetCaretPosition getCaretPositionInterface;
-
-  protected IInsertText insertTextInterface;
-
   protected ControlSpaceKeyAdapter controlSpaceKeyAdapter;
 
   protected IVariables variables;
@@ -74,24 +68,12 @@ public class ExpressionText extends Composite {
       int flags,
       ExpressionMode mode,
       CompletableFuture<IRowMeta> rowMetaFutur) {
+
     super(composite, SWT.NONE);
-    initialize(variables, composite, flags, null, null, null, null);
+
+    this.variables = variables;
     this.mode = mode;
     this.rowMetaFutur = rowMetaFutur;
-  }
-
-  protected void initialize(
-      IVariables variables,
-      Composite composite,
-      int flags,
-      String toolTipText,
-      IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface,
-      SelectionListener selectionListener) {
-
-    this.getCaretPositionInterface = getCaretPositionInterface;
-    this.insertTextInterface = insertTextInterface;
-    this.variables = variables;
 
     PropsUi.setLook(this);
 
@@ -126,12 +108,8 @@ public class ExpressionText extends Composite {
 
     wText.addListener(SWT.Modify, e -> updateTooltip(wText));
 
-    controlSpaceKeyAdapter =
-        new ControlSpaceKeyAdapter(
-            variables, wText, getCaretPositionInterface, insertTextInterface);
+    controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText, null, null);
     wText.addKeyListener(controlSpaceKeyAdapter);
-
-    this.setToolTipText(toolTipText);
   }
 
   protected void openExpressionDialog() {
@@ -140,34 +118,6 @@ public class ExpressionText extends Composite {
     if (expression != null) {
       wText.setText(expression);
     }
-  }
-
-  /**
-   * @return the getCaretPositionInterface
-   */
-  public IGetCaretPosition getGetCaretPositionInterface() {
-    return getCaretPositionInterface;
-  }
-
-  /**
-   * @param getCaretPositionInterface the getCaretPositionInterface to set
-   */
-  public void setGetCaretPositionInterface(IGetCaretPosition getCaretPositionInterface) {
-    this.getCaretPositionInterface = getCaretPositionInterface;
-  }
-
-  /**
-   * @return the insertTextInterface
-   */
-  public IInsertText getInsertTextInterface() {
-    return insertTextInterface;
-  }
-
-  /**
-   * @param insertTextInterface the insertTextInterface to set
-   */
-  public void setInsertTextInterface(IInsertText insertTextInterface) {
-    this.insertTextInterface = insertTextInterface;
   }
 
   protected void updateTooltip(final Text textField) {
