@@ -203,6 +203,10 @@ public class LiteralTest extends ExpressionTest {
     // optimize("INET '192.168.0.0/16'");
     optimize(
         "INET '2001:0db8:85a3:0000:0000:8a2e:0370:7334'", "INET '2001:db8:85a3:0:0:8a2e:370:7334'");
+
+    // Ignore case
+    optimize(
+        "INET '2001:0DB8:85A3:0000:0000:8A2E:0370:7334'", "INET '2001:db8:85a3:0:0:8a2e:370:7334'");
   }
 
   @Test

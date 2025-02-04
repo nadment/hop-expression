@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 
 public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
@@ -89,13 +88,6 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
             return array;
           }
 
-          // Some operator don't know return type like JSON_VALUE.
-          if (TypeName.ANY.equals(type.getName())) {
-            type = Types.inferTypeFromValue(value);
-            if (type == null) {
-              return call;
-            }
-          }
           // For CAST operator, it's important to return type
           else if (expression.isOperator(CastOperator.INSTANCE)) {
             value = type.cast(value);

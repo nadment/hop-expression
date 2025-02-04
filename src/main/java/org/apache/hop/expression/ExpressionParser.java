@@ -23,6 +23,7 @@ import java.util.Set;
 import lombok.Getter;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.operator.AddOperator;
+import org.apache.hop.expression.operator.ArrayElementAtOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenAsymmetricOperator;
 import org.apache.hop.expression.operator.BetweenSymmetricOperator;
@@ -40,7 +41,6 @@ import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.operator.DivOperator;
-import org.apache.hop.expression.operator.ElementAtOperator;
 import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.FirstValueFunction;
 import org.apache.hop.expression.operator.GreaterThanOperator;
@@ -115,6 +115,7 @@ public class ExpressionParser {
           "NULLS",
           "OR",
           "RESPECT",
+          "RETURNING",
           "RLIKE",
           "SIMILAR",
           "SYMMETRIC",
@@ -552,7 +553,7 @@ public class ExpressionParser {
     // Array element at ARRAY[index]
     if (isThenNext(Id.LBRACKET)) {
       IExpression term = this.parseBitwiseOr();
-      Call call = new Call(getPosition(), ElementAtOperator.INSTANCE, expression, term);
+      Call call = new Call(getPosition(), ArrayElementAtOperator.INSTANCE, expression, term);
       if (isNotThenNext(Id.RBRACKET)) {
         throw new ExpressionParseException(getPosition(), ErrorCode.MISSING_RIGHT_BRACKET);
       }
@@ -988,7 +989,7 @@ public class ExpressionParser {
     IExpression operand = this.parseLogicalOr();
 
     if (isNotThenNext(Id.RPARENT)) {
-      throw new ExpressionParseException(token.end(), ErrorCode.MISSING_LEFT_PARENTHESIS);
+      throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     // NULL treatment clause
@@ -1165,6 +1166,29 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
+  /** JSON_VALUE(json, path [RETURNING type]) */
+  private IExpression parseFunctionJsonValue(Token token, final Function function)
+      throws ExpressionException {
+
+    List<IExpression> operands = new ArrayList<>();
+    if (isThenNext(Id.RPARENT)) {
+      return new Call(token.start(), function, operands);
+    }
+
+    operands.add(this.parseLogicalOr());
+    if (isThenNext(Id.COMMA)) {
+      operands.add(this.parseLiteralString(next()));
+      if (isThenNext(Id.RETURNING)) {
+        operands.add(this.parseLiteralDataType(next()));
+      }
+    }
+    if (isNotThenNext(Id.RPARENT)) {
+      throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    }
+
+    return new Call(token.start(), function, operands);
+  }
+
   /** Function */
   private IExpression parseFunction(final Token token) throws ExpressionException {
     Function function = FunctionRegistry.getFunction(token.text());
@@ -1186,7 +1210,7 @@ public class ExpressionParser {
       return new Call(token.start(), function, operands);
     }
 
-    // Function with custom syntax
+    // Parse function with custom syntax
     switch (token.text()) {
       case "CAST", "TRY_CAST" -> {
         return parseFunctionCast(token, function);
@@ -1214,6 +1238,9 @@ public class ExpressionParser {
       }
       case "JSON_OBJECT" -> {
         return this.parseFunctionJsonObject(token, function);
+      }
+      case "JSON_VALUE" -> {
+        return this.parseFunctionJsonValue(token, function);
       }
     }
 

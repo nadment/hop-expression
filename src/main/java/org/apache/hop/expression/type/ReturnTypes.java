@@ -291,6 +291,21 @@ public final class ReturnTypes {
         return transform.transformType(type1);
       };
 
+  /** Type-inference strategy for JSON_VALUE function. */
+  public static final IReturnTypeInference JSON_VALUE =
+      call -> {
+        try {
+          if (call.getOperandCount() == 3) {
+            return call.getOperand(2).getValue(Type.class);
+          }
+
+          // By default return STRING
+          return Types.STRING;
+        } catch (Exception e) {
+          return Types.UNKNOWN;
+        }
+      };
+
   /**
    * Calculate return type precision and scale for x + y and x - y
    *

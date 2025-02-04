@@ -21,23 +21,34 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Set;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Types;
 
 /** Extracts a scalar value from a JSON string. */
 @FunctionPlugin
 public class JsonValueFunction extends Function {
+
+  private static final Set<TypeName> SUPPORTED_TYPES =
+      Set.of(TypeName.STRING, TypeName.BOOLEAN, TypeName.INTEGER, TypeName.NUMBER, TypeName.BINARY);
 
   public static final Configuration JSONPATH_CONFIGURATION =
       Configuration.builder()
@@ -50,10 +61,28 @@ public class JsonValueFunction extends Function {
   public JsonValueFunction() {
     super(
         "JSON_VALUE",
-        ReturnTypes.ANY,
-        OperandTypes.JSON_STRING.or(OperandTypes.STRING_STRING),
+        ReturnTypes.JSON_VALUE,
+        OperandTypes.JSON_VALUE,
         OperatorCategory.JSON,
         "/docs/json_value.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    if (call.getOperandCount() == 2) {
+      // Add default returning type arguments
+      return new Call(
+          call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.of(Types.STRING));
+    }
+
+    // Check if returning type is supported
+    Type type = call.getOperand(2).getValue(Type.class);
+    if (!SUPPORTED_TYPES.contains(type.getName())) {
+      throw new ExpressionException(ErrorCode.UNEXPECTED_DATA_TYPE, type, getName());
+    }
+
+    return call;
   }
 
   @Override
@@ -70,15 +99,34 @@ public class JsonValueFunction extends Function {
       value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
       if (value instanceof JsonNode result) {
         if (result.isNull()) return null;
-        if (result.isTextual()) return result.textValue();
-        if (result.isNumber()) return result.decimalValue();
-        if (result.isBoolean()) return result.booleanValue();
-        if (result.isArray()) throw new ExpressionException(ErrorCode.UNSUPPORTED_ARRAY_TYPE, path);
+        Type type = operands[2].getValue(Type.class);
+        if (type.is(TypeName.STRING)) {
+          return result.asText();
+        }
+        if (type.is(TypeName.BOOLEAN)) {
+          return result.asBoolean();
+        }
+        if (type.is(TypeName.INTEGER)) {
+          return result.asLong();
+        }
+        if (type.is(TypeName.NUMBER)) {
+          return result.decimalValue();
+        }
+        if (type.is(TypeName.BINARY)) {
+          try {
+            return result.binaryValue();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+
+        return result;
       }
-      if (value instanceof Integer number) {
-        return Long.valueOf(number);
-      }
-      if (value instanceof Double number) {
+
+      // Json function can return integer
+      else if (value instanceof Integer integer) {
+        return Long.valueOf(integer);
+      } else if (value instanceof Double number) {
         return BigDecimal.valueOf(number);
       }
 
@@ -89,7 +137,7 @@ public class JsonValueFunction extends Function {
     } catch (ClassCastException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.ANY, value);
-    } catch (Exception e) {
+    } catch (JsonPathException e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
   }

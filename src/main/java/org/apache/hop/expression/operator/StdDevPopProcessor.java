@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.stat.StatUtils;
@@ -31,18 +32,17 @@ public class StdDevPopProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-    Double value = operands[0].getValue(Double.class);
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value);
+      values.add(value.doubleValue());
     }
   }
 
   @Override
   public Object getValue() throws Exception {
     final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = values.get(i);
-    }
-    return FastMath.sqrt(StatUtils.populationVariance(array));
+    for (int i = 0; i < array.length; i++) array[i] = values.get(i);
+    double value = FastMath.sqrt(StatUtils.populationVariance(array));
+    return new BigDecimal(value);
   }
 }

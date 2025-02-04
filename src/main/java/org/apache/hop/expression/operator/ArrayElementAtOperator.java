@@ -36,11 +36,11 @@ import org.apache.hop.expression.type.Types;
  * Returns an array element at the given an index <br>
  * <strong>Syntax:</strong> <code>array[3]</code>
  */
-public class ElementAtOperator extends Operator {
+public class ArrayElementAtOperator extends Operator {
 
-  public static final ElementAtOperator INSTANCE = new ElementAtOperator();
+  public static final ArrayElementAtOperator INSTANCE = new ArrayElementAtOperator();
 
-  public ElementAtOperator() {
+  public ArrayElementAtOperator() {
     super(
         "ELEMENT_AT",
         "[]",
@@ -86,7 +86,7 @@ public class ElementAtOperator extends Operator {
 
     if (i < 0) i = array.size() + i + 1;
 
-    if (i < 1 || i > array.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
+    if (i < 1 || i > array.size()) {
       throw new ExpressionException(ErrorCode.INVALID_ARRAY_INDEX, index);
     }
 

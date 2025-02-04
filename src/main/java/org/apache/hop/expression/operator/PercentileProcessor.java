@@ -38,9 +38,9 @@ public class PercentileProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-    Double value = operands[0].getValue(Double.class);
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value);
+      values.add(value.doubleValue());
     }
   }
 
@@ -48,10 +48,11 @@ public class PercentileProcessor implements IExpressionProcessor {
   public Object getValue() throws Exception {
 
     final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = values.get(i);
-    }
 
-    return PERCENTILE.evaluate(array, quantile);
+    for (int i = 0; i < array.length; i++) array[i] = values.get(i);
+
+    double value = PERCENTILE.evaluate(array, quantile);
+
+    return new BigDecimal(value);
   }
 }

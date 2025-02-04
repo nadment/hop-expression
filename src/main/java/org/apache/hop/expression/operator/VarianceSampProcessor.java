@@ -15,6 +15,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
@@ -41,9 +42,9 @@ public class VarianceSampProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-    Double value = operands[0].getValue(Double.class);
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value);
+      values.add(value.doubleValue());
     }
   }
 
@@ -53,6 +54,7 @@ public class VarianceSampProcessor implements IExpressionProcessor {
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);
     }
-    return VARIANCE.evaluate(array, 0, array.length);
+    double value = VARIANCE.evaluate(array, 0, array.length);
+    return new BigDecimal(value);
   }
 }

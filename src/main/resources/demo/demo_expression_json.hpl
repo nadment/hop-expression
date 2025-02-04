@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>expression-json</name>
+    <name>demo_expression_json</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
@@ -16,8 +16,6 @@
     <created_date>2022/05/08 11:38:45.722</created_date>
     <modified_user>-</modified_user>
     <modified_date>2022/05/08 11:38:45.722</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
-    <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
@@ -28,13 +26,13 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Clone row</from>
-      <to>Expression</to>
+      <from>Expression</from>
+      <to>Dummy</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Expression</from>
-      <to>Dummy</to>
+      <from>Clone row</from>
+      <to>Expression</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -57,8 +55,8 @@
     <nrclones>1</nrclones>
     <attributes/>
     <GUI>
-      <xloc>240</xloc>
-      <yloc>96</yloc>
+      <xloc>192</xloc>
+      <yloc>64</yloc>
     </GUI>
   </transform>
   <transform>
@@ -72,44 +70,48 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <fields>
-      <field>
-        <set_empty_string>N</set_empty_string>
-        <length>-1</length>
-        <name>FIELD_JSON</name>
-        <precision>-1</precision>
-        <type>JSON</type>
-      </field>
-      <field>
-        <set_empty_string>N</set_empty_string>
-        <length>-1</length>
-        <name>FIELD_STRING</name>
-        <precision>-1</precision>
-        <type>String</type>
-      </field>
-    </fields>
     <data>
       <line>
         <item>{"firstname" : "Ann", "surname" : "Smith", "age" : 29, "gender":"Female","address":{"zipCode":"2760","street":"Blvd des capusins"}}</item>
         <item>{"firstname" : "Ann", "surname" : "Smith", "age" : 29, "gender":"Female","address":{"zipCode":"2760","street":"Blvd des capusins"}}</item>
       </line>
       <line>
-        <item>{"firstname" : "Sue", "surname" : "Smith", "age" : 42,"gender":null, "address": {"zipCode":"1150","street":"Route des romains"}}</item>
+        <item>{"firstname" : "Sue", "surname" : "Smith", "age" : 42,"gender":null, "address": {"zipCode":"1150","street":"Route des romains"}, "amount": 111.00}</item>
         <item>{"firstname" : "Sue", "surname" : "Smith", "age" : 42,"gender":null, "address": {"zipCode":"1150","street":"Route des romains"}}</item>
       </line>
       <line>
-        <item>{"firstname" : "John", "surname" : "Doe", "age" : 50, "gender":"Male","address":{"zipCode":"1223","street":"Av. des cerises"}}</item>
+        <item>{"firstname" : "John", "surname" : "Doe", "age" : 50, "gender":"Male","address":{"zipCode":"1223","street":"Av. des cerises"}, "amount": 987.65}</item>
         <item>{"firstname" : "John", "surname" : "Doe", "age" : 50, "gender":"Male","address":{"zipCode":"1223","street":"Av. des cerises"}}</item>
       </line>
       <line>
+        <item>{firstname:"Without", surname:"Quotes", age:50, gender:"Male",address:{zipCode:"1223",street:"Av. des cerises"}, "amount": 123.45 }</item>
         <item>{firstname:"Without", surname:"Quotes", age:50, gender:"Male",address:{zipCode:"1223",street:"Av. des cerises"}}</item>
-        <item>{firstname:"Without", surname:"Quotes", age:50, gender:"Male",address:{zipCode:"1223",street:"Av. des cerises"}}</item>
+      </line>
+      <line>
+        <item/>
+        <item/>
       </line>
     </data>
+    <fields>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_JSON</name>
+        <type>JSON</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_STRING</name>
+        <type>String</type>
+      </field>
+    </fields>
     <attributes/>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>96</yloc>
+      <xloc>64</xloc>
+      <yloc>64</yloc>
     </GUI>
   </transform>
   <transform>
@@ -125,8 +127,8 @@
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>560</xloc>
-      <yloc>96</yloc>
+      <xloc>448</xloc>
+      <yloc>64</yloc>
     </GUI>
   </transform>
   <transform>
@@ -142,39 +144,27 @@
     </partitioning>
     <fields>
       <field>
-        <expression>JSON_VALUE(FIELD_JSON,'$.firstname')</expression>
+        <expression>-- Extract a string value
+JSON_VALUE(FIELD_JSON,'$.firstname')</expression>
         <length>-1</length>
         <name>FirstName</name>
         <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <expression>JSON_VALUE(FIELD_JSON,'$.age')</expression>
+        <expression>-- Extract a numeric value
+JSON_VALUE(FIELD_JSON,'$.age' RETURNING INTEGER)</expression>
         <length>-1</length>
         <name>Age</name>
         <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
-        <expression>JSON_VALUE(FIELD_JSON,'$.gender')</expression>
+        <expression>JSON_VALUE(FIELD_JSON,'$.amount' RETURNING NUMBER)</expression>
         <length>-1</length>
-        <name>Gender</name>
+        <name>Amount</name>
         <precision>-1</precision>
-        <type>String</type>
-      </field>
-      <field>
-        <expression>JSON_VALUE(FIELD_STRING,'$.address.zipCode')</expression>
-        <length>-1</length>
-        <name>ZipCode</name>
-        <precision>-1</precision>
-        <type>String</type>
-      </field>
-      <field>
-        <expression>JSON_VALUE(FIELD_JSON,'$.*.street')</expression>
-        <length>-1</length>
-        <name>Street</name>
-        <precision>-1</precision>
-        <type>String</type>
+        <type>Number</type>
       </field>
       <field>
         <expression>Cast(FIELD_STRING as JSON)</expression>
@@ -191,14 +181,42 @@
         <type>JSON</type>
       </field>
       <field>
-        <expression>Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')</expression>
+        <expression>JSON_VALUE(FIELD_JSON,'$.*.street')</expression>
+        <length>-1</length>
+        <name>Street</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <expression>JSON_VALUE(FIELD_JSON,'$.gender')</expression>
+        <length>-1</length>
+        <name>Gender</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>JSON_VALUE(FIELD_STRING,'$.address.zipCode')</expression>
+        <length>-1</length>
+        <name>ZipCode</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>JSON_QUERY(FIELD_JSON,'$.address')</expression>
+        <length>-1</length>
+        <name>Address</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <expression>JSON_OBJECT(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')</expression>
         <length>-1</length>
         <name>JSON1</name>
         <precision>-1</precision>
         <type>JSON</type>
       </field>
       <field>
-        <expression>Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'Doe', KEY 'empty' VALUE null )</expression>
+        <expression>JSON_OBJECT(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'Doe', KEY 'empty' VALUE null )</expression>
         <length>-1</length>
         <name>JSON2</name>
         <precision>-1</precision>
@@ -207,8 +225,8 @@
     </fields>
     <attributes/>
     <GUI>
-      <xloc>400</xloc>
-      <yloc>96</yloc>
+      <xloc>320</xloc>
+      <yloc>64</yloc>
     </GUI>
   </transform>
   <transform_error_handling>

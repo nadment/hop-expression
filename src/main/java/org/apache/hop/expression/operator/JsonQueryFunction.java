@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.hop.expression.ErrorCode;
@@ -69,7 +70,7 @@ public class JsonQueryFunction extends Function {
     try {
       JsonPath jsonPath = JsonPath.compile(path);
       return jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-    } catch (Exception e) {
+    } catch (JsonPathException e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
   }

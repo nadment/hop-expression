@@ -144,6 +144,8 @@ public class Token {
     IGNORE,
     /** For IGNORE NULLS or RESPECT NULLS */
     RESPECT,
+    /** For JSON_VALUE(... RETURNING) */
+    RETURNING,
     /** The "IS" operator. */
     IS,
     /** Used by function "JSON_OBJECT" */

@@ -46,6 +46,7 @@ import org.apache.hop.expression.OperatorComparator;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.operator.AddOperator;
+import org.apache.hop.expression.operator.ArrayElementAtOperator;
 import org.apache.hop.expression.operator.BetweenAsymmetricOperator;
 import org.apache.hop.expression.operator.BitAndFunction;
 import org.apache.hop.expression.operator.BitNotFunction;
@@ -59,7 +60,6 @@ import org.apache.hop.expression.operator.CaseSearchOperator;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.DivOperator;
-import org.apache.hop.expression.operator.ElementAtOperator;
 import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
@@ -158,7 +158,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           // STRING OPERATOR
           new ConcatFunction("||"),
           // ARRAY OPERATOR
-          ElementAtOperator.INSTANCE,
+          ArrayElementAtOperator.INSTANCE,
           // COMPARISON OPERATORS
           EqualOperator.INSTANCE,
           NotEqualOperator.INSTANCE,

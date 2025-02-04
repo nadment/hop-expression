@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import com.ibm.icu.math.BigDecimal;
+import java.math.BigDecimal;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 

@@ -280,5 +280,14 @@ public final class OperandTypes {
   public static final IOperandTypeChecker CAST =
       sequence(ANY, DATATYPE, TEXT).or(sequence(ANY, DATATYPE));
 
+  /** Operand type-checking strategy for JSON_VALUE function. */
+  public static final IOperandTypeChecker JSON_VALUE =
+      sequence(JSON, TEXT)
+          .or(sequence(JSON, TEXT, DATATYPE))
+          .or(sequence(STRING, TEXT))
+          .or(sequence(STRING, TEXT, DATATYPE));
+  ;
+
+  // TODO: Move operand type checker to the function
   public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
 }

@@ -3349,18 +3349,25 @@ public class FunctionTest extends ExpressionTest {
     // dot–notation
     evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
 
+    // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
+
     // TODO: bracket–notation
     // evalEquals("Json_Value(FIELD_JSON, '$['store']['book'][0]['title']')", "Sayings of the
     // Century");
 
     // boolean type
-    evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]')");
-    evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]')");
+    evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]' RETURNING BOOLEAN)");
+    evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]' RETURNING BOOLEAN)");
 
     // numeric type
-    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", new BigDecimal(29L));
-    evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]')", new BigDecimal(15L));
-    evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].price')", new BigDecimal("8.95"));
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age' RETURNING INTEGER)", 29L);
+    evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]' RETURNING INTEGER)", 15L);
+    evalEquals(
+        "Json_Value(FIELD_JSON, '$.store.book[0].price' RETURNING NUMBER)", new BigDecimal("8.95"));
+
+    // date type
+    // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
+    // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
 
     // TODO: Syntax of the special characters $[01] or $[6F,FF,00,1F] in variable resolution not
     // compatible with JsonPath array
@@ -3376,7 +3383,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Json_Value('{name:\"Smith\", age:29}','$.name')", "Smith");
 
     // Support Json function
-    evalEquals("Json_Value(FIELD_JSON, '$..book.length()')", 4L);
+    evalEquals("Json_Value(FIELD_JSON, '$..book.length()' RETURNING INTEGER)", 4L);
 
     // Return NULL from NULL value
     evalNull("Json_Value(NULL_STRING,'$.name')");
@@ -3385,7 +3392,11 @@ public class FunctionTest extends ExpressionTest {
     // Return NULL if JsonPath does not match a value
     evalNull("Json_Value(FIELD_JSON,'$.notexist')");
 
-    evalFails("Json_Value(FIELD_JSON,NULL_STRING)", ErrorCode.JSON_PATH_IS_NULL);
+    // Return NULL if json path is null
+    evalNull("Json_Value(FIELD_JSON,NULL_STRING)");
+
+    evalFails("Json_Value(FIELD_JSON)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Value(FIELD_JSON,'$.notexist' RETURNING INET)", ErrorCode.UNEXPECTED_DATA_TYPE);
   }
 
   @Test

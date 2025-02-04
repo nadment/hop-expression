@@ -76,7 +76,7 @@ public class ExpressionTest {
   static void setup() throws Throwable {
     // Can't use RestoreHopEnvironment because it is for Junit 4
     // RestoreHopEnvironment env = new RestoreHopEnvironment();
-
+    Locale.setDefault(Locale.ENGLISH);
     HopClientEnvironment.init();
     FunctionRegistry.registerFunctions();
   }
@@ -467,6 +467,9 @@ public class ExpressionTest {
 
   @Test
   public void test() throws Exception {
-    Locale.setDefault(new Locale("fr", "BE"));
+    // Locale.setDefault(new Locale("fr", "BE"));
+    // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
+    // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
+    // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
   }
 }

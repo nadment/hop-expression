@@ -254,10 +254,11 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
   /**
    * Process each row
    *
-   * @param row
+   * @param row the row to process
    * @throws HopException
    */
   protected void processAggregate(Object[] row) throws HopException {
+    data.context.setRow(row);
 
     AggregateKey key = data.createAggregateKey(row);
 
@@ -272,7 +273,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     }
 
     try {
-      data.context.setRow(row);
+
       for (int i = 0; i < aggregators.length; i++) {
         aggregators[i].process(data.aggregates[i].getOperands());
       }
@@ -281,12 +282,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     }
   }
 
-  /**
-   * Create new aggregate
-   *
-   * @throws HopException
-   */
-  protected IExpressionProcessor[] createAggregate() throws HopException {
+  /** Create new aggregate */
+  protected IExpressionProcessor[] createAggregate() {
 
     IExpressionProcessor[] processors = new IExpressionProcessor[data.functions.length];
 

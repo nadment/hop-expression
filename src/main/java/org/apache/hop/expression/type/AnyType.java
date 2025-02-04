@@ -17,16 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.util.BinaryConversion;
-import org.apache.hop.expression.util.BooleanConversion;
-import org.apache.hop.expression.util.IntegerConversion;
-import org.apache.hop.expression.util.JsonConversion;
-import org.apache.hop.expression.util.NumberConversion;
-import org.apache.hop.expression.util.StringConversion;
 
 public final class AnyType extends Type {
 
@@ -60,46 +51,6 @@ public final class AnyType extends Type {
       return clazz.cast(value);
     }
 
-    // JSon function return type ANY
-    if (value instanceof String str) {
-      if (Boolean.class == clazz) {
-        return clazz.cast(BooleanConversion.convert(str));
-      }
-      if (Long.class == clazz) {
-        return clazz.cast(IntegerConversion.convert(str));
-      }
-      if (BigDecimal.class == clazz) {
-        return clazz.cast(NumberConversion.convert(str));
-      }
-      if (byte[].class == clazz) {
-        return clazz.cast(BinaryConversion.convert(str));
-      }
-      if (JsonNode.class == clazz) {
-        return clazz.cast(JsonConversion.convert(str));
-      }
-    }
-    if (value instanceof BigDecimal number) {
-      if (Boolean.class == clazz) {
-        return clazz.cast(!BigInteger.ZERO.equals(number.unscaledValue()));
-      }
-      if (Long.class == clazz) {
-        return clazz.cast(number.longValue());
-      }
-      if (String.class == clazz) {
-        return clazz.cast(StringConversion.convert(number));
-      }
-    }
-    if (value instanceof Boolean bool) {
-      if (String.class == clazz) {
-        return clazz.cast(StringConversion.convert(bool));
-      }
-      if (Long.class == clazz) {
-        return clazz.cast(bool ? 1L : 0L);
-      }
-      if (BigDecimal.class == clazz) {
-        return clazz.cast(bool ? BigDecimal.ONE : BigDecimal.ZERO);
-      }
-    }
     return super.convert(value, clazz);
   }
 }
