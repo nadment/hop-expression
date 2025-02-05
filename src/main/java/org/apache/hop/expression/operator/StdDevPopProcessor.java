@@ -43,6 +43,6 @@ public class StdDevPopProcessor implements IExpressionProcessor {
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) array[i] = values.get(i);
     double value = FastMath.sqrt(StatUtils.populationVariance(array));
-    return new BigDecimal(value);
+    return BigDecimal.valueOf((value);
   }
 }

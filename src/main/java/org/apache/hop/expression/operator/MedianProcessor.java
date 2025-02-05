@@ -47,6 +47,6 @@ public class MedianProcessor implements IExpressionProcessor {
       array[i] = values.get(i);
     }
     double value = MEDIAN.evaluate(array);
-    return new BigDecimal(value);
+    return BigDecimal.valueOf(value);
   }
 }

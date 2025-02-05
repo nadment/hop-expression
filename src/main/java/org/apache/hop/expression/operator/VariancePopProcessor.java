@@ -55,6 +55,6 @@ public class VariancePopProcessor implements IExpressionProcessor {
     }
     double value = VARIANCE.evaluate(array, 0, array.length);
 
-    return new BigDecimal(value);
+    return BigDecimal.valueOf((value);
   }
 }
