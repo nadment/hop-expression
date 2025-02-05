@@ -17,7 +17,7 @@ http://www.apache.org/licenses/LICENSE-2.0
     <parent>
         <groupId>org.apache.hop</groupId>
         <artifactId>hop</artifactId>
-        <version>2.12.0-SNAPSHOT</version>
+        <version>2.11.0</version>
     </parent>
 
     <artifactId>hop-expression</artifactId>
@@ -300,12 +300,13 @@ http://www.apache.org/licenses/LICENSE-2.0
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <echo level="info" message="Install the plugin in HOP installation in ${hop.home}."></echo>
+                                <echo level="info" message="Install the plugin in HOP installation in ${hop.home}."/>
                                 <!-- remove previous installations -->
-                                <delete dir="${hop.home}/plugins/misc/expression"></delete>
+                                <delete dir="${hop.home}/plugins/misc/expression"/>
                                 <!-- put fresh files in place -->
-                                <mkdir dir="${hop.home}/plugins/misc/expression"></mkdir>
-                                <unzip dest="${hop.home}/plugins/" src="${project.build.directory}/${project.artifactId}-${project.version}.zip"></unzip>
+                                <mkdir dir="${hop.home}/plugins/misc/expression"/>
+                                <unzip dest="${hop.home}/plugins/"
+                                       src="${project.build.directory}/${project.artifactId}-${project.version}.zip"/>
                             </target>
                         </configuration>
                     </execution>
