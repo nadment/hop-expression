@@ -53,6 +53,6 @@ public class PercentileProcessor implements IExpressionProcessor {
 
     double value = PERCENTILE.evaluate(array, quantile);
 
-    return BigDecimal.valueOf((value);
+    return BigDecimal.valueOf(value);
   }
 }

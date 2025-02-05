@@ -49,6 +49,6 @@ public class StdDevSampProcessor implements IExpressionProcessor {
       array[i] = values.get(i);
     }
     double value = FastMath.sqrt(StatUtils.variance(array));
-    return BigDecimal.valueOf((value);
+    return BigDecimal.valueOf(value);
   }
 }

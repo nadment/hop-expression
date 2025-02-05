@@ -55,6 +55,6 @@ public class VarianceSampProcessor implements IExpressionProcessor {
       array[i] = values.get(i);
     }
     double value = VARIANCE.evaluate(array, 0, array.length);
-    return BigDecimal.valueOf((value);
+    return BigDecimal.valueOf(value);
   }
 }
