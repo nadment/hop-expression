@@ -213,21 +213,16 @@ public class Identifier implements IExpression {
             return type.convert(value, clazz);
           }
 
-        case ValueMetaJson.TYPE_JSON:
-          {
-            Object value = row[ordinal];
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_INET:
-          {
-            Object value = row[ordinal];
-            return type.convert(value, clazz);
-          }
-
         case IValueMeta.TYPE_BINARY:
           {
             byte[] value = valueMeta.getBinary(row[ordinal]);
+            return type.convert(value, clazz);
+          }
+
+        case ValueMetaJson.TYPE_JSON:
+        case IValueMeta.TYPE_INET:
+          {
+            Object value = row[ordinal];
             return type.convert(value, clazz);
           }
 
