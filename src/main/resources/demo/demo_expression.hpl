@@ -151,100 +151,65 @@
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_STRING</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>String</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_NUMBER</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>Number</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_BOOLEAN</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>Boolean</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_DATE</name>
         <format>yyyy-MM-dd</format>
-        <group/>
-        <decimal/>
         <type>Date</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_INTEGER</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>Integer</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_JSON</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>JSON</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>FIELD_BINARY</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>Binary</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>YEAR</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>Integer</type>
       </field>
       <field>
         <length>-1</length>
         <precision>-1</precision>
-        <currency/>
         <set_empty_string>N</set_empty_string>
         <name>COST CENTER</name>
-        <format/>
-        <group/>
-        <decimal/>
         <type>String</type>
       </field>
     </fields>
@@ -257,7 +222,7 @@
   <transform>
     <name>Expression</name>
     <type>Expression</type>
-    <description/>
+    <description>Remark description</description>
     <distribute>Y</distribute>
     <custom_distribution/>
     <copies>2</copies>

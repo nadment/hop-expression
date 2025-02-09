@@ -258,7 +258,7 @@ http://www.apache.org/licenses/LICENSE-2.0
                             <backend>html5</backend>
                             <preserveDirectories>true</preserveDirectories>
                             <attributes>
-                                <stylesheet>asciidoctor.css</stylesheet>
+                                <stylesheet>expression.css</stylesheet>
                                 <linkcss>false</linkcss>
                                 <nofooter>true</nofooter>
                                 <icons>font</icons>
@@ -300,13 +300,12 @@ http://www.apache.org/licenses/LICENSE-2.0
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <echo level="info" message="Install the plugin in HOP installation in ${hop.home}."/>
+                                <echo level="info" message="Install the plugin in HOP installation in ${hop.home}."></echo>
                                 <!-- remove previous installations -->
-                                <delete dir="${hop.home}/plugins/misc/expression"/>
+                                <delete dir="${hop.home}/plugins/misc/expression"></delete>
                                 <!-- put fresh files in place -->
-                                <mkdir dir="${hop.home}/plugins/misc/expression"/>
-                                <unzip dest="${hop.home}/plugins/"
-                                       src="${project.build.directory}/${project.artifactId}-${project.version}.zip"/>
+                                <mkdir dir="${hop.home}/plugins/misc/expression"></mkdir>
+                                <unzip dest="${hop.home}/plugins/" src="${project.build.directory}/${project.artifactId}-${project.version}.zip"></unzip>
                             </target>
                         </configuration>
                     </execution>

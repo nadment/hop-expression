@@ -269,7 +269,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           String description =
               "<b>Type:</b> "
                   + valueMeta.getTypeDesc()
-                  + "<br><b>Step origin:</b> "
+                  + "<br><b>Transform origin:</b> "
                   + valueMeta.getOrigin()
                   + "<br><b>Comment:</b> "
                   + StringUtils.defaultString(valueMeta.getComments());

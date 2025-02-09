@@ -112,6 +112,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -126,8 +127,6 @@ import org.eclipse.swt.widgets.TreeItem;
 
 @GuiPlugin
 public class ExpressionEditor extends Composite implements IDocumentListener {
-  private static final Class<?> PKG = ExpressionEditor.class;
-
   public static final String ID_TOOLBAR = "expression-editor-toolbar";
   public static final String ID_TOOLBAR_SELECT_ALL = "expression-editor-toolbar-10300-select-all";
   public static final String ID_TOOLBAR_COPY = "expression-editor-toolbar-10400-copy";
@@ -136,7 +135,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public static final String ID_TOOLBAR_UNDO = "expression-editor-toolbar-10430-undo";
   public static final String ID_TOOLBAR_REDO = "expression-editor-toolbar-10440-redo";
   public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10450-simplify";
-
+  private static final Class<?> PKG = ExpressionEditor.class;
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
@@ -258,7 +257,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
             wViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
           }
           if (event.keyCode == 'a' && (event.stateMask & SWT.MOD1) != 0) {
-            doSelectAll();
+            onSelectAll();
           } else if (event.keyCode == SWT.F1) {
             // TODO: Help
             event.doit = false;
@@ -316,41 +315,52 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     undoItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/undo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    undoItem.addListener(SWT.Selection, e -> doUndo());
+    undoItem.setAccelerator(SWT.MOD1 | 'Z');
+    undoItem.addListener(SWT.Selection, e -> onUndo());
 
     MenuItem redoItem = new MenuItem(menu, SWT.PUSH);
     redoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Redo.Label"));
     redoItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/redo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    redoItem.addListener(SWT.Selection, e -> doRedo());
+    redoItem.setAccelerator(SWT.MOD1 + SWT.SHIFT | 'Z');
+    redoItem.addListener(SWT.Selection, e -> onRedo());
+
     new MenuItem(menu, SWT.SEPARATOR);
+
     MenuItem cutItem = new MenuItem(menu, SWT.PUSH);
     cutItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Cut.Label"));
     cutItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/cut.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    cutItem.addListener(SWT.Selection, e -> doCut());
+    cutItem.addListener(SWT.Selection, e -> onCut());
+
     MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
     copyItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Copy.Label"));
     copyItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/copy.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    copyItem.addListener(SWT.Selection, e -> doCopy());
+    copyItem.setAccelerator(SWT.MOD1 | 'C');
+    copyItem.addListener(SWT.Selection, e -> onCopy());
+
     MenuItem pasteItem = new MenuItem(menu, SWT.PUSH);
     pasteItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Paste.Label"));
     pasteItem.setImage(
         GuiResource.getInstance()
             .getImage("ui/images/paste.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    pasteItem.addListener(SWT.Selection, e -> doPaste());
+    pasteItem.setAccelerator(SWT.MOD1 | 'V');
+    pasteItem.addListener(SWT.Selection, e -> onPaste());
+
     new MenuItem(menu, SWT.SEPARATOR);
+
     MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
     selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.SelectAll.Label"));
     selectAllItem.setImage(
         GuiResource.getInstance()
             .getImage(
                 "ui/images/select-all.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
-    selectAllItem.addListener(SWT.Selection, e -> doSelectAll());
+    selectAllItem.setAccelerator(SWT.MOD1 | 'A');
+    selectAllItem.addListener(SWT.Selection, e -> onSelectAll());
 
     widget.setMenu(menu);
     widget.addListener(
@@ -391,20 +401,20 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     ToolItem toolbarItem = new ToolItem(toolbar, SWT.PUSH);
     toolbarItem.setToolTipText("Collapse all");
     toolbarItem.setImage(GuiResource.getInstance().getImageCollapseAll());
-    toolbarItem.addListener(SWT.Selection, e -> treeExpandCollapseAll(false));
+    toolbarItem.addListener(SWT.Selection, e -> onTreeExpandCollapseAll(false));
 
     toolbarItem = new ToolItem(toolbar, SWT.PUSH);
     toolbarItem.setToolTipText("Expand all");
     toolbarItem.setImage(GuiResource.getInstance().getImageExpandAll());
-    toolbarItem.addListener(SWT.Selection, e -> treeExpandCollapseAll(true));
+    toolbarItem.addListener(SWT.Selection, e -> onTreeExpandCollapseAll(true));
 
     toolbar.pack();
 
     // Tree widget
     wTree = new Tree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
     wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
-    PropsUi.setLook(wTree);
     wTree.addListener(SWT.MouseDoubleClick, this::onTreeDoubleClick);
+    PropsUi.setLook(wTree);
 
     // Create the drag source on the tree
     DragSource dragSource = new DragSource(wTree, DND.DROP_MOVE | DND.DROP_COPY);
@@ -414,7 +424,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           @Override
           public void dragStart(DragSourceEvent event) {
             TreeItem item = wTree.getSelection()[0];
-
             event.doit = item != null && item.getData() != null;
           }
 
@@ -544,9 +553,48 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       }
     }
 
-    // Tooltip for syntax and help
-    BrowserToolTip toolTip = new BrowserToolTip(wTree, labelProvider);
-    toolTip.activate();
+    wTree.addMenuDetectListener(
+        event -> {
+          if (wTree.getSelectionCount() == 0) {
+            return;
+          }
+          TreeItem item = wTree.getSelection()[0];
+
+          if (item != null && item.getData() != null) {
+
+            Rectangle bounds = item.getBounds();
+            Point point = new Point(bounds.x, bounds.y);
+
+            // Context menu to display help
+            Menu menu = new Menu(wTree);
+            MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
+            menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label"));
+            menuItem.setImage(GuiResource.getInstance().getImageHelpWeb());
+            menuItem.setData(item.getData());
+            menuItem.addListener(SWT.Selection, e -> displayHelp(point, item.getData()));
+            menu.setVisible(true);
+          }
+        });
+  }
+
+  protected void onTreeDoubleClick(Event event) {
+    Point point = new Point(event.x, event.y);
+    TreeItem item = wTree.getItem(point);
+    if (item == null || item.getData() == null) {
+      return;
+    }
+
+    displayHelp(point, item.getData());
+  }
+
+  /** Display help as a tooltip. */
+  protected void displayHelp(Point point, Object element) {
+    String text = labelProvider.getToolTipText(element);
+    if (text != null) {
+      BrowserToolTip toolTip = new BrowserToolTip(wTree);
+      toolTip.setText(text);
+      toolTip.show(point);
+    }
   }
 
   /**
@@ -573,33 +621,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     return ruler;
   }
 
-  // Adds the Current item to the current Position
-  private void onTreeDoubleClick(Event event) {
-    Point point = new Point(event.x, event.y);
-    TreeItem item = wTree.getItem(point);
-
-    if (item != null && item.getData() != null) {
-      StyledText styledText = wViewer.getTextWidget();
-
-      // When a selection is already there we need to subtract the position
-      int start = styledText.getCaretOffset() - styledText.getSelectionCount();
-      if (start < 0) {
-        start = 0;
-      }
-
-      String str = item.getText();
-      if (item.getData() instanceof Function function) {
-        str = function.getName() + "()";
-      }
-      if (item.getData() instanceof DescribedVariable variable) {
-        str = "${" + variable.getName() + '}';
-      }
-      if (item.getData() instanceof IValueMeta meta) {
-        str = Identifier.quoteIfNeeded(meta.getName());
-      }
-      styledText.insert(str);
-      styledText.setSelection(start, start + str.length());
-    }
+  public String getText() {
+    return wViewer.getDocument().get();
   }
 
   public void setText(String expression) {
@@ -608,17 +631,13 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wViewer.getDocument().set(expression);
   }
 
-  public String getText() {
-    return wViewer.getDocument().get();
-  }
-
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_COPY,
       image = "ui/images/copy.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Copy.ToolTip",
       separator = true)
-  public void doCopy() {
+  public void onCopy() {
     wViewer.doOperation(ITextOperationTarget.COPY);
   }
 
@@ -627,7 +646,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       id = ID_TOOLBAR_PASTE,
       image = "ui/images/paste.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Paste.ToolTip")
-  public void doPaste() {
+  public void onPaste() {
     wViewer.doOperation(ITextOperationTarget.PASTE);
   }
 
@@ -636,7 +655,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       id = ID_TOOLBAR_CUT,
       image = "ui/images/cut.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Cut.ToolTip")
-  public void doCut() {
+  public void onCut() {
     wViewer.doOperation(ITextOperationTarget.CUT);
   }
 
@@ -646,7 +665,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       image = "ui/images/select-all.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip",
       separator = true)
-  public void doSelectAll() {
+  public void onSelectAll() {
     wViewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
 
@@ -656,7 +675,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       image = "ui/images/undo.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Undo.ToolTip",
       separator = true)
-  public void doUndo() {
+  public void onUndo() {
     wViewer.doOperation(ITextOperationTarget.UNDO);
   }
 
@@ -665,7 +684,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       id = ID_TOOLBAR_REDO,
       image = "ui/images/redo.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Redo.ToolTip")
-  public void doRedo() {
+  public void onRedo() {
     wViewer.doOperation(ITextOperationTarget.REDO);
   }
 
@@ -675,7 +694,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       image = "evaluate.svg",
       toolTip = "i18n::ExpressionEditor.ToolBarWidget.Evaluate.ToolTip",
       separator = true)
-  public void doEvaluate() {
+  public void onEvaluate() {
 
     String source = wViewer.getTextWidget().getText();
 
@@ -688,7 +707,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     dialog.open();
   }
 
-  protected void treeExpandCollapseAll(boolean expanded) {
+  protected void onTreeExpandCollapseAll(boolean expanded) {
     // Stop redraw until operation complete
     wTree.setRedraw(false);
     for (TreeItem item : wTree.getItems()) {

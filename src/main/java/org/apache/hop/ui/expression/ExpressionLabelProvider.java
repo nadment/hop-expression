@@ -16,6 +16,11 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.DescribedVariable;
 import org.apache.hop.expression.Function;
@@ -28,8 +33,26 @@ import org.eclipse.swt.graphics.Image;
 
 public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider {
 
+  private String css;
+
   public ExpressionLabelProvider() {
     super();
+  }
+
+  private String getCss() {
+    if (css == null) {
+      try (StringWriter writer = new StringWriter()) {
+        InputStream is = this.getClass().getResourceAsStream("/docs/expression.css");
+        if (is != null) {
+          InputStreamReader reader = new InputStreamReader(is);
+          IOUtils.copy(reader, writer);
+        }
+        css = writer.toString();
+      } catch (Exception e) {
+        css = "";
+      }
+    }
+    return css;
   }
 
   @Override
@@ -85,7 +108,49 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
     }
 
     if (element instanceof DescribedVariable variable) {
-      return variable.getDescription();
+      StringBuilder builder = new StringBuilder();
+
+      // Header
+      builder.append("<html><style>");
+      builder.append(getCss());
+      builder.append("</style><body class=\"article\">");
+      builder.append("<div id=\"header\"><h1>");
+      builder.append(variable.getName());
+      builder.append("</h1></div><div id=\"content\">");
+
+      // Content
+      builder.append("<h2>Description</h2>");
+      builder.append(variable.getDescription());
+
+      // Footer
+      builder.append("</div></div></body></html>");
+
+      return builder.toString();
+    }
+
+    if (element instanceof IValueMeta meta) {
+      StringBuilder builder = new StringBuilder();
+
+      // Header
+      builder.append("<html><style>");
+      builder.append(getCss());
+      builder.append("</style><body class=\"article\">");
+      builder.append("<div id=\"header\"><h1>");
+      builder.append(meta.getName());
+      builder.append("</h1></div><div id=\"content\">");
+
+      // Content
+      builder.append("<h2>Type</h2>");
+      builder.append(meta.getTypeDesc());
+      builder.append("<h2>Transform origin</h2>");
+      builder.append(meta.getOrigin());
+      builder.append("<h2>Comment</h2>");
+      builder.append(StringUtils.defaultString(meta.getComments()));
+
+      // Footer
+      builder.append("</div></div></body></html>");
+
+      return builder.toString();
     }
 
     return null;

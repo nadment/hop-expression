@@ -16,19 +16,20 @@
  */
 package org.apache.hop.ui.expression;
 
-import org.eclipse.jface.viewers.IToolTipProvider;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.hop.core.util.Utils;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 
-/** Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget. */
+/** Displays HTML information in a {@link Browser} widget. */
 public class BrowserToolTip extends ToolTip {
   /** Minimal size constraints. */
   private static final int MIN_WIDTH = 800;
@@ -38,13 +39,13 @@ public class BrowserToolTip extends ToolTip {
   private static final int DEFAULT_SHIFT_X = -3;
   private static final int DEFAULT_SHIFT_Y = -3;
 
-  private final IToolTipProvider tooltipProvider;
+  @Getter private Browser browser;
 
-  public BrowserToolTip(Tree control, IToolTipProvider provider) {
-    super(control, ToolTip.NO_RECREATE, false);
+  /** HTML text to display. */
+  @Getter @Setter private String text;
 
-    this.tooltipProvider = provider;
-
+  public BrowserToolTip(Control control) {
+    super(control, ToolTip.RECREATE, true);
     this.setShift(new Point(DEFAULT_SHIFT_X, DEFAULT_SHIFT_Y));
     this.setRespectMonitorBounds(true);
     this.setRespectDisplayBounds(true);
@@ -58,6 +59,7 @@ public class BrowserToolTip extends ToolTip {
       shell.setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
     }
 
+    // Create the widget browser
     Browser browser = new Browser(parent, SWT.NONE);
 
     // Cancel opening of new windows
@@ -66,24 +68,14 @@ public class BrowserToolTip extends ToolTip {
     // Replace browser's built-in context menu with none
     browser.setMenu(new Menu(parent.getShell(), SWT.NONE));
 
-    String doc = this.getText(event);
-    if (doc != null) browser.setText(doc);
+    // Set HTML content
+    browser.setText(text);
 
     return browser;
   }
 
   @Override
   protected boolean shouldCreateToolTip(Event event) {
-    return this.getText(event) != null;
-  }
-
-  protected final String getText(Event event) {
-    Tree tree = (Tree) event.widget;
-    TreeItem item = tree.getItem(new Point(event.x, event.y));
-    if (item != null) {
-      return this.tooltipProvider.getToolTipText(item.getData());
-    }
-
-    return null;
+    return !Utils.isEmpty(text);
   }
 }
