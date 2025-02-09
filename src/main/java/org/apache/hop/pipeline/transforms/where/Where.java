@@ -120,7 +120,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       Boolean predicate = data.condition.getValue(Boolean.class);
 
       if (predicate == null) {
-        putRow(data.outputRowMeta, row); // copy row to output rowset(s)
+        putError(data.outputRowMeta, row, 1, "Expression result is null", null, "EXP000");
       } else if (predicate) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {

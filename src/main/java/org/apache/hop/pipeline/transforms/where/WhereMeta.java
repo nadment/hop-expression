@@ -189,14 +189,18 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     streams.get(1).setTransformMeta(TransformMeta.findTransform(transforms, falseTransformName));
   }
 
+  @Override
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+
   /** Returns the Input/Output metadata for this transform. */
   @Override
   public ITransformIOMeta getTransformIOMeta() {
     ITransformIOMeta ioMeta = super.getTransformIOMeta(false);
+
     if (ioMeta == null) {
-
-      ioMeta = new TransformIOMeta(true, true, false, false, false, false);
-
+      ioMeta = new TransformIOMeta(true, false, false, false, false, false);
       ioMeta.addStream(
           new Stream(
               StreamType.TARGET,

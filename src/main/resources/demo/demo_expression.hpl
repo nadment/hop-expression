@@ -86,7 +86,7 @@
     <nrclones>100000</nrclones>
     <attributes/>
     <GUI>
-      <xloc>192</xloc>
+      <xloc>128</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -215,7 +215,7 @@
     </fields>
     <attributes/>
     <GUI>
-      <xloc>96</xloc>
+      <xloc>32</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -501,7 +501,7 @@ End
     </fields>
     <attributes/>
     <GUI>
-      <xloc>288</xloc>
+      <xloc>224</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -518,7 +518,7 @@ End
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>512</xloc>
+      <xloc>448</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -535,7 +535,7 @@ End
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>512</xloc>
+      <xloc>448</xloc>
       <yloc>160</yloc>
     </GUI>
   </transform>
@@ -552,7 +552,7 @@ End
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>512</xloc>
+      <xloc>448</xloc>
       <yloc>32</yloc>
     </GUI>
   </transform>
@@ -573,11 +573,23 @@ Day(FIELD_DATE)%2 = 1</condition>
     <send_true_to>TRUE</send_true_to>
     <attributes/>
     <GUI>
-      <xloc>384</xloc>
+      <xloc>320</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
+    <error>
+      <source_transform>Where</source_transform>
+      <target_transform>NULL</target_transform>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>NR_FIELD</nr_valuename>
+      <descriptions_valuename>ERROR_DESCRIPTION</descriptions_valuename>
+      <fields_valuename>ERROR_FIELD</fields_valuename>
+      <codes_valuename>ERROR_CODE</codes_valuename>
+      <max_errors/>
+      <max_pct_errors/>
+      <min_pct_rows/>
+    </error>
   </transform_error_handling>
   <attributes>
     <group>
