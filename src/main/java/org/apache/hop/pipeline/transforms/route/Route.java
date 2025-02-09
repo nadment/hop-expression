@@ -17,9 +17,13 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 /** Utility class that contains the routing condition and the target transform name */
+@Setter
+@Getter
 public class Route {
   /** The condition expression for routing to */
   @HopMetadataProperty(
@@ -37,40 +41,8 @@ public class Route {
 
   public Route() {}
 
-  public Route(Route t) {
-    this.condition = t.condition;
-    this.transformName = t.transformName;
-  }
-
-  /**
-   * Gets the condition expression
-   *
-   * @return condition expression
-   */
-  public String getCondition() {
-    return condition;
-  }
-
-  /**
-   * @param condition The condition expression to set
-   */
-  public void setCondition(String condition) {
-    this.condition = condition;
-  }
-
-  /**
-   * Gets target transform name
-   *
-   * @return value of target transform name
-   */
-  public String getTransformName() {
-    return transformName;
-  }
-
-  /**
-   * @param transformName The target transform name to set
-   */
-  public void setTransformName(String transformName) {
-    this.transformName = transformName;
+  public Route(Route other) {
+    this.condition = other.condition;
+    this.transformName = other.transformName;
   }
 }

@@ -19,6 +19,7 @@ package org.apache.hop.pipeline.transforms.route;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -213,6 +214,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
 
       // Add the routes...
       //
+      int index = 1;
       for (Route route : routes) {
         IStream stream =
             new Stream(
@@ -221,6 +223,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
                 BaseMessages.getString(
                     PKG,
                     "RouteMeta.Route.SetTarget.Description",
+                    index++,
                     Const.NVL(route.getCondition(), "")),
                 StreamIcon.TARGET,
                 route.getTransformName());
@@ -250,7 +253,6 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     int index = 0;
     for (Route target : routes) {
       IStream stream = targetStreams.get(index++);
-
       TransformMeta transformMeta =
           TransformMeta.findTransform(transforms, target.getTransformName());
       stream.setTransformMeta(transformMeta);
@@ -267,7 +269,43 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
 
   @Override
   public void convertIOMetaToTransformNames() {
-    // TODO
+    // Update target transforms
+    List<IStream> targetStreams = getTransformIOMeta().getTargetStreams();
+    int index = 0;
+    for (Route route : routes) {
+      if (route.getTransformName() != null) {
+        IStream stream = targetStreams.get(index++);
+        if (stream != null && stream.getTransformName() != null) {
+          route.setTransformName(stream.getTransformName());
+        }
+      }
+    }
+
+    // Update default target (extra one target)
+    if (defaultTargetTransformName!=null && index == targetStreams.size() - 1) {
+      IStream stream = targetStreams.get(index);
+      if (stream != null && stream.getTransformName() != null) {
+        this.defaultTargetTransformName = stream.getTransformName();
+      }
+    }
+  }
+
+  public boolean cleanAfterHopFromRemove(TransformMeta toTransform) {
+    for (Route route : routes) {
+      if (Objects.equals(route.getTransformName(), toTransform.getName())) {
+        route.setTransformName(null);
+      }
+    }
+
+    if (Objects.equals(this.defaultTargetTransformName, toTransform.getName())) {
+      this.defaultTargetTransformName=null;
+    }
+
+    return true;
+  }
+
+  public boolean cleanAfterHopToRemove(TransformMeta fromTransform) {
+    return true;
   }
 
   @Override

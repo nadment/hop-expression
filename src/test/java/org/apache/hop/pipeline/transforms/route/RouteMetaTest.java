@@ -18,10 +18,10 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.hop.pipeline.transform.TransformSerializationTestUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RouteMetaTest {
 
@@ -30,7 +30,10 @@ public class RouteMetaTest {
     RouteMeta meta =
         TransformSerializationTestUtil.testSerialization("/route-transform.xml", RouteMeta.class);
 
-    assertEquals("Condition default", meta.getDefaultTargetTransformName());
+    Route route = meta.getRoutes().get(0);
+    assertEquals("FIELD_BOOLEAN is TRUE", route.getCondition());
+    assertEquals("Condition 1", route.getTransformName());
     assertEquals(4, meta.getRoutes().size());
+    assertEquals("Condition default", meta.getDefaultTargetTransformName());
   }
 }

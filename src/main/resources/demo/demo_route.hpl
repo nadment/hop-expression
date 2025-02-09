@@ -26,11 +26,6 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Clone row</from>
-      <to>Route row</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>Route row</from>
       <to>Condition 1</to>
       <enabled>Y</enabled>
@@ -41,13 +36,18 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Route row</from>
-      <to>Condition default</to>
+      <from>Clone row</from>
+      <to>Route row</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>Route row</from>
       <to>Condition 3</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Route row</from>
+      <to>Condition default</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -92,7 +92,7 @@
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>432</xloc>
+      <xloc>448</xloc>
       <yloc>64</yloc>
     </GUI>
   </transform>
@@ -109,7 +109,7 @@
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>432</xloc>
+      <xloc>448</xloc>
       <yloc>128</yloc>
     </GUI>
   </transform>
@@ -126,7 +126,7 @@
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>432</xloc>
+      <xloc>448</xloc>
       <yloc>192</yloc>
     </GUI>
   </transform>
@@ -143,7 +143,7 @@
     </partitioning>
     <attributes/>
     <GUI>
-      <xloc>432</xloc>
+      <xloc>448</xloc>
       <yloc>256</yloc>
     </GUI>
   </transform>

@@ -106,9 +106,14 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
       if (StringUtils.isNotEmpty(meta.getDefaultTargetTransformName())) {
         IRowSet rowSet = findOutputRowSet(meta.getDefaultTargetTransformName());
-        if (rowSet != null) {
-          data.defaultRowSet = rowSet;
+        if (rowSet == null) {
+          throw new HopTransformException(
+              BaseMessages.getString(
+                  PKG,
+                  "Route.Exception.UnableToFindDefaultTargetTransform",
+                  meta.getDefaultTargetTransformName()));
         }
+        data.defaultRowSet = rowSet;
       }
     }
 
@@ -118,11 +123,11 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     for (RouteTarget target : data.targets) {
 
       try {
-        boolean predicate = target.expression.getValue(Boolean.class);
+        boolean predicate = target.getExpression().getValue(Boolean.class);
 
         if (predicate) {
           toDefault = false;
-          putRowTo(data.rowMeta, row, target.rowSet);
+          putRowTo(data.rowMeta, row, target.getRowSet());
           break;
         }
       } catch (Exception e) {
@@ -130,8 +135,8 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
             BaseMessages.getString(
                 PKG,
                 "Route.Exception.ConditionError",
-                target.route.getTransformName(),
-                target.route.getCondition(),
+                target.getRoute().getTransformName(),
+                target.getRoute().getCondition(),
                 e.getMessage());
         logError(message);
         if (isDebug()) {

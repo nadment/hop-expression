@@ -17,13 +17,15 @@
 
 package org.apache.hop.pipeline.transforms.route;
 
+import lombok.Getter;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.expression.IExpression;
 
+@Getter
 public final class RouteTarget {
-  final Route route;
-  final IExpression expression;
-  final IRowSet rowSet;
+  private final Route route;
+  private final IExpression expression;
+  private final IRowSet rowSet;
 
   public RouteTarget(Route route, IExpression expression, IRowSet rowSet) {
     this.route = route;
