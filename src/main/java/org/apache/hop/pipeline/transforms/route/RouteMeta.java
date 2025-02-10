@@ -290,6 +290,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     }
   }
 
+  @Override
   public boolean cleanAfterHopFromRemove(TransformMeta toTransform) {
     for (Route route : routes) {
       if (Objects.equals(route.getTransformName(), toTransform.getName())) {
@@ -301,10 +302,6 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
       this.defaultTargetTransformName=null;
     }
 
-    return true;
-  }
-
-  public boolean cleanAfterHopToRemove(TransformMeta fromTransform) {
     return true;
   }
 
