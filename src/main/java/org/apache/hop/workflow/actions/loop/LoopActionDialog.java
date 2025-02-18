@@ -57,8 +57,8 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
   private static final Class<?> PKG = LoopActionDialog.class; // For Translator
 
   private static final String COLON_SEPARATOR = " : ";
-
   private LoopAction action;
+  private boolean changed;
 
   private Text wName;
   private TextVar wFilename;
@@ -72,25 +72,24 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     this.action = action;
 
     if (this.action.getName() == null) {
-      this.action.setName(BaseMessages.getString(PKG, "LoopAction.Name"));
+      this.action.setName(BaseMessages.getString(PKG, "LoopAction.Name.Default"));
     }
   }
 
   @Override
   public IAction open() {
+    changed = action.hasChanged();
 
-    Shell parent = getParent();
-
-    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE);
+    shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE);
     PropsUi.setLook(shell);
     WorkflowDialog.setShellImage(shell, action);
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = PropsUi.getFormMargin();
     formLayout.marginHeight = PropsUi.getFormMargin();
-
     shell.setLayout(formLayout);
     shell.setText(BaseMessages.getString(PKG, "LoopActionDialog.Title"));
+    shell.setMinimumSize(500, 300);
 
     int middle = props.getMiddlePct();
     int margin = PropsUi.getMargin();
@@ -199,7 +198,7 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     // Parameters
     //
     Label wlParameters = new Label(shell, SWT.LEFT);
-    wlParameters.setText(BaseMessages.getString(PKG, "LoopActionDialog.Parammeters.Label"));
+    wlParameters.setText(BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Label"));
     PropsUi.setLook(wlParameters);
     FormData fdlParameters = new FormData();
     fdlParameters.left = new FormAttachment(0, 0);
@@ -230,12 +229,12 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     ColumnInfo[] columnInfos =
         new ColumnInfo[] {
           new ColumnInfo(
-              BaseMessages.getString(PKG, "LoopActionDialog.Parammeters.Name.Column.Header"),
+              BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Name.Column.Header"),
               ColumnInfo.COLUMN_TYPE_TEXT,
               false,
               false),
           new ColumnInfo(
-              BaseMessages.getString(PKG, "LoopActionDialog.Parammeters.Value.Column.Header"),
+              BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Value.Column.Header"),
               ColumnInfo.COLUMN_TYPE_TEXT,
               false,
               false),
@@ -272,6 +271,7 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
   }
 
   private void cancel() {
+    action.setChanged(changed);
     action = null;
     dispose();
   }

@@ -17,7 +17,6 @@
 package org.apache.hop.pipeline.transforms.where;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.hop.core.CheckResult;
@@ -27,6 +26,9 @@ import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.ExpressionFactory;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -104,7 +106,26 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
 
-    // See if there is a filter condition expression
+    // Check if we have input streams leading to this transform
+    if (input.length == 0) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "WhereMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
+              transformMeta));
+    }
+    // Look up fields in the input stream <prev>
+    else if (prev == null || prev.isEmpty()) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "WhereMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
+              transformMeta));
+    }
+
+    // Check if there is a condition expression
     if (Utils.isEmpty(this.getCondition())) {
       remarks.add(
           new CheckResult(
@@ -113,66 +134,30 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
               transformMeta));
     }
 
-    // TODO: check if Identifiers used in expression are available:
-    // FieldsNotFoundFromPreviousTransform
+    // Check if the expression is valide
+    else
+      try {
+        RowExpressionContext context = new RowExpressionContext(variables, prev);
+        ExpressionFactory.create(context, variables.resolve(getCondition()));
+      } catch (ExpressionException e) {
+        remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR, e.getMessage(), transformMeta));
+      }
 
-    checkTarget(transformMeta, true, getTrueTransformName(), output).ifPresent(remarks::add);
-    checkTarget(transformMeta, false, getFalseTransformName(), output).ifPresent(remarks::add);
-
-    // Look up fields in the input stream <prev>
-    if (prev != null && !prev.isEmpty()) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG,
-                  "WhereMeta.CheckResult.ReceivingFieldsFromPreviousTransforms",
-                  prev.size() + ""),
-              transformMeta));
-    } else {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(
-                  PKG, "WhereMeta.CheckResult.CouldNotReadFieldsFromPreviousTransform"),
-              transformMeta));
-    }
-
-    // See if we have input streams leading to this transform!
-    if (input.length > 0) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "WhereMeta.CheckResult.ReceivingInfoFromOtherTransforms"),
-              transformMeta));
-
-    } else {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(
-                  PKG, "WhereMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
-              transformMeta));
-    }
-  }
-
-  private Optional<ICheckResult> checkTarget(
-      TransformMeta transformMeta, boolean target, String targetTransformName, String[] output) {
-    if (targetTransformName != null) {
-      int trueTargetIdx = Const.indexOfString(targetTransformName, output);
-      if (trueTargetIdx < 0) {
-        return Optional.of(
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_ERROR,
-                BaseMessages.getString(
-                    PKG,
-                    "WhereMeta.CheckResult.TargetTransformInvalid",
-                    target,
-                    targetTransformName),
-                transformMeta));
+    // Check if there is at least one target (true, false or error)
+    ITransformIOMeta transformIOMeta = getTransformIOMeta();
+    int target = 0;
+    for (IStream stream : transformIOMeta.getTargetStreams()) {
+      if (stream.getTransformName() != null) {
+        target++;
       }
     }
-    return Optional.empty();
+    if (target == 0) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_WARNING,
+              "WhereMeta.CheckResult.CheckAtLeastOneTarget",
+              transformMeta));
+    }
   }
 
   @Override

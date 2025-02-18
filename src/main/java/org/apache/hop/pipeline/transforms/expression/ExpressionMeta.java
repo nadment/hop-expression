@@ -129,40 +129,22 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
 
-    // Look up fields in the input stream <prev>
-    if (prev != null && !prev.isEmpty()) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG,
-                  "ExpressionMeta.CheckResult.ReceivingFieldsFromPreviousTransforms",
-                  prev.size() + ""),
-              transformMeta));
-    } else {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(
-                  PKG, "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
-              transformMeta));
-    }
-
-    // See if we have input streams leading to this transform!
-    if (input.length > 0) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG, "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"),
-              transformMeta));
-
-    } else {
+    // Check if we have input streams leading to this transform!
+    if (input.length == 0) {
       remarks.add(
           new CheckResult(
               ICheckResult.TYPE_RESULT_ERROR,
               BaseMessages.getString(
                   PKG, "ExpressionMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
+              transformMeta));
+    }
+    // Look up fields in the input stream <prev>
+    else if (prev == null || prev.isEmpty()) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_WARNING,
+              BaseMessages.getString(
+                  PKG, "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
               transformMeta));
     }
 

@@ -24,16 +24,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.base.AbstractMeta;
+import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
+import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.Result;
 import org.apache.hop.core.annotations.Action;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.file.IHasFilename;
+import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.resource.IResourceExport;
@@ -56,6 +60,7 @@ import org.apache.hop.workflow.engine.WorkflowEngineFactory;
     image = "loop.svg",
     documentationUrl = "/workflow/actions/loop.html")
 public class LoopAction extends ActionBase implements IAction {
+  static final Class<?> PKG = LoopAction.class;
 
   /** The workflow to execute */
   @HopMetadataProperty(key = "filename")
@@ -255,5 +260,33 @@ public class LoopAction extends ActionBase implements IAction {
   @Override
   public boolean isUnconditional() {
     return false;
+  }
+
+  @Override
+  public void check(
+      List<ICheckResult> remarks,
+      WorkflowMeta workflowMeta,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
+
+    // Check variable definition
+    ExpressionContext context = new ExpressionContext(variables);
+    if (Utils.isEmpty(condition)) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "LoopAction.CheckResult.LoopConditionIsMissing"),
+              this));
+    } else
+      try {
+        ExpressionFactory.create(context, variables.resolve(condition));
+      } catch (Exception e) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "LoopAction.CheckResult.LoopConditionExpressionError", e.getMessage()),
+                this));
+      }
   }
 }

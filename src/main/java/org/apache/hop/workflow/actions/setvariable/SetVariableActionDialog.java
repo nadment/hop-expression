@@ -55,9 +55,7 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
   private static final Class<?> PKG = SetVariableAction.class; // For Translator
 
   private Text wName;
-
   private SetVariableAction action;
-
   private TableView wFields;
 
   private boolean changed;
@@ -74,21 +72,21 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
 
   @Override
   public IAction open() {
-    Shell parent = getParent();
 
-    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE);
+    changed = action.hasChanged();
+
+    shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE);
     PropsUi.setLook(shell);
     WorkflowDialog.setShellImage(shell, action);
 
     ModifyListener lsMod = e -> action.setChanged();
-    changed = action.hasChanged();
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = PropsUi.getFormMargin();
     formLayout.marginHeight = PropsUi.getFormMargin();
-
     shell.setLayout(formLayout);
     shell.setText(BaseMessages.getString(PKG, "SetVariableAction.Title"));
+    shell.setMinimumSize(500, 300);
 
     int middle = props.getMiddlePct();
     int margin = PropsUi.getMargin();

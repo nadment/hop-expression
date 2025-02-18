@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.Result;
 import org.apache.hop.core.annotations.Action;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopWorkflowException;
+import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionFactory;
@@ -36,10 +38,6 @@ import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.workflow.WorkflowMeta;
 import org.apache.hop.workflow.action.ActionBase;
 import org.apache.hop.workflow.action.IAction;
-import org.apache.hop.workflow.action.validator.AbstractFileValidator;
-import org.apache.hop.workflow.action.validator.ActionValidatorUtils;
-import org.apache.hop.workflow.action.validator.AndValidator;
-import org.apache.hop.workflow.action.validator.ValidatorContext;
 import org.apache.hop.workflow.engine.IWorkflowEngine;
 
 /** This defines a 'Set variables' action. */
@@ -54,7 +52,7 @@ import org.apache.hop.workflow.engine.IWorkflowEngine;
     keywords = "i18n::SetVariableAction.Keywords",
     documentationUrl = "/workflow/actions/setvariable.html")
 public class SetVariableAction extends ActionBase implements IAction {
-  static final Class<?> PKG = SetVariableAction.class; // For Translator
+  static final Class<?> PKG = SetVariableAction.class;
 
   @HopMetadataProperty(groupKey = "variables", key = "variable")
   private List<SetVariableDefinition> variableDefinitions;
@@ -203,7 +201,7 @@ public class SetVariableAction extends ActionBase implements IAction {
     } catch (Exception e) {
       result.setResult(false);
       result.setNrErrors(1);
-      logError(BaseMessages.getString(PKG, "SetVariableAction.UnExcpectedError", e.getMessage()));
+      logError(BaseMessages.getString(PKG, "SetVariableAction.UnexpectedError", e.getMessage()));
       return result;
     }
 
@@ -221,21 +219,40 @@ public class SetVariableAction extends ActionBase implements IAction {
       WorkflowMeta workflowMeta,
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
-    boolean res =
-        ActionValidatorUtils.andValidator()
-            .validate(
-                this,
-                "variableName",
-                remarks,
-                AndValidator.putValidators(ActionValidatorUtils.notNullValidator()));
 
-    if (!res) {
-      return;
+    // Check variable definition
+    ExpressionContext context = new ExpressionContext(variables);
+    for (SetVariableDefinition definition : this.variableDefinitions) {
+      if (Utils.isEmpty(definition.getName())) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG,
+                    "SetVariableAction.CheckResult.VariableNameIsMissing",
+                    definition.getExpression()),
+                this));
+      } else if (Utils.isEmpty(definition.getExpression())) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "SetVariableAction.CheckResult.ExpressionIsMissing", definition.getName()),
+                this));
+      } else
+        try {
+          ExpressionFactory.create(context, variables.resolve(definition.getExpression()));
+        } catch (Exception e) {
+          remarks.add(
+              new CheckResult(
+                  ICheckResult.TYPE_RESULT_ERROR,
+                  BaseMessages.getString(
+                      PKG,
+                      "SetVariableAction.CheckResult.ExpressionError",
+                      definition.getName(),
+                      e.getMessage()),
+                  this));
+        }
     }
-
-    ValidatorContext ctx = new ValidatorContext();
-    AbstractFileValidator.putVariableSpace(ctx, getVariables());
-    AndValidator.putValidators(
-        ctx, ActionValidatorUtils.notNullValidator(), ActionValidatorUtils.fileExistsValidator());
   }
 }

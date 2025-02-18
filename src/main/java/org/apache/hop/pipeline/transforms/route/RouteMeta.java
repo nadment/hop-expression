@@ -125,16 +125,8 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
       IHopMetadataProvider metadataProvider) {
     CheckResult cr;
 
-    // See if we have input streams leading to this transform!
-    if (input.length > 0) {
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG, "RouteMeta.CheckResult.TransformReceivingInfoFromOtherTransforms"),
-              transformMeta);
-      remarks.add(cr);
-    } else {
+    // Check if we have input streams leading to this transform!
+    if (input.length == 0) {
       cr =
           new CheckResult(
               ICheckResult.TYPE_RESULT_ERROR,
@@ -282,7 +274,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     }
 
     // Update default target (extra one target)
-    if (defaultTargetTransformName!=null && index == targetStreams.size() - 1) {
+    if (defaultTargetTransformName != null && index == targetStreams.size() - 1) {
       IStream stream = targetStreams.get(index);
       if (stream != null && stream.getTransformName() != null) {
         this.defaultTargetTransformName = stream.getTransformName();
@@ -299,7 +291,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     }
 
     if (Objects.equals(this.defaultTargetTransformName, toTransform.getName())) {
-      this.defaultTargetTransformName=null;
+      this.defaultTargetTransformName = null;
     }
 
     return true;

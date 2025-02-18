@@ -176,22 +176,13 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       IRowMeta info,
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
-    CheckResult cr;
 
-    if (input.length > 0) {
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "AggregateMeta.CheckResult.ReceivingInfoOK"),
-              transformMeta);
-      remarks.add(cr);
-    } else {
-      cr =
+    if (input.length == 0) {
+      remarks.add(
           new CheckResult(
               ICheckResult.TYPE_RESULT_ERROR,
               BaseMessages.getString(PKG, "AggregateMeta.CheckResult.NoInputError"),
-              transformMeta);
-      remarks.add(cr);
+              transformMeta));
     }
   }
 }
