@@ -2189,14 +2189,24 @@ public class OperatorTest extends ExpressionTest {
     evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.INVALID_ARGUMENT);
     evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
 
-    optimize("FIELD_STRING LIKE 'AD%D'");
-    optimize("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
+    optimize("FIELD_STRING LIKE 'AB%C'");
+    optimize("FIELD_STRING LIKE '%ADC!_%' ESCAPE '!'");
     optimize("FIELD_STRING LIKE '%'", "NVL2(FIELD_STRING,TRUE,NULL)");
-    optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
-    optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
-    optimize("FIELD_STRING LIKE 'ADD%'", "STARTSWITH(FIELD_STRING,'ADD')");
-    optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
-    optimize("FIELD_STRING LIKE '%Hello%'", "CONTAINS(FIELD_STRING,'Hello')");
+    optimize("FIELD_STRING LIKE 'ABC'", "FIELD_STRING='ABC'");
+    optimize("FIELD_STRING LIKE 'ABC%'", "STARTSWITH(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE 'ABC%%'", "STARTSWITH(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE 'ABC%%%'", "STARTSWITH(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE '%ABC'", "ENDSWITH(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE '%%ABC'", "ENDSWITH(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE '%%%ABC'", "ENDSWITH(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE '%ABC%'", "CONTAINS(FIELD_STRING,'ABC')");
+    optimize("FIELD_STRING LIKE '%%ABC%%'", "CONTAINS(FIELD_STRING,'ABC')");
+
+    optimize("FIELD_STRING LIKE 'AB%%C'", "FIELD_STRING LIKE 'AB%C'");
+    optimize("FIELD_STRING LIKE 'AB%%%%C'", "FIELD_STRING LIKE 'AB%C'");
+    optimize("FIELD_STRING LIKE '%%%AB%%C%%%'", "FIELD_STRING LIKE '%AB%C%'");
+    // optimize("FIELD_STRING LIKE '%%'", "FIELD_STRING=FIELD_STRING");
+    // optimize("FIELD_STRING LIKE '%%%'", "FIELD_STRING=FIELD_STRING");
   }
 
   @Test
