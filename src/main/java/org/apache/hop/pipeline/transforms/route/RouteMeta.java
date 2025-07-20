@@ -251,7 +251,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     }
     // Extra one is the default target (if any)...
     //
-    if (!Utils.isEmpty(defaultTargetTransformName)) {
+    if (StringUtils.isNotEmpty(defaultTargetTransformName)) {
       IStream stream = targetStreams.get(index);
       TransformMeta transformMeta =
           TransformMeta.findTransform(transforms, defaultTargetTransformName);
