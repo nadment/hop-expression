@@ -83,14 +83,14 @@ public class LikeOperator extends Operator {
       char escape = '\\';
       if (call.getOperandCount() == 3) {
         String escapeString = call.getOperand(2).getValue(String.class);
-        if ( StringUtils.isNotEmpty(escapeString)) {
+        if (StringUtils.isNotEmpty(escapeString)) {
           escape = escapeString.charAt(0);
         }
       }
 
       // Multiple consecutive '%' in the string matched by LIKE should simplify to a single '%'
-      String simplifiedPattern = Regexp.simplifyLikeString(pattern,  escape, '%');
-      if ( !simplifiedPattern.equals(pattern)) {
+      String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
+      if (!simplifiedPattern.equals(pattern)) {
         return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
       }
 
