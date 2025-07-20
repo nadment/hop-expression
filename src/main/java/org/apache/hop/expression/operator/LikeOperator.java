@@ -76,7 +76,7 @@ public class LikeOperator extends Operator {
     if (call.getOperand(1).isConstant()) {
       String pattern = call.getOperand(1).getValue(String.class);
 
-      // FIELD LIKE NULL → NULL
+      // x LIKE NULL → NULL
       if (pattern == null) return Literal.NULL_BOOLEAN;
 
       if (call.getOperandCount() == 3) {
@@ -84,34 +84,40 @@ public class LikeOperator extends Operator {
           return Literal.NULL_BOOLEAN;
         }
 
-        // For now don't optimize if special escape char
+        // For now, don't optimize if special escapes char
         return call;
       }
 
-      // field LIKE '%' → IFNULL(field,NULL,TRUE)
+      // Multiple consecutive '%' in the string matched by LIKE should simplify to a single '%'
+      String simplifiedPattern = Regexp.simplifyLikeString(pattern, '\\', '%');
+      if ( !simplifiedPattern.equals(pattern)) {
+        return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
+      }
+
+      // x LIKE '%' → IFNULL(x,NULL,TRUE)
       if ("%".equals(pattern)) {
         return new Call(Nvl2Function.INSTANCE, value, Literal.TRUE, Literal.NULL);
       }
 
-      // field LIKE '%foo%' → CONTAINS(field,'foo')
+      // x LIKE '%foo%' → CONTAINS(x,'foo')
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(ContainsFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // field LIKE 'foo%' → STARTSWITH(field,'foo')
+      // x LIKE 'foo%' → STARTSWITH(x,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(StartsWithFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // field LIKE '%foo' → ENDSWITH(field,'foo')
+      // x LIKE '%foo' → ENDSWITH(x,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(EndsWithFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // field LIKE 'Hello' → field='Hello'
+      // x LIKE 'Hello' → x='Hello'
       if (equalTo.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(EqualOperator.INSTANCE, value, Literal.of(search));
