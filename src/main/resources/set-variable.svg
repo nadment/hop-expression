@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1"
-     id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="42px" height="42px"
+     xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="42px" height="42px"
      viewBox="0 0 42 42" enable-background="new 0 0 42 42" xml:space="preserve">
 <g>
 	<polygon fill="#0E3A5A" points="21.041,2.697 38.917,20.932 21.041,39.166 3.167,20.932 	"/>
