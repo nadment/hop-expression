@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>

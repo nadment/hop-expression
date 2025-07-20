@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /** Represents a capitalization strategy. */
 public enum Capitalization {

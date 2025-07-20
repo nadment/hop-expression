@@ -28,7 +28,7 @@ import java.time.temporal.JulianFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;

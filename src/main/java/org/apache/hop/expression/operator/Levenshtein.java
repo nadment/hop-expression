@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -24,9 +24,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** The function compute Levenshtein distance. */
+/** The function computes Levenshtein distance. */
 @FunctionPlugin
 public class Levenshtein extends Function {
+
+  private static final LevenshteinDistance LEVENSHTEIN = LevenshteinDistance.getDefaultInstance();
 
   public Levenshtein() {
     super(
@@ -44,6 +46,6 @@ public class Levenshtein extends Function {
     String str2 = operands[1].getValue(String.class);
     if (str2 == null) return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
+    return Long.valueOf(LEVENSHTEIN.apply(str1, str2));
   }
 }
