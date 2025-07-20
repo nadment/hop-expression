@@ -43,6 +43,7 @@ import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaInternetAddress;
+import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
@@ -149,7 +150,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN_FALSE"));
     rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
     rowMeta.addValueMeta(new ValueMetaInternetAddress("FIELD_INET"));
-    rowMeta.addValueMeta(new org.apache.hop.core.row.value.ValueMetaJson("FIELD_JSON"));
+    rowMeta.addValueMeta(new ValueMetaJson("FIELD_JSON"));
 
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
@@ -160,7 +161,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
     rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
     rowMeta.addValueMeta(new ValueMetaBinary("NULL_BINARY"));
-    rowMeta.addValueMeta(new org.apache.hop.core.row.value.ValueMetaJson("NULL_JSON"));
+    rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
 
     // Zero values
     rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER_ZERO"));

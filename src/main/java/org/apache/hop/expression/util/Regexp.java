@@ -175,4 +175,37 @@ public class Regexp {
     }
     return javaPattern.toString();
   }
+
+  /**
+   * Simplifies like string with escape. A like '%%#%%A%%' escape '#' should simplify to A like
+   * '%#%%A%' escape '#'.
+   */
+  public static String simplifyLikeString(String content, char escape, char wildcard) {
+    int escapeCount = 0;
+    int wildcardCount = 0;
+    StringBuilder builder = new StringBuilder();
+    for (int index = 0; index < content.length(); index++) {
+      char c = content.charAt(index);
+      if (c == escape) {
+        builder.append(c);
+        escapeCount++;
+        wildcardCount = 0;
+        continue;
+      }
+      if (c == wildcard) {
+        if (escapeCount % 2 == 1) {
+          builder.append(wildcard);
+        } else if (wildcardCount == 0) {
+          builder.append(wildcard);
+          wildcardCount++;
+        }
+        escapeCount = 0;
+        continue;
+      }
+      builder.append(c);
+      escapeCount = 0;
+      wildcardCount = 0;
+    }
+    return builder.toString();
+  }
 }

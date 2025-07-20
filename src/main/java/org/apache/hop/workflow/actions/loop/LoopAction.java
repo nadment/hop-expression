@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.base.AbstractMeta;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
@@ -172,8 +172,6 @@ public class LoopAction extends ActionBase implements IAction {
     // Link both ways!
     workflow.getWorkflowTracker().setParentWorkflowTracker(parentWorkflow.getWorkflowTracker());
 
-    String counterVar = workflow.getVariable("COUNTER");
-
     Result result = workflow.startExecution();
     return new ExecutionContext(result, workflow);
   }
@@ -193,7 +191,7 @@ public class LoopAction extends ActionBase implements IAction {
 
     boolean result = expression.getValue(Boolean.class);
 
-    this.logBasic("Evaluate expression '" + source + "'=" + result);
+    this.logBasic("Evaluate loop condition '" + source + "' is " + result);
 
     return result;
   }

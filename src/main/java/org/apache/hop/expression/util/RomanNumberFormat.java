@@ -17,7 +17,7 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 final class RomanNumberFormat extends NumberFormat {
 

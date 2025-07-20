@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
@@ -224,7 +223,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
 
       // Add the default target transform
       //
-      if (StringUtils.isNotEmpty(defaultTargetTransformName)) {
+      if (!Utils.isEmpty(defaultTargetTransformName)) {
         ioMeta.addStream(
             new Stream(
                 StreamType.TARGET,
@@ -251,7 +250,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     }
     // Extra one is the default target (if any)...
     //
-    if (StringUtils.isNotEmpty(defaultTargetTransformName)) {
+    if (!Utils.isEmpty(defaultTargetTransformName)) {
       IStream stream = targetStreams.get(index);
       TransformMeta transformMeta =
           TransformMeta.findTransform(transforms, defaultTargetTransformName);
@@ -302,7 +301,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
     List<IStream> list = new ArrayList<>();
 
     list.add(newTargetStream);
-    if (StringUtils.isEmpty(defaultTargetTransformName)) {
+    if (Utils.isEmpty(defaultTargetTransformName)) {
       list.add(newDefaultStream);
     }
 

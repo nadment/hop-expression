@@ -17,7 +17,7 @@ http://www.apache.org/licenses/LICENSE-2.0
     <parent>
         <groupId>org.apache.hop</groupId>
         <artifactId>hop</artifactId>
-        <version>2.11.0</version>
+        <version>2.13.0</version>
     </parent>
 
     <artifactId>hop-expression</artifactId>
@@ -27,8 +27,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 
     <properties>
         <asciidoctor.version>3.0.0</asciidoctor.version>
-        <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
         <commons-math3.version>3.6.1</commons-math3.version>
+        <commons-text.version>1.13.1</commons-text.version>
         <commons-vfs2.version>2.9.0</commons-vfs2.version>
         <hop.home>C:\hop</hop.home>
         <hop.version>2.11.0</hop.version>
@@ -59,6 +60,11 @@ http://www.apache.org/licenses/LICENSE-2.0
             <artifactId>json-path</artifactId>
             <version>${json-path.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${commons-text.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.platform</groupId>
@@ -107,9 +113,9 @@ http://www.apache.org/licenses/LICENSE-2.0
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
