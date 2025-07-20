@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -69,15 +70,29 @@ public class LikeOperator extends Operator {
    */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    // Optimize NULL LIKE FIELD to NULL
+    // Simplify NULL LIKE FIELD → NULL
     IExpression value = call.getOperand(0);
     if (value.isNull()) return value;
 
     if (call.getOperand(1).isConstant()) {
       String pattern = call.getOperand(1).getValue(String.class);
 
-      // x LIKE NULL → NULL
+      // Simplify x LIKE NULL → NULL
       if (pattern == null) return Literal.NULL_BOOLEAN;
+
+      char escape = '\\';
+      if (call.getOperandCount() == 3) {
+        String escapeString = call.getOperand(2).getValue(String.class);
+        if (StringUtils.isNotEmpty(escapeString)) {
+          escape = escapeString.charAt(0);
+        }
+      }
+
+      // Multiple consecutive '%' in the string matched by LIKE should simplify to a single '%'
+      String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
+      if (!simplifiedPattern.equals(pattern)) {
+        return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
+      }
 
       if (call.getOperandCount() == 3) {
         if (call.getOperand(2).isNull()) {
@@ -88,36 +103,30 @@ public class LikeOperator extends Operator {
         return call;
       }
 
-      // Multiple consecutive '%' in the string matched by LIKE should simplify to a single '%'
-      String simplifiedPattern = Regexp.simplifyLikeString(pattern, '\\', '%');
-      if ( !simplifiedPattern.equals(pattern)) {
-        return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
-      }
-
-      // x LIKE '%' → IFNULL(x,NULL,TRUE)
+      // Simplify x LIKE '%' → IFNULL(x,NULL,TRUE)
       if ("%".equals(pattern)) {
         return new Call(Nvl2Function.INSTANCE, value, Literal.TRUE, Literal.NULL);
       }
 
-      // x LIKE '%foo%' → CONTAINS(x,'foo')
+      // Simplify x LIKE '%foo%' → CONTAINS(x,'foo')
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(ContainsFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // x LIKE 'foo%' → STARTSWITH(x,'foo')
+      // Simplify x LIKE 'foo%' → STARTSWITH(x,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(StartsWithFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // x LIKE '%foo' → ENDSWITH(x,'foo')
+      // Simplify x LIKE '%foo' → ENDSWITH(x,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(EndsWithFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // x LIKE 'Hello' → x='Hello'
+      // Simplify x LIKE 'Hello' → x='Hello'
       if (equalTo.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(EqualOperator.INSTANCE, value, Literal.of(search));
@@ -129,8 +138,8 @@ public class LikeOperator extends Operator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    String input = operands[0].getValue(String.class);
-    if (input == null) {
+    String value = operands[0].getValue(String.class);
+    if (value == null) {
       return null;
     }
     String pattern = operands[1].getValue(String.class);
@@ -145,11 +154,9 @@ public class LikeOperator extends Operator {
       }
     }
 
-    final String regex = Regexp.toRegexLike(pattern, escape);
-
+    String regex = Regexp.toRegexLike(pattern, escape);
     Pattern p = Pattern.compile(regex, Pattern.DOTALL);
-
-    return p.matcher(input).matches();
+    return p.matcher(value).matches();
   }
 
   @Override

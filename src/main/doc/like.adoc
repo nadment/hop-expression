@@ -36,12 +36,14 @@ Wildcards are supported in pattern
 *	An underscore `_` matches any single character.
 *	A percent sign `%` matches any sequence of zero or more characters.
 	
-The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
+The escape character instructs the operator to treat the wildcard characters as the regular characters.
+The default escape character is backslash `\`.
 
 TIP: See ILIKE insensitive case operator
 
 == Examples
 
 ----
-customer_name LIKE '%/_%' ESCAPE '/'
+customer_name LIKE 'APA%'
+customer_name LIKE '%A#_B%' ESCAPE  ESCAPE '#'
 ----

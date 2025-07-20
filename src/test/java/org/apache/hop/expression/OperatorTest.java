@@ -2111,8 +2111,23 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("'Result 100% value' ilike 'RESULT%100^%%' escape '^'");
 
     evalNull("'test' ILIKE NULL_STRING");
-    evalNull("'test' ILIKE 'TEST' escape NULL_STRING");
     evalNull("NULL_STRING ILIKE '%T%'");
+
+    evalFails("'a' ILIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
+    evalFails("'a' ILIKE '%' ESCAPE NULL_STRING", ErrorCode.INVALID_ARGUMENT);
+
+    // Optimizable
+    evalTrue("'ABCDEFG' ILIKE 'abcdefg'");
+    evalTrue("'ABCDEFG' ILIKE 'abcde%'");
+    evalTrue("'ABCDEFG' ILIKE '%defg'");
+    evalTrue("'ABCDEFG' ILIKE '%cde%'");
+
+    optimize("FIELD_STRING ILIKE 'AB%C'");
+    optimize("FIELD_STRING ILIKE '%ADC!_%' ESCAPE '!'");
+    optimize("FIELD_STRING ILIKE 'AB%%C'", "FIELD_STRING ILIKE 'AB%C'");
+    optimize("FIELD_STRING ILIKE 'AB%%%%C'", "FIELD_STRING ILIKE 'AB%C'");
+    optimize("FIELD_STRING ILIKE '%%%AB%%C%%%'", "FIELD_STRING ILIKE '%AB%C%'");
+    optimize("FIELD_STRING ILIKE '\\%%%AB%%C%%\\%'", "FIELD_STRING ILIKE '\\%%AB%C%\\%'");
   }
 
   @Test
@@ -2185,9 +2200,12 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_STRING LIKE '%'").returnType(Types.BOOLEAN);
     evalNull("'test' LIKE NULL_STRING").returnType(Types.BOOLEAN);
 
+    evalFails("'a' LIKE '%' ESCAPE", ErrorCode.SYNTAX_ERROR);
+    evalFails("'a' LIKE '%' ESCAPE ''", ErrorCode.INVALID_ARGUMENT);
+    evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
+    evalFails("'a' LIKE '%' ESCAPE NULL_STRING", ErrorCode.INVALID_ARGUMENT);
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'", ErrorCode.INVALID_ARGUMENT);
     evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.INVALID_ARGUMENT);
-    evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
 
     optimize("FIELD_STRING LIKE 'AB%C'");
     optimize("FIELD_STRING LIKE '%ADC!_%' ESCAPE '!'");
@@ -2205,6 +2223,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_STRING LIKE 'AB%%C'", "FIELD_STRING LIKE 'AB%C'");
     optimize("FIELD_STRING LIKE 'AB%%%%C'", "FIELD_STRING LIKE 'AB%C'");
     optimize("FIELD_STRING LIKE '%%%AB%%C%%%'", "FIELD_STRING LIKE '%AB%C%'");
+    optimize("FIELD_STRING LIKE '\\%%%AB%%C%%\\%'", "FIELD_STRING LIKE '\\%%AB%C%\\%'");
+
     // optimize("FIELD_STRING LIKE '%%'", "FIELD_STRING=FIELD_STRING");
     // optimize("FIELD_STRING LIKE '%%%'", "FIELD_STRING=FIELD_STRING");
   }

@@ -370,6 +370,7 @@ public class ExpressionParser {
       IExpression pattern = this.parseBitwiseOr();
 
       if (isThenNext(Id.ESCAPE)) {
+        checkEndOfExpression(Id.LIKE);
         IExpression escape = this.parseLiteralString(next());
         expression = new Call(getPosition(), LikeOperator.INSTANCE, expression, pattern, escape);
       } else {
@@ -382,9 +383,9 @@ public class ExpressionParser {
       return expression;
     } else if (isThenNext(Id.ILIKE)) {
       IExpression pattern = this.parseBitwiseOr();
-
       if (isThenNext(Id.ESCAPE)) {
-        IExpression escape = this.parseBitwiseOr();
+        checkEndOfExpression(Id.ILIKE);
+        IExpression escape = this.parseLiteralString(next());
         expression = new Call(getPosition(), ILikeOperator.INSTANCE, expression, pattern, escape);
       } else {
         expression = new Call(getPosition(), ILikeOperator.INSTANCE, expression, pattern);
