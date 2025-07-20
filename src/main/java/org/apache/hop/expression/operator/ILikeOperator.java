@@ -18,7 +18,12 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -41,6 +46,43 @@ public class ILikeOperator extends Operator {
   }
 
   @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Optimize NULL ILIKE FIELD → NULL
+    IExpression value = call.getOperand(0);
+    if (value.isNull()) return value;
+
+    if (call.getOperand(1).isConstant()) {
+      String pattern = call.getOperand(1).getValue(String.class);
+
+      // Simplify x ILIKE NULL → NULL
+      if (pattern == null) return Literal.NULL_BOOLEAN;
+
+      char escape = '\\';
+      if (call.getOperandCount() == 3) {
+        String escapeString = call.getOperand(2).getValue(String.class);
+        if (StringUtils.isNotEmpty(escapeString)) {
+          escape = escapeString.charAt(0);
+        }
+      }
+
+      // Multiple consecutive '%' in the string matched by ILIKE should simplify to a single '%'
+      String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
+      if (!simplifiedPattern.equals(pattern)) {
+        return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
+      }
+
+      // Simplify x LIKE '%' ESCAPE NULL → NULL
+      if (call.getOperandCount() == 3) {
+        if (call.getOperand(2).isNull()) {
+          return Literal.NULL_BOOLEAN;
+        }
+      }
+    }
+
+    return call;
+  }
+
+  @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) {
@@ -60,10 +102,8 @@ public class ILikeOperator extends Operator {
       }
     }
 
-    final String regex = Regexp.toRegexLike(pattern, escape);
-
+    String regex = Regexp.toRegexLike(pattern, escape);
     Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-
     return p.matcher(value).matches();
   }
 
