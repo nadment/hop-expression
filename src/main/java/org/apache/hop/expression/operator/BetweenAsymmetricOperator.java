@@ -35,7 +35,7 @@ public class BetweenAsymmetricOperator extends Operator {
     super(
         "BETWEEN",
         120,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BETWEEN,
         OperatorCategory.COMPARISON,

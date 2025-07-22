@@ -58,7 +58,7 @@ public class BoolOrOperator extends BinaryOperator {
         "BOOLOR",
         "OR",
         180,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,

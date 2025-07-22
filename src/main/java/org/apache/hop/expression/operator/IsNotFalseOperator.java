@@ -36,7 +36,7 @@ public class IsNotFalseOperator extends PostfixUnaryOperator {
     super(
         "IS NOT FALSE",
         140,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.BOOLEAN,
         OperatorCategory.COMPARISON,

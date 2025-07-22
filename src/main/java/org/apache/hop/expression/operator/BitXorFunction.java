@@ -50,7 +50,7 @@ public class BitXorFunction extends Function {
         "BIT_XOR",
         name,
         80,
-        true,
+        Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,

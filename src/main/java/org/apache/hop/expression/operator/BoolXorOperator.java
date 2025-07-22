@@ -44,7 +44,7 @@ public class BoolXorOperator extends BinaryOperator {
         "BOOLXOR",
         "XOR",
         170,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,

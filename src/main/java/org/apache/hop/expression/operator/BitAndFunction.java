@@ -54,7 +54,7 @@ public class BitAndFunction extends Function {
         "BIT_AND",
         name,
         70,
-        true,
+        Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,

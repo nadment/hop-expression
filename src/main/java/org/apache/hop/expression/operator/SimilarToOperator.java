@@ -40,7 +40,7 @@ public class SimilarToOperator extends BinaryOperator {
         "SIMILAR TO",
         "SIMILAR TO",
         10,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING,
         OperatorCategory.COMPARISON,

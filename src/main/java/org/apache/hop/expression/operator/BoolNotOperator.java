@@ -45,7 +45,7 @@ public class BoolNotOperator extends PrefixUnaryOperator {
         "BOOLNOT",
         "NOT",
         150,
-        false,
+        Associativity.RIGHT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN,
         OperatorCategory.LOGICAL,

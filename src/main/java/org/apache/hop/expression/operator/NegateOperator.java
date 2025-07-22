@@ -39,7 +39,7 @@ public class NegateOperator extends PrefixUnaryOperator {
         "NEGATE",
         "-",
         30,
-        true,
+        Associativity.RIGHT,
         ReturnTypes.ARG0,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER).or(OperandTypes.INTERVAL),
         OperatorCategory.MATHEMATICAL,

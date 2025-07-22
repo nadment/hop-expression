@@ -28,7 +28,7 @@ public abstract class PostfixUnaryOperator extends Operator {
   protected PostfixUnaryOperator(
       String id,
       int precedence,
-      boolean isLeftAssociative,
+      Associativity associativity,
       IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker,
       String category,
@@ -36,7 +36,7 @@ public abstract class PostfixUnaryOperator extends Operator {
     super(
         id,
         precedence,
-        isLeftAssociative,
+        associativity,
         returnTypeInference,
         operandTypeChecker,
         category,

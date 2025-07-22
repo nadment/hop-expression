@@ -34,7 +34,15 @@ public abstract class Function extends Operator {
       IOperandTypeChecker operandTypeChecker,
       String category,
       String documentationUrl) {
-    super(id, id, 10, true, returnTypeInference, operandTypeChecker, category, documentationUrl);
+    super(
+        id,
+        id,
+        10,
+        Associativity.LEFT,
+        returnTypeInference,
+        operandTypeChecker,
+        category,
+        documentationUrl);
   }
 
   /**
@@ -52,14 +60,22 @@ public abstract class Function extends Operator {
       IOperandTypeChecker operandTypeChecker,
       String category,
       String documentationUrl) {
-    super(id, name, 10, true, returnTypeInference, operandTypeChecker, category, documentationUrl);
+    super(
+        id,
+        name,
+        10,
+        Associativity.LEFT,
+        returnTypeInference,
+        operandTypeChecker,
+        category,
+        documentationUrl);
   }
 
   protected Function(
       String id,
       String name,
       int precedence,
-      boolean isLeftAssociative,
+      Associativity associativity,
       IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker,
       String category,
@@ -68,7 +84,7 @@ public abstract class Function extends Operator {
         id,
         name,
         precedence,
-        isLeftAssociative,
+        associativity,
         returnTypeInference,
         operandTypeChecker,
         category,

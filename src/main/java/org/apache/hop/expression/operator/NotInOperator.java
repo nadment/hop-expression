@@ -53,7 +53,7 @@ public class NotInOperator extends Operator {
     super(
         "NOT IN",
         120,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
         OperatorCategory.COMPARISON,

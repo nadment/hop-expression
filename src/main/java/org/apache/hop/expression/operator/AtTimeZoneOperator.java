@@ -40,7 +40,7 @@ public class AtTimeZoneOperator extends Operator {
         "TIMEZONE",
         "AT TIME ZONE",
         10,
-        true,
+        Associativity.LEFT,
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.CONVERSION,

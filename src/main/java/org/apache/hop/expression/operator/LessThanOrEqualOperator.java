@@ -37,7 +37,7 @@ public class LessThanOrEqualOperator extends BinaryOperator {
         "LESS_THAN_OR_EQUAL",
         "<=",
         130,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
         OperatorCategory.COMPARISON,

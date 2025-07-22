@@ -42,7 +42,7 @@ public class DivOperator extends BinaryOperator {
         "DIV",
         "/",
         50,
-        true,
+        Associativity.LEFT,
         ReturnTypes.DIVIDE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL,

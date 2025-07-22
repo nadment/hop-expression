@@ -53,7 +53,7 @@ public class BitOrFunction extends Function {
         "BIT_OR",
         name,
         90,
-        true,
+        Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.INTEGER_INTEGER,
         OperatorCategory.BITWISE,

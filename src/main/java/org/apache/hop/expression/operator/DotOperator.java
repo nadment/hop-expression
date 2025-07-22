@@ -37,7 +37,7 @@ public class DotOperator extends Operator {
         "DOT",
         ".",
         100,
-        true,
+        Associativity.LEFT,
         ReturnTypes.DIVIDE_OPERATOR,
         OperandTypes.JSON_STRING,
         OperatorCategory.ARRAY,

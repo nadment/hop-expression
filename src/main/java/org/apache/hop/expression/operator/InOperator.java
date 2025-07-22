@@ -53,7 +53,7 @@ public class InOperator extends Operator {
     super(
         "IN",
         120,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
         OperatorCategory.COMPARISON,

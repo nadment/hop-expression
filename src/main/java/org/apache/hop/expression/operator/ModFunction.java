@@ -54,7 +54,7 @@ public class ModFunction extends Function {
         "MOD",
         name,
         50,
-        true,
+        Associativity.LEFT,
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,

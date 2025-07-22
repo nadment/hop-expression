@@ -45,7 +45,7 @@ public class ArrayElementAtOperator extends Operator {
         "ELEMENT_AT",
         "[]",
         200,
-        true,
+        Associativity.LEFT,
         ReturnTypes.ARRAY_ELEMENT,
         OperandTypes.ARRAY_INTEGER,
         OperatorCategory.ARRAY,

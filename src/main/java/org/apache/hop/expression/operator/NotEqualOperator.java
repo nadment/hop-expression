@@ -37,7 +37,7 @@ public class NotEqualOperator extends BinaryOperator {
         "NOT_EQUAL",
         name,
         130,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,

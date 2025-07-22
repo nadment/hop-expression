@@ -50,7 +50,7 @@ public class BitNotFunction extends Function {
         "BIT_NOT",
         name,
         40,
-        true,
+        Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.INTEGER,
         OperatorCategory.BITWISE,
