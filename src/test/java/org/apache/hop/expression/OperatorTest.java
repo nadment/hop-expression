@@ -1662,7 +1662,12 @@ public class OperatorTest extends ExpressionTest {
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
     optimize("-FIELD_INTEGER*FIELD_NUMBER", "FIELD_NUMBER*-FIELD_INTEGER");
-    // optimize("-FIELD_INTEGER*(-2)", "2*FIELD_INTEGER");
+
+    // Simplify arithmetic only if one negate const * (-A) → -const * A
+    optimize("-FIELD_INTEGER*(-2)", "2*FIELD_INTEGER");
+    optimize("-2*(-FIELD_INTEGER)", "2*FIELD_INTEGER");
+    optimize("2*(-FIELD_INTEGER)", "-2*FIELD_INTEGER");
+    optimize("2*(-FIELD_INTEGER)*(-4)", "8*FIELD_INTEGER");
 
     // Simplify arithmetic A * A → SQUARE(A)
     // optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
@@ -1671,7 +1676,7 @@ public class OperatorTest extends ExpressionTest {
     // Simplify arithmetic 1 / A * B → B / A
     optimize("1/FIELD_INTEGER*4", "4*FIELD_INTEGER");
 
-    // TODO: optimize("-2*(FIELD_INTEGER-4)/2", "-(FIELD_INTEGER-4)+4");
+    // optimize("-2*(FIELD_INTEGER-4)/2", "4+FIELD_INTEGER");
   }
 
   @Test
