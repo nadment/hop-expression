@@ -40,7 +40,7 @@ public class IsNullOperator extends PostfixUnaryOperator {
     super(
         "IS NULL",
         140,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY,
         OperatorCategory.COMPARISON,

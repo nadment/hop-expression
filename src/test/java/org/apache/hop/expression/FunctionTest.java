@@ -1420,6 +1420,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Add_NanoSeconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
+    // Simplify
     optimize("Add_NanoSeconds(FIELD_DATE,0)", "FIELD_DATE");
   }
 
@@ -1443,6 +1444,7 @@ public class FunctionTest extends ExpressionTest {
         "DATE_ADD(NANOSECOND,23,DATE '2019-01-15')",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 23));
 
+    // Simplify
     optimize("DATE_ADD(YEAR,1,FIELD_DATE)", "ADD_YEARS(FIELD_DATE,1)");
     optimize("DATE_ADD(QUARTER,1,FIELD_DATE)", "ADD_QUARTERS(FIELD_DATE,1)");
     optimize("DATE_ADD(MONTH,1,FIELD_DATE)", "ADD_MONTHS(FIELD_DATE,1)");
@@ -1521,6 +1523,13 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Substring('TEST FROM',1,4)", "TEST");
     evalEquals("Substring('TEST FROM',-4)", "FROM");
     evalEquals("Substring('ABCDEFG',1,1)", "A");
+
+    // TODO: is this really useful ?
+    // System.setProperty(Const.HOP_EMPTY_STRING_DIFFERS_FROM_NULL, "Y");
+    // evalEquals("Substring('TEST',1,0)","").returnType(Types.STRING);
+    // System.setProperty(Const.HOP_EMPTY_STRING_DIFFERS_FROM_NULL, "N");
+    evalNull("Substring('TEST',1,0)").returnType(Types.STRING);
+
     evalNull("Substring(NULL_STRING,1,1)").returnType(Types.STRING);
 
     // Compatibility mode
@@ -1604,6 +1613,9 @@ public class FunctionTest extends ExpressionTest {
     evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Space('str')", ErrorCode.ILLEGAL_ARGUMENT);
+
+    // Simplify
+    optimize("SPACE(4)", "'    '");
   }
 
   @Test

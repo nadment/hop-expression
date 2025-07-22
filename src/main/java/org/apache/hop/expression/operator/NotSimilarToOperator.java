@@ -39,7 +39,7 @@ public class NotSimilarToOperator extends BinaryOperator {
         "NOT SIMILAR TO",
         "NOT SIMILAR TO",
         10,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING,
         OperatorCategory.COMPARISON,

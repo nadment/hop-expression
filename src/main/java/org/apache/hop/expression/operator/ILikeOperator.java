@@ -38,7 +38,7 @@ public class ILikeOperator extends Operator {
     super(
         "ILIKE",
         120,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.COMPARISON,

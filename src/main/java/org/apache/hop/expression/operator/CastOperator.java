@@ -43,7 +43,7 @@ public class CastOperator extends Operator {
         "CAST",
         "::",
         40,
-        true,
+        Associativity.LEFT,
         ReturnTypes.CAST_OPERATOR,
         OperandTypes.CAST,
         OperatorCategory.CONVERSION,

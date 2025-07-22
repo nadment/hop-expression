@@ -59,7 +59,7 @@ public class BoolAndOperator extends BinaryOperator {
         "BOOLAND",
         "AND",
         160,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,

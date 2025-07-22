@@ -59,7 +59,7 @@ public class ConcatFunction extends Function {
         "CONCAT",
         name,
         110,
-        true,
+        Associativity.LEFT,
         ReturnTypes.FIRST_KNOWN,
         OperandTypes.or(
             OperandTypes.STRING_VARIADIC,

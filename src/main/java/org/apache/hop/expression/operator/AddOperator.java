@@ -45,7 +45,7 @@ public class AddOperator extends BinaryOperator {
         "ADD",
         "+",
         100,
-        true,
+        Associativity.LEFT,
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC
             .or(OperandTypes.DATE_INTERVAL)

@@ -1671,7 +1671,7 @@ public class OperatorTest extends ExpressionTest {
     // Simplify arithmetic 1 / A * B → B / A
     optimize("1/FIELD_INTEGER*4", "4*FIELD_INTEGER");
 
-    // TODO: optimize("-2*(FIELD_INTEGER-4)/2", "-FIELD_INTEGER+4");
+    // TODO: optimize("-2*(FIELD_INTEGER-4)/2", "-(FIELD_INTEGER-4)+4");
   }
 
   @Test

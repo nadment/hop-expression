@@ -56,7 +56,7 @@ public class LikeOperator extends Operator {
     super(
         "LIKE",
         120,
-        true,
+        Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.COMPARISON,

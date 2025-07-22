@@ -41,7 +41,7 @@ public class CaseSimpleOperator extends Operator {
     super(
         "CASE",
         120,
-        true,
+        Associativity.LEFT,
         ReturnTypes.CASE_OPERATOR,
         null,
         OperatorCategory.CONDITIONAL,

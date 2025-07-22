@@ -43,15 +43,26 @@ public abstract class Operator {
   private static final ILogChannel LOG = new LogChannel("Expression");
 
   /**
+   * Associativity determines how operators of the same precedence are resolved to avoid ambiguity.
+   */
+  public enum Associativity {
+    LEFT,
+    RIGHT
+  }
+
+  /**
    * A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link
    * RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
-  /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
+  /** The unique identifier of the operator/function. Example: "COS" or "TRIM" */
   private final String id;
 
-  /** The symbol of the operator or name of function. Ex. "id=TRUNCATE" but alias name is "TRUNC" */
+  /**
+   * The symbol of the operator or name of function. Example: id is "TRUNCATE" but alias name is
+   * "TRUNC"
+   */
   private final String name;
 
   /**
@@ -86,23 +97,22 @@ public abstract class Operator {
    * @param id The unique identifier of operator
    * @param name The symbol of the operator or name of function
    * @param precedence The precedence value of the operator
-   * @param isLeftAssociative Set to true if the operator is left associative, false if it is right
-   *     associative
+   * @param associativity Set if the operator is left or right associative
    * @param category The category to group operator
    */
   protected Operator(
       String id,
       String name,
       int precedence,
-      boolean isLeftAssociative,
+      Associativity associativity,
       IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker,
       String category,
       String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id");
     this.name = Objects.requireNonNull(name, "name");
-    this.leftPrec = leftPrecedence(precedence, isLeftAssociative);
-    this.rightPrec = rightPrecedence(precedence, isLeftAssociative);
+    this.leftPrec = leftPrecedence(precedence, associativity);
+    this.rightPrec = rightPrecedence(precedence, associativity);
     this.returnTypeInference = Objects.requireNonNull(returnTypeInference, "return type inference");
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
@@ -114,7 +124,7 @@ public abstract class Operator {
   protected Operator(
       String id,
       int precedence,
-      boolean isLeftAssociative,
+      Associativity associativity,
       IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker,
       String category,
@@ -123,22 +133,22 @@ public abstract class Operator {
         id,
         id,
         precedence,
-        isLeftAssociative,
+        associativity,
         returnTypeInference,
         operandTypeChecker,
         category,
         documentationUrl);
   }
 
-  private static int leftPrecedence(int precedence, boolean isLeftAssociative) {
-    if (isLeftAssociative) {
+  private static int leftPrecedence(int precedence, Associativity associativity) {
+    if (associativity == Associativity.LEFT) {
       ++precedence;
     }
     return precedence;
   }
 
-  private static int rightPrecedence(int precedence, boolean isLeftAssociative) {
-    if (!isLeftAssociative) {
+  private static int rightPrecedence(int precedence, Associativity associativity) {
+    if (associativity == Associativity.RIGHT) {
       ++precedence;
     }
     return precedence;
@@ -264,7 +274,7 @@ public abstract class Operator {
   /**
    * Get the category of this operator.
    *
-   * @return
+   * @return the category
    */
   public String getCategory() {
     return category;
@@ -320,7 +330,7 @@ public abstract class Operator {
    * Check operand types expected
    *
    * @param call The call to check
-   * @param throwOnFailure whether to throw an exception if check fails(otherwise returns false in
+   * @param throwOnFailure whether to throw an exception if check fails (otherwise returns false in
    *     that case)
    * @return whether check succeeded
    */
@@ -349,7 +359,7 @@ public abstract class Operator {
   }
 
   /**
-   * Derives the operands type of call for this operator.
+   * Derives the operand type of call for this operator.
    *
    * @param call The call to coerce
    */
@@ -365,7 +375,7 @@ public abstract class Operator {
    * Compile and optimize the call
    *
    * @param context The context against which the call will be compiled.
-   * @param call The call to compiled
+   * @param call The call to compile
    * @return compiled The compiled expression
    * @throws ExpressionException if an error occurs.
    */
