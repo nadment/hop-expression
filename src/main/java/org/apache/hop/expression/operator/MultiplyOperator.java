@@ -115,7 +115,7 @@ public class MultiplyOperator extends BinaryOperator {
     // Simplify arithmetic (-A) * (-B) → A * B
     int negateCount = negateTerms.size();
     if (negateCount > 1) {
-      // Remove all par of negate operator else Keep one negate
+      // Remove all pairs of negate operators else Keep one negate
       int i = negateCount % 2;
       for (Call term : negateTerms) {
         if (i <= 0) {
