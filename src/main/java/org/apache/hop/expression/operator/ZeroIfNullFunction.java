@@ -22,6 +22,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeTransforms;
 
 /** Returns 0 if its argument is null; otherwise, returns its argument. */
 @FunctionPlugin
@@ -30,7 +31,7 @@ public class ZeroIfNullFunction extends Function {
   public ZeroIfNullFunction() {
     super(
         "ZEROIFNULL",
-        ReturnTypes.ARG0_NOT_NULL,
+        ReturnTypes.ARG0.andThen(TypeTransforms.TO_NOT_NULLABLE),
         OperandTypes.NUMERIC,
         OperatorCategory.CONDITIONAL,
         "/docs/zeroifnull.html");

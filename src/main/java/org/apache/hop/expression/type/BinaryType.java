@@ -49,6 +49,9 @@ public final class BinaryType extends Type {
 
   @Override
   public Type withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new BinaryType(precision, nullable);
   }
 

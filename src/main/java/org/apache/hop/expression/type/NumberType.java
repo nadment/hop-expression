@@ -74,6 +74,9 @@ public final class NumberType extends Type {
 
   @Override
   public NumberType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new NumberType(precision, scale, nullable);
   }
 

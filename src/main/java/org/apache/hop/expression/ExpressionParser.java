@@ -547,7 +547,7 @@ public class ExpressionParser {
     // Cast operator ::
     if (isThenNext(Id.CAST)) {
       checkEndOfExpression(Id.CAST);
-      IExpression type = parseLiteralDataType(next());
+      IExpression type = parseLiteralType(next());
       return new Call(getPosition(), CastOperator.INSTANCE, expression, type);
     }
 
@@ -599,7 +599,7 @@ public class ExpressionParser {
       case LITERAL_TIMEUNIT:
         return parseLiteralTimeUnit(token);
       case LITERAL_DATATYPE:
-        return parseLiteralDataType(token);
+        return parseLiteralType(token);
       case DATE:
         checkEndOfExpression(Id.DATE);
         token = next();
@@ -931,7 +931,7 @@ public class ExpressionParser {
           token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
-    operands.add(this.parseLiteralDataType(next()));
+    operands.add(this.parseLiteralType(next()));
 
     if (isThenNext(Id.FORMAT)) {
       if (!hasNext()) {
@@ -1180,7 +1180,7 @@ public class ExpressionParser {
     if (isThenNext(Id.COMMA)) {
       operands.add(this.parseLiteralString(next()));
       if (isThenNext(Id.RETURNING)) {
-        operands.add(this.parseLiteralDataType(next()));
+        operands.add(this.parseLiteralType(next()));
       }
     }
     if (isNotThenNext(Id.RPARENT)) {
@@ -1280,13 +1280,13 @@ public class ExpressionParser {
     this.checkEndOfExpression(Id.INTERVAL);
     Token value = next();
     if (value == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL);
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,"");
     if (value.is(Id.MINUS)) {
       negative = true;
       this.checkEndOfExpression(Id.INTERVAL);
       value = next();
       if (value == null)
-        throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL);
+        throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,"");
     }
 
     checkEndOfExpression(Id.INTERVAL);
@@ -1310,7 +1310,7 @@ public class ExpressionParser {
         checkEndOfExpression(Id.INTERVAL);
         end = next();
         if (end == null)
-          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL);
+          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,text);
         endUnit = TimeUnit.of(end.text());
       }
 
@@ -1322,74 +1322,62 @@ public class ExpressionParser {
 
     IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
     if (qualifier == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL);
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,text);
 
     Interval interval = qualifier.parse(text);
     if (interval == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL);
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,text);
 
     if (negative) interval = interval.negate();
 
     return Literal.of(interval);
   }
 
-  private IExpression parseLiteralDataType(Token token) throws ExpressionException {
-    return Literal.of(parseType(token));
-  }
-
-  private Type parseType(Token token) throws ExpressionException {
+  private IExpression parseLiteralType(Token token) throws ExpressionException {
 
     TypeName name = TypeName.of(token.text());
-    if (name != null) {
-      int precision = Type.PRECISION_NOT_SPECIFIED;
-      int scale = Type.SCALE_NOT_SPECIFIED;
+    if (name == null) {
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+    }
 
-      if (isThenNext(Id.LPARENT)) {
-        boolean scaleFound = false;
+    int precision = Type.PRECISION_NOT_SPECIFIED;
+    int scale = Type.SCALE_NOT_SPECIFIED;
+    if (isThenNext(Id.LPARENT)) {
 
-        // Precision
-        precision = Integer.parseInt(this.next().text());
-
-        // Scale
-        if (isThenNext(Id.COMMA)) {
-          scale = Integer.parseInt(this.next().text());
-          scaleFound = true;
-        }
-
-        if (isNotThenNext(Id.RPARENT)) {
-          throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
-        }
-
-        if (!name.supportsPrecision())
-          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
-        if (!name.supportsScale() && scaleFound)
-          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+      // Precision
+      precision = Integer.parseInt(this.next().text());
+      if (!name.supportsPrecision()) {
+        throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
       }
 
-      switch (name) {
-        case BOOLEAN:
-          return Types.BOOLEAN;
-        case INTEGER:
-          return IntegerType.of(precision);
-        case NUMBER:
-          return NumberType.of(precision, scale);
-        case STRING:
-          return StringType.of(precision);
-        case BINARY:
-          return BinaryType.of(precision);
-        case DATE:
-          return Types.DATE;
-        case INET:
-          return Types.INET;
-        case JSON:
-          return Types.JSON;
-        case INTERVAL:
-          return Types.INTERVAL;
-        default:
+      // Scale
+      if (isThenNext(Id.COMMA)) {
+        scale = Integer.parseInt(this.next().text());
+        if (!name.supportsScale()) {
+          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+        }
+      }
+
+      if (isNotThenNext(Id.RPARENT)) {
+        throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
       }
     }
 
-    throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+    Type type = switch (name) {
+      case BOOLEAN -> Types.BOOLEAN;
+      case INTEGER -> IntegerType.of(precision);
+      case NUMBER -> NumberType.of(precision, scale);
+      case STRING -> StringType.of(precision);
+      case BINARY -> BinaryType.of(precision);
+      case DATE -> Types.DATE;
+      case INET -> Types.INET;
+      case JSON -> Types.JSON;
+      case INTERVAL -> Types.INTERVAL;
+      default ->
+          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+    };
+
+    return Literal.of(type);
   }
 
   /** Parses an expression string to return the individual tokens. */

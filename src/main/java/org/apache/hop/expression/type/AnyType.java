@@ -28,6 +28,9 @@ public final class AnyType extends Type {
 
   @Override
   public AnyType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new AnyType(nullable);
   }
 

@@ -45,6 +45,9 @@ public final class ArrayType extends Type {
 
   @Override
   public ArrayType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new ArrayType(elementType, nullable);
   }
 

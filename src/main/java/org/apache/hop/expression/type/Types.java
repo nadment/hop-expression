@@ -47,7 +47,7 @@ public class Types {
 
   public static final UnknownType UNKNOWN = new UnknownType(true);
 
-  public static final EnumType TIMEUNIT = new EnumType(true);
+  public static final EnumType TIMEUNIT = new EnumType(false);
 
   public static final ArrayType ARRAY = new ArrayType(UNKNOWN, true);
 

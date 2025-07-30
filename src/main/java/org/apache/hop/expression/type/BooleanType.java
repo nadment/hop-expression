@@ -30,7 +30,7 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public BooleanType withNullability(final boolean nullable) {
+  public BooleanType withNullability(boolean nullable) {
     return (nullable) ? Types.BOOLEAN : Types.BOOLEAN_NOT_NULL;
   }
 

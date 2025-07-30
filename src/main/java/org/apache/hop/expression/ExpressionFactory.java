@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 
 public final class ExpressionFactory {
@@ -36,9 +37,10 @@ public final class ExpressionFactory {
     ExpressionCompiler compiler = new ExpressionCompiler(context);
     expression = compiler.compile(expression);
 
-    // Check return type, Unknown is not expected here
-    if (!expression.isNull() && expression.getType().is(TypeName.UNKNOWN)) {
-      throw new ExpressionParseException(0, ErrorCode.RETURN_TYPE_UNKNOWN);
+    // Check return type, Unknown or Enum are not expected here
+    Type type= expression.getType();
+    if (!expression.isNull() && (type.is(TypeName.UNKNOWN) || type.is(TypeName.ENUM))) {
+      throw new ExpressionParseException(0, ErrorCode.SYNTAX_ERROR, expression);
     }
 
     return expression;

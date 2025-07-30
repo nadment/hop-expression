@@ -49,6 +49,7 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
@@ -126,7 +127,7 @@ public class ExpressionTest {
     }
 
     public void returnType(Type expectedType) {
-      assertEquals(expectedType.withNullability(true), expression.getType().withNullability(true));
+      assertEquals(expectedType, expression.getType());
     }
   }
 
@@ -254,7 +255,8 @@ public class ExpressionTest {
 
   protected void returnType(String source, Type expected) throws Exception {
     IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
-    assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
+    //assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
+    assertEquals(expected, expression.getType());
   }
 
   protected Evaluator evalNull(String source) throws Exception {
@@ -472,5 +474,7 @@ public class ExpressionTest {
     // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
     // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
     // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
+   // evalFails("BOOLEAN ", ErrorCode.SYNTAX_ERROR);
+
   }
 }

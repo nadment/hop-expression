@@ -72,10 +72,10 @@ public class Literal implements IExpression {
   public static final Literal FALSE = new Literal(Boolean.FALSE, Types.BOOLEAN_NOT_NULL);
 
   /** Literal 0 value with integer data type */
-  public static final Literal ZERO = new Literal(0L, IntegerType.of(1).withNullability(false));
+  public static final Literal ZERO = new Literal(0L, IntegerType.of(1, false));
 
   /** Literal 1 value with integer data type */
-  public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
+  public static final Literal ONE = new Literal(1L, IntegerType.of(1, false));
 
   public static Literal of(final Boolean value) {
     if (value == null) return NULL_BOOLEAN;
@@ -146,7 +146,7 @@ public class Literal implements IExpression {
 
   public static Literal of(final Type value) {
     if (value == null) return NULL;
-    return new Literal(value, Types.UNKNOWN);
+    return new Literal(value, Types.TIMEUNIT);
   }
 
   public static Literal of(final TimeUnit value) {

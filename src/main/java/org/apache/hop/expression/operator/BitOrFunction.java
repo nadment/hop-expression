@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.io.StringWriter;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -43,7 +44,7 @@ public class BitOrFunction extends Function {
     super(
         "BIT_OR",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }
@@ -55,7 +56,7 @@ public class BitOrFunction extends Function {
         90,
         Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }
@@ -108,5 +109,41 @@ public class BitOrFunction extends Function {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append('|');
     operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+  }
+
+  public static final class IntegerBitOrFunction extends BitOrFunction {
+    public static final IntegerBitOrFunction INSTANCE = new IntegerBitOrFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long left = operands[0].getValue(Long.class);
+      if (left == null) return null;
+      Long right = operands[1].getValue(Long.class);
+      if (right == null) return null;
+      return left | right;
+    }
+  }
+
+  public static final class BinaryBitOrFunction extends BitOrFunction {
+    public static final BinaryBitOrFunction INSTANCE = new BinaryBitOrFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] left = operands[0].getValue(byte[].class);
+      if (left == null) return null;
+      byte[] right = operands[1].getValue(byte[].class);
+      if (right == null) return null;
+
+      if (left.length != right.length) {
+        throw new ExpressionException(ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
+      }
+
+      final byte[] result = new byte[left.length];
+      for (int i = 0; i < left.length; i++) {
+        result[i] = (byte) (left[i] | right[i]);
+      }
+
+      return result;
+    }
   }
 }

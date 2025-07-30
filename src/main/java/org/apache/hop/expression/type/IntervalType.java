@@ -31,6 +31,9 @@ public final class IntervalType extends Type {
 
   @Override
   public IntervalType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new IntervalType(nullable);
   }
 

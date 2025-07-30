@@ -84,6 +84,8 @@ public enum ErrorCode {
   SCALE_GREATER_THAN_PRECISION,
   /** The index ''{0}'' is out of bounds */
   INVALID_ARRAY_INDEX,
+  /** Binary operands of bitwise operators must be of equal length */
+  INVALID_BITWISE_OPERANDS_SIZE,
   /** Date ''{0}'' is not recognized */
   INVALID_DATE,
   /** Time unit ''{0}'' is not recognized */
@@ -116,8 +118,6 @@ public enum ErrorCode {
   JSON_PATH_IS_NULL,
   /** Json property cannot be found in specified path ''{0}'' */
   JSON_PATH_NOT_FOUND,
-  /** Return type is unknown */
-  RETURN_TYPE_UNKNOWN,
   /** Error compile user defined function ''{0}'' */
   UDF_COMPILATION_ERROR,
   /** Conversion from {1} to {2} is not supported for value ''{0}'' */

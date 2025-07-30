@@ -23,7 +23,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** */
+/**
+ * Returns TRUE if the specified bit in a value is a 1; otherwise FALSE is returned.
+ *
+ * @see BitSetFunction
+ * @see BitClearFunction
+ */
 @FunctionPlugin
 public class BitGetFunction extends Function {
 

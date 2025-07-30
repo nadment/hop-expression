@@ -45,11 +45,8 @@ public abstract class Type {
 
   /**
    * Generates a string representation of this type.
-   *
-   * @return string
    */
-  protected String generateSignature() {
-    StringBuilder builder = new StringBuilder();
+  private void generateLiteral(StringBuilder builder) {
     TypeName id = getName();
     builder.append(id.name());
     if (precision != id.getMaxPrecision() || (scale > 0 && scale != id.getDefaultScale())) {
@@ -60,6 +57,19 @@ public abstract class Type {
         builder.append(scale);
       }
       builder.append(')');
+    }
+  }
+
+  /**
+   * Generates a string representation of this type with full detail such as scale, precision and nullability.
+   *
+   * @return string
+   */
+  protected String generateSignature() {
+    StringBuilder builder = new StringBuilder();
+    this.generateLiteral(builder);
+    if ( !this.isNullable() ) {
+      builder.append(" NOT NULL");
     }
     return builder.toString();
   }
@@ -190,7 +200,7 @@ public abstract class Type {
     return null;
   }
 
-  /** Indicates whether that type are equal with each other by ignoring the nullability. */
+  /** Indicates whether that type is equal with each other by ignoring the nullability. */
   public boolean equalsIgnoreNullability(final Type type) {
     if (type == null) return false;
     return this.signature.equals(type.signature);
@@ -249,6 +259,18 @@ public abstract class Type {
     throw new ConversionException(ErrorCode.INTERNAL_ERROR);
   }
 
+  /**
+   * Gets a string representation of this type for LITERAL string for the type. */
+  public String getLiteral() {
+    StringBuilder builder = new StringBuilder();
+    this.generateLiteral(builder);
+    return builder.toString();
+  }
+
+  /**
+   * Gets a string representation of this type with full detail such as scale, precision and nullability.
+   * <p>The string must serve as a "digest" for this type, meaning two types can be considered identical if their digests are equal.</p>
+   */
   @Override
   public String toString() {
     return signature;

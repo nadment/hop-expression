@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 
 /** The function repeats a string or binary as many times as specified. */
@@ -36,7 +37,7 @@ public class RepeatFunction extends Function {
   public RepeatFunction() {
     super(
         "REPEAT",
-        ReturnTypes.ARG0_MAX_PRECISION,
+        ReturnTypes.ARG0.andThen(TypeTransforms.TO_MAX_PRECISION).andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
         "/docs/repeat.html");

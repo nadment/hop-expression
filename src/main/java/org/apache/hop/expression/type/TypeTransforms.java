@@ -18,21 +18,75 @@ package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
 
-/** A collection of strategies for type transform. */
+import org.apache.hop.expression.IExpression;
+
+/** A collection of reusable instances of {@link ITypeTransform}. */
 public final class TypeTransforms {
 
-  private TypeTransforms() {
-    // Utility class
-  }
-
+  /**
+   * Type transform strategy where a derived type is transformed into the same type but nullable if
+   * any of the call operands is nullable.
+   */
   public static final ITypeTransform TO_NULLABLE =
-      typeToTransform -> typeToTransform.withNullability(true);
+      (call, typeToTransform) -> {
+        boolean nullable = false;
+        for (IExpression operand : call.getOperands()) {
+          if (operand.getType().isNullable()) {
+            nullable = true;
+          }
+        }
 
+        return typeToTransform.withNullability(nullable);
+      };
+
+  /**
+   * Type transform strategy where a derived type is transformed into the same type, but nullable if
+   * and only if all of a call's operands are nullable.
+   */
+  public static final ITypeTransform TO_NULLABLE_ALL =
+      (call, typeToTransform) -> {
+        boolean nullable = true;
+        for (IExpression operand : call.getOperands()) {
+          if (!operand.getType().isNullable()) {
+            nullable = false;
+          }
+        }
+
+        return typeToTransform.withNullability(nullable);
+      };
+
+  /**
+   * Type transform strategy where a derived type is transformed into the same type but not
+   * nullable.
+   */
   public static final ITypeTransform TO_NOT_NULLABLE =
-      typeToTransform -> typeToTransform.withNullability(false);
+      (call, typeToTransform) -> typeToTransform.withNullability(false);
+
+  /**
+   * Type transform strategy where a derived type is transformed into the same type with nulls
+   * allowed.
+   */
+  public static final ITypeTransform FORCE_NULLABLE =
+      (call, typeToTransform) -> typeToTransform.withNullability(true);
+
+  /**
+   * Type transform strategy where the result is NOT NULL if any of the arguments is NOT NULL,
+   * otherwise the type is unchanged.
+   */
+  public static final ITypeTransform LEAST_NULLABLE =
+      (call, typeToTransform) -> {
+        boolean nullable = typeToTransform.isNullable();
+        for (IExpression operand : call.getOperands()) {
+          if (!operand.getType().isNullable()) {
+            nullable = false;
+          }
+        }
+
+        return typeToTransform.withNullability(nullable);
+      };
 
   public static final ITypeTransform TO_MAX_PRECISION =
-      typeToTransform ->
+      (call, typeToTransform) ->
           switch (requireNonNull(typeToTransform).getName()) {
             case STRING -> Types.STRING;
             case BINARY -> Types.BINARY;
@@ -40,4 +94,8 @@ public final class TypeTransforms {
             case NUMBER -> Types.NUMBER;
             default -> typeToTransform;
           };
+
+  private TypeTransforms() {
+    // Utility class
+  }
 }

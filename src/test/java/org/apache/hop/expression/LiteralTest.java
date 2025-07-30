@@ -68,44 +68,44 @@ public class LiteralTest extends ExpressionTest {
   @Test
   void Interval() throws Exception {
 
-    evalEquals("INTERVAL 20 YEAR", Interval.of(20)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '20' YEAR", Interval.of(20)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate())
-        .returnType(Types.INTERVAL);
-    evalEquals("INTERVAL 2 QUARTER", Interval.of(0, 6)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL 5 QUARTER", Interval.of(1, 3)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL 15 MONTH", Interval.of(0, 15)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate()).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate()).returnType(Types.INTERVAL);
+    evalEquals("INTERVAL 20 YEAR", Interval.of(20)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '20' YEAR", Interval.of(20)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL 2 QUARTER", Interval.of(0, 6)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL 5 QUARTER", Interval.of(1, 3)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL 15 MONTH", Interval.of(0, 15)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate()).returnType(Types.INTERVAL_NOT_NULL);
 
-    evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365)).returnType(Types.INTERVAL);
-    evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365)).returnType(Types.INTERVAL);
+    evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365)).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '365 12' DAY TO HOUR", Interval.of(0, 0, 365, 12))
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", Interval.of(0, 0, 365, 12, 30))
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", Interval.of(0, 0, 365, 12, 30, 58))
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
 
-    evalEquals("INTERVAL 12 HOUR", Interval.of(0, 0, 0, 12)).returnType(Types.INTERVAL);
+    evalEquals("INTERVAL 12 HOUR", Interval.of(0, 0, 0, 12)).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL -12 HOUR", Interval.of(0, 0, 0, 12).negate());
     evalEquals("INTERVAL '12' HOUR", Interval.of(0, 0, 0, 12));
     evalEquals("INTERVAL '-12' HOUR", Interval.of(0, 0, 0, 12).negate());
     evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", Interval.of(0, 0, 0, 12, 30).negate())
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", Interval.of(0, 0, 0, 12, 30, 58))
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
 
     evalEquals("INTERVAL '-30' MINUTE", Interval.of(0, 0, 0, 0, 30).negate())
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", Interval.of(0, 0, 0, 0, 30, 58).negate())
-        .returnType(Types.INTERVAL);
+        .returnType(Types.INTERVAL_NOT_NULL);
 
-    evalEquals("INTERVAL 58 SECOND", Interval.of(0, 0, 0, 0, 0, 58)).returnType(Types.INTERVAL);
+    evalEquals("INTERVAL 58 SECOND", Interval.of(0, 0, 0, 0, 0, 58))
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '58' SECOND", Interval.of(0, 0, 0, 0, 0, 58));
     evalEquals("INTERVAL -58 SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
     evalEquals("INTERVAL '-58' SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
@@ -187,11 +187,11 @@ public class LiteralTest extends ExpressionTest {
     evalTrue("'test'='test'");
 
     // Single quote with two adjacent single quotes
-    evalEquals("'te''st'", "te'st").returnType(StringType.of(5));
+    evalEquals("'te''st'", "te'st").returnType(StringType.of(5,false));
     evalEquals("'te''''st'", "te''st");
 
     // Minimum precision for empty string is 1
-    evalEquals("''", "").returnType(StringType.of(1));
+    evalEquals("''", "").returnType(StringType.of(1,false));
 
     optimize("'Test ''Bla'' string'");
   }
@@ -220,7 +220,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "JSON '{\"name\":\"John\",\"age\":5}'",
             mapper.readTree("{\"name\": \"John\", \"age\": 5}"))
-        .returnType(Types.JSON);
+        .returnType(Types.JSON_NOT_NULL);
 
     // Ignores the order of attributes
     evalTrue(
@@ -258,7 +258,7 @@ public class LiteralTest extends ExpressionTest {
         "BINARY '1234567812345678'", new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
 
     // Minimum precision for empty binary is 1
-    evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1));
+    evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1,false));
 
     evalFails("BINARY '0Z'", ErrorCode.UNPARSABLE_BINARY);
 
@@ -279,13 +279,13 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456", Literal.of(-123456L).toString());
 
     // Integer decimal
-    evalEquals("1_234", 1234L).returnType(IntegerType.of(4));
-    evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4));
-    evalEquals("-1234", -1234L).returnType(IntegerType.of(4));
+    evalEquals("1_234", 1234L).returnType(IntegerType.of(4,false));
+    evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4,false));
+    evalEquals("-1234", -1234L).returnType(IntegerType.of(4,false));
 
     // Integer decimal with 19 digits or more
     evalEquals("-9223372036854775808", new BigDecimal(Long.MIN_VALUE))
-        .returnType(NumberType.of(19));
+        .returnType(NumberType.of(19).withNullability(false));
     evalEquals("922_3372_0368_5477_5807", new BigDecimal(Long.MAX_VALUE));
 
     // Invalid integer
@@ -298,12 +298,12 @@ public class LiteralTest extends ExpressionTest {
     evalFails("+_123", ErrorCode.UNRESOLVED_IDENTIFIER);
 
     // Integer exponent
-    evalEquals("2.3E2", 230L).returnType(IntegerType.of(3));
-    evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3));
-    evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4));
+    evalEquals("2.3E2", 230L).returnType(IntegerType.of(3,false));
+    evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3,false));
+    evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4,false));
 
     // Integer hexadecimal
-    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9));
+    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9,false));
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
     // Not a negative like  Java [0xffffeeee0000aaa0]=-18769007039840
     evalEquals("0xFFFF_EEEE_0000_AAA0", new BigDecimal("18446725304702511776"));
@@ -319,7 +319,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0xABCDEFg", ErrorCode.UNEXPECTED_CHARACTER);
 
     // Integer octal
-    evalEquals("0o0757", 495L).returnType(IntegerType.of(3));
+    evalEquals("0o0757", 495L).returnType(IntegerType.of(3,false));
     evalEquals("0o12345671234567", 718046312823L);
     evalEquals("0O12345", 5349L);
     evalEquals("0O1_2_3_4_5", 5349L);
@@ -331,7 +331,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0o0A", ErrorCode.UNEXPECTED_CHARACTER);
 
     // Integer bit
-    evalEquals("0b10", 0b10L).returnType(IntegerType.of(1));
+    evalEquals("0b10", 0b10L).returnType(IntegerType.of(1,false));
     evalEquals("0b00000010", 0b10L);
     evalEquals("0b011", 0b11L);
     evalEquals("0b000000011111111", 0b000000011111111L);
@@ -358,40 +358,40 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456.789", Literal.of(BigDecimal.valueOf(-123456.789)).toString());
 
     // Number decimal
-    evalEquals("+.1", 0.1D).returnType(NumberType.of(2, 1));
-    evalEquals("-.2", -0.2D).returnType(NumberType.of(2, 1));
-    evalEquals("0.2", 0.2D).returnType(NumberType.of(2, 1));
-    evalEquals("-0.2", -0.2D).returnType(NumberType.of(2, 1));
-    evalEquals("0.02", 0.02D).returnType(NumberType.of(3, 2));
-    evalEquals("-0.02", -0.02D).returnType(NumberType.of(3, 2));
-    evalEquals(".000_005", 0.000005D).returnType(NumberType.of(7, 6));
+    evalEquals("+.1", 0.1D).returnType(NumberType.of(2, 1,false));
+    evalEquals("-.2", -0.2D).returnType(NumberType.of(2, 1,false));
+    evalEquals("0.2", 0.2D).returnType(NumberType.of(2, 1,false));
+    evalEquals("-0.2", -0.2D).returnType(NumberType.of(2, 1,false));
+    evalEquals("0.02", 0.02D).returnType(NumberType.of(3, 2,false));
+    evalEquals("-0.02", -0.02D).returnType(NumberType.of(3, 2, false));
+    evalEquals(".000_005", 0.000005D).returnType(NumberType.of(7, 6,false));
     evalEquals(
             "15167890123456789012345678901234567890",
             new BigDecimal("15167890123456789012345678901234567890"))
-        .returnType(Types.NUMBER);
+        .returnType(Types.NUMBER_NOT_NULL);
 
     // Number hexadecimal
     evalEquals(
             "0x85_5892_1485_2587_2555_2569_1234_890ab",
             new BigInteger("85589214852587255525691234890ab", 16))
-        .returnType(Types.NUMBER);
+        .returnType(Types.NUMBER_NOT_NULL);
 
     // Number octal
     evalEquals(
             "0o4575_5712_1475_2577_2555_2561_1231_4567_7110",
             new BigInteger("457557121475257725552561123145677110", 8))
-        .returnType(NumberType.of(33));
+        .returnType(NumberType.of(33).withNullability(false));
 
     // Number binary
     evalEquals(
             "0b1010000101000101101000010100010110100001010001011010000101000101",
             new BigDecimal("11620871733929943365"))
-        .returnType(NumberType.of(20));
+        .returnType(NumberType.of(20).withNullability(false));
 
     // Number with exponent
-    evalEquals("2.3E-2", 2.3E-2D).returnType(NumberType.of(5, 3));
-    evalEquals("-2.3e-2", -2.3E-2D).returnType(NumberType.of(5, 3));
-    evalEquals("1_000.5e-0_1", 100.05D).returnType(NumberType.of(5, 2));
+    evalEquals("2.3E-2", 2.3E-2D).returnType(NumberType.of(5, 3,false));
+    evalEquals("-2.3e-2", -2.3E-2D).returnType(NumberType.of(5, 3,false));
+    evalEquals("1_000.5e-0_1", 100.05D).returnType(NumberType.of(5, 2,false));
 
     // Underscore
     evalFails("1__2", ErrorCode.INVALID_NUMBER);
@@ -420,13 +420,14 @@ public class LiteralTest extends ExpressionTest {
 
   @Test
   void Date() throws Exception {
-    ZonedDateTime datetime = ZonedDateTime.of(2021, 2, 25, 2, 59, 0, 0, ZoneId.systemDefault());
+    ZonedDateTime datetime1 = ZonedDateTime.of(2021, 2, 25, 2, 59, 0, 0, ZoneId.systemDefault());
+    ZonedDateTime datetime2 = ZonedDateTime.of(2021, 2, 25, 2, 59, 0, 0, ZoneId.systemDefault());
 
-    assertEquals(datetime, Literal.of(datetime).getValue());
-    assertEquals(Literal.of(datetime), Literal.of(datetime));
+    assertEquals(datetime1, Literal.of(datetime2).getValue());
+    assertEquals(Literal.of(datetime1), Literal.of(datetime2));
 
-    evalEquals("DaTe '2021-02-25'", LocalDate.of(2021, 2, 25)).returnType(Types.DATE);
-    evalEquals("'2021-02-25'::DATE", LocalDate.of(2021, 2, 25)).returnType(Types.DATE);
+    evalEquals("DaTe '2021-02-25'", LocalDate.of(2021, 2, 25)).returnType(Types.DATE_NOT_NULL);
+    evalEquals("'2021-02-25'::DATE", LocalDate.of(2021, 2, 25)).returnType(Types.DATE_NOT_NULL);
 
     // Fails because literal use exact mode
     evalFails("DATE '2021-Feb-25'", ErrorCode.INVALID_DATE);
@@ -453,7 +454,7 @@ public class LiteralTest extends ExpressionTest {
 
     // Timestamp
     evalEquals("TimeSTAMP '2021-02-25 3'", LocalDateTime.of(2021, 2, 25, 3, 0, 0))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals("TimeSTAMP '2021-2-5 03'", LocalDateTime.of(2021, 2, 5, 3, 0, 0));
     evalEquals("TimeSTAMP '2021-2-25 03'", LocalDateTime.of(2021, 2, 25, 3, 0, 0));
     evalEquals("TimeSTAMP '2021-02-25 03'", LocalDateTime.of(2021, 2, 25, 3, 0, 0));
@@ -486,7 +487,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "TIMESTAMP '2021-01-01 5:28+02'",
             OffsetDateTime.of(2021, 1, 1, 5, 28, 0, 0, ZoneOffset.ofHours(2)))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals(
         "TIMESTAMP '2021-01-01 15:28+02'",
         OffsetDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.ofHours(2)));
@@ -529,7 +530,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "TIMESTAMP '2021-01-01 5:28:59.123456789+0200'",
             OffsetDateTime.of(2021, 1, 1, 5, 28, 59, 123456789, ZoneOffset.ofHours(2)))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals(
         "TIMESTAMP '2021-01-01 15:28:59.123456789+0200'",
         OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 123456789, ZoneOffset.ofHours(2)));
@@ -550,11 +551,11 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "TIMESTAMP '2021-01-01 15:28' AT TIME ZONE 'UTC'",
             OffsetDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.UTC))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals(
             "TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'America/New_York'",
             ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneId.of("America/New_York")))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals(
         "TIMESTAMP '2021-01-01 15:28:59.123' AT TIME ZONE 'US/Pacific'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 123000000, ZoneId.of("US/Pacific")));

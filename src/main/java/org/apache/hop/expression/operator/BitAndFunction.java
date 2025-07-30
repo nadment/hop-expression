@@ -44,7 +44,7 @@ public class BitAndFunction extends Function {
     super(
         "BIT_AND",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
   }
@@ -56,7 +56,7 @@ public class BitAndFunction extends Function {
         70,
         Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
   }

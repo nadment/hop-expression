@@ -53,49 +53,54 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ANY = explicit(Types.ANY);
 
   /** Type-inference strategy whereby the result type of call is BOOLEAN. */
-  public static final IReturnTypeInference BOOLEAN_NULLABLE = explicit(Types.BOOLEAN);
+  public static final IReturnTypeInference BOOLEAN_NULLABLE =
+      explicit(Types.BOOLEAN).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is BOOLEAN NOT NULL. */
   public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of call is BINARY. */
-  public static final IReturnTypeInference BINARY_NULLABLE = explicit(Types.BINARY);
+  public static final IReturnTypeInference BINARY_NULLABLE =
+      explicit(Types.BINARY).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is BINARY NOT NULL. */
   public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of call is STRING. */
-  public static final IReturnTypeInference STRING_NULLABLE = explicit(Types.STRING);
+  public static final IReturnTypeInference STRING_NULLABLE =
+      explicit(Types.STRING).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is STRING NOT NULL. */
   public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of call is INTEGER. */
-  public static final IReturnTypeInference INTEGER_NULLABLE = explicit(Types.INTEGER);
+  public static final IReturnTypeInference INTEGER_NULLABLE =
+      explicit(Types.INTEGER).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is NUMBER. */
-  public static final IReturnTypeInference NUMBER_NULLABLE = explicit(Types.NUMBER);
+  public static final IReturnTypeInference NUMBER_NULLABLE =
+      explicit(Types.NUMBER).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is NUMBER NOT NULL. */
   public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of call is DATE. */
-  public static final IReturnTypeInference DATE_NULLABLE = explicit(Types.DATE);
+  public static final IReturnTypeInference DATE_NULLABLE =
+      explicit(Types.DATE).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is DATE NOT NULL. */
   public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of call is DATE. */
-  public static final IReturnTypeInference JSON_NULLABLE = explicit(Types.JSON);
+  public static final IReturnTypeInference JSON_NULLABLE =
+      explicit(Types.JSON).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is INTERVAL. */
-  public static final IReturnTypeInference INTERVAL_NULLABLE = explicit(Types.INTERVAL);
+  public static final IReturnTypeInference INTERVAL_NULLABLE =
+      explicit(Types.INTERVAL).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is the type of the operand #0. */
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);
-
-  public static final IReturnTypeInference ARG0_NOT_NULL =
-      ARG0.andThen(TypeTransforms.TO_NOT_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is the type of the operand #1. */
   public static final IReturnTypeInference ARG1 = new OrdinalReturnTypeInference(1);
@@ -110,12 +115,11 @@ public final class ReturnTypes {
       new FirstKnownReturnTypeInference().andThen(TypeTransforms.TO_MAX_PRECISION);
 
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
-      new LeastRestrictiveReturnTypeInference().andThen(TypeTransforms.TO_MAX_PRECISION);
+      new LeastRestrictiveReturnTypeInference()
+          .andThen(TypeTransforms.TO_MAX_PRECISION)
+          .andThen(TypeTransforms.LEAST_NULLABLE);
 
-  public static final IReturnTypeInference ARG0_MAX_PRECISION =
-      new OrdinalReturnTypeInference(0).andThen(TypeTransforms.TO_MAX_PRECISION);
-
-  /** Type-inference strategy whereby the result type of a call is the element type of the array. */
+  /** Type-inference strategy whereby the result type of call is the element type of the array. */
   public static final IReturnTypeInference ARRAY_ELEMENT =
       call -> {
         Type type = call.getOperand(0).getType();
@@ -187,6 +191,7 @@ public final class ReturnTypes {
         TypeName name = TypeName.STRING;
         Type elementType = Types.UNKNOWN;
         int precision = 0;
+        boolean nullable = true;
 
         for (IExpression operand : call.getOperands()) {
           Type type = operand.getType();
@@ -196,6 +201,9 @@ public final class ReturnTypes {
             elementType = Types.getLeastRestrictive(operand);
           } else if (type.is(TypeName.BINARY)) {
             name = TypeName.BINARY;
+          }
+          if (!type.isNullable()) {
+            nullable = false;
           }
         }
 
@@ -208,10 +216,10 @@ public final class ReturnTypes {
         }
 
         if (name == TypeName.BINARY) {
-          return BinaryType.of(precision);
+          return BinaryType.of(precision, nullable);
         }
 
-        return StringType.of(precision);
+        return StringType.of(precision, nullable);
       };
 
   /** Type-inference strategy for concatenation with separator. */
@@ -220,6 +228,7 @@ public final class ReturnTypes {
         Type separatorType = call.getOperand(0).getType();
         TypeName typeName = separatorType.getName();
         int precision = 0;
+        boolean nullable = separatorType.isNullable();
 
         if (separatorType.getPrecision() != -1) {
           for (int i = 1; i < call.getOperandCount(); i++) {
@@ -238,6 +247,10 @@ public final class ReturnTypes {
             if (type.is(TypeName.BINARY)) {
               typeName = TypeName.BINARY;
             }
+
+            if (type.isNullable()) {
+              nullable = true;
+            }
           }
         } else precision = typeName.getMaxPrecision();
 
@@ -245,10 +258,10 @@ public final class ReturnTypes {
           precision = typeName.getMaxPrecision();
         }
         if (typeName == TypeName.BINARY) {
-          return BinaryType.of(precision);
+          return BinaryType.of(precision, nullable);
         }
 
-        return StringType.of(precision);
+        return StringType.of(precision, nullable);
       };
 
   public static final IReturnTypeInference ADDITIVE_OPERATOR =
@@ -266,7 +279,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference CAST_OPERATOR =
       call -> {
         try {
-          return call.getOperand(1).getValue(Type.class);
+          return call.getOperand(1).getValue(Type.class).withNullability(call.getOperand(0).getType().isNullable());
         } catch (Exception e) {
           return Types.UNKNOWN;
         }
@@ -281,14 +294,14 @@ public final class ReturnTypes {
 
         Type type1 = call.getOperand(1).getType();
         if (call.getOperandCount() == 2) {
-          return transform.transformType(type1);
+          return transform.transformType(call, type1);
         }
         Type type2 = call.getOperand(2).getType();
         if (type1.getName().ordinal() < type2.getName().ordinal()) {
-          return transform.transformType(type2);
+          return transform.transformType(call, type2);
         }
 
-        return transform.transformType(type1);
+        return transform.transformType(call, type1);
       };
 
   /** Type-inference strategy for JSON_VALUE function. */
@@ -378,8 +391,10 @@ public final class ReturnTypes {
    * </ul>
    */
   public static Type deriveMultiplyType(final Type type1, final Type type2) {
+    boolean nullable = type1.isNullable() || type2.isNullable();
+
     if (Types.isString(type1) || Types.isString(type2)) {
-      return Types.NUMBER;
+      return Types.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();
@@ -388,7 +403,7 @@ public final class ReturnTypes {
     // Preserve integer type and adjust precision
     if (type1.is(TypeName.INTEGER) && type2.is(TypeName.INTEGER)) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), p1 + p2);
-      return IntegerType.of(p);
+      return IntegerType.of(p,nullable);
     }
 
     // Return type precision
@@ -399,7 +414,7 @@ public final class ReturnTypes {
     int s2 = type2.getScale();
     int s = Math.min(TypeName.NUMBER.getMaxScale(), s1 + s2);
 
-    return NumberType.of(p, s);
+    return NumberType.of(p, s, nullable);
   }
 
   /**
@@ -420,9 +435,10 @@ public final class ReturnTypes {
    * </ul>
    */
   public static Type deriveDivideType(final Type type1, final Type type2) {
+    boolean nullable = type1.isNullable() || type2.isNullable();
 
     if (Types.isString(type1) || Types.isString(type2)) {
-      return Types.NUMBER;
+      return Types.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();
@@ -439,7 +455,7 @@ public final class ReturnTypes {
     // Return type precision
     int p = Math.min(TypeName.NUMBER.getMaxPrecision(), d + s);
 
-    return NumberType.of(p, s);
+    return NumberType.of(p, s,nullable);
   }
 
   /**
@@ -460,8 +476,10 @@ public final class ReturnTypes {
    */
   public static Type deriveModType(final Type type1, final Type type2) {
 
+    boolean nullable = type1.isNullable() || type2.isNullable();
+
     if (Types.isString(type1) || Types.isString(type2)) {
-      return Types.NUMBER;
+      return Types.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();
@@ -477,6 +495,6 @@ public final class ReturnTypes {
 
     p = Math.min(TypeName.NUMBER.getMaxPrecision(), p);
 
-    return NumberType.of(p, s);
+    return NumberType.of(p, s,nullable);
   }
 }

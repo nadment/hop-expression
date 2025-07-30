@@ -16,13 +16,16 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.Call;
+
 /** Strategy to transform one type to another. */
 public interface ITypeTransform {
   /**
    * Transforms a {@link Type}.
    *
+   * @param call the call context in which transformation is being performed
    * @param type to transform
    * @return type
    */
-  Type transformType(Type type);
+  Type transformType(Call call, Type type);
 }

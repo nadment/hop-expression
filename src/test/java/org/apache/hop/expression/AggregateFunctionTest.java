@@ -32,7 +32,7 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("Count(DISTINCT )", ErrorCode.SYNTAX_ERROR);
     evalFails("Count(1,2)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    returnType("Count(*)", Types.INTEGER);
+    returnType("Count(*)", Types.INTEGER_NOT_NULL);
 
     optimize("COUNT(FIELD_INTEGER)");
     optimize("COUNT(*)");

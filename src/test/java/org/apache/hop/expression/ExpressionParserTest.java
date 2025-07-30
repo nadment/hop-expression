@@ -145,8 +145,8 @@ public class ExpressionParserTest extends ExpressionTest {
 
   @Test
   void arrayElementAt() throws Exception {
-    evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1));
-    evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1));
+    evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1,false));
+    evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1,false));
   }
 
   @Test
@@ -346,18 +346,26 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("case when 1=1 then 1 else  end ", ErrorCode.SYNTAX_ERROR);
     evalFails("case 1 when 1  else 0 end", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
-    evalFails("BOOLEAN ", ErrorCode.RETURN_TYPE_UNKNOWN);
+    // Type
+    evalFails("BOOLEAN ", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("NUMBER", ErrorCode.SYNTAX_ERROR);
     evalFails("DATE ", ErrorCode.SYNTAX_ERROR);
     evalFails("TIME", ErrorCode.SYNTAX_ERROR);
     evalFails("TIMESTAMP", ErrorCode.SYNTAX_ERROR);
     evalFails("BINARY", ErrorCode.SYNTAX_ERROR);
+    evalFails("INET", ErrorCode.SYNTAX_ERROR);
     evalFails("JSON ", ErrorCode.SYNTAX_ERROR);
 
+    // TimeUnit
+    evalFails("QUARTER", ErrorCode.SYNTAX_ERROR);
+    evalFails("YEAR", ErrorCode.SYNTAX_ERROR);
+    evalFails("HOUR", ErrorCode.SYNTAX_ERROR);
+
+    evalFails("DATE ''", ErrorCode.INVALID_DATE);
+    evalFails("DATE 2025", ErrorCode.INVALID_DATE);
     evalFails("DATE FIELD_STRING", ErrorCode.INVALID_DATE);
     evalFails("TIMESTAMP FIELD_STRING", ErrorCode.INVALID_TIMESTAMP);
-
-    evalFails("INTEGER", ErrorCode.RETURN_TYPE_UNKNOWN);
-    evalFails("NUMBER", ErrorCode.RETURN_TYPE_UNKNOWN);
   }
 
   @Test

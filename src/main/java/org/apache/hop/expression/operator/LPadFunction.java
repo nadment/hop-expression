@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 
 /**
@@ -43,7 +44,7 @@ public class LPadFunction extends Function {
   public LPadFunction() {
     super(
         "LPAD",
-        ReturnTypes.ARG0_MAX_PRECISION,
+        ReturnTypes.ARG0.andThen(TypeTransforms.TO_MAX_PRECISION).andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER
             .or(OperandTypes.STRING_INTEGER_STRING)
             .or(OperandTypes.BINARY_INTEGER_BINARY),

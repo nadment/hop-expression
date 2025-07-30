@@ -134,7 +134,8 @@ public class CastFunction extends Function {
     writer.append('(');
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" AS ");
-    writer.append(operands[1].toString());
+    Type type = operands[1].getValue(Type.class);
+    writer.append(type.getLiteral());
     if (operands.length == 3) {
       writer.append(" FORMAT ");
       operands[2].unparse(writer, 0, 0);

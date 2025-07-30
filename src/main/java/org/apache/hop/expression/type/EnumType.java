@@ -28,6 +28,9 @@ public final class EnumType extends Type {
 
   @Override
   public EnumType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new EnumType(nullable);
   }
 

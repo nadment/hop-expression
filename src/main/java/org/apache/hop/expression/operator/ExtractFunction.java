@@ -89,9 +89,7 @@ public class ExtractFunction extends Function {
 
     @Override
     public Object eval(final IExpression[] operands) {
-
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
-
       ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
       if (datetime == null) return null;
 
@@ -105,9 +103,7 @@ public class ExtractFunction extends Function {
 
     @Override
     public Object eval(final IExpression[] operands) {
-
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
-
       Interval interval = operands[1].getValue(Interval.class);
       if (interval == null) return null;
 

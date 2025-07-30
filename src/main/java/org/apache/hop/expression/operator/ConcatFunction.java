@@ -60,7 +60,7 @@ public class ConcatFunction extends Function {
         name,
         110,
         Associativity.LEFT,
-        ReturnTypes.FIRST_KNOWN,
+        ReturnTypes.CONCAT_FUNCTION,
         OperandTypes.or(
             OperandTypes.STRING_VARIADIC,
             OperandTypes.BINARY_VARIADIC,

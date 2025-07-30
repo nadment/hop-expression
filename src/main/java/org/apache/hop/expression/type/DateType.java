@@ -36,7 +36,10 @@ public final class DateType extends Type {
   }
 
   @Override
-  public DateType withNullability(final boolean nullable) {
+  public DateType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new DateType(nullable);
   }
 

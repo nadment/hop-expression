@@ -23,7 +23,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** */
+/**
+ * Returns the result after clearing the specified bit on in a value.
+ *
+ * @see BitGetFunction
+ * @see BitSetFunction
+ */
 @FunctionPlugin
 public class BitClearFunction extends Function {
 

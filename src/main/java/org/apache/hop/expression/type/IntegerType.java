@@ -53,6 +53,9 @@ public final class IntegerType extends Type {
 
   @Override
   public Type withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new IntegerType(precision, nullable);
   }
 

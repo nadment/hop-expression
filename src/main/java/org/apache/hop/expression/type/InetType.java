@@ -32,6 +32,9 @@ public final class InetType extends Type {
 
   @Override
   public InetType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new InetType(nullable);
   }
 

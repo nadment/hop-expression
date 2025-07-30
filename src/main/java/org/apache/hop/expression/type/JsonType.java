@@ -34,6 +34,9 @@ public final class JsonType extends Type {
 
   @Override
   public JsonType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new JsonType(nullable);
   }
 

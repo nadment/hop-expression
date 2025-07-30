@@ -28,6 +28,9 @@ public final class UnknownType extends Type {
 
   @Override
   public UnknownType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new UnknownType(nullable);
   }
 

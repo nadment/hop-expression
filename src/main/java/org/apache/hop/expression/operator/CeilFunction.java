@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 
 /**
- * Returns the values rounded to the nearest equal or larger integer.
+ * Returns the value rounded to the nearest equal or larger integer.
  *
  * @see FloorFunction
  * @see RoundFunction

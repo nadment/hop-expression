@@ -53,7 +53,7 @@ public final class StringType extends Type {
     int precision = value.length();
     // Empty string should return 1
     if (precision < 1) precision = 1;
-    return StringType.of(precision).withNullability(false);
+    return StringType.of(precision, false);
   }
 
   /* Package */ StringType(int precision, boolean nullable) {
@@ -62,7 +62,10 @@ public final class StringType extends Type {
     this.checkPrecisionAndScale();
   }
 
-  public StringType withNullability(final boolean nullable) {
+  public StringType withNullability(boolean nullable) {
+    if (nullable == this.isNullable()) {
+      return this;
+    }
     return new StringType(precision, nullable);
   }
 

@@ -32,9 +32,9 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void ElementAt() throws Exception {
-    evalEquals("[1,3,5][1]", 1L).returnType(IntegerType.of(1));
-    evalEquals("[1,3.5,5][3]", 5D).returnType(NumberType.of(2, 1));
-    evalEquals("['A','B',FIELD_STRING][3]", "TEST").returnType(StringType.of(1000));
+    evalEquals("[1,3,5][1]", 1L).returnType(IntegerType.of(1,false));
+    evalEquals("[1,3.5,5][3]", 5D).returnType(NumberType.of(2, 1,false));
+    evalEquals("['A','B',FIELD_STRING][3]", "TEST").returnType(StringType.of(1000,true));
 
     // Negative index
     evalEquals("[1,3,5][-1]", 5L);
@@ -67,7 +67,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("BINARY 'FF22C' = BINARY 'ff22c'");
 
     // Boolean
-    evalTrue("true = true");
+    evalTrue("true = true").returnType(Types.BOOLEAN_NOT_NULL);;
     evalTrue("false = false");
     evalFalse("true = false");
     evalFalse("false = true");
@@ -238,7 +238,7 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void GreaterThan() throws Exception {
-    evalTrue("9>5").returnType(Types.BOOLEAN);
+    evalTrue("9>5").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("9.4>9.358");
     evalTrue("(4+2)>10-9");
     evalTrue("FIELD_INTEGER>10.3");
@@ -264,7 +264,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("INTERVAL 3 YEARS > INTERVAL 3 MONTHS");
 
     evalFalse("BINARY '4100' > BINARY '4100'");
-    evalFalse("BINARY '4100' > BINARY '42'").returnType(Types.BOOLEAN);
+    evalFalse("BINARY '4100' > BINARY '42'").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("BINARY '410000' > BINARY '4100'");
     evalFalse("BINARY '4100' > BINARY '410000'");
 
@@ -317,7 +317,7 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void GreaterThanOrEqualTo() throws Exception {
-    evalTrue("9 >= 5").returnType(Types.BOOLEAN);
+    evalTrue("9 >= 5").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("9.4 >= 9.358");
     evalTrue("(4+2) >= 10-9");
     evalTrue("FIELD_INTEGER >= 10");
@@ -341,7 +341,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("INTERVAL 3 YEARS >= INTERVAL 3 MONTHS");
 
     evalTrue("BINARY '4100' >= BINARY '4100'");
-    evalFalse("BINARY '4100' >= BINARY '42'").returnType(Types.BOOLEAN);
+    evalFalse("BINARY '4100' >= BINARY '42'").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("BINARY '410000' >= BINARY '4100'");
     evalFalse("BINARY '4100' >= BINARY '410000'");
 
@@ -400,23 +400,23 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void LessThan() throws Exception {
-    evalTrue("5 < 9").returnType(Types.BOOLEAN);
+    evalTrue("5 < 9").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("9.358 < 9.4");
     evalTrue("10-9 < (4+2)");
     evalTrue("FIELD_INTEGER < 100");
     evalTrue("FIELD_INTEGER < 100.12");
     evalFalse("5 < 5");
 
-    evalFalse("true < false").returnType(Types.BOOLEAN);
+    evalFalse("true < false").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("false < true");
     evalFalse("false < false");
     evalFalse("true < true");
 
-    evalTrue("'bar' < 'foo'").returnType(Types.BOOLEAN);
+    evalTrue("'bar' < 'foo'").returnType(Types.BOOLEAN_NOT_NULL);
     evalFalse("'foo' < 'foo'");
     evalFalse("'foo' < 'bar'");
 
-    evalTrue("BINARY '4100' < BINARY '42'").returnType(Types.BOOLEAN);
+    evalTrue("BINARY '4100' < BINARY '42'").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("BINARY '4100' < BINARY '410000'");
     evalFalse("BINARY '4100' < BINARY '4100'");
     evalFalse("BINARY '410000' < BINARY '4100'");
@@ -486,7 +486,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("false <= true");
     evalFalse("true <= false");
 
-    evalTrue("'foo' <= 'foo'").returnType(Types.BOOLEAN);
+    evalTrue("'foo' <= 'foo'").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("'bar' <= 'foo'");
     evalFalse("'foo' <= 'bar'");
 
@@ -498,7 +498,7 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("INTERVAL 3 YEARS <= INTERVAL 3 MONTHS");
 
     evalTrue("BINARY '4100' <= BINARY '4100'");
-    evalTrue("BINARY '4100' <= BINARY '42'").returnType(Types.BOOLEAN);
+    evalTrue("BINARY '4100' <= BINARY '42'").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("BINARY '4100' <= BINARY '410000'");
     evalFalse("BINARY '410000' <= BINARY '4100'");
 
@@ -623,11 +623,11 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void IsTrue() throws Exception {
-    evalTrue("True IS True").returnType(Types.BOOLEAN);
-    evalTrue("True IS NOT False").returnType(Types.BOOLEAN);
-    evalTrue("FIELD_BOOLEAN_TRUE is True").returnType(Types.BOOLEAN);
+    evalTrue("True IS True").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("True IS NOT False").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("FIELD_BOOLEAN_TRUE is True").returnType(Types.BOOLEAN_NOT_NULL);
     evalFalse("NULL_BOOLEAN IS True");
-    evalFalse("FIELD_STRING='XX' IS TRUE").returnType(Types.BOOLEAN);
+    evalFalse("FIELD_STRING='XX' IS TRUE").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("FIELD_STRING='XX' IS NOT TRUE");
     evalFalse("NULL_BOOLEAN is True");
     evalTrue("NULL_BOOLEAN IS NOT True");
@@ -646,8 +646,8 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void IsFalse() throws Exception {
-    evalFalse("FIELD_BOOLEAN_TRUE IS FALSE").returnType(Types.BOOLEAN);
-    evalTrue("FIELD_BOOLEAN_TRUE IS NOT FALSE").returnType(Types.BOOLEAN);
+    evalFalse("FIELD_BOOLEAN_TRUE IS FALSE").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("FIELD_BOOLEAN_TRUE IS NOT FALSE").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("FIELD_STRING='XX' IS FALSE");
     evalFalse("FIELD_STRING='XX' IS NOT FALSE");
 
@@ -672,8 +672,8 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("NULL_INTEGER IS NULL");
     evalTrue("NULL_STRING IS NULL");
     evalTrue("NULL_BOOLEAN IS NULL");
-    evalFalse("FIELD_BOOLEAN_TRUE IS NULL").returnType(Types.BOOLEAN);
-    evalTrue("FIELD_BOOLEAN_TRUE IS NOT NULL").returnType(Types.BOOLEAN);
+    evalFalse("FIELD_BOOLEAN_TRUE IS NULL").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("FIELD_BOOLEAN_TRUE IS NOT NULL").returnType(Types.BOOLEAN_NOT_NULL);
 
     evalFails("IS NULL", ErrorCode.SYNTAX_ERROR);
     evalFails("IS NOT NULL", ErrorCode.SYNTAX_ERROR);
@@ -703,7 +703,7 @@ public class OperatorTest extends ExpressionTest {
   void IsDistinctFrom() throws Exception {
     evalTrue("1 IS DISTINCT FROM 2");
     evalFalse("1 IS DISTINCT FROM 1");
-    evalTrue("FIELD_INTEGER IS DISTINCT FROM 1").returnType(Types.BOOLEAN);
+    evalTrue("FIELD_INTEGER IS DISTINCT FROM 1").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("1 IS NOT DISTINCT FROM 1");
 
     evalFalse("NULL_BOOLEAN IS NOT DISTINCT FROM true");
@@ -786,7 +786,8 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("BINARY 'F'::INTEGER+1", 16L);
     evalEquals("0b00011::INTEGER+0", 3L);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505D);
-    evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669D).returnType(Types.NUMBER);
+    evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669D)
+        .returnType(Types.NUMBER);
     evalEquals("FIELD_BIGNUMBER+FIELD_NUMBER+FIELD_INTEGER", 123491.669D);
     evalEquals("FIELD_BIGNUMBER+1", 123457.789D).returnType(Types.NUMBER);
     evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4D).returnType(NumberType.of(38, 10));
@@ -835,7 +836,7 @@ public class OperatorTest extends ExpressionTest {
 
     // Addition of interval to a temporal
     evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals(
         "INTERVAL 2 YEARS+DATE '2019-02-25'+INTERVAL 1 YEARS",
         LocalDateTime.of(2022, 2, 25, 0, 0, 0));
@@ -868,7 +869,7 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void AddNumericToTemporal() throws Exception {
     // Addition of days to a temporal
-    evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26)).returnType(Types.DATE);
+    evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26)).returnType(Types.DATE_NOT_NULL);
     evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
     evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
 
@@ -960,7 +961,7 @@ public class OperatorTest extends ExpressionTest {
   class Between {
     @Test
     void number() throws Exception {
-      evalTrue("3 between 1 and 5").returnType(Types.BOOLEAN);
+      evalTrue("3 between 1 and 5").returnType(Types.BOOLEAN_NOT_NULL);
       evalTrue("3 between 3 and 5");
       evalTrue("5 between 3 and 5");
       evalFalse("1 between 3 and 5");
@@ -1055,11 +1056,11 @@ public class OperatorTest extends ExpressionTest {
   void CastToBoolean() throws Exception {
 
     // Boolean to Boolean
-    evalTrue("CAST(TRUE as Boolean)").returnType(Types.BOOLEAN);
+    evalTrue("CAST(TRUE as Boolean)").returnType(Types.BOOLEAN_NOT_NULL);
     evalFalse("CAST(FALSE as Boolean)");
 
     // Cast String to Boolean
-    evalTrue("'Yes'::Boolean").returnType(Types.BOOLEAN);
+    evalTrue("'Yes'::Boolean").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("'Yes' :: Boolean");
     evalTrue("CAST('YES' as Boolean)");
     evalTrue("CAST('yes' as Boolean)");
@@ -1100,14 +1101,14 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("'FALSE'::Boolean");
 
     // Cast Integer to Boolean
-    evalTrue("CAST(1 as Boolean)").returnType(Types.BOOLEAN);
+    evalTrue("CAST(1 as Boolean)").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("CAST(-123 as Boolean)");
     evalTrue("1::Boolean");
     evalFalse("CAST(0 as Boolean)");
     evalFalse("CAST(-0 as Boolean)");
 
     // Cast Number to Boolean
-    evalTrue("CAST(-12.1 as Boolean)").returnType(Types.BOOLEAN);
+    evalTrue("CAST(-12.1 as Boolean)").returnType(Types.BOOLEAN_NOT_NULL);
     evalFalse("CAST(0.000 as Boolean)");
     evalTrue("CAST(12345678901234567890123456789012345678 as Boolean)");
 
@@ -1133,23 +1134,23 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void CastToInteger() throws Exception {
     // Integer
-    evalEquals("CAST(0 as Integer)", 0L).returnType(Types.INTEGER);
+    evalEquals("CAST(0 as Integer)", 0L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("CAST(123 as Integer)", 123L);
-    evalEquals("CAST(-123 as Integer(3))", -123L).returnType(IntegerType.of(3));
+    evalEquals("CAST(-123 as Integer(3))", -123L).returnType(IntegerType.of(3,false));
 
     // Number
-    evalEquals("CAST(1.25 as Integer)", 1L).returnType(Types.INTEGER);
+    evalEquals("CAST(1.25 as Integer)", 1L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("CAST(-1.25 as Integer)", -1L);
 
     // Oracle truncate to 1 and Snowflake round it to 2
     evalEquals("CAST(1.75 as Integer)", 1L);
 
     // Boolean
-    evalEquals("CAST(TRUE as Integer)", 1L).returnType(Types.INTEGER);
+    evalEquals("CAST(TRUE as Integer)", 1L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("CAST(FALSE as Integer)", 0L);
 
     // String
-    evalEquals("CAST('1234' as Integer)", 1234L).returnType(Types.INTEGER);
+    evalEquals("CAST('1234' as Integer)", 1234L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("'1234'::Integer+5", 1239L);
     evalEquals("CAST('1234.567' as Integer)", 1234L);
     evalEquals("CAST('1_234' as Integer)", 1234L);
@@ -1169,7 +1170,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("Cast(NULL_STRING as INTEGER(5))").returnType(IntegerType.of(5));
 
     // Accept DataType quoted like a String
-    evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(Types.INTEGER);
+    evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(Types.INTEGER_NOT_NULL);
 
     // Conversion overflow
     evalFails("CAST(9223372036854775807888 as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
@@ -1214,31 +1215,32 @@ public class OperatorTest extends ExpressionTest {
   void CastToNumber() throws Exception {
 
     // Boolean
-    evalEquals("CAST(TRUE as Number)", 1D).returnType(Types.NUMBER);
-    evalEquals("CAST(FALSE as Number(1))", 0D).returnType(NumberType.of(1));
+    evalEquals("CAST(TRUE as Number)", 1D).returnType(Types.NUMBER_NOT_NULL);
+    evalEquals("CAST(FALSE as Number(1))", 0D).returnType(NumberType.of(1).withNullability(false));
 
     // Integer
-    evalEquals("CAST(0 as Number)", 0D).returnType(Types.NUMBER);
-    evalEquals("CAST(123 as Number)", 123D).returnType(Types.NUMBER);
-    evalEquals("CAST(-123 as Number(6,2))", -123D).returnType(NumberType.of(6, 2));
+    evalEquals("CAST(0 as Number)", 0D).returnType(Types.NUMBER_NOT_NULL);
+    evalEquals("CAST(123 as Number)", 123D).returnType(Types.NUMBER_NOT_NULL);
+    evalEquals("CAST(-123 as Number(6,2))", -123D).returnType(NumberType.of(6, 2,false));
 
     // Number
-    evalEquals("CAST(1234.456 as Number(20,9))", 1234.456D).returnType(NumberType.of(20, 9));
+    evalEquals("CAST(1234.456 as Number(20,9))", 1234.456D)
+        .returnType(NumberType.of(20, 9, false));
     evalEquals("CAST(1234.456 as Number(10,1))", 1234.4D);
     evalEquals("1.23456::Number", 1D);
-    evalEquals("1.23456::Number(10)", 1D).returnType(NumberType.of(10));
-    evalEquals("1.23456::Number(10,0)", 1D).returnType(NumberType.of(10));
-    evalEquals("1.23456::Number(10,2)", 1.23D).returnType(NumberType.of(10, 2));
+    evalEquals("1.23456::Number(10)", 1D).returnType(NumberType.of(10).withNullability(false));
+    evalEquals("1.23456::Number(10,0)", 1D).returnType(NumberType.of(10).withNullability(false));
+    evalEquals("1.23456::Number(10,2)", 1.23D).returnType(NumberType.of(10, 2,false));
     evalEquals("1.23456::Number(10,6)", new BigDecimal("1.234560"))
-        .returnType(NumberType.of(10, 6));
-    evalEquals("1.23456::Number(38,9)", 1.23456).returnType(NumberType.of(38, 9));
+        .returnType(NumberType.of(10, 6,false));
+    evalEquals("1.23456::Number(38,9)", 1.23456).returnType(NumberType.of(38, 9,false));
     evalEquals(
             "CAST(12345678901234567890123456789012345678 as Number(38,0))",
             new BigDecimal("12345678901234567890123456789012345678"))
-        .returnType(NumberType.of(38));
+        .returnType(NumberType.of(38).withNullability(false));
 
     // String
-    evalEquals("CAST('0' as Number)", 0D).returnType(Types.NUMBER);
+    evalEquals("CAST('0' as Number)", 0D).returnType(Types.NUMBER_NOT_NULL);
     evalEquals("CAST('1' As Number)", 1D);
     evalEquals("CAST('-1e-37' as Number(38,37))", -1e-37d);
     evalEquals("CAST(' -1e-37 ' as Number(38,37))", -1e-37d);
@@ -1252,12 +1254,13 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('1_2.3_4E1_0' as NUMBER)", 12.34E10D);
 
     // Date to Unix Epoch
-    evalEquals("CAST(DATE '1970-01-01' as Number)", 0D).returnType(Types.NUMBER);
-    evalEquals("CAST(DATE '2019-02-25' AS Number)", 1551052800D).returnType(Types.NUMBER);
-    evalEquals("CAST(DATE '1800-01-01' AS Number)", -5364662400D).returnType(Types.NUMBER);
+    evalEquals("CAST(DATE '1970-01-01' as Number)", 0D).returnType(Types.NUMBER_NOT_NULL);
+    evalEquals("CAST(DATE '2019-02-25' AS Number)", 1551052800D).returnType(Types.NUMBER_NOT_NULL);
+    evalEquals("CAST(DATE '1800-01-01' AS Number)", -5364662400D).returnType(Types.NUMBER_NOT_NULL);
 
     // Timestamp to Unix Epoch
-    evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1D).returnType(Types.NUMBER);
+    evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1D)
+        .returnType(Types.NUMBER_NOT_NULL);
 
     // Null
     evalNull("CAST(NULL_INTEGER as Number)").returnType(Types.NUMBER);
@@ -1279,7 +1282,7 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void CastToString() throws Exception {
     // Boolean
-    evalEquals("CAST(true as String)", "TRUE").returnType(Types.STRING);
+    evalEquals("CAST(true as String)", "TRUE").returnType(Types.STRING_NOT_NULL);
     evalEquals("CAST(false as String)", "FALSE");
     evalEquals("CAST(FIELD_BOOLEAN_TRUE as String)", "TRUE");
     evalEquals("true::String", "TRUE");
@@ -1315,7 +1318,8 @@ public class OperatorTest extends ExpressionTest {
     evalNull("CAST(NULL_BINARY as STRING)").returnType(Types.STRING);
     evalNull("CAST(NULL_STRING as String)").returnType(Types.STRING);
     evalNull("Cast(NULL_BOOLEAN as STRING(4))").returnType(StringType.of(4));
-    evalNull("Cast(NULL_DATE as STRING(10) format 'YYYY-MM-DD')").returnType(StringType.of(10));
+    evalNull("Cast(NULL_DATE as STRING(10) format 'YYYY-MM-DD')")
+        .returnType(StringType.of(10));
 
     optimize("CAST(FIELD_STRING AS STRING(1000))", "FIELD_STRING");
     optimize("CAST(TRUE AS STRING)", "'TRUE'");
@@ -1333,11 +1337,11 @@ public class OperatorTest extends ExpressionTest {
   void CastToDate() throws Exception {
     // String
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
     evalEquals(
             "CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')",
             LocalDateTime.of(2020, 1, 19, 11, 23, 44))
-        .returnType(Types.DATE);
+        .returnType(Types.DATE_NOT_NULL);
 
     // Integer Unix Epoch
     evalEquals("CAST(0 AS DATE)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
@@ -1381,7 +1385,7 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void CastToBinary() throws Exception {
     // String
-    evalEquals("CAST('AB' as BINARY)", "AB".getBytes()).returnType(Types.BINARY);
+    evalEquals("CAST('AB' as BINARY)", "AB".getBytes()).returnType(Types.BINARY_NOT_NULL);
 
     // Null
     evalNull("CAST(NULL_STRING as Binary)").returnType(Types.BINARY);
@@ -1407,8 +1411,8 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void CastToInterval() throws Exception {
     // String
-    evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5)).returnType(Types.INTERVAL);
-    evalEquals("'2 hour'::INTERVAL", Interval.of(0, 0, 0, 2)).returnType(Types.INTERVAL);
+    evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5)).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("'2 hour'::INTERVAL", Interval.of(0, 0, 0, 2)).returnType(Types.INTERVAL_NOT_NULL);
 
     // Null
     evalNull("CAST(NULL_STRING as INTERVAL)");
@@ -1422,8 +1426,9 @@ public class OperatorTest extends ExpressionTest {
   void CastToInet() throws Exception {
     // String
     evalEquals("CAST('10.10.10.1' as INET)", InetAddress.getByName("10.10.10.1"))
-        .returnType(Types.INET);
-    evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
+        .returnType(Types.INET_NOT_NULL);
+    evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1"))
+        .returnType(Types.INET_NOT_NULL);
 
     // Null
     evalNull("CAST(NULL_STRING as INET)");
@@ -1439,7 +1444,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(Types.INTEGER);
 
       // Accept data type quoted like a String
-      evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(Types.INTEGER);
+      evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(Types.INTEGER_NOT_NULL);
       evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
     }
 
@@ -1565,7 +1570,7 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void Mod() throws Exception {
-    evalEquals("11%4", 3D).returnType(Types.NUMBER);
+    evalEquals("11%4", 3D).returnType(Types.NUMBER_NOT_NULL);
     evalEquals("Mod(11,4)", 3D);
     evalEquals("Mod(11,-4)", 3D);
     evalEquals("Mod(-11,4)", -3D);
@@ -1602,26 +1607,28 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void Multiply() throws Exception {
-    evalEquals("4*10", 40L).returnType(IntegerType.of(3));
-    evalEquals("2*-2", -4L).returnType(IntegerType.of(2));
+    evalEquals("4*10", 40L).returnType(IntegerType.of(3,false));
+    evalEquals("2*-2", -4L).returnType(IntegerType.of(2,false));
 
-    evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2));
-    evalEquals("4*2.5", 10D).returnType(NumberType.of(3, 1));
-    evalEquals("2.5*4", 10D).returnType(NumberType.of(3, 1));
-    evalEquals("-4*-1", 4L).returnType(IntegerType.of(2));
-    evalEquals("100 * .5", 50D).returnType(NumberType.of(5, 1));
-    evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224).returnType(NumberType.of(38, 15));
-    evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15.3).returnType(NumberType.of(7, 3));
+    evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2,false));
+    evalEquals("4*2.5", 10D).returnType(NumberType.of(3, 1,false));
+    evalEquals("2.5*4", 10D).returnType(NumberType.of(3, 1,false));
+    evalEquals("-4*-1", 4L).returnType(IntegerType.of(2,false));
+    evalEquals("100 * .5", 50D).returnType(NumberType.of(5, 1,false));
+    evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224)
+        .returnType(NumberType.of(38, 15,false));
+    evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15.3)
+        .returnType(NumberType.of(7, 3));
     evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204.8)
         .returnType(NumberType.of(38, 8));
 
     // Implicit coercion from INTEGER to NUMBER
-    evalEquals("2*2.2", 4.4D).returnType(NumberType.of(3, 1));
-    evalEquals("2.5*2::INTEGER", 5D).returnType(NumberType.of(21, 1));
+    evalEquals("2*2.2", 4.4D).returnType(NumberType.of(3, 1,false));
+    evalEquals("2.5*2::INTEGER", 5D).returnType(NumberType.of(21, 1,false));
 
     // Check no arithmetic overflow Long.MAX_VALUE * 2
     evalEquals("9223372036854775807*2::NUMBER", new BigDecimal("18446744073709551614"))
-        .returnType(Types.NUMBER);
+        .returnType(Types.NUMBER_NOT_NULL);
     // Check no arithmetic underflow Long.MIN_VALUE * 2
     evalEquals("-9223372036854775808*2::NUMBER", new BigDecimal("-18446744073709551616"));
 
@@ -1682,14 +1689,15 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void Div() throws Exception {
     evalEquals("FIELD_INTEGER/4", 10D).returnType(NumberType.of(18, 6));
-    evalEquals("10/4", 2.5D).returnType(NumberType.of(8, 6));
-    evalEquals("40/-10", -4D).returnType(NumberType.of(8, 6));
-    evalEquals("-40/-10", 4D).returnType(NumberType.of(8, 6));
-    evalEquals("5/2", 2.5D).returnType(NumberType.of(7, 6));
+    evalEquals("10/4", 2.5D).returnType(NumberType.of(8, 6,false));
+    evalEquals("40/-10", -4D).returnType(NumberType.of(8, 6,false));
+    evalEquals("-40/-10", 4D).returnType(NumberType.of(8, 6,false));
+    evalEquals("5/2", 2.5D).returnType(NumberType.of(7, 6,false));
     evalEquals("10.1/2.1", new BigDecimal("4.8095238095238095238095238095238"))
-        .returnType(NumberType.of(9, 6));
-    evalEquals("0.1/0.0000000000001", 1000000000000D).returnType(NumberType.of(30, 16));
-    evalEquals("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", -1.7D).returnType(NumberType.of(11, 6));
+        .returnType(NumberType.of(9, 6,false));
+    evalEquals("0.1/0.0000000000001", 1000000000000D).returnType(NumberType.of(30, 16,false));
+    evalEquals("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", -1.7D)
+        .returnType(NumberType.of(11, 6));
 
     evalNull("NULL_INTEGER/1");
     evalNull("NULL_INTEGER/0");
@@ -1699,8 +1707,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("40/0", ErrorCode.DIVISION_BY_ZERO);
 
     // Implicit coercion from BOOLEAN
-    evalEquals("8/TRUE", 8D).returnType(NumberType.of(7, 6));
-    evalEquals("TRUE/2", 0.5D).returnType(NumberType.of(7, 6));
+    evalEquals("8/TRUE", 8D).returnType(NumberType.of(7, 6,false));
+    evalEquals("TRUE/2", 0.5D).returnType(NumberType.of(7, 6,false));
 
     // Normalize
     optimize("0/0");
@@ -1724,7 +1732,7 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void Div0() throws Exception {
-    evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6));
+    evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6,false));
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
     evalEquals("Div0(FIELD_INTEGER,0)", 0D);
     evalEquals("Div0(FIELD_INTEGER,2)", 20D).returnType(NumberType.of(18, 6));
@@ -1756,8 +1764,8 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void BitNot() throws Exception {
-    evalEquals("~1", -2L).returnType(Types.INTEGER);
-    evalEquals("~ 1", -2L).returnType(Types.INTEGER);
+    evalEquals("~1", -2L).returnType(Types.INTEGER_NOT_NULL);
+    evalEquals("~ 1", -2L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("~0", -1L);
     evalEquals("~4", -5L);
     evalEquals("~65504", -65505L);
@@ -1786,7 +1794,7 @@ public class OperatorTest extends ExpressionTest {
     evalFails("100 & ", ErrorCode.SYNTAX_ERROR);
 
     // Alias function
-    evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER);
+    evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER_NOT_NULL);
 
     // Nothing to simplify
     optimize("4&FIELD_INTEGER");
@@ -1813,7 +1821,7 @@ public class OperatorTest extends ExpressionTest {
     evalFails("3 | ", ErrorCode.SYNTAX_ERROR);
 
     // Alias function
-    evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER);
+    evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER_NOT_NULL);
 
     // Nothing to simplify
     optimize("FIELD_INTEGER|4", "4|FIELD_INTEGER");
@@ -1830,9 +1838,9 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void BitXor() throws Exception {
-    evalEquals("BIT_XOR(2,2)", 0L).returnType(Types.INTEGER);
-    evalEquals("2 ^ 1", 3L).returnType(Types.INTEGER);
-    evalEquals("100 ^ 2", 102L).returnType(Types.INTEGER);
+    evalEquals("BIT_XOR(2,2)", 0L).returnType(Types.INTEGER_NOT_NULL);
+    evalEquals("2 ^ 1", 3L).returnType(Types.INTEGER_NOT_NULL);
+    evalEquals("100 ^ 2", 102L).returnType(Types.INTEGER_NOT_NULL);
     evalNull("100 ^ NULL_INTEGER").returnType(Types.INTEGER);
     evalNull("NULL_INTEGER ^ 100").returnType(Types.INTEGER);
 
@@ -1853,22 +1861,22 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void BoolNot() throws Exception {
-    evalTrue("FIELD_BOOLEAN_TRUE is not false").returnType(Types.BOOLEAN);
-    evalTrue("NULL_BOOLEAN is null").returnType(Types.BOOLEAN);
-    evalTrue("NOT (NULL_BOOLEAN is not null)").returnType(Types.BOOLEAN);
-    evalFalse("NOT 1").returnType(Types.BOOLEAN);
-    evalTrue("NOT 0").returnType(Types.BOOLEAN);
+    evalTrue("FIELD_BOOLEAN_TRUE is not false").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("NULL_BOOLEAN is null").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("NOT (NULL_BOOLEAN is not null)").returnType(Types.BOOLEAN_NOT_NULL);
+    evalFalse("NOT 1").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("NOT 0").returnType(Types.BOOLEAN_NOT_NULL);
     evalFalse("NOT FIELD_INTEGER").returnType(Types.BOOLEAN);
     evalTrue("NOT FIELD_STRING_BOOLEAN_FALSE::BOOLEAN").returnType(Types.BOOLEAN);
     evalFalse("NOT FIELD_STRING_BOOLEAN_TRUE::BOOLEAN").returnType(Types.BOOLEAN);
-    evalTrue("NOT NOT True").returnType(Types.BOOLEAN);
+    evalTrue("NOT NOT True").returnType(Types.BOOLEAN_NOT_NULL);
     evalNull("NOT NULL_BOOLEAN").returnType(Types.BOOLEAN);
 
     evalFails("FIELD_BOOLEAN_TRUE is ", ErrorCode.SYNTAX_ERROR);
     evalFails("NOT", ErrorCode.SYNTAX_ERROR);
 
     // Function syntax
-    evalTrue("NOT(FALSE)").returnType(Types.BOOLEAN);
+    evalTrue("NOT(FALSE)").returnType(Types.BOOLEAN_NOT_NULL);
 
     optimize("NOT FIELD_BOOLEAN_TRUE");
     optimize("NOT NOT FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
@@ -1909,12 +1917,12 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void BoolXor() throws Exception {
-    evalFalse("true XOR true").returnType(Types.BOOLEAN);
+    evalFalse("true XOR true").returnType(Types.BOOLEAN_NOT_NULL);
     // evalFalse("2 XOR 3").returnType(Types.BOOLEAN);
-    evalFalse("false XOR false").returnType(Types.BOOLEAN);
+    evalFalse("false XOR false").returnType(Types.BOOLEAN_NOT_NULL);
     // evalFalse("0 XOR 0").returnType(Types.BOOLEAN);
-    evalTrue("true XOR false").returnType(Types.BOOLEAN);
-    evalTrue("false XOR true").returnType(Types.BOOLEAN);
+    evalTrue("true XOR false").returnType(Types.BOOLEAN_NOT_NULL);
+    evalTrue("false XOR true").returnType(Types.BOOLEAN_NOT_NULL);
     evalNull("NULL XOR true");
     evalNull("true XOR NULLIF(true,true)");
     evalNull("false XOR NULLIF(true,true)");
@@ -1926,10 +1934,10 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   void BoolOr() throws Exception {
-    evalTrue("true OR true").returnType(Types.BOOLEAN);
+    evalTrue("true OR true").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("true OR false");
     evalTrue("false OR true");
-    evalFalse("false OR false").returnType(Types.BOOLEAN);
+    evalFalse("false OR false").returnType(Types.BOOLEAN_NOT_NULL);
     evalTrue("true OR NULL_BOOLEAN");
     evalTrue("true OR FIELD_BOOLEAN_TRUE");
     evalTrue("NULL_BOOLEAN OR true");
@@ -2094,9 +2102,9 @@ public class OperatorTest extends ExpressionTest {
 
     // Simplify intersection = and IN
     optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (3,4,5)", "FIELD_INTEGER=3");
-    optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5,3,1)", "FIELD_INTEGER IN (1,3)");
+    optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5,3,1)", "FIELD_INTEGER IN (3,1)");
     optimize(
-        "FIELD_INTEGER IN (1,2,3,5) AND FIELD_INTEGER IN (2,3,4,5)", "FIELD_INTEGER IN (5,3,2)");
+        "FIELD_INTEGER IN (1,2,3,5) AND FIELD_INTEGER IN (2,3,4,5)", "FIELD_INTEGER IN (3,2,5)");
     optimizeFalse("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5)");
     optimizeFalse("FIELD_STRING IN ('A','B','C') AND FIELD_STRING='X'");
     optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=2");
@@ -2202,7 +2210,7 @@ public class OperatorTest extends ExpressionTest {
     // NULL does not match NULL
     evalNull("NULL_STRING like NULL_STRING").returnType(Types.BOOLEAN);
     evalNull("NULL_STRING like 'NULL'").returnType(Types.BOOLEAN);
-    evalNull("NULL_STRING LIKE '%'").returnType(Types.BOOLEAN);
+    evalNull("NULL_STRING LIKE '%'").returnType(Types.BOOLEAN_NOT_NULL);
     evalNull("'test' LIKE NULL_STRING").returnType(Types.BOOLEAN);
 
     evalFails("'a' LIKE '%' ESCAPE", ErrorCode.SYNTAX_ERROR);
@@ -2237,12 +2245,13 @@ public class OperatorTest extends ExpressionTest {
   @Test
   void CaseSearch() throws Exception {
 
-    evalEquals("case when TRUE then 1 else 2 end", 1L).returnType(IntegerType.of(1));
-    evalEquals("case when FALSE then 1 else 2 end", 2L).returnType(IntegerType.of(1));
+    evalEquals("case when TRUE then 1 else 2 end", 1L).returnType(IntegerType.of(1,false));
+    evalEquals("case when FALSE then 1 else 2 end", 2L).returnType(IntegerType.of(1,false));
 
     // Implicit ELSE NULL case
     evalNull("case when FIELD_INTEGER=10 then 10 end").returnType(IntegerType.of(2));
-    evalEquals("case when FIELD_INTEGER=40 then 10 end", 10L).returnType(IntegerType.of(2));
+    evalEquals("case when FIELD_INTEGER=40 then 10 end", 10L)
+        .returnType(IntegerType.of(2));
 
     // Explicit ELSE case
     evalEquals("case when FIELD_INTEGER=40 then 10 else 50 end", 10L);
@@ -2257,7 +2266,8 @@ public class OperatorTest extends ExpressionTest {
         "case when FIELD_INTEGER IS NULL then null when FIELD_INTEGER=20+20 then 2*5 else 50 end",
         10L);
 
-    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end").returnType(IntegerType.of(1));
+    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end")
+        .returnType(IntegerType.of(1,false));
 
     // Missing 'END'
     evalFails("case when FIELD_INTEGER=40 then 10 else 50", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
@@ -2325,18 +2335,20 @@ public class OperatorTest extends ExpressionTest {
   void CaseSimple() throws Exception {
 
     evalEquals("case FIELD_INTEGER when 10 then 10 when 40 then 40 else 50 end", 40L)
-        .returnType(IntegerType.of(2));
+        .returnType(IntegerType.of(2,false));
     evalEquals("case FIELD_INTEGER when 10 then 10 when 20 then 20 else -1 end", -1L)
-        .returnType(IntegerType.of(2));
+        .returnType(IntegerType.of(2,false));
     evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end")
         .returnType(IntegerType.of(2));
 
     // If the operand is null, the else clause applies
-    evalFalse("CASE NULL_INTEGER WHEN 1 THEN TRUE ELSE FALSE END").returnType(Types.BOOLEAN);
+    evalFalse("CASE NULL_INTEGER WHEN 1 THEN TRUE ELSE FALSE END")
+        .returnType(Types.BOOLEAN_NOT_NULL);
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L).returnType(Types.INTEGER);
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 1.023 ELSE 1 END", BigDecimal.ONE)
         .returnType(Types.NUMBER);
-    evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B").returnType(Types.STRING);
+    evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B")
+        .returnType(Types.STRING);
 
     // Check null data type returned
     evalNull("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE NULL END").returnType(Types.STRING);
@@ -2354,7 +2366,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals(
             "CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
             "B")
-        .returnType(StringType.of(1));
+        .returnType(StringType.of(1).withNullability(false));
     evalEquals(
         "CASE FIELD_INTEGER WHEN 10, 20.23 THEN 'A' WHEN 30, 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
         "B");
