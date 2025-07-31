@@ -72,14 +72,18 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '20' YEAR", Interval.of(20)).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate()).returnType(Types.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5)).returnType(Types.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5))
+        .returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate())
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL 2 QUARTER", Interval.of(0, 6)).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL 5 QUARTER", Interval.of(1, 3)).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL 15 MONTH", Interval.of(0, 15)).returnType(Types.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate())
+        .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15)).returnType(Types.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate()).returnType(Types.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate())
+        .returnType(Types.INTERVAL_NOT_NULL);
 
     evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365)).returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365)).returnType(Types.INTERVAL_NOT_NULL);
@@ -187,11 +191,11 @@ public class LiteralTest extends ExpressionTest {
     evalTrue("'test'='test'");
 
     // Single quote with two adjacent single quotes
-    evalEquals("'te''st'", "te'st").returnType(StringType.of(5,false));
+    evalEquals("'te''st'", "te'st").returnType(StringType.of(5, false));
     evalEquals("'te''''st'", "te''st");
 
     // Minimum precision for empty string is 1
-    evalEquals("''", "").returnType(StringType.of(1,false));
+    evalEquals("''", "").returnType(StringType.of(1, false));
 
     optimize("'Test ''Bla'' string'");
   }
@@ -258,7 +262,7 @@ public class LiteralTest extends ExpressionTest {
         "BINARY '1234567812345678'", new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
 
     // Minimum precision for empty binary is 1
-    evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1,false));
+    evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1, false));
 
     evalFails("BINARY '0Z'", ErrorCode.UNPARSABLE_BINARY);
 
@@ -279,9 +283,9 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456", Literal.of(-123456L).toString());
 
     // Integer decimal
-    evalEquals("1_234", 1234L).returnType(IntegerType.of(4,false));
-    evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4,false));
-    evalEquals("-1234", -1234L).returnType(IntegerType.of(4,false));
+    evalEquals("1_234", 1234L).returnType(IntegerType.of(4, false));
+    evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4, false));
+    evalEquals("-1234", -1234L).returnType(IntegerType.of(4, false));
 
     // Integer decimal with 19 digits or more
     evalEquals("-9223372036854775808", new BigDecimal(Long.MIN_VALUE))
@@ -298,12 +302,12 @@ public class LiteralTest extends ExpressionTest {
     evalFails("+_123", ErrorCode.UNRESOLVED_IDENTIFIER);
 
     // Integer exponent
-    evalEquals("2.3E2", 230L).returnType(IntegerType.of(3,false));
-    evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3,false));
-    evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4,false));
+    evalEquals("2.3E2", 230L).returnType(IntegerType.of(3, false));
+    evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3, false));
+    evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4, false));
 
     // Integer hexadecimal
-    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9,false));
+    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9, false));
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
     // Not a negative like  Java [0xffffeeee0000aaa0]=-18769007039840
     evalEquals("0xFFFF_EEEE_0000_AAA0", new BigDecimal("18446725304702511776"));
@@ -319,7 +323,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0xABCDEFg", ErrorCode.UNEXPECTED_CHARACTER);
 
     // Integer octal
-    evalEquals("0o0757", 495L).returnType(IntegerType.of(3,false));
+    evalEquals("0o0757", 495L).returnType(IntegerType.of(3, false));
     evalEquals("0o12345671234567", 718046312823L);
     evalEquals("0O12345", 5349L);
     evalEquals("0O1_2_3_4_5", 5349L);
@@ -331,7 +335,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0o0A", ErrorCode.UNEXPECTED_CHARACTER);
 
     // Integer bit
-    evalEquals("0b10", 0b10L).returnType(IntegerType.of(1,false));
+    evalEquals("0b10", 0b10L).returnType(IntegerType.of(1, false));
     evalEquals("0b00000010", 0b10L);
     evalEquals("0b011", 0b11L);
     evalEquals("0b000000011111111", 0b000000011111111L);
@@ -358,13 +362,13 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456.789", Literal.of(BigDecimal.valueOf(-123456.789)).toString());
 
     // Number decimal
-    evalEquals("+.1", 0.1D).returnType(NumberType.of(2, 1,false));
-    evalEquals("-.2", -0.2D).returnType(NumberType.of(2, 1,false));
-    evalEquals("0.2", 0.2D).returnType(NumberType.of(2, 1,false));
-    evalEquals("-0.2", -0.2D).returnType(NumberType.of(2, 1,false));
-    evalEquals("0.02", 0.02D).returnType(NumberType.of(3, 2,false));
+    evalEquals("+.1", 0.1D).returnType(NumberType.of(2, 1, false));
+    evalEquals("-.2", -0.2D).returnType(NumberType.of(2, 1, false));
+    evalEquals("0.2", 0.2D).returnType(NumberType.of(2, 1, false));
+    evalEquals("-0.2", -0.2D).returnType(NumberType.of(2, 1, false));
+    evalEquals("0.02", 0.02D).returnType(NumberType.of(3, 2, false));
     evalEquals("-0.02", -0.02D).returnType(NumberType.of(3, 2, false));
-    evalEquals(".000_005", 0.000005D).returnType(NumberType.of(7, 6,false));
+    evalEquals(".000_005", 0.000005D).returnType(NumberType.of(7, 6, false));
     evalEquals(
             "15167890123456789012345678901234567890",
             new BigDecimal("15167890123456789012345678901234567890"))
@@ -389,9 +393,9 @@ public class LiteralTest extends ExpressionTest {
         .returnType(NumberType.of(20).withNullability(false));
 
     // Number with exponent
-    evalEquals("2.3E-2", 2.3E-2D).returnType(NumberType.of(5, 3,false));
-    evalEquals("-2.3e-2", -2.3E-2D).returnType(NumberType.of(5, 3,false));
-    evalEquals("1_000.5e-0_1", 100.05D).returnType(NumberType.of(5, 2,false));
+    evalEquals("2.3E-2", 2.3E-2D).returnType(NumberType.of(5, 3, false));
+    evalEquals("-2.3e-2", -2.3E-2D).returnType(NumberType.of(5, 3, false));
+    evalEquals("1_000.5e-0_1", 100.05D).returnType(NumberType.of(5, 2, false));
 
     // Underscore
     evalFails("1__2", ErrorCode.INVALID_NUMBER);

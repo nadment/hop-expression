@@ -267,8 +267,7 @@ public class LoopAction extends ActionBase implements IAction {
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
 
-    // Check variable definition
-    ExpressionContext context = new ExpressionContext(variables);
+    // Check condition expression
     if (Utils.isEmpty(condition)) {
       remarks.add(
           new CheckResult(
@@ -277,6 +276,7 @@ public class LoopAction extends ActionBase implements IAction {
               this));
     } else
       try {
+        ExpressionContext context = new ExpressionContext(variables);
         ExpressionFactory.create(context, variables.resolve(condition));
       } catch (Exception e) {
         remarks.add(
@@ -286,5 +286,33 @@ public class LoopAction extends ActionBase implements IAction {
                     PKG, "LoopAction.CheckResult.LoopConditionExpressionError", e.getMessage()),
                 this));
       }
+
+    // Check workflow exist
+    // Load the workflow meta to execute
+    //
+    String realFilename = variables.resolve(filename);
+    if (StringUtils.isEmpty(realFilename)) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "LoopAction.CheckResult.WorkflowToExecuteIsMissing"),
+              this));
+    } else {
+      WorkflowMeta workflowToExecute = null;
+      try {
+        workflowToExecute = loadWorkflow(realFilename, getMetadataProvider(), variables);
+      } catch (HopException e) {
+        // Ignore
+      }
+
+      if (workflowToExecute == null) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "LoopAction.CheckResult.WorkflowToExecuteNotFound", realFilename),
+                this));
+      }
+    }
   }
 }

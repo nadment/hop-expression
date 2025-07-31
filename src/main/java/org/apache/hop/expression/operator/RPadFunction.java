@@ -44,7 +44,9 @@ public class RPadFunction extends Function {
   public RPadFunction() {
     super(
         "RPAD",
-        ReturnTypes.ARG0.andThen(TypeTransforms.TO_MAX_PRECISION).andThen(TypeTransforms.TO_NULLABLE),
+        ReturnTypes.ARG0
+            .andThen(TypeTransforms.TO_MAX_PRECISION)
+            .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER
             .or(OperandTypes.STRING_INTEGER_STRING)
             .or(OperandTypes.BINARY_INTEGER_BINARY),

@@ -1280,13 +1280,13 @@ public class ExpressionParser {
     this.checkEndOfExpression(Id.INTERVAL);
     Token value = next();
     if (value == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,"");
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, "");
     if (value.is(Id.MINUS)) {
       negative = true;
       this.checkEndOfExpression(Id.INTERVAL);
       value = next();
       if (value == null)
-        throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,"");
+        throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, "");
     }
 
     checkEndOfExpression(Id.INTERVAL);
@@ -1310,7 +1310,7 @@ public class ExpressionParser {
         checkEndOfExpression(Id.INTERVAL);
         end = next();
         if (end == null)
-          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,text);
+          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, text);
         endUnit = TimeUnit.of(end.text());
       }
 
@@ -1322,11 +1322,11 @@ public class ExpressionParser {
 
     IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
     if (qualifier == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,text);
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, text);
 
     Interval interval = qualifier.parse(text);
     if (interval == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL,text);
+      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, text);
 
     if (negative) interval = interval.negate();
 
@@ -1363,19 +1363,21 @@ public class ExpressionParser {
       }
     }
 
-    Type type = switch (name) {
-      case BOOLEAN -> Types.BOOLEAN;
-      case INTEGER -> IntegerType.of(precision);
-      case NUMBER -> NumberType.of(precision, scale);
-      case STRING -> StringType.of(precision);
-      case BINARY -> BinaryType.of(precision);
-      case DATE -> Types.DATE;
-      case INET -> Types.INET;
-      case JSON -> Types.JSON;
-      case INTERVAL -> Types.INTERVAL;
-      default ->
-          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
-    };
+    Type type =
+        switch (name) {
+          case BOOLEAN -> Types.BOOLEAN;
+          case INTEGER -> IntegerType.of(precision);
+          case NUMBER -> NumberType.of(precision, scale);
+          case STRING -> StringType.of(precision);
+          case BINARY -> BinaryType.of(precision);
+          case DATE -> Types.DATE;
+          case INET -> Types.INET;
+          case JSON -> Types.JSON;
+          case INTERVAL -> Types.INTERVAL;
+          default ->
+              throw new ExpressionParseException(
+                  token.start(), ErrorCode.INVALID_TYPE, token.text());
+        };
 
     return Literal.of(type);
   }

@@ -279,7 +279,9 @@ public final class ReturnTypes {
   public static final IReturnTypeInference CAST_OPERATOR =
       call -> {
         try {
-          return call.getOperand(1).getValue(Type.class).withNullability(call.getOperand(0).getType().isNullable());
+          return call.getOperand(1)
+              .getValue(Type.class)
+              .withNullability(call.getOperand(0).getType().isNullable());
         } catch (Exception e) {
           return Types.UNKNOWN;
         }
@@ -403,7 +405,7 @@ public final class ReturnTypes {
     // Preserve integer type and adjust precision
     if (type1.is(TypeName.INTEGER) && type2.is(TypeName.INTEGER)) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), p1 + p2);
-      return IntegerType.of(p,nullable);
+      return IntegerType.of(p, nullable);
     }
 
     // Return type precision
@@ -455,7 +457,7 @@ public final class ReturnTypes {
     // Return type precision
     int p = Math.min(TypeName.NUMBER.getMaxPrecision(), d + s);
 
-    return NumberType.of(p, s,nullable);
+    return NumberType.of(p, s, nullable);
   }
 
   /**
@@ -495,6 +497,6 @@ public final class ReturnTypes {
 
     p = Math.min(TypeName.NUMBER.getMaxPrecision(), p);
 
-    return NumberType.of(p, s,nullable);
+    return NumberType.of(p, s, nullable);
   }
 }

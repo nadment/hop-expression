@@ -144,7 +144,8 @@ public class FunctionTest extends ExpressionTest {
     evalTrue("TRY_TO_BOOLEAN(1.2)").returnType(Types.BOOLEAN_NOT_NULL);
 
     evalNull("TRY_TO_BOOLEAN('Bad')").returnType(Types.BOOLEAN);
-    evalNull("TRY_TO_BOOLEAN(NULL_STRING)").returnType(Types.BOOLEAN);;
+    evalNull("TRY_TO_BOOLEAN(NULL_STRING)").returnType(Types.BOOLEAN);
+    ;
 
     // Check operands
     evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -237,8 +238,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Coalesce('TEST','BIDON')", "TEST").returnType(Types.STRING_NOT_NULL);
 
     // Coalesce numeric
-    evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1,false));
-    evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1,false));
+    evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1, false));
+    evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1, false));
 
     // TODO: use transform type LEAST_NULL ?
     evalEquals("Coalesce(FIELD_INTEGER,1,2)", 40L).returnType(Types.INTEGER_NOT_NULL);
@@ -290,8 +291,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True").returnType(Types.STRING);
     evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
     evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(Types.INTEGER);
-    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", new BigDecimal("2"))
-        .returnType(Types.NUMBER);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", new BigDecimal("2")).returnType(Types.NUMBER);
     evalEquals(
             "If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1))
         .returnType(Types.DATE_NOT_NULL);
@@ -428,8 +428,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void NullIfZero() throws Exception {
-    evalEquals("NULLIFZERO(0.1)", 0.1D).returnType(NumberType.of(2, 1,false));
-    evalEquals("NullIfZero(1)", 1L).returnType(IntegerType.of(1,false));
+    evalEquals("NULLIFZERO(0.1)", 0.1D).returnType(NumberType.of(2, 1, false));
+    evalEquals("NullIfZero(1)", 1L).returnType(IntegerType.of(1, false));
 
     evalNull("NullIfZero(0)");
     evalNull("NullIfZero(0.000)");
@@ -450,12 +450,12 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Decode() throws Exception {
     evalEquals("Decode(1,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "one")
-        .returnType(StringType.of(3,false));
+        .returnType(StringType.of(3, false));
     evalEquals("Decode(2,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "two");
     evalEquals("Decode(NULL_INTEGER,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "<NULL>");
     evalEquals("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "other");
 
-    evalEquals("Decode('A','B',2,'C',3,0)", 0L).returnType(IntegerType.of(1,false));
+    evalEquals("Decode('A','B',2,'C',3,0)", 0L).returnType(IntegerType.of(1, false));
 
     // Support ERROR as default
     evalEquals(
@@ -548,9 +548,9 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Current_TimeZone() throws Exception {
     TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
-    evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12,false));
+    evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12, false));
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3,false));
+    evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3, false));
 
     // Check operands
     evalFails("Current_Timezone(Null)", ErrorCode.TOO_MANY_ARGUMENT);
@@ -582,7 +582,7 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Current_User() throws Exception {
     evalEquals("Current_User()", System.getProperty("user.name"))
-        .returnType(StringType.of(System.getProperty("user.name").length(),false));
+        .returnType(StringType.of(System.getProperty("user.name").length(), false));
   }
 
   @Test
@@ -1625,9 +1625,9 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Abs() throws Exception {
-    evalEquals("Abs(0)", 0L).returnType(IntegerType.of(1,false));
-    evalEquals("Abs(1)", 1L).returnType(IntegerType.of(1,false));
-    evalEquals("Abs(-1)", 1L).returnType(IntegerType.of(1,false));
+    evalEquals("Abs(0)", 0L).returnType(IntegerType.of(1, false));
+    evalEquals("Abs(1)", 1L).returnType(IntegerType.of(1, false));
+    evalEquals("Abs(-1)", 1L).returnType(IntegerType.of(1, false));
     evalEquals("Abs(FIELD_INTEGER)", 40L).returnType(IntegerType.of(12));
     evalEquals("Abs(FIELD_NUMBER)", 5.12D).returnType(Types.NUMBER);
     evalEquals("Abs(-1::INTEGER)", 1L);
@@ -2136,7 +2136,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Least(123,FIELD_INTEGER,789)", 40L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Least(-5,2.1,9,4)", -5D).returnType(Types.NUMBER_NOT_NULL);
     evalEquals("Least(FIELD_INTEGER,FIELD_NUMBER,789)", -5.12D).returnType(Types.NUMBER_NOT_NULL);
-    evalEquals("Least(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", -5.12D).returnType(Types.NUMBER);
+    evalEquals("Least(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", -5.12D)
+        .returnType(Types.NUMBER);
 
     // TODO: Numeric with coercion to String
     // evalEquals("Least('123',FIELD_INTEGER,789)", 40D).returnType(Types.NUMBER);
@@ -2288,8 +2289,7 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Array_To_String() throws Exception {
-    evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world")
-        .returnType(Types.STRING);
+    evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world").returnType(Types.STRING);
     evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(Types.STRING);
     evalEquals("ARRAY_TO_STRING(['A',[4,8+2],'B'],'')", "A410B");
 
@@ -2365,7 +2365,8 @@ public class FunctionTest extends ExpressionTest {
     evalNull("Right('TEST',NULL_INTEGER)");
 
     // Binary
-    evalEquals("Right(BINARY '12345678', 2)", new byte[] {0x56, 0x78}).returnType(Types.BINARY_NOT_NULL);
+    evalEquals("Right(BINARY '12345678', 2)", new byte[] {0x56, 0x78})
+        .returnType(Types.BINARY_NOT_NULL);
     evalEquals("Right(BINARY '12345678', 4)", new byte[] {0x12, 0x34, 0x56, 0x78});
     evalEquals("Right(BINARY '12345678', -2)", new byte[] {});
 
@@ -2393,7 +2394,8 @@ public class FunctionTest extends ExpressionTest {
 
     // Binary
     evalEquals("Repeat(BINARY '1234',0)", new byte[] {}).returnType(Types.BINARY_NOT_NULL);
-    evalEquals("Repeat(BINARY '1234',1)", new byte[] {0x12, 0x34}).returnType(Types.BINARY_NOT_NULL);
+    evalEquals("Repeat(BINARY '1234',1)", new byte[] {0x12, 0x34})
+        .returnType(Types.BINARY_NOT_NULL);
     evalEquals("Repeat(BINARY '1234',2)", new byte[] {0x12, 0x34, 0x12, 0x34});
     evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
 
@@ -3544,9 +3546,9 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Reverse() throws Exception {
-    evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH").returnType(StringType.of(13,false));
+    evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH").returnType(StringType.of(13, false));
     evalEquals("Reverse(BINARY '2A3B4C')", new byte[] {0x4C, 0x3B, 0x2A})
-        .returnType(BinaryType.of(3,false));
+        .returnType(BinaryType.of(3, false));
 
     evalNull("Reverse(NULL_STRING)").returnType(Types.STRING);
     evalNull("Reverse(NULL_BINARY)").returnType(Types.BINARY);
@@ -3879,7 +3881,7 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Concat() throws Exception {
     // String
-    evalEquals("CONCAT('TES','T')", "TEST").returnType(StringType.of(4,false));
+    evalEquals("CONCAT('TES','T')", "TEST").returnType(StringType.of(4, false));
     evalEquals("FIELD_STRING||'t'", "TESTt").returnType(StringType.of(1001, false));
     evalTrue("FIELD_STRING='TES'||'T'");
     evalTrue("FIELD_STRING='TES'||NULL_STRING||'T'");
@@ -3888,12 +3890,12 @@ public class FunctionTest extends ExpressionTest {
 
     evalEquals(
             "concat(cast('a' as string(2)), cast('b' as string(3)),cast('c' as string(2)))", "abc")
-        .returnType(StringType.of(7,false));
+        .returnType(StringType.of(7, false));
     evalNull("NULL_STRING||NULL_STRING").returnType(Types.STRING);
 
     // Binary
     evalEquals("Concat(BINARY '1F',BINARY '2A3B')", new byte[] {0x1F, 0x2A, 0x3B})
-        .returnType(BinaryType.of(3,false));
+        .returnType(BinaryType.of(3, false));
     evalEquals("BINARY '1F' || NULL_BINARY || BINARY '2A3B'", new byte[] {0x1F, 0x2A, 0x3B})
         .returnType(Types.BINARY_NOT_NULL);
     evalEquals("NULL_BINARY || BINARY '1F' || BINARY '2A3B'", new byte[] {0x1F, 0x2A, 0x3B})
@@ -3905,8 +3907,8 @@ public class FunctionTest extends ExpressionTest {
     evalFails("Concat()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Coercion to string
-    evalEquals("4 || 2", "42").returnType(StringType.of(2,false));
-    evalEquals("4 || '2'", "42").returnType(StringType.of(2,false));
+    evalEquals("4 || 2", "42").returnType(StringType.of(2, false));
+    evalEquals("4 || '2'", "42").returnType(StringType.of(2, false));
     evalEquals("Concat(FIELD_STRING, FIELD_INTEGER)", "TEST40");
     evalEquals("Concat(FIELD_INET, FIELD_STRING)", "10.10.10.1TEST");
 
@@ -3945,7 +3947,7 @@ public class FunctionTest extends ExpressionTest {
 
     // String
     evalEquals("CONCAT_WS(',','ONE','TWO','THREE')", "ONE,TWO,THREE");
-    evalEquals("CONCAT_WS('---','b','c')", "b---c").returnType(StringType.of(5,false));
+    evalEquals("CONCAT_WS('---','b','c')", "b---c").returnType(StringType.of(5, false));
     evalEquals("CONCAT_WS('--','one')", "one");
     evalEquals("CONCAT_WS(',','a',NULL_STRING,'b')", "a,b");
 
@@ -3953,10 +3955,10 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
             "CONCAT_WS(BINARY '1F',BINARY '2A3B',BINARY '4D',BINARY '5E')",
             new byte[] {0x2A, 0x3B, 0x1F, 0x4D, 0x1F, 0x5E})
-        .returnType(BinaryType.of(6,false));
+        .returnType(BinaryType.of(6, false));
 
     // Number
-    evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(3,false));
+    evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(3, false));
 
     evalNull("CONCAT_WS(NULL_STRING,'FIRST')").returnType(StringType.of(5));
     evalNull("CONCAT_WS('a',NULL_STRING)");

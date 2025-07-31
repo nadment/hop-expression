@@ -37,7 +37,9 @@ public class RepeatFunction extends Function {
   public RepeatFunction() {
     super(
         "REPEAT",
-        ReturnTypes.ARG0.andThen(TypeTransforms.TO_MAX_PRECISION).andThen(TypeTransforms.TO_NULLABLE),
+        ReturnTypes.ARG0
+            .andThen(TypeTransforms.TO_MAX_PRECISION)
+            .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
         "/docs/repeat.html");

@@ -43,9 +43,7 @@ public abstract class Type {
     this.nullable = nullable;
   }
 
-  /**
-   * Generates a string representation of this type.
-   */
+  /** Generates a string representation of this type. */
   private void generateLiteral(StringBuilder builder) {
     TypeName id = getName();
     builder.append(id.name());
@@ -61,14 +59,15 @@ public abstract class Type {
   }
 
   /**
-   * Generates a string representation of this type with full detail such as scale, precision and nullability.
+   * Generates a string representation of this type with full detail such as scale, precision and
+   * nullability.
    *
    * @return string
    */
   protected String generateSignature() {
     StringBuilder builder = new StringBuilder();
     this.generateLiteral(builder);
-    if ( !this.isNullable() ) {
+    if (!this.isNullable()) {
       builder.append(" NOT NULL");
     }
     return builder.toString();
@@ -259,8 +258,7 @@ public abstract class Type {
     throw new ConversionException(ErrorCode.INTERNAL_ERROR);
   }
 
-  /**
-   * Gets a string representation of this type for LITERAL string for the type. */
+  /** Gets a string representation of this type for LITERAL string for the type. */
   public String getLiteral() {
     StringBuilder builder = new StringBuilder();
     this.generateLiteral(builder);
@@ -268,8 +266,11 @@ public abstract class Type {
   }
 
   /**
-   * Gets a string representation of this type with full detail such as scale, precision and nullability.
-   * <p>The string must serve as a "digest" for this type, meaning two types can be considered identical if their digests are equal.</p>
+   * Gets a string representation of this type with full detail such as scale, precision and
+   * nullability.
+   *
+   * <p>The string must serve as a "digest" for this type, meaning two types can be considered
+   * identical if their digests are equal.
    */
   @Override
   public String toString() {

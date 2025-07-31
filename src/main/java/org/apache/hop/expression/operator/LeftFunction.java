@@ -41,7 +41,9 @@ public class LeftFunction extends Function {
   public LeftFunction() {
     super(
         "LEFT",
-        ReturnTypes.ARG0.andThen(TypeTransforms.TO_MAX_PRECISION).andThen(TypeTransforms.TO_NULLABLE),
+        ReturnTypes.ARG0
+            .andThen(TypeTransforms.TO_MAX_PRECISION)
+            .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
         "/docs/left.html");

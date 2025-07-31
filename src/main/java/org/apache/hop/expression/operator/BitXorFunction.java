@@ -52,7 +52,7 @@ public class BitXorFunction extends Function {
         80,
         Associativity.LEFT,
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, //.or(OperandTypes.BINARY_BINARY),
+        OperandTypes.INTEGER_INTEGER, // .or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }

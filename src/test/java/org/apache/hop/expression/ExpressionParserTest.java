@@ -145,8 +145,8 @@ public class ExpressionParserTest extends ExpressionTest {
 
   @Test
   void arrayElementAt() throws Exception {
-    evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1,false));
-    evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1,false));
+    evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1, false));
+    evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1, false));
   }
 
   @Test
