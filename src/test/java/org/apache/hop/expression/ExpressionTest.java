@@ -473,7 +473,7 @@ public class ExpressionTest {
     // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
     // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
     // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
-    // evalFails("BOOLEAN ", ErrorCode.SYNTAX_ERROR);
+
 
   }
 }

@@ -79,7 +79,7 @@ class CallTest extends ExpressionTest {
   }
 
   @Test
-  void coercion() throws Exception {
+  void testCoercion() throws Exception {
 
     // Coercion to boolean
     // evalTrue("FIELD_STRING_BOOLEAN_TRUE::BOOLEAN IS TRUE");

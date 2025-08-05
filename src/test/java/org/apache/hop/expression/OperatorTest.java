@@ -30,127 +30,153 @@ import org.junit.jupiter.api.Test;
 
 public class OperatorTest extends ExpressionTest {
 
-  @Test
-  void ElementAt() throws Exception {
-    evalEquals("[1,3,5][1]", 1L).returnType(IntegerType.of(1, false));
-    evalEquals("[1,3.5,5][3]", 5D).returnType(NumberType.of(2, 1, false));
-    evalEquals("['A','B',FIELD_STRING][3]", "TEST").returnType(StringType.of(1000, true));
+  @Nested
+  class ElementAt {
+    @Test
+    void testOperation() throws Exception {
+      evalEquals("[1,3,5][1]", 1L).returnType(IntegerType.of(1, false));
+      evalEquals("[1,3.5,5][3]", 5D).returnType(NumberType.of(2, 1, false));
+      evalEquals("['A','B',FIELD_STRING][3]", "TEST").returnType(StringType.of(1000, true));
 
-    // Negative index
-    evalEquals("[1,3,5][-1]", 5L);
-    evalEquals("[1,3,5][-3]", 1L);
+      // Negative index
+      evalEquals("[1,3,5][-1]", 5L);
+      evalEquals("[1,3,5][-3]", 1L);
 
-    evalFails("[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
-    evalFails("[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
+      evalFails("[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
+      evalFails("[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
+    }
 
-    optimize("[FIELD_INTEGER,3,5][1]");
-    optimize("[FIELD_STRING,'A','B'][1]");
+    @Test
+    void testOptimization() throws Exception {
+      optimize("[FIELD_INTEGER,3,5][1]");
+      optimize("[FIELD_STRING,'A','B'][1]");
+    }
   }
 
-  @Test
-  void EqualTo() throws Exception {
-    // Integer
-    evalTrue("0.0 = 0");
-    evalTrue("0.0 = -0.000");
-    evalTrue("15.0 = 15");
-    evalTrue("'.01' = 0.01");
-    evalTrue("FIELD_INTEGER = 40.0").returnType(Types.BOOLEAN);
-    evalTrue("0b11110000 = 0xF0");
+  @Nested
+  class EqualTo {
+    @Test
+    void testCoercion() throws Exception {
+      // Compare numeric with implicit coercion from BOOLEAN
+      evalTrue("TRUE=1");
+      evalTrue("1=TRUE");
+      evalFalse("TRUE=1.1");
+      evalFalse("TRUE=0");
 
-    // Number
-    evalTrue("FIELD_NUMBER = -5.12").returnType(Types.BOOLEAN);
-    evalTrue("2.000 = 2");
-    evalTrue("2.000 = 2.00");
-    evalTrue("-1.4e-10 = -1.4e-10");
+      // Compare numeric with implicit coercion from integer and number
+      evalTrue("2 = 2.0");
+      evalTrue("2.0=2");
+      evalFalse("2 = 2.1");
+      evalFalse("2.1 = 2");
 
-    // Binary
-    evalTrue("BINARY 'FF22C' = BINARY 'ff22c'");
+      // Comparable unordered type
+      evalNull("NULL_JSON = FIELD_JSON");
+      evalFalse("FIELD_JSON = FIELD_STRING_JSON::JSON");
+    }
 
-    // Boolean
-    evalTrue("true = true").returnType(Types.BOOLEAN_NOT_NULL);
-    ;
-    evalTrue("false = false");
-    evalFalse("true = false");
-    evalFalse("false = true");
-    evalTrue("FIELD_BOOLEAN_TRUE = true").returnType(Types.BOOLEAN);
+    @Test
+    void testNullHandling() throws Exception {
+      // NULL is not equal ( = ) to anything not even to another NULL.
+      evalNull("1 = NULL_INTEGER").returnType(Types.BOOLEAN);
+      evalNull("1 = NULL_NUMBER").returnType(Types.BOOLEAN);
+      evalNull("NULL_BOOLEAN = true").returnType(Types.BOOLEAN);
+      evalNull("NULL_BOOLEAN = false").returnType(Types.BOOLEAN);
+      evalNull("NULL_BOOLEAN = NULL_BOOLEAN").returnType(Types.BOOLEAN);
+      evalNull("NULL_STRING = NULL_STRING").returnType(Types.BOOLEAN);
+      evalNull("NULL_STRING = FIELD_STRING").returnType(Types.BOOLEAN);
+      evalNull("FIELD_STRING = NULL_STRING").returnType(Types.BOOLEAN);
+      evalNull("NULL_INTEGER = NULL_INTEGER").returnType(Types.BOOLEAN);
+      evalNull("NULL_INTEGER = 1").returnType(Types.BOOLEAN);
+      evalNull("FIELD_INTEGER=NULL_INTEGER").returnType(Types.BOOLEAN);
+    }
 
-    // String
-    evalTrue("'ABC' = 'ABC'");
-    evalFalse("'ABC' = 'abc'");
-    evalTrue("FIELD_STRING = 'TEST'");
+    @Test
+    void testIntegerOperation() throws Exception {
+      evalTrue("0.0 = 0");
+      evalTrue("0.0 = -0.000");
+      evalTrue("15.0 = 15");
+      evalTrue("'.01' = 0.01");
+      evalTrue("FIELD_INTEGER = 40.0").returnType(Types.BOOLEAN);
+      evalTrue("0b11110000 = 0xF0");
+    }
 
-    // Date
-    evalTrue("DATE '2019-01-01' = DATE '2019-01-01'");
-    evalFalse("DATE '2019-01-01' = DATE '2018-01-01'");
+    @Test
+    void testNumberOperation() throws Exception {
+      evalTrue("FIELD_NUMBER = -5.12").returnType(Types.BOOLEAN);
+      evalTrue("2.000 = 2");
+      evalTrue("2.000 = 2.00");
+      evalTrue("-1.4e-10 = -1.4e-10");
+    }
 
-    // Timestamp
-    evalTrue("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
-    evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
-    evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
-    evalTrue(
-        "Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
+    @Test
+    void testDateOperation() throws Exception {
+      evalTrue("DATE '2019-01-01' = DATE '2019-01-01'");
+      evalFalse("DATE '2019-01-01' = DATE '2018-01-01'");
+    }
 
-    // Interval
-    evalTrue("INTERVAL 1 YEARS = INTERVAL 12 MONTHS");
-    evalFalse("INTERVAL 3 YEARS = INTERVAL 3 MONTHS");
+    @Test
+    void testTimestampOperation() throws Exception {
+      evalTrue("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
+      evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
+      evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
+      evalTrue(
+          "Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
+    }
 
-    // NULL is not equal ( = ) to anything not even to another NULL.
-    evalNull("1 = NULL_INTEGER").returnType(Types.BOOLEAN);
-    evalNull("1 = NULL_NUMBER").returnType(Types.BOOLEAN);
-    evalNull("NULL_BOOLEAN = true").returnType(Types.BOOLEAN);
-    evalNull("NULL_BOOLEAN = false").returnType(Types.BOOLEAN);
-    evalNull("NULL_BOOLEAN = NULL_BOOLEAN").returnType(Types.BOOLEAN);
-    evalNull("NULL_STRING = NULL_STRING").returnType(Types.BOOLEAN);
-    evalNull("NULL_STRING = FIELD_STRING").returnType(Types.BOOLEAN);
-    evalNull("FIELD_STRING = NULL_STRING").returnType(Types.BOOLEAN);
-    evalNull("NULL_INTEGER = NULL_INTEGER").returnType(Types.BOOLEAN);
-    evalNull("NULL_INTEGER = 1").returnType(Types.BOOLEAN);
-    evalNull("FIELD_INTEGER=NULL_INTEGER").returnType(Types.BOOLEAN);
+    @Test
+    void testIntervalOperation() throws Exception {
+      evalTrue("INTERVAL 1 YEARS = INTERVAL 12 MONTHS");
+      evalFalse("INTERVAL 3 YEARS = INTERVAL 3 MONTHS");
+    }
 
-    // Compare numeric with implicit coercion from BOOLEAN
-    evalTrue("TRUE=1");
-    evalTrue("1=TRUE");
-    evalFalse("TRUE=1.1");
-    evalFalse("TRUE=0");
+    @Test
+    void testStringOperation() throws Exception {
+      evalTrue("'ABC' = 'ABC'");
+      evalFalse("'ABC' = 'abc'");
+      evalTrue("FIELD_STRING = 'TEST'");
+    }
 
-    // Compare numeric with implicit coercion from integer and number
-    evalTrue("2 = 2.0");
-    evalTrue("2.0=2");
-    evalFalse("2 = 2.1");
-    evalFalse("2.1 = 2");
+    @Test
+    void testBinaryOperation() throws Exception {
+      evalTrue("BINARY 'FF22C' = BINARY 'ff22c'");
+    }
 
-    // Comparable unordered type
-    evalNull("NULL_JSON = FIELD_JSON");
-    evalFalse("FIELD_JSON = FIELD_STRING_JSON::JSON");
+    @Test
+    void testBooleanOperation() throws Exception {
+      evalTrue("true = true").returnType(Types.BOOLEAN_NOT_NULL);
+      evalTrue("false = false");
+      evalFalse("true = false");
+      evalFalse("false = true");
+      evalTrue("FIELD_BOOLEAN_TRUE = true").returnType(Types.BOOLEAN);
+    }
 
-    // Syntax error
-    evalFails("FIELD_INTEGER=", ErrorCode.SYNTAX_ERROR);
-    evalFails(" = FIELD_INTEGER ", ErrorCode.SYNTAX_ERROR);
+    @Test
+    void testOptimization() throws Exception {
+      // Normalize
+      optimize("10=FIELD_INTEGER", "FIELD_INTEGER=10");
+      optimize("FIELD_INTEGER=40");
 
-    // Normalize
-    optimize("10=FIELD_INTEGER", "FIELD_INTEGER=10");
-    optimize("FIELD_INTEGER=40");
+      // Simplify comparison with literals
+      optimizeTrue("'a' = 'a'");
+      optimizeFalse("'a' = 'b'");
+      optimizeFalse("10151082135029368 = 10151082135029369");
+      optimizeNull("NULL::STRING=FIELD_STRING");
+      optimizeNull("FIELD_STRING=NULL::STRING");
 
-    // Simplify comparison with literals
-    optimizeTrue("'a' = 'a'");
-    optimizeFalse("'a' = 'b'");
-    optimizeFalse("10151082135029368 = 10151082135029369");
-    optimizeNull("NULL::STRING=FIELD_STRING");
-    optimizeNull("FIELD_STRING=NULL::STRING");
+      // Simplify comparison when operands are of a boolean type
+      optimize("FIELD_BOOLEAN_TRUE=TRUE", "FIELD_BOOLEAN_TRUE");
+      optimize("TRUE=FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+      optimize("FIELD_BOOLEAN_TRUE=FALSE", "NOT FIELD_BOOLEAN_TRUE");
+      optimize("FALSE=FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
 
-    // Simplify comparison when operands is of boolean type
-    optimize("FIELD_BOOLEAN_TRUE=TRUE", "FIELD_BOOLEAN_TRUE");
-    optimize("TRUE=FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
-    optimize("FIELD_BOOLEAN_TRUE=FALSE", "NOT FIELD_BOOLEAN_TRUE");
-    optimize("FALSE=FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
+      // Simplify comparison with arithmetic
+      optimize("FIELD_INTEGER+1=3", "FIELD_INTEGER=2");
+      optimize("3=FIELD_INTEGER+1", "FIELD_INTEGER=2");
 
-    // Simplify comparison with arithmetic
-    optimize("FIELD_INTEGER+1=3", "FIELD_INTEGER=2");
-    optimize("3=FIELD_INTEGER+1", "FIELD_INTEGER=2");
-
-    // Simplify comparison with the same term when it is not nullable
-    optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
-    optimize("PI()=PI()", "TRUE");
+      // Simplify comparison with the same term when it is not nullable
+      optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
+      optimize("PI()=PI()", "TRUE");
+    }
   }
 
   @Test
@@ -203,13 +229,6 @@ public class OperatorTest extends ExpressionTest {
 
     // Comparable unordered type
     evalTrue("FIELD_JSON <> FIELD_STRING_JSON::JSON");
-
-    // Syntax error
-    evalFails("FIELD_INTEGER<>", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_INTEGER <> ", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_INTEGER!", ErrorCode.UNEXPECTED_CHARACTER);
-    evalFails("FIELD_INTEGER ! ", ErrorCode.UNEXPECTED_CHARACTER);
-    evalFails("<>FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
 
     // Normalize
     optimize("10!=FIELD_INTEGER", "FIELD_INTEGER!=10");
@@ -469,7 +488,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER+1<3", "FIELD_INTEGER<2");
     optimize("3>FIELD_INTEGER+1", "FIELD_INTEGER<2");
 
-    // Simplify comparison with same term
+    // Simplify comparison with the same term
     optimize("FIELD_STRING<FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
   }
 
@@ -547,7 +566,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("3<=FIELD_INTEGER+1", "FIELD_INTEGER>=2");
     optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
 
-    // Simplify comparison with same term
+    // Simplify comparison with the same term
     optimize("FIELD_STRING<=FIELD_STRING", "NVL2(FIELD_STRING,TRUE,NULL)");
   }
 
@@ -744,40 +763,52 @@ public class OperatorTest extends ExpressionTest {
     optimize("NULL IS NOT DISTINCT FROM FIELD_STRING", "FIELD_STRING IS NULL");
   }
 
-  @Test
-  void SimilarTo() throws Exception {
-    evalTrue("'abc' SIMILAR TO 'abc'");
-    evalTrue("'abc' SIMILAR TO '_b_'");
-    evalTrue("'aaa' SIMILAR TO 'a{2,4}'");
-    evalFalse("'aa' SIMILAR TO 'a{3,4}'");
-    evalFalse("'aaaaa' SIMILAR TO 'a{2,4}'");
-    evalFalse("'abc' SIMILAR TO '_B_'");
-    evalFalse("'abc' SIMILAR TO '_a_'");
+  @Nested
+  class SimilarTo {
+      @Test
+      void testOperation() throws Exception {
+      evalTrue("'abc' SIMILAR TO 'abc'");
+      evalTrue("'abc' SIMILAR TO '_b_'");
+      evalTrue("'aaa' SIMILAR TO 'a{2,4}'");
+      evalFalse("'aa' SIMILAR TO 'a{3,4}'");
+      evalFalse("'aaaaa' SIMILAR TO 'a{2,4}'");
+      evalFalse("'abc' SIMILAR TO '_B_'");
+      evalFalse("'abc' SIMILAR TO '_a_'");
 
-    // evalTrue("'Erdbeere' SIMILAR TO 'Erd[a[:SPACE:]b]eere'");
-    evalTrue("'12345TEST' SIMILAR TO '123[:ALNUM:]*'");
+      // evalTrue("'Erdbeere' SIMILAR TO 'Erd[a[:SPACE:]b]eere'");
+      evalTrue("'12345TEST' SIMILAR TO '123[:ALNUM:]*'");
 
-    evalFalse("'abc' SIMILAR TO 'a'");
-    evalTrue("'abc' SIMILAR TO '.*(b|d).*'");
-    evalFalse("'abc' SIMILAR TO '(b|c).*'");
-    evalFalse("'abc' NOT SIMILAR TO 'abc'");
-    evalTrue("'xyz' SIMILAR TO '%(y|a)%'");
+      evalFalse("'abc' SIMILAR TO 'a'");
+      evalTrue("'abc' SIMILAR TO '.*(b|d).*'");
+      evalFalse("'abc' SIMILAR TO '(b|c).*'");
+      evalFalse("'abc' NOT SIMILAR TO 'abc'");
+      evalTrue("'xyz' SIMILAR TO '%(y|a)%'");
 
-    // An empty pattern '' matches nothing
-    evalFalse("'' SIMILAR TO  ''");
-    evalFalse("'ABC' SIMILAR TO ''");
+      // An empty pattern '' matches nothing
+      evalFalse("'' SIMILAR TO  ''");
+      evalFalse("'ABC' SIMILAR TO ''");
+    }
 
-    evalNull("NULL_STRING SIMILAR TO 'A'");
-    evalNull("'A' SIMILAR TO NULL_STRING");
+    @Test
+    void testNullHandling() throws Exception {
+      evalNull("NULL_STRING SIMILAR TO 'A'");
+      evalNull("'A' SIMILAR TO NULL_STRING");
+    }
 
-    evalFails("FIELD_STRING IS ", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_STRING IS SIMILAR", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_STRING IS SIMILAR 'A'", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_STRING IS SIMILAR TO ", ErrorCode.SYNTAX_ERROR);
-    evalFails("FIELD_STRING IS SIMILAR AND TO ", ErrorCode.SYNTAX_ERROR);
+    @Test
+    void testSyntax() throws Exception {
+      evalFails("FIELD_STRING IS ", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_STRING IS SIMILAR", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_STRING IS SIMILAR 'A'", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_STRING IS SIMILAR TO ", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_STRING IS SIMILAR AND TO ", ErrorCode.SYNTAX_ERROR);
+    }
 
-    optimize("FIELD_STRING SIMILAR TO 'abc'");
-    optimize("FIELD_STRING NOT SIMILAR TO 'abc'");
+    @Test
+    void testOptimization() throws Exception {
+      optimize("FIELD_STRING SIMILAR TO 'abc'");
+      optimize("FIELD_STRING NOT SIMILAR TO 'abc'");
+    }
   }
 
   @Test
@@ -960,7 +991,7 @@ public class OperatorTest extends ExpressionTest {
   @Nested
   class Between {
     @Test
-    void number() throws Exception {
+    void testNumberOperation() throws Exception {
       evalTrue("3 between 1 and 5").returnType(Types.BOOLEAN_NOT_NULL);
       evalTrue("3 between 3 and 5");
       evalTrue("5 between 3 and 5");
@@ -973,19 +1004,18 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void string() throws Exception {
+    void testStringOperation() throws Exception {
       evalTrue("'the' between 'that' and 'then'");
       evalFalse("'ti' between 'to' and 'tu'");
     }
 
     @Test
-    void date() throws Exception {
-      // Date
+    void testDateOperation() throws Exception {
       evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
     }
 
     @Test
-    void not() throws Exception {
+    void testNot() throws Exception {
       // Not between
       evalTrue("FIELD_INTEGER not between 10 and 20");
       evalTrue("FIELD_INTEGER not between 10.5 and 20");
@@ -994,7 +1024,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void coercion() throws Exception {
+    void testCoercion() throws Exception {
       // Integer with boolean coercion
       evalTrue("FIELD_BOOLEAN_TRUE between -1 and 1");
       evalFalse("FIELD_INTEGER between FALSE and TRUE");
@@ -1009,7 +1039,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void withNull() throws Exception {
+    void testNullHandling() throws Exception {
       evalNull("NULL_INTEGER between -10 and 20").returnType(Types.BOOLEAN);
       evalNull("NULL_INTEGER between symmetric -10 and 20");
       evalNull("1 between NULL_INTEGER and 20");
@@ -1019,7 +1049,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void syntax() {
+    void testSyntax() {
       evalFails("'the' between 1 and 2", ErrorCode.CONVERSION_ERROR);
       evalFails("FIELD_INTEGER between 10 and", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and 10", ErrorCode.SYNTAX_ERROR);
@@ -1031,7 +1061,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void compile() throws Exception {
+    void testOptimization() throws Exception {
       optimize("FIELD_INTEGER BETWEEN 10 AND 20");
       optimize("FIELD_NUMBER BETWEEN 10.5 AND 20.12");
       optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
@@ -1201,7 +1231,7 @@ public class OperatorTest extends ExpressionTest {
         "CAST(CAST(FIELD_STRING AS STRING(20)) AS STRING(20))", "CAST(FIELD_STRING AS STRING(20))");
     optimize("CAST(FIELD_STRING AS STRING(1000))", "FIELD_STRING");
 
-    // Don't remove not loss-less cast
+    // Don't remove loss-less cast
     optimize(
         "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))",
         "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))");
@@ -1447,7 +1477,7 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void syntax() {
+    void testSyntax() {
       // Operator syntax
       evalFails("'1234':", ErrorCode.UNEXPECTED_CHARACTER);
       evalFails("'1234':NUMBER", ErrorCode.UNEXPECTED_CHARACTER);
@@ -1758,101 +1788,188 @@ public class OperatorTest extends ExpressionTest {
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
   }
 
-  @Test
-  void BitNot() throws Exception {
-    evalEquals("~1", -2L).returnType(Types.INTEGER_NOT_NULL);
-    evalEquals("~ 1", -2L).returnType(Types.INTEGER_NOT_NULL);
-    evalEquals("~0", -1L);
-    evalEquals("~4", -5L);
-    evalEquals("~65504", -65505L);
-    evalNull("~NULL_INTEGER").returnType(Types.INTEGER);
+  @Nested
+  class BitNot {
+    @Test
+    void testIntegerOperation() throws Exception {
+      evalEquals("~1", -2L).returnType(Types.INTEGER_NOT_NULL);
+      evalEquals("~ 1", -2L).returnType(Types.INTEGER_NOT_NULL);
+      evalEquals("~0", -1L);
+      evalEquals("~4", -5L);
+      evalEquals("~65504", -65505L);
+    }
 
-    evalFails("BIT_NOT()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("BIT_NOT(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("~", ErrorCode.SYNTAX_ERROR);
-    evalFails("~ ", ErrorCode.SYNTAX_ERROR);
+    @Test
+    void testNullHandling() throws Exception {
+      evalNull("~NULL_INTEGER").returnType(Types.INTEGER);
+    }
 
-    // Alias function
-    evalEquals("BIT_NOT(1)", -2L);
+    @Test
+    void testOptimization() throws Exception {
+      optimize("~FIELD_INTEGER");
+      optimize("~(~FIELD_INTEGER)", "FIELD_INTEGER");
+    }
 
-    optimize("~FIELD_INTEGER");
-    optimize("~(~FIELD_INTEGER)", "FIELD_INTEGER");
+    @Test
+    void testAlias() throws Exception {
+      evalEquals("BIT_NOT(1)", -2L);
+      evalFails("BIT_NOT()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+      evalFails("BIT_NOT(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    }
   }
 
-  @Test
-  void BitAnd() throws Exception {
-    evalEquals("3 & 2", 2L);
-    evalEquals("100 & 2", 0L);
-    evalEquals("100 & 2 & 1", 0L);
-    evalNull("100 & NULL_INTEGER").returnType(Types.INTEGER);
-    evalNull("NULL_INTEGER & 100").returnType(Types.INTEGER);
-    evalFails("100&", ErrorCode.SYNTAX_ERROR);
-    evalFails("100 & ", ErrorCode.SYNTAX_ERROR);
+  @Nested
+  class BitAnd {
+    @Test
+    void testIntegerOperation() throws Exception {
+      evalEquals("3 & 2", 2L).returnType(Types.INTEGER_NOT_NULL);
+      evalEquals("100 & 2", 0L).returnType(Types.INTEGER_NOT_NULL);
+      evalEquals("100 & 2 & 1", 0L).returnType(Types.INTEGER_NOT_NULL);
 
-    // Alias function
-    evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER_NOT_NULL);
+      // Type propagation check
+      evalEquals("3 & FIELD_INTEGER", 0L).returnType(Types.INTEGER);
+    }
 
-    // Nothing to simplify
-    optimize("4&FIELD_INTEGER");
-    optimize("FIELD_INTEGER&4", "4&FIELD_INTEGER");
+    @Test
+    void testNullHandling() throws Exception {
+      evalNull("100 & NULL_INTEGER").returnType(Types.INTEGER);
+      evalNull("NULL_INTEGER & 100").returnType(Types.INTEGER);
+      evalNull("BINARY '0F000001' & NULL_BINARY").returnType(Types.BINARY);
+      evalNull("NULL_BINARY & BINARY '0F000001'").returnType(Types.BINARY);
+    }
 
-    // Simplify NULL & A → NULL
-    optimizeNull("NULLIF(1,1)&FIELD_INTEGER");
-    optimizeNull("FIELD_INTEGER&NULLIF(1,1)");
+    @Test
+    void testBinaryOperation() throws Exception {
+      // Binary
+      evalEquals("BINARY '0F000001' & BINARY '0000003'", new byte[] {0x00, 0x00, 0x00, 0x01})
+          .returnType(Types.BINARY_NOT_NULL);
+      evalFails("BINARY '0F' & BINARY '0F01'", ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
+    }
 
-    // Simplify 0 & A -> 0 (if A not nullable)
-    optimize("FIELD_INTEGER&0", "0&FIELD_INTEGER");
-    optimize("0&FIELD_INTEGER");
-    optimize("123&0", "0");
-    optimize("0&123", "0");
+    @Test
+    void testOptimization() throws Exception {
+      // Nothing to simplify
+      optimize("4&FIELD_INTEGER");
+      optimize("FIELD_INTEGER&4", "4&FIELD_INTEGER");
+
+      // Simplify NULL & A → NULL
+      optimizeNull("NULLIF(1,1)&FIELD_INTEGER");
+      optimizeNull("FIELD_INTEGER&NULLIF(1,1)");
+
+      // Simplify 0 & A -> 0 (if A not nullable)
+      optimize("FIELD_INTEGER&0", "0&FIELD_INTEGER");
+      optimize("0&FIELD_INTEGER");
+      optimize("123&0", "0");
+      optimize("0&123", "0");
+    }
+
+    @Test
+    void testAlias() throws Exception {
+      evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER_NOT_NULL);
+      evalFails("BIT_AND(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+      evalFails("BIT_AND(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    }
   }
 
-  @Test
-  void BitOr() throws Exception {
-    evalEquals("100 | 2", 102L);
-    evalEquals("3 | 2", 3L);
-    evalNull("100 | NULL_INTEGER").returnType(Types.INTEGER);
-    evalNull("NULL_INTEGER | 100").returnType(Types.INTEGER);
-    evalFails("3|", ErrorCode.SYNTAX_ERROR);
-    evalFails("3 | ", ErrorCode.SYNTAX_ERROR);
+  @Nested
+  class BitOr {
+    @Test
+    void testIntegerOperation() throws Exception {
+      evalEquals("100 | 2", 102L).returnType(Types.INTEGER_NOT_NULL);
+      evalEquals("3 | 2", 3L).returnType(Types.INTEGER_NOT_NULL);
+    }
 
-    // Alias function
-    evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER_NOT_NULL);
+    @Test
+    void testBinaryOperation() throws Exception {
+      evalEquals(
+              "BINARY '0F000001' | BINARY '00000001'",
+              new byte[] {(byte) 0x0F, (byte) 0x00, (byte) 0x00, (byte) 0x01})
+          .returnType(Types.BINARY_NOT_NULL);
+      evalFails("BINARY '0F' | BINARY '0F01'", ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
+    }
 
-    // Nothing to simplify
-    optimize("FIELD_INTEGER|4", "4|FIELD_INTEGER");
-    optimize("1|FIELD_INTEGER|4", "5|FIELD_INTEGER");
+    @Test
+    void testNullHandling() throws Exception {
+      evalNull("100 | NULL_INTEGER").returnType(Types.INTEGER);
+      evalNull("NULL_INTEGER | 100").returnType(Types.INTEGER);
+      evalNull("BINARY '0F000001' | NULL_BINARY").returnType(Types.BINARY);
+      evalNull("NULL_BINARY | BINARY '0F000001'").returnType(Types.BINARY);
+    }
 
-    // Simplify NULL | A → NULL
-    optimizeNull("NULLIF(1,1)|FIELD_INTEGER");
-    optimizeNull("FIELD_INTEGER|NULLIF(1,1)");
+    @Test
+    void testAlias() throws Exception {
+      evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER_NOT_NULL);
+      evalFails("BIT_OR(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+      evalFails("BIT_OR(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    }
 
-    // Simplify 0 | A → A (even if A is null)
-    optimize("FIELD_INTEGER|0", "FIELD_INTEGER");
-    optimize("0|FIELD_INTEGER", "FIELD_INTEGER");
+    @Test
+    void testOptimization() throws Exception {
+      // Nothing to simplify
+      optimize("FIELD_INTEGER|4", "4|FIELD_INTEGER");
+      optimize("1|FIELD_INTEGER|4", "5|FIELD_INTEGER");
+
+      // Simplify NULL | A → NULL
+      optimizeNull("NULLIF(1,1)|FIELD_INTEGER");
+      optimizeNull("FIELD_INTEGER|NULLIF(1,1)");
+
+      // Simplify 0 | A → A (even if A is null)
+      optimize("FIELD_INTEGER|0", "FIELD_INTEGER");
+      optimize("0|FIELD_INTEGER", "FIELD_INTEGER");
+    }
   }
 
-  @Test
-  void BitXor() throws Exception {
-    evalEquals("BIT_XOR(2,2)", 0L).returnType(Types.INTEGER_NOT_NULL);
-    evalEquals("2 ^ 1", 3L).returnType(Types.INTEGER_NOT_NULL);
-    evalEquals("100 ^ 2", 102L).returnType(Types.INTEGER_NOT_NULL);
-    evalNull("100 ^ NULL_INTEGER").returnType(Types.INTEGER);
-    evalNull("NULL_INTEGER ^ 100").returnType(Types.INTEGER);
+  @Nested
+  class BitXor {
+    @Test
+    void testIntegerOperation() throws Exception {
+      evalEquals("2 ^ 1", 3L).returnType(Types.INTEGER_NOT_NULL);
+      evalEquals("100 ^ 2", 102L).returnType(Types.INTEGER_NOT_NULL);
+    }
 
-    evalFails("100^", ErrorCode.SYNTAX_ERROR);
-    evalFails("100 ^ ", ErrorCode.SYNTAX_ERROR);
+    @Test
+    void testBinaryOperation() throws Exception {
 
-    // Nothing to simplify
-    optimize("FIELD_INTEGER^4");
+      // Binary
+      evalEquals("BINARY 'FFFF' ^ BINARY 'FFFF'", new byte[] {(byte) 0x00, (byte) 0x00})
+          .returnType(Types.BINARY_NOT_NULL);
 
-    // Simplify NULL ^ A → NULL
-    optimizeNull("NULLIF(1,1)^FIELD_INTEGER");
-    optimizeNull("FIELD_INTEGER^NULLIF(1,1)");
+      evalEquals("BINARY '0F01' ^ BINARY 'F0FE'", new byte[] {(byte) 0xFF, (byte) 0xFF})
+          .returnType(Types.BINARY_NOT_NULL);
+      evalFails("BINARY '0F' ^ BINARY '0F01'", ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
+    }
 
-    // Simplify 0 ^ A → A (even if A is null)
-    optimize("0^FIELD_INTEGER", "FIELD_INTEGER");
-    optimize("FIELD_INTEGER^0", "FIELD_INTEGER");
+    @Test
+    void testNullHandling() throws Exception {
+      evalNull("100 ^ NULL_INTEGER").returnType(Types.INTEGER);
+      evalNull("NULL_INTEGER ^ 100").returnType(Types.INTEGER);
+      evalNull("BINARY '0F000001' ^ NULL_BINARY").returnType(Types.BINARY);
+      evalNull("NULL_BINARY ^ BINARY '0F000001'").returnType(Types.BINARY);
+    }
+
+    @Test
+    void testAlias() throws Exception {
+      evalEquals("BIT_XOR(2,2)", 0L).returnType(Types.INTEGER_NOT_NULL);
+      evalFails("BIT_XOR(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+      evalFails("BIT_XOR(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    }
+
+    @Test
+    void testOptimization() throws Exception {
+      // Nothing to simplify
+      optimize("FIELD_INTEGER^4");
+
+      // Simplify NULL ^ A → NULL
+      optimizeNull("NULLIF(1,1)^FIELD_INTEGER");
+      optimizeNull("FIELD_INTEGER^NULLIF(1,1)");
+
+      // TODO: Simplify A ^ A → 0 (if A is not null)
+      // optimize("FIELD_INTEGER^FIELD_INTEGER", "0");
+
+      // Simplify 0 ^ A → A (even if A is null)
+      optimize("0^FIELD_INTEGER", "FIELD_INTEGER");
+      optimize("FIELD_INTEGER^0", "FIELD_INTEGER");
+    }
   }
 
   @Test
@@ -1978,7 +2095,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER=2 OR 2=FIELD_INTEGER", "FIELD_INTEGER=2");
     optimize("NULL_BOOLEAN or NULL_BOOLEAN", "NULL_BOOLEAN");
 
-    // Check if simplify doesn't create infinity loop with same operator if order change
+    // Check if simplify doesn't create infinity loop with the same operator if order change
     optimize(
         "FIELD_STRING LIKE 'AB%' OR FIELD_STRING LIKE 'BC%' OR FIELD_STRING LIKE '%DE' ",
         "ENDSWITH(FIELD_STRING,'DE') OR STARTSWITH(FIELD_STRING,'AB') OR STARTSWITH(FIELD_STRING,'BC')");
@@ -2073,7 +2190,7 @@ public class OperatorTest extends ExpressionTest {
         "(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN_TRUE AND (2*FIELD_INTEGER>1)",
         "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
 
-    // Check if simplify doesn't create infinity loop with same operator if order change
+    // Check if simplify doesn't create infinity loop with the same operator if order change
     optimize(
         "FIELD_STRING LIKE 'AB%' AND FIELD_STRING LIKE 'BC%' AND FIELD_STRING LIKE '%DE' ",
         "ENDSWITH(FIELD_STRING,'DE') AND STARTSWITH(FIELD_STRING,'AB') AND STARTSWITH(FIELD_STRING,'BC')");

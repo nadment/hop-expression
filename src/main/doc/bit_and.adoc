@@ -16,23 +16,22 @@ under the License.
 ////
 = BIT_AND, &
 
-Performs a bitwise AND operation between two integer values.
+Performs a bitwise AND operation between two integer or binary values.
 
 == Syntax
 
 ----
-BIT_AND( integer1, integer2 ) 
+BIT_AND( value1, value2 )
 ----
 
 The xref:bit_and.adoc["&",role=op] operator provides alternative syntax.
 ----
-integer1 & integer2
+value1 & value2
 ----
 
-== Returns
-
-Integer
+Returns:: Integer or Binary
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+* Binary values must be of equal length.

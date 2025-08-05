@@ -560,6 +560,8 @@ public class ExpressionParser {
       }
       return call;
     }
+
+    //  <term> AT TIMEZONE <timezone>
     if (isThenNext(Id.AT)) {
       checkEndOfExpression(Id.AT);
       if (isThenNext(Id.TIME)) {

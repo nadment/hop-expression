@@ -30,9 +30,12 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
+import org.apache.hop.expression.type.Types;
 
 /**
- * Bitwise OR operator. <br>
+ * Bitwise OR operator.<br>
  * <strong>Syntax:</strong> <code>x | y</code>
  */
 @FunctionPlugin
@@ -43,8 +46,8 @@ public class BitOrFunction extends Function {
   public BitOrFunction() {
     super(
         "BIT_OR",
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
+        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
+        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }
@@ -55,8 +58,8 @@ public class BitOrFunction extends Function {
         name,
         90,
         Associativity.LEFT,
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
+        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
+        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }
@@ -80,19 +83,18 @@ public class BitOrFunction extends Function {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Simplify A | NULL → NULL
     // Simplify NULL | A → NULL
-    if (left.isNull()) {
+    if (left.isNull() || right.isNull()) {
       return Literal.NULL_INTEGER;
     }
 
-    // Simplify 0 | A → A (even if A is null)
-    if (Literal.ZERO.equals(left)) {
-      return right;
+    Type type = left.getType();
+    if (Types.isBinary(type)) {
+      return new Call(BinaryBitOrFunction.INSTANCE, call.getOperands());
     }
 
-    // TODO: Simplify A | !A → -1 (if A is not nullable)
-
-    return call;
+    return new Call(IntegerBitOrFunction.INSTANCE, call.getOperands());
   }
 
   @Override
@@ -113,6 +115,21 @@ public class BitOrFunction extends Function {
 
   public static final class IntegerBitOrFunction extends BitOrFunction {
     public static final IntegerBitOrFunction INSTANCE = new IntegerBitOrFunction();
+
+    @Override
+    public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+      IExpression left = call.getOperand(0);
+      IExpression right = call.getOperand(1);
+
+      // Simplify 0 | A → A (even if A is null)
+      if (Literal.ZERO.equals(left)) {
+        return right;
+      }
+
+      // TODO: Simplify A | !A → -1 (if A is not nullable)
+
+      return call;
+    }
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -139,7 +156,7 @@ public class BitOrFunction extends Function {
       }
 
       final byte[] result = new byte[left.length];
-      for (int i = 0; i < left.length; i++) {
+      for (int i = result.length-1; i >=0; i--) {
         result[i] = (byte) (left[i] | right[i]);
       }
 

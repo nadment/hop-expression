@@ -16,22 +16,21 @@ under the License.
 ////
 = BIT_XOR, ^
 
-Performs a bitwise exclusive OR operation between two integer values.
+Performs a bitwise exclusive OR operation between two integer or binary values.
 
 == Syntax
 
 ----
-BIT_XOR( integer1, integer2 ) 
+BIT_XOR( value1, value2 )
 ----
 The xref:bit_xor.adoc["^",role=op] operator provides alternative syntax.
 ----
-integer1 ^ integer2
+value1 ^ value2
 ----
 
-== Returns
-
-Integer
+Returns:: Integer or Binary
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+* Binary values must be of equal length.

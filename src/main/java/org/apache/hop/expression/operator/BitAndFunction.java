@@ -20,6 +20,7 @@ package org.apache.hop.expression.operator;
 import java.io.StringWriter;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -30,9 +31,12 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
+import org.apache.hop.expression.type.Types;
 
 /**
- * Bitwise AND operator. <br>
+ * Bitwise AND operator.<br>
  * <strong>Syntax:</strong> <code>x &amp; y</code>
  */
 @FunctionPlugin
@@ -43,8 +47,8 @@ public class BitAndFunction extends Function {
   public BitAndFunction() {
     super(
         "BIT_AND",
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
+        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
+        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
   }
@@ -55,8 +59,8 @@ public class BitAndFunction extends Function {
         name,
         70,
         Associativity.LEFT,
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
+        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
+        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_and.html");
   }
@@ -80,26 +84,18 @@ public class BitAndFunction extends Function {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Simplify A & NULL → NULL
     // Simplify NULL & A → NULL
-    if (left.isNull()) {
+    if (left.isNull() || right.isNull()) {
       return Literal.NULL_INTEGER;
     }
 
-    // Simplify 0 & A -> 0 (if A not nullable)
-    if (Literal.ZERO.equals(left) && !right.getType().isNullable()) {
-      return Literal.ZERO;
+    Type type = left.getType();
+    if (Types.isBinary(type)) {
+      return new Call(BinaryBitAndFunction.INSTANCE, call.getOperands());
     }
 
-    return call;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Long left = operands[0].getValue(Long.class);
-    if (left == null) return null;
-    Long right = operands[1].getValue(Long.class);
-    if (right == null) return null;
-    return left & right;
+    return new Call(IntegerBitAndFunction.INSTANCE, call.getOperands());
   }
 
   @Override
@@ -107,5 +103,56 @@ public class BitAndFunction extends Function {
     operands[0].unparse(writer, 0, 0);
     writer.append('&');
     operands[1].unparse(writer, 0, 0);
+  }
+
+  public static final class IntegerBitAndFunction extends BitAndFunction {
+    public static final IntegerBitAndFunction INSTANCE = new IntegerBitAndFunction();
+
+    @Override
+    public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+      IExpression left = call.getOperand(0);
+      IExpression right = call.getOperand(1);
+
+      // Simplify 0 & A -> 0 (if A not nullable)
+      if (Literal.ZERO.equals(left) && !right.getType().isNullable()) {
+        return Literal.ZERO;
+      }
+
+      // TODO: Simplify A | !A → -1 (if A is not nullable)
+
+      return call;
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long left = operands[0].getValue(Long.class);
+      if (left == null) return null;
+      Long right = operands[1].getValue(Long.class);
+      if (right == null) return null;
+      return left & right;
+    }
+  }
+
+  public static final class BinaryBitAndFunction extends BitAndFunction {
+    public static final BinaryBitAndFunction INSTANCE = new BinaryBitAndFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] left = operands[0].getValue(byte[].class);
+      if (left == null) return null;
+      byte[] right = operands[1].getValue(byte[].class);
+      if (right == null) return null;
+
+      if (left.length != right.length) {
+        throw new ExpressionException(ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
+      }
+
+      final byte[] result = new byte[left.length];
+      for (int i = result.length-1; i >=0; i--) {
+        result[i] = (byte) (left[i] & right[i]);
+      }
+
+      return result;
+    }
   }
 }

@@ -145,7 +145,6 @@ public class FunctionTest extends ExpressionTest {
 
     evalNull("TRY_TO_BOOLEAN('Bad')").returnType(Types.BOOLEAN);
     evalNull("TRY_TO_BOOLEAN(NULL_STRING)").returnType(Types.BOOLEAN);
-    ;
 
     // Check operands
     evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -241,9 +240,10 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1, false));
     evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1, false));
 
-    // TODO: use transform type LEAST_NULL ?
+    // Check NOT NULL return type
     evalEquals("Coalesce(FIELD_INTEGER,1,2)", 40L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Coalesce(NULL_NUMBER,NULL_INTEGER,1,2)", 1D).returnType(Types.NUMBER_NOT_NULL);
+
     evalNull("Coalesce(NULL_NUMBER,NULL_INTEGER,NULL_BIGNUMBER)").returnType(Types.NUMBER);
 
     // Coalesce date
@@ -4352,7 +4352,7 @@ public class FunctionTest extends ExpressionTest {
 
     /*
      Keep the same context
-     Warning Random implementation is not the same on each JVM
+     Warning Random implementation is different on each JVM
     */
     Evaluator evaluator = new Evaluator(createExpressionContext(), "Random()");
     evaluator.returnType(Types.NUMBER_NOT_NULL);
@@ -4582,7 +4582,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Date_Part(HOUR,TIMESTAMP '2020-05-25 23:48:59')", 23L)
         .returnType(Types.INTEGER_NOT_NULL);
 
-    // Extract part from interval
+    // Extract part from an interval
     evalEquals("Extract(MILLENNIUM from INTERVAL 1234 YEAR)", 1L)
         .returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Extract(CENTURY from INTERVAL 1234 YEAR)", 12L);

@@ -315,12 +315,43 @@ public class ExpressionParserTest extends ExpressionTest {
 
     evalFails("9+()", ErrorCode.SYNTAX_ERROR);
     evalFails("9+*(", ErrorCode.SYNTAX_ERROR);
-    evalFails("*9", ErrorCode.SYNTAX_ERROR);
+    evalFails("9)", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails(")+1", ErrorCode.SYNTAX_ERROR);
     // TODO: evalFails("DATE '2023-01-01'||'X'", ErrorCode.ILLEGAL_ARGUMENT);
 
-    evalFails(")+1", ErrorCode.SYNTAX_ERROR);
-    evalFails("Year(", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    // Comparison operators
+    evalFails("FIELD_INTEGER=", ErrorCode.SYNTAX_ERROR);
+    evalFails(" = FIELD_INTEGER ", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER<>", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER <> ", ErrorCode.SYNTAX_ERROR);
+    evalFails("<>FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER!", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("FIELD_INTEGER ! ", ErrorCode.UNEXPECTED_CHARACTER);
 
+    // Arithmetic operators
+    evalFails("3+ ", ErrorCode.SYNTAX_ERROR);
+    evalFails("3- ", ErrorCode.SYNTAX_ERROR);
+    evalFails("*3 ", ErrorCode.SYNTAX_ERROR);
+    evalFails("3* ", ErrorCode.SYNTAX_ERROR);
+    evalFails("/3 ", ErrorCode.SYNTAX_ERROR);
+    evalFails("3/ ", ErrorCode.SYNTAX_ERROR);
+    evalFails("3~ ", ErrorCode.UNEXPECTED_CHARACTER);
+
+    // Bitwise operators
+    evalFails("3|", ErrorCode.SYNTAX_ERROR);
+    evalFails("3 | ", ErrorCode.SYNTAX_ERROR);
+    evalFails("|3", ErrorCode.SYNTAX_ERROR);
+    evalFails("100&", ErrorCode.SYNTAX_ERROR);
+    evalFails("100 & ", ErrorCode.SYNTAX_ERROR);
+    evalFails("&100", ErrorCode.SYNTAX_ERROR);
+    evalFails("100^", ErrorCode.SYNTAX_ERROR);
+    evalFails("100 ^ ", ErrorCode.SYNTAX_ERROR);
+    evalFails("^100", ErrorCode.SYNTAX_ERROR);
+    evalFails("~", ErrorCode.SYNTAX_ERROR);
+    evalFails("~ ", ErrorCode.SYNTAX_ERROR);
+
+
+    evalFails("Year(", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Year(()", ErrorCode.SYNTAX_ERROR);
     evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT);

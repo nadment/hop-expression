@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -27,20 +28,24 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
+import org.apache.hop.expression.type.Types;
 
 /**
- * Bitwise XOR operator. <br>
+ * Bitwise XOR (Exclusive OR) operator.<br>
  * <strong>Syntax:</strong> <code>x ^ y</code>
  */
 @FunctionPlugin
 public class BitXorFunction extends Function {
+
   public static final BitXorFunction INSTANCE = new BitXorFunction("^");
 
   public BitXorFunction() {
     super(
         "BIT_XOR",
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, // TODO: .or(OperandTypes.BINARY_BINARY),
+        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
+        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }
@@ -51,8 +56,8 @@ public class BitXorFunction extends Function {
         name,
         80,
         Associativity.LEFT,
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER, // .or(OperandTypes.BINARY_BINARY),
+        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
+        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }
@@ -73,28 +78,14 @@ public class BitXorFunction extends Function {
       return Literal.NULL_INTEGER;
     }
 
-    // Simplify 0 ^ A → A (even if A is not nullable)
-    if (Literal.ZERO.equals(left)) {
-      return right;
+    // TODO: Simplify A ^ A → 0 (if A is not null)
+
+    Type type = left.getType();
+    if (Types.isBinary(type)) {
+      return new Call(BinaryBitXorFunction.INSTANCE, call.getOperands());
     }
-    if (Literal.ZERO.equals(right)) {
-      return left;
-    }
 
-    // TODO: Simplify A ^ (..A..) → (the expression without A, if number of A is odd, otherwise
-    // one A)
-
-    return call;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Long left = operands[0].getValue(Long.class);
-    if (left == null) return null;
-    Long right = operands[1].getValue(Long.class);
-    if (right == null) return null;
-
-    return left ^ right;
+    return new Call(IntegerBitXorFunction.INSTANCE, call.getOperands());
   }
 
   @Override
@@ -102,5 +93,57 @@ public class BitXorFunction extends Function {
     operands[0].unparse(writer, 0, 0);
     writer.append('^');
     operands[1].unparse(writer, 0, 0);
+  }
+
+  public static final class IntegerBitXorFunction extends BitXorFunction {
+    public static final IntegerBitXorFunction INSTANCE = new IntegerBitXorFunction();
+
+    @Override
+    public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+      IExpression left = call.getOperand(0);
+      IExpression right = call.getOperand(1);
+
+      // Simplify 0 ^ A → A (even if A is not nullable)
+      if (Literal.ZERO.equals(left)) {
+        return right;
+      }
+      if (Literal.ZERO.equals(right)) {
+        return left;
+      }
+
+      return call;
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long left = operands[0].getValue(Long.class);
+      if (left == null) return null;
+      Long right = operands[1].getValue(Long.class);
+      if (right == null) return null;
+      return left ^ right;
+    }
+  }
+
+  public static final class BinaryBitXorFunction extends BitXorFunction {
+    public static final BinaryBitXorFunction INSTANCE = new BinaryBitXorFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] left = operands[0].getValue(byte[].class);
+      if (left == null) return null;
+      byte[] right = operands[1].getValue(byte[].class);
+      if (right == null) return null;
+
+      if (left.length != right.length) {
+        throw new ExpressionException(ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
+      }
+
+      final byte[] result = new byte[left.length];
+      for (int i = result.length-1; i >=0; i--) {
+        result[i] = (byte) (left[i] ^ right[i]);
+      }
+
+      return result;
+    }
   }
 }
