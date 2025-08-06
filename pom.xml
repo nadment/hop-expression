@@ -27,10 +27,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 
     <properties>
         <asciidoctor.version>3.0.0</asciidoctor.version>
-        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <commons-text.version>1.13.1</commons-text.version>
-        <commons-vfs2.version>2.9.0</commons-vfs2.version>
+        <commons-vfs2.version>2.10.0</commons-vfs2.version>
         <hop.home>C:\hop</hop.home>
         <hop.version>2.11.0</hop.version>
         <jmh.version>1.37</jmh.version>
