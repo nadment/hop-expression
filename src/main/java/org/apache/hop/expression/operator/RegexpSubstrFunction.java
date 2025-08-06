@@ -82,7 +82,7 @@ public class RegexpSubstrFunction extends Function {
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 5) {
-      String v4 = operands[5].getValue(String.class);
+      String v4 = operands[4].getValue(String.class);
       flags = Regexp.parseFlags(v4);
     }
 
