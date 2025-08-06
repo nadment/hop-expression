@@ -1093,6 +1093,8 @@ public class ExpressionParser {
     // COUNT(*) no operand
     if (isThenNext(Id.MULTIPLY)) {
       aggregator = CountFunction.COUNT_ALL;
+      // Use fictive operand
+      operands.add(Literal.NULL);
     } else if (isThenNext(Id.DISTINCT)) {
       operands.add(this.parsePrimary());
       aggregator = CountFunction.COUNT_DISTINCT;

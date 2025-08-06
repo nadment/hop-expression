@@ -77,6 +77,9 @@ public final class ReturnTypes {
   public static final IReturnTypeInference INTEGER_NULLABLE =
       explicit(Types.INTEGER).andThen(TypeTransforms.TO_NULLABLE);
 
+  /** Type-inference strategy whereby the result type of call is INTEGER NOT NULL. */
+  public static final IReturnTypeInference INTEGER_NOT_NULL = explicit(Types.INTEGER_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is NUMBER. */
   public static final IReturnTypeInference NUMBER_NULLABLE =
       explicit(Types.NUMBER).andThen(TypeTransforms.TO_NULLABLE);

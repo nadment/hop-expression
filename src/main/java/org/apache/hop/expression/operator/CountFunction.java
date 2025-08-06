@@ -38,8 +38,7 @@ public class CountFunction extends AggregateFunction {
   private final Count count;
 
   /**
-   * Default constructor to register function but not used. The different count mode are detected by
-   * parser.
+   * Default constructor to register function but not used. The parser detects the different count modes.
    */
   public CountFunction() {
     this(Count.VALUE);
@@ -48,8 +47,8 @@ public class CountFunction extends AggregateFunction {
   public CountFunction(Count count) {
     super(
         "COUNT",
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.NILADIC.or(OperandTypes.ANY),
+        ReturnTypes.INTEGER_NOT_NULL,
+        OperandTypes.ANY,
         "/docs/count.html");
     this.count = count;
   }

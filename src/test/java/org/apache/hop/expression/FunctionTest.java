@@ -4382,7 +4382,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Length(Uuid())", 36L);
     evalEquals("Substr(Uuid(),15,1)", "7");
 
-    returnType("UUID()", Types.STRING_NOT_NULL);
+    optimize("UUID()").returnType(Types.STRING_NOT_NULL);
 
     // Check operands
     evalFails("UUID(1)", ErrorCode.TOO_MANY_ARGUMENT);

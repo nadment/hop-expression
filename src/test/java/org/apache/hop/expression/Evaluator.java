@@ -48,14 +48,18 @@ public class Evaluator {
               + " → "
               + ANSI_GREEN
               + expression
+              + ANSI_YELLOW
+              + " → "
+              + ANSI_BLUE
+              + expression.getType()
               + ANSI_PURPLE
-              + " (cost="
+              + " (cost "
               + expression.getCost()
               + ")"
               + ANSI_RESET);
 
     } catch (Exception ex) {
-      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+      System.err.println(ANSI_WHITE + source + ANSI_YELLOW + " → " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
     }
     this.source = source;
