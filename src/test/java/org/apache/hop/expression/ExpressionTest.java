@@ -50,7 +50,6 @@ import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
@@ -59,18 +58,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {
-  protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
-
-  protected static final String ANSI_RESET = "\u001B[0m";
-  protected static final String ANSI_BLACK = "\u001B[30m";
-  protected static final String ANSI_RED = "\u001B[31m";
-  protected static final String ANSI_GREEN = "\u001B[32m";
-  protected static final String ANSI_YELLOW = "\u001B[33m";
-  protected static final String ANSI_BLUE = "\u001B[34m";
-  protected static final String ANSI_PURPLE = "\u001B[35m";
-  protected static final String ANSI_CYAN = "\u001B[36m";
-  protected static final String ANSI_WHITE = "\u001B[37m";
-
   public static RestoreHopEnvironment env;
 
   @BeforeAll
@@ -88,49 +75,7 @@ public class ExpressionTest {
     HopClientEnvironment.reset();
   }
 
-  public static class Evaluator {
-    private final IExpression expression;
-    private final String source;
-
-    public Evaluator(IExpressionContext context, String source) {
-
-      try {
-        this.expression = ExpressionFactory.create(context, source);
-      } catch (Exception ex) {
-        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-        throw ex;
-      }
-      this.source = source;
-    }
-
-    public Object eval() throws Exception {
-      try {
-        return expression.getValue();
-      } catch (Exception ex) {
-        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-        throw ex;
-      }
-    }
-
-    public <T> T eval(Class<T> clazz) throws Exception {
-      try {
-        return expression.getValue(clazz);
-      } catch (Exception ex) {
-        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-        throw ex;
-      }
-    }
-
-    public IExpression getExpression() {
-      return expression;
-    }
-
-    public void returnType(Type expectedType) {
-      assertEquals(expectedType, expression.getType());
-    }
-  }
-
-  protected IRowExpressionContext createExpressionContext() throws Exception {
+    protected IRowExpressionContext createExpressionContext() throws Exception {
     return this.createExpressionContext(new Variables());
   }
 
@@ -426,54 +371,34 @@ public class ExpressionTest {
         .build();
   }
 
-  protected IExpression compile(String source) throws Exception {
-
-    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
-
-    String color = ANSI_YELLOW;
-    if (expression.getType() == Types.UNKNOWN) {
-      color = ANSI_RED;
-    }
-    System.out.println(
-        source
-            + ANSI_PURPLE
-            + " cost="
-            + expression.getCost()
-            + "  "
-            + color
-            + expression
-            + ANSI_RESET);
-
-    return expression;
-  }
-
   protected void optimize(String source) throws Exception {
-    assertEquals(source, compile(source).toString());
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals(source, evaluator.getExpression().toString());
   }
 
   protected void optimize(String source, String expected) throws Exception {
-    assertEquals(expected, compile(source).toString());
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals(expected, evaluator.getExpression().toString());
   }
 
   protected void optimizeTrue(String source) throws Exception {
-    assertEquals("TRUE", compile(source).toString());
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals("TRUE", evaluator.getExpression().toString());
   }
 
   protected void optimizeFalse(String source) throws Exception {
-    assertEquals("FALSE", compile(source).toString());
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals("FALSE", evaluator.getExpression().toString());
   }
 
   protected void optimizeNull(String source) throws Exception {
-    assertEquals("NULL", compile(source).toString());
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals("NULL", evaluator.getExpression().toString());
   }
 
   @Test
   public void test() throws Exception {
     // Locale.setDefault(new Locale("fr", "BE"));
-    // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
-    // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
-    // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
-
-
+      evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
   }
 }

@@ -41,6 +41,7 @@ import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 
 public class FunctionTest extends ExpressionTest {
+  protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
 
   @Test
   void Error() {

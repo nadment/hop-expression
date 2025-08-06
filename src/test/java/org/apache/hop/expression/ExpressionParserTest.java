@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.hop.expression.operator.BitAndFunction;
+import org.apache.hop.expression.operator.BitOrFunction;
+import org.apache.hop.expression.operator.BitXorFunction;
 import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
@@ -226,13 +229,15 @@ public class ExpressionParserTest extends ExpressionTest {
     assertTrue(NotEqualOperator.INSTANCE.isSymmetrical());
     assertTrue(IsDistinctFromOperator.INSTANCE.isSymmetrical());
     assertTrue(IsNotDistinctFromOperator.INSTANCE.isSymmetrical());
-    assertFalse(GreaterThanOperator.INSTANCE.isSymmetrical());
+    assertTrue(BitAndFunction.INSTANCE.isSymmetrical());
+    assertTrue(BitOrFunction.INSTANCE.isSymmetrical());
+    assertTrue(BitXorFunction.INSTANCE.isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("EQUAL_NULL").isSymmetrical());
-    assertTrue(FunctionRegistry.getFunction("BIT_AND").isSymmetrical());
-    assertTrue(FunctionRegistry.getFunction("BIT_OR").isSymmetrical());
-    assertTrue(FunctionRegistry.getFunction("BIT_XOR").isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("GREATEST").isSymmetrical());
     assertTrue(FunctionRegistry.getFunction("LEAST").isSymmetrical());
+
+    assertFalse(GreaterThanOperator.INSTANCE.isSymmetrical());
+    assertFalse(ConcatFunction.INSTANCE.isSymmetrical());
   }
 
   @Test
