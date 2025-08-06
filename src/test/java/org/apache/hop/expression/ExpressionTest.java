@@ -50,7 +50,6 @@ import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
@@ -59,17 +58,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {
-  protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
-
-  protected static final String ANSI_RESET = "\u001B[0m";
-  protected static final String ANSI_BLACK = "\u001B[30m";
-  protected static final String ANSI_RED = "\u001B[31m";
-  protected static final String ANSI_GREEN = "\u001B[32m";
-  protected static final String ANSI_YELLOW = "\u001B[33m";
-  protected static final String ANSI_BLUE = "\u001B[34m";
-  protected static final String ANSI_PURPLE = "\u001B[35m";
-  protected static final String ANSI_CYAN = "\u001B[36m";
-  protected static final String ANSI_WHITE = "\u001B[37m";
 
   public static RestoreHopEnvironment env;
 
@@ -86,48 +74,6 @@ public class ExpressionTest {
   static void clean() {
     FunctionRegistry.unregisterFunctions();
     HopClientEnvironment.reset();
-  }
-
-  public static class Evaluator {
-    private final IExpression expression;
-    private final String source;
-
-    public Evaluator(IExpressionContext context, String source) {
-
-      try {
-        this.expression = ExpressionFactory.create(context, source);
-      } catch (Exception ex) {
-        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-        throw ex;
-      }
-      this.source = source;
-    }
-
-    public Object eval() throws Exception {
-      try {
-        return expression.getValue();
-      } catch (Exception ex) {
-        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-        throw ex;
-      }
-    }
-
-    public <T> T eval(Class<T> clazz) throws Exception {
-      try {
-        return expression.getValue(clazz);
-      } catch (Exception ex) {
-        System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-        throw ex;
-      }
-    }
-
-    public IExpression getExpression() {
-      return expression;
-    }
-
-    public void returnType(Type expectedType) {
-      assertEquals(expectedType, expression.getType());
-    }
   }
 
   protected IRowExpressionContext createExpressionContext() throws Exception {
@@ -426,45 +372,34 @@ public class ExpressionTest {
         .build();
   }
 
-  protected IExpression compile(String source) throws Exception {
-
-    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
-
-    String color = ANSI_YELLOW;
-    if (expression.getType() == Types.UNKNOWN) {
-      color = ANSI_RED;
-    }
-    System.out.println(
-        source
-            + ANSI_PURPLE
-            + " cost="
-            + expression.getCost()
-            + "  "
-            + color
-            + expression
-            + ANSI_RESET);
-
-    return expression;
+  protected Evaluator optimize(String source) throws Exception {
+      Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+      assertEquals(source, evaluator.getExpression().toString());
+      return evaluator;
   }
 
-  protected void optimize(String source) throws Exception {
-    assertEquals(source, compile(source).toString());
+  protected Evaluator optimize(String source, String expected) throws Exception {
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals(expected, evaluator.getExpression().toString());
+    return evaluator;
   }
 
-  protected void optimize(String source, String expected) throws Exception {
-    assertEquals(expected, compile(source).toString());
+  protected Evaluator optimizeTrue(String source) throws Exception {
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals("TRUE", evaluator.getExpression().toString());
+    return evaluator;
   }
 
-  protected void optimizeTrue(String source) throws Exception {
-    assertEquals("TRUE", compile(source).toString());
+  protected Evaluator optimizeFalse(String source) throws Exception {
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals("FALSE", evaluator.getExpression().toString());
+    return evaluator;
   }
 
-  protected void optimizeFalse(String source) throws Exception {
-    assertEquals("FALSE", compile(source).toString());
-  }
-
-  protected void optimizeNull(String source) throws Exception {
-    assertEquals("NULL", compile(source).toString());
+  protected Evaluator optimizeNull(String source) throws Exception {
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals("NULL", evaluator.getExpression().toString());
+    return evaluator;
   }
 
   @Test
