@@ -25,8 +25,8 @@ public class TimeUnitTest extends ExpressionTest {
 
   @Test
   void of() {
-    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUM"));
-    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUMs"));
+    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MILLENNIUM"));
+    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MILLENNIUMS"));
     assertEquals(TimeUnit.CENTURY, TimeUnit.of("CeNTuRy"));
     assertEquals(TimeUnit.DECADE, TimeUnit.of("DeCaDE"));
     assertEquals(TimeUnit.DECADE, TimeUnit.of("DECADES"));

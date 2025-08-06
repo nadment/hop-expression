@@ -23,19 +23,17 @@ import org.junit.jupiter.api.Test;
 class AggregateFunctionTest extends ExpressionTest {
   @Test
   void Avg() throws Exception {
-    returnType("AVG(FIELD_NUMBER)", Types.NUMBER);
+    optimize("AVG(FIELD_NUMBER)").returnType(Types.NUMBER);
   }
 
   @Test
   void Count() throws Exception {
-    evalFails("Count()", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Count()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Count(DISTINCT )", ErrorCode.SYNTAX_ERROR);
     evalFails("Count(1,2)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    returnType("Count(*)", Types.INTEGER_NOT_NULL);
-
-    optimize("COUNT(FIELD_INTEGER)");
-    optimize("COUNT(*)");
+    optimize("COUNT(*)").returnType(Types.INTEGER_NOT_NULL);
+    optimize("COUNT(FIELD_INTEGER)").returnType(Types.INTEGER_NOT_NULL);
     optimize("COUNT(DISTINCT FIELD_STRING)");
   }
 
@@ -44,101 +42,99 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("CountIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("CountIf(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    returnType("CountIf(FIELD_INTEGER>=10)", Types.INTEGER);
+
+    optimize("COUNTIF(FIELD_INTEGER>=10)").returnType(Types.INTEGER);
     optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(FIELD_INTEGER>=10)");
   }
 
   @Test
   void Sum() throws Exception {
-    returnType("SUM(FIELD_INTEGER)", Types.NUMBER);
+    optimize("SUM(FIELD_INTEGER)").returnType(Types.NUMBER);
   }
 
   @Test
   void Max() throws Exception {
-    returnType("MAX(FIELD_STRING)", StringType.of(1000));
-    returnType("MAX(FIELD_INTEGER)", IntegerType.of(12));
-    returnType("MAX(FIELD_NUMBER)", Types.NUMBER);
-    returnType("MAX(FIELD_DATE)", Types.DATE);
+    optimize("MAX(FIELD_STRING)").returnType(StringType.of(1000));
+    optimize("MAX(FIELD_INTEGER)").returnType(IntegerType.of(12));
+    optimize("MAX(FIELD_NUMBER)").returnType(Types.NUMBER);
+    optimize("MAX(FIELD_DATE)").returnType(Types.DATE);
   }
 
   @Test
   void Min() throws Exception {
-    returnType("MIN(FIELD_STRING)", StringType.of(1000));
-    returnType("MIN(FIELD_INTEGER)", IntegerType.of(12));
-    returnType("MIN(FIELD_NUMBER)", Types.NUMBER);
-    returnType("MIN(FIELD_DATE)", Types.DATE);
+    optimize("MIN(FIELD_STRING)").returnType(StringType.of(1000));
+    optimize("MIN(FIELD_INTEGER)").returnType(IntegerType.of(12));
+    optimize("MIN(FIELD_NUMBER)").returnType(Types.NUMBER);
+    optimize("MIN(FIELD_DATE)").returnType(Types.DATE);
   }
 
   @Test
   void Median() throws Exception {
-    returnType("MEDIAN(FIELD_INTEGER)", Types.NUMBER);
+    optimize("MEDIAN(FIELD_INTEGER)").returnType(Types.NUMBER);
   }
 
   @Test
   void AnyValue() throws Exception {
-    returnType("Any_Value(FIELD_DATE)", Types.DATE);
+    optimize("ANY_VALUE(FIELD_DATE)").returnType(Types.DATE);
   }
 
   @Test
   void FirstValue() throws Exception {
-    evalFails("FIRST_VALUE(FIELD_DATE) IGNORE", ErrorCode.CALL_FUNCTION_ERROR);
-    evalFails("FIRST_VALUE(FIELD_DATE) NULLS", ErrorCode.UNEXPECTED_CHARACTER);
-
+    optimize("FIRST_VALUE(FIELD_DATE)").returnType(Types.DATE);
     optimize("FIRST_VALUE(FIELD_DATE) RESPECT NULLS", "FIRST_VALUE(FIELD_DATE)");
     optimize("FIRST_VALUE(FIELD_DATE) IGNORE NULLS");
 
-    returnType("FIRST_VALUE(FIELD_DATE)", Types.DATE);
+    evalFails("FIRST_VALUE(FIELD_DATE) IGNORE", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("FIRST_VALUE(FIELD_DATE) NULLS", ErrorCode.UNEXPECTED_CHARACTER);
   }
 
   @Test
   void LastValue() throws Exception {
+    optimize("LAST_VALUE(FIELD_DATE)").returnType(Types.DATE);
+    optimize("LAST_VALUE(FIELD_DATE) RESPECT NULLS", "LAST_VALUE(FIELD_DATE)");
+    optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS").returnType(Types.DATE);
+
     evalFails("LAST_VALUE(FIELD_DATE) IGNORE", ErrorCode.CALL_FUNCTION_ERROR);
     evalFails("LAST_VALUE(FIELD_DATE) NULLS", ErrorCode.UNEXPECTED_CHARACTER);
-
-    optimize("LAST_VALUE(FIELD_DATE) RESPECT NULLS", "LAST_VALUE(FIELD_DATE)");
-    optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS");
-
-    returnType("LAST_VALUE(FIELD_DATE)", Types.DATE);
   }
 
   @Test
   void NthValue() throws Exception {
-    evalFails("NTH_VALUE(FIELD_DATE)", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("NTH_VALUE(FIELD_DATE) IGNORE", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("NTH_VALUE(FIELD_DATE) NULLS", ErrorCode.SYNTAX_ERROR_FUNCTION);
-
+    optimize("NTH_VALUE(FIELD_DATE,3)").returnType(Types.DATE);
     optimize("NTH_VALUE(FIELD_DATE,2) RESPECT NULLS", "NTH_VALUE(FIELD_DATE,2)");
     optimize("NTH_VALUE(FIELD_DATE,2) IGNORE NULLS");
 
-    returnType("NTH_VALUE(FIELD_DATE,3)", Types.DATE);
+    evalFails("NTH_VALUE(FIELD_DATE)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("NTH_VALUE(FIELD_DATE) IGNORE", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("NTH_VALUE(FIELD_DATE) NULLS", ErrorCode.SYNTAX_ERROR_FUNCTION);
   }
 
   @Test
   void ListAgg() throws Exception {
-    returnType("ListAGG(FIELD_STRING,',')", Types.STRING);
+    optimize("LISTAGG(FIELD_STRING,',')").returnType(Types.STRING);
   }
 
   @Test
   void Percentile() throws Exception {
-    returnType("Percentile(FIELD_INTEGER,0.75)", Types.NUMBER);
+    optimize("PERCENTILE(FIELD_INTEGER,0.75)").returnType(Types.NUMBER);
   }
 
   @Test
   void VarPop() throws Exception {
-    returnType("Variance_Pop(FIELD_INTEGER)", Types.NUMBER);
+    optimize("VARIANCE_POP(FIELD_INTEGER)").returnType(Types.NUMBER);
   }
 
   void VarSamp() throws Exception {
-    returnType("Variance_Samp(FIELD_INTEGER)", Types.NUMBER);
+    optimize("VARIANCE_SAMP(FIELD_INTEGER)").returnType(Types.NUMBER);
   }
 
   @Test
   void StdDevPop() throws Exception {
-    returnType("StdDev_Pop(FIELD_INTEGER)", Types.NUMBER);
+    optimize("STDDEV_POP(FIELD_INTEGER)").returnType(Types.NUMBER);
   }
 
   @Test
   void StdDevSamp() throws Exception {
-    returnType("StdDev_Samp(FIELD_INTEGER)", Types.NUMBER);
+    optimize("STDDEV_SAMP(FIELD_INTEGER)").returnType(Types.NUMBER);
   }
 }
