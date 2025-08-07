@@ -33,16 +33,6 @@ public final class StringConversion extends Conversion<String> {
     // Utility class
   }
 
-  @Override
-  public Class<String> getConvertedType() {
-    return String.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.STRING;
-  }
-
   public static String convert(final boolean value) {
     return value ? "TRUE" : "FALSE";
   }
@@ -80,5 +70,15 @@ public final class StringConversion extends Conversion<String> {
     } catch (Exception e) {
       throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_STRING, TypeName.JSON, json);
     }
+  }
+
+  @Override
+  public Class<String> getConvertedType() {
+    return String.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.STRING;
   }
 }

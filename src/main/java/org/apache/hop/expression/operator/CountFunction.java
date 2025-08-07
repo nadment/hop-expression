@@ -28,28 +28,18 @@ public class CountFunction extends AggregateFunction {
   public static final CountFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
   public static final CountFunction COUNT_VALUE = new CountFunction(Count.VALUE);
   public static final CountFunction COUNT_ALL = new CountFunction(Count.ALL);
-
-  public enum Count {
-    VALUE,
-    DISTINCT,
-    ALL
-  }
-
   private final Count count;
 
   /**
-   * Default constructor to register function but not used. The parser detects the different count modes.
+   * Default constructor to register function but not used. The parser detects the different count
+   * modes.
    */
   public CountFunction() {
     this(Count.VALUE);
   }
 
   public CountFunction(Count count) {
-    super(
-        "COUNT",
-        ReturnTypes.INTEGER_NOT_NULL,
-        OperandTypes.ANY,
-        "/docs/count.html");
+    super("COUNT", ReturnTypes.INTEGER_NOT_NULL, OperandTypes.ANY, "/docs/count.html");
     this.count = count;
   }
 
@@ -82,5 +72,11 @@ public class CountFunction extends AggregateFunction {
         break;
     }
     writer.append(')');
+  }
+
+  public enum Count {
+    VALUE,
+    DISTINCT,
+    ALL
   }
 }

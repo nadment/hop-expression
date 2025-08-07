@@ -23,16 +23,6 @@ import org.apache.hop.expression.type.TypeName;
 
 public final class BooleanConversion extends Conversion<Boolean> {
 
-  @Override
-  public Class<Boolean> getConvertedType() {
-    return Boolean.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.BOOLEAN;
-  }
-
   public static Boolean convert(final Boolean value) {
     return value;
   }
@@ -89,5 +79,15 @@ public final class BooleanConversion extends Conversion<Boolean> {
     }
 
     throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeName.STRING, value);
+  }
+
+  @Override
+  public Class<Boolean> getConvertedType() {
+    return Boolean.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.BOOLEAN;
   }
 }

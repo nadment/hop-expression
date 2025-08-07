@@ -35,6 +35,9 @@ public class FunctionRegistry {
   /** Set of functions or alias by name. */
   private static final HashMap<String, Function> functions = new HashMap<>(256);
 
+  /** Initialize the registry, keep private to keep this a singleton */
+  private FunctionRegistry() {}
+
   public static boolean isFunction(final String name) {
     return functions.containsKey(name);
   }
@@ -58,9 +61,6 @@ public class FunctionRegistry {
   public static Set<String> getFunctionNames() {
     return functions.keySet();
   }
-
-  /** Initialize the registry, keep private to keep this a singleton */
-  private FunctionRegistry() {}
 
   private static void register(final ClassInfo classInfo) {
     try {

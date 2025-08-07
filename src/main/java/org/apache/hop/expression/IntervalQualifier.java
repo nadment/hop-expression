@@ -34,6 +34,12 @@ public enum IntervalQualifier {
   MINUTE_TO_SECOND,
   SECOND;
 
+  private final String string;
+
+  IntervalQualifier() {
+    this.string = name().replace('_', ' ').intern();
+  }
+
   /**
    * Returns a {@link IntervalQualifier} with a given start and end {@link TimeUnit}.
    *
@@ -111,12 +117,6 @@ public enum IntervalQualifier {
     }
 
     return of(start, end);
-  }
-
-  private final String string;
-
-  IntervalQualifier() {
-    this.string = name().replace('_', ' ').intern();
   }
 
   /**

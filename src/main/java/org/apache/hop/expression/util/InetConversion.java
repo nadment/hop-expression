@@ -29,16 +29,6 @@ public final class InetConversion extends Conversion<InetAddress> {
     // Utility class
   }
 
-  @Override
-  public Class<InetAddress> getConvertedType() {
-    return InetAddress.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.INET;
-  }
-
   /**
    * Convert String value to Inet.
    *
@@ -53,5 +43,15 @@ public final class InetConversion extends Conversion<InetAddress> {
     } catch (Exception e) {
       throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeName.STRING, str);
     }
+  }
+
+  @Override
+  public Class<InetAddress> getConvertedType() {
+    return InetAddress.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.INET;
   }
 }

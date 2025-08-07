@@ -35,45 +35,6 @@ import org.apache.hop.expression.util.Hex;
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
 
-  public static final class StringHexToBinaryFunction extends ToBinaryFunction {
-    public static final StringHexToBinaryFunction INSTANCE = new StringHexToBinaryFunction();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      final String value = operands[0].getValue(String.class);
-      if (value == null) {
-        return null;
-      }
-      return Hex.decode(value);
-    }
-  }
-
-  public static final class StringUtf8ToBinaryFunction extends ToBinaryFunction {
-    public static final StringUtf8ToBinaryFunction INSTANCE = new StringUtf8ToBinaryFunction();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      final String value = operands[0].getValue(String.class);
-      if (value == null) {
-        return null;
-      }
-      return value.getBytes(StandardCharsets.UTF_8);
-    }
-  }
-
-  public static final class StringBase6ToBinaryFunction extends ToBinaryFunction {
-    public static final StringBase6ToBinaryFunction INSTANCE = new StringBase6ToBinaryFunction();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      final String value = operands[0].getValue(String.class);
-      if (value == null) {
-        return null;
-      }
-      return Base64.getDecoder().decode(value);
-    }
-  }
-
   public ToBinaryFunction() {
     super(
         "TO_BINARY",
@@ -111,5 +72,44 @@ public class ToBinaryFunction extends Function {
       }
     }
     throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
+  }
+
+  public static final class StringHexToBinaryFunction extends ToBinaryFunction {
+    public static final StringHexToBinaryFunction INSTANCE = new StringHexToBinaryFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final String value = operands[0].getValue(String.class);
+      if (value == null) {
+        return null;
+      }
+      return Hex.decode(value);
+    }
+  }
+
+  public static final class StringUtf8ToBinaryFunction extends ToBinaryFunction {
+    public static final StringUtf8ToBinaryFunction INSTANCE = new StringUtf8ToBinaryFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final String value = operands[0].getValue(String.class);
+      if (value == null) {
+        return null;
+      }
+      return value.getBytes(StandardCharsets.UTF_8);
+    }
+  }
+
+  public static final class StringBase6ToBinaryFunction extends ToBinaryFunction {
+    public static final StringBase6ToBinaryFunction INSTANCE = new StringBase6ToBinaryFunction();
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final String value = operands[0].getValue(String.class);
+      if (value == null) {
+        return null;
+      }
+      return Base64.getDecoder().decode(value);
+    }
   }
 }

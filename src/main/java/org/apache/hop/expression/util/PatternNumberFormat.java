@@ -135,64 +135,26 @@ import org.apache.commons.lang3.StringUtils;
  */
 final class PatternNumberFormat extends NumberFormat {
 
-  public enum SignMode {
-    DEFAULT,
-    /** Trailing minus */
-    TRAILING_MI,
-    /** Leading minus */
-    MI_LEADING,
-    /** Trailing sign */
-    TRAILING_S,
-    /** Leading sign */
-    S_LEADING,
-    /** Angle brackets */
-    PR
-  }
-
-  public enum CurrencyMode {
-    NONE,
-    /** Dollars symbol */
-    DOLLARS,
-    /** Leading local currency symbol */
-    LOCAL_LEADING,
-    /** Trailing local currency symbol */
-    TRAILING_LOCAL,
-    /** Leading ISO currency code */
-    ISO_LEADING,
-    /** Trailing ISO currency code */
-    TRAILING_ISO
-  }
-
   // Original format
   private final String format;
-
+  private final boolean exactMode = false;
+  private final String pattern;
   // Fill mode suppress padding blanks and zeroes.
   private boolean fillMode = true;
-
-  private final boolean exactMode = false;
-
   private boolean blank = true;
-
   // number of digits to the left of the decimal separator
   private int precision = 0;
-
   // number of digits to the right of the decimal separator
   private int scale = 0;
-
   // scientific fixed-width exponent
   private int scientific = 0;
-
   // decimal separator position in pattern
   private int separator = 0;
-
   // use local symbols for grouping (G) or decimal separator (D)
   private boolean localSymbols = true;
-
   private CurrencyMode currency = CurrencyMode.NONE;
   private SignMode sign = SignMode.DEFAULT;
-  private final String pattern;
   private int v = 0;
-
   PatternNumberFormat(final String format) {
 
     this.format = format;
@@ -874,5 +836,33 @@ final class PatternNumberFormat extends NumberFormat {
     }
 
     return 1;
+  }
+
+  public enum SignMode {
+    DEFAULT,
+    /** Trailing minus */
+    TRAILING_MI,
+    /** Leading minus */
+    MI_LEADING,
+    /** Trailing sign */
+    TRAILING_S,
+    /** Leading sign */
+    S_LEADING,
+    /** Angle brackets */
+    PR
+  }
+
+  public enum CurrencyMode {
+    NONE,
+    /** Dollars symbol */
+    DOLLARS,
+    /** Leading local currency symbol */
+    LOCAL_LEADING,
+    /** Trailing local currency symbol */
+    TRAILING_LOCAL,
+    /** Leading ISO currency code */
+    ISO_LEADING,
+    /** Trailing ISO currency code */
+    TRAILING_ISO
   }
 }

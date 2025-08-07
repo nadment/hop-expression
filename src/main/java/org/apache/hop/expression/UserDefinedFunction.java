@@ -39,6 +39,18 @@ public class UserDefinedFunction extends Function {
     this.meta = meta;
   }
 
+  public static IRowMeta createRowMetaFromArguments(List<FunctionArgument> arguments) {
+
+    // Convert arguments to row meta
+    IRowMeta rowMeta = new RowMeta();
+    for (FunctionArgument argument : arguments) {
+      IValueMeta vm = Types.createValueMeta(argument.getName(), argument.getType());
+      rowMeta.addValueMeta(vm);
+    }
+
+    return rowMeta;
+  }
+
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
@@ -71,17 +83,5 @@ public class UserDefinedFunction extends Function {
 
   public List<FunctionArgument> getArguments() {
     return meta.getArguments();
-  }
-
-  public static IRowMeta createRowMetaFromArguments(List<FunctionArgument> arguments) {
-
-    // Convert arguments to row meta
-    IRowMeta rowMeta = new RowMeta();
-    for (FunctionArgument argument : arguments) {
-      IValueMeta vm = Types.createValueMeta(argument.getName(), argument.getType());
-      rowMeta.addValueMeta(vm);
-    }
-
-    return rowMeta;
   }
 }

@@ -30,16 +30,6 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     // Utility class
   }
 
-  @Override
-  public Class<ZonedDateTime> getConvertedType() {
-    return ZonedDateTime.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.DATE;
-  }
-
   public static ZonedDateTime convert(final String value) throws ConversionException {
     return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
   }
@@ -65,5 +55,15 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
     Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+  }
+
+  @Override
+  public Class<ZonedDateTime> getConvertedType() {
+    return ZonedDateTime.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.DATE;
   }
 }

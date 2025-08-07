@@ -25,6 +25,12 @@ import org.apache.hop.expression.util.IntegerConversion;
 
 public final class IntegerType extends Type {
 
+  IntegerType(int precision, boolean nullable) {
+    super(precision, 0, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
+  }
+
   public static IntegerType from(final Long value) {
     return of(numberOfDigit(value), false);
   }
@@ -45,10 +51,53 @@ public final class IntegerType extends Type {
     return new IntegerType(precision, nullable);
   }
 
-  IntegerType(int precision, boolean nullable) {
-    super(precision, 0, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
+  private static int numberOfDigit(int number) {
+    if (number < 100000) {
+      if (number < 100) {
+        if (number < 10) {
+          return 1;
+        } else {
+          return 2;
+        }
+      } else {
+        if (number < 1000) {
+          return 3;
+        } else {
+          if (number < 10000) {
+            return 4;
+          } else {
+            return 5;
+          }
+        }
+      }
+    } else {
+      if (number < 10000000) {
+        if (number < 1000000) {
+          return 6;
+        } else {
+          return 7;
+        }
+      } else {
+        if (number < 100000000) {
+          return 8;
+        } else {
+          if (number < 1000000000) {
+            return 9;
+          } else {
+            return 10;
+          }
+        }
+      }
+    }
+  }
+
+  private static int numberOfDigit(long number) {
+    int count = 0;
+    while (number != 0) {
+      number = number / 10;
+      ++count;
+    }
+    return count;
   }
 
   @Override
@@ -123,55 +172,6 @@ public final class IntegerType extends Type {
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-  }
-
-  private static int numberOfDigit(int number) {
-    if (number < 100000) {
-      if (number < 100) {
-        if (number < 10) {
-          return 1;
-        } else {
-          return 2;
-        }
-      } else {
-        if (number < 1000) {
-          return 3;
-        } else {
-          if (number < 10000) {
-            return 4;
-          } else {
-            return 5;
-          }
-        }
-      }
-    } else {
-      if (number < 10000000) {
-        if (number < 1000000) {
-          return 6;
-        } else {
-          return 7;
-        }
-      } else {
-        if (number < 100000000) {
-          return 8;
-        } else {
-          if (number < 1000000000) {
-            return 9;
-          } else {
-            return 10;
-          }
-        }
-      }
-    }
-  }
-
-  private static int numberOfDigit(long number) {
-    int count = 0;
-    while (number != 0) {
-      number = number / 10;
-      ++count;
-    }
-    return count;
   }
 
   @Override

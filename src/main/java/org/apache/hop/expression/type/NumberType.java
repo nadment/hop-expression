@@ -29,6 +29,12 @@ import org.apache.hop.expression.util.NumberFormat;
 /** Number type with an optional precision and scale: */
 public final class NumberType extends Type {
 
+  NumberType(int precision, int scale, boolean nullable) {
+    super(precision, scale, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
+  }
+
   public static NumberType from(final BigDecimal number) {
     int precision = number.precision();
     int scale = number.scale();
@@ -64,12 +70,6 @@ public final class NumberType extends Type {
         && nullable) return Types.NUMBER;
 
     return new NumberType(precision, scale, nullable);
-  }
-
-  NumberType(int precision, int scale, boolean nullable) {
-    super(precision, scale, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   @Override

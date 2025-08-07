@@ -40,55 +40,36 @@ import org.apache.hop.expression.type.Type;
  * operator on a lower level
  */
 public abstract class Operator {
-  private static final ILogChannel LOG = new LogChannel("Expression");
-
-  /**
-   * Associativity determines how operators of the same precedence are resolved to avoid ambiguity.
-   */
-  public enum Associativity {
-    LEFT,
-    RIGHT
-  }
-
   /**
    * A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link
    * RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
-
+  private static final ILogChannel LOG = new LogChannel("Expression");
   /** The unique identifier of the operator/function. Example: "COS" or "TRIM" */
   private final String id;
-
   /**
    * The symbol of the operator or name of function. Example: id is "TRUNCATE" but alias name is
    * "TRUNC"
    */
   private final String name;
-
   /**
    * The precedence with which this operator binds to the expression to the left. This is less than
    * the right precedence if the operator is left-associative.
    */
   private final int leftPrec;
-
   /**
    * The precedence with which this operator binds to the expression to the right. This is greater
    * than the left precedence if the operator is left-associative.
    */
   private final int rightPrec;
-
   /** Used to infer the return type of call to this operator. */
   private final IReturnTypeInference returnTypeInference;
-
   /** Used to validate operand types. */
   private final IOperandTypeChecker operandTypeChecker;
-
   private final String category;
-
   private final String documentationUrl;
-
   private final String documentation;
-
   private final String description;
 
   /**
@@ -152,6 +133,54 @@ public abstract class Operator {
       ++precedence;
     }
     return precedence;
+  }
+
+  protected static MethodHandle findMethodHandle(final Class<?> clazz, final String methodName) {
+    try {
+      MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+      MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
+      return lookup.findVirtual(clazz, methodName, methodType);
+    } catch (NoSuchMethodException | IllegalAccessException e) {
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
+    }
+  }
+
+  protected static MethodHandle findStaticMethodHandle(
+      final Class<?> clazz, final String methodName) {
+    try {
+      MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+      MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
+      return lookup.findStatic(clazz, methodName, methodType);
+    } catch (NoSuchMethodException | IllegalAccessException e) {
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
+    }
+  }
+
+  /**
+   * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
+   *
+   * @return this instance cast to a class
+   */
+  protected static Call call(final IExpression expression) {
+    return (Call) expression;
+  }
+
+  /**
+   * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
+   *
+   * @return this instance cast to a class
+   */
+  protected static Identifier identifier(final IExpression expression) {
+    return (Identifier) expression;
+  }
+
+  /**
+   * Casts and returns this expression as a {@link Array} if it is of kind {@code ARRAY}
+   *
+   * @return this instance cast to a class
+   */
+  protected static Array array(final IExpression expression) {
+    return (Array) expression;
   }
 
   /** The unique identifier of the operator */
@@ -395,27 +424,6 @@ public abstract class Operator {
     return id;
   }
 
-  protected static MethodHandle findMethodHandle(final Class<?> clazz, final String methodName) {
-    try {
-      MethodHandles.Lookup lookup = MethodHandles.publicLookup();
-      MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
-      return lookup.findVirtual(clazz, methodName, methodType);
-    } catch (NoSuchMethodException | IllegalAccessException e) {
-      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
-    }
-  }
-
-  protected static MethodHandle findStaticMethodHandle(
-      final Class<?> clazz, final String methodName) {
-    try {
-      MethodHandles.Lookup lookup = MethodHandles.publicLookup();
-      MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
-      return lookup.findStatic(clazz, methodName, methodType);
-    } catch (NoSuchMethodException | IllegalAccessException e) {
-      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
-    }
-  }
-
   /**
    * Normalize reversible operator
    *
@@ -512,33 +520,6 @@ public abstract class Operator {
     return call;
   }
 
-  /**
-   * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
-   *
-   * @return this instance cast to a class
-   */
-  protected static Call call(final IExpression expression) {
-    return (Call) expression;
-  }
-
-  /**
-   * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
-   *
-   * @return this instance cast to a class
-   */
-  protected static Identifier identifier(final IExpression expression) {
-    return (Identifier) expression;
-  }
-
-  /**
-   * Casts and returns this expression as a {@link Array} if it is of kind {@code ARRAY}
-   *
-   * @return this instance cast to a class
-   */
-  protected static Array array(final IExpression expression) {
-    return (Array) expression;
-  }
-
   private String loadDocumentation() {
     try (StringWriter writer = new StringWriter()) {
       InputStream is = this.getClass().getResourceAsStream(documentationUrl);
@@ -568,5 +549,13 @@ public abstract class Operator {
     }
 
     return "";
+  }
+
+  /**
+   * Associativity determines how operators of the same precedence are resolved to avoid ambiguity.
+   */
+  public enum Associativity {
+    LEFT,
+    RIGHT
   }
 }

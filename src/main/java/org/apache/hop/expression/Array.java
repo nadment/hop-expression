@@ -28,40 +28,8 @@ import org.apache.hop.expression.type.Types;
 public final class Array implements IExpression, Iterable<IExpression> {
 
   public static final Array EMPTY = new Array();
-
-  /**
-   * Iterator implementation used to efficiently expose contents of an Array as read-only iterator.
-   */
-  private class ArrayIterator implements java.util.Iterator<IExpression> {
-
-    private int index;
-
-    public ArrayIterator() {
-      index = 0;
-    }
-
-    @Override
-    public boolean hasNext() {
-      return index < values.length;
-    }
-
-    @Override
-    public IExpression next() {
-      if (index >= values.length) {
-        throw new NoSuchElementException();
-      }
-      return values[index++];
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-  }
-
-  private Type type;
   private final IExpression[] values;
-
+  private Type type;
   public Array(IExpression... expressions) {
     this(Types.ARRAY, expressions);
   }
@@ -262,5 +230,35 @@ public final class Array implements IExpression, Iterable<IExpression> {
       }
     }
     return true;
+  }
+
+  /**
+   * Iterator implementation used to efficiently expose contents of an Array as read-only iterator.
+   */
+  private class ArrayIterator implements java.util.Iterator<IExpression> {
+
+    private int index;
+
+    public ArrayIterator() {
+      index = 0;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return index < values.length;
+    }
+
+    @Override
+    public IExpression next() {
+      if (index >= values.length) {
+        throw new NoSuchElementException();
+      }
+      return values[index++];
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
   }
 }

@@ -128,6 +128,17 @@ public class ExpressionParser {
           "WHEN",
           "XOR",
           "ZONE");
+  @Getter private final String source;
+  private final List<Token> tokens = new ArrayList<>();
+  // Char position in source
+  private int position = 0;
+  // Index in tokens
+  private int index = 0;
+
+  public ExpressionParser(final String source) {
+    super();
+    this.source = source;
+  }
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -136,21 +147,6 @@ public class ExpressionParser {
   public static boolean isReservedWord(final String name) {
     if (name == null) return false;
     return RESERVED_WORDS.contains(name.toUpperCase());
-  }
-
-  @Getter private final String source;
-
-  // Char position in source
-  private int position = 0;
-
-  // Index in tokens
-  private int index = 0;
-
-  private final List<Token> tokens = new ArrayList<>();
-
-  public ExpressionParser(final String source) {
-    super();
-    this.source = source;
   }
 
   protected int getPosition() {

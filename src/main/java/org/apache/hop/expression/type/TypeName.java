@@ -71,31 +71,23 @@ public enum TypeName {
 
   ENUM(TypeFamily.ENUM, false, false, -1, -1, -1, -1, Enum.class);
 
-  /** If the precision parameter is supported. */
-  private final boolean supportsPrecision;
-
-  /** If the scale parameter is supported. */
-  private final boolean supportsScale;
-
-  /** The minimum supported precision. */
-  private final int minPrecision;
-
-  /** The maximum supported precision. */
-  private final int maxPrecision;
-
-  /** The lowest possible scale. */
-  private final int minScale;
-
-  /** The highest possible scale. */
-  private final int maxScale;
-
-  private final TypeFamily family;
-
-  private final Class<?> javaClass;
-
   public static final Set<String> ALL_NAMES =
       Set.of(
           "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
+  /** If the precision parameter is supported. */
+  private final boolean supportsPrecision;
+  /** If the scale parameter is supported. */
+  private final boolean supportsScale;
+  /** The minimum supported precision. */
+  private final int minPrecision;
+  /** The maximum supported precision. */
+  private final int maxPrecision;
+  /** The lowest possible scale. */
+  private final int minScale;
+  /** The highest possible scale. */
+  private final int maxScale;
+  private final TypeFamily family;
+  private final Class<?> javaClass;
 
   TypeName(
       TypeFamily family,
@@ -114,6 +106,59 @@ public enum TypeName {
     this.maxScale = maxScale;
     this.minScale = minScale;
     this.javaClass = javaClass;
+  }
+
+  /**
+   * Returns a {@link TypeName} with a given name (ignore case).
+   *
+   * @param name The name of the data name
+   * @return data name, or null if not valid
+   */
+  public static TypeName of(final String name) {
+    for (TypeName type : TypeName.values()) {
+      if (type.name().equalsIgnoreCase(name)) {
+        return type;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Search a data type identifier from a java class.
+   *
+   * @return The {@link TypeName} or 'UNKNOWN' if not found
+   */
+  public static TypeName fromClass(final Class<?> clazz) {
+    if (clazz == null) return UNKNOWN;
+
+    for (TypeName id : values()) {
+
+      // Ignore ANY
+      if (id.equals(ANY)) continue;
+
+      if (id.getJavaClass().isAssignableFrom(clazz)) {
+        return id;
+      }
+    }
+    return UNKNOWN;
+  }
+
+  /**
+   * Search a data type identifier from a value.
+   *
+   * @return The type id or 'UNKNOWN' if not found
+   */
+  public static TypeName fromValue(final Object value) {
+    if (value == null) return UNKNOWN;
+
+    if (value instanceof Integer) {
+      return INTEGER;
+    }
+    if (value instanceof Double) {
+      return NUMBER;
+    }
+
+    return fromClass(value.getClass());
   }
 
   public Class<?> getJavaClass() {
@@ -214,59 +259,6 @@ public enum TypeName {
       case BOOLEAN -> 0;
       default -> -1;
     };
-  }
-
-  /**
-   * Returns a {@link TypeName} with a given name (ignore case).
-   *
-   * @param name The name of the data name
-   * @return data name, or null if not valid
-   */
-  public static TypeName of(final String name) {
-    for (TypeName type : TypeName.values()) {
-      if (type.name().equalsIgnoreCase(name)) {
-        return type;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Search a data type identifier from a java class.
-   *
-   * @return The {@link TypeName} or 'UNKNOWN' if not found
-   */
-  public static TypeName fromClass(final Class<?> clazz) {
-    if (clazz == null) return UNKNOWN;
-
-    for (TypeName id : values()) {
-
-      // Ignore ANY
-      if (id.equals(ANY)) continue;
-
-      if (id.getJavaClass().isAssignableFrom(clazz)) {
-        return id;
-      }
-    }
-    return UNKNOWN;
-  }
-
-  /**
-   * Search a data type identifier from a value.
-   *
-   * @return The type id or 'UNKNOWN' if not found
-   */
-  public static TypeName fromValue(final Object value) {
-    if (value == null) return UNKNOWN;
-
-    if (value instanceof Integer) {
-      return INTEGER;
-    }
-    if (value instanceof Double) {
-      return NUMBER;
-    }
-
-    return fromClass(value.getClass());
   }
 
   /** Returns whether type are in same type. */

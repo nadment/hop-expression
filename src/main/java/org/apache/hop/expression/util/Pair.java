@@ -18,10 +18,6 @@ import java.util.Objects;
 
 /** Pair of objects. */
 public record Pair<T1, T2>(T1 left, T2 right) {
-  public static <T1, T2> Pair<T1, T2> of(T1 left, T2 right) {
-    return new Pair<>(left, right);
-  }
-
   /**
    * Creates a Pair.
    *
@@ -31,6 +27,10 @@ public record Pair<T1, T2>(T1 left, T2 right) {
   public Pair(final T1 left, final T2 right) {
     this.left = Objects.requireNonNull(left, "left must not be null");
     this.right = Objects.requireNonNull(right, "right must not be null");
+  }
+
+  public static <T1, T2> Pair<T1, T2> of(T1 left, T2 right) {
+    return new Pair<>(left, right);
   }
 
   /** Get the left object. */

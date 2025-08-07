@@ -25,6 +25,12 @@ import org.apache.hop.expression.util.StringConversion;
 
 public final class BinaryType extends Type {
 
+  BinaryType(int precision, boolean nullable) {
+    super(precision, 0, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
+  }
+
   public static BinaryType from(final byte[] value) {
     int precision = value.length;
     // Empty binary array should return 1
@@ -39,12 +45,6 @@ public final class BinaryType extends Type {
   public static BinaryType of(int precision, boolean nullable) {
     if (precision == PRECISION_NOT_SPECIFIED && nullable) return Types.BINARY;
     return new BinaryType(precision, nullable);
-  }
-
-  BinaryType(int precision, boolean nullable) {
-    super(precision, 0, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   @Override

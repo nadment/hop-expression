@@ -614,6 +614,24 @@ public enum TimeUnit {
     return null;
   }
 
+  protected static int millennium(int year) {
+    return year > 0 ? (year + 999) / 1000 : year / 1000;
+  }
+
+  protected static int century(int year) {
+    return year > 0 ? (year + 99) / 100 : year / 100;
+  }
+
+  protected static int decade(int year) {
+    return year >= 0 ? year / 10 : (year - 9) / 10;
+  }
+
+  protected static int dow(int dow) {
+    dow++;
+    if (dow == 8) dow = 1;
+    return dow;
+  }
+
   public long extract(LocalDate date) {
     throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, this);
   }
@@ -637,23 +655,5 @@ public enum TimeUnit {
   /** Returns a list of name and alias. */
   public Set<String> names() {
     return names;
-  }
-
-  protected static int millennium(int year) {
-    return year > 0 ? (year + 999) / 1000 : year / 1000;
-  }
-
-  protected static int century(int year) {
-    return year > 0 ? (year + 99) / 100 : year / 100;
-  }
-
-  protected static int decade(int year) {
-    return year >= 0 ? year / 10 : (year - 9) / 10;
-  }
-
-  protected static int dow(int dow) {
-    dow++;
-    if (dow == 8) dow = 1;
-    return dow;
   }
 }

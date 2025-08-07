@@ -25,18 +25,10 @@ import org.apache.hop.expression.ErrorCode;
 
 /* package */ class DateTimeParser {
 
-  public DateTimeParser(final DateTimeFormat format, final String text) {
-    this.format = format;
-    this.text = text;
-    this.length = text.length();
-    this.index = 0;
-  }
-
   public final DateTimeFormat format;
   public final String text;
   public final int length;
   public int index;
-
   public boolean bc = false;
   public long epochDay = 0;
   // Default minimum year if omitted
@@ -52,13 +44,18 @@ import org.apache.hop.expression.ErrorCode;
   public int nano = 0;
   public int timeZoneHour = 0;
   public int timeZoneMinute = 0;
-
   public boolean isPM = false;
   public boolean isHourFormat12 = false;
   public boolean isEpochDay = false;
   public boolean isDayOfYear = false;
   public boolean isTimeZoneOffset = false;
   public ZoneId zoneId = ZoneOffset.UTC;
+  public DateTimeParser(final DateTimeFormat format, final String text) {
+    this.format = format;
+    this.text = text;
+    this.length = text.length();
+    this.index = 0;
+  }
 
   protected boolean isAllCharParsed() {
     return index == length;

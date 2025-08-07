@@ -27,6 +27,12 @@ public final class ArrayType extends Type {
 
   private final Type elementType;
 
+  ArrayType(Type elementType, boolean nullable) {
+    super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
+    this.elementType = Objects.requireNonNull(elementType);
+    this.signature = generateSignature();
+  }
+
   /**
    * Create an ARRAY data type with the specified element type.
    *
@@ -35,12 +41,6 @@ public final class ArrayType extends Type {
    */
   public static ArrayType of(final Type type) {
     return new ArrayType(type, true);
-  }
-
-  ArrayType(Type elementType, boolean nullable) {
-    super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
-    this.elementType = Objects.requireNonNull(elementType);
-    this.signature = generateSignature();
   }
 
   @Override

@@ -20,6 +20,14 @@ public final class Range<T extends Comparable<? super T>> {
   private final T lowerBound;
   private final T upperBound;
 
+  public Range(final T lower, final T upper) {
+    lowerBound = Objects.requireNonNull(lower, "lower must not be null");
+    upperBound = Objects.requireNonNull(upper, "upper must not be null");
+    if (lower.compareTo(upper) > 0) {
+      throw new IllegalArgumentException("lower must be less than or equal to upper");
+    }
+  }
+
   public static <T extends Comparable<? super T>> Range<T> singleton(T value) {
     return new Range<>(value, value);
   }
@@ -30,14 +38,6 @@ public final class Range<T extends Comparable<? super T>> {
 
   public static <T extends Comparable<? super T>> Range<T> greaterThan(T value) {
     return new Range<>(value, null);
-  }
-
-  public Range(final T lower, final T upper) {
-    lowerBound = Objects.requireNonNull(lower, "lower must not be null");
-    upperBound = Objects.requireNonNull(upper, "upper must not be null");
-    if (lower.compareTo(upper) > 0) {
-      throw new IllegalArgumentException("lower must be less than or equal to upper");
-    }
   }
 
   /** Get the lower value. */

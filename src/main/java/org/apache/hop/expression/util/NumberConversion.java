@@ -31,16 +31,6 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     // Utility class
   }
 
-  @Override
-  public Class<BigDecimal> getConvertedType() {
-    return BigDecimal.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.NUMBER;
-  }
-
   public static BigDecimal convert(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
@@ -71,5 +61,15 @@ public final class NumberConversion extends Conversion<BigDecimal> {
       result = result.add(fraction).stripTrailingZeros();
     }
     return result;
+  }
+
+  @Override
+  public Class<BigDecimal> getConvertedType() {
+    return BigDecimal.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.NUMBER;
   }
 }

@@ -260,6 +260,14 @@ public abstract class DateTimeFormat extends BaseFormat {
     return new PatternDateTimeFormat(pattern);
   }
 
+  public static ZoneId toZoneId(final String zone) {
+    try {
+      return ZoneId.of(zone);
+    } catch (Exception e) {
+      throw new ExpressionException(ErrorCode.INVALID_TIMEZONE, zone);
+    }
+  }
+
   public abstract ZonedDateTime parse(String text) throws FormatParseException;
 
   /**
@@ -276,13 +284,5 @@ public abstract class DateTimeFormat extends BaseFormat {
    */
   public void setTwoDigitYearStart(int year) {
     this.twoDigitYearStart = year;
-  }
-
-  public static ZoneId toZoneId(final String zone) {
-    try {
-      return ZoneId.of(zone);
-    } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.INVALID_TIMEZONE, zone);
-    }
   }
 }

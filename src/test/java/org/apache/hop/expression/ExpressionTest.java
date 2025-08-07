@@ -373,9 +373,9 @@ public class ExpressionTest {
   }
 
   protected Evaluator optimize(String source) throws Exception {
-      Evaluator evaluator = new Evaluator(createExpressionContext(), source);
-      assertEquals(source, evaluator.getExpression().toString());
-      return evaluator;
+    Evaluator evaluator = new Evaluator(createExpressionContext(), source);
+    assertEquals(source, evaluator.getExpression().toString());
+    return evaluator;
   }
 
   protected Evaluator optimize(String source, String expected) throws Exception {
@@ -408,7 +408,6 @@ public class ExpressionTest {
     // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
     // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
     // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
-
 
   }
 }

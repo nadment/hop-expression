@@ -47,37 +47,6 @@ public class JsonObjectFunction extends Function {
   private static final EnumSet<TypeFamily> VALUE_TYPES =
       EnumSet.of(TypeFamily.STRING, TypeFamily.BOOLEAN, TypeFamily.NUMERIC);
 
-  public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {
-
-    public JsonObjectFunctionOperandTypeChecker() {
-      super();
-    }
-
-    @Override
-    public boolean checkOperandTypes(Call call) {
-      for (int i = 0; i < call.getOperandCount(); ) {
-        // Key should be string
-        IExpression key = call.getOperand(i++);
-        if (!Types.isString(key.getType())) {
-          return false;
-        }
-
-        IExpression value = call.getOperand(i++);
-        if (value.isNull()) continue;
-        if (!VALUE_TYPES.contains(value.getType().getFamily())) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    @Override
-    public IOperandCountRange getOperandCountRange() {
-      return OperandCountRange.between(2, Integer.MAX_VALUE);
-    }
-  }
-
   public JsonObjectFunction() {
     super(
         "JSON_OBJECT",
@@ -128,5 +97,36 @@ public class JsonObjectFunction extends Function {
       operands[i + 1].unparse(writer, 0, 0);
     }
     writer.append(')');
+  }
+
+  public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {
+
+    public JsonObjectFunctionOperandTypeChecker() {
+      super();
+    }
+
+    @Override
+    public boolean checkOperandTypes(Call call) {
+      for (int i = 0; i < call.getOperandCount(); ) {
+        // Key should be string
+        IExpression key = call.getOperand(i++);
+        if (!Types.isString(key.getType())) {
+          return false;
+        }
+
+        IExpression value = call.getOperand(i++);
+        if (value.isNull()) continue;
+        if (!VALUE_TYPES.contains(value.getType().getFamily())) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    @Override
+    public IOperandCountRange getOperandCountRange() {
+      return OperandCountRange.between(2, Integer.MAX_VALUE);
+    }
   }
 }

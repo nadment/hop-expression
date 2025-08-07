@@ -30,16 +30,6 @@ public final class JsonConversion extends Conversion<JsonNode> {
     // Utility class
   }
 
-  @Override
-  public Class<JsonNode> getConvertedType() {
-    return JsonNode.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.JSON;
-  }
-
   /**
    * Convert String value to Json.
    *
@@ -55,5 +45,15 @@ public final class JsonConversion extends Conversion<JsonNode> {
     } catch (Exception e) {
       throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_JSON, TypeName.STRING, str);
     }
+  }
+
+  @Override
+  public Class<JsonNode> getConvertedType() {
+    return JsonNode.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.JSON;
   }
 }

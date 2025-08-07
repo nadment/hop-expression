@@ -38,22 +38,31 @@ import org.apache.hop.expression.type.Types;
 /** Expression representing a named column in an input row. */
 public class Identifier implements IExpression {
 
-  private IRowExpressionContext context;
-
   /** The name of the identifier */
   @Getter private final String name;
-
-  /** The data type when resolved or UNKNOWN if unresolved */
-  @Getter private Type type;
-
   // The position in the expression source
   private final int position;
-
+  private IRowExpressionContext context;
+  /** The data type when resolved or UNKNOWN if unresolved */
+  @Getter private Type type;
   /** The index in IRowMeta when resolved or -1 if unresolved */
   @Getter private int ordinal;
 
   // The IValueMeta when resolved or null if unresolved.
   private IValueMeta valueMeta;
+
+  public Identifier(final String name) {
+    this(0, name);
+  }
+
+  public Identifier(int position, final String name) {
+    this.name = requireNonNull(name, "name");
+    this.type = Types.UNKNOWN;
+    this.position = position;
+    this.context = null;
+    this.valueMeta = null;
+    this.ordinal = -1;
+  }
 
   /**
    * If identifier name contains space, is a reserved word or is a function name must be quoted.
@@ -71,19 +80,6 @@ public class Identifier implements IExpression {
     }
 
     return name;
-  }
-
-  public Identifier(final String name) {
-    this(0, name);
-  }
-
-  public Identifier(int position, final String name) {
-    this.name = requireNonNull(name, "name");
-    this.type = Types.UNKNOWN;
-    this.position = position;
-    this.context = null;
-    this.valueMeta = null;
-    this.ordinal = -1;
   }
 
   @Override

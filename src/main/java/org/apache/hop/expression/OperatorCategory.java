@@ -19,9 +19,6 @@ package org.apache.hop.expression;
 
 /** A collection of operator categories. */
 public final class OperatorCategory {
-  /** Private constructor since this is a utility class. */
-  private OperatorCategory() {}
-
   public static final String ARRAY = "i18n::Expression.Operator.Category.Array";
   public static final String STRING = "i18n::Expression.Operator.Category.String";
   public static final String JSON = "i18n::Expression.Operator.Category.Json";
@@ -37,4 +34,6 @@ public final class OperatorCategory {
   public static final String SPECIAL = "i18n::Expression.Operator.Category.Special";
   public static final String AGGREGATION = "i18n::Expression.Operator.Category.Aggregation";
   public static final String UDF = "i18n::Expression.Operator.Category.Udf";
+  /** Private constructor since this is a utility class. */
+  private OperatorCategory() {}
 }

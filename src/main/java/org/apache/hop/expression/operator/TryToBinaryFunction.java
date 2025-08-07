@@ -35,6 +35,46 @@ import org.apache.hop.expression.util.Hex;
 @FunctionPlugin
 public class TryToBinaryFunction extends Function {
 
+  public TryToBinaryFunction() {
+    super(
+        "TRY_TO_BINARY",
+        ReturnTypes.BINARY_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperatorCategory.CONVERSION,
+        "/docs/to_binary.html");
+  }
+
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    // Default format
+    String format = (String) context.getAttribute(ExpressionContext.EXPRESSION_BINARY_FORMAT);
+
+    // With specified format
+    if (call.getOperandCount() == 2) {
+      format = call.getOperand(1).getValue(String.class);
+    }
+
+    if (format != null) {
+      // Normalize pattern
+      format = format.toUpperCase();
+
+      switch (format) {
+        case "HEX" -> {
+          return new Call(StringHexTryToBinaryFunction.INSTANCE, call.getOperands());
+        }
+        case "BASE64" -> {
+          return new Call(StringBase64TryToBinaryFunction.INSTANCE, call.getOperands());
+        }
+        case "UTF8", "UTF-8" -> {
+          return new Call(StringUtf8TryToBinaryFunction.INSTANCE, call.getOperands());
+        }
+      }
+    }
+
+    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
+  }
+
   public static final class StringHexTryToBinaryFunction extends TryToBinaryFunction {
     public static final TryToBinaryFunction INSTANCE = new StringHexTryToBinaryFunction();
 
@@ -85,45 +125,5 @@ public class TryToBinaryFunction extends Function {
         return null;
       }
     }
-  }
-
-  public TryToBinaryFunction() {
-    super(
-        "TRY_TO_BINARY",
-        ReturnTypes.BINARY_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
-        OperatorCategory.CONVERSION,
-        "/docs/to_binary.html");
-  }
-
-  @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-    // Default format
-    String format = (String) context.getAttribute(ExpressionContext.EXPRESSION_BINARY_FORMAT);
-
-    // With specified format
-    if (call.getOperandCount() == 2) {
-      format = call.getOperand(1).getValue(String.class);
-    }
-
-    if (format != null) {
-      // Normalize pattern
-      format = format.toUpperCase();
-
-      switch (format) {
-        case "HEX" -> {
-          return new Call(StringHexTryToBinaryFunction.INSTANCE, call.getOperands());
-        }
-        case "BASE64" -> {
-          return new Call(StringBase64TryToBinaryFunction.INSTANCE, call.getOperands());
-        }
-        case "UTF8", "UTF-8" -> {
-          return new Call(StringUtf8TryToBinaryFunction.INSTANCE, call.getOperands());
-        }
-      }
-    }
-
-    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
   }
 }

@@ -765,8 +765,8 @@ public class OperatorTest extends ExpressionTest {
 
   @Nested
   class SimilarTo {
-      @Test
-      void testOperation() throws Exception {
+    @Test
+    void testOperation() throws Exception {
       evalTrue("'abc' SIMILAR TO 'abc'");
       evalTrue("'abc' SIMILAR TO '_b_'");
       evalTrue("'aaa' SIMILAR TO 'a{2,4}'");

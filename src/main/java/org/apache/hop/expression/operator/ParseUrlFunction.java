@@ -34,22 +34,6 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class ParseUrlFunction extends Function {
 
-  public enum UrlPart {
-    HOST,
-    PORT,
-    PATH,
-    QUERY,
-    REF,
-    PROTOCOL,
-    FILE,
-    AUTHORITY,
-    USERINFO
-  }
-
-  static Pattern keyToPattern(final String keyToExtract) {
-    return Pattern.compile("(&|^)" + keyToExtract + "=([^&]*)");
-  }
-
   private static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
 
   public ParseUrlFunction() {
@@ -59,6 +43,10 @@ public class ParseUrlFunction extends Function {
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.STRING,
         "/docs/parse_url.html");
+  }
+
+  static Pattern keyToPattern(final String keyToExtract) {
+    return Pattern.compile("(&|^)" + keyToExtract + "=([^&]*)");
   }
 
   @Override
@@ -136,5 +124,17 @@ public class ParseUrlFunction extends Function {
       }
     }
     return null;
+  }
+
+  public enum UrlPart {
+    HOST,
+    PORT,
+    PATH,
+    QUERY,
+    REF,
+    PROTOCOL,
+    FILE,
+    AUTHORITY,
+    USERINFO
   }
 }

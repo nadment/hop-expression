@@ -28,16 +28,6 @@ public final class BinaryConversion extends Conversion<byte[]> {
     // Utility class
   }
 
-  @Override
-  public Class<byte[]> getConvertedType() {
-    return byte[].class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.BINARY;
-  }
-
   public static byte[] convert(Long number) throws ConversionException {
     ByteBuffer bytes = ByteBuffer.allocate(Long.BYTES);
     bytes.putLong(number);
@@ -46,5 +36,15 @@ public final class BinaryConversion extends Conversion<byte[]> {
 
   public static byte[] convert(final String str) throws ConversionException {
     return str.getBytes(StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public Class<byte[]> getConvertedType() {
+    return byte[].class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.BINARY;
   }
 }

@@ -18,21 +18,12 @@ package org.apache.hop.expression.util;
 
 public class Characters {
 
-  /** Private constructor since this is a utility class. */
-  private Characters() {}
-
   private static final byte[] FLAGS = new byte[256];
-
   private static final byte IS_DIGIT = 0x01;
-
   private static final byte IS_HEX_DIGIT = 0x02;
-
   private static final byte IS_ALPHA = 0x04;
-
   private static final byte IS_DELIMITER = 0x08;
-
   private static final byte IS_OCT_DIGIT = 0x10;
-
   private static final byte IS_BIT = 0x20;
 
   static {
@@ -66,6 +57,9 @@ public class Characters {
       FLAGS[ch] |= IS_DELIMITER;
     }
   }
+
+  /** Private constructor since this is a utility class. */
+  private Characters() {}
 
   /**
    * Determines if the specified character is a digit.

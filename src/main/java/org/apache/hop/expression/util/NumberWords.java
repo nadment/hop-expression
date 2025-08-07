@@ -16,8 +16,6 @@ package org.apache.hop.expression.util;
 
 public class NumberWords {
 
-  private NumberWords() {}
-
   private static final String[] UNITS = {
     "zero",
     "one",
@@ -43,6 +41,7 @@ public class NumberWords {
   private static final String[] TENS = {
     "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"
   };
+  private NumberWords() {}
 
   protected static String convertOrdinal(int number) {
     // variable to hold string representation of number

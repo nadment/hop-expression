@@ -76,6 +76,21 @@ public class Literal implements IExpression {
 
   /** Literal 1 value with integer data type */
   public static final Literal ONE = new Literal(1L, IntegerType.of(1, false));
+  /** The data type of this literal. */
+  private final Type type;
+  /** The value of this literal. */
+  private final Object value;
+
+  /**
+   * Create a typed literal value
+   *
+   * @param value the constant value
+   * @param type the type of the value
+   */
+  public Literal(final Object value, final Type type) {
+    this.value = value;
+    this.type = type;
+  }
 
   public static Literal of(final Boolean value) {
     if (value == null) return NULL_BOOLEAN;
@@ -157,23 +172,6 @@ public class Literal implements IExpression {
   public static Literal of(final BaseFormat value) {
     if (value == null) return NULL;
     return new Literal(value, Types.UNKNOWN);
-  }
-
-  /** The data type of this literal. */
-  private final Type type;
-
-  /** The value of this literal. */
-  private final Object value;
-
-  /**
-   * Create a typed literal value
-   *
-   * @param value the constant value
-   * @param type the type of the value
-   */
-  public Literal(final Object value, final Type type) {
-    this.value = value;
-    this.type = type;
   }
 
   @Override

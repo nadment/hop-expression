@@ -23,11 +23,9 @@ final class RomanNumberFormat extends NumberFormat {
 
   // Original format
   private final String format;
-
+  private final boolean lowerCase;
   // Fill mode suppress padding blanks.
   private boolean fillMode = true;
-
-  private final boolean lowerCase;
 
   public RomanNumberFormat(final String pattern) {
 

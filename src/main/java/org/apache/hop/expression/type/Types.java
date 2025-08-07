@@ -41,77 +41,56 @@ import org.apache.hop.expression.operator.CastOperator;
 
 public class Types {
 
-  private Types() {
-    // Utility class
-  }
-
   public static final UnknownType UNKNOWN = new UnknownType(true);
-
   public static final EnumType TIMEUNIT = new EnumType(false);
-
   public static final ArrayType ARRAY = new ArrayType(UNKNOWN, true);
-
   public static final AnyType ANY = new AnyType(true);
-
   /** Default BINARY type with maximum precision. */
   public static final BinaryType BINARY = new BinaryType(TypeName.BINARY.getMaxPrecision(), true);
-
   /** Default BINARY NOT NULL type with maximum precision. */
   public static final BinaryType BINARY_NOT_NULL =
       new BinaryType(TypeName.BINARY.getMaxPrecision(), false);
-
   /** Default BOOLEAN type. */
   public static final BooleanType BOOLEAN = new BooleanType(true);
-
   /** Default BOOLEAN NOT NULL type. */
   public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
-
   /** Default STRING type with maximum precision. */
   public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision(), true);
-
   /** Default STRING NOT NULL type with maximum precision. */
   public static final StringType STRING_NOT_NULL =
       new StringType(TypeName.STRING.getMaxPrecision(), false);
-
   /** Default INTEGER type with maximum precision. */
   public static final IntegerType INTEGER =
       new IntegerType(TypeName.INTEGER.getMaxPrecision(), true);
-
   /** Default INTEGER NOT NULL type with maximum precision. */
   public static final IntegerType INTEGER_NOT_NULL =
       new IntegerType(TypeName.INTEGER.getMaxPrecision(), false);
-
   /** Default NUMBER(38,9) type with max precision and default scale. */
   public static final NumberType NUMBER =
       new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), true);
-
   /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
   public static final NumberType NUMBER_NOT_NULL =
       new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), false);
-
   /** Default DATE type with default parameters. */
   public static final DateType DATE = new DateType(true);
-
   /** Default DATE NOT NULL type with default parameters. */
   public static final DateType DATE_NOT_NULL = new DateType(false);
-
   /** Default INTERVAL type with default parameters. */
   public static final IntervalType INTERVAL = new IntervalType(true);
-
   /** Default INTERVAL NOT NULL type with default parameters. */
   public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
-
   /** Default INET type. */
   public static final InetType INET = new InetType(true);
-
   /** Default INET NOT NULL type. */
   public static final InetType INET_NOT_NULL = new InetType(false);
-
   /** Default JSON type. */
   public static final JsonType JSON = new JsonType(true);
-
   /** Default JSON NOT NULL type. */
   public static final JsonType JSON_NOT_NULL = new JsonType(false);
+
+  private Types() {
+    // Utility class
+  }
 
   /** Returns the most general of a set of types */
   public static Type getLeastRestrictive(List<Type> types) {

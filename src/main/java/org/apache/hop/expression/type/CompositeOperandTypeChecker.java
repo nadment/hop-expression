@@ -23,23 +23,23 @@ import org.apache.hop.expression.Call;
 /** Allows multiple {@link IOperandTypeChecker} rules to be combined into one rule. */
 public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
-  public enum Composition {
-    AND,
-    OR,
-    SEQUENCE,
-    REPEAT
-  }
-
   protected final Composition composition;
   protected final List<IOperandTypeChecker> rules;
   protected final IOperandCountRange repeatRange;
-
   CompositeOperandTypeChecker(
       Composition composition, List<IOperandTypeChecker> rules, IOperandCountRange repeatRange) {
     super();
     this.composition = composition;
     this.rules = rules;
     this.repeatRange = repeatRange;
+  }
+
+  private static int min(List<IOperandCountRange> ranges) {
+    int min = Integer.MAX_VALUE;
+    for (IOperandCountRange range : ranges) {
+      min = Math.min(min, range.getMin());
+    }
+    return min;
   }
 
   @Override
@@ -163,14 +163,6 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
     return rules;
   }
 
-  private static int min(List<IOperandCountRange> ranges) {
-    int min = Integer.MAX_VALUE;
-    for (IOperandCountRange range : ranges) {
-      min = Math.min(min, range.getMin());
-    }
-    return min;
-  }
-
   private int max(List<IOperandCountRange> ranges) {
     int max = Integer.MIN_VALUE;
     for (IOperandCountRange range : ranges) {
@@ -183,5 +175,12 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
       }
     }
     return max;
+  }
+
+  public enum Composition {
+    AND,
+    OR,
+    SEQUENCE,
+    REPEAT
   }
 }

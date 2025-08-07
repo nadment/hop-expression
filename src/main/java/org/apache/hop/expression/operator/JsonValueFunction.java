@@ -47,9 +47,6 @@ import org.apache.hop.expression.type.Types;
 @FunctionPlugin
 public class JsonValueFunction extends Function {
 
-  private static final Set<TypeName> SUPPORTED_TYPES =
-      Set.of(TypeName.STRING, TypeName.BOOLEAN, TypeName.INTEGER, TypeName.NUMBER, TypeName.BINARY);
-
   public static final Configuration JSONPATH_CONFIGURATION =
       Configuration.builder()
           .mappingProvider(
@@ -57,6 +54,8 @@ public class JsonValueFunction extends Function {
                   JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
           .jsonProvider(new JacksonJsonNodeJsonProvider())
           .build();
+  private static final Set<TypeName> SUPPORTED_TYPES =
+      Set.of(TypeName.STRING, TypeName.BOOLEAN, TypeName.INTEGER, TypeName.NUMBER, TypeName.BINARY);
 
   public JsonValueFunction() {
     super(

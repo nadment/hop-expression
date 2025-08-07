@@ -38,16 +38,6 @@ public final class IntegerConversion extends Conversion<Long> {
     // Utility class
   }
 
-  @Override
-  public Class<Long> getConvertedType() {
-    return Long.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.INTEGER;
-  }
-
   public static Long convert(final BigDecimal number) throws ConversionException {
     BigInteger integer = number.toBigInteger();
     if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
@@ -77,5 +67,15 @@ public final class IntegerConversion extends Conversion<Long> {
 
   public static Long convert(final ZonedDateTime datetime) throws ConversionException {
     return datetime.toEpochSecond();
+  }
+
+  @Override
+  public Class<Long> getConvertedType() {
+    return Long.class;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return TypeName.INTEGER;
   }
 }

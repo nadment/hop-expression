@@ -18,6 +18,54 @@ package org.apache.hop.expression;
 
 public class Token {
 
+  private final Id id;
+  private final int start;
+  private final int end;
+  private final String text;
+  protected Token(Id id, int start) {
+    this(id, start, start + 1, id.label);
+  }
+
+  protected Token(Id id, int start, int end, String text) {
+    this.id = id;
+    this.start = start;
+    this.end = end;
+    this.text = text;
+  }
+
+  public boolean is(final Id id) {
+    return this.id == id;
+  }
+
+  public Id id() {
+    return id;
+  }
+
+  /** Returns the start index of the token in the original source. */
+  public int start() {
+    return start;
+  }
+
+  /** Returns the end index of the token in the original source. */
+  public int end() {
+    return end;
+  }
+
+  /** Returns the length of the token. */
+  public int length() {
+    return end - start;
+  }
+
+  /** Returns the token value. */
+  public String text() {
+    return text;
+  }
+
+  @Override
+  public String toString() {
+    return (text != null) ? text : id.toString();
+  }
+
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
     /** The bitwise AND operator "&". */
@@ -186,54 +234,5 @@ public class Token {
     public String toString() {
       return label;
     }
-  }
-
-  private final Id id;
-  private final int start;
-  private final int end;
-  private final String text;
-
-  protected Token(Id id, int start) {
-    this(id, start, start + 1, id.label);
-  }
-
-  protected Token(Id id, int start, int end, String text) {
-    this.id = id;
-    this.start = start;
-    this.end = end;
-    this.text = text;
-  }
-
-  public boolean is(final Id id) {
-    return this.id == id;
-  }
-
-  public Id id() {
-    return id;
-  }
-
-  /** Returns the start index of the token in the original source. */
-  public int start() {
-    return start;
-  }
-
-  /** Returns the end index of the token in the original source. */
-  public int end() {
-    return end;
-  }
-
-  /** Returns the length of the token. */
-  public int length() {
-    return end - start;
-  }
-
-  /** Returns the token value. */
-  public String text() {
-    return text;
-  }
-
-  @Override
-  public String toString() {
-    return (text != null) ? text : id.toString();
   }
 }

@@ -38,6 +38,10 @@ public final class Strong {
           GreaterThanOperator.INSTANCE,
           GreaterThanOrEqualOperator.INSTANCE);
 
+  private Strong() {
+    // Utility class
+  }
+
   /**
    * Returns whether a given expression is strong.
    *
@@ -55,9 +59,5 @@ public final class Strong {
       }
     }
     return false;
-  }
-
-  private Strong() {
-    // Utility class
   }
 }

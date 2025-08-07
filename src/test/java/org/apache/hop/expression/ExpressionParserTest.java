@@ -355,7 +355,6 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("~", ErrorCode.SYNTAX_ERROR);
     evalFails("~ ", ErrorCode.SYNTAX_ERROR);
 
-
     evalFails("Year(", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Year(()", ErrorCode.SYNTAX_ERROR);

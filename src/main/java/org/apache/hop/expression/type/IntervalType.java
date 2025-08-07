@@ -29,6 +29,17 @@ public final class IntervalType extends Type {
     this.checkPrecisionAndScale();
   }
 
+  /**
+   * Convert String value to Interval.
+   *
+   * @param str the string to convert
+   * @return Interval
+   */
+  public static Interval convert(final String str) throws ConversionException {
+    if (str == null) return null;
+    return Interval.of(str);
+  }
+
   @Override
   public IntervalType withNullability(boolean nullable) {
     if (nullable == this.isNullable()) {
@@ -77,17 +88,6 @@ public final class IntervalType extends Type {
 
     throw new ConversionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-  }
-
-  /**
-   * Convert String value to Interval.
-   *
-   * @param str the string to convert
-   * @return Interval
-   */
-  public static Interval convert(final String str) throws ConversionException {
-    if (str == null) return null;
-    return Interval.of(str);
   }
 
   @Override

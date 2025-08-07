@@ -19,11 +19,11 @@ import org.apache.hop.expression.IExpression;
 
 public abstract class BaseFormat {
 
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
+
   protected BaseFormat() {
     super();
   }
-
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   protected static boolean startsWithIgnoreCase(String str, int offset, String prefix) {
     if (prefix.length() > str.length() - offset) {

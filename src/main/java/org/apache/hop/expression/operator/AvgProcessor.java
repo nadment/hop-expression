@@ -15,6 +15,7 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 
@@ -43,6 +44,6 @@ public class AvgProcessor implements IExpressionProcessor {
 
   @Override
   public Object getValue() throws Exception {
-    return sum.divide(BigDecimal.valueOf(count));
+    return sum.divide(BigDecimal.valueOf(count), RoundingMode.HALF_UP);
   }
 }

@@ -37,6 +37,12 @@ import org.apache.hop.expression.util.StringConversion;
 
 public final class StringType extends Type {
 
+  /* Package */ StringType(int precision, boolean nullable) {
+    super(precision, 0, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
+  }
+
   public static StringType of(int precision) {
     return of(precision, true);
   }
@@ -54,12 +60,6 @@ public final class StringType extends Type {
     // Empty string should return 1
     if (precision < 1) precision = 1;
     return StringType.of(precision, false);
-  }
-
-  /* Package */ StringType(int precision, boolean nullable) {
-    super(precision, 0, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   public StringType withNullability(boolean nullable) {

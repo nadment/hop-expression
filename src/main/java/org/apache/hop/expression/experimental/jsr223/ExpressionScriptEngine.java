@@ -29,6 +29,22 @@ public final class ExpressionScriptEngine extends AbstractScriptEngine implement
 
   private ExpressionScriptEngineFactory factory;
 
+  private static String readFully(Reader reader) throws ScriptException {
+    char[] buffer = new char[8192];
+    StringBuilder builder = new StringBuilder();
+
+    int numChars;
+    try {
+      while ((numChars = reader.read(buffer, 0, buffer.length)) > 0) {
+        builder.append(buffer, 0, numChars);
+      }
+    } catch (IOException e) {
+      throw new ScriptException(e);
+    }
+
+    return builder.toString();
+  }
+
   @Override
   public synchronized ScriptEngineFactory getFactory() {
     if (this.factory == null) {
@@ -56,22 +72,6 @@ public final class ExpressionScriptEngine extends AbstractScriptEngine implement
   @Override
   public Object eval(Reader reader, ScriptContext context) throws ScriptException {
     return this.eval(readFully(reader), context);
-  }
-
-  private static String readFully(Reader reader) throws ScriptException {
-    char[] buffer = new char[8192];
-    StringBuilder builder = new StringBuilder();
-
-    int numChars;
-    try {
-      while ((numChars = reader.read(buffer, 0, buffer.length)) > 0) {
-        builder.append(buffer, 0, numChars);
-      }
-    } catch (IOException e) {
-      throw new ScriptException(e);
-    }
-
-    return builder.toString();
   }
 
   @Override

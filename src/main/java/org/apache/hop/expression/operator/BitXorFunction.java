@@ -139,7 +139,7 @@ public class BitXorFunction extends Function {
       }
 
       final byte[] result = new byte[left.length];
-      for (int i = result.length-1; i >=0; i--) {
+      for (int i = result.length - 1; i >= 0; i--) {
         result[i] = (byte) (left[i] ^ right[i]);
       }
 

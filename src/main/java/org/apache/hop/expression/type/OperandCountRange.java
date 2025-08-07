@@ -19,6 +19,14 @@ package org.apache.hop.expression.type;
 /** A class that describes how many operands an operator can take. */
 public class OperandCountRange implements IOperandCountRange {
 
+  private final int min;
+  private final int max;
+
+  OperandCountRange(int min, int max) {
+    this.min = min;
+    this.max = max;
+  }
+
   public static IOperandCountRange of(int length) {
     return new OperandCountRange(length, length);
   }
@@ -33,14 +41,6 @@ public class OperandCountRange implements IOperandCountRange {
 
   public static IOperandCountRange any() {
     return new OperandCountRange(0, -1);
-  }
-
-  private final int min;
-  private final int max;
-
-  OperandCountRange(int min, int max) {
-    this.min = min;
-    this.max = max;
   }
 
   @Override

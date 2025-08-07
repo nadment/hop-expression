@@ -39,16 +39,6 @@ public class DifferenceFunction extends Function {
         "/docs/difference.html");
   }
 
-  @Override
-  public Object eval(final IExpression[] operands) {
-    String v0 = operands[0].getValue(String.class);
-    if (v0 == null) return null;
-    String v1 = operands[1].getValue(String.class);
-    if (v1 == null) return null;
-
-    return Long.valueOf(difference(v0, v1));
-  }
-
   private static int difference(final String str0, final String str1) {
     String soundex0 = SOUNDEX.soundex(str0);
     String soundex1 = SOUNDEX.soundex(str1);
@@ -58,5 +48,15 @@ public class DifferenceFunction extends Function {
       }
     }
     return SOUNDEX_LENGTH;
+  }
+
+  @Override
+  public Object eval(final IExpression[] operands) {
+    String v0 = operands[0].getValue(String.class);
+    if (v0 == null) return null;
+    String v1 = operands[1].getValue(String.class);
+    if (v1 == null) return null;
+
+    return Long.valueOf(difference(v0, v1));
   }
 }
