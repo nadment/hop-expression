@@ -24,8 +24,11 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.IOperandCountRange;
+import org.apache.hop.expression.type.IOperandTypeChecker;
+import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 
@@ -36,13 +39,10 @@ import org.apache.hop.expression.type.Type;
 @FunctionPlugin
 public class DecodeFunction extends Function {
 
+  public static final IOperandTypeChecker OTC = new DecodeFunctionOperandTypeChecker();
+
   public DecodeFunction() {
-    super(
-        "DECODE",
-        ReturnTypes.ARG2,
-        OperandTypes.DECODE_FUNCTION,
-        OperatorCategory.CONDITIONAL,
-        "/docs/decode.html");
+    super("DECODE", ReturnTypes.ARG2, OTC, OperatorCategory.CONDITIONAL, "/docs/decode.html");
   }
 
   @Override
@@ -96,5 +96,46 @@ public class DecodeFunction extends Function {
     if (index < 0) return null;
 
     return operands[index].getValue();
+  }
+
+  public static class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
+
+    public DecodeFunctionOperandTypeChecker() {
+      super();
+    }
+
+    @Override
+    public boolean checkOperandTypes(Call call) {
+      Type search = call.getOperand(0).getType();
+      Type result = firstNonNull(call.getOperands()).getType();
+
+      int count = ((call.getOperandCount() - 1) / 2) * 2;
+      for (int i = 1; i < count; i += 2) {
+        if (!search.isFamily(call.getOperand(i).getType().getFamily())) {
+          return false;
+        }
+
+        IExpression operandResult = call.getOperand(i + 1);
+        if (!(result.isFamily(operandResult.getType().getFamily()) || operandResult.isNull())) {
+          return false;
+        }
+      }
+
+      // Check type if function has a default value
+      return (call.getOperandCount() - 1) <= count
+          || call.getOperand(count + 1).getType().isCoercible(result);
+    }
+
+    private IExpression firstNonNull(IExpression[] operands) {
+      for (int i = 2; i < operands.length; i += 2) {
+        if (!operands[i].isNull()) return operands[i];
+      }
+      return Literal.NULL;
+    }
+
+    @Override
+    public IOperandCountRange getOperandCountRange() {
+      return OperandCountRange.between(3, Integer.MAX_VALUE);
+    }
   }
 }

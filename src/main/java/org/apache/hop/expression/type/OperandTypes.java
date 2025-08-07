@@ -208,8 +208,7 @@ public final class OperandTypes {
           .or(sequence(JSON, TEXT, DATATYPE))
           .or(sequence(STRING, TEXT))
           .or(sequence(STRING, TEXT, DATATYPE));
-  // TODO: Move operand type checker to the function
-  public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
+
   private OperandTypes() {
     // Utility class
   }
@@ -249,7 +248,6 @@ public final class OperandTypes {
       IOperandCountRange range, ISingleOperandTypeChecker... rules) {
     return new CompositeOperandTypeChecker(Composition.REPEAT, List.of(rules), range);
   }
-  ;
 
   public static ISingleOperandTypeChecker literal(Class<?> javaClass) {
     return new LiteralOperandTypeChecker(javaClass);
