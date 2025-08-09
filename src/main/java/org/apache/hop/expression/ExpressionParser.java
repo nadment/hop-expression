@@ -130,7 +130,7 @@ public class ExpressionParser {
           "ZONE");
   @Getter private final String source;
   private final List<Token> tokens = new ArrayList<>();
-  // Char position in source
+  // Char position in the source
   private int position = 0;
   // Index in tokens
   private int index = 0;
@@ -447,14 +447,14 @@ public class ExpressionParser {
 
       int start = this.getPosition();
 
-      if (isThenNext(Id.MULTIPLY)) {
-        checkEndOfExpression(Id.MULTIPLY);
+      if (isThenNext(Id.STAR)) {
+        checkEndOfExpression(Id.STAR);
         expression = new Call(start, MultiplyOperator.INSTANCE, expression, this.parseBitwiseNot());
-      } else if (isThenNext(Id.DIVIDE)) {
-        checkEndOfExpression(Id.DIVIDE);
+      } else if (isThenNext(Id.SLASH)) {
+        checkEndOfExpression(Id.SLASH);
         expression = new Call(start, DivOperator.INSTANCE, expression, this.parseBitwiseNot());
-      } else if (isThenNext(Id.MODULUS)) {
-        checkEndOfExpression(Id.MODULUS);
+      } else if (isThenNext(Id.PERCENT)) {
+        checkEndOfExpression(Id.PERCENT);
         expression = new Call(start, ModFunction.INSTANCE, expression, this.parseBitwiseNot());
       } else break;
     }
@@ -467,9 +467,9 @@ public class ExpressionParser {
 
     int start = this.getPosition();
 
-    if (isThenNext(Id.BITWISE_NOT)) {
+    if (isThenNext(Id.TILDE)) {
       if (!hasNext()) {
-        throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, Id.BITWISE_NOT);
+        throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, Id.TILDE);
       }
       return new Call(start, BitNotFunction.INSTANCE, this.parseUnary());
     }
@@ -479,8 +479,8 @@ public class ExpressionParser {
   /** ConcatenationExpression ( & ConcatenationExpression)* */
   private IExpression parseBitwiseAnd() throws ExpressionException {
     IExpression expression = this.parseConcatenation();
-    while (isThenNext(Id.BITWISE_AND)) {
-      checkEndOfExpression(Id.BITWISE_AND);
+    while (isThenNext(Id.AMPERSAND)) {
+      checkEndOfExpression(Id.AMPERSAND);
       expression =
           new Call(getPosition(), BitAndFunction.INSTANCE, expression, parseConcatenation());
     }
@@ -490,8 +490,8 @@ public class ExpressionParser {
   /** BitwiseXorExpression ( | BitwiseXorExpression)* */
   private IExpression parseBitwiseOr() throws ExpressionException {
     IExpression expression = this.parseBitwiseXor();
-    while (isThenNext(Id.BITWISE_OR)) {
-      checkEndOfExpression(Id.BITWISE_OR);
+    while (isThenNext(Id.PIPE)) {
+      checkEndOfExpression(Id.PIPE);
       expression = new Call(getPosition(), BitOrFunction.INSTANCE, expression, parseBitwiseXor());
     }
     return expression;
@@ -500,8 +500,8 @@ public class ExpressionParser {
   /** BitwiseAndExpression ( ^ BitwiseAndExpression)* */
   private IExpression parseBitwiseXor() throws ExpressionException {
     IExpression expression = this.parseBitwiseAnd();
-    while (isThenNext(Id.BITWISE_XOR)) {
-      checkEndOfExpression(Id.BITWISE_XOR);
+    while (isThenNext(Id.CARET)) {
+      checkEndOfExpression(Id.CARET);
       expression =
           new Call(getPosition(), BitXorFunction.INSTANCE, expression, this.parseBitwiseAnd());
     }
@@ -632,10 +632,10 @@ public class ExpressionParser {
         return parseFunction(token);
       case LBRACKET:
         return parseArray(token);
-      case LPARENT:
+      case LPARENTHESIS:
         if (hasNext()) {
           IExpression expression = this.parseLogicalOr();
-          if (isThenNext(Id.RPARENT)) {
+          if (isThenNext(Id.RPARENTHESIS)) {
             return expression;
           }
         }
@@ -830,7 +830,7 @@ public class ExpressionParser {
 
     List<IExpression> list = new ArrayList<>();
 
-    if (isNotThenNext(Id.LPARENT)) {
+    if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ExpressionParseException(getPosition(), ErrorCode.MISSING_LEFT_PARENTHESIS);
     }
 
@@ -845,7 +845,7 @@ public class ExpressionParser {
         continue;
       }
 
-      if (isThenNext(Id.RPARENT)) {
+      if (isThenNext(Id.RPARENTHESIS)) {
         return new Array(list);
       }
 
@@ -924,7 +924,7 @@ public class ExpressionParser {
           token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
-    if (!hasNext() || is(Id.RPARENT)) {
+    if (!hasNext() || is(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(
           token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
@@ -943,7 +943,7 @@ public class ExpressionParser {
             format.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -974,7 +974,7 @@ public class ExpressionParser {
 
     operands.add(this.parseConcatenation());
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -987,7 +987,7 @@ public class ExpressionParser {
 
     IExpression operand = this.parseLogicalOr();
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1007,7 +1007,7 @@ public class ExpressionParser {
 
     IExpression operand = this.parseLogicalOr();
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1034,7 +1034,7 @@ public class ExpressionParser {
     }
     operands.add(this.parseLogicalOr());
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1072,7 +1072,7 @@ public class ExpressionParser {
 
     operands.add(this.parseLogicalOr());
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1087,7 +1087,7 @@ public class ExpressionParser {
     List<IExpression> operands = new ArrayList<>();
 
     // COUNT(*) no operand
-    if (isThenNext(Id.MULTIPLY)) {
+    if (isThenNext(Id.STAR)) {
       aggregator = CountFunction.COUNT_ALL;
       // Use fictive operand
       operands.add(Literal.NULL);
@@ -1098,7 +1098,7 @@ public class ExpressionParser {
       operands.add(this.parsePrimary());
     }
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1125,7 +1125,7 @@ public class ExpressionParser {
       operands.add(this.parsePrimary());
     }
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1160,7 +1160,7 @@ public class ExpressionParser {
       }
     } while (comma);
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1172,7 +1172,7 @@ public class ExpressionParser {
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
-    if (isThenNext(Id.RPARENT)) {
+    if (isThenNext(Id.RPARENTHESIS)) {
       return new Call(token.start(), function, operands);
     }
 
@@ -1183,7 +1183,7 @@ public class ExpressionParser {
         operands.add(this.parseLiteralType(next()));
       }
     }
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1200,14 +1200,14 @@ public class ExpressionParser {
           token.start(), ErrorCode.FUNCTION_DOES_NOT_EXIST, token.text());
     }
 
-    if (isNotThenNext(Id.LPARENT)) {
+    if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_LEFT_PARENTHESIS);
     }
 
     List<IExpression> operands = new ArrayList<>();
 
     // No param function
-    if (isThenNext(Id.RPARENT)) {
+    if (isThenNext(Id.RPARENTHESIS)) {
       return new Call(token.start(), function, operands);
     }
 
@@ -1259,7 +1259,7 @@ public class ExpressionParser {
       operands.add(this.parseLogicalOr());
     }
 
-    if (isNotThenNext(Id.RPARENT)) {
+    if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
@@ -1342,7 +1342,7 @@ public class ExpressionParser {
 
     int precision = Type.PRECISION_NOT_SPECIFIED;
     int scale = Type.SCALE_NOT_SPECIFIED;
-    if (isThenNext(Id.LPARENT)) {
+    if (isThenNext(Id.LPARENTHESIS)) {
 
       // Precision
       precision = Integer.parseInt(this.next().text());
@@ -1358,7 +1358,7 @@ public class ExpressionParser {
         }
       }
 
-      if (isNotThenNext(Id.RPARENT)) {
+      if (isNotThenNext(Id.RPARENTHESIS)) {
         throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
       }
     }
@@ -1393,10 +1393,10 @@ public class ExpressionParser {
           return new Token(Id.COMMA, position++);
 
         case '(':
-          return new Token(Id.LPARENT, position++);
+          return new Token(Id.LPARENTHESIS, position++);
 
         case ')':
-          return new Token(Id.RPARENT, position++);
+          return new Token(Id.RPARENTHESIS, position++);
 
         case '[':
           return new Token(Id.LBRACKET, position++);
@@ -1458,10 +1458,10 @@ public class ExpressionParser {
           }
 
         case '*':
-          return new Token(Id.MULTIPLY, position++);
+          return new Token(Id.STAR, position++);
 
         case '%':
-          return new Token(Id.MODULUS, position++);
+          return new Token(Id.PERCENT, position++);
 
         case '<':
           {
@@ -1566,17 +1566,17 @@ public class ExpressionParser {
                 return new Token(Id.COMMENT, start, position, source.substring(start, position));
               }
             }
-            return new Token(Id.DIVIDE, start);
+            return new Token(Id.SLASH, start);
           }
 
         case '~':
-          return new Token(Id.BITWISE_NOT, position++);
+          return new Token(Id.TILDE, position++);
 
         case '&':
-          return new Token(Id.BITWISE_AND, position++);
+          return new Token(Id.AMPERSAND, position++);
 
         case '^':
-          return new Token(Id.BITWISE_XOR, position++);
+          return new Token(Id.CARET, position++);
 
           // Bitwise OR operator or concat symbol
         case '|':
@@ -1589,7 +1589,7 @@ public class ExpressionParser {
                 return new Token(Id.CONCAT, start);
               }
             }
-            return new Token(Id.BITWISE_OR, start);
+            return new Token(Id.PIPE, start);
           }
 
           // Quoted identifier matching reserved words or with white space

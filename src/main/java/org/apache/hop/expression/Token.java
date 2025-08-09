@@ -69,13 +69,13 @@ public class Token {
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
     /** The bitwise AND operator "&". */
-    BITWISE_AND("&"),
+    AMPERSAND("&"),
     /** The bitwise NOT operator "~". */
-    BITWISE_NOT("~"),
+    TILDE("~"),
     /** The bitwise OR operator "|". */
-    BITWISE_OR("|"),
+    PIPE("|"),
     /** The bitwise exclusive OR operator "^". */
-    BITWISE_XOR("^"),
+    CARET("^"),
     /** Case when operator */
     CASE,
     /** Concat operator <code>||<code>. */
@@ -95,9 +95,9 @@ public class Token {
     /** Comma separator */
     COMMA(","),
     /** Left parenthesis */
-    LPARENT("("),
+    LPARENTHESIS("("),
     /** Right parenthesis */
-    RPARENT(")"),
+    RPARENTHESIS(")"),
     /** Left bracket */
     LBRACKET("]"),
     /** Right bracket */
@@ -140,14 +140,14 @@ public class Token {
     FUNCTION,
     /** Extract(part FROM date_time) */
     FROM,
-    /** The arithmetic division operator, "/". */
-    DIVIDE("/"),
-    /** The arithmetic multiplication operator, "*". */
-    MULTIPLY("*"),
+    /** The arithmetic division operator "/". */
+    SLASH("/"),
+    /** The arithmetic multiplication operator "*" or COUNT(*). */
+    STAR("*"),
     /** ESCAPE word for LIKE operator */
     ESCAPE,
-    /** The arithmetic remainder operator, "MOD" (and "%" in some dialects). */
-    MODULUS("%"),
+    /** The arithmetic remainder operator "%". */
+    PERCENT("%"),
     /**
      * The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".
      */
