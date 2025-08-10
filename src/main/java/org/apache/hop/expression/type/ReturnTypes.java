@@ -24,48 +24,66 @@ import org.apache.hop.expression.IExpression;
 public final class ReturnTypes {
 
   public static final IReturnTypeInference ANY = explicit(Types.ANY);
+
   /** Type-inference strategy whereby the result type of call is BOOLEAN. */
   public static final IReturnTypeInference BOOLEAN_NULLABLE =
       explicit(Types.BOOLEAN).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is BOOLEAN NOT NULL. */
   public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is BINARY. */
   public static final IReturnTypeInference BINARY_NULLABLE =
       explicit(Types.BINARY).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is BINARY NOT NULL. */
   public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is STRING. */
   public static final IReturnTypeInference STRING_NULLABLE =
       explicit(Types.STRING).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is STRING NOT NULL. */
   public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is INTEGER. */
   public static final IReturnTypeInference INTEGER_NULLABLE =
       explicit(Types.INTEGER).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is INTEGER NOT NULL. */
   public static final IReturnTypeInference INTEGER_NOT_NULL = explicit(Types.INTEGER_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is NUMBER. */
   public static final IReturnTypeInference NUMBER_NULLABLE =
       explicit(Types.NUMBER).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is NUMBER NOT NULL. */
   public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is DATE. */
   public static final IReturnTypeInference DATE_NULLABLE =
       explicit(Types.DATE).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is DATE NOT NULL. */
   public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE_NOT_NULL);
+
   /** Type-inference strategy whereby the result type of call is DATE. */
   public static final IReturnTypeInference JSON_NULLABLE =
       explicit(Types.JSON).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is INTERVAL. */
   public static final IReturnTypeInference INTERVAL_NULLABLE =
       explicit(Types.INTERVAL).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is the type of the operand #0. */
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);
+
   /** Type-inference strategy whereby the result type of call is the type of the operand #1. */
   public static final IReturnTypeInference ARG1 = new OrdinalReturnTypeInference(1);
+
   /** Type-inference strategy whereby the result type of call is the type of the operand #2. */
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
+
   public static final IReturnTypeInference ARG1_OR_ARG2 =
       chain(new OrdinalReturnTypeInference(1), new OrdinalReturnTypeInference(2));
   public static final IReturnTypeInference FIRST_KNOWN =
@@ -74,6 +92,7 @@ public final class ReturnTypes {
       new LeastRestrictiveReturnTypeInference()
           .andThen(TypeTransforms.TO_MAX_PRECISION)
           .andThen(TypeTransforms.LEAST_NULLABLE);
+
   /** Type-inference strategy whereby the result type of call is the element type of the array. */
   public static final IReturnTypeInference ARRAY_ELEMENT =
       call -> {
@@ -83,6 +102,7 @@ public final class ReturnTypes {
         }
         return Types.UNKNOWN;
       };
+
   public static final IReturnTypeInference ARRAY =
       call -> {
         List<Type> types = new ArrayList<>();
@@ -93,6 +113,7 @@ public final class ReturnTypes {
         Type type = Types.getLeastRestrictive(types);
         return ArrayType.of(type);
       };
+
   /**
    * Type-inference strategy whereby the result type of a call is a number with scale 0 with
    * precision-scale and nullity than ARG0.
@@ -113,6 +134,7 @@ public final class ReturnTypes {
 
         return NumberType.of(precision, 0, type.isNullable());
       };
+
   /** Type-inference strategy for ABS function. */
   public static final IReturnTypeInference ABS_FUNCTION =
       call -> {
@@ -127,6 +149,7 @@ public final class ReturnTypes {
         // By default, coerce to Number
         return Types.NUMBER.withNullability(type.isNullable());
       };
+
   /**
    * Type-inference strategy for concatenation. For example,
    *
@@ -168,6 +191,7 @@ public final class ReturnTypes {
 
         return StringType.of(precision, nullable);
       };
+
   /** Type-inference strategy for concatenation with separator. */
   public static final IReturnTypeInference CONCATWS_FUNCTION =
       call -> {
@@ -209,6 +233,7 @@ public final class ReturnTypes {
 
         return StringType.of(precision, nullable);
       };
+
   public static final IReturnTypeInference ADDITIVE_OPERATOR =
       call -> deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());
 
@@ -222,6 +247,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference MOD_OPERATOR =
       call -> deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
+
   /** Type-inference strategy for CAST operator. */
   public static final IReturnTypeInference CAST_OPERATOR =
       call -> {
@@ -233,6 +259,7 @@ public final class ReturnTypes {
           return Types.UNKNOWN;
         }
       };
+
   /** Type-inference strategy for IF function. */
   public static final IReturnTypeInference IF_FUNCTION =
       call -> {
@@ -251,6 +278,7 @@ public final class ReturnTypes {
 
         return transform.transformType(call, type1);
       };
+
   /** Type-inference strategy for JSON_VALUE function. */
   public static final IReturnTypeInference JSON_VALUE =
       call -> {

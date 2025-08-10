@@ -22,6 +22,7 @@ public class Token {
   private final int start;
   private final int end;
   private final String text;
+
   protected Token(Id id, int start) {
     this(id, start, start + 1, id.label);
   }

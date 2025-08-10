@@ -52,8 +52,18 @@ public class IfNullFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Simplify IfNull(NULL,x) → x
+    if ( call.getOperand(0).isNull()) {
+        return call.getOperand(1);
+    }
+
+    // Simplify if x is not nullable IfNull(x,y) → x
+    if ( !call.getOperand(0).getType().isNullable()) {
+        return call.getOperand(0);
+    }
+
     // Remove null and duplicate but keep order
-    final List<IExpression> operands = new ArrayList<>();
+    List<IExpression> operands = new ArrayList<>();
     for (IExpression operand : call.getOperands()) {
       if (operand.isNull() || operands.contains(operand)) {
         continue;

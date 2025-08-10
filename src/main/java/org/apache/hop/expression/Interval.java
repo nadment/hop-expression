@@ -30,22 +30,31 @@ public class Interval implements Serializable, Comparable<Interval> {
 
   /** The number of months per year. */
   static final long MONTHS_PER_YEAR = 12;
+
   /** The number of seconds per minute. */
   static final long SECONDS_PER_MINUTE = 60;
+
   /** The number of seconds per hour. */
   static final long SECONDS_PER_HOUR = 60 * SECONDS_PER_MINUTE;
+
   /** The number of seconds per day. */
   static final long SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
+
   /** The number of milliseconds per day. */
   static final long MILLIS_PER_DAY = 1000 * SECONDS_PER_DAY;
+
   /** The number of nanoseconds per day. */
   static final long NANOS_PER_DAY = MILLIS_PER_DAY * 1_000_000;
+
   /** The number of nanoseconds per second. */
   static final long NANOS_PER_SECOND = 1_000_000_000L;
+
   /** The number of nanoseconds per minute. */
   static final long NANOS_PER_MINUTE = 60 * NANOS_PER_SECOND;
+
   /** The number of nanoseconds per hour. */
   static final long NANOS_PER_HOUR = 60 * NANOS_PER_MINUTE;
+
   private static final EnumSet<TimeUnit> UNITS =
       EnumSet.of(
           TimeUnit.YEAR,
@@ -68,8 +77,10 @@ public class Interval implements Serializable, Comparable<Interval> {
   private static final Pattern PATTERN_HTM = Pattern.compile("^([+-])?(\\d+):(\\d+)$");
   private static final Pattern PATTERN_MTS =
       Pattern.compile("^([+-])?(\\d+):(\\d+)(?:\\.(\\d+))?$");
+
   /** {@code false} for zero or positive intervals, {@code true} for negative intervals. */
   private final boolean negative;
+
   private final long months;
   private final long seconds;
   private final int nanos;

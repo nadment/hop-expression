@@ -25,10 +25,13 @@ public final class OperandTypes {
 
   /** Operand type-checking strategy type must be a data type. */
   public static final IOperandTypeChecker DATATYPE = literal(Type.class);
+
   /** Operand type-checking strategy type must be a time unit. */
   public static final IOperandTypeChecker TIMEUNIT = literal(TimeUnit.class);
+
   /** Operand type-checking strategy type must be a literal string non-NULL. */
   public static final IOperandTypeChecker TEXT = literal(String.class);
+
   public static final ISingleOperandTypeChecker ANY = explicit(TypeName.ANY);
   public static final IOperandTypeChecker ANY_BOOLEAN = explicit(TypeName.ANY, TypeName.BOOLEAN);
   public static final IOperandTypeChecker ANY_INTEGER = explicit(TypeName.ANY, TypeName.INTEGER);
@@ -39,43 +42,54 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ANY_ARRAY = explicit(TypeName.ANY, TypeName.ARRAY);
   public static final IOperandTypeChecker ANY_SAME_SAME =
       ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
+
   /** Operand type-checking strategy for an operator which takes no operands. */
   public static final IOperandTypeChecker NILADIC = explicit();
+
   /** Operand type-checking strategy where two operands must both be in the same type family. */
   public static final IOperandTypeChecker SAME_SAME =
       new SameOperandTypeChecker(OperandCountRange.of(2));
+
   /** Operand type-checking strategy where three operands must both be in the same type family. */
   public static final IOperandTypeChecker SAME_SAME_SAME =
       new SameOperandTypeChecker(OperandCountRange.of(3));
+
   /**
    * Operand type-checking strategy where any number of operands must all be in the same type
    * family.
    */
   public static final IOperandTypeChecker SAME_VARIADIC =
       new SameOperandTypeChecker(OperandCountRange.any());
+
   /**
    * Operand type-checking strategy where any positive number of operands must all be in the same
    * type family.
    */
   public static final IOperandTypeChecker AT_LEAST_ONE_SAME_VARIADIC =
       new SameOperandTypeChecker(OperandCountRange.from(1));
+
   public static final IOperandTypeChecker AT_LEAST_TREE_SAME_VARIADIC =
       new SameOperandTypeChecker(OperandCountRange.from(3));
+
   /** Operand type-checking strategy where any number of operands must allow ordered comparisons. */
   public static final IOperandTypeChecker COMPARABLE_ORDERED_VARIADIC =
       new ComparableOperandTypeChecker(OperandCountRange.between(1, -1), TypeComparability.ALL);
+
   /**
    * Operand type-checking strategy where operand type must allow ordered comparisons. Used when
    * instance comparisons are made on single operand functions.
    */
   public static final IOperandTypeChecker COMPARABLE_ORDERED =
       new ComparableOperandTypeChecker(OperandCountRange.of(1), TypeComparability.ALL);
+
   /** Operand type-checking strategy where operand types must allow ordered comparisons. */
   public static final IOperandTypeChecker COMPARABLE_ORDERED_COMPARABLE_ORDERED =
       new ComparableOperandTypeChecker(OperandCountRange.of(2), TypeComparability.ALL);
+
   /** Operand type-checking strategy where operand types must allow unordered comparisons. */
   public static final IOperandTypeChecker COMPARABLE_UNORDERED_COMPARABLE_UNORDERED =
       new ComparableOperandTypeChecker(OperandCountRange.of(2), TypeComparability.UNORDERED);
+
   public static final ISingleOperandTypeChecker BOOLEAN = explicit(TypeName.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
       explicit(TypeName.BOOLEAN, TypeName.BOOLEAN);
@@ -193,15 +207,18 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ARRAY_STRING = explicit(TypeName.ARRAY, TypeName.STRING);
   public static final IOperandTypeChecker ARRAY_VARIADIC =
       repeat(OperandCountRange.between(1, -1), ARRAY);
+
   /**
    * Operand type-checking strategy for BETWEEN operator where operand types must allow ordered
    * comparisons.
    */
   public static final IOperandTypeChecker BETWEEN =
       new ComparableOperandTypeChecker(OperandCountRange.of(3), TypeComparability.ALL);
+
   /** Operand type-checking strategy for CAST operator. */
   public static final IOperandTypeChecker CAST =
       sequence(ANY, DATATYPE, TEXT).or(sequence(ANY, DATATYPE));
+
   /** Operand type-checking strategy for JSON_VALUE function. */
   public static final IOperandTypeChecker JSON_VALUE =
       sequence(JSON, TEXT)

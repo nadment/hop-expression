@@ -26,6 +26,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
   protected final Composition composition;
   protected final List<IOperandTypeChecker> rules;
   protected final IOperandCountRange repeatRange;
+
   CompositeOperandTypeChecker(
       Composition composition, List<IOperandTypeChecker> rules, IOperandCountRange repeatRange) {
     super();

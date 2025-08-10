@@ -155,6 +155,7 @@ final class PatternNumberFormat extends NumberFormat {
   private CurrencyMode currency = CurrencyMode.NONE;
   private SignMode sign = SignMode.DEFAULT;
   private int v = 0;
+
   PatternNumberFormat(final String format) {
 
     this.format = format;

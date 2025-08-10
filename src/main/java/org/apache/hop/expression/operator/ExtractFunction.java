@@ -77,7 +77,7 @@ public class ExtractFunction extends Function {
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
       // Replace EXTRACT from date with the corresponding function YEAR, DAY, HOUR... only if
-      // without time zone
+      // without a time zone
       TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
       Function function = FunctionRegistry.getFunction(unit.name());
       if (function != null && !(function instanceof UserDefinedFunction)) {

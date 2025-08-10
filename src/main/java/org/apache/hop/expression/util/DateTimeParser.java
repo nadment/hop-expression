@@ -50,6 +50,7 @@ import org.apache.hop.expression.ErrorCode;
   public boolean isDayOfYear = false;
   public boolean isTimeZoneOffset = false;
   public ZoneId zoneId = ZoneOffset.UTC;
+
   public DateTimeParser(final DateTimeFormat format, final String text) {
     this.format = format;
     this.text = text;

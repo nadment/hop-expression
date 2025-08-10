@@ -84,19 +84,19 @@ public class Regexp {
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {
         switch (str.charAt(i)) {
-          // Enables case-insensitive matching
+            // Enables case-insensitive matching
           case 'i':
             flags |= Pattern.CASE_INSENSITIVE;
             break;
-          // Enables case-sensitive matching
+            // Enables case-sensitive matching
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
-          // Enables dotall mode, that allows the period (.) to match the newline character.
+            // Enables dotall mode, that allows the period (.) to match the newline character.
           case 'n':
             flags |= Pattern.DOTALL;
             break;
-          // Enables multiline mode.
+            // Enables multiline mode.
           case 'm':
             flags |= Pattern.MULTILINE;
             break;

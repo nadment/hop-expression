@@ -33,29 +33,35 @@ public class ExpressionContext implements IExpressionContext {
       description =
           "Control Two-digit year format YY, when set to 1980, values of 79 and 80 parsed as 2079 and 1980 respectively")
   public static final String EXPRESSION_TWO_DIGIT_YEAR_START = "EXPRESSION_TWO_DIGIT_YEAR_START";
+
   /** The date format used for conversions between dates and strings. */
   @Variable(
       value = "HEX",
       description =
           "The default binary format used by expression for conversions between binaries and strings")
   public static final String EXPRESSION_BINARY_FORMAT = "EXPRESSION_BINARY_FORMAT";
+
   /** The date format used for conversions between dates and strings. */
   @Variable(
       value = "YYYY-MM-DD",
       description = "The default date format used by expression for conversions strings to dates")
   public static final String EXPRESSION_DATE_FORMAT = "EXPRESSION_DATE_FORMAT";
+
   /** The timestamp format used for conversions between timestamps and strings */
   @Variable(
       value = "YYYY-MM-DD H24:MI:SS",
       description =
           "The default timestamp format used by expression for conversions strings to timestamps")
   public static final String EXPRESSION_TIMESTAMP_FORMAT = "EXPRESSION_TIMESTAMP_FORMAT";
+
   /**
    * Defines the first day of a week. The value follows the ISO-8601 standard, from 1 (Monday) to 7
    * (Sunday).
    */
   public static final String EXPRESSION_FIRST_DAY_OF_WEEK = "EXPRESSION_FIRST_DAY_OF_WEEK";
+
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
+
   /** The {@code Map} field stores the attributes. */
   private final Map<String, Object> attributes;
 

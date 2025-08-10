@@ -265,16 +265,22 @@ import org.apache.hop.expression.ExpressionException;
     "NOVEMBER",
     "DECEMBER"
   };
+
   /** Minutes per hour. */
   private static final int MINUTES_PER_HOUR = 60;
+
   /** Seconds per minute. */
   private static final int SECONDS_PER_MINUTE = 60;
+
   /** Seconds per hour. */
   private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+
   /** The pattern. */
   private final String pattern;
+
   /** The locale. */
   private final Locale locale;
+
   /** The parsed formats. */
   private final Format[] formats;
 

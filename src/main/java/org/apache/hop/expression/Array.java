@@ -30,6 +30,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   public static final Array EMPTY = new Array();
   private final IExpression[] values;
   private Type type;
+
   public Array(IExpression... expressions) {
     this(Types.ARRAY, expressions);
   }

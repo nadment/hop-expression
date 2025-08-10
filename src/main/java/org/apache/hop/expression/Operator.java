@@ -45,28 +45,36 @@ public abstract class Operator {
    * RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
+
   private static final ILogChannel LOG = new LogChannel("Expression");
+
   /** The unique identifier of the operator/function. Example: "COS" or "TRIM" */
   private final String id;
+
   /**
    * The symbol of the operator or name of function. Example: id is "TRUNCATE" but alias name is
    * "TRUNC"
    */
   private final String name;
+
   /**
    * The precedence with which this operator binds to the expression to the left. This is less than
    * the right precedence if the operator is left-associative.
    */
   private final int leftPrec;
+
   /**
    * The precedence with which this operator binds to the expression to the right. This is greater
    * than the left precedence if the operator is left-associative.
    */
   private final int rightPrec;
+
   /** Used to infer the return type of call to this operator. */
   private final IReturnTypeInference returnTypeInference;
+
   /** Used to validate operand types. */
   private final IOperandTypeChecker operandTypeChecker;
+
   private final String category;
   private final String documentationUrl;
   private final String documentation;

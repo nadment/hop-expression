@@ -76,8 +76,10 @@ public class Literal implements IExpression {
 
   /** Literal 1 value with integer data type */
   public static final Literal ONE = new Literal(1L, IntegerType.of(1, false));
+
   /** The data type of this literal. */
   private final Type type;
+
   /** The value of this literal. */
   private final Object value;
 

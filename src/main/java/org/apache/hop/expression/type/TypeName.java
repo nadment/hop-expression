@@ -74,18 +74,25 @@ public enum TypeName {
   public static final Set<String> ALL_NAMES =
       Set.of(
           "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
+
   /** If the precision parameter is supported. */
   private final boolean supportsPrecision;
+
   /** If the scale parameter is supported. */
   private final boolean supportsScale;
+
   /** The minimum supported precision. */
   private final int minPrecision;
+
   /** The maximum supported precision. */
   private final int maxPrecision;
+
   /** The lowest possible scale. */
   private final int minScale;
+
   /** The highest possible scale. */
   private final int maxScale;
+
   private final TypeFamily family;
   private final Class<?> javaClass;
 

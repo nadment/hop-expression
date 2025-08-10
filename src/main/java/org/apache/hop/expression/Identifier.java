@@ -40,11 +40,14 @@ public class Identifier implements IExpression {
 
   /** The name of the identifier */
   @Getter private final String name;
-  // The position in the expression source
+
+  /** The position in the expression source */
   private final int position;
   private IRowExpressionContext context;
+
   /** The data type when resolved or UNKNOWN if unresolved */
   @Getter private Type type;
+
   /** The index in IRowMeta when resolved or -1 if unresolved */
   @Getter private int ordinal;
 
@@ -65,7 +68,7 @@ public class Identifier implements IExpression {
   }
 
   /**
-   * If identifier name contains space, is a reserved word or is a function name must be quoted.
+   * If the name contains space, is a reserved word or is a function name must be quoted.
    *
    * @param name the name to quote
    */

@@ -34,6 +34,7 @@ public final class OperatorCategory {
   public static final String SPECIAL = "i18n::Expression.Operator.Category.Special";
   public static final String AGGREGATION = "i18n::Expression.Operator.Category.Aggregation";
   public static final String UDF = "i18n::Expression.Operator.Category.Udf";
+
   /** Private constructor since this is a utility class. */
   private OperatorCategory() {}
 }

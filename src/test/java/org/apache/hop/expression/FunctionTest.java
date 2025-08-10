@@ -350,12 +350,12 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void IfNull() throws Exception {
-    evalEquals("IfNull(1,FIELD_INTEGER)", 1L).returnType(Types.INTEGER_NOT_NULL);
+    evalEquals("IfNull(1,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1, false));
     evalEquals("IfNull(NULL_INTEGER, FIELD_NUMBER)", -5.12D).returnType(Types.NUMBER);
 
     evalEquals("IfNull(NULL_STRING,'B')", "B").returnType(Types.STRING_NOT_NULL);
 
-    evalEquals("IfNull('A','B')", "A").returnType(Types.STRING_NOT_NULL);
+    evalEquals("IfNull('A','B')", "A").returnType(StringType.of(1, false));
     evalEquals("IfNull(NULL_STRING,'B')", "B").returnType(Types.STRING_NOT_NULL);
 
     evalEquals("IfNull(NULL_DATE,DATE '2022-01-01')", LocalDate.of(2022, 1, 1))
@@ -365,6 +365,12 @@ public class FunctionTest extends ExpressionTest {
     evalFails("IfNull()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("IfNull(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("IfNull(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+
+   // Simplify IfNull(NULL,x) → x
+   optimize("IFNULL(NULL::STRING,FIELD_STRING)","FIELD_STRING");
+
+   // Simplify if x is not nullable IfNull(x,y) → x
+   optimize("IFNULL('A',FIELD_STRING)","'A'");
 
     // Flatten chained IFNULL or COALESCE
     optimize(
@@ -400,7 +406,8 @@ public class FunctionTest extends ExpressionTest {
     evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimizeNull("NULLIF(NULL, NULL)");
-    optimizeNull("NULLIF(true, true)");
+    // TODO: Id the second operand is not nullable, return type must be not null
+    optimizeNull("NULLIF(true, true)").returnType(Types.BOOLEAN);
     optimizeTrue("NULLIF(true, false)");
     optimizeNull("NULLIF(NULL, false)");
     optimizeTrue("NULLIF(true, NULL)");
@@ -424,6 +431,7 @@ public class FunctionTest extends ExpressionTest {
     evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT);
 
+    optimize("NULLIFZERO(0)", "NULL");
     optimize("NULLIFZERO(0.00)", "NULL");
   }
 
@@ -4605,7 +4613,15 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Extract()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    // TODO: detect unsupported time unit at compile time
     evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Extract(ISOYEAR from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Extract(ISOWEEK from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Extract(ISODAYOFWEEK from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Extract(WEEKOFMONTH from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Extract(DAYOFWEEK from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Extract(DAYOFYEAR from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
+
     evalFails("Extract(123 from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
     evalFails("Extract('TEST' from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
     evalFails("Extract(NULL from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
