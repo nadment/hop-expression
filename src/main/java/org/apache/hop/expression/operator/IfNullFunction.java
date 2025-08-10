@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 
 /**
- * The IFNULL function replace the null with value (Alias NVL).
+ * The IFNULL function replaces the null with value (Alias NVL).
  *
  * @see CoalesceFunction
  */

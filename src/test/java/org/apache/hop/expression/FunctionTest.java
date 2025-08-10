@@ -410,13 +410,13 @@ public class FunctionTest extends ExpressionTest {
     optimizeNull("NULLIF(true, true)").returnType(Types.BOOLEAN);
     optimizeTrue("NULLIF(true, false)");
     optimizeNull("NULLIF(NULL, false)");
-    optimizeTrue("NULLIF(true, NULL)");
+    optimizeNull("NULLIF(true, NULL)");
     optimizeNull("NULLIF(NULL, FIELD_STRING)");
     optimizeNull("NULLIF('a', 'a')");
-    optimize("NULLIF('a', 'b')", "'a'");
     optimizeNull("NULLIF(NULL, 'b')");
-    optimize("NULLIF('a', NULL)", "'a'");
+    optimizeNull("NULLIF('a', NULL)");
     optimizeNull("NULLIF(1, 1)");
+    optimize("NULLIF('a', 'b')", "'a'");
     optimize("NULLIF(1, 2)", "1");
   }
 
@@ -431,8 +431,8 @@ public class FunctionTest extends ExpressionTest {
     evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT);
 
-    optimize("NULLIFZERO(0)", "NULL");
-    optimize("NULLIFZERO(0.00)", "NULL");
+    optimizeNull("NULLIFZERO(0)");
+    optimizeNull("NULLIFZERO(0.00)");
   }
 
   @Test
