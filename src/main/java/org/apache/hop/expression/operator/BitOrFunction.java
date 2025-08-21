@@ -89,6 +89,11 @@ public class BitOrFunction extends Function {
       return Literal.NULL_INTEGER;
     }
 
+    // Simplify A | A → A
+    if (left.equals(right)) {
+      return left;
+    }
+
     Type type = left.getType();
     if (Types.isBinary(type)) {
       return new Call(BinaryBitOrFunction.INSTANCE, call.getOperands());

@@ -1916,8 +1916,14 @@ public class OperatorTest extends ExpressionTest {
       optimize("1|FIELD_INTEGER|4", "5|FIELD_INTEGER");
 
       // Simplify NULL | A → NULL
-      optimizeNull("NULLIF(1,1)|FIELD_INTEGER");
-      optimizeNull("FIELD_INTEGER|NULLIF(1,1)");
+      optimizeNull("NULL::INTEGER|FIELD_INTEGER");
+      optimizeNull("FIELD_INTEGER|NULL::INTEGER");
+      optimizeNull("NULL::BINARY|FIELD_BINARY");
+      optimizeNull("FIELD_BINARY|NULL::BINARY");
+
+      // Simplify A | A → A
+      optimize("FIELD_INTEGER|FIELD_INTEGER", "FIELD_INTEGER");
+      optimize("FIELD_BINARY|FIELD_BINARY", "FIELD_BINARY");
 
       // Simplify 0 | A → A (even if A is null)
       optimize("FIELD_INTEGER|0", "FIELD_INTEGER");
