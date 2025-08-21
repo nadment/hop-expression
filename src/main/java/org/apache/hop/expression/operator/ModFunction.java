@@ -76,9 +76,9 @@ public class ModFunction extends Function {
       return Literal.NULL;
     }
 
-    // Simplify arithmetic A % 1 → A
-    if (Literal.ONE.equals(right)) {
-      return call.getOperand(0);
+    // Simplify arithmetic A % 1 → 0 (if A is not nullable)
+    if (Literal.ONE.equals(right) && !left.getType().isNullable()) {
+      return Literal.ZERO;
     }
 
     return call;

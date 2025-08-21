@@ -1628,9 +1628,11 @@ public class OperatorTest extends ExpressionTest {
     optimizeNull("NULL::INTEGER%FIELD_INTEGER");
     optimizeNull("FIELD_INTEGER%NULL::INTEGER");
 
-    // Simplify arithmetic A%1 → A
-    optimize("FIELD_INTEGER%1", "FIELD_INTEGER");
-    optimize("FIELD_INTEGER%1.0", "FIELD_INTEGER");
+    // Simplify arithmetic A % 1 → 0 (if A is not nullable)
+    optimize("FIELD_INTEGER%1", "FIELD_INTEGER%1");
+    optimize("FIELD_INTEGER%1.0", "FIELD_INTEGER%1");
+    optimize("Random()%1", "0");
+    optimize("Random()%1.0", "0");
   }
 
   @Test
