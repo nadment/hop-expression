@@ -53,13 +53,13 @@ public class IfNullFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Simplify IfNull(NULL,x) → x
-    if ( call.getOperand(0).isNull()) {
-        return call.getOperand(1);
+    if (call.getOperand(0).isNull()) {
+      return call.getOperand(1);
     }
 
     // Simplify if x is not nullable IfNull(x,y) → x
-    if ( !call.getOperand(0).getType().isNullable()) {
-        return call.getOperand(0);
+    if (!call.getOperand(0).getType().isNullable()) {
+      return call.getOperand(0);
     }
 
     // Remove null and duplicate but keep order
@@ -86,7 +86,7 @@ public class IfNullFunction extends Function {
       case 2 -> // COALESCE(X,Y) → IFNULL(X,Y)
           new Call(IfNullFunction.INSTANCE, operands);
       default -> {
-        // First is literal COALESCE(1, a, b) → 1
+        // The first is literal COALESCE(1, a, b) → 1
         if (operands.get(0).isConstant()) {
           yield operands.get(0);
         }

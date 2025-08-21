@@ -90,6 +90,11 @@ public class BitAndFunction extends Function {
       return Literal.NULL_INTEGER;
     }
 
+    // Simplify A & A → A
+    if (left.equals(right)) {
+      return left;
+    }
+
     Type type = left.getType();
     if (Types.isBinary(type)) {
       return new Call(BinaryBitAndFunction.INSTANCE, call.getOperands());
@@ -117,8 +122,6 @@ public class BitAndFunction extends Function {
       if (Literal.ZERO.equals(left) && !right.getType().isNullable()) {
         return Literal.ZERO;
       }
-
-      // TODO: Simplify A | !A → -1 (if A is not nullable)
 
       return call;
     }

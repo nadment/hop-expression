@@ -366,11 +366,11 @@ public class FunctionTest extends ExpressionTest {
     evalFails("IfNull(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("IfNull(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 
-   // Simplify IfNull(NULL,x) → x
-   optimize("IFNULL(NULL::STRING,FIELD_STRING)","FIELD_STRING");
+    // Simplify IfNull(NULL,x) → x
+    optimize("IFNULL(NULL::STRING,FIELD_STRING)", "FIELD_STRING");
 
-   // Simplify if x is not nullable IfNull(x,y) → x
-   optimize("IFNULL('A',FIELD_STRING)","'A'");
+    // Simplify if x is not nullable IfNull(x,y) → x
+    optimize("IFNULL('A',FIELD_STRING)", "'A'");
 
     // Flatten chained IFNULL or COALESCE
     optimize(

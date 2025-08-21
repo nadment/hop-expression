@@ -43,6 +43,7 @@ public class Identifier implements IExpression {
 
   /** The position in the expression source */
   private final int position;
+
   private IRowExpressionContext context;
 
   /** The data type when resolved or UNKNOWN if unresolved */
