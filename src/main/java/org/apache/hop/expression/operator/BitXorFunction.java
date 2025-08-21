@@ -17,8 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -69,6 +71,16 @@ public class BitXorFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+      // Reorder chained symmetric operator and simplify A ^ (..A..) --> (..A..)
+      PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+      operands.addAll(call.getChainedOperands(true));
+      IExpression operand = operands.poll();
+      while (!operands.isEmpty()) {
+          call = new Call(this, operand, operands.poll());
+          call.inferReturnType();
+          operand = call;
+      }
+
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -77,8 +89,6 @@ public class BitXorFunction extends Function {
     if (left.isNull() || right.isNull()) {
       return Literal.NULL_INTEGER;
     }
-
-    // TODO: Simplify A ^ A → 0 (if A is not null)
 
     Type type = left.getType();
     if (Types.isBinary(type)) {
@@ -103,12 +113,17 @@ public class BitXorFunction extends Function {
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);
 
-      // Simplify 0 ^ A → A (even if A is not nullable)
+      // Simplify 0 ^ A → A (even if A is nullable)
       if (Literal.ZERO.equals(left)) {
         return right;
       }
       if (Literal.ZERO.equals(right)) {
         return left;
+      }
+
+      // Simplify A ^ A → 0 (if A is not nullable)
+      if (left.equals(right) && !left.getType().isNullable()) {
+        return Literal.ZERO;
       }
 
       return call;

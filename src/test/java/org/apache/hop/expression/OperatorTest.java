@@ -1854,6 +1854,9 @@ public class OperatorTest extends ExpressionTest {
       optimize("4&FIELD_INTEGER");
       optimize("FIELD_INTEGER&4", "4&FIELD_INTEGER");
 
+      // Simplify constant
+      optimize("5&FIELD_INTEGER&5&5", "5&FIELD_INTEGER");
+
       // Simplify NULL & A → NULL
       optimizeNull("NULL::INTEGER&FIELD_INTEGER");
       optimizeNull("FIELD_INTEGER&NULL::INTEGER");
@@ -1915,7 +1918,9 @@ public class OperatorTest extends ExpressionTest {
     void testOptimization() throws Exception {
       // Nothing to simplify
       optimize("FIELD_INTEGER|4", "4|FIELD_INTEGER");
-      optimize("1|FIELD_INTEGER|4", "5|FIELD_INTEGER");
+
+      // Simplify constant
+      optimize("1|FIELD_INTEGER|4|4", "5|FIELD_INTEGER");
 
       // Simplify NULL | A → NULL
       optimizeNull("NULL::INTEGER|FIELD_INTEGER");
@@ -1971,18 +1976,24 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testOptimization() throws Exception {
       // Nothing to simplify
-      optimize("FIELD_INTEGER^4");
+      optimize("FIELD_INTEGER^4","4^FIELD_INTEGER");
+
+      // Simplify constant
+      optimize("1^FIELD_INTEGER^3^4", "6^FIELD_INTEGER");
 
       // Simplify NULL ^ A → NULL
-      optimizeNull("NULLIF(1,1)^FIELD_INTEGER");
-      optimizeNull("FIELD_INTEGER^NULLIF(1,1)");
+      optimizeNull("NULL::INTEGER ^ FIELD_INTEGER");
+      optimizeNull("FIELD_INTEGER ^ NULL::INTEGER");
+      optimizeNull("NULL::BINARY ^ FIELD_BINARY");
+      optimizeNull("FIELD_BINARY ^ NULL::BINARY");
 
-      // TODO: Simplify A ^ A → 0 (if A is not null)
-      // optimize("FIELD_INTEGER^FIELD_INTEGER", "0");
+      // Simplify A ^ A → 0 (if A is not nullable)
+      optimize("FIELD_INTEGER ^ FIELD_INTEGER", "FIELD_INTEGER^FIELD_INTEGER");
+      optimize("IFNULL(FIELD_INTEGER,4) ^ IFNULL(FIELD_INTEGER,4)", "0");
 
-      // Simplify 0 ^ A → A (even if A is null)
-      optimize("0^FIELD_INTEGER", "FIELD_INTEGER");
-      optimize("FIELD_INTEGER^0", "FIELD_INTEGER");
+      // Simplify 0 ^ A → A (even if A is nullable)
+      optimize("0 ^ FIELD_INTEGER", "FIELD_INTEGER");
+      optimize("FIELD_INTEGER ^ 0", "FIELD_INTEGER");
     }
   }
 
