@@ -161,11 +161,7 @@ public class LoopAction extends ActionBase implements IAction {
 
     // workflow.setVariables(getVariablesMap(workflow, previousResult));
     workflow.setLogLevel(getLogLevel());
-
-    if (parentWorkflow.isInteractive()) {
-      workflow.setInteractive(true);
-      workflow.getActionListeners().addAll(parentWorkflow.getActionListeners());
-    }
+    workflow.getActionListeners().addAll(parentWorkflow.getActionListeners());
 
     // Link the workflow with the sub-workflow
     parentWorkflow.getWorkflowTracker().addWorkflowTracker(workflow.getWorkflowTracker());

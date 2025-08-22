@@ -245,7 +245,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     widget.setFont(GuiResource.getInstance().getFontFixed());
 
-    // In Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
+    // In the Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
     // Use Ctrl-ALT-SPACE instead.
     final int modifierKeys =
         (System.getProperty("user.language").equals("zh")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
@@ -569,7 +569,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
             Menu menu = new Menu(wTree);
             MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
             menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label"));
-            menuItem.setImage(GuiResource.getInstance().getImageHelpWeb());
+            menuItem.setImage(GuiResource.getInstance().getImageHelp());
             menuItem.setData(item.getData());
             menuItem.addListener(SWT.Selection, e -> displayHelp(point, item.getData()));
             menu.setVisible(true);

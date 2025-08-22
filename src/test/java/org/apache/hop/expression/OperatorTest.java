@@ -1976,7 +1976,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testOptimization() throws Exception {
       // Nothing to simplify
-      optimize("FIELD_INTEGER^4","4^FIELD_INTEGER");
+      optimize("FIELD_INTEGER^4", "4^FIELD_INTEGER");
 
       // Simplify constant
       optimize("1^FIELD_INTEGER^3^4", "6^FIELD_INTEGER");

@@ -71,15 +71,15 @@ public class BitXorFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-      // Reorder chained symmetric operator and simplify A ^ (..A..) --> (..A..)
-      PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
-      operands.addAll(call.getChainedOperands(true));
-      IExpression operand = operands.poll();
-      while (!operands.isEmpty()) {
-          call = new Call(this, operand, operands.poll());
-          call.inferReturnType();
-          operand = call;
-      }
+    // Reorder chained symmetric operator and simplify A ^ (..A..) --> (..A..)
+    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+    operands.addAll(call.getChainedOperands(true));
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {
+      call = new Call(this, operand, operands.poll());
+      call.inferReturnType();
+      operand = call;
+    }
 
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
