@@ -575,6 +575,9 @@ public class FunctionTest extends ExpressionTest {
         "CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 4, 0, 0));
     evalEquals(
+        "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')",
+        ZonedDateTime.of(2020, 5, 25, 22, 48, 0, 0, ZoneId.of("Europe/Paris")));
+    evalEquals(
         "CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 23, 0, 0));
     evalEquals(
@@ -586,6 +589,14 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("CONVERT_TIMEZONE(Null, '2023-01-01 14:00:00')", ErrorCode.INVALID_TIMEZONE);
+
+    // evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE
+    // 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
+
+    optimize("CONVERT_TIMEZONE('Europe/Paris',FIELD_TIMESTAMP)");
+    optimize(
+        "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')",
+        "TIMESTAMP '2020-05-25 22:48:00' AT TIME ZONE 'Europe/Paris'");
   }
 
   @Test
@@ -1909,6 +1920,38 @@ public class FunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Div0() throws Exception {
+    evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6, false));
+    evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
+    evalEquals("Div0(FIELD_INTEGER,0)", 0D);
+    evalEquals("Div0(FIELD_INTEGER,2)", 20D).returnType(NumberType.of(18, 6));
+    evalNull("Div0(NULL_INTEGER,1)");
+    evalNull("Div0(NULL_INTEGER,0)");
+    evalNull("Div0(1,NULL_INTEGER)");
+
+    evalFails("Div0()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Div0(40)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Div0(40,1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+
+    // Normalize
+    optimize("DIV0(FIELD_INTEGER,4)");
+
+    // Simplify arithmetic DIV0(A,0) → 0 when A is not nullable
+    optimize("DIV0(0,0)", "0");
+    optimize("DIV0(PI(),0)", "0");
+
+    // Simplify arithmetic with NULL
+    optimizeNull("DIV0(NULL::INTEGER,FIELD_INTEGER)");
+    optimizeNull("DIV0(FIELD_INTEGER,NULL::INTEGER)");
+
+    // Simplify arithmetic DIV0(A,1) → A
+    optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
+
+    // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
+    optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
+  }
+
+  @Test
   void Exp() throws Exception {
     evalEquals("Exp(1)", BigDecimalMath.exp(BigDecimal.ONE, Operator.MATH_CONTEXT))
         .returnType(Types.NUMBER_NOT_NULL);
@@ -1997,10 +2040,10 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Cbrt(0)", BigDecimal.ZERO);
     evalEquals("Cbrt(1)", BigDecimal.ONE);
     evalEquals("Cbrt(2)", new BigDecimal("1.2599210498948731647672106072782"));
-    evalEquals("Cbrt(64)", 4D);
-    evalEquals("Cbrt(343)", 7D);
-    // TODO: CBRT(-64)=-4 Work in DuckDb
-    // evalEquals("Cbrt(-64)", -4D);
+    evalEquals("Cbrt(64)", BigDecimal.valueOf(4L));
+    evalEquals("Cbrt(343)", BigDecimal.valueOf(7L));
+    // TODO: support negative value CBRT(-64)=-4
+    // evalEquals("Cbrt(-8)", BigDecimal.valueOf(-2L));
     evalNull("Cbrt(NULL_INTEGER)");
     evalNull("Cbrt(NULL_NUMBER)");
 
@@ -2011,7 +2054,7 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Sqrt() throws Exception {
-    evalEquals("Sqrt(9)", 3D);
+    evalEquals("Sqrt(9)", BigDecimal.valueOf(3L));
     evalNull("Sqrt(NULL_INTEGER)");
 
     // Check operands

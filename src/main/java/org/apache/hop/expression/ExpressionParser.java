@@ -419,13 +419,15 @@ public class ExpressionParser {
       }
       return expression;
     } else if (isThenNext(Id.SIMILAR)) {
-      if (isThenNext(Id.TO)) {
+        if (isNotThenNext(Id.TO)) {
+            throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
+        }
+        checkEndOfExpression(Id.SIMILAR);
         return new Call(
             getPosition(),
             not ? NotSimilarToOperator.INSTANCE : SimilarToOperator.INSTANCE,
             expression,
             parseBitwiseOr());
-      } else throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
     }
 
     if (not) {

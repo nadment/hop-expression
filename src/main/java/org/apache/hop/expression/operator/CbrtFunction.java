@@ -33,6 +33,8 @@ public class CbrtFunction extends Function {
 
   private static final BigDecimal TREE = BigDecimal.valueOf(3);
 
+  // private static final BigDecimal ONE_THIRD = BigDecimal.ONE.divide(TREE, MATH_CONTEXT);
+
   public CbrtFunction() {
     super(
         "CBRT",
@@ -51,6 +53,8 @@ public class CbrtFunction extends Function {
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
+
+    // return BigDecimalMath.pow(value, ONE_THIRD, MATH_CONTEXT);
 
     return BigDecimalMath.root(value, TREE, MATH_CONTEXT);
   }
