@@ -690,6 +690,14 @@ public class OperatorTest extends ExpressionTest {
       // Simplify arithmetic (-A) / (-B) → A / B
       optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
 
+      // Simplify arithmetic (A * B) / C → (A / C) * B (if A and C are constants)
+      optimize("(4*FIELD_NUMBER)/2", "2*FIELD_NUMBER");
+
+      // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
+      optimize("(FIELD_NUMBER/4)/2", "FIELD_NUMBER/8");
+
+      optimize("((FIELD_NUMBER/4)/FIELD_INTEGER)/2", "FIELD_NUMBER/FIELD_INTEGER/8");
+
       optimize("-FIELD_NUMBER/FIELD_INTEGER", "-FIELD_NUMBER/FIELD_INTEGER");
       optimize("-FIELD_NUMBER/FIELD_INTEGER", "-FIELD_NUMBER/FIELD_INTEGER");
       optimize("FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/-FIELD_INTEGER");
@@ -1707,11 +1715,11 @@ public class OperatorTest extends ExpressionTest {
       optimize("2*(-FIELD_INTEGER)", "-2*FIELD_INTEGER");
       optimize("2*(-FIELD_INTEGER)*(-4)", "8*FIELD_INTEGER");
 
-      // Simplify arithmetic A * A → SQUARE(A)
+      // Simplify arithmetic A*A → SQUARE(A)
       // optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
       // optimize("(2*FIELD_INTEGER)*(FIELD_INTEGER*2)", "4*SQUARE(FIELD_INTEGER)");
 
-      // Simplify arithmetic 1 / A * B → B / A
+      // Simplify arithmetic (1/A)*B → B/A
       optimize("1/FIELD_INTEGER*4", "4*FIELD_INTEGER");
 
       // optimize("-2*(FIELD_INTEGER-4)/2", "4+FIELD_INTEGER");
@@ -1739,7 +1747,7 @@ public class OperatorTest extends ExpressionTest {
       // values that starts with "a" and ends with "o"
       evalTrue("'amigo' like 'a%o'");
       evalTrue("'ao' like 'a%o'");
-      // values that starts with "a" and are at least 3 characters in length
+      // values that start with "a" and are at least 3 characters in length
       evalTrue("'ami' like 'a_%_%'");
       evalTrue("'amigo' like 'a_%_%'");
       evalTrue("'Friday' like '___day'");

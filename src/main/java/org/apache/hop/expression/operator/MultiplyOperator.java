@@ -39,7 +39,7 @@ import org.apache.hop.expression.type.Types;
  * <strong>Syntax:</strong> <code>x * y</code>
  */
 public class MultiplyOperator extends BinaryOperator {
-
+  private static final Literal MINUS_ONE = Literal.of(new BigDecimal(-1L));
   public static final MultiplyOperator INSTANCE = new MultiplyOperator();
 
   public MultiplyOperator() {
@@ -67,6 +67,7 @@ public class MultiplyOperator extends BinaryOperator {
 
     final List<IExpression> zeroTerms = new ArrayList<>();
     final List<IExpression> oneTerms = new ArrayList<>();
+    final List<IExpression> minusOneTerms = new ArrayList<>();
     final List<IExpression> constantTerms = new ArrayList<>();
     final List<IExpression> nullableTerms = new ArrayList<>();
     final List<Call> divideTerms = new ArrayList<>();
@@ -83,6 +84,9 @@ public class MultiplyOperator extends BinaryOperator {
       }
       if (Literal.ONE.equals(operand)) {
         oneTerms.add(operand);
+      }
+      if (MINUS_ONE.equals(operand)) {
+        minusOneTerms.add(operand);
       }
       if (operand.isConstant()) {
         constantTerms.add(operand);

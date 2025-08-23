@@ -17,8 +17,14 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -72,6 +78,18 @@ public class DivOperator extends BinaryOperator {
     // Simplify arithmetic (-A) / (-B) → A / B
     if (left.isOperator(NegateOperator.INSTANCE) && right.isOperator(NegateOperator.INSTANCE)) {
       return new Call(DivOperator.INSTANCE, call(left).getOperand(0), call(right).getOperand(0));
+    }
+
+    // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
+    if (right.isConstant() && left.isOperator(DivOperator.INSTANCE) && call(left).getOperand(1).isConstant()) {
+        Call denominator = new Call(MultiplyOperator.INSTANCE, call(left).getOperand(1), right);
+        return new Call(DivOperator.INSTANCE, call(left).getOperand(0), denominator);
+    }
+
+    // Simplify arithmetic (A * B) / C → (A / C) * B (if A and C are constants)
+    if (right.isConstant() && left.isOperator(MultiplyOperator.INSTANCE) && call(left).getOperand(0).isConstant()) {
+      IExpression numerator = new Call(DivOperator.INSTANCE, call(left).getOperand(0), right);
+      return new Call(MultiplyOperator.INSTANCE, numerator, call(left).getOperand(1));
     }
 
     return call;
