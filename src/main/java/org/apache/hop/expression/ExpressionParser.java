@@ -62,7 +62,7 @@ import org.apache.hop.expression.operator.LikeOperator;
 import org.apache.hop.expression.operator.ListAggFunction;
 import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
-import org.apache.hop.expression.operator.NegateOperator;
+import org.apache.hop.expression.operator.NegativeOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NotInOperator;
 import org.apache.hop.expression.operator.NotSimilarToOperator;
@@ -514,7 +514,7 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ExpressionException {
     int start = this.getPosition();
     if (isThenNext(Id.MINUS)) {
-      return new Call(start, NegateOperator.INSTANCE, this.parsePrimary());
+      return new Call(start, NegativeOperator.INSTANCE, this.parsePrimary());
     }
     if (isThenNext(Id.PLUS)) {
       // Ignore

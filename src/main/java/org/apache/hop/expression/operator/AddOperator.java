@@ -120,7 +120,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A+(-B) → A-B
-    if (right.isOperator(NegateOperator.INSTANCE)) {
+    if (right.isOperator(NegativeOperator.INSTANCE)) {
       return new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0));
     }
 

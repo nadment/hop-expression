@@ -70,7 +70,7 @@ public class DivOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic (-A) / (-B) → A / B
-    if (left.isOperator(NegateOperator.INSTANCE) && right.isOperator(NegateOperator.INSTANCE)) {
+    if (left.isOperator(NegativeOperator.INSTANCE) && right.isOperator(NegativeOperator.INSTANCE)) {
       return new Call(DivOperator.INSTANCE, call(left).getOperand(0), call(right).getOperand(0));
     }
 

@@ -63,7 +63,7 @@ public class SubtractOperator extends BinaryOperator {
         return new Call(
             AddDaysFunction.INSTANCE,
             left,
-            new Call(call.getPosition(), NegateOperator.INSTANCE, right));
+            new Call(call.getPosition(), NegativeOperator.INSTANCE, right));
       }
       return new Call(IntervalFromTemporalSubtractOperator.INSTANCE, call.getOperands());
     }
@@ -75,11 +75,11 @@ public class SubtractOperator extends BinaryOperator {
 
     // Simplify arithmetic 0-A → -A
     if (Literal.ZERO.equals(left)) {
-      return new Call(NegateOperator.INSTANCE, right);
+      return new Call(NegativeOperator.INSTANCE, right);
     }
 
     // Simplify arithmetic A-(-B) → A+B
-    if (right.isOperator(NegateOperator.INSTANCE)) {
+    if (right.isOperator(NegativeOperator.INSTANCE)) {
       return new Call(AddOperator.INSTANCE, left, call(right).getOperand(0));
     }
 

@@ -73,7 +73,7 @@ public class Div0Function extends Function {
     }
 
     // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
-    if (left.isOperator(NegateOperator.INSTANCE) && right.isOperator(NegateOperator.INSTANCE)) {
+    if (left.isOperator(NegativeOperator.INSTANCE) && right.isOperator(NegativeOperator.INSTANCE)) {
       return new Call(call.getOperator(), call(left).getOperand(0), call(right).getOperand(0));
     }
 

@@ -76,7 +76,7 @@ public class MultiplyOperator extends BinaryOperator {
     final List<IExpression> constantTerms = new ArrayList<>();
     final List<IExpression> nullableTerms = new ArrayList<>();
     final List<Call> divideTerms = new ArrayList<>();
-    final List<Call> negateTerms = new ArrayList<>();
+    final List<Call> negativeTerms = new ArrayList<>();
 
     for (IExpression operand : operands) {
 
@@ -96,8 +96,8 @@ public class MultiplyOperator extends BinaryOperator {
       if (operand.getType().isNullable()) {
         nullableTerms.add(operand);
       }
-      if (operand.isOperator(NegateOperator.INSTANCE)) {
-        negateTerms.add((Call) operand);
+      if (operand.isOperator(NegativeOperator.INSTANCE)) {
+        negativeTerms.add((Call) operand);
       }
       if (operand.isOperator(DivOperator.INSTANCE)) {
         divideTerms.add((Call) operand);
@@ -119,11 +119,11 @@ public class MultiplyOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic (-A) * (-B) → A * B
-    int negateCount = negateTerms.size();
+    int negateCount = negativeTerms.size();
     if (negateCount > 1) {
       // Remove all pairs of negate operators else Keep one negate
       int i = negateCount % 2;
-      for (Call term : negateTerms) {
+      for (Call term : negativeTerms) {
         if (i <= 0) {
           operands.add(term.getOperand(0));
           operands.remove(term);
@@ -134,7 +134,7 @@ public class MultiplyOperator extends BinaryOperator {
 
     // Simplify arithmetic only if one negate const * (-A) → -const * A
     else if (negateCount == 1 && !constantTerms.isEmpty()) {
-      Call term = negateTerms.get(0);
+      Call term = negativeTerms.get(0);
       // operands.remove(term);
       operands.add(term.getOperand(0));
       IExpression constant = constantTerms.get(0);

@@ -29,4 +29,4 @@ A unary plus can appear before any numeric expression, it performs no operation 
 
 == See also
 
-* xref:negate.adoc["-",role=fun]
+* xref:negative.adoc["-",role=fun]

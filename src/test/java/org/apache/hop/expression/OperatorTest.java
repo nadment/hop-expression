@@ -596,6 +596,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testOptimize() throws Exception {
       optimize("+FIELD_INTEGER", "FIELD_INTEGER");
+      optimize("+(FIELD_INTEGER)", "FIELD_INTEGER");
     }
   }
 

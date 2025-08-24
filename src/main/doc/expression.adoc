@@ -40,9 +40,9 @@ Comments are sections of code text to aid readability.
 
 <1> A single line comment begins with two consecutive slash // or hyphen -- characters and ends with a new line.
 
-<2> A multi line comment begins with a slash asterick /* and ends with asterick slash and support nested block comment.
+<2> A multi-line comment begins with a slash asterisk /* and ends with asterisk slash and support nested block comment.
 
-NOTE: A comment is removed when parsing expression before evaluation, therefore has no influence on performance.
+NOTE: A comment is removed when parsing an expression before evaluation, therefore, has no influence on performance.
 
 
 == Literals
@@ -105,7 +105,7 @@ Binary integers are a sequence of binary digits [0-1] preceded by a `0b` or `0B`
 0b_1001_0001
 ----
 
-NOTE: A numeric literal that is outside the range of the INTEGER type is assigned to NUMBER(n, 0), where n is the number of digits in the literal, excluding leading zeros. 
+NOTE: A numeric literal outside the range of the INTEGER type is assigned to NUMBER(n, 0), where n is the number of digits in the literal, excluding leading zeros.
 
 NOTE: The use of underscores is restricted to one underscore between digits or prefixes.
 
@@ -157,7 +157,7 @@ The parsing is strict and requires months to be less than 12, days to be less th
 === Timestamp
 
 
-Literal timestamp can includes a time zone offset or a time zone region.
+Literal timestamp can include a time zone offset or a time zone region.
 
 ----
 TIMESTAMP 'yyyy-mm-dd hh24:mi:ss.ffffff' [AT TIME ZONE  '...']
@@ -180,7 +180,7 @@ NOTE: Time zone names are case-sensitive and must be enclosed in single quotes (
 
 === Interval
 
-Interval literals defines a constant time period. You can use interval to add or subtract a period of time to/from a date or timestamp.
+Interval literals defines a constant time period. You can use an interval to add or subtract a period of time to/from a date or timestamp.
 
 ----
 INTERVAL 1 YEAR
@@ -278,7 +278,7 @@ The operator precedence and associativity, highest to lowest.
 |left|xref:functions.adoc["function",role=fun](args...)|Function
 |right|xref:cast.adoc["::",role=op]|Type cast
 |right|xref:element_at.adoc["[\]",role=op]|Array element selection
-|right|xref:plus.adoc["+",role=op], xref:negate.adoc["-",role=operator]|Positive, Negative
+|right|xref:plus.adoc["+",role=op], xref:negative.adoc["-",role=operator]|Positive, Negative
 |right|xref:bit_or.adoc["~",role=op]|Bitwise NOT
 |left|xref:multiply.adoc["*",role=op], xref:div.adoc["/",role=op], xref:mod.adoc["%",role=op]|Multiplication, Division, Modulus
 |left|xref:add.adoc[+], xref:subtract.adoc["-",role=op]|Addition, Subtraction
