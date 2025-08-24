@@ -17,14 +17,8 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -80,15 +74,26 @@ public class DivOperator extends BinaryOperator {
       return new Call(DivOperator.INSTANCE, call(left).getOperand(0), call(right).getOperand(0));
     }
 
-    // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
-    if (right.isConstant() && left.isOperator(DivOperator.INSTANCE) && call(left).getOperand(1).isConstant()) {
-        Call denominator = new Call(MultiplyOperator.INSTANCE, call(left).getOperand(1), right);
-        return new Call(DivOperator.INSTANCE, call(left).getOperand(0), denominator);
+    if (left.isOperator(DivOperator.INSTANCE)) {
+      // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
+      if (call(left).getOperand(1).isConstant()) {
+        if (right.isConstant()) {
+          Call denominator = new Call(MultiplyOperator.INSTANCE, call(left).getOperand(1), right);
+          return new Call(DivOperator.INSTANCE, call(left).getOperand(0), denominator);
+        } else {
+          // Move constant up (A / B) / C → ( A / C ) / B (if B is constant)
+          Call numerator = new Call(DivOperator.INSTANCE, call(left).getOperand(0), right);
+          numerator.inferReturnType();
+          return new Call(DivOperator.INSTANCE, numerator, call(left).getOperand(1));
+        }
+      }
     }
 
     // Simplify arithmetic (A * B) / C → (A / C) * B (if A and C are constants)
-    if (right.isConstant() && left.isOperator(MultiplyOperator.INSTANCE) && call(left).getOperand(0).isConstant()) {
-      IExpression numerator = new Call(DivOperator.INSTANCE, call(left).getOperand(0), right);
+    if (right.isConstant()
+        && left.isOperator(MultiplyOperator.INSTANCE)
+        && call(left).getOperand(0).isConstant()) {
+      Call numerator = new Call(DivOperator.INSTANCE, call(left).getOperand(0), right);
       return new Call(MultiplyOperator.INSTANCE, numerator, call(left).getOperand(1));
     }
 

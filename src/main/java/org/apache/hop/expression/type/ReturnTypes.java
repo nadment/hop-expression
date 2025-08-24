@@ -240,10 +240,14 @@ public final class ReturnTypes {
   // -------------------------------------------------------------
   //                   FUNCTIONS
   // -------------------------------------------------------------
+
+  /** Type-inference strategy for the multiply operator. */
   public static final IReturnTypeInference MULTIPLY_OPERATOR =
       call -> deriveMultiplyType(call.getOperand(0).getType(), call.getOperand(1).getType());
+  /** Type-inference strategy for the divide operator. */
   public static final IReturnTypeInference DIVIDE_OPERATOR =
       call -> deriveDivideType(call.getOperand(0).getType(), call.getOperand(1).getType());
+  /** Type-inference strategy for the modulo operator. */
   public static final IReturnTypeInference MOD_OPERATOR =
       call -> deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();

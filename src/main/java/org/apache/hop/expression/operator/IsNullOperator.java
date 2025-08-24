@@ -61,6 +61,11 @@ public class IsNullOperator extends PostfixUnaryOperator {
       return Literal.FALSE;
     }
 
+    // Simplify CAST(x AS type) IS NULL → x IS NULL
+    if (operand.isOperator(CastOperator.INSTANCE)) {
+      return new Call(call.getOperator(), call(operand).getOperands());
+    }
+
     return call;
   }
 

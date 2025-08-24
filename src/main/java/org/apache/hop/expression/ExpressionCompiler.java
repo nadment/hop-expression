@@ -66,7 +66,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
     if (expression instanceof Call call) {
 
-      // Inferring return type
+      // Inferring the return type
       call.inferReturnType();
       hasChanged |= call.getOperator().coerceOperandsType(call);
 

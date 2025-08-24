@@ -411,8 +411,9 @@ public class ExpressionTest {
     // evalEquals("TIMESTAMP '2001-02-16 20:38:40' AT TIME ZONE 'Asia/Tokyo' AT TIME ZONE
     // 'America/Chicago'",  ZonedDateTime.of(2001, 2, 16, 5, 38, 40, 0,
     // ZoneId.of("America/Chicago")));
-      optimize("(FIELD_NUMBER/2)/4", "FIELD_NUMBER/8");
-      //optimize("(4*FIELD_NUMBER)/2", "2*FIELD_NUMBER");
 
+     // optimize("-2*(FIELD_INTEGER-4)/2", "4+FIELD_INTEGER");
+    //optimize("((FIELD_NUMBER/4)/FIELD_INTEGER)/2", "FIELD_NUMBER/FIELD_INTEGER/8");
+    //optimize("((FIELD_NUMBER*4)*FIELD_INTEGER)/2", "2*FIELD_NUMBER*FIELD_INTEGER");
   }
 }

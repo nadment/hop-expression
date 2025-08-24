@@ -70,7 +70,7 @@ public class IsDateFunction extends Function {
       return new Call(IsNotNullOperator.INSTANCE, call.getOperand(0));
     }
 
-    // Other data type are always false
+    // Another data type is always false
     return Literal.FALSE;
   }
 

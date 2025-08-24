@@ -61,13 +61,18 @@ public class MultiplyOperator extends BinaryOperator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Simplify arithmetic -1 * A → -A
+//    if (MINUS_ONE.equals(call.getOperand(0))) {
+//      return new Call(NegateOperator.INSTANCE, call.getOperand(1));
+//    }
+
     // Reorder chained symmetric operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
     operands.addAll(call.getChainedOperands(true));
 
     final List<IExpression> zeroTerms = new ArrayList<>();
     final List<IExpression> oneTerms = new ArrayList<>();
-    final List<IExpression> minusOneTerms = new ArrayList<>();
     final List<IExpression> constantTerms = new ArrayList<>();
     final List<IExpression> nullableTerms = new ArrayList<>();
     final List<Call> divideTerms = new ArrayList<>();
@@ -84,9 +89,6 @@ public class MultiplyOperator extends BinaryOperator {
       }
       if (Literal.ONE.equals(operand)) {
         oneTerms.add(operand);
-      }
-      if (MINUS_ONE.equals(operand)) {
-        minusOneTerms.add(operand);
       }
       if (operand.isConstant()) {
         constantTerms.add(operand);
