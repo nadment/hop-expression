@@ -64,7 +64,7 @@ import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
 import org.apache.hop.expression.operator.ILikeOperator;
-import org.apache.hop.expression.operator.InOperator;
+import org.apache.hop.expression.operator.InListOperator;
 import org.apache.hop.expression.operator.IsDistinctFromOperator;
 import org.apache.hop.expression.operator.IsFalseOperator;
 import org.apache.hop.expression.operator.IsNullOperator;
@@ -167,7 +167,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           LessThanOperator.INSTANCE,
           LessThanOrEqualOperator.INSTANCE,
           BetweenAsymmetricOperator.INSTANCE,
-          InOperator.INSTANCE,
+          InListOperator.INSTANCE,
           IsDistinctFromOperator.INSTANCE,
           IsNullOperator.INSTANCE,
           SimilarToOperator.INSTANCE,

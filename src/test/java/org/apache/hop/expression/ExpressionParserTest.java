@@ -32,7 +32,7 @@ import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
-import org.apache.hop.expression.operator.InOperator;
+import org.apache.hop.expression.operator.InListOperator;
 import org.apache.hop.expression.operator.IsDistinctFromOperator;
 import org.apache.hop.expression.operator.IsFalseOperator;
 import org.apache.hop.expression.operator.IsNotDistinctFromOperator;
@@ -178,7 +178,7 @@ public class ExpressionParserTest extends ExpressionTest {
     assertNotNull(ConcatFunction.INSTANCE.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
-    assertNotEquals(InOperator.INSTANCE, NotInOperator.INSTANCE);
+    assertNotEquals(InListOperator.INSTANCE, NotInOperator.INSTANCE);
     assertNotEquals(SimilarToOperator.INSTANCE, NotSimilarToOperator.INSTANCE);
   }
 

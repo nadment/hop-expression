@@ -781,8 +781,8 @@ final class PatternNumberFormat extends NumberFormat {
   private int addSign(StringBuilder output, int signum) {
     switch (this.sign) {
 
-        // Returns negative value with a leading minus sign (-) and positive value with
-        // a leading blank.
+      // Returns negative value with a leading minus sign (-) and positive value with
+      // a leading blank.
       case DEFAULT:
         if (signum < 0) {
           output.insert(0, '-');
@@ -791,20 +791,20 @@ final class PatternNumberFormat extends NumberFormat {
         } else return 0;
         break;
 
-        // Returns negative value with a leading minus sign (-) and positive value with
-        // a leading plus sign (+).
+      // Returns negative value with a leading minus sign (-) and positive value with
+      // a leading plus sign (+).
       case S_LEADING:
         output.insert(0, (signum < 0) ? '-' : '+');
         break;
 
-        // Returns negative value with a trailing minus sign (-) and positive value with
-        // a trailing plus sign (+).
+      // Returns negative value with a trailing minus sign (-) and positive value with
+      // a trailing plus sign (+).
       case TRAILING_S:
         output.append((signum < 0) ? '-' : '+');
         break;
 
-        // Returns negative value with a leading minus sign (-) and positive value with
-        // a leading blank.
+      // Returns negative value with a leading minus sign (-) and positive value with
+      // a leading blank.
       case MI_LEADING:
         if (signum < 0) {
           output.insert(0, '-');
@@ -813,8 +813,8 @@ final class PatternNumberFormat extends NumberFormat {
         } else return 0;
         break;
 
-        // Returns negative value with a trailing minus sign (-) and positive value with
-        // a trailing blank.
+      // Returns negative value with a trailing minus sign (-) and positive value with
+      // a trailing blank.
       case TRAILING_MI:
         if (signum < 0) {
           output.append('-');
@@ -823,8 +823,8 @@ final class PatternNumberFormat extends NumberFormat {
         } else return 0;
         break;
 
-        // Returns negative value in <angle brackets> and positive value with a leading
-        // and trailing blank.
+      // Returns negative value in <angle brackets> and positive value with a leading
+      // and trailing blank.
       case PR:
         if (signum < 0) {
           output.insert(0, '<');

@@ -26,6 +26,23 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 @Setter
 public final class ExpressionField {
 
+  /** The target field name */
+  @HopMetadataProperty(
+      key = "name",
+      injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
+  private String name;
+  /** The expression source */
+  @HopMetadataProperty(
+      key = "expression",
+      injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
+  private String expression;
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Type")
+  private String type;
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
+  private int length = -1;
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
+  private int precision = -1;
+
   public ExpressionField() {
     super();
   }
@@ -39,27 +56,6 @@ public final class ExpressionField {
     this.length = other.length;
     this.precision = other.precision;
   }
-
-  /** The target field name */
-  @HopMetadataProperty(
-      key = "name",
-      injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
-  private String name;
-
-  /** The expression source */
-  @HopMetadataProperty(
-      key = "expression",
-      injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
-  private String expression;
-
-  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Type")
-  private String type;
-
-  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
-  private int length = -1;
-
-  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
-  private int precision = -1;
 
   @Override
   public boolean equals(Object o) {

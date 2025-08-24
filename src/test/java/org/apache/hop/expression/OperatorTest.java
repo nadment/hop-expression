@@ -494,7 +494,7 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Nested
-  class In {
+  class InList {
     @Test
     void testPredicate() throws Exception {
       evalTrue("FIELD_STRING in ('?','*','TEST')").returnType(Types.BOOLEAN);

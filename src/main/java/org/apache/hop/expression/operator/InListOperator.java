@@ -37,21 +37,21 @@ import org.apache.hop.expression.type.Types;
 
 /**
  * Logical <code>IN</code> operator tests for a value's membership in a list of values. The IN
- * operator is a shorthand for multiple OR conditions.
+ * operator is shorthand for multiple OR conditions.
  *
  * <p>Syntax of the operator:
  *
  * <ul>
- *   <li><code>field NOT IN (list of values)</code>
+ *   <li><code>field IN (list of values)</code>
  * </ul>
  */
-public class NotInOperator extends Operator {
+public class InListOperator extends Operator {
 
-  public static final NotInOperator INSTANCE = new NotInOperator();
+  public static final InListOperator INSTANCE = new InListOperator();
 
-  public NotInOperator() {
+  public InListOperator() {
     super(
-        "NOT IN",
+        "IN",
         120,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
@@ -62,7 +62,7 @@ public class NotInOperator extends Operator {
 
   @Override
   public Operator not() {
-    return InListOperator.INSTANCE;
+    return NotInOperator.INSTANCE;
   }
 
   @Override
@@ -107,6 +107,10 @@ public class NotInOperator extends Operator {
 
     // Remove null and duplicate element in list
     for (IExpression expression : array) {
+
+      if (expression.isNull()) {
+        continue;
+      }
 
       // Simplify B in (A,B,C) → B=B (only if reference is not nullable)
       if (reference.equals(expression) && !reference.getType().isNullable()) {
@@ -176,22 +180,21 @@ public class NotInOperator extends Operator {
     Array array = (Array) operands[1];
     Type type = operands[0].getType();
 
-    // c1 NOT IN (c2, c3, NULL) is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
-    Boolean result = Boolean.TRUE;
+    // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
     for (IExpression expression : array) {
       Object value = expression.getValue();
-      if (value == null) return null;
+      if (value == null) continue;
       if (type.compareEqual(left, value)) {
-        result = Boolean.FALSE;
+        return Boolean.TRUE;
       }
     }
-    return result;
+    return Boolean.FALSE;
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
-    writer.append(" NOT IN (");
+    writer.append(" IN (");
     array(operands[1]).unparseValues(writer);
     writer.append(')');
   }

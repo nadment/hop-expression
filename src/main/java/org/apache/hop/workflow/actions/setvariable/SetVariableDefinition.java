@@ -23,6 +23,13 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 @Setter
 @Getter
 public final class SetVariableDefinition {
+  @HopMetadataProperty(key = "name")
+  private String name;
+  @HopMetadataProperty(key = "expression")
+  private String expression;
+  @HopMetadataProperty(key = "scope")
+  private SetVariableScope scope;
+
   public SetVariableDefinition() {
     super();
   }
@@ -33,13 +40,4 @@ public final class SetVariableDefinition {
     this.expression = value;
     this.scope = type;
   }
-
-  @HopMetadataProperty(key = "name")
-  private String name;
-
-  @HopMetadataProperty(key = "expression")
-  private String expression;
-
-  @HopMetadataProperty(key = "scope")
-  private SetVariableScope scope;
 }

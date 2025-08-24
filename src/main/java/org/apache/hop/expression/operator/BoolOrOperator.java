@@ -121,7 +121,7 @@ public class BoolOrOperator extends BinaryOperator {
             inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.isOperator(InOperator.INSTANCE) && term.getOperand(1).isConstant()) {
+        if (term.isOperator(InListOperator.INSTANCE) && term.getOperand(1).isConstant()) {
           for (IExpression operand : array(term.getOperand(1))) {
             inTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
@@ -229,7 +229,7 @@ public class BoolOrOperator extends BinaryOperator {
           values.add(pair.right());
           predicates.remove(pair.left());
         }
-        Call predicate = new Call(InOperator.INSTANCE, reference, new Array(values));
+        Call predicate = new Call(InListOperator.INSTANCE, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }

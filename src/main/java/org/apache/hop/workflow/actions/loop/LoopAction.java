@@ -78,16 +78,6 @@ public class LoopAction extends ActionBase implements IAction {
   @HopMetadataProperty(groupKey = "parameters", key = "parameter")
   private List<Parameter> parameters;
 
-  private static class ExecutionContext {
-    public Result result;
-    public IVariables variables;
-
-    public ExecutionContext(Result result, IVariables variables) {
-      this.result = result;
-      this.variables = variables;
-    }
-  }
-
   public LoopAction(String name, String description) {
     super(name, description);
     parameters = new ArrayList<>();
@@ -309,6 +299,16 @@ public class LoopAction extends ActionBase implements IAction {
                     PKG, "LoopAction.CheckResult.WorkflowToExecuteNotFound", realFilename),
                 this));
       }
+    }
+  }
+
+  private static class ExecutionContext {
+    public Result result;
+    public IVariables variables;
+
+    public ExecutionContext(Result result, IVariables variables) {
+      this.result = result;
+      this.variables = variables;
     }
   }
 }

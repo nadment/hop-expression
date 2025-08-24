@@ -63,13 +63,11 @@ import org.eclipse.swt.widgets.Text;
 
 public class AggregateDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = AggregateMeta.class; // For Translator
-
+  private final AggregateMeta input;
   private TableView wGroup;
   private TableView wAggregate;
   private Button wAlwaysAddResult;
   private ColumnInfo[] columnInfoGroup;
-
-  private final AggregateMeta input;
 
   public AggregateDialog(
       Shell parent, IVariables variables, AggregateMeta transformMeta, PipelineMeta pipelineMeta) {

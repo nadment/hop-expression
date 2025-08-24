@@ -114,7 +114,7 @@ public class BoolAndOperator extends BinaryOperator {
             notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.isOperator(InOperator.INSTANCE)) {
+        if (term.isOperator(InListOperator.INSTANCE)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(NotInOperator.INSTANCE) && term.getOperand(1).isConstant()) {
@@ -211,7 +211,7 @@ public class BoolAndOperator extends BinaryOperator {
         predicate.inferReturnType();
         predicates.add(predicate);
       } else {
-        Call predicate = new Call(InOperator.INSTANCE, reference, new Array(values));
+        Call predicate = new Call(InListOperator.INSTANCE, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
       }

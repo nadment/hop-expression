@@ -59,12 +59,9 @@ import org.eclipse.swt.widgets.Text;
 
 public class RouteDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
-
-  private TableView wRoutes;
-
-  private Combo wDefaultTarget;
-
   private final RouteMeta input;
+  private TableView wRoutes;
+  private Combo wDefaultTarget;
 
   public RouteDialog(
       Shell parent, IVariables variables, RouteMeta transformMeta, PipelineMeta pipelineMeta) {

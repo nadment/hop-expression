@@ -31,6 +31,37 @@ import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
 public final class AggregateData extends BaseTransformData implements ITransformData {
+  public Map<AggregateKey, IExpressionProcessor[]> map;
+  public IRowMeta groupMeta;
+  public int[] groupIndex;
+  public IRowExpressionContext context;
+  public Call[] aggregates;
+  public AggregateFunction[] functions;
+  public IRowMeta aggregateMeta;
+  public boolean firstRead;
+  public boolean hasOutput;
+  public IRowMeta inputRowMeta;
+  public IRowMeta outputRowMeta;
+  public boolean newBatch;
+
+  public AggregateData() {
+    super();
+  }
+
+  public AggregateKey createAggregateKey(Object[] row) {
+    Object[] groupData = new Object[groupIndex.length];
+    for (int i = 0; i < groupIndex.length; i++) {
+      groupData[i] = row[groupIndex[i]];
+    }
+
+    return new AggregateKey(groupData);
+  }
+
+  /** Method responsible for clearing out memory hogs */
+  public void clear() {
+    map = new HashMap<>();
+  }
+
   @Getter
   public class AggregateKey {
     private final Object[] values;
@@ -71,42 +102,5 @@ public final class AggregateData extends BaseTransformData implements ITransform
       }
       return groupDataHash;
     }
-  }
-
-  public Map<AggregateKey, IExpressionProcessor[]> map;
-
-  public IRowMeta groupMeta;
-  public int[] groupIndex;
-
-  public IRowExpressionContext context;
-  public Call[] aggregates;
-  public AggregateFunction[] functions;
-  public IRowMeta aggregateMeta;
-
-  public boolean firstRead;
-
-  public boolean hasOutput;
-
-  public IRowMeta inputRowMeta;
-  public IRowMeta outputRowMeta;
-
-  public boolean newBatch;
-
-  public AggregateData() {
-    super();
-  }
-
-  public AggregateKey createAggregateKey(Object[] row) {
-    Object[] groupData = new Object[groupIndex.length];
-    for (int i = 0; i < groupIndex.length; i++) {
-      groupData[i] = row[groupIndex[i]];
-    }
-
-    return new AggregateKey(groupData);
-  }
-
-  /** Method responsible for clearing out memory hogs */
-  public void clear() {
-    map = new HashMap<>();
   }
 }

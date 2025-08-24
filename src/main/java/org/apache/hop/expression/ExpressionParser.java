@@ -46,7 +46,7 @@ import org.apache.hop.expression.operator.FirstValueFunction;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
 import org.apache.hop.expression.operator.ILikeOperator;
-import org.apache.hop.expression.operator.InOperator;
+import org.apache.hop.expression.operator.InListOperator;
 import org.apache.hop.expression.operator.IsDistinctFromOperator;
 import org.apache.hop.expression.operator.IsFalseOperator;
 import org.apache.hop.expression.operator.IsNotDistinctFromOperator;
@@ -394,7 +394,7 @@ public class ExpressionParser {
     } else if (isThenNext(Id.IN)) {
       return new Call(
           getPosition(),
-          not ? NotInOperator.INSTANCE : InOperator.INSTANCE,
+          not ? NotInOperator.INSTANCE : InListOperator.INSTANCE,
           expression,
           this.parseElements());
     } else if (isThenNext(Id.BETWEEN)) {
@@ -419,15 +419,15 @@ public class ExpressionParser {
       }
       return expression;
     } else if (isThenNext(Id.SIMILAR)) {
-        if (isNotThenNext(Id.TO)) {
-            throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
-        }
-        checkEndOfExpression(Id.SIMILAR);
-        return new Call(
-            getPosition(),
-            not ? NotSimilarToOperator.INSTANCE : SimilarToOperator.INSTANCE,
-            expression,
-            parseBitwiseOr());
+      if (isNotThenNext(Id.TO)) {
+        throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
+      }
+      checkEndOfExpression(Id.SIMILAR);
+      return new Call(
+          getPosition(),
+          not ? NotSimilarToOperator.INSTANCE : SimilarToOperator.INSTANCE,
+          expression,
+          parseBitwiseOr());
     }
 
     if (not) {
@@ -1406,7 +1406,7 @@ public class ExpressionParser {
         case ']':
           return new Token(Id.RBRACKET, position++);
 
-          // Single-quoted literal text.
+        // Single-quoted literal text.
         case '\'':
           {
             StringBuilder text = new StringBuilder();
@@ -1483,7 +1483,7 @@ public class ExpressionParser {
             return new Token(Id.LT, start);
           }
 
-          // parse greater symbol
+        // parse greater symbol
         case '>':
           {
             int start = position++;
@@ -1497,7 +1497,7 @@ public class ExpressionParser {
             return new Token(Id.GT, start);
           }
 
-          // parse bang equal symbol "!="
+        // parse bang equal symbol "!="
         case '!':
           {
             int start = position++;
@@ -1511,7 +1511,7 @@ public class ExpressionParser {
             throw new ExpressionParseException(start, ErrorCode.UNEXPECTED_CHARACTER, '!');
           }
 
-          // cast operator
+        // cast operator
         case ':':
           {
             int start = position++;
@@ -1525,7 +1525,7 @@ public class ExpressionParser {
             throw new ExpressionParseException(start, ErrorCode.UNEXPECTED_CHARACTER, ':');
           }
 
-          // possible start of '/*' or '//' comment
+        // possible start of '/*' or '//' comment
         case '/':
           {
             int start = position++;
@@ -1580,7 +1580,7 @@ public class ExpressionParser {
         case '^':
           return new Token(Id.CARET, position++);
 
-          // Bitwise OR operator or concat symbol
+        // Bitwise OR operator or concat symbol
         case '|':
           {
             int start = position++;
@@ -1594,7 +1594,7 @@ public class ExpressionParser {
             return new Token(Id.PIPE, start);
           }
 
-          // Quoted identifier matching reserved words or with white space
+        // Quoted identifier matching reserved words or with white space
         case '"':
           {
             int start = position++;

@@ -48,17 +48,10 @@ import org.eclipse.swt.graphics.Image;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
-  static class ProposalComparator implements Comparator<ICompletionProposal> {
-    public int compare(ICompletionProposal p1, ICompletionProposal p2) {
-      return p1.getDisplayString().compareTo(p2.getDisplayString());
-    }
-  }
-
   private final CompletableFuture<IRowMeta> rowMeta;
   private final IVariables variables;
   private final ExpressionMode mode;
   private String message;
-
   public ExpressionCompletionProcessor(IVariables variables) {
     this(variables, null, ExpressionMode.NONE);
   }
@@ -310,5 +303,11 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   @Override
   public String getErrorMessage() {
     return message;
+  }
+
+  static class ProposalComparator implements Comparator<ICompletionProposal> {
+    public int compare(ICompletionProposal p1, ICompletionProposal p2) {
+      return p1.getDisplayString().compareTo(p2.getDisplayString());
+    }
   }
 }
