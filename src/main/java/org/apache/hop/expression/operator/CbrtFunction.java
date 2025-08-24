@@ -54,6 +54,12 @@ public class CbrtFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
 
+    // If negative value
+    if ( value.signum()<0 ) {
+        BigDecimal result = BigDecimalMath.root(value.abs(), TREE, MATH_CONTEXT);
+        return result.negate();
+    }
+
     // return BigDecimalMath.pow(value, ONE_THIRD, MATH_CONTEXT);
 
     return BigDecimalMath.root(value, TREE, MATH_CONTEXT);

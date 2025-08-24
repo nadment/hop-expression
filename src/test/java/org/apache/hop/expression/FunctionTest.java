@@ -2042,8 +2042,11 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Cbrt(2)", new BigDecimal("1.2599210498948731647672106072782"));
     evalEquals("Cbrt(64)", BigDecimal.valueOf(4L));
     evalEquals("Cbrt(343)", BigDecimal.valueOf(7L));
-    // TODO: support negative value CBRT(-64)=-4
-    // evalEquals("Cbrt(-8)", BigDecimal.valueOf(-2L));
+
+    // Support negative value CBRT(-64)=-4
+    evalEquals("Cbrt(-8)", BigDecimal.valueOf(-2L));
+
+    // Null handling
     evalNull("Cbrt(NULL_INTEGER)");
     evalNull("Cbrt(NULL_NUMBER)");
 

@@ -783,9 +783,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testPredicate() throws Exception {
       evalFalse("true XOR true").returnType(Types.BOOLEAN_NOT_NULL);
-      // evalFalse("2 XOR 3").returnType(Types.BOOLEAN);
       evalFalse("false XOR false").returnType(Types.BOOLEAN_NOT_NULL);
-      // evalFalse("0 XOR 0").returnType(Types.BOOLEAN);
       evalTrue("true XOR false").returnType(Types.BOOLEAN_NOT_NULL);
       evalTrue("false XOR true").returnType(Types.BOOLEAN_NOT_NULL);
     }
