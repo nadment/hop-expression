@@ -234,7 +234,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   /**
-   * Iterator implementation used to efficiently expose contents of an Array as read-only iterator.
+   * Iterator implementation used to efficiently expose the contents of an Array as read-only iterator.
    */
   private class ArrayIterator implements java.util.Iterator<IExpression> {
 
