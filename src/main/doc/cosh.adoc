@@ -27,3 +27,8 @@ COSH( numeric )
 == Returns
 
 Number
+
+== Usage
+
+* Returns a value in the range of [1, ∞).
+* Returns NULL if the argument is NULL.

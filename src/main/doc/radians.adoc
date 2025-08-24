@@ -30,4 +30,6 @@ Number
 
 == Usage
 
+* The argument should be expressed in degrees.
+* Returns a value in the range of (-π, π)
 * Returns NULL if the argument is NULL.

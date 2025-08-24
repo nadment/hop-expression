@@ -32,3 +32,4 @@ Number
 
 * The argument should be expressed in radians.
 * SEC(x) is equivalent to 1 / COS(x)
+* Returns NULL if the argument is NULL.

@@ -30,4 +30,6 @@ Number
 
 == Usage
 
-The result is a number in the interval [-pi, pi].
+* Argument must be in the interval [-1;1].
+* Returns a value in the range of [-π/2, π/2].
+* Returns NULL if the argument is NULL.

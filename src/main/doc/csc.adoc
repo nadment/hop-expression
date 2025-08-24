@@ -31,4 +31,5 @@ Number
 == Usage
 
 * The argument should be expressed in radians.
-* CSC(x) is equivalent to 1 / SIN(x)
+* CSC(x) is equivalent to 1 / SIN(x).
+* Returns NULL if the argument is NULL.

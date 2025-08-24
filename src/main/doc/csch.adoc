@@ -32,3 +32,4 @@ Number
 
 * The argument should be expressed in radians.
 * CSCH(x) is equivalent to 1 / SINH(x)
+* Returns NULL if the argument is NULL.

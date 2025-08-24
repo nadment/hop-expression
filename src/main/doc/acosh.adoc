@@ -27,3 +27,8 @@ ACOSH( numeric )
 == Returns
 
 Number
+
+== Usage
+
+* Returns a value in the range of [0, ∞).
+* Returns NULL if the argument is NULL.

@@ -27,3 +27,7 @@ SINH( numeric )
 == Returns
 
 Number
+
+== Usage
+
+* Returns NULL if the argument is NULL.

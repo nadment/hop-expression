@@ -31,3 +31,4 @@ Number
 == Usage
 
 * The argument should be expressed in radians.
+* Returns NULL if the argument is NULL.
