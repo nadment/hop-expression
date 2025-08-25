@@ -193,7 +193,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         return expression.getValue(Boolean.class);
       case IValueMeta.TYPE_BINARY:
         return expression.getValue(byte[].class);
-      case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON:
+      case IValueMeta.TYPE_JSON:
         return expression.getValue(JsonNode.class);
       case IValueMeta.TYPE_INET:
         return expression.getValue(InetAddress.class);

@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -25,7 +25,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Removes all occurrences of a specified substring, and optionally replaces them with another
+ * Removes all occurrences of a specified substring and optionally replaces them with another
  * string.
  */
 @FunctionPlugin
@@ -52,6 +52,6 @@ public class ReplaceFunction extends Function {
       return string.replace(search, replacement);
     }
 
-    return StringUtils.remove(string, search);
+    return Strings.CS.remove(string, search);
   }
 }

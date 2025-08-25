@@ -40,7 +40,6 @@ import org.apache.hop.expression.type.Types;
  */
 public class MultiplyOperator extends BinaryOperator {
   public static final MultiplyOperator INSTANCE = new MultiplyOperator();
-  private static final Literal MINUS_ONE = Literal.of(new BigDecimal(-1L));
 
   public MultiplyOperator() {
     super(
@@ -62,10 +61,8 @@ public class MultiplyOperator extends BinaryOperator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Simplify arithmetic -1 * A → -A
-    //    if (MINUS_ONE.equals(call.getOperand(0))) {
-    //      return new Call(NegateOperator.INSTANCE, call.getOperand(1));
-    //    }
+    // TODO: Simplify arithmetic -1 * A → -A
+
 
     // Reorder chained symmetric operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());

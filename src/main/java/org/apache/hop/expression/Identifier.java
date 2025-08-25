@@ -26,7 +26,6 @@ import java.util.Objects;
 import lombok.Getter;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
@@ -121,7 +120,7 @@ public class Identifier implements IExpression {
           return valueMeta.getInteger(row[ordinal]);
         case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER:
           return valueMeta.getBigNumber(row[ordinal]);
-        case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON:
+        case IValueMeta.TYPE_JSON:
           return valueMeta.getNativeDataType(row[ordinal]);
         case IValueMeta.TYPE_BINARY:
           return valueMeta.getBinary(row[ordinal]);
@@ -219,7 +218,7 @@ public class Identifier implements IExpression {
             return type.convert(value, clazz);
           }
 
-        case ValueMetaJson.TYPE_JSON:
+        case IValueMeta.TYPE_JSON:
         case IValueMeta.TYPE_INET:
           {
             Object value = row[ordinal];
@@ -244,7 +243,7 @@ public class Identifier implements IExpression {
    *
    * <ul>
    *   <li>Resolve index in IRowMeta
-   *   <li>Determine data type of value in row.
+   *   <li>Determine a data type of value in a row.
    * </ul>
    */
   @Override
@@ -288,7 +287,7 @@ public class Identifier implements IExpression {
 
   @Override
   public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
-    // If identifier name contains space or is a reserved word or a function name
+    // If the identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0
         || ExpressionParser.isReservedWord(name)
         || FunctionRegistry.isFunction(name)

@@ -28,28 +28,28 @@ import org.apache.hop.expression.ErrorCode;
   public final DateTimeFormat format;
   public final String text;
   public final int length;
-  public int index;
-  public boolean bc = false;
-  public long epochDay = 0;
+  protected int index;
+  protected boolean bc = false;
+  protected long epochDay = 0;
   // Default minimum year if omitted
-  public int year = 1970;
+  protected int year = 1970;
   // Default minimum month if omitted
-  public int month = 1;
+  protected int month = 1;
   // Default minimum day if omitted
-  public int day = 1;
-  public int dayOfYear = 0;
-  public int hour = 0;
-  public int minute = 0;
-  public int second = 0;
-  public int nano = 0;
-  public int timeZoneHour = 0;
-  public int timeZoneMinute = 0;
-  public boolean isPM = false;
-  public boolean isHourFormat12 = false;
-  public boolean isEpochDay = false;
-  public boolean isDayOfYear = false;
-  public boolean isTimeZoneOffset = false;
-  public ZoneId zoneId = ZoneOffset.UTC;
+  protected int day = 1;
+  protected int dayOfYear = 0;
+  protected int hour = 0;
+  protected int minute = 0;
+  protected int second = 0;
+  protected int nano = 0;
+  protected int timeZoneHour = 0;
+  protected int timeZoneMinute = 0;
+  protected boolean isPM = false;
+  protected boolean isHourFormat12 = false;
+  protected boolean isEpochDay = false;
+  protected boolean isDayOfYear = false;
+  protected boolean isTimeZoneOffset = false;
+  protected ZoneId zoneId = ZoneOffset.UTC;
 
   public DateTimeParser(final DateTimeFormat format, final String text) {
     this.format = format;

@@ -2030,6 +2030,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Sign()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Sign(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Sign(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Function repetition
     optimize("SIGN(SIGN(FIELD_INTEGER))", "SIGN(FIELD_INTEGER)");
@@ -2053,6 +2054,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Cbrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Cbrt(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Cbrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -2063,7 +2065,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Sqrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Sqrt(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-
+    evalFails("Sqrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Sqrt(-5)", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
@@ -2077,6 +2079,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Square()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Square(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Square(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
@@ -2124,6 +2127,9 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("RTrim('012ABC10', '012')", "012ABC");
     evalNull("RTrim(NULL_STRING)").returnType(Types.STRING);
     evalNull("RTrim('01ABC012',NULL_STRING)");
+    evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
+    // Check operands
     evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Function repetition

@@ -23,6 +23,8 @@ import java.util.Objects;
  */
 public final class Range<T extends Comparable<? super T>> {
 
+  private static final String VALUE_IS_NULL = "value must not be null";
+
   private final Bound<T> lowerBound;
   private final Bound<T> upperBound;
 
@@ -42,7 +44,7 @@ public final class Range<T extends Comparable<? super T>> {
    * @return the range
    */
   public static <T extends Comparable<? super T>> Range<T> singleton(T value) {
-    Objects.requireNonNull(value, "value must not be null");
+    Objects.requireNonNull(value, VALUE_IS_NULL);
     return new Range<>(
         new Above<>(value, BoundType.INCLUSIVE), new Below<>(value, BoundType.INCLUSIVE));
   }
@@ -59,7 +61,7 @@ public final class Range<T extends Comparable<? super T>> {
    */
   @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> lessThan(T value) {
-    Objects.requireNonNull(value, "value must not be null");
+    Objects.requireNonNull(value, VALUE_IS_NULL);
     return new Range<>((Bound<T>) BelowAll.INSTANCE, new Below<>(value, BoundType.EXCLUSIVE));
   }
 
@@ -71,7 +73,7 @@ public final class Range<T extends Comparable<? super T>> {
    */
   @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> lessThanOrEqual(T value) {
-    Objects.requireNonNull(value, "value must not be null");
+    Objects.requireNonNull(value, VALUE_IS_NULL);
     return new Range<>((Bound<T>) BelowAll.INSTANCE, new Below<>(value, BoundType.INCLUSIVE));
   }
 
@@ -84,7 +86,7 @@ public final class Range<T extends Comparable<? super T>> {
    */
   @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> greaterThan(T value) {
-    Objects.requireNonNull(value, "value must not be null");
+    Objects.requireNonNull(value, VALUE_IS_NULL);
     return new Range<>(new Above<>(value, BoundType.EXCLUSIVE), (Bound<T>) AboveAll.INSTANCE);
   }
 
@@ -96,7 +98,7 @@ public final class Range<T extends Comparable<? super T>> {
    */
   @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> greaterThanOrEqual(T value) {
-    Objects.requireNonNull(value, "value must not be null");
+    Objects.requireNonNull(value, VALUE_IS_NULL);
     return new Range<>(new Above<>(value, BoundType.INCLUSIVE), (Bound<T>) AboveAll.INSTANCE);
   }
 
@@ -141,7 +143,7 @@ public final class Range<T extends Comparable<? super T>> {
 
   /** Checks if the {@code value} is within the bounds of this range. */
   public boolean contains(T value) {
-    Objects.requireNonNull(value, "value must not be null");
+    Objects.requireNonNull(value, VALUE_IS_NULL);
     return lowerBound.isGreater(value) && upperBound.isLess(value);
   }
 

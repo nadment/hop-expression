@@ -103,6 +103,8 @@ public class IntervalTest extends ExpressionTest {
 
   @Test
   void intervalParse() {
+    assertNull(Interval.of(null));
+
     // Short format
     assertEquals(Interval.of(5), Interval.year("5"));
     assertEquals(Interval.of(1), Interval.yearToMonth("+0-12"));
