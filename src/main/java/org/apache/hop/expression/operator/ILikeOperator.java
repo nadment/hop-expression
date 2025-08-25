@@ -72,7 +72,7 @@ public class ILikeOperator extends Operator {
       }
 
       // Simplify x LIKE '%' ESCAPE NULL → NULL
-      if (call.getOperandCount() == 3 && call.getOperand(2).isConstant()) {
+      if (call.getOperandCount() == 3 && call.getOperand(2).isNull()) {
         return Literal.NULL_BOOLEAN;
       }
     }
