@@ -74,18 +74,16 @@ public class DivOperator extends BinaryOperator {
       return new Call(DivOperator.INSTANCE, call(left).getOperand(0), call(right).getOperand(0));
     }
 
-    if (left.isOperator(DivOperator.INSTANCE)) {
+    if (left.isOperator(DivOperator.INSTANCE) && call(left).getOperand(1).isConstant()) {
       // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
-      if (call(left).getOperand(1).isConstant()) {
-        if (right.isConstant()) {
-          Call denominator = new Call(MultiplyOperator.INSTANCE, call(left).getOperand(1), right);
-          return new Call(DivOperator.INSTANCE, call(left).getOperand(0), denominator);
-        } else {
-          // Move constant up (A / B) / C → ( A / C ) / B (if B is constant)
-          Call numerator = new Call(DivOperator.INSTANCE, call(left).getOperand(0), right);
-          numerator.inferReturnType();
-          return new Call(DivOperator.INSTANCE, numerator, call(left).getOperand(1));
-        }
+      if (right.isConstant()) {
+        Call denominator = new Call(MultiplyOperator.INSTANCE, call(left).getOperand(1), right);
+        return new Call(DivOperator.INSTANCE, call(left).getOperand(0), denominator);
+      } else {
+        // Move constant up (A / B) / C → ( A / C ) / B (if B is constant)
+        Call numerator = new Call(DivOperator.INSTANCE, call(left).getOperand(0), right);
+        numerator.inferReturnType();
+        return new Call(DivOperator.INSTANCE, numerator, call(left).getOperand(1));
       }
     }
 

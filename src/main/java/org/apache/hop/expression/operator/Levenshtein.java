@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class Levenshtein extends Function {
 
-  private static final LevenshteinDistance LEVENSHTEIN = LevenshteinDistance.getDefaultInstance();
+  private static final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
 
   public Levenshtein() {
     super(
@@ -46,6 +46,6 @@ public class Levenshtein extends Function {
     String str2 = operands[1].getValue(String.class);
     if (str2 == null) return null;
 
-    return Long.valueOf(LEVENSHTEIN.apply(str1, str2));
+    return Long.valueOf(LEVENSHTEIN_DISTANCE.apply(str1, str2));
   }
 }

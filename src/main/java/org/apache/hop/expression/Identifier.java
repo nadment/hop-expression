@@ -218,8 +218,7 @@ public class Identifier implements IExpression {
             return type.convert(value, clazz);
           }
 
-        case IValueMeta.TYPE_JSON:
-        case IValueMeta.TYPE_INET:
+        case IValueMeta.TYPE_JSON, IValueMeta.TYPE_INET:
           {
             Object value = row[ordinal];
             return type.convert(value, clazz);
@@ -271,7 +270,7 @@ public class Identifier implements IExpression {
       case IValueMeta.TYPE_INTEGER -> IntegerType.of(meta.getLength());
       case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER ->
           NumberType.of(meta.getLength(), meta.getPrecision());
-      case org.apache.hop.core.row.value.ValueMetaJson.TYPE_JSON -> Types.JSON;
+      case IValueMeta.TYPE_JSON -> Types.JSON;
       case IValueMeta.TYPE_INET -> Types.INET;
       case IValueMeta.TYPE_BINARY -> BinaryType.of(meta.getLength());
       default ->
