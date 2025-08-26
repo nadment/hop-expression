@@ -95,7 +95,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
           hasChanged = true;
 
-          // If the value is null, change nullability of the type.
+          // If the value is null, change the nullability of the type.
           if (value == null) {
             type = type.withNullability(true);
           }

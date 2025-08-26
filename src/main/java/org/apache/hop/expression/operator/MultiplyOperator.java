@@ -118,7 +118,7 @@ public class MultiplyOperator extends BinaryOperator {
     // Simplify arithmetic (-A) * (-B) → A * B
     int negateCount = negativeTerms.size();
     if (negateCount > 1) {
-      // Remove all pairs of negate operators else Keep one negate
+      // Remove all pairs of negated operators else Keep one negating
       int i = negateCount % 2;
       for (Call term : negativeTerms) {
         if (i <= 0) {
@@ -132,7 +132,6 @@ public class MultiplyOperator extends BinaryOperator {
     // Simplify arithmetic only if one negate const * (-A) → -const * A
     else if (negateCount == 1 && !constantTerms.isEmpty()) {
       Call term = negativeTerms.get(0);
-      // operands.remove(term);
       operands.add(term.getOperand(0));
       IExpression constant = constantTerms.get(0);
       operands.remove(constant);

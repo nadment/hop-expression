@@ -41,8 +41,7 @@ import org.apache.hop.expression.type.Type;
  */
 public abstract class Operator {
   /**
-   * A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link
-   * RoundingMode#HALF_EVEN}.
+   * A {@code MathContext} object with precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
@@ -52,7 +51,7 @@ public abstract class Operator {
   private final String id;
 
   /**
-   * The symbol of the operator or name of function. Example: id is "TRUNCATE" but alias name is
+   * The symbol of the operator or name of the function. Example: id is "TRUNCATE" but the alias name is
    * "TRUNC"
    */
   private final String name;
@@ -84,7 +83,7 @@ public abstract class Operator {
    * Create a new operator for use in expressions.
    *
    * @param id The unique identifier of operator
-   * @param name The symbol of the operator or name of function
+   * @param name The symbol of the operator or name of the function
    * @param precedence The precedence value of the operator
    * @param associativity Set if the operator is left or right associative
    * @param category The category to group operator
@@ -219,7 +218,7 @@ public abstract class Operator {
   }
 
   /**
-   * Returns whether a call to this operator is not sensitive to the operands order. An operator is
+   * Returns whether a call to this operator is not sensitive to the operand order. An operator is
    * symmetrical if the call returns the same result when the operands are permuted.
    */
   public boolean isSymmetrical() {
@@ -275,7 +274,7 @@ public abstract class Operator {
    * Check if it's the same operator.
    *
    * @param other the operator to compare
-   * @return true if operator are the same
+   * @return true if the operator is the same
    */
   public boolean is(Operator other) {
     if (other == null) return false;
@@ -323,7 +322,7 @@ public abstract class Operator {
   }
 
   /**
-   * Evaluate the result of operator with operands.
+   * Evaluate the result of the operator with operands.
    *
    * @return the result of the evaluation
    */
@@ -367,7 +366,7 @@ public abstract class Operator {
    * Check operand types expected
    *
    * @param call The call to check
-   * @param throwOnFailure whether to throw an exception if check fails (otherwise returns false in
+   * @param throwOnFailure whether to throw an exception if the check fails (otherwise returns false in
    *     that case)
    * @return whether check succeeded
    */
@@ -471,7 +470,7 @@ public abstract class Operator {
       return call.reverse();
     }
 
-    // If same cost order with textual representation
+    // If the same cost order with textual representation
     //    if (left.toString().compareTo(right.toString()) > 0) {
     //      System.out.println("Reverse term by textual");
     //      return reverse(call);

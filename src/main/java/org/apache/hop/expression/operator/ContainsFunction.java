@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.Arrays;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -65,9 +66,7 @@ public class ContainsFunction extends Function {
       String search = operands[1].getValue(String.class);
       if (search == null) return null;
 
-      if (value.contains(search)) return Boolean.TRUE;
-
-      return Boolean.FALSE;
+      return Boolean.valueOf(value.contains(search));
     }
   }
 
@@ -87,16 +86,21 @@ public class ContainsFunction extends Function {
         return Boolean.FALSE;
       }
 
-      outer:
-      for (int i = 0; i < value.length - search.length + 1; i++) {
-        for (int j = 0; j < search.length; j++) {
-          if (value[i + j] != search[j]) {
-            continue outer;
-          }
+        if (search.length > value.length) {
+            return Boolean.FALSE;
         }
-        return Boolean.TRUE;
-      }
-      return Boolean.FALSE;
+
+        return containsSubarray(value, search) ? Boolean.TRUE : Boolean.FALSE;
     }
+
+      private static boolean containsSubarray(final byte[] value, final byte[] search) {
+          final int lastStart = value.length - search.length;
+          for (int i = 0; i <= lastStart; i++) {
+              if (Arrays.mismatch(value, i, i + search.length, search, 0, search.length) == -1) {
+                  return true;
+              }
+          }
+          return false;
+      }
   }
 }

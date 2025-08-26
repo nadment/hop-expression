@@ -47,7 +47,7 @@ public class FunctionRegistry {
   }
 
   /**
-   * Get function by name or alias (ignore case)
+   * Get a function by name or alias (ignore case)
    *
    * @param name the name of the function to search
    * @return the function or null of not found
@@ -104,7 +104,7 @@ public class FunctionRegistry {
         }
       }
     } catch (Exception e) {
-      throw new HopException("Error discovering annoted functions", e);
+      throw new HopException("Error discovering annotated functions", e);
     }
   }
 
@@ -116,7 +116,7 @@ public class FunctionRegistry {
     if (name == null) return;
 
     if (functions.containsKey(name)) {
-      log.logError("Function ''{0}'' already registred", name);
+      log.logError("Function ''{0}'' already registered", name);
       return;
     }
 

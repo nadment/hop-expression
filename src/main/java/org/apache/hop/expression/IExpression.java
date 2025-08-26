@@ -20,7 +20,7 @@ import java.io.StringWriter;
 import org.apache.hop.expression.type.Type;
 
 /**
- * An expression is a combination of one or more literal, identifiers, list of expressions or a call
+ * An expression is a combination of one or more literal, identifiers, a list of expressions or a call
  * to an operator that evaluate to a value.
  */
 public interface IExpression {

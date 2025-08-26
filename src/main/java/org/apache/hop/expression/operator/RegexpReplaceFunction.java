@@ -138,8 +138,6 @@ public class RegexpReplaceFunction extends Function {
       }
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);
-      // } catch (Exception e) {
-      /// throw new ExpressionException(ExpressionError.REGEXP_REPLACE_ERROR, replacement);
     }
   }
 }

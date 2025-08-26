@@ -51,7 +51,7 @@ public abstract class Function extends Operator {
    * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
    *
    * @param id The unique identifier of the function
-   * @param name The name of function
+   * @param name The name of the function
    */
   protected Function(
       String id,
