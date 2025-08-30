@@ -20,8 +20,8 @@ import java.io.StringWriter;
 import org.apache.hop.expression.type.Type;
 
 /**
- * An expression is a combination of one or more literal, identifiers, a list of expressions or a call
- * to an operator that evaluate to a value.
+ * An expression is a combination of one or more literal, identifiers, a list of expressions or a
+ * call to an operator that evaluate to a value.
  */
 public interface IExpression {
 
@@ -89,7 +89,7 @@ public interface IExpression {
    *
    * @param clazz Desired value type
    * @param <T> Value type
-   * @return The result of evaluating the expression in desired type
+   * @return The result of evaluating the expression in the desired type
    */
   default <T> T getValue(Class<T> clazz) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
@@ -110,7 +110,7 @@ public interface IExpression {
 
   /**
    * Appends this expression statement to the specified writer. This may not always be the original
-   * expression statement, specially after optimization.
+   * expression statement, especially after optimization.
    *
    * <p>The <code>leftPrec</code> and <code>rightPrec</code> parameters give us enough context to
    * decide whether we need to enclose the expression in parentheses. For example, we need

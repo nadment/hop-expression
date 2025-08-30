@@ -52,6 +52,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   private final IVariables variables;
   private final ExpressionMode mode;
   private String message;
+
   public ExpressionCompletionProcessor(IVariables variables) {
     this(variables, null, ExpressionMode.NONE);
   }

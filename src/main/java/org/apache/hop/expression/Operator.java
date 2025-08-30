@@ -41,7 +41,8 @@ import org.apache.hop.expression.type.Type;
  */
 public abstract class Operator {
   /**
-   * A {@code MathContext} object with precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN}.
+   * A {@code MathContext} object with precision 32 digits, and a rounding mode of {@link
+   * RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
@@ -51,8 +52,8 @@ public abstract class Operator {
   private final String id;
 
   /**
-   * The symbol of the operator or name of the function. Example: id is "TRUNCATE" but the alias name is
-   * "TRUNC"
+   * The symbol of the operator or name of the function. Example: id is "TRUNCATE" but the alias
+   * name is "TRUNC"
    */
   private final String name;
 
@@ -366,8 +367,8 @@ public abstract class Operator {
    * Check operand types expected
    *
    * @param call The call to check
-   * @param throwOnFailure whether to throw an exception if the check fails (otherwise returns false in
-   *     that case)
+   * @param throwOnFailure whether to throw an exception if the check fails (otherwise returns false
+   *     in that case)
    * @return whether check succeeded
    */
   public boolean checkOperandTypes(final Call call, boolean throwOnFailure) {

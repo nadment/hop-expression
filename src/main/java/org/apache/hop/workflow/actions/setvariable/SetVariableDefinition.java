@@ -25,8 +25,10 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 public final class SetVariableDefinition {
   @HopMetadataProperty(key = "name")
   private String name;
+
   @HopMetadataProperty(key = "expression")
   private String expression;
+
   @HopMetadataProperty(key = "scope")
   private SetVariableScope scope;
 

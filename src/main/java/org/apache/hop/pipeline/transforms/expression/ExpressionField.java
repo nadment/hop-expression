@@ -31,15 +31,19 @@ public final class ExpressionField {
       key = "name",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
   private String name;
+
   /** The expression source */
   @HopMetadataProperty(
       key = "expression",
       injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
   private String expression;
+
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Type")
   private String type;
+
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
   private int length = -1;
+
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
   private int precision = -1;
 

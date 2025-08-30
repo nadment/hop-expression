@@ -20,6 +20,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -52,8 +53,9 @@ public class LnFunction extends Function {
 
     if (value == null) return null;
 
-    if (value.signum() <= 0)
-      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
+    if (value.signum() <= 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
+    }
 
     return BigDecimalMath.log(value, MATH_CONTEXT);
   }

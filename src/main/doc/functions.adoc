@@ -21,6 +21,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:abs.adoc["ABS",role=fun]
 * xref:acos.adoc["ACOS",role=fun]
 * xref:acosh.adoc["ACOSH",role=fun]
+* xref:acoth.adoc["ACOTH",role=fun]
 * xref:add_days.adoc["ADD_DAYS",role=fun]
 * xref:add_hours.adoc["ADD_HOURS",role=fun]
 * xref:add_minutes.adoc["ADD_MINUTES",role=fun]

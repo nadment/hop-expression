@@ -412,8 +412,5 @@ public class ExpressionTest {
     // 'America/Chicago'",  ZonedDateTime.of(2001, 2, 16, 5, 38, 40, 0,
     // ZoneId.of("America/Chicago")));
 
-     // optimize("-2*(FIELD_INTEGER-4)/2", "4+FIELD_INTEGER");
-    //optimize("((FIELD_NUMBER/4)/FIELD_INTEGER)/2", "FIELD_NUMBER/FIELD_INTEGER/8");
-    //optimize("((FIELD_NUMBER*4)*FIELD_INTEGER)/2", "2*FIELD_NUMBER*FIELD_INTEGER");
   }
 }

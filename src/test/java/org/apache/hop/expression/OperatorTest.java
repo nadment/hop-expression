@@ -1254,34 +1254,34 @@ public class OperatorTest extends ExpressionTest {
     }
   }
 
-    @Nested
-    class IsNotTrue {
-        @Test
-        void testPredicate() throws Exception {
-            evalFalse("True IS NOT True").returnType(Types.BOOLEAN_NOT_NULL);
-            evalTrue("True IS NOT False").returnType(Types.BOOLEAN_NOT_NULL);
-            evalFalse("FIELD_BOOLEAN_TRUE is not True").returnType(Types.BOOLEAN_NOT_NULL);
-            evalTrue("FIELD_STRING='XX' IS NOT TRUE");
-        }
-
-        @Test
-        void testNullHandling() throws Exception {
-            evalTrue("NULL_BOOLEAN IS NOT True");
-        }
-
-        @Test
-        void testError() throws Exception {
-            evalFails("FIELD_BOOLEAN IS NOT", ErrorCode.SYNTAX_ERROR);
-            evalFails("IS NOT TRUE", ErrorCode.SYNTAX_ERROR);
-        }
-
-        @Test
-        void testOptimize() throws Exception {
-            optimize("FIELD_BOOLEAN_TRUE IS NOT TRUE");
-            optimizeFalse("true is not true");
-            optimizeTrue("false is not true");
-        }
+  @Nested
+  class IsNotTrue {
+    @Test
+    void testPredicate() throws Exception {
+      evalFalse("True IS NOT True").returnType(Types.BOOLEAN_NOT_NULL);
+      evalTrue("True IS NOT False").returnType(Types.BOOLEAN_NOT_NULL);
+      evalFalse("FIELD_BOOLEAN_TRUE is not True").returnType(Types.BOOLEAN_NOT_NULL);
+      evalTrue("FIELD_STRING='XX' IS NOT TRUE");
     }
+
+    @Test
+    void testNullHandling() throws Exception {
+      evalTrue("NULL_BOOLEAN IS NOT True");
+    }
+
+    @Test
+    void testError() throws Exception {
+      evalFails("FIELD_BOOLEAN IS NOT", ErrorCode.SYNTAX_ERROR);
+      evalFails("IS NOT TRUE", ErrorCode.SYNTAX_ERROR);
+    }
+
+    @Test
+    void testOptimize() throws Exception {
+      optimize("FIELD_BOOLEAN_TRUE IS NOT TRUE");
+      optimizeFalse("true is not true");
+      optimizeTrue("false is not true");
+    }
+  }
 
   @Nested
   class IsFalse {
@@ -1310,32 +1310,32 @@ public class OperatorTest extends ExpressionTest {
     }
   }
 
-    @Nested
-    class IsNotFalse {
-        @Test
-        void testPredicate() throws Exception {
-            evalTrue("FIELD_BOOLEAN_TRUE IS NOT FALSE").returnType(Types.BOOLEAN_NOT_NULL);
-            evalFalse("FIELD_STRING='XX' IS NOT FALSE");
-        }
-
-        @Test
-        void testNullHandling() throws Exception {
-            evalTrue("NULL_BOOLEAN IS NOT False");
-        }
-
-        @Test
-        void testError() throws Exception {
-            evalFails("FIELD_BOOLEAN_TRUE NOT FALSE", ErrorCode.SYNTAX_ERROR);
-            evalFails("IS NOT FALSE", ErrorCode.SYNTAX_ERROR);
-        }
-
-        @Test
-        void testOptimize() throws Exception {
-            optimize("FIELD_BOOLEAN_TRUE IS NOT FALSE");
-            optimizeFalse("false is not false");
-            optimizeTrue("true is not false");
-        }
+  @Nested
+  class IsNotFalse {
+    @Test
+    void testPredicate() throws Exception {
+      evalTrue("FIELD_BOOLEAN_TRUE IS NOT FALSE").returnType(Types.BOOLEAN_NOT_NULL);
+      evalFalse("FIELD_STRING='XX' IS NOT FALSE");
     }
+
+    @Test
+    void testNullHandling() throws Exception {
+      evalTrue("NULL_BOOLEAN IS NOT False");
+    }
+
+    @Test
+    void testError() throws Exception {
+      evalFails("FIELD_BOOLEAN_TRUE NOT FALSE", ErrorCode.SYNTAX_ERROR);
+      evalFails("IS NOT FALSE", ErrorCode.SYNTAX_ERROR);
+    }
+
+    @Test
+    void testOptimize() throws Exception {
+      optimize("FIELD_BOOLEAN_TRUE IS NOT FALSE");
+      optimizeFalse("false is not false");
+      optimizeTrue("true is not false");
+    }
+  }
 
   @Nested
   class IsNull {
@@ -1450,48 +1450,48 @@ public class OperatorTest extends ExpressionTest {
     }
   }
 
-    @Nested
-    class IsNotDistinctFrom {
+  @Nested
+  class IsNotDistinctFrom {
 
-        @Test
-        void testPredicate() throws Exception {
-            evalFalse("1 IS NOT DISTINCT FROM 2");
-            evalTrue("1 IS NOT DISTINCT FROM 1");
-            evalTrue("FIELD_INTEGER IS NOT DISTINCT FROM 40").returnType(Types.BOOLEAN_NOT_NULL);
-            evalFalse("FIELD_INTEGER IS NOT DISTINCT FROM 1").returnType(Types.BOOLEAN_NOT_NULL);
-            evalTrue("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2019-01-01'");
-            evalFalse("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2018-01-01'");
-        }
-
-        @Test
-        void testNullHandling() throws Exception {
-            evalFalse("NULL_BOOLEAN IS NOT DISTINCT FROM true");
-            evalTrue("NULL_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN");
-            evalTrue("NULL_INTEGER IS NOT DISTINCT FROM NULL");
-        }
-
-        @Test
-        void testError() throws Exception {
-            evalFails("FIELD_STRING IS NOT DISTINCT FROM ", ErrorCode.SYNTAX_ERROR);
-            evalFails("FIELD_STRING IS NOT DISTINCT 'TEST' ", ErrorCode.SYNTAX_ERROR);
-            evalFails("FIELD_STRING DISTINCT FROM 'TEST' ", ErrorCode.UNEXPECTED_CHARACTER);
-        }
-
-        @Test
-        void testOptimize() throws Exception {
-            optimize("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE");
-            optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
-            optimizeFalse("NULL IS NOT DISTINCT FROM TRUE");
-            optimizeFalse("10151082135029368 IS NOT DISTINCT FROM 10151082135029369");
-            optimizeTrue("FIELD_INTEGER IS NOT DISTINCT FROM FIELD_INTEGER");
-
-            // The DISTINCT predicate is a verbose way of NULL safe comparisons
-            optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
-            optimize("NULL_INTEGER IS NOT DISTINCT FROM NULL", "NULL_INTEGER IS NULL");
-            optimize("FIELD_STRING IS NOT DISTINCT FROM NULL", "FIELD_STRING IS NULL");
-            optimize("NULL IS NOT DISTINCT FROM FIELD_STRING", "FIELD_STRING IS NULL");
-        }
+    @Test
+    void testPredicate() throws Exception {
+      evalFalse("1 IS NOT DISTINCT FROM 2");
+      evalTrue("1 IS NOT DISTINCT FROM 1");
+      evalTrue("FIELD_INTEGER IS NOT DISTINCT FROM 40").returnType(Types.BOOLEAN_NOT_NULL);
+      evalFalse("FIELD_INTEGER IS NOT DISTINCT FROM 1").returnType(Types.BOOLEAN_NOT_NULL);
+      evalTrue("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2019-01-01'");
+      evalFalse("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2018-01-01'");
     }
+
+    @Test
+    void testNullHandling() throws Exception {
+      evalFalse("NULL_BOOLEAN IS NOT DISTINCT FROM true");
+      evalTrue("NULL_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN");
+      evalTrue("NULL_INTEGER IS NOT DISTINCT FROM NULL");
+    }
+
+    @Test
+    void testError() throws Exception {
+      evalFails("FIELD_STRING IS NOT DISTINCT FROM ", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_STRING IS NOT DISTINCT 'TEST' ", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_STRING DISTINCT FROM 'TEST' ", ErrorCode.UNEXPECTED_CHARACTER);
+    }
+
+    @Test
+    void testOptimize() throws Exception {
+      optimize("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE");
+      optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
+      optimizeFalse("NULL IS NOT DISTINCT FROM TRUE");
+      optimizeFalse("10151082135029368 IS NOT DISTINCT FROM 10151082135029369");
+      optimizeTrue("FIELD_INTEGER IS NOT DISTINCT FROM FIELD_INTEGER");
+
+      // The DISTINCT predicate is a verbose way of NULL safe comparisons
+      optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
+      optimize("NULL_INTEGER IS NOT DISTINCT FROM NULL", "NULL_INTEGER IS NULL");
+      optimize("FIELD_STRING IS NOT DISTINCT FROM NULL", "FIELD_STRING IS NULL");
+      optimize("NULL IS NOT DISTINCT FROM FIELD_STRING", "FIELD_STRING IS NULL");
+    }
+  }
 
   @Nested
   class Add {

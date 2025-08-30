@@ -52,6 +52,7 @@ public class CastOperator extends Operator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Use CAST function to simplify casting
     return new Call(CastFunction.INSTANCE, call.getOperands());
   }
 

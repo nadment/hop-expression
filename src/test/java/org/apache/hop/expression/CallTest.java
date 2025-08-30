@@ -47,10 +47,14 @@ class CallTest extends ExpressionTest {
 
     Call call6 =
         new Call(
-            InListOperator.INSTANCE, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
+            InListOperator.INSTANCE,
+            new Identifier("Field"),
+            new Array(Literal.of(1), Literal.of(2)));
     Call call7 =
         new Call(
-            InListOperator.INSTANCE, new Identifier("Field"), new Array(Literal.of(1), Literal.of(2)));
+            InListOperator.INSTANCE,
+            new Identifier("Field"),
+            new Array(Literal.of(1), Literal.of(2)));
     Call call8 = new Call(FunctionRegistry.getFunction("RANDOM"));
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);

@@ -66,7 +66,7 @@ public class PowerFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Simplify arithmetic "POWER(X,1)" to "X"
-    if (Literal.ONE.equals(call.getOperand(1))) {
+    if (Literal.ONE.equals(call.getOperand(1)) && !call.getOperand(0).getType().isNullable()) {
       return call.getOperand(0);
     }
 

@@ -16,42 +16,47 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import ch.obermuhlner.math.big.BigDecimalMath;
+import java.math.BigDecimal;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
-/**
- * The function calculates the SHA-512 hash of a data value. The hash will be returned as 128
- * characters hex-encoded string.
- *
- * @see Md5Function
- * @see Sha1Function
- * @see Sha224Function
- * @see Sha256Function
- * @see Sha384Function
- */
+/** Calculates the inverse hyperbolic cotangent of a number. */
 @FunctionPlugin
-public class Sha512Function extends Function {
+public class AcothFunction extends Function {
 
-  public Sha512Function() {
+  public AcothFunction() {
     super(
-        "SHA512",
-        ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/sha512.html");
+        "ACOTH",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMBER,
+        OperatorCategory.TRIGONOMETRY,
+        "/docs/acoth.html");
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandType(call, call.getType(), 0);
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    byte[] value = operands[0].getValue(byte[].class);
-    if (value == null) {
-      return null;
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
+    if (value == null) return null;
+
+    // The absolute value must be greater than 1
+    if (BigDecimal.ONE.compareTo(value.abs()) >= 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
     }
-    return DigestUtils.sha512Hex(value);
+
+    return BigDecimalMath.acoth(value, MATH_CONTEXT);
   }
 }

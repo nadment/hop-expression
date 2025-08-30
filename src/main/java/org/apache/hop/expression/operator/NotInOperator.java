@@ -113,7 +113,7 @@ public class NotInOperator extends Operator {
         return new Call(EqualOperator.INSTANCE, reference, reference);
       }
 
-      // If this element is not present in new list then add it
+      // If this element is not present in a new list, then add it
       if (!list.contains(expression)) {
         list.add(expression);
       }

@@ -86,21 +86,21 @@ public class ContainsFunction extends Function {
         return Boolean.FALSE;
       }
 
-        if (search.length > value.length) {
-            return Boolean.FALSE;
-        }
+      if (search.length > value.length) {
+        return Boolean.FALSE;
+      }
 
-        return containsSubarray(value, search) ? Boolean.TRUE : Boolean.FALSE;
+      return containsSubarray(value, search) ? Boolean.TRUE : Boolean.FALSE;
     }
 
-      private static boolean containsSubarray(final byte[] value, final byte[] search) {
-          final int lastStart = value.length - search.length;
-          for (int i = 0; i <= lastStart; i++) {
-              if (Arrays.mismatch(value, i, i + search.length, search, 0, search.length) == -1) {
-                  return true;
-              }
-          }
-          return false;
+    private static boolean containsSubarray(final byte[] value, final byte[] search) {
+      final int lastStart = value.length - search.length;
+      for (int i = 0; i <= lastStart; i++) {
+        if (Arrays.mismatch(value, i, i + search.length, search, 0, search.length) == -1) {
+          return true;
+        }
       }
+      return false;
+    }
   }
 }

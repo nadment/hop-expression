@@ -47,7 +47,6 @@ public class SubtractOperator extends BinaryOperator {
         Associativity.LEFT,
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.DATE_INTERVAL).or(OperandTypes.DATE_INTEGER),
-        // .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
         "/docs/subtract.html");
   }
@@ -152,28 +151,6 @@ public class SubtractOperator extends BinaryOperator {
       if (interval == null) return null;
 
       return interval.subtractFrom(datetime);
-    }
-  }
-
-  public static final class IntervalFromIntervalSubtractOperator extends SubtractOperator {
-    private static final IntervalFromIntervalSubtractOperator INSTANCE =
-        new IntervalFromIntervalSubtractOperator();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      Interval interval0 = operands[0].getValue(Interval.class);
-      if (interval0 == null) return null;
-
-      Interval interval1 = operands[1].getValue(Interval.class);
-      if (interval1 == null) return null;
-
-      // return interval0.subtract(interval1);
-      throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
-    }
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
     }
   }
 }

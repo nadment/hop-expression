@@ -39,8 +39,6 @@ public class BrowserToolTip extends ToolTip {
   private static final int DEFAULT_SHIFT_X = -3;
   private static final int DEFAULT_SHIFT_Y = -3;
 
-  @Getter private Browser browser;
-
   /** HTML text to display. */
   @Getter @Setter private String text;
 
@@ -65,7 +63,7 @@ public class BrowserToolTip extends ToolTip {
     // Cancel opening of new windows
     browser.addOpenWindowListener(e -> e.required = true);
 
-    // Replace browser's built-in context menu with none
+    // Replace the browser's built-in context menu with none
     browser.setMenu(new Menu(parent.getShell(), SWT.NONE));
 
     // Set HTML content

@@ -63,7 +63,6 @@ public class MultiplyOperator extends BinaryOperator {
 
     // TODO: Simplify arithmetic -1 * A → -A
 
-
     // Reorder chained symmetric operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
     operands.addAll(call.getChainedOperands(true));

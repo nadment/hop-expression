@@ -151,6 +151,5 @@ public class RangeTest extends ExpressionTest {
   }
 
   @Test
-  void x() {
-  }
+  void x() {}
 }

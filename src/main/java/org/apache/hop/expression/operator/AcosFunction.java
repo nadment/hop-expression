@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -51,15 +52,16 @@ public class AcosFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    BigDecimal number = operands[0].getValue(BigDecimal.class);
-    if (number == null) return null;
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
+    if (value == null) return null;
 
-    double value = number.doubleValue();
-    if (value < -1.0 || value > 1.0) {
-      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
+    // The absolute value must be less or equal than 1
+    if (BigDecimal.ONE.compareTo(value.abs()) < 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
     }
+
     // FIXME: Use BigDecimalMath when bug are fixed
     // https://github.com/eobermuhlner/big-math/issues/66
-    return BigDecimal.valueOf(FastMath.acos(value));
+    return BigDecimal.valueOf(FastMath.acos(value.doubleValue()));
   }
 }

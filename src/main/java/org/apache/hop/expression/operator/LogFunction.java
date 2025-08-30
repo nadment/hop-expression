@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -47,8 +48,9 @@ public class LogFunction extends Function {
     BigDecimal value = operands[1].getValue(BigDecimal.class);
     if (value == null) return null;
 
-    if (value.signum() <= 0)
-      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(2, value));
+    if (value.signum() <= 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, value.stripTrailingZeros());
+    }
 
     return BigDecimalMath.log(value, MATH_CONTEXT)
         .divide(BigDecimalMath.log(base, MATH_CONTEXT), MATH_CONTEXT);
