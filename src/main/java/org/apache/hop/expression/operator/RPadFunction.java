@@ -91,10 +91,7 @@ public class RPadFunction extends Function {
         return "";
       }
       if (length > PAD_LIMIT) {
-        // TODO: Fix i18n message
-        throw new IllegalArgumentException(
-            ErrorCode.INVALID_ARGUMENT.message(
-                "Padding length exceeds maximum limit: " + PAD_LIMIT));
+        throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
       }
 
       final int size = pad.length();
@@ -147,9 +144,7 @@ public class RPadFunction extends Function {
       if (length < 0) {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(
-            ErrorCode.INVALID_ARGUMENT.message(
-                "Padding length exceeds maximum limit: " + PAD_LIMIT));
+          throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
       }
 
       // nothing to pad

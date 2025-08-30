@@ -76,6 +76,8 @@ public enum ErrorCode {
   CONVERSION_OVERFLOW,
   /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE,
+  /** Padding length exceeds maximum limit {0} */
+  PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT,
   /** Precision of {0} must be within the range {1} to {2} */
   PRECISION_OUT_OF_RANGE,
   /** The scale of {0} must be within the range {1} to {2} */

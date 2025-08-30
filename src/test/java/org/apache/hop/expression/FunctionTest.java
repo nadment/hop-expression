@@ -938,9 +938,9 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    // Test PAD_LIMIT
-    evalFails("RPad('test',10000,'t')", ErrorCode.CALL_FUNCTION_ERROR);
-    evalFails("RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.CALL_FUNCTION_ERROR);
+    // Check padding length exceeds the maximum limit
+    evalFails("RPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
   }
 
   @Test
@@ -980,9 +980,9 @@ public class FunctionTest extends ExpressionTest {
     // Missing arguments
     evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    // Test PAD_LIMIT
-    evalFails("LPad('test',10000,'t')", ErrorCode.CALL_FUNCTION_ERROR);
-    evalFails("LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.CALL_FUNCTION_ERROR);
+    // Check padding length exceeds the maximum limit
+    evalFails("LPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
   }
 
   @Test
