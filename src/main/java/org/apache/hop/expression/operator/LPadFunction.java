@@ -139,7 +139,7 @@ public class LPadFunction extends Function {
       if (pad == null) {
         pad = DEFAULT;
       }
-      // If length is a negative number, the result is an empty array.
+      // If the length is a negative number, the result is an empty array.
       if (length < 0) {
         return new byte[0];
       } else if (length > PAD_LIMIT) {

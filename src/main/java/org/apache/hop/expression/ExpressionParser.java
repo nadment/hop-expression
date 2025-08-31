@@ -64,7 +64,7 @@ import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegativeOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
-import org.apache.hop.expression.operator.NotInOperator;
+import org.apache.hop.expression.operator.NotInListOperator;
 import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.NthValueFunction;
 import org.apache.hop.expression.operator.SimilarToOperator;
@@ -246,9 +246,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse logical OR expression (Disjunction)
-   *
-   * <p>LogicalXorExpression ( OR LogicalXorExpression )*
+   * Parse logical OR expression (Disjunction) <code>
+   * LogicalXorExpression ( OR LogicalXorExpression )*</code>
    */
   private IExpression parseLogicalOr() throws ExpressionException {
     IExpression expression = this.parseLogicalXor();
@@ -261,9 +260,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse logical XOR expression (Exclusive disjunction)
-   *
-   * <p>LogicalAndExpression ( XOR LogicalAndExpression )*
+   * Parse logical XOR expression (Exclusive disjunction) <code>
+   * LogicalAndExpression ( XOR LogicalAndExpression )*</code>*
    */
   private IExpression parseLogicalXor() throws ExpressionException {
     IExpression expression = this.parseLogicalAnd();
@@ -276,11 +274,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse logical AND expression (Conjunction)
-   *
-   * <p>LogicalNotExpression ( AND LogicalNotExpression )*
-   *
-   * @return Expression
+   * Parse logical AND expression (Conjunction) <code>
+   * LogicalNotExpression ( AND LogicalNotExpression )</code>*
    */
   private IExpression parseLogicalAnd() throws ExpressionException {
     IExpression expression = this.parseLogicalNot();
@@ -292,11 +287,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /**
-   * Parse logical NOT expression
-   *
-   * <p>[NOT] IdentityExpression
-   */
+  /** Parse logical NOT expression <code>[NOT] IdentityExpression</code> */
   private IExpression parseLogicalNot() throws ExpressionException {
     if (isThenNext(Id.NOT)) {
       checkEndOfExpression(Id.NOT);
@@ -307,10 +298,11 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse assertion IS expression
-   *
-   * <p>RelationalExpression IS [NOT] TRUE|FALSE|NULL RelationalExpression IS [NOT] DISTINCT FROM
+   * Parse assertion IS expression <code>
+   * RelationalExpression IS [NOT] TRUE|FALSE|NULL
+   * RelationalExpression IS [NOT] DISTINCT FROM
    * RelationalExpression
+   * </code>
    */
   private IExpression parseConditional() throws ExpressionException {
     IExpression expression = this.parseComparison();
@@ -352,9 +344,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse IN, LIKE, BETWEEN, SIMILAR TO expression
-   *
-   * <p>BitwiseOrExpression ( [NOT] | InClause | BetweenClause | LikeClause BitwiseOrExpression)
+   * Parse IN, LIKE, BETWEEN, SIMILAR TO expression <code>
+   * BitwiseOrExpression ( [NOT] | InClause | BetweenClause | LikeClause BitwiseOrExpression)</code>
    */
   private IExpression parseRelational() throws ExpressionException {
     IExpression expression = this.parseBitwiseOr();
@@ -394,9 +385,9 @@ public class ExpressionParser {
     } else if (isThenNext(Id.IN)) {
       return new Call(
           getPosition(),
-          not ? NotInOperator.INSTANCE : InListOperator.INSTANCE,
+          not ? NotInListOperator.INSTANCE : InListOperator.INSTANCE,
           expression,
-          this.parseElements());
+          this.parseListElements());
     } else if (isThenNext(Id.BETWEEN)) {
       Operator operator = BetweenAsymmetricOperator.INSTANCE;
       if (isThenNext(Id.ASYMMETRIC)) {
@@ -437,11 +428,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /**
-   * BitwiseNotExpression ( (* | / | %) BitwiseNotExpression())*
-   *
-   * @return Expression
-   */
+  /** <code>BitwiseNotExpression ( (* | / | %) BitwiseNotExpression())</code>* */
   private IExpression parseFactor() throws ExpressionException {
     IExpression expression = this.parseBitwiseNot();
 
@@ -464,7 +451,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** ( UnaryExpression)* */
+  /** <code>(UnaryExpression)*</code> */
   private IExpression parseBitwiseNot() throws ExpressionException {
 
     int start = this.getPosition();
@@ -478,7 +465,7 @@ public class ExpressionParser {
     return this.parseUnary();
   }
 
-  /** ConcatenationExpression ( & ConcatenationExpression)* */
+  /** <code>ConcatenationExpression ( & ConcatenationExpression)*</code> */
   private IExpression parseBitwiseAnd() throws ExpressionException {
     IExpression expression = this.parseConcatenation();
     while (isThenNext(Id.AMPERSAND)) {
@@ -489,7 +476,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** BitwiseXorExpression ( | BitwiseXorExpression)* */
+  /** <code>BitwiseXorExpression ( | BitwiseXorExpression)*</code> */
   private IExpression parseBitwiseOr() throws ExpressionException {
     IExpression expression = this.parseBitwiseXor();
     while (isThenNext(Id.PIPE)) {
@@ -499,7 +486,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** BitwiseAndExpression ( ^ BitwiseAndExpression)* */
+  /** <code>BitwiseAndExpression ( ^ BitwiseAndExpression)*</code> */
   private IExpression parseBitwiseXor() throws ExpressionException {
     IExpression expression = this.parseBitwiseAnd();
     while (isThenNext(Id.CARET)) {
@@ -510,7 +497,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** (('+' | '-') PrimaryExpression ) */
+  /** <code>('+' | '-') PrimaryExpression</code> */
   private IExpression parseUnary() throws ExpressionException {
     int start = this.getPosition();
     if (isThenNext(Id.MINUS)) {
@@ -538,7 +525,10 @@ public class ExpressionParser {
     return Literal.of(InetConversion.convert(token.text()));
   }
 
-  /** Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>] */
+  /**
+   * Parse primary <code>
+   * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>]</code>
+   */
   private IExpression parsePrimary() throws ExpressionException {
     IExpression expression = this.parseTerm();
 
@@ -574,7 +564,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** Term = Literal | Identifier | Function | '(' Expression ')' */
+  /** Parse term <code>Literal | Identifier | Function | '(' Expression ')'</code> */
   private IExpression parseTerm() throws ExpressionException {
     Token token = next();
     switch (token.id()) {
@@ -645,10 +635,11 @@ public class ExpressionParser {
       default:
         // Syntax error
     }
+
     throw new ExpressionParseException(position, ErrorCode.SYNTAX_ERROR, token);
   }
 
-  /** RelationalExpression ( Operator RelationalExpression ) */
+  /** <code>RelationalExpression ( Operator RelationalExpression )</code> */
   private IExpression parseComparison() throws ExpressionException {
     IExpression expression = this.parseRelational();
     int start = this.getPosition();
@@ -681,7 +672,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** FactorExpression ( (+ | - ) FactorExpression )* */
+  /** <code>FactorExpression ( (+ | - ) FactorExpression )*</code> */
   private IExpression parseAdditive() throws ExpressionException {
     IExpression expression = this.parseFactor();
     while (hasNext()) {
@@ -702,7 +693,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** [exp1, exp2...] * */
+  /** Parse array <code>[exp1, exp2...]</code> */
   private IExpression parseArray(final Token token) throws ExpressionException {
 
     if (!hasNext()) {
@@ -728,7 +719,7 @@ public class ExpressionParser {
     return new Array(operands);
   }
 
-  /** AdditiveExpression ( || AdditiveExpression )* */
+  /** <code>AdditiveExpression ( || AdditiveExpression )*</code> */
   private IExpression parseConcatenation() throws ExpressionException {
     IExpression expression = this.parseAdditive();
     while (isThenNext(Id.CONCAT)) {
@@ -827,8 +818,10 @@ public class ExpressionParser {
     }
   }
 
-  /** Parses a list of expressions separated by commas. (expression [,expression...] ) */
-  private Array parseElements() throws ExpressionException {
+  /**
+   * Parses a list of expressions separated by commas. <code>(expression [,expression...] )</code>
+   */
+  private Array parseListElements() throws ExpressionException {
 
     List<IExpression> list = new ArrayList<>();
 
@@ -914,7 +907,7 @@ public class ExpressionParser {
         elseExpression);
   }
 
-  /** Cast function CAST(value AS type [FORMAT pattern]) */
+  /** Cast function <code>CAST(value AS type [FORMAT pattern])</code> */
   private IExpression parseFunctionCast(final Token token, final Function function)
       throws ExpressionException {
     List<IExpression> operands = new ArrayList<>();
@@ -952,17 +945,27 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** Parse POSITION(expression IN expression) */
+  /** Parse function <code>POSITION(expression IN expression)</code> */
   private IExpression parseFunctionPosition(final Token token, final Function function)
       throws ExpressionException {
+    List<IExpression> operands = new ArrayList<>();
+
+    // Check argument will detect an error later
+    if (isThenNext(Id.RPARENTHESIS)) {
+      return new Call(token.start(), function, operands);
+    }
 
     if (!hasNext()) {
       throw new ExpressionParseException(
           token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
-    List<IExpression> operands = new ArrayList<>();
     operands.add(this.parseConcatenation());
+
+    // Check argument will detect an error later
+    if (isThenNext(Id.RPARENTHESIS)) {
+      return new Call(token.start(), function, operands);
+    }
 
     if (isNotThenNext(Id.IN)) {
       throw new ExpressionParseException(
@@ -983,84 +986,110 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** Parse <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
+  /** Parse function <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
   private IExpression parseFunctionFirstValue(Token token, Function function)
       throws ExpressionException {
 
-    IExpression operand = this.parseLogicalOr();
+    List<IExpression> operands = this.parseArguments();
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     // NULL treatment clause
-    if (isThenNext(Id.IGNORE, Id.NULLS)) {
+    if (this.parseNullTreatment(function)) {
       function = FirstValueFunction.FIRST_VALUE_IGNORE_NULLS;
-    } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
+    } else {
       function = FirstValueFunction.FIRST_VALUE_RESPECT_NULLS;
     }
 
-    return new Call(token.start(), function, operand);
+    return new Call(token.start(), function, operands);
   }
 
-  /** Parse <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
+  /** Parse function <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
   private IExpression parseFunctionLastValue(Token token, Function function)
       throws ExpressionException {
 
-    IExpression operand = this.parseLogicalOr();
+    List<IExpression> operands = this.parseArguments();
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     // NULL treatment clause
-    if (isThenNext(Id.IGNORE, Id.NULLS)) {
+    if (this.parseNullTreatment(function)) {
       function = LastValueFunction.LAST_VALUE_IGNORE_NULLS;
-    } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
+    } else {
       function = LastValueFunction.LAST_VALUE_RESPECT_NULLS;
     }
 
-    return new Call(token.start(), function, operand);
+    return new Call(token.start(), function, operands);
   }
 
-  /** Parse <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code> */
+  /** Parse function <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code> */
   private IExpression parseFunctionNthValue(Token token, Function function)
       throws ExpressionException {
 
-    List<IExpression> operands = new ArrayList<>();
-    operands.add(this.parseLogicalOr());
-
-    if (isNotThenNext(Id.COMMA)) {
-      throw new ExpressionParseException(
-          getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
-    }
-    operands.add(this.parseLogicalOr());
+    List<IExpression> operands = this.parseArguments();
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     // NULL treatment clause
-    if (isThenNext(Id.IGNORE, Id.NULLS)) {
+    if (this.parseNullTreatment(function)) {
       function = NthValueFunction.NTH_VALUE_IGNORE_NULLS;
-    } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
+    } else {
       function = NthValueFunction.NTH_VALUE_RESPECT_NULLS;
     }
 
     return new Call(token.start(), function, operands);
   }
 
-  /** EXTRACT(part FROM expression) */
+  /**
+   * Parse NULL treatment clause <code>[ IGNORE NULLS | RESPECT NULLS ]</code>
+   *
+   * @return true if the function should ignore null values
+   */
+  private boolean parseNullTreatment(Function function) throws ExpressionException {
+    if (isThenNext(Id.IGNORE)) {
+      if (isThenNext(Id.NULLS)) {
+        return true;
+      }
+      throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function);
+    }
+    if (isThenNext(Id.RESPECT)) {
+      if (isThenNext(Id.NULLS)) {
+        return false;
+      }
+      throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function);
+    }
+
+    return false;
+  }
+
+  /** Parse function <code>EXTRACT(part FROM expression)</code> */
   private IExpression parseFunctionExtract(Token token, final Function function)
       throws ExpressionException {
+
+    List<IExpression> operands = new ArrayList<>();
+
+    // Check argument will detect an error later
+    if (isThenNext(Id.RPARENTHESIS)) {
+      return new Call(token.start(), function, operands);
+    }
 
     if (!hasNext()) {
       throw new ExpressionParseException(
           getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
-    List<IExpression> operands = new ArrayList<>();
     operands.add(this.parseLiteralTimeUnit(next()));
+
+    // Check argument will detect an error later
+    if (isThenNext(Id.RPARENTHESIS)) {
+      return new Call(token.start(), function, operands);
+    }
 
     if (isNotThenNext(Id.FROM)) {
       throw new ExpressionParseException(
@@ -1081,7 +1110,7 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** COUNT(*) | COUNT([DISTINCT] expression) */
+  /** Parse function <code>COUNT(*) | COUNT([DISTINCT] expression)</code> */
   private IExpression parseFunctionCount(Token token, Function function)
       throws ExpressionException {
 
@@ -1094,10 +1123,10 @@ public class ExpressionParser {
       // Use fictive operand
       operands.add(Literal.NULL);
     } else if (isThenNext(Id.DISTINCT)) {
-      operands.add(this.parsePrimary());
+      operands = this.parseArguments();
       aggregator = CountFunction.COUNT_DISTINCT;
     } else {
-      operands.add(this.parsePrimary());
+      operands = this.parseArguments();
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
@@ -1107,25 +1136,17 @@ public class ExpressionParser {
     return new Call(token.start(), aggregator, operands);
   }
 
-  /** LISTAGG([DISTINCT] expression [, delimiter] ) */
+  /** Parse function <code>LISTAGG([DISTINCT] expression [, delimiter] )</code> */
   private IExpression parseFunctionListAgg(Token token, final Function function)
       throws ExpressionException {
 
     AggregateFunction aggregator = ListAggFunction.LISTAGG_ALL;
 
-    List<IExpression> operands = new ArrayList<>();
-
     if (isThenNext(Id.DISTINCT)) {
-      operands.add(this.parsePrimary());
       aggregator = ListAggFunction.LISTAGG_DISTINCT;
-    } else {
-      operands.add(this.parsePrimary());
     }
 
-    // Optional delimiter
-    if (isThenNext(Id.COMMA)) {
-      operands.add(this.parsePrimary());
-    }
+    List<IExpression> operands = this.parseArguments();
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
@@ -1134,7 +1155,10 @@ public class ExpressionParser {
     return new Call(token.start(), aggregator, operands);
   }
 
-  /** JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...) */
+  /**
+   * Parse function <code>JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...)
+   * </code>
+   */
   private IExpression parseFunctionJsonObject(Token token, final Function function)
       throws ExpressionException {
 
@@ -1169,7 +1193,7 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** JSON_VALUE(json, path [RETURNING type]) */
+  /** Parse function <code>JSON_VALUE(json, path [RETURNING type])</code> */
   private IExpression parseFunctionJsonValue(Token token, final Function function)
       throws ExpressionException {
 
@@ -1192,7 +1216,7 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** Function */
+  /** Parse function */
   private IExpression parseFunction(final Token token) throws ExpressionException {
     Function function = FunctionRegistry.getFunction(token.text());
 
@@ -1204,13 +1228,6 @@ public class ExpressionParser {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ExpressionParseException(token.end(), ErrorCode.MISSING_LEFT_PARENTHESIS);
-    }
-
-    List<IExpression> operands = new ArrayList<>();
-
-    // No param function
-    if (isThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
     }
 
     // Parse function with custom syntax
@@ -1247,25 +1264,33 @@ public class ExpressionParser {
       }
     }
 
-    if (!hasNext()) {
-      throw new ExpressionParseException(
-          getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-    }
-    operands.add(this.parseLogicalOr());
-
-    while (isThenNext(Id.COMMA)) {
-      if (!hasNext()) {
-        throw new ExpressionParseException(
-            getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-      }
-      operands.add(this.parseLogicalOr());
-    }
+    List<IExpression> operands = this.parseArguments();
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(token.start(), function, operands);
+  }
+
+  /** Parse function arguments */
+  private List<IExpression> parseArguments() {
+    List<IExpression> operands = new ArrayList<>();
+
+    // No argument function
+    if (is(Id.RPARENTHESIS)) {
+      return operands;
+    }
+
+    // <expression [, expression>]
+    do {
+      if (hasNext()) {
+        operands.add(this.parseLogicalOr());
+      }
+
+    } while (isThenNext(Id.COMMA));
+
+    return operands;
   }
 
   private IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {

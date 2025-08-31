@@ -45,11 +45,11 @@ import org.apache.hop.expression.type.Types;
  *   <li><code>field NOT IN (list of values)</code>
  * </ul>
  */
-public class NotInOperator extends Operator {
+public class NotInListOperator extends Operator {
 
-  public static final NotInOperator INSTANCE = new NotInOperator();
+  public static final NotInListOperator INSTANCE = new NotInListOperator();
 
-  public NotInOperator() {
+  public NotInListOperator() {
     super(
         "NOT IN",
         120,

@@ -28,7 +28,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public Type inferReturnType(Call call) {
-    Type returnType = Types.getLeastRestrictive((Array) call.getOperand(2));
+    Type returnType = Types.getLeastRestrictive(call.getOperand(2));
     return Types.getLeastRestrictive(returnType, call.getOperand(3).getType());
   }
 }

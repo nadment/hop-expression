@@ -126,7 +126,7 @@ public class BoolOrOperator extends BinaryOperator {
             inTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
-        if (term.isOperator(NotInOperator.INSTANCE)) {
+        if (term.isOperator(NotInListOperator.INSTANCE)) {
           notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(NotEqualOperator.INSTANCE)) {
@@ -212,7 +212,7 @@ public class BoolOrOperator extends BinaryOperator {
       if (values.size() == 1) {
         predicate = new Call(NotEqualOperator.INSTANCE, reference, values.iterator().next());
       } else {
-        predicate = new Call(NotInOperator.INSTANCE, reference, new Array(values));
+        predicate = new Call(NotInListOperator.INSTANCE, reference, new Array(values));
       }
       predicate.inferReturnType();
       predicates.add(predicate);

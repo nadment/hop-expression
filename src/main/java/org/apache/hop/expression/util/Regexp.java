@@ -25,7 +25,7 @@ public class Regexp {
   /** Private constructor since this is a utility class. */
   private Regexp() {}
 
-  /** Translates a LIKE pattern to Java regexp pattern, with optional escape string. */
+  /** Translates a LIKE pattern to a Java regexp pattern, with an optional escape string. */
   public static String toRegexLike(final String pattern, final CharSequence escapeStr)
       throws ExpressionException {
     final char escapeChar;
@@ -84,24 +84,24 @@ public class Regexp {
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {
         switch (str.charAt(i)) {
-            // Enables case-insensitive matching
+          // Enables case-insensitive matching
           case 'i':
             flags |= Pattern.CASE_INSENSITIVE;
             break;
-            // Enables case-sensitive matching
+          // Enables case-sensitive matching
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
-            // Enables dotall mode, that allows the period (.) to match the newline character.
+          // Enables dotall mode, that allows the period (.) to match the newline character.
           case 'n':
             flags |= Pattern.DOTALL;
             break;
-            // Enables multiline mode.
+          // Enables multiline mode.
           case 'm':
             flags |= Pattern.MULTILINE;
             break;
           default:
-            throw new IllegalArgumentException(ErrorCode.INVALID_ARGUMENT.message(str));
+            throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, str);
         }
       }
     }
@@ -146,26 +146,37 @@ public class Regexp {
 
           String cls = pattern.substring(i + 2, end - 1).toLowerCase();
           // Alphabetic characters
-          if ("alpha".equals(cls)) javaPattern.append("\\p{Alpha}");
-          // Alphanumeric characters
-          else if ("alnum".equals(cls)) javaPattern.append("\\p{Alnum}");
-          else if ("cntrl".equals(cls)) javaPattern.append("\\p{Cntrl}");
-          // Blank space and tab characters
-          else if ("blank".equals(cls)) javaPattern.append("\\h");
-          // Punctuation and symbols characters
-          else if ("punct".equals(cls)) javaPattern.append("\\p{Punct}");
-          // Numeric digits
-          else if ("digit".equals(cls)) javaPattern.append("\\d");
-          // Hexadecimal digits
-          else if ("xdigit".equals(cls)) javaPattern.append("\\p{XDigit}");
-          // All whitespace characters, including line breaks
-          else if ("space".equals(cls)) javaPattern.append("\\s");
-          // Uppercase letters
-          else if ("upper".equals(cls)) javaPattern.append("\\u");
-          // Lowercase letters
-          else if ("lower".equals(cls)) javaPattern.append("\\l");
-          // Word characters (letters, numbers and underscores)
-          else if ("word".equals(cls)) javaPattern.append("\\w");
+          switch (cls) {
+            case "alpha" -> javaPattern.append("\\p{Alpha}");
+
+            // Alphanumeric characters
+            case "alnum" -> javaPattern.append("\\p{Alnum}");
+            case "cntrl" -> javaPattern.append("\\p{Cntrl}");
+
+            // Blank space and tab characters
+            case "blank" -> javaPattern.append("\\h");
+
+            // Punctuation and symbols characters
+            case "punct" -> javaPattern.append("\\p{Punct}");
+
+            // Numeric digits
+            case "digit" -> javaPattern.append("\\d");
+
+            // Hexadecimal digits
+            case "xdigit" -> javaPattern.append("\\p{XDigit}");
+
+            // All whitespace characters, including line breaks
+            case "space" -> javaPattern.append("\\s");
+
+            // Uppercase letters
+            case "upper" -> javaPattern.append("\\u");
+
+            // Lowercase letters
+            case "lower" -> javaPattern.append("\\l");
+
+            // Word characters (letters, numbers and underscores)
+            case "word" -> javaPattern.append("\\w");
+          }
 
           i = end;
         } else javaPattern.append(c);

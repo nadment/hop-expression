@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -62,7 +63,7 @@ public class InstrFunction extends Function {
       start = operands[2].getValue(Long.class).intValue();
 
       if (start == 0) {
-        throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(3, start));
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE,3, start);
       }
 
       start -= 1;
@@ -71,7 +72,7 @@ public class InstrFunction extends Function {
       if (operands.length == 4) {
         occurrence = operands[3].getValue(Long.class).intValue();
         if (occurrence < 1) {
-          throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(occurrence));
+          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE,4, occurrence);
         }
       }
     }

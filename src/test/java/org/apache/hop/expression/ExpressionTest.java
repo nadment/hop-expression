@@ -411,6 +411,6 @@ public class ExpressionTest {
     // evalEquals("TIMESTAMP '2001-02-16 20:38:40' AT TIME ZONE 'Asia/Tokyo' AT TIME ZONE
     // 'America/Chicago'",  ZonedDateTime.of(2001, 2, 16, 5, 38, 40, 0,
     // ZoneId.of("America/Chicago")));
-
+     // evalFails("Left(", ErrorCode.SYNTAX_ERROR_FUNCTION);
   }
 }

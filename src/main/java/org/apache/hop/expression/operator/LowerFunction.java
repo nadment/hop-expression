@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 
 /**
- * The function convert a string value to lower case.
+ * The function converts a string value to lower case.
  *
  * @see InitCapFunction
  * @see UpperFunction

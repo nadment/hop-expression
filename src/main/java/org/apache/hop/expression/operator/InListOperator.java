@@ -62,7 +62,7 @@ public class InListOperator extends Operator {
 
   @Override
   public Operator not() {
-    return NotInOperator.INSTANCE;
+    return NotInListOperator.INSTANCE;
   }
 
   @Override

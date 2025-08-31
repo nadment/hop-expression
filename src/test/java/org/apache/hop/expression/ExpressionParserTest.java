@@ -45,7 +45,7 @@ import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
-import org.apache.hop.expression.operator.NotInOperator;
+import org.apache.hop.expression.operator.NotInListOperator;
 import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.type.IntegerType;
@@ -178,7 +178,7 @@ public class ExpressionParserTest extends ExpressionTest {
     assertNotNull(ConcatFunction.INSTANCE.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
-    assertNotEquals(InListOperator.INSTANCE, NotInOperator.INSTANCE);
+    assertNotEquals(InListOperator.INSTANCE, NotInListOperator.INSTANCE);
     assertNotEquals(SimilarToOperator.INSTANCE, NotSimilarToOperator.INSTANCE);
   }
 
@@ -297,6 +297,11 @@ public class ExpressionParserTest extends ExpressionTest {
   }
 
   @Test
+  void x()  {
+    evalFails("Left(,)", ErrorCode.SYNTAX_ERROR);
+  }
+
+  @Test
   void syntaxError() throws Exception {
 
     // Single quote for string
@@ -355,7 +360,14 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("~", ErrorCode.SYNTAX_ERROR);
     evalFails("~ ", ErrorCode.SYNTAX_ERROR);
 
-    evalFails("Year(", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Left(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Left('test'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Left('test',", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Left)", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("Left(,)", ErrorCode.SYNTAX_ERROR);
+
+    evalFails("Year(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Year(2024", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Year(()", ErrorCode.SYNTAX_ERROR);
     evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT);

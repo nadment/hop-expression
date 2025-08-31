@@ -894,9 +894,8 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Instr()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-
-    evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)", ErrorCode.CALL_FUNCTION_ERROR);
-    evalFails("Instr('CORPORATE FLOOR','OR',0)", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Instr('CORPORATE FLOOR','OR',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -940,7 +939,8 @@ public class FunctionTest extends ExpressionTest {
 
     // Check padding length exceeds the maximum limit
     evalFails("RPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
-    evalFails("RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails(
+        "RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
   }
 
   @Test
@@ -982,7 +982,8 @@ public class FunctionTest extends ExpressionTest {
 
     // Check padding length exceeds the maximum limit
     evalFails("LPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
-    evalFails("LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails(
+        "LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
   }
 
   @Test
@@ -1670,8 +1671,7 @@ public class FunctionTest extends ExpressionTest {
     evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Abs(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Abs(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-
-    evalFails("Abs(", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Abs(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("ABS(-FIELD_INTEGER)");
 
@@ -2475,9 +2475,8 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Insert()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-
-    evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')", ErrorCode.CALL_FUNCTION_ERROR);
-    evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -3859,11 +3858,15 @@ public class FunctionTest extends ExpressionTest {
     evalFalse("StartsWith(BINARY '1234',BINARY '123456')");
 
     // Null handling
-    evalNull("StartsWith(NULL_STRING,'ROMA')");
-    evalNull("StartsWith('TEST FROM',NULL_STRING)");
+    evalNull("StartsWith(NULL_STRING,'TEST')").returnType(Types.BOOLEAN);
+    evalNull("StartsWith('TEST',NULL_STRING)");
+    evalNull("StartsWith(NULL_BINARY,BINARY 'FA')").returnType(Types.BOOLEAN);
+    evalNull("StartsWith(BINARY 'FAA12345',NULL_BINARY)");
 
     // Check operands
     evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("StartsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("StartsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3875,8 +3878,10 @@ public class FunctionTest extends ExpressionTest {
     evalFalse("EndsWith('TEST','XXTEST')");
 
     // Null handling
-    evalNull("EndsWith(NULL_STRING,'ROMA')").returnType(Types.BOOLEAN);
-    evalNull("EndsWith('TEST FROM',NULL_STRING)").returnType(Types.BOOLEAN);
+    evalNull("EndsWith(NULL_STRING,'TEST')").returnType(Types.BOOLEAN);
+    evalNull("EndsWith('TEST',NULL_STRING)");
+    evalNull("EndsWith(NULL_BINARY,BINARY 'FA')").returnType(Types.BOOLEAN);
+    evalNull("EndsWith(BINARY 'FAA12345',NULL_BINARY)");
 
     // Binary
     evalTrue("EndsWith(BINARY 'FAA12345',BINARY '2345')").returnType(Types.BOOLEAN_NOT_NULL);
@@ -3885,6 +3890,8 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("EndsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("EndsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -3908,8 +3915,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Regexp_Like()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Regexp_Like('A')", ErrorCode.NOT_ENOUGH_ARGUMENT);
-
-    evalFails("Regexp_Like('A','[a-z]','z')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Regexp_Like('A','[a-z]','z')", ErrorCode.INVALID_ARGUMENT);
   }
 
   @Test
@@ -4629,7 +4635,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Bit_Set(16,4)", 24L);
     evalEquals("Bit_Set(32,4)", 40L);
 
-    // Overflow has no impact on result
+    // Overflow has no impact on the result
     evalEquals("Bit_Set(32,66)", 32L);
 
     // Null handling
@@ -4797,8 +4803,6 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Extract(MICROSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654L);
     evalEquals("Extract(NANOSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654321L);
 
-    // Check operands
-    evalFails("Extract()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     // TODO: detect unsupported time unit at compile time
     evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
     evalFails("Extract(ISOYEAR from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
@@ -4814,9 +4818,12 @@ public class FunctionTest extends ExpressionTest {
     evalFails("Extract(BIDON from NULL)", ErrorCode.INVALID_TIMEUNIT);
     evalFails("Extract(BIDON from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
 
+    // Check operands
+    evalFails("Extract()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Extract(MONTH)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+
     // Check syntax
     evalFails("Extract(", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("Extract(MONTH)", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Extract(MONTH DATE '2023-12-01')", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Extract(DAY DATE '2021-01-01')", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Extract(MONTH FROM DATE '2023-12-01'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
@@ -4850,6 +4857,7 @@ public class FunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Position()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Position('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Check syntax
     evalFails("Position( ", ErrorCode.SYNTAX_ERROR_FUNCTION);

@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * The function decode the URL to a string.
+ * The function decodes the URL to a string.
  *
  * @see UrlEncodeFunction
  */

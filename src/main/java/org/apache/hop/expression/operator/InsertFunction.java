@@ -82,12 +82,12 @@ public class InsertFunction extends Function {
 
       // Valid values are between 1 and one more than the length of the string (inclusive).
       if (pos <= 0 || pos > original.length() + 1)
-        throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(2, pos));
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, pos);
 
       // Valid values range from 0 to the number of characters between pos and the end of the
       // string.
       if (len < 0 || len > original.length() - pos + 1)
-        throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(3, len));
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, len);
 
       int start = Math.min(Math.max(0, pos.intValue() - 1), original.length());
       int length = Math.min(len.intValue(), original.length());
@@ -117,11 +117,11 @@ public class InsertFunction extends Function {
 
       // Valid values are between 1 and one more than the length of the binary (inclusive).
       if (pos <= 0 || pos > value.length + 1)
-        throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(2, pos));
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, pos);
 
       // Valid values range from 0 to the number of byte between pos and the end of the binary.
       if (len < 0 || len > value.length - pos + 1)
-        throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(3, len));
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, len);
 
       int position = pos.intValue() - 1;
       int start = Math.min(position, value.length);
