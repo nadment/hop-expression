@@ -63,7 +63,7 @@ public class InstrFunction extends Function {
       start = operands[2].getValue(Long.class).intValue();
 
       if (start == 0) {
-        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE,3, start);
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
       }
 
       start -= 1;
@@ -72,7 +72,7 @@ public class InstrFunction extends Function {
       if (operands.length == 4) {
         occurrence = operands[3].getValue(Long.class).intValue();
         if (occurrence < 1) {
-          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE,4, occurrence);
+          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, occurrence);
         }
       }
     }

@@ -678,7 +678,8 @@ public class FunctionTest extends ExpressionTest {
         .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59.123)", Interval.of(20, 1, 1, 23, 15, 59, 123000000));
 
-    // TODO: Null handling
+    // Null handling
+    evalNull("MAKE_INTERVAL(20,1,NULL_INTEGER,23,15,59)");
 
     // Check operands
     evalFails("MAKE_INTERVAL()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -3740,11 +3741,10 @@ public class FunctionTest extends ExpressionTest {
     optimize("JSON_OBJECT(KEY 'name' VALUE FIELD_STRING,KEY 'langue' VALUE 'english')");
   }
 
-
-    @Test
-    void z() throws Exception {
-        evalFails("Json_Object(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
-    }
+  @Test
+  void z() throws Exception {
+    evalFails("Json_Object(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+  }
 
   @Test
   void Overlay() throws Exception {

@@ -84,19 +84,19 @@ public class Regexp {
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {
         switch (str.charAt(i)) {
-          // Enables case-insensitive matching
+            // Enables case-insensitive matching
           case 'i':
             flags |= Pattern.CASE_INSENSITIVE;
             break;
-          // Enables case-sensitive matching
+            // Enables case-sensitive matching
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
-          // Enables dotall mode, that allows the period (.) to match the newline character.
+            // Enables dotall mode, that allows the period (.) to match the newline character.
           case 'n':
             flags |= Pattern.DOTALL;
             break;
-          // Enables multiline mode.
+            // Enables multiline mode.
           case 'm':
             flags |= Pattern.MULTILINE;
             break;
@@ -149,32 +149,32 @@ public class Regexp {
           switch (cls) {
             case "alpha" -> javaPattern.append("\\p{Alpha}");
 
-            // Alphanumeric characters
+              // Alphanumeric characters
             case "alnum" -> javaPattern.append("\\p{Alnum}");
             case "cntrl" -> javaPattern.append("\\p{Cntrl}");
 
-            // Blank space and tab characters
+              // Blank space and tab characters
             case "blank" -> javaPattern.append("\\h");
 
-            // Punctuation and symbols characters
+              // Punctuation and symbols characters
             case "punct" -> javaPattern.append("\\p{Punct}");
 
-            // Numeric digits
+              // Numeric digits
             case "digit" -> javaPattern.append("\\d");
 
-            // Hexadecimal digits
+              // Hexadecimal digits
             case "xdigit" -> javaPattern.append("\\p{XDigit}");
 
-            // All whitespace characters, including line breaks
+              // All whitespace characters, including line breaks
             case "space" -> javaPattern.append("\\s");
 
-            // Uppercase letters
+              // Uppercase letters
             case "upper" -> javaPattern.append("\\u");
 
-            // Lowercase letters
+              // Lowercase letters
             case "lower" -> javaPattern.append("\\l");
 
-            // Word characters (letters, numbers and underscores)
+              // Word characters (letters, numbers and underscores)
             case "word" -> javaPattern.append("\\w");
           }
 

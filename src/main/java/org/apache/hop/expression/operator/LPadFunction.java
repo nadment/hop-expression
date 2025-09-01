@@ -89,7 +89,7 @@ public class LPadFunction extends Function {
       if (length < 0) {
         length = 0;
       } else if (length > PAD_LIMIT) {
-          throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
+        throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
       }
 
       final int size = pad.length();
@@ -143,7 +143,7 @@ public class LPadFunction extends Function {
       if (length < 0) {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
-          throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
+        throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
       }
 
       // nothing to pad

@@ -16,10 +16,9 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 
-/** Least restrictive then expression or else expression */
+/** Least restrictive <code>then</code> expression or <code>else</code> expression */
 public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   public CaseOperatorReturnTypeInference() {

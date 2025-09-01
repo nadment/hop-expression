@@ -55,10 +55,10 @@ public class PositionFunction extends Function {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("POSITION(");
-    if ( operands.length >= 1) {
-        operands[0].unparse(writer, 0, 0);
+    if (operands.length >= 1) {
+      operands[0].unparse(writer, 0, 0);
     }
-    if ( operands.length == 2) {
+    if (operands.length == 2) {
       writer.append(" IN ");
       operands[1].unparse(writer, 0, 0);
     }
