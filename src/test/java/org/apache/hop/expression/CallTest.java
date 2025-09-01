@@ -70,6 +70,7 @@ class CallTest extends ExpressionTest {
     assertEquals(7, call1.getCost());
     assertEquals(14, call4.getCost());
     assertEquals(11, call6.getCost());
+
     // Data type is unknown before validation
     assertEquals(Types.UNKNOWN, call1.getType());
     assertEquals(Types.UNKNOWN, call3.getType());
@@ -123,7 +124,6 @@ class CallTest extends ExpressionTest {
 
     // Normalize identifiers by name
     optimize("FIELD_NUMBER+FIELD_INTEGER", "FIELD_INTEGER+FIELD_NUMBER");
-
     optimize(
         "FIELD_BOOLEAN_TRUE AND FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE AND FIELD_BOOLEAN_TRUE");
     optimize(
@@ -135,12 +135,7 @@ class CallTest extends ExpressionTest {
 
     // Normalize operands by cost
     optimize("1+FIELD_NUMBER+3", "4+FIELD_NUMBER");
-
     optimize("FIELD_NUMBER>3 AND TRUE", "TRUE AND FIELD_NUMBER>3");
-
-    // TODO: Coerce operands
-    // optimize("2::INTEGER*FIELD_NUMBER*3", "6*CAST(FIELD_NUMBER AS NUMBER)");
-    // optimize("FIELD_NUMBER||FIELD_STRING_INTEGER", "CAST(FIELD_STRING_INTEGER AS
-    // STRING)*FIELD_NUMBER");
+    optimize("2::INTEGER*FIELD_NUMBER*3::NUMBER", "6*FIELD_NUMBER");
   }
 }

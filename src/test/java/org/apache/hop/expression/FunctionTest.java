@@ -124,10 +124,10 @@ public class FunctionTest extends ExpressionTest {
 
     evalNull("TRY_TO_BINARY(NULL_STRING)");
 
-    // Failed if format is null
+    // Failed if the format is null
     evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    // Failed if format is bad
+    // Failed if the format is bad
     evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')", ErrorCode.INVALID_BINARY_FORMAT);
 
     // Check operands
@@ -187,13 +187,13 @@ public class FunctionTest extends ExpressionTest {
     evalNull("TRY_TO_DATE('2019-13-13','YYYY-MM-DD')");
     evalNull("TRY_TO_DATE('20x9-13-13','YYYY-MM-DD')");
 
-    // Return NULL if argument is NULL
+    // Null handling
     evalNull("TRY_TO_DATE(NULL_STRING,'FXDD/MM/YYYY')");
 
     // Check operands
     evalFails("TRY_TO_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    // Failed if format is bad
+    // Failed if the format is bad
     evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Integer Unix Epoch in seconds
@@ -214,7 +214,6 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Try_To_Json() throws Exception {
-
     evalEquals(
             "Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
             JsonConversion.convert("{\"name\":\"Smith\",\"age\":29}"))
@@ -222,6 +221,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Try_To_Json('true')", JsonConversion.convert("true"));
     evalEquals("Try_To_Json('null')", JsonConversion.convert("null"));
 
+    // Null handling
     evalNull("Try_To_Json(NULL_STRING)");
     evalNull("Try_To_Json('BAD JSON ;')");
     evalNull("Try_To_Json('{\"name\":\"Smith\"; \"age\":29}')");
@@ -406,7 +406,7 @@ public class FunctionTest extends ExpressionTest {
     evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT);
 
     optimizeNull("NULLIF(NULL, NULL)");
-    // TODO: Id the second operand is not nullable, return type must be not null
+    // TODO: If the second operand is not nullable, return type must be not null
     optimizeNull("NULLIF(true, true)").returnType(Types.BOOLEAN);
     optimizeTrue("NULLIF(true, false)");
     optimizeNull("NULLIF(NULL, false)");
@@ -439,10 +439,11 @@ public class FunctionTest extends ExpressionTest {
   void NullIfZero() throws Exception {
     evalEquals("NULLIFZERO(0.1)", 0.1D).returnType(NumberType.of(2, 1, false));
     evalEquals("NullIfZero(1)", 1L).returnType(IntegerType.of(1, false));
-
     evalNull("NullIfZero(0)");
     evalNull("NullIfZero(0.000)");
     evalNull("NullIfZero(-0.0)");
+
+    // Null handling
     evalNull("NullIfZero(NULL_INTEGER)");
     evalNull("NullIfZero(NULL_NUMBER)");
 
@@ -471,6 +472,7 @@ public class FunctionTest extends ExpressionTest {
         "Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',Error('Error generated with ABORT'))",
         "Flag 2");
 
+    // Null handling
     evalNull("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>')");
     evalNull("Decode(9,1,'one',9,NULL,NULL_INTEGER,'<NULL>')");
     evalNull("Decode(1,1,NULL_STRING,9,'9',NULL_INTEGER,'<NULL>')");
@@ -513,6 +515,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1&id=2','QUERY','id')", "2");
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1#fragment', 'REF')", "fragment");
 
+    // Null handling
     evalNull("Parse_Url(NULL_STRING,'PATH')");
     evalNull("Parse_Url('https://hop.apache.org:80',NULL_STRING)");
     evalNull("Parse_Url('https://hop.apache.org:80','PATH')");
@@ -584,6 +587,7 @@ public class FunctionTest extends ExpressionTest {
         "CONVERT_TIMEZONE('+00:00','+10:00', TIMESTAMP '2023-01-01 12:00:00')",
         ZonedDateTime.of(2023, 1, 1, 22, 0, 0, 0, ZoneOffset.ofHoursMinutes(10, 0)));
 
+    // Null handling
     evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)").returnType(Types.DATE);
     evalNull("CONVERT_TIMEZONE('Europe/Paris', 'America/New_York', NULL_TIMESTAMP)");
 
@@ -619,6 +623,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("MAKE_DATE(2020, 2, 0)", LocalDate.of(2020, Month.JANUARY, 31));
     evalEquals("MAKE_DATE(2020, 2, -1)", LocalDate.of(2020, Month.JANUARY, 30));
 
+    // Null handling
     evalNull("MAKE_DATE(NULL_INTEGER,-1,1)").returnType(Types.DATE);
     evalNull("MAKE_DATE(2020,NULL_INTEGER,1)");
     evalNull("MAKE_DATE(2020,-1,NULL_INTEGER)");
@@ -655,6 +660,7 @@ public class FunctionTest extends ExpressionTest {
         "MAKE_TIMESTAMP(2020,6,50,23,15,59.123456789)",
         LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456789));
 
+    // Null handling
     evalNull("MAKE_TIMESTAMP(NULL_INTEGER,-1,1,23,15,59)").returnType(Types.DATE);
     evalNull("MAKE_TIMESTAMP(2020,NULL_INTEGER,1,23,15,59)");
     evalNull("MAKE_TIMESTAMP(2020,-1,NULL_INTEGER,23,15,59)");
@@ -671,6 +677,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59)", Interval.of(20, 1, 1, 23, 15, 59))
         .returnType(Types.INTERVAL_NOT_NULL);
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59.123)", Interval.of(20, 1, 1, 23, 15, 59, 123000000));
+
+    // TODO: Null handling
 
     // Check operands
     evalFails("MAKE_INTERVAL()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -702,6 +710,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
 
+    // Null handling
     evalNull("First_Day(NULL_DATE)").returnType(Types.DATE);
     evalNull("First_day(NULL_DATE, WEEK)");
     evalNull("First_day(NULL_DATE, MONTH)");
@@ -737,6 +746,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.DECEMBER, 31));
 
+    // Null handling
     evalNull("Last_Day(NULL_DATE)").returnType(Types.DATE);
     evalNull("Last_Day(NULL_DATE, WEEK)");
     evalNull("Last_Day(NULL_DATE, MONTH)");
@@ -759,6 +769,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Next_Day(FIELD_DATE,'monday')", LocalDate.of(1981, Month.JUNE, 29));
     evalEquals("Next_Day(FIELD_TIMESTAMP,'monday')", LocalDate.of(2023, Month.MARCH, 6));
 
+    // Null handling
     evalNull("Next_Day(NULL_DATE, 'monday')").returnType(Types.DATE);
     evalNull("Next_Day(FIELD_DATE, NULL_STRING)");
 
@@ -776,6 +787,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Previous_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24))
         .returnType(Types.DATE_NOT_NULL);
 
+    // Null handling
     evalNull("Previous_Day(NULL_DATE, 'monday')").returnType(Types.DATE);
     evalNull("Previous_Day(FIELD_DATE, NULL_STRING)");
 
@@ -795,6 +807,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Normalize('Jane\u2006Doe', 'NFKC')", "Jane Doe");
     evalEquals("Normalize('¼', 'NFKC')", "1⁄4");
     evalEquals("Normalize('i⁹', 'NFKC')", "i9");
+
+    // Null handling
     evalNull("Normalize(NULL_STRING)");
 
     // Check operands
@@ -824,6 +838,7 @@ public class FunctionTest extends ExpressionTest {
     // Keep ligature and special char
     evalEquals("Unaccent('ÆæØøµß¢©')", "ÆæØøµß¢©");
 
+    // Null handling
     evalNull("Unaccent(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -836,6 +851,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Upper() throws Exception {
     evalEquals("Upper('test')", "TEST").returnType(Types.STRING_NOT_NULL);
+
+    // Null handling
     evalNull("Upper(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -853,6 +870,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("InitCap('tRy a littlE  ')", "Try A Little  ");
     evalEquals("InitCap('won''t it?no')", "Won'T It?No");
     evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
+
+    // Null handling
     evalNull("InitCap(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -888,6 +907,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Instr('CORPORATE FLOOR','OR',-3, 2)", 2L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-3, 3)", 0L);
 
+    // Null handling
     evalNull("Instr(NULL_STRING,'test')");
     evalNull("Instr('test',NULL_STRING)");
     evalNull("Instr(NULL_STRING,NULL_STRING)");
@@ -929,6 +949,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("RPad('test',-8)", "");
     evalEquals("RPad(FIELD_BINARY,-8)", new byte[0]);
 
+    // Null handling
     evalNull("RPad(NULL_STRING,2)").returnType(Types.STRING);
     evalNull("RPad(NULL_BINARY,2)").returnType(Types.BINARY);
     evalNull("RPad(NULL_STRING,-8)");
@@ -972,6 +993,7 @@ public class FunctionTest extends ExpressionTest {
     // If length is a negative number, the result of the function is an empty string or binary.
     evalEquals("LPad('test',-8)", "");
 
+    // Null handling
     evalNull("LPad(NULL_STRING,2)").returnType(Types.STRING);
     evalNull("LPad(NULL_STRING,-8)");
     evalNull("LPad(NULL_BINARY,2)").returnType(Types.BINARY);
@@ -989,6 +1011,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Year() throws Exception {
     evalEquals("Year(DATE '2019-01-01')", 2019L).returnType(Types.INTEGER_NOT_NULL);
+
+    // Null handling
     evalNull("Year(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1000,6 +1024,8 @@ public class FunctionTest extends ExpressionTest {
   void MonthName() throws Exception {
     evalEquals("MonthName(DATE '2019-01-01')", "January").returnType(Types.STRING_NOT_NULL);
     evalEquals("MonthName(DATE '2019-12-28')", "December");
+
+    // Null handling
     evalNull("MonthName(NULL_DATE)");
 
     // Check operands
@@ -1011,6 +1037,8 @@ public class FunctionTest extends ExpressionTest {
   void DayName() throws Exception {
     evalEquals("DayName(DATE '2019-01-01')", "Tuesday").returnType(Types.STRING_NOT_NULL);
     evalEquals("DayName(DATE '2019-12-28')", "Saturday");
+
+    // Null handling
     evalNull("DayName(NULL_DATE)");
 
     // Check operands
@@ -1023,6 +1051,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Month(DATE '2019-01-01')", 1L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Month(DATE '2020-02-23')", 2L);
     evalEquals("Month(DATE '2019-12-28')", 12L);
+
+    // Null handling
     evalNull("Month(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1060,6 +1090,7 @@ public class FunctionTest extends ExpressionTest {
         "Date_Diff(NANOSECOND, TIMESTAMP '2019-01-01 15:00:00.000000000',TIMESTAMP '2019-01-01 15:00:00.123456789')",
         123456789L);
 
+    // Null handling
     evalNull("Date_Diff(YEAR, NULL_DATE, DATE '2007-11-09')").returnType(Types.INTEGER);
     evalNull("Date_Diff(YEAR, DATE '2007-11-09',NULL_DATE)");
     evalNull("Date_Diff(YEAR, NULL_DATE, NULL_DATE)");
@@ -1072,6 +1103,8 @@ public class FunctionTest extends ExpressionTest {
   void Years_Between() throws Exception {
     evalEquals(
         "Years_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')", -1L);
+
+    // Null handling
     evalNull("Years_Between(NULL_DATE, DATE '2007-11-09')");
     evalNull("Years_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Years_Between(NULL_DATE, NULL_DATE)");
@@ -1107,6 +1140,7 @@ public class FunctionTest extends ExpressionTest {
     // TODO: If the months and days are identical, the result is an integer.
     evalEquals("Months_Between(DATE '2007-11-09',DATE '2007-12-09')", 0.967741935483871);
 
+    // Null handling
     evalNull("Months_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Months_Between(NULL_DATE, DATE '2007-11-09')");
     evalNull("Months_Between(NULL_DATE, NULL_DATE)");
@@ -1121,6 +1155,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Days_Between(DATE '2021-11-09',DATE '2020-12-28')", -316L);
     evalEquals("Days_Between(DATE '2007-11-09',DATE '2007-12-09')", 30L);
 
+    // Null handling
     evalNull("Days_Between(DATE '2007-11-09',NULL_DATE)");
     evalNull("Days_Between(NULL_DATE, Date '2007-11-09')");
     evalNull("Days_Between(NULL_DATE, NULL_DATE)");
@@ -1135,6 +1170,8 @@ public class FunctionTest extends ExpressionTest {
         "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 0L);
     evalEquals(
         "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 24L);
+
+    // Null handling
     evalNull("Hours_Between(NULL_TIMESTAMP, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Hours_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_TIMESTAMP)");
 
@@ -1148,6 +1185,8 @@ public class FunctionTest extends ExpressionTest {
         "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 28L);
     evalEquals(
         "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 1440L);
+
+    // Null handling
     evalNull("Minutes_Between(NULL_DATE, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Minutes_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
 
@@ -1162,6 +1201,8 @@ public class FunctionTest extends ExpressionTest {
         28L * 60L);
     evalEquals(
         "Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 86400L);
+
+    // Null handling
     evalNull("Seconds_Between(NULL_DATE, TIMESTAMP '2019-01-01 15:00:59')");
     evalNull("Seconds_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
 
@@ -1177,6 +1218,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Quarter(DATE '2019-08-28')", 3L);
     evalEquals("Quarter(DATE '2019-12-28')", 4L);
 
+    // Null handling
     evalNull("Quarter(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1195,6 +1237,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("DayOfWeek(FIELD_DATE)", 3L);
     evalEquals("DayOfWeek(FIELD_TIMESTAMP)", 3L);
 
+    // Null handling
     evalNull("DayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1210,6 +1253,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Day(DATE '2019-12-28')", 28L);
     evalEquals("Day(FIELD_DATE)", 23L);
     evalEquals("Day(FIELD_TIMESTAMP)", 28L);
+
+    // Null handling
     evalNull("Day(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1227,6 +1272,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("DayOfYear(DATE '2019-12-31')", 365L);
     evalEquals("DayOfYear(FIELD_DATE)", 174L);
     evalEquals("DayOfYear(FIELD_TIMESTAMP)", 59L);
+
+    // Null handling
     evalNull("DayOfYear(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1238,6 +1285,8 @@ public class FunctionTest extends ExpressionTest {
   void Julian_Day() throws Exception {
     evalEquals("Julian_Day(DATE '2021-06-23')", 2459389L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Julian_Day(TIMESTAMP  '2021-06-23 8:00:00' at time zone 'UTC+12')", 2459389L);
+
+    // Null handling
     evalNull("Julian_Day(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1250,6 +1299,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Week(DATE '2015-12-31')", 53L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Week(DATE '2015-01-01')", 1L);
     evalEquals("Week(DATE '2015-01-02')", 1L);
+
+    // Null handling
     evalNull("Week(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1260,6 +1311,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void IsoDayOfWeek() throws Exception {
     evalEquals("IsoDayOfWeek(DATE '2003-12-28')", 7L).returnType(Types.INTEGER_NOT_NULL);
+
+    // Null handling
     evalNull("IsoDayOfWeek(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1274,6 +1327,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("IsoWeek(DATE '2016-01-02')", 53L);
     evalEquals("IsoWeek(DATE '2016-01-03')", 53L);
     evalEquals("IsoWeek(DATE '2016-01-04')", 1L);
+
+    // Null handling
     evalNull("IsoWeek(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1288,6 +1343,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("IsoYear(DATE '2016-01-02')", 2015L);
     evalEquals("IsoYear(DATE '2016-01-04')", 2016L);
     evalEquals("IsoYear(DATE '2042-12-31')", 2043L);
+
+    // Null handling
     evalNull("IsoYear(NULL_DATE)").returnType(Types.INTEGER);
 
     // Check operands
@@ -1304,6 +1361,7 @@ public class FunctionTest extends ExpressionTest {
     // the resulting month has fewer days
     evalEquals("Add_Years(DATE '2020-02-29',1)", LocalDate.of(2021, Month.FEBRUARY, 28));
 
+    // Null handling
     evalNull("Add_Years(NULL_DATE,140)");
     evalNull("Add_Years(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1323,6 +1381,8 @@ public class FunctionTest extends ExpressionTest {
 
     // the resulting month has fewer days
     evalEquals("Add_Quarters(DATE '2019-01-31',1)", LocalDate.of(2019, Month.APRIL, 30));
+
+    // Null handling
     evalNull("Add_Quarters(NULL_DATE,140)");
     evalNull("Add_Quarters(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1341,6 +1401,8 @@ public class FunctionTest extends ExpressionTest {
 
     // the resulting month has fewer days
     evalEquals("Add_Months(DATE '2019-01-31',1)", LocalDate.of(2019, Month.FEBRUARY, 28));
+
+    // Null handling
     evalNull("Add_Months(NULL_DATE,140)");
     evalNull("Add_Months(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1356,6 +1418,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Add_Weeks(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
 
+    // Null handling
     evalNull("Add_Weeks(NULL_DATE,140)");
     evalNull("Add_Weeks(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1374,6 +1437,7 @@ public class FunctionTest extends ExpressionTest {
         "Add_Days(TIMESTAMP '2021-01-01 15:28:59+02:00',20)",
         ZonedDateTime.of(2021, 1, 21, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
 
+    // Null handling
     evalNull("Add_Days(NULL_DATE,140)");
     evalNull("Add_Days(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1391,6 +1455,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "Add_Hours(TIMESTAMP '2021-01-01 15:28:59+02:00',2)",
         ZonedDateTime.of(2021, 1, 1, 17, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
+
+    // Null handling
     evalNull("Add_Hours(NULL_DATE,140)");
     evalNull("Add_Hours(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1406,6 +1472,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "Add_Minutes(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
+
+    // Null handling
     evalNull("Add_Minutes(NULL_DATE,140)");
     evalNull("Add_Minutes(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1422,6 +1490,8 @@ public class FunctionTest extends ExpressionTest {
         "Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
     evalEquals(
         "Add_Seconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20));
+
+    // Null handling
     evalNull("Add_Seconds(NULL_DATE,140)");
     evalNull("Add_Seconds(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1440,6 +1510,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "Add_NanoSeconds(DATE '2019-01-15',140)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140));
+
+    // Null handling
     evalNull("Add_NanoSeconds(NULL_DATE,140)");
     evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
 
@@ -1482,6 +1554,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Hour() throws Exception {
     evalEquals("Hour(TIMESTAMP '2019-01-01 15:28:59')", 15L);
+
+    // Null handling
     evalNull("Hour(NULL_DATE)");
 
     // Check operands
@@ -1491,6 +1565,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Minute() throws Exception {
     evalEquals("Minute(TIMESTAMP '2019-01-01 15:28:59')", 28L);
+
+    // Null handling
     evalNull("Minute(NULL_DATE)");
 
     // Check operands
@@ -1509,6 +1585,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Lower() throws Exception {
     evalEquals("Lower('TesT')", "test").returnType(Types.STRING_NOT_NULL);
+
+    // Null handling
     evalNull("Lower(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -1532,6 +1610,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("SQUEEZE('T\t es T ')", "T es T");
     evalEquals("SQUEEZE('T \t es T')", "T es T");
     evalEquals("SQUEEZE('T \t es T\n\r')", "T es T");
+
+    // Null handling
     evalNull("SQUEEZE(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -1556,6 +1636,7 @@ public class FunctionTest extends ExpressionTest {
     // System.setProperty(Const.HOP_EMPTY_STRING_DIFFERS_FROM_NULL, "N");
     evalNull("Substring('TEST',1,0)").returnType(Types.STRING);
 
+    // Null handling
     evalNull("Substring(NULL_STRING,1,1)").returnType(Types.STRING);
 
     // Compatibility mode
@@ -1581,6 +1662,7 @@ public class FunctionTest extends ExpressionTest {
     // If the part index is out of range, the returned value is an empty string.
     evalEquals("Split_Part('127.1.2.3','.',5)", "");
 
+    // Null handling
     evalNull("Split_Part(NULL_STRING,'.',5)");
     evalNull("Split_Part('127.1.2.3',NULL_STRING,5)");
     evalNull("Split_Part('127.1.2.3','.',NULL_INTEGER)");
@@ -1631,6 +1713,8 @@ public class FunctionTest extends ExpressionTest {
   void Space() throws Exception {
     evalEquals("Space(4)", "    ").returnType(Types.STRING_NOT_NULL);
     evalEquals("Space(0)", "");
+
+    // Null handling
     evalNull("Space(-3)");
     evalNull("Space(NULL_INTEGER)");
 
@@ -1751,6 +1835,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Asinh(asin(0.5))", new BigDecimal("0.50221898503461160828703900193479"))
         .returnType(Types.NUMBER_NOT_NULL);
 
+    // Null handling
     evalNull("Asinh(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -1795,6 +1880,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Atanh(0.2)", new BigDecimal("0.20273255405408219098900655773217"))
         .returnType(Types.NUMBER_NOT_NULL);
 
+    // Null handling
     evalNull("Atanh(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -2011,6 +2097,7 @@ public class FunctionTest extends ExpressionTest {
         .returnType(Types.NUMBER_NOT_NULL);
     evalEquals("Exp(2)", new BigDecimal("7.3890560989306502272304274605750"));
 
+    // Null handling
     evalNull("Exp(NULL_INTEGER)").returnType(Types.NUMBER);
 
     // Check operands
@@ -2190,9 +2277,10 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("RTrim('a')", "a").returnType(Types.STRING_NOT_NULL);
     evalEquals("RTrim(' a ')", " a");
     evalEquals("RTrim('012ABC10', '012')", "012ABC");
+
+    // Null handling
     evalNull("RTrim(NULL_STRING)").returnType(Types.STRING);
     evalNull("RTrim('01ABC012',NULL_STRING)");
-    evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
     // Check operands
     evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -2304,12 +2392,14 @@ public class FunctionTest extends ExpressionTest {
     // String
     evalEquals("Length('TEST')", 4L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Len('TEST')", 4L).returnType(Types.INTEGER_NOT_NULL);
-    evalNull("Length(NULL_STRING)").returnType(Types.INTEGER);
 
     // Binary
     evalEquals("Length(BINARY 'F0FA')", 2L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Len(BINARY 'F0FA')", 2L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Length(BINARY '0F0FA')", 3L).returnType(Types.INTEGER_NOT_NULL);
+
+    // Null handling
+    evalNull("Length(NULL_STRING)").returnType(Types.INTEGER);
     evalNull("Length(NULL_BINARY)");
 
     // Implicit conversion from Boolean to String
@@ -2430,14 +2520,16 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Left('',1)", "");
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
-    evalNull("Left(NULL_STRING,4)");
-    evalNull("Left(FIELD_STRING,NULL_INTEGER)");
 
     // Binary
     evalEquals("Left(BINARY '12345678', 4)", new byte[] {0x12, 0x34, 0x56, 0x78})
         .returnType(Types.BINARY_NOT_NULL);
     evalEquals("Left(BINARY '12345678', 2)", new byte[] {0x12, 0x34});
     evalEquals("Left(BINARY '12345678', -2)", new byte[] {});
+
+    // Null handling
+    evalNull("Left(NULL_STRING,4)");
+    evalNull("Left(FIELD_STRING,NULL_INTEGER)");
     evalNull("Left(NULL_BINARY,4)");
     evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
 
@@ -2460,6 +2552,7 @@ public class FunctionTest extends ExpressionTest {
 
     // evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
 
+    // Null handling
     evalNull("Insert(NULL_STRING, 2, 1, 'qw')");
     evalNull("Insert('abcd', NULL_INTEGER, 1, 'qw')");
     evalNull("Insert('abcd', 2, NULL_INTEGER, 'qw')");
@@ -2486,6 +2579,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Right('',1)", "");
     evalEquals("Right('TEST',10)", "TEST");
     evalEquals("Right('TEST',-1)", "");
+
+    // Null handling
     evalNull("Right(NULL_STRING,4)");
     evalNull("Right('TEST',NULL_INTEGER)");
 
@@ -2514,8 +2609,6 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Repeat('ABC',1)", "ABC").returnType(Types.STRING_NOT_NULL);
     evalEquals("Repeat('ABC',2)", "ABCABC").returnType(Types.STRING_NOT_NULL);
     evalEquals("Repeat('ABC',3)", "ABCABCABC").returnType(Types.STRING_NOT_NULL);
-    evalNull("Repeat(NULL_STRING,2)").returnType(Types.STRING);
-    evalNull("Repeat('ABC',NULL_INTEGER)");
 
     // Binary
     evalEquals("Repeat(BINARY '1234',0)", new byte[] {}).returnType(Types.BINARY_NOT_NULL);
@@ -2524,6 +2617,9 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Repeat(BINARY '1234',2)", new byte[] {0x12, 0x34, 0x12, 0x34});
     evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
 
+    // Null handling
+    evalNull("Repeat(NULL_STRING,2)").returnType(Types.STRING);
+    evalNull("Repeat('ABC',NULL_INTEGER)");
     evalNull("Repeat(NULL_BINARY,2)").returnType(Types.BINARY);
     evalNull("Repeat(FIELD_BINARY,NULL_INTEGER)");
 
@@ -2539,6 +2635,8 @@ public class FunctionTest extends ExpressionTest {
   void Replace() throws Exception {
     evalEquals("Replace('ABCD','CD')", "AB").returnType(Types.STRING_NOT_NULL);
     evalEquals("Replace('ABCDEFCD','CD','EF')", "ABEFEFEF");
+
+    // Null handling
     evalNull("Replace(NULL_STRING,'CD','EF')");
     evalNull("Replace('ABCD',NULL_STRING,'EF')");
 
@@ -2644,6 +2742,7 @@ public class FunctionTest extends ExpressionTest {
     evalFalse("To_Boolean(0)");
     evalFalse("To_Boolean(0.0000)");
 
+    // Null handling
     evalNull("To_Boolean(NULL_STRING)").returnType(Types.BOOLEAN);
 
     // Check operands
@@ -2660,6 +2759,7 @@ public class FunctionTest extends ExpressionTest {
   void HexEncode() throws Exception {
     evalEquals("HEX_ENCODE('Apache Hop')", "41706163686520486f70");
 
+    // Null handling
     evalNull("HEX_ENCODE(NULL_STRING)");
 
     // Check operands
@@ -2689,6 +2789,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
     evalEquals("TO_BINARY('Apache Hop','UtF8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
 
+    // Null handling
     evalNull("TO_BINARY(NULL_STRING)");
 
     // Check operands
@@ -2792,6 +2893,7 @@ public class FunctionTest extends ExpressionTest {
     // Parse multi format
     evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234D);
 
+    // Null handling
     evalNull("TO_NUMBER(NULL_STRING)");
 
     // Date to number epoch
@@ -2818,7 +2920,7 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void To_Char() throws Exception {
-    // Null
+    // Null handling
     evalNull("TO_CHAR(NULL_NUMBER)").returnType(Types.STRING);
     evalNull("TO_CHAR(NULL_DATE)").returnType(Types.STRING);
     evalNull("TO_CHAR(NULL_BINARY)").returnType(Types.STRING);
@@ -3621,11 +3723,15 @@ public class FunctionTest extends ExpressionTest {
         "Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'John')",
         JsonConversion.convert("{\"name\":\"Smith\", \"name\":\"John\"}"));
 
-    // Accept missing KEY
+    // Accept optional missing KEY
     evalEquals("Json_Object('name' VALUE 'Smith')", JsonConversion.convert("{\"name\":\"Smith\"}"));
 
+    evalFails("Json_Object()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Object(KEY)", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Json_Object(KEY 'name' VALUE )", ErrorCode.SYNTAX_ERROR);
-    evalFails("Json_Object(KEY VALUE 'Smith')", ErrorCode.SYNTAX_ERROR);
+    evalFails("Json_Object(KEY 'name' VALUE 3,)", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Json_Object(KEY VALUE 'Smith')", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    evalFails("Json_Object(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Json_Object(KEY 'name' VALUE 'Smith'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize(
@@ -3633,6 +3739,12 @@ public class FunctionTest extends ExpressionTest {
         "JSON '{\"name\":\"Smith\",\"langue\":\"english\"}'");
     optimize("JSON_OBJECT(KEY 'name' VALUE FIELD_STRING,KEY 'langue' VALUE 'english')");
   }
+
+
+    @Test
+    void z() throws Exception {
+        evalFails("Json_Object(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    }
 
   @Test
   void Overlay() throws Exception {
@@ -3661,6 +3773,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Overlay('Apxxxe','ach',3,4)", "Apach");
     evalEquals("Overlay('Apxxxe','pl',3,3)", "Apple");
 
+    // Null handling
     evalNull("Overlay(NULL_STRING,'ach',3)").returnType(Types.STRING);
     evalNull("Overlay(FIELD_STRING,NULL_STRING,3)").returnType(Types.STRING);
 
@@ -3708,6 +3821,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Difference('Juice', 'Jucy')", 4L);
     evalEquals("Difference('Apple', 'Orange')", 0L);
 
+    // Null handling
     evalNull("Difference(NULL_STRING,NULL_STRING)");
     evalNull("Difference(NULL_STRING,'Jucy')");
     evalNull("Difference('Juice',NULL_STRING)");
@@ -3722,6 +3836,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Levenshtein('Superman', 'Superman')", 0L);
     evalEquals("Levenshtein('kitten', 'sitting')", 3L);
 
+    // Null handling
     evalNull("Levenshtein(NULL_STRING,NULL_STRING)");
     evalNull("Levenshtein(NULL_STRING,'Superman')");
     evalNull("Levenshtein('Superman',NULL_STRING)");
@@ -3827,8 +3942,6 @@ public class FunctionTest extends ExpressionTest {
     // String
     evalTrue("CONTAINS(FIELD_STRING,'ES')").returnType(Types.BOOLEAN);
     evalFalse("CONTAINS(FIELD_STRING,'YZ')");
-    evalNull("CONTAINS(NULL_STRING,'ES')").returnType(Types.BOOLEAN);
-    evalNull("CONTAINS(FIELD_STRING,NULL_STRING)");
 
     // Binary
     evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '1A2B')").returnType(Types.BOOLEAN_NOT_NULL);
@@ -3837,6 +3950,10 @@ public class FunctionTest extends ExpressionTest {
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '6F6F')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '')");
+
+    // Null handling
+    evalNull("CONTAINS(NULL_STRING,'ES')").returnType(Types.BOOLEAN);
+    evalNull("CONTAINS(FIELD_STRING,NULL_STRING)");
     evalNull("CONTAINS(NULL_BINARY,BINARY '1A2B3C')").returnType(Types.BOOLEAN);
     evalNull("CONTAINS(BINARY '1A2B3C',NULL_BINARY)");
 
@@ -4145,6 +4262,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Ascii('€')", 8364L);
     evalEquals("Ascii('興')", 33288L);
     evalEquals("Ascii('')", 0L);
+
+    // Null handling
     evalNull("Ascii(NULL_STRING)");
 
     // Check operands
@@ -4158,6 +4277,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Unicode('é')", 233L);
     evalEquals("Unicode('€')", 8364L);
     evalEquals("Unicode('')", 0L);
+
+    // Null handling
     evalNull("Unicode(NULL_STRING)");
 
     // Check operands
@@ -4169,6 +4290,7 @@ public class FunctionTest extends ExpressionTest {
   void String_Encode() throws Exception {
     evalEquals("String_Encode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"")
         .returnType(Types.STRING_NOT_NULL);
+
     // Encode 16 bit unicode
     evalEquals("String_Encode('€')", "\\u20AC");
 
@@ -4180,6 +4302,7 @@ public class FunctionTest extends ExpressionTest {
   void String_Decode() throws Exception {
     evalEquals("String_Decode('\\t\\r\\n\\f\\b\\\"')", "\t\r\n\f\b\"")
         .returnType(Types.STRING_NOT_NULL);
+
     // Decode 16 bits unicode
     evalEquals("String_Decode('\\u20AC')", "€");
     // Decode octal
@@ -4193,6 +4316,8 @@ public class FunctionTest extends ExpressionTest {
   void Html_Encode() throws Exception {
     evalEquals("Html_Encode('18€ & <test> ™')", "18&euro; &amp; &lt;test&gt; &trade;")
         .returnType(Types.STRING_NOT_NULL);
+
+    // Null handling
     evalNull("Html_Encode(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -4238,7 +4363,6 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Url_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Url_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
-
     evalFails("Url_Decode('a%%2Bb')", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
@@ -4277,6 +4401,7 @@ public class FunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Base32_Encode(NULL_STRING)").returnType(Types.STRING);
 
+    // Check operands
     evalFails("Base32_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
@@ -4289,6 +4414,7 @@ public class FunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Base32_Decode(NULL_STRING)").returnType(Types.STRING);
 
+    // Check operands
     evalFails("Base32_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
@@ -4491,6 +4617,8 @@ public class FunctionTest extends ExpressionTest {
   void Sha224() throws Exception {
     evalEquals("SHA224('Test')", "c696f08d2858549cfe0929bb7b098cfa9b64d51bec94aa68471688e4")
         .returnType(Types.STRING_NOT_NULL);
+
+    // Null handling
     evalNull("SHA224(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -4515,6 +4643,8 @@ public class FunctionTest extends ExpressionTest {
             "SHA384('Test')",
             "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3")
         .returnType(Types.STRING_NOT_NULL);
+
+    // Null handling
     evalNull("SHA384(NULL_STRING)").returnType(Types.STRING);
 
     // Check operands
@@ -4654,7 +4784,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Bit_Clear(3,1)", 2L).returnType(Types.INTEGER_NOT_NULL);
     evalEquals("Bit_Clear(3,4)", 3L);
 
-    // Overflow has no impact on result
+    // Overflow has no impact on the result
     evalEquals("Bit_Clear(32,66)", 32L);
 
     // Null handling
@@ -4682,6 +4812,7 @@ public class FunctionTest extends ExpressionTest {
     // Overflow
     evalEquals("Bit_Shift(1,64)", 0L);
     evalEquals("Bit_Shift(1,-64)", 0L);
+
     // Underflow
     evalEquals("Bit_Shift(1,-1)", 0L);
 
@@ -4777,6 +4908,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "Extract(TIMEZONE_MINUTE from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Asia/Tokyo')",
         0L);
+
+    // Null handling
     evalNull("Extract(SECOND from NULL_DATE)").returnType(Types.INTEGER);
 
     // Alias

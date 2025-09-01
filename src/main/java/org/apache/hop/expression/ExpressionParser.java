@@ -1163,28 +1163,37 @@ public class ExpressionParser {
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
-    boolean comma;
-    do {
 
+    // Check argument will detect an error later
+    if (isThenNext(Id.RPARENTHESIS)) {
+      return new Call(token.start(), function, operands);
+    }
+
+    if (!hasNext()) {
+      throw new ExpressionParseException(
+          token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    }
+
+    do {
       if (isThenNext(Id.KEY)) {
         // KEY is optional
       }
 
-      operands.add(this.parseLiteralString(next()));
+      if (hasNext()) {
+        operands.add(this.parseLiteralString(next()));
+      } else {
+        throw new ExpressionParseException(
+            token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
+      }
 
       if (isThenNext(Id.VALUE)) {
         operands.add(this.parsePrimary());
       } else {
         throw new ExpressionParseException(
-            token.start(), ErrorCode.SYNTAX_ERROR, function.getName());
+            token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
       }
 
-      comma = false;
-      if (is(Id.COMMA)) {
-        comma = true;
-        token = next();
-      }
-    } while (comma);
+    } while (isThenNext(Id.COMMA));
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);

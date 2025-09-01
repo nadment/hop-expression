@@ -167,7 +167,6 @@ public class ExpressionParserTest extends ExpressionTest {
     assertEquals(51, MultiplyOperator.INSTANCE.getLeftPrec());
     assertEquals(50, MultiplyOperator.INSTANCE.getRightPrec());
     assertEquals("CONCAT", ConcatFunction.INSTANCE.toString());
-    assertNotEquals(ConcatFunction.INSTANCE, EqualOperator.INSTANCE);
     assertTrue(ConcatFunction.INSTANCE.is(FunctionRegistry.getFunction("CONCAT")));
     assertFalse(ConcatFunction.INSTANCE.is(null));
     assertFalse(ConcatFunction.INSTANCE.isAggregate());
@@ -178,6 +177,7 @@ public class ExpressionParserTest extends ExpressionTest {
     assertNotNull(ConcatFunction.INSTANCE.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
+    assertNotEquals(ConcatFunction.INSTANCE, EqualOperator.INSTANCE);
     assertNotEquals(InListOperator.INSTANCE, NotInListOperator.INSTANCE);
     assertNotEquals(SimilarToOperator.INSTANCE, NotSimilarToOperator.INSTANCE);
   }
@@ -297,11 +297,6 @@ public class ExpressionParserTest extends ExpressionTest {
   }
 
   @Test
-  void x()  {
-    evalFails("Left(,)", ErrorCode.SYNTAX_ERROR);
-  }
-
-  @Test
   void syntaxError() throws Exception {
 
     // Single quote for string
@@ -327,7 +322,6 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("9+*(", ErrorCode.SYNTAX_ERROR);
     evalFails("9)", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails(")+1", ErrorCode.SYNTAX_ERROR);
-    // TODO: evalFails("DATE '2023-01-01'||'X'", ErrorCode.ILLEGAL_ARGUMENT);
 
     // Comparison operators
     evalFails("FIELD_INTEGER=", ErrorCode.SYNTAX_ERROR);
