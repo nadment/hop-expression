@@ -69,13 +69,13 @@ public class Token {
 
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
-    /** The bitwise AND operator "&". */
+    /** The "&". */
     AMPERSAND("&"),
-    /** The bitwise NOT operator "~". */
+    /** The "~". */
     TILDE("~"),
-    /** The bitwise OR operator "|". */
+    /** The "|". */
     PIPE("|"),
-    /** The bitwise exclusive OR operator "^". */
+    /** The "^". */
     CARET("^"),
     /** Case when operator */
     CASE,

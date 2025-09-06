@@ -42,7 +42,7 @@ public class CastOperator extends Operator {
     super(
         "CAST",
         "::",
-        40,
+        20,
         Associativity.LEFT,
         ReturnTypes.CAST_OPERATOR,
         OperandTypes.CAST,

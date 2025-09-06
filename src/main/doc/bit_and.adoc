@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BIT_AND, &
+= BIT_AND
 
 Performs a bitwise AND operation between two integer or binary values.
 
@@ -22,11 +22,6 @@ Performs a bitwise AND operation between two integer or binary values.
 
 ----
 BIT_AND( value1, value2 )
-----
-
-The xref:bit_and.adoc["&",role=op] operator provides alternative syntax.
-----
-value1 & value2
 ----
 
 Returns:: Integer or Binary

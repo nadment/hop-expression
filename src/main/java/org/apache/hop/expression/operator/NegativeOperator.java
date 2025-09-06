@@ -38,7 +38,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
     super(
         "NEGATIVE",
         "-",
-        30,
+        40,
         Associativity.RIGHT,
         ReturnTypes.ARG0,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER).or(OperandTypes.INTERVAL),

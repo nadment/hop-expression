@@ -41,7 +41,7 @@ public class DivOperator extends BinaryOperator {
     super(
         "DIV",
         "/",
-        50,
+        60,
         Associativity.LEFT,
         ReturnTypes.DIVIDE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC,

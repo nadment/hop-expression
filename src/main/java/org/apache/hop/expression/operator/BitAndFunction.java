@@ -17,7 +17,6 @@
 
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -35,30 +34,15 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 
-/**
- * Bitwise AND operator.<br>
- * <strong>Syntax:</strong> <code>x &amp; y</code>
- */
+/** Bitwise AND function.<br> */
 @FunctionPlugin
 public class BitAndFunction extends Function {
 
-  public static final BitAndFunction INSTANCE = new BitAndFunction("&");
+  public static final BitAndFunction INSTANCE = new BitAndFunction();
 
   public BitAndFunction() {
     super(
         "BIT_AND",
-        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
-        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
-        OperatorCategory.BITWISE,
-        "/docs/bit_and.html");
-  }
-
-  public BitAndFunction(String name) {
-    super(
-        "BIT_AND",
-        name,
-        70,
-        Associativity.LEFT,
         ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
@@ -101,13 +85,6 @@ public class BitAndFunction extends Function {
     }
 
     return new Call(IntegerBitAndFunction.INSTANCE, call.getOperands());
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, 0, 0);
-    writer.append('&');
-    operands[1].unparse(writer, 0, 0);
   }
 
   public static final class IntegerBitAndFunction extends BitAndFunction {

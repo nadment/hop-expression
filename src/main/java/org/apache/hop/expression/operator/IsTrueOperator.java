@@ -35,7 +35,7 @@ public class IsTrueOperator extends PostfixUnaryOperator {
   public IsTrueOperator() {
     super(
         "IS TRUE",
-        140,
+        100,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.BOOLEAN,

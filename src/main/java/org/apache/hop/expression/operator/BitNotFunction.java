@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,30 +26,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/**
- * Bitwise NOT operator. <br>
- * <strong>Syntax:</strong> <code>~x</code>
- */
+/** Bitwise NOT function. <br> */
 @FunctionPlugin
 public class BitNotFunction extends Function {
 
-  public static final BitNotFunction INSTANCE = new BitNotFunction("~");
+  public static final BitNotFunction INSTANCE = new BitNotFunction();
 
   public BitNotFunction() {
     super(
         "BIT_NOT",
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER,
-        OperatorCategory.BITWISE,
-        "/docs/bit_not.html");
-  }
-
-  public BitNotFunction(String name) {
-    super(
-        "BIT_NOT",
-        name,
-        40,
-        Associativity.RIGHT,
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.INTEGER,
         OperatorCategory.BITWISE,
@@ -75,11 +59,5 @@ public class BitNotFunction extends Function {
     if (value == null) return null;
 
     return ~value;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append('~');
-    operands[0].unparse(writer, 0, 0);
   }
 }

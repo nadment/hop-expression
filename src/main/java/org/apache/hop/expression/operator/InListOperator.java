@@ -52,7 +52,7 @@ public class InListOperator extends Operator {
   public InListOperator() {
     super(
         "IN",
-        120,
+        80,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
@@ -93,7 +93,7 @@ public class InListOperator extends Operator {
     IExpression reference = call.getOperand(0);
     Array array = (Array) call.getOperand(1);
 
-    // NULL if left side expression is always NULL
+    // NULL if the left side expression is always NULL
     if (reference.isNull()) {
       return Literal.NULL_BOOLEAN;
     }
@@ -112,12 +112,12 @@ public class InListOperator extends Operator {
         continue;
       }
 
-      // Simplify B in (A,B,C) → B=B (only if reference is not nullable)
+      // Simplify B in (A,B,C) → B=B (only if the reference is not nullable)
       if (reference.equals(expression) && !reference.getType().isNullable()) {
         return new Call(EqualOperator.INSTANCE, reference, reference);
       }
 
-      // If this element is not present in new list then add it
+      // If this element is not present in the new list, then add it
       if (!list.contains(expression)) {
         list.add(expression);
       }

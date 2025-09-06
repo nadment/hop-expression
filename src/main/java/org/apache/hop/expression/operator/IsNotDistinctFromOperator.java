@@ -43,7 +43,7 @@ public class IsNotDistinctFromOperator extends BinaryOperator {
     super(
         "IS NOT DISTINCT FROM",
         "IS NOT DISTINCT FROM",
-        10,
+        100,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY_ANY,

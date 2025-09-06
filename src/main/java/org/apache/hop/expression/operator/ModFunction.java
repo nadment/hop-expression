@@ -53,7 +53,7 @@ public class ModFunction extends Function {
     super(
         "MOD",
         name,
-        50,
+        60,
         Associativity.LEFT,
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER_NUMBER,

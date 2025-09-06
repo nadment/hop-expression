@@ -135,7 +135,6 @@ public class Identifier implements IExpression {
       // Ignore
     }
 
-    // TODO: check message
     throw new ExpressionException(
         ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal]);
   }

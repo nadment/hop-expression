@@ -37,7 +37,7 @@ public class ILikeOperator extends Operator {
   public ILikeOperator() {
     super(
         "ILIKE",
-        120,
+        80,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),

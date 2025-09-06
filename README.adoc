@@ -63,8 +63,7 @@ end
 * Array `[1,4,8]` and element at `<array>[1]`
 * Logical operators `NOT` `AND` `OR` `XOR`
 * Arithmetic operators `+` `-` `*` `/` `%`
-* Bitwise operators  `&` `|` `~` `^`
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `BETWEEN` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM`  
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `BETWEEN` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM`
 * Concatenate operator `||`
 * Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
 * Pattern matching operators `LIKE` `ILIKE` `SIMILAR TO`

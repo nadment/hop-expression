@@ -36,7 +36,7 @@ public class GreaterThanOperator extends BinaryOperator {
     super(
         "GREATER_THAN",
         ">",
-        130,
+        90,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,

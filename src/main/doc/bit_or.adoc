@@ -14,18 +14,14 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BIT_OR, | 
+= BIT_OR
 
-Performs a bitwise OR operation between two integer or binary values.
+Performs a bitwise OR (inclusive OR) operation between two integer or binary values.
 
 == Syntax
 
 ----
 BIT_OR( value1, value2 )
-----
-The xref:bit_or.adoc["|",role=op] operator provides alternative syntax.
-----
-value1 | value2
 ----
 
 Return:: Integer or Binary

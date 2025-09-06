@@ -47,8 +47,8 @@ import org.apache.hop.expression.util.Strong;
 /**
  * Logical conjunction <code>AND</code> operator.
  *
- * <p>If any of the arguments are false, result is false; else if any arguments are null, result is
- * null; else true.
+ * <p>If any of the arguments are false, the result is false; else if any arguments are null, result
+ * is null; else true.
  */
 public class BoolAndOperator extends BinaryOperator {
 
@@ -58,7 +58,7 @@ public class BoolAndOperator extends BinaryOperator {
     super(
         "BOOLAND",
         "AND",
-        160,
+        120,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,

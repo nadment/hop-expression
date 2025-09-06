@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -34,30 +33,15 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 
-/**
- * Bitwise OR operator.<br>
- * <strong>Syntax:</strong> <code>x | y</code>
- */
+/** Bitwise OR function.<br> */
 @FunctionPlugin
 public class BitOrFunction extends Function {
 
-  public static final BitOrFunction INSTANCE = new BitOrFunction("|");
+  public static final BitOrFunction INSTANCE = new BitOrFunction();
 
   public BitOrFunction() {
     super(
         "BIT_OR",
-        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
-        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
-        OperatorCategory.BITWISE,
-        "/docs/bit_or.html");
-  }
-
-  public BitOrFunction(String name) {
-    super(
-        "BIT_OR",
-        name,
-        90,
-        Associativity.LEFT,
         ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
@@ -109,13 +93,6 @@ public class BitOrFunction extends Function {
     Long right = operands[1].getValue(Long.class);
     if (right == null) return null;
     return left | right;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
-    writer.append('|');
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
   }
 
   public static final class IntegerBitOrFunction extends BitOrFunction {

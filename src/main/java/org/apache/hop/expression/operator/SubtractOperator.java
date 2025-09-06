@@ -43,7 +43,7 @@ public class SubtractOperator extends BinaryOperator {
     super(
         "SUBTRACT",
         "-",
-        100,
+        70,
         Associativity.LEFT,
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.DATE_INTERVAL).or(OperandTypes.DATE_INTEGER),

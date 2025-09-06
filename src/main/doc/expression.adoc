@@ -180,7 +180,7 @@ NOTE: Time zone names are case-sensitive and must be enclosed in single quotes (
 
 === Interval
 
-Interval literals defines a constant time period. You can use an interval to add or subtract a period of time to/from a date or timestamp.
+Interval literals define a constant time period. You can use an interval to add or subtract a period of time to/from a date or timestamp.
 
 ----
 INTERVAL 1 YEAR
@@ -266,38 +266,52 @@ NOTE: If you wish to include a double quote in an identifier, use another double
 
 == Operator
 
-Expression supports most of the arithmetic, bitwise, logical and comparison operators.
+The following table lists all operators from highest to lowest precedence, alongside their associativity.
+An operator on higher levels is evaluated before an operator on a lower level. Add parentheses to an expression with multiple operators if you want to force precedence or clarify precedence, for example `(5 + 2) * 3`.
 
 
-The operator precedence and associativity, highest to lowest.
-
-[cols="^1,<5,<5", options="header"]
+[cols="<5,<5,^1,^1", options="header"]
 |===
-|Associativity|Operator|Description
-|left|()|Parenthesis
-|left|xref:functions.adoc["function",role=fun](args...)|Function
-|right|xref:cast.adoc["::",role=op]|Type cast
-|right|xref:element_at.adoc["[\]",role=op]|Array element selection
-|right|xref:plus.adoc["+",role=op], xref:negative.adoc["-",role=operator]|Positive, Negative
-|right|xref:bit_or.adoc["~",role=op]|Bitwise NOT
-|left|xref:multiply.adoc["*",role=op], xref:div.adoc["/",role=op], xref:mod.adoc["%",role=op]|Multiplication, Division, Modulus
-|left|xref:add.adoc[+], xref:subtract.adoc["-",role=op]|Addition, Subtraction
-|left|xref:concat.adoc["\|\|",role=op]|Concatenation
-|left|xref:bit_and.adoc["&",role=op]|Bitwise AND
-|left|xref:bit_xor.adoc["&circ;",role=op]|Bitwise XOR (exclusive OR)
-|left|xref:bit_or.adoc["\|",role=op]|Bitwise OR (inclusive OR)
-|left|xref:is-null.adoc["IS NULL",role=op], xref:is-true.adoc["IS TRUE",role=op], xref:is-false.adoc["IS FALSE",role=op], xref:is-distinct-from.adoc["IS DISTINCT FROM",role=op]|Conditional
-|left|xref:in.adoc["IN",role=op]|Membership
-||xref:between.adoc["BETWEEN",role=op]|Range containment
-||xref:like.adoc["LIKE",role=op], xref:ilike.adoc["ILIKE",role=op], xref:similar-to.adoc["SIMILAR TO",role=op]|Pattern matching
-|left|xref:equal.adoc["=",role=op], xref:greater_than.adoc[">",role=op], xref:less_than.adoc["<",role=op], xref:greater_than_or_equal.adoc[">=",role=op], xref:less_than_or_equal.adoc["<=",role=op], xref:not_equal.adoc["<>",role=op], xref:not_equal.adoc["!=",role=op] |Comparison
-|right|xref:boolnot.adoc["NOT",role=op]|Logical negation 
-|left|xref:booland.adoc["AND",role=op]|Logical conjunction
-|left|xref:boolxor.adoc["XOR",role=op]|Logical exclusive disjunction 
-|left|xref:boolor.adoc["OR",role=op]|Logical disjunction 
+|Operator|Description|Precedence|Associativity
+|()|Parenthesis|0|left
+|xref:functions.adoc["function",role=fun](args...)|Function|10|left
+|xref:cast.adoc["::",role=op]|Type cast|20|right
+|xref:element_at.adoc["[\]",role=op]|Array element selection|30|left
+|xref:plus.adoc["+",role=op] +
+xref:negative.adoc["-",role=operator]|Positive +
+Negative|40|right
+|xref:attimezone.adoc["AT",role=op]|AT TIME ZONE|50|right
+|xref:multiply.adoc["*",role=op] +
+xref:div.adoc["/",role=op] +
+xref:mod.adoc["%",role=op]|Multiplication +
+Division +
+Modulus|60|left
+|xref:add.adoc[+] +
+xref:subtract.adoc["-",role=op] +
+xref:concat.adoc["\|\|",role=op]|Addition +
+Subtraction +
+Concatenation|70|left
+|xref:in.adoc["IN",role=op]|Membership|80|left
+|xref:between.adoc["BETWEEN",role=op]|Range containment|80|left
+|xref:like.adoc["LIKE",role=op] +
+xref:ilike.adoc["ILIKE",role=op] +
+xref:similar-to.adoc["SIMILAR TO",role=op]|Pattern matching|80|left
+|xref:equal.adoc["=",role=op] +
+xref:greater_than.adoc[">",role=op] +
+xref:less_than.adoc["<",role=op] +
+xref:greater_than_or_equal.adoc[">=",role=op] +
+xref:less_than_or_equal.adoc["<=",role=op] +
+xref:not_equal.adoc["<>",role=op] +
+xref:not_equal.adoc["!=",role=op]|Comparison|90|left
+|xref:is-null.adoc["IS NULL",role=op] +
+xref:is-true.adoc["IS TRUE",role=op] +
+xref:is-false.adoc["IS FALSE",role=op] +
+xref:is-distinct-from.adoc["IS DISTINCT FROM",role=op]|Conditional|100|left
+|xref:boolnot.adoc["NOT",role=op]|Logical negation|110|right
+|xref:booland.adoc["AND",role=op]|Logical conjunction|120|left
+|xref:boolxor.adoc["XOR",role=op]|Logical exclusive disjunction|130|left
+|xref:boolor.adoc["OR",role=op]|Logical disjunction|140|left
 |===
-
-NOTE: An operator on higher levels is evaluated before an operator on a lower level. Add parentheses to an expression with multiple operators if you want to to force precedence or clarify precedence, for example, (5 + 2) * 3.
 
 NOTE: When an operator combines expressions of different data types, the data type with the lower precedence is first converted to the data type with the higher precedence. If the conversion isn't a supported implicit conversion, an error is returned. 
 

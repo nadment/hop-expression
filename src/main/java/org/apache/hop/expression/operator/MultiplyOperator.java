@@ -45,7 +45,7 @@ public class MultiplyOperator extends BinaryOperator {
     super(
         "MULTIPLY",
         "*",
-        50,
+        60,
         Associativity.LEFT,
         ReturnTypes.MULTIPLY_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC,

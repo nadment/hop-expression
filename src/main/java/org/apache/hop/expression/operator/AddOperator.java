@@ -44,7 +44,7 @@ public class AddOperator extends BinaryOperator {
     super(
         "ADD",
         "+",
-        100,
+        70,
         Associativity.LEFT,
         ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC

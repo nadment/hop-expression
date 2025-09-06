@@ -39,7 +39,7 @@ public class LessThanOperator extends BinaryOperator {
     super(
         "LESS_THAN",
         "<",
-        130,
+        90,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,

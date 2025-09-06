@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BIT_NOT, ~
+= BIT_NOT
 
 Performs a bitwise NOT operation on an integer value.
 
@@ -22,10 +22,6 @@ Performs a bitwise NOT operation on an integer value.
 
 ----
 BIT_NOT( integer )
-----
-The xref:bit_not.adoc["~",role=op] operator provides alternative syntax.
-----
-~ integer
 ----
 
 == Returns

@@ -39,7 +39,7 @@ public class SimilarToOperator extends BinaryOperator {
     super(
         "SIMILAR TO",
         "SIMILAR TO",
-        10,
+        80,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING,

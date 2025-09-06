@@ -49,7 +49,6 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
@@ -58,6 +57,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {
+
+  // TODO: Use Junit 5  @RegisterExtension static RestoreHopEngineEnvironmentExtension env = new
+  // RestoreHopEngineEnvironmentExtension();
 
   public static RestoreHopEnvironment env;
 
@@ -196,12 +198,6 @@ public class ExpressionTest {
     context.setRow(row);
 
     return context;
-  }
-
-  protected void returnType(String source, Type expected) throws Exception {
-    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
-    // assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
-    assertEquals(expected, expression.getType());
   }
 
   protected Evaluator evalNull(String source) throws Exception {

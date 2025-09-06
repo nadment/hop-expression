@@ -58,7 +58,7 @@ public class ConcatFunction extends Function {
     super(
         "CONCAT",
         name,
-        110,
+        70,
         Associativity.LEFT,
         ReturnTypes.CONCAT_FUNCTION,
         OperandTypes.or(

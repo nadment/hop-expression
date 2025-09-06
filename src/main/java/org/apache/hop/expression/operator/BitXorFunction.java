@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -34,30 +33,15 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 
-/**
- * Bitwise XOR (Exclusive OR) operator.<br>
- * <strong>Syntax:</strong> <code>x ^ y</code>
- */
+/** Bitwise XOR (Exclusive OR) function.<br> */
 @FunctionPlugin
 public class BitXorFunction extends Function {
 
-  public static final BitXorFunction INSTANCE = new BitXorFunction("^");
+  public static final BitXorFunction INSTANCE = new BitXorFunction();
 
   public BitXorFunction() {
     super(
         "BIT_XOR",
-        ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
-        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
-        OperatorCategory.BITWISE,
-        "/docs/bit_xor.html");
-  }
-
-  public BitXorFunction(String name) {
-    super(
-        "BIT_XOR",
-        name,
-        80,
-        Associativity.LEFT,
         ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
@@ -96,13 +80,6 @@ public class BitXorFunction extends Function {
     }
 
     return new Call(IntegerBitXorFunction.INSTANCE, call.getOperands());
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, 0, 0);
-    writer.append('^');
-    operands[1].unparse(writer, 0, 0);
   }
 
   public static final class IntegerBitXorFunction extends BitXorFunction {

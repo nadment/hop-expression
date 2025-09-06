@@ -36,7 +36,7 @@ public class BetweenSymmetricOperator extends Operator {
   public BetweenSymmetricOperator() {
     super(
         "BETWEEN SYMMETRIC",
-        120,
+        80,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BETWEEN,

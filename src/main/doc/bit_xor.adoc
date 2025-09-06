@@ -14,18 +14,14 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BIT_XOR, ^
+= BIT_XOR
 
-Performs a bitwise exclusive OR operation between two integer or binary values.
+Performs a bitwise XOR (exclusive OR) operation between two integer or binary values.
 
 == Syntax
 
 ----
 BIT_XOR( value1, value2 )
-----
-The xref:bit_xor.adoc["^",role=op] operator provides alternative syntax.
-----
-value1 ^ value2
 ----
 
 Returns:: Integer or Binary

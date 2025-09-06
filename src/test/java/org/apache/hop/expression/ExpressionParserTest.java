@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.operator.BitAndFunction;
 import org.apache.hop.expression.operator.BitOrFunction;
 import org.apache.hop.expression.operator.BitXorFunction;
@@ -164,8 +165,8 @@ public class ExpressionParserTest extends ExpressionTest {
     assertEquals("Mathematical", MultiplyOperator.INSTANCE.getCategory());
     assertEquals(IsTrueOperator.INSTANCE, new IsTrueOperator());
     assertEquals(ConcatFunction.INSTANCE, new ConcatFunction());
-    assertEquals(51, MultiplyOperator.INSTANCE.getLeftPrec());
-    assertEquals(50, MultiplyOperator.INSTANCE.getRightPrec());
+    assertEquals(61, MultiplyOperator.INSTANCE.getLeftPrec());
+    assertEquals(60, MultiplyOperator.INSTANCE.getRightPrec());
     assertEquals("CONCAT", ConcatFunction.INSTANCE.toString());
     assertTrue(ConcatFunction.INSTANCE.is(FunctionRegistry.getFunction("CONCAT")));
     assertFalse(ConcatFunction.INSTANCE.is(null));
@@ -255,8 +256,13 @@ public class ExpressionParserTest extends ExpressionTest {
     evalEquals("42%(3+2)", 2D);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0L);
+    evalEquals("100+200/10-3*10", 90D);
 
-    // Operators with the same precedence and adjacent, respect associativity without parenthesis
+    // The division (/) and modulus (%) operators have the same precedence, so the order in which
+    // they are evaluated depends on their left-to-right associativity.
+    evalEquals("100/5%2", BigDecimal.ZERO);
+
+    // Operators with the same precedence and adjacent, respect associativity without a parenthesis
     evalEquals("3*5/2", 3 * 5 / 2d);
     evalEquals("9/3*3", 9L / 3L * 3d);
     evalEquals("-10*2/4+1", -10L * 2L / 4L + 1d);
@@ -279,8 +285,14 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFalse("1 = 1 is null");
     evalTrue(" 3 > 5 IS FALSE");
 
-    // TODO: BETWEEN, IN, LIKE have higher precedence than comparison
-    // evalFalse("5 between 4>=4 and 6<=6");
+    evalTrue("5 between 1+2 and 4+6");
+
+    //  BETWEEN have higher precedence than logical AND operator
+    evalTrue("5 between 1 and 10 and TRUE");
+
+    // IN have higher precedence than additive
+    evalTrue("3+1 in (4,5)");
+    evalTrue("'A'||'B' in ('X','AB')");
 
     // The cast operator has higher precedence than the unary minus (negation) operator,
     // so the statement is interpreted as -(0.0::NUMBER::BOOLEAN)
@@ -290,7 +302,10 @@ public class ExpressionParserTest extends ExpressionTest {
 
   @Test
   void unparse() throws Exception {
+    optimize("(2+FIELD_INTEGER)*4", "4*(2+FIELD_INTEGER)");
     optimize("4*(2+FIELD_INTEGER)", "4*(2+FIELD_INTEGER)");
+    optimize("4/2+FIELD_INTEGER", "2+FIELD_INTEGER");
+    optimize("4/(2+FIELD_INTEGER)", "4/(2+FIELD_INTEGER)");
     optimize("-FIELD_INTEGER::NUMBER", "-CAST(FIELD_INTEGER AS NUMBER)");
     optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*FIELD_INTEGER/2");
     optimize("((FIELD_INTEGER > 5) AND FALSE) OR (FIELD_INTEGER < 10)", "FIELD_INTEGER<10");
@@ -315,11 +330,11 @@ public class ExpressionParserTest extends ExpressionTest {
     // Unbalanced parenthesis
     evalFails("(9+7", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("9+(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
-    evalFails("3*(1+2", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Year(2020", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     evalFails("9+()", ErrorCode.SYNTAX_ERROR);
     evalFails("9+*(", ErrorCode.SYNTAX_ERROR);
+    evalFails("3+*(1+2", ErrorCode.SYNTAX_ERROR);
     evalFails("9)", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails(")+1", ErrorCode.SYNTAX_ERROR);
 
@@ -341,24 +356,13 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("3/ ", ErrorCode.SYNTAX_ERROR);
     evalFails("3~ ", ErrorCode.UNEXPECTED_CHARACTER);
 
-    // Bitwise operators
-    evalFails("3|", ErrorCode.SYNTAX_ERROR);
-    evalFails("3 | ", ErrorCode.SYNTAX_ERROR);
-    evalFails("|3", ErrorCode.SYNTAX_ERROR);
-    evalFails("100&", ErrorCode.SYNTAX_ERROR);
-    evalFails("100 & ", ErrorCode.SYNTAX_ERROR);
-    evalFails("&100", ErrorCode.SYNTAX_ERROR);
-    evalFails("100^", ErrorCode.SYNTAX_ERROR);
-    evalFails("100 ^ ", ErrorCode.SYNTAX_ERROR);
-    evalFails("^100", ErrorCode.SYNTAX_ERROR);
-    evalFails("~", ErrorCode.SYNTAX_ERROR);
-    evalFails("~ ", ErrorCode.SYNTAX_ERROR);
-
     evalFails("Left(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Left('test'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Left('test',", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Left)", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("Left(,", ErrorCode.SYNTAX_ERROR);
     evalFails("Left(,)", ErrorCode.SYNTAX_ERROR);
+    evalFails("Left('test',)", ErrorCode.MISSING_ELEMENT);
 
     evalFails("Year(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Year(2024", ErrorCode.MISSING_RIGHT_PARENTHESIS);
@@ -370,6 +374,17 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("Year)", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("9!7", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("9: ", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("3|", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("3 | ", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("100&", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("100 & ", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("100^", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("100 ^ ", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("|3", ErrorCode.SYNTAX_ERROR);
+    evalFails("&100", ErrorCode.SYNTAX_ERROR);
+    evalFails("^100", ErrorCode.SYNTAX_ERROR);
+    evalFails("~", ErrorCode.SYNTAX_ERROR);
+    evalFails("~ ", ErrorCode.SYNTAX_ERROR);
 
     evalFails("Date '2022-05-01' AT TIME", ErrorCode.SYNTAX_ERROR);
     evalFails("Date '2022-05-01' AT TIME ZONE", ErrorCode.SYNTAX_ERROR);
