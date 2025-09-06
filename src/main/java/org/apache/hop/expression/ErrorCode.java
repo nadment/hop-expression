@@ -38,6 +38,8 @@ public enum ErrorCode {
   CONTEXT_ERROR,
   /** Division by zero */
   DIVISION_BY_ZERO,
+  /** Empty value list for the IN predicate */
+  EMPTY_VALUE_LIST_FOR_IN_PREDICATE,
   /** Invalid argument “{0}” */
   INVALID_ARGUMENT,
   /** Illegal argument type to call {0}. You might need to add explicit type casts. */
@@ -52,6 +54,8 @@ public enum ErrorCode {
   NOT_ENOUGH_ARGUMENT,
   /** Too many arguments to call function {0} */
   TOO_MANY_ARGUMENT,
+  /** Missing element */
+  MISSING_ELEMENT,
   /** Missing end block comment */
   MISSING_END_BLOCK_COMMENT,
   /** Missing end of single-quotes string */
