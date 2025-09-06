@@ -870,7 +870,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parses a list of expressions separated by commas (function arguments or IN predicate value list).
+   * Parses a list of expressions separated by commas (function arguments or IN predicate value
+   * list).
    *
    * <p><code>expression [,expression...]</code>
    */
@@ -1410,16 +1411,25 @@ public class ExpressionParser {
     if (isThenNext(Id.LPARENTHESIS)) {
 
       // Precision
-      precision = Integer.parseInt(this.next().text());
+      try {
+        precision = Integer.parseInt(next().text());
+      } catch (NumberFormatException e) {
+        throw new ExpressionParseException(token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
+      }
       if (!name.supportsPrecision()) {
-        throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+        throw new ExpressionParseException(token.start(), ErrorCode.PRECISION_NOT_SUPPORTED, token.text());
       }
 
       // Scale
       if (isThenNext(Id.COMMA)) {
-        scale = Integer.parseInt(this.next().text());
+        checkEndOfExpression(token.id());
+        try {
+          scale = Integer.parseInt(next().text());
+        } catch (NumberFormatException e) {
+          throw new ExpressionParseException(token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_SCALE);
+        }
         if (!name.supportsScale()) {
-          throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+          throw new ExpressionParseException(token.start(), ErrorCode.SCALE_NOT_SUPPORTED, token.text());
         }
       }
 

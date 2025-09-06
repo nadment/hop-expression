@@ -40,6 +40,10 @@ public enum ErrorCode {
   DIVISION_BY_ZERO,
   /** Empty value list for the IN predicate */
   EMPTY_VALUE_LIST_FOR_IN_PREDICATE,
+  /** Expected an integer constant as precision */
+  EXPECTED_INTEGER_CONSTANT_AS_PRECISION,
+  /** Expected an integer constant as scale */
+  EXPECTED_INTEGER_CONSTANT_AS_SCALE,
   /** Invalid argument “{0}” */
   INVALID_ARGUMENT,
   /** Illegal argument type to call {0}. You might need to add explicit type casts. */
@@ -82,8 +86,12 @@ public enum ErrorCode {
   ARGUMENT_OUT_OF_RANGE,
   /** Padding length exceeds maximum limit {0} */
   PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT,
+  /** Precision is not supported for {0} data type */
+  PRECISION_NOT_SUPPORTED,
   /** Precision of {0} must be within the range {1} to {2} */
   PRECISION_OUT_OF_RANGE,
+  /** Scale is not supported for {0} data type */
+  SCALE_NOT_SUPPORTED,
   /** The scale of {0} must be within the range {1} to {2} */
   SCALE_OUT_OF_RANGE,
   /** The scale of {0} must be less than or equal to the precision */

@@ -433,7 +433,12 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("Cast(123 as STRING(3)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Cast(123 as STRING 3))", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    evalFails("Cast('TRUE' as BOOLEAN(4)", ErrorCode.INVALID_TYPE);
-    evalFails("Cast('2023-12-31' as DATE(10)", ErrorCode.INVALID_TYPE);
+    evalFails("Cast('123.1' as NUMBER()", ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
+    evalFails("Cast('123.1' as NUMBER())", ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
+    evalFails("Cast('123.1' as NUMBER(,2))", ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
+    evalFails("Cast('123.1' as NUMBER(3,))", ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_SCALE);
+    evalFails("Cast('123.1' as INTEGER(4,2)", ErrorCode.SCALE_NOT_SUPPORTED);
+    evalFails("Cast('TRUE' as BoolEAN(4)", ErrorCode.PRECISION_NOT_SUPPORTED);
+    evalFails("Cast('2023-12-31' as DATE(10)", ErrorCode.PRECISION_NOT_SUPPORTED);
   }
 }
