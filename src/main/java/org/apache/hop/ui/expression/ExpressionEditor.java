@@ -48,10 +48,6 @@ import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.ArrayElementAtOperator;
 import org.apache.hop.expression.operator.BetweenAsymmetricOperator;
-import org.apache.hop.expression.operator.BitAndFunction;
-import org.apache.hop.expression.operator.BitNotFunction;
-import org.apache.hop.expression.operator.BitOrFunction;
-import org.apache.hop.expression.operator.BitXorFunction;
 import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
@@ -141,11 +137,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> OPERATORS =
       Set.of(
-          // BITWISE OPERATORS
-          BitAndFunction.INSTANCE,
-          BitOrFunction.INSTANCE,
-          BitNotFunction.INSTANCE,
-          BitXorFunction.INSTANCE,
           // CAST OPERATOR
           CastOperator.INSTANCE,
           // ARITHMETIC OPERATORS

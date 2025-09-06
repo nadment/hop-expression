@@ -1414,10 +1414,12 @@ public class ExpressionParser {
       try {
         precision = Integer.parseInt(next().text());
       } catch (NumberFormatException e) {
-        throw new ExpressionParseException(token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
+        throw new ExpressionParseException(
+            token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
       }
       if (!name.supportsPrecision()) {
-        throw new ExpressionParseException(token.start(), ErrorCode.PRECISION_NOT_SUPPORTED, token.text());
+        throw new ExpressionParseException(
+            token.start(), ErrorCode.PRECISION_NOT_SUPPORTED, token.text());
       }
 
       // Scale
@@ -1426,10 +1428,12 @@ public class ExpressionParser {
         try {
           scale = Integer.parseInt(next().text());
         } catch (NumberFormatException e) {
-          throw new ExpressionParseException(token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_SCALE);
+          throw new ExpressionParseException(
+              token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_SCALE);
         }
         if (!name.supportsScale()) {
-          throw new ExpressionParseException(token.start(), ErrorCode.SCALE_NOT_SUPPORTED, token.text());
+          throw new ExpressionParseException(
+              token.start(), ErrorCode.SCALE_NOT_SUPPORTED, token.text());
         }
       }
 
@@ -1479,7 +1483,7 @@ public class ExpressionParser {
         case ']':
           return new Token(Id.RBRACKET, position++);
 
-        // Single-quoted literal text.
+          // Single-quoted literal text.
         case '\'':
           {
             StringBuilder text = new StringBuilder();
@@ -1556,7 +1560,7 @@ public class ExpressionParser {
             return new Token(Id.LT, start);
           }
 
-        // parse greater symbol
+          // parse greater symbol
         case '>':
           {
             int start = position++;
@@ -1570,7 +1574,7 @@ public class ExpressionParser {
             return new Token(Id.GT, start);
           }
 
-        // parse bang equal symbol "!="
+          // parse bang equal symbol "!="
         case '!':
           {
             int start = position++;
@@ -1584,7 +1588,7 @@ public class ExpressionParser {
             throw new ExpressionParseException(start, ErrorCode.UNEXPECTED_CHARACTER, '!');
           }
 
-        // cast operator
+          // cast operator
         case ':':
           {
             int start = position++;
@@ -1598,7 +1602,7 @@ public class ExpressionParser {
             throw new ExpressionParseException(start, ErrorCode.UNEXPECTED_CHARACTER, ':');
           }
 
-        // possible start of '/*' or '//' comment
+          // possible start of '/*' or '//' comment
         case '/':
           {
             int start = position++;
@@ -1653,7 +1657,7 @@ public class ExpressionParser {
         case '^':
           return new Token(Id.CARET, position++);
 
-        // Bitwise OR operator or concat symbol
+          // Bitwise OR operator or concat symbol
         case '|':
           {
             int start = position++;
@@ -1667,7 +1671,7 @@ public class ExpressionParser {
             return new Token(Id.PIPE, start);
           }
 
-        // Quoted identifier matching reserved words or with white space
+          // Quoted identifier matching reserved words or with white space
         case '"':
           {
             int start = position++;
