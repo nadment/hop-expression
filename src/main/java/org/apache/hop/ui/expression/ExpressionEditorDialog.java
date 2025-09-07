@@ -85,7 +85,7 @@ public class ExpressionEditorDialog extends Dialog {
 
     HelpUtils.createHelpButton(
         shell,
-        "https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc");
+        "https://github.com/nadment/hop-expression/blob/master/src/main/doc/expression.adoc");
 
     List<Button> buttons = new ArrayList<>();
     buttons.add(btnOK);
