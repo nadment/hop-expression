@@ -253,6 +253,13 @@ public class ExpressionTest {
     return evaluator;
   }
 
+  protected Evaluator evalEquals(IExpressionContext context, String source, Array expected)
+      throws Exception {
+    Evaluator evaluator = new Evaluator(context, source);
+    assertEquals(expected, evaluator.eval());
+    return evaluator;
+  }
+
   protected Evaluator evalEquals(IExpressionContext context, String source, JsonNode expected)
       throws Exception {
     Evaluator evaluator = new Evaluator(context, source);
@@ -327,6 +334,10 @@ public class ExpressionTest {
     BigDecimal result = evaluator.eval(BigDecimal.class);
     assertEquals(expected.stripTrailingZeros(), result.stripTrailingZeros());
     return evaluator;
+  }
+
+  protected Evaluator evalEquals(String source, Array expected) throws Exception {
+    return evalEquals(createExpressionContext(), source, expected);
   }
 
   protected Evaluator evalEquals(String source, Temporal expected) throws Exception {

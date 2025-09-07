@@ -35,7 +35,7 @@ import org.apache.hop.expression.util.StringConversion;
 /** Constant value in a expression. */
 public class Literal implements IExpression {
 
-  /** Literal null value without known data type */
+  /** Literal null value without a known data type */
   public static final Literal NULL = new Literal(null, Types.UNKNOWN);
 
   /** Literal null with binary data type */

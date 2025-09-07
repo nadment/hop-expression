@@ -32,6 +32,7 @@ class ArrayTest extends ExpressionTest {
     Array array1 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
     Array array2 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
     Array array3 = new Array(Literal.NULL, Literal.NULL, Literal.NULL);
+
     Array array4 = new Array(ArrayType.of(Types.STRING), Literal.of("A"), new Identifier("B"));
 
     assertEquals(Kind.ARRAY, array1.getKind());

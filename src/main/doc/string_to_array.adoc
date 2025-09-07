@@ -1,0 +1,41 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= STRING_TO_ARRAY
+
+Splits a string into an array of strings based on a specified delimiter.
+
+== Syntax
+
+----
+STRING_TO_ARRAY(string, delimiter)
+----
+
+== Returns
+
+Array
+
+== Usage
+
+* If the `delimiter` is an empty string '', the result is an array containing the entire original input string as a single element.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+STRING_TO_ARRAY('blue|orange|yellow','|') = ['blue','orange','yellow']
+STRING_TO_ARRAY('blue|orange|yellow','') = ['blue|orange|yellow']
+----

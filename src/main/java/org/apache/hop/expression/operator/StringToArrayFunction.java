@@ -16,34 +16,52 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.Array;
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
-/** The ARRAY function creates an ARRAY containing the argument values. */
+/** Splits a string into an array of strings based on a specified delimiter. */
 @FunctionPlugin
-public class ArrayFunction extends Function {
+public class StringToArrayFunction extends Function {
 
-  public static final Function INSTANCE = new ArrayFunction();
+  public static final Function INSTANCE = new StringToArrayFunction();
 
-  public ArrayFunction() {
+  private static final ArrayType DEFAULT_TYPE = ArrayType.of(Types.STRING);
+
+  public StringToArrayFunction() {
     super(
-        "ARRAY",
+        "STRING_TO_ARRAY",
         ReturnTypes.ARRAY,
-        OperandTypes.SAME_VARIADIC,
+        OperandTypes.STRING_STRING,
         OperatorCategory.ARRAY,
-        "/docs/array.html");
+        "/docs/string_to_array.html");
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return new Array(call.getOperands());
+  public Object eval(final IExpression[] operands) {
+    String str = operands[0].getValue(String.class);
+    if (str == null) return null;
+
+    String delimiter = operands[1].getValue(String.class);
+    if (delimiter == null) return null;
+
+    String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
+
+    List<IExpression> list = new ArrayList<>();
+    for (String s : parts) {
+      list.add(Literal.of(s));
+    }
+
+    return new Array(DEFAULT_TYPE, list);
   }
 }

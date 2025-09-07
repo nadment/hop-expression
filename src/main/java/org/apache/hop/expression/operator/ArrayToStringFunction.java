@@ -25,7 +25,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * The ARRAY_TO_STRING function convert an input array to a string by casting all values to strings
+ * The ARRAY_TO_STRING function converts an input array to a string by casting all values to strings
  * and concatenating them, using the string from the second argument to separate the elements.
  */
 @FunctionPlugin

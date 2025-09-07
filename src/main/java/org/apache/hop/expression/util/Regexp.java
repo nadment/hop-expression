@@ -92,7 +92,7 @@ public class Regexp {
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
-            // Enables dotall mode, that allows the period (.) to match the newline character.
+            // Enables dot all mode that allows the period (.) to match the newline character.
           case 'n':
             flags |= Pattern.DOTALL;
             break;
@@ -108,7 +108,7 @@ public class Regexp {
     return flags;
   }
 
-  /** Translates a SIMILAR TO pattern to Java regex pattern. */
+  /** Translates a SIMILAR TO pattern to a Java regex pattern. */
   public static String toSimilarTo(final String pattern, final char escapeChar)
       throws ExpressionException {
     final int len = pattern.length();
