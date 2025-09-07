@@ -97,6 +97,7 @@ import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.LineNumberRulerColumn;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
@@ -182,6 +183,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
   private IRowMeta rowMeta;
+  private Browser wBrowser;
+  private SashForm wEditorSashForm;
 
   public ExpressionEditor(
       Composite parent,
@@ -198,10 +201,10 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     PropsUi.setLook(this);
 
     this.setLayout(new FormLayout());
-    SashForm wSashForm = new org.eclipse.swt.custom.SashForm(this, org.eclipse.swt.SWT.HORIZONTAL);
+    SashForm wSashForm = new SashForm(this, SWT.HORIZONTAL);
     wSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
     this.createTree(wSashForm);
-    this.createEditor(wSashForm);
+    this.createSash(wSashForm);
 
     // When IRowMeta is ready
     if (rowMetaFutur != null) {
@@ -211,9 +214,52 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wSashForm.setWeights(25, 75);
   }
 
+  protected void createSash(final Composite parent) {
+    wEditorSashForm = new SashForm(parent, SWT.VERTICAL);
+    wEditorSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
+
+    this.createEditor(wEditorSashForm);
+    this.createHelp(wEditorSashForm);
+
+    wEditorSashForm.setWeights(100, 0);
+  }
+
+  protected void createHelp(final Composite parent) {
+    Composite composite = new Composite(parent, SWT.BORDER);
+    composite.setLayout(new FormLayout());
+
+    // Create toolbar
+    ToolBar toolbar = new ToolBar(composite, SWT.FLAT | SWT.HORIZONTAL | SWT.RIGHT_TO_LEFT);
+    toolbar.setLayoutData(new FormDataBuilder().top().fullWidth().result());
+    PropsUi.setLook(toolbar, Props.WIDGET_STYLE_TOOLBAR);
+
+    ToolItem toolbarItem = new ToolItem(toolbar, SWT.PUSH);
+    toolbarItem.setToolTipText("Close");
+    toolbarItem.setImage(GuiResource.getInstance().getImageClosePanel());
+    toolbarItem.addListener(SWT.Selection, e -> hideHelp());
+
+    // Create the widget browser
+    wBrowser = new Browser(composite, SWT.NONE);
+    wBrowser.setLayoutData(new FormDataBuilder().top(toolbar).bottom().fullWidth().result());
+
+    // Cancel opening of new windows
+    wBrowser.addOpenWindowListener(e -> e.required = true);
+
+    // Replace the browser's built-in context menu with none
+    wBrowser.setMenu(new Menu(parent.getShell(), SWT.NONE));
+  }
+
+  protected void hideHelp() {
+    wEditorSashForm.setWeights(new int[] {100, 0});
+  }
+
+  protected void showHelp() {
+    wEditorSashForm.setWeights(new int[] {40, 60});
+  }
+
   protected void createEditor(final Composite parent) {
 
-    Composite composite = new Composite(parent, SWT.NONE);
+    Composite composite = new Composite(parent, SWT.BORDER);
     composite.setLayout(new FormLayout());
 
     ToolBar toolbar = new ToolBar(composite, SWT.FLAT | SWT.HORIZONTAL);
@@ -241,6 +287,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     final int modifierKeys =
         (System.getProperty("user.language").equals("zh")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
 
+    widget.addListener(SWT.FocusIn, e -> hideHelp());
     widget.addListener(
         SWT.KeyDown,
         event -> {
@@ -381,7 +428,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
   protected void createTree(final Composite parent) {
 
-    Composite composite = new Composite(parent, SWT.NONE);
+    Composite composite = new Composite(parent, SWT.BORDER);
     composite.setLayout(new FormLayout());
     // composite.setLayoutData(new FormDataBuilder().fullSize().result());
 
@@ -581,10 +628,10 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   /** Display help as a tooltip. */
   protected void displayHelp(Point point, Object element) {
     String text = labelProvider.getToolTipText(element);
+
     if (text != null) {
-      BrowserToolTip toolTip = new BrowserToolTip(wTree);
-      toolTip.setText(text);
-      toolTip.show(point);
+      this.wBrowser.setText(text);
+      this.showHelp();
     }
   }
 

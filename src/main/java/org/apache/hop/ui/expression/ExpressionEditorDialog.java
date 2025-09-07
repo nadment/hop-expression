@@ -96,7 +96,7 @@ public class ExpressionEditorDialog extends Dialog {
     // ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
 
     // The expression editor
-    wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, mode, rowMetaFutur);
+    wEditor = new ExpressionEditor(shell, SWT.NONE, variables, mode, rowMetaFutur);
     wEditor.setText(expression);
     wEditor.setLayoutData(
         new FormDataBuilder().top().bottom(btnOK, -PropsUi.getMargin()).left().right().result());

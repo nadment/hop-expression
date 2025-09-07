@@ -37,7 +37,7 @@ body {
     padding: 0;
     margin: 0;
     font-family: "Noto Serif", "DejaVu Serif", serif;
-    font-size: inherit;
+    font-size: small;
     line-height: 1;
     position: relative;
     cursor: auto;

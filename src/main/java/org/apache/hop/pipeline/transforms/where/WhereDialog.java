@@ -226,7 +226,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     wEditor =
         new ExpressionEditor(
-            parent, SWT.BORDER, this.getVariables(), ExpressionMode.ROW, rowMetaProvider);
+            parent, SWT.NONE, this.getVariables(), ExpressionMode.ROW, rowMetaProvider);
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     wEditor.addListener(SWT.Modify, e -> onChanged());
 

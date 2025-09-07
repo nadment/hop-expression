@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.DescribedVariable;
 import org.apache.hop.expression.Function;
@@ -120,7 +121,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
       // Content
       builder.append("<h2>Description</h2>");
-      builder.append(variable.getDescription());
+      builder.append(Const.NVL(variable.getDescription(),"-"));
 
       // Footer
       builder.append("</div></div></body></html>");
@@ -143,7 +144,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
       builder.append("<h2>Type</h2>");
       builder.append(meta.getTypeDesc());
       builder.append("<h2>Transform origin</h2>");
-      builder.append(meta.getOrigin());
+      builder.append(Const.NVL(meta.getOrigin(), "-"));
       builder.append("<h2>Comment</h2>");
       builder.append(StringUtils.defaultString(meta.getComments()));
 
