@@ -196,6 +196,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:startswith.adoc["STARTSWITH",role=fun]
 * xref:string_decode.adoc["STRING_DECODE",role=fun]
 * xref:string_encode.adoc["STRING_ENCODE",role=fun]
+* xref:string_to_array.adoc["STRING_TO_ARRAY",role=fun]
 * xref:substring.adoc["SUBSTRING",role=fun]
 * xref:sum.adoc["SUM",role=fun] aggregate
 * xref:tan.adoc["TAN",role=fun]

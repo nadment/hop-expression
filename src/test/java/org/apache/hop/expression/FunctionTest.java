@@ -4495,6 +4495,21 @@ public class FunctionTest extends ExpressionTest {
   }
 
   @Test
+  void String_To_Array() throws Exception {
+    evalEquals(
+        "String_To_Array('Green|Yellow|Blue','|')",
+        new Array(Literal.of("Green"), Literal.of("Yellow"), Literal.of("Blue")));
+    evalEquals("String_To_Array('AB|CD','')", new Array(Literal.of("AB|CD")));
+
+    // Null handling
+    evalNull("String_To_Array('Green|Yellow|Blue',NULL_STRING)");
+    evalNull("String_To_Array(NULL_STRING,',')");
+
+    // Check operands
+    evalFails("String_To_Array()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+  }
+
+  @Test
   void String_Encode() throws Exception {
     evalEquals("String_Encode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"")
         .returnType(Types.STRING_NOT_NULL);
