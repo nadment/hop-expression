@@ -565,7 +565,7 @@ public class OperatorTest extends ExpressionTest {
 
       // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
 
-      // Normalize IN list with single element to comparison
+      // Normalize IN list with a single element to comparison
       optimize("FIELD_INTEGER in (1)", "FIELD_INTEGER=1");
       optimize("FIELD_STRING in ('AB','AB')", "FIELD_STRING='AB'");
 

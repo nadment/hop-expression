@@ -430,19 +430,18 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     Composite composite = new Composite(parent, SWT.BORDER);
     composite.setLayout(new FormLayout());
-    // composite.setLayoutData(new FormDataBuilder().fullSize().result());
 
     ToolBar toolbar = new ToolBar(composite, SWT.FLAT | SWT.HORIZONTAL);
     toolbar.setLayoutData(new FormDataBuilder().top().fullWidth().result());
     PropsUi.setLook(toolbar, Props.WIDGET_STYLE_TOOLBAR);
 
     ToolItem toolbarItem = new ToolItem(toolbar, SWT.PUSH);
-    toolbarItem.setToolTipText("Collapse all");
+    toolbarItem.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.CollapseALl"));
     toolbarItem.setImage(GuiResource.getInstance().getImageCollapseAll());
     toolbarItem.addListener(SWT.Selection, e -> onTreeExpandCollapseAll(false));
 
     toolbarItem = new ToolItem(toolbar, SWT.PUSH);
-    toolbarItem.setToolTipText("Expand all");
+    toolbarItem.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.ExpandAll"));
     toolbarItem.setImage(GuiResource.getInstance().getImageExpandAll());
     toolbarItem.addListener(SWT.Selection, e -> onTreeExpandCollapseAll(true));
 
