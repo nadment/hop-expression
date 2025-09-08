@@ -26,13 +26,13 @@ ARRAY_SLICE( array, from, to )
 
 == Return
 
-This function returns an ARRAY.
+Returns an array.
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
 * A negative position is interpreted as an index from the back of the array. 
-* If both of the of the `from` or `to` parameters are beyond the upper or lower end of the array, the result is an empty array.
+* If both of the `from` or `to` parameters are beyond the upper or lower end of the array, the result is an empty array.
 
 == Examples
 

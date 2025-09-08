@@ -18,34 +18,27 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 
-/**
- * Returns an array concatenating an element at the end of an array.
- *
- * @see ArrayPrependFunction
- */
+/** Returns TRUE if the value is found in the array. */
 @FunctionPlugin
-public class ArrayAppendFunction extends Function {
+public class ArrayContainsFunction extends Function {
 
-  public static final Function INSTANCE = new ArrayAppendFunction();
+  public static final Function INSTANCE = new ArrayContainsFunction();
 
-  public ArrayAppendFunction() {
+  public ArrayContainsFunction() {
     super(
-        "ARRAY_APPEND",
+        "ARRAY_CONTAINS",
         ReturnTypes.ARRAY,
         OperandTypes.ARRAY_ANY,
         OperatorCategory.ARRAY,
-        "/docs/array_append.html");
+        "/docs/array_contains.html");
   }
 
   @Override
@@ -55,7 +48,7 @@ public class ArrayAppendFunction extends Function {
       Type arrayType = call.getOperand(0).getType().getElementType();
       Type elementType = call.getOperand(1).getType();
 
-      // Check if the appended element is coercible to an array element type
+      // Check if the element is coercible to the array element type
       success = elementType.isCoercible(arrayType);
     }
 
@@ -63,18 +56,9 @@ public class ArrayAppendFunction extends Function {
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    // If the operand is an array (not an operator)
-    if (call.getOperand(0).is(Kind.ARRAY)) {
-      return (Array) eval(call.getOperands());
-    }
-    return call;
-  }
-
-  @Override
   public Object eval(final IExpression[] operands) {
     Array array = (Array) operands[0];
     IExpression element = operands[1];
-    return array.append(element);
+    return array.contains(element);
   }
 }

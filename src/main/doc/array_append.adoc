@@ -31,7 +31,7 @@ element:: The element to append to the array.
 
 == Returns
 
-This function returns an ARRAY.
+Returns an array.
 
 == Usage
 

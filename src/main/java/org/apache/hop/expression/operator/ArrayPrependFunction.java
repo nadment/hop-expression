@@ -29,7 +29,11 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 
-/** Returns an array concatenating an element to the beginning of an array. */
+/**
+ * Returns an array concatenating an element to the beginning of an array.
+ *
+ * @see ArrayAppendFunction
+ */
 @FunctionPlugin
 public class ArrayPrependFunction extends Function {
 
@@ -51,7 +55,7 @@ public class ArrayPrependFunction extends Function {
       Type elementType = call.getOperand(0).getType();
       Type arrayType = call.getOperand(1).getType().getElementType();
 
-      // Check if appended element is coercible to array element type
+      // Check if the appended element is coercible to an array element type
       success = elementType.isCoercible(arrayType);
     }
 

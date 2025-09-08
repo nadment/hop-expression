@@ -2671,6 +2671,20 @@ public class FunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Array_Contains() throws Exception {
+    evalTrue("ARRAY_CONTAINS([1,2,3],2)");
+    evalFalse("ARRAY_CONTAINS([1,2,3],0)");
+    evalTrue("ARRAY_CONTAINS(['FR','BE','US'],'BE')");
+    evalFalse("ARRAY_CONTAINS(['FR','BE','US'],'GB')");
+
+    // Check operands
+    evalFails("ARRAY_CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_CONTAINS([1,2,3],0,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("ARRAY_CONTAINS(1,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_CONTAINS([1,2,3], FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+  }
+
+  @Test
   void Array_Position() throws Exception {
     // TODO: return NOT NULL
     evalEquals("ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon')", 2L)

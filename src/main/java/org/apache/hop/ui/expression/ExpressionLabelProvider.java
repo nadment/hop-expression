@@ -121,7 +121,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
       // Content
       builder.append("<h2>Description</h2>");
-      builder.append(Const.NVL(variable.getDescription(),"-"));
+      builder.append(Const.NVL(variable.getDescription(), "-"));
 
       // Footer
       builder.append("</div></div></body></html>");

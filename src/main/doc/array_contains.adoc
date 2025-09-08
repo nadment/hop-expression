@@ -14,32 +14,31 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= ARRAY_TO_STRING
+= ARRAY_CONTAINS
 
-Returns array converted to a string by casting all values to strings and concatenating them using the string to separate the elements.
+Returns a boolean indicating whether the array contains the specified value.
 
 == Syntax
 
 ----
-ARRAY_TO_STRING( array, separator )
+ARRAY_CONTAINS( array, element )
 ----
 
 == Arguments
 
-array:: The array of elements to convert to a string.
-separator:: The string to put between each element.
+array:: The array.
+element:: The element to search for within the array.
 
 == Returns
 
-Returns a string value.
+Returns a boolean value.
 
 == Usage
 
-* Returns NULL if one of the arguments is NULL.
-* NULL in an array is converted to an empty string in the result.
+* Returns NULL if the array is NULL.
 
 == Examples
 
 ----
-ARRAY_TO_STRING(['Hello','world'],' ')
+ARRAY_CONTAINS([1,2,3],2) = TRUE
 ----
