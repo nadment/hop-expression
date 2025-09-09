@@ -16,7 +16,7 @@ under the License.
 ////
 = ARRAY_CONTAINS
 
-Returns a boolean indicating whether the array contains the specified value.
+Returns a boolean indicating whether the array contains the specified element.
 
 == Syntax
 
@@ -31,7 +31,7 @@ element:: The element to search for within the array.
 
 == Returns
 
-Returns a boolean value.
+Boolean
 
 == Usage
 

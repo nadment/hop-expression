@@ -24,4 +24,6 @@ Returns the constant value of pi.
 PI()
 ----
 
-Returns:: Number
+== Returns
+
+Number

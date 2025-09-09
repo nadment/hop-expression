@@ -249,14 +249,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wBrowser.setMenu(new Menu(parent.getShell(), SWT.NONE));
   }
 
-  protected void hideHelp() {
-    wEditorSashForm.setWeights(new int[] {100, 0});
-  }
-
-  protected void showHelp() {
-    wEditorSashForm.setWeights(new int[] {40, 60});
-  }
-
   protected void createEditor(final Composite parent) {
 
     Composite composite = new Composite(parent, SWT.BORDER);
@@ -608,7 +600,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
             menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label"));
             menuItem.setImage(GuiResource.getInstance().getImageHelp());
             menuItem.setData(item.getData());
-            menuItem.addListener(SWT.Selection, e -> displayHelp(point, item.getData()));
+            menuItem.addListener(SWT.Selection, e -> showHelp(item.getData()));
             menu.setVisible(true);
           }
         });
@@ -621,16 +613,24 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       return;
     }
 
-    displayHelp(point, item.getData());
+    showHelp(item.getData());
   }
 
-  /** Display help as a tooltip. */
-  protected void displayHelp(Point point, Object element) {
-    String text = labelProvider.getToolTipText(element);
+  protected void hideHelp() {
+    wEditorSashForm.setWeights(100, 0);
+  }
 
+  /** Display help of the element. */
+  protected void showHelp(Object element) {
+    String text = labelProvider.getToolTipText(element);
     if (text != null) {
       this.wBrowser.setText(text);
-      this.showHelp();
+
+      // If the help panel is too small (less than 20%), reset to 60%.
+      int[] weights =  this.wEditorSashForm.getWeights();
+      if ( ((float) weights[1] /(weights[0]+weights[1])) < 0.2f) {
+        this.wEditorSashForm.setWeights(40, 60);
+      }
     }
   }
 

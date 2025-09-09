@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_BINARY
+= TO_BINARY, TRY_TO_BINARY
 
 Converts the input string to binary value.
 
@@ -22,6 +22,7 @@ Converts the input string to binary value.
 
 ----
 TO_BINARY( string [, format ] )
+TRY_TO_BINARY( string [, format ] )
 ----
 
 == Arguments

@@ -24,6 +24,10 @@ First expression is equal than second expression.
 expression1 = expression2
 ----
 
+== Returns
+
+Boolean
+
 == Usage
 
 * NULL is not equal to anything, not even to another NULL.

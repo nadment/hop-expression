@@ -27,6 +27,10 @@ TO_CHAR( binary [, format ] )
 TO_CHAR( boolean )
 ----
 
+== Returns
+
+String
+
 == Usage
 
 include::dateformat.adoc[]
