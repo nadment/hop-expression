@@ -36,3 +36,15 @@ If an optional default is specified, and if none of the search expressions match
 
 
 TIP: Contrary to `CASE`, a NULL value in the select expression matches a NULL value in the search expressions.
+
+== Examples
+----
+DECODE(EXTRACT(dayofweek FROM CURRENT_DATE()),
+1, 'Monday',
+2, 'Tuesday',
+3, 'Wednesday',
+4, 'Thursday',
+5, 'Friday',
+6, 'Saturday',
+7, 'Sunday')
+----

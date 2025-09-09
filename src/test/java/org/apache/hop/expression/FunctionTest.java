@@ -5142,6 +5142,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59 +02:00')", 2L);
     evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59 -04:00')", -4L);
     evalEquals("Extract(TIMEZONE_MINUTE from TIMESTAMP '2021-01-01 15:28:59 +01:28')", 28L);
+    evalEquals("Extract(TIMEZONE from TIMESTAMP '2021-01-01 15:28:59 +01:28')", 5280L);
     evalEquals(
         "Extract(TIMEZONE_MINUTE from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Asia/Tokyo')",
         0L);

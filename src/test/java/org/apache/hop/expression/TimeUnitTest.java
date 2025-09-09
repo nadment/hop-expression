@@ -56,6 +56,9 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeekOFYEAR"));
     assertEquals(TimeUnit.ISODAYOFWEEK, TimeUnit.of("IsoDayOfWeek"));
     assertEquals(TimeUnit.ISOYEAR, TimeUnit.of("IsoYEAR"));
+    assertEquals(TimeUnit.TIMEZONE_HOUR, TimeUnit.of("Timezone_Hour"));
+    assertEquals(TimeUnit.TIMEZONE_MINUTE, TimeUnit.of("Timezone_Minute"));
+    assertEquals(TimeUnit.TIMEZONE, TimeUnit.of("TimeZone"));
 
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
     assertNotEquals(null, TimeUnit.of("HOUR"));

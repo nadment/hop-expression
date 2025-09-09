@@ -553,7 +553,7 @@ public enum TimeUnit {
     }
   },
 
-  /** Time zone offset's hour part. */
+  /** Time zone offset hour part. */
   TIMEZONE_HOUR {
     @Override
     public long extract(final OffsetDateTime datetime) {
@@ -566,7 +566,7 @@ public enum TimeUnit {
     }
   },
 
-  /** Time zone offset's minute part. */
+  /** Time zone offset minute part. */
   TIMEZONE_MINUTE {
     @Override
     public long extract(final OffsetDateTime datetime) {
@@ -576,6 +576,19 @@ public enum TimeUnit {
     @Override
     public long extract(final ZonedDateTime datetime) {
       return (datetime.getOffset().getTotalSeconds() / 60) % 60;
+    }
+  },
+
+  /** Time zone offset in seconds. */
+  TIMEZONE {
+    @Override
+    public long extract(final OffsetDateTime datetime) {
+      return datetime.getOffset().getTotalSeconds();
+    }
+
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getOffset().getTotalSeconds();
     }
   };
 

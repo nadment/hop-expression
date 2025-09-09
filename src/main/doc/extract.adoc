@@ -56,8 +56,9 @@ Integer
 |NANOSECOND|NANOSECONDS|The nanosecond|
 |QUARTER|QUARTERS|The quarter of the year (1-4)|xref:quarter.adoc["QUARTER",role=fun]
 |SECOND|SECONDS|The second (and fractional seconds)|xref:second.adoc["SECOND",role=fun]
-|TIMEZONE_HOUR||The hour of the time zone offset|
-|TIMEZONE_MINUTE||The minute of the time zone offset|
+|TIMEZONE_HOUR||The hour part of the time zone offset|
+|TIMEZONE_MINUTE||The minute part of the time zone offset|
+|TIMEZONE||The time zone offset in seconds|
 |WEEKOFYEAR|WEEK|The aligned week of year (01-53) where week 1 starts on the first day of the year.|xref:week.adoc["WEEK",role=fun]
 |YEAR|YEARS|The Gregorian year|xref:year.adoc["YEAR",role=fun]
 
