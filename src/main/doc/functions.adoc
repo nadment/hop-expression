@@ -103,6 +103,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:div0.adoc["DIV0",role=fun]
 * xref:endswith.adoc["ENDSWITH",role=fun]
 * xref:equal_null.adoc["EQUAL_NULL",role=fun]
+* xref:epoch.adoc["EPOCH",role=fun]
 * xref:error.adoc["ERROR",role=fun]
 * xref:exp.adoc["EXP",role=fun]
 * xref:extract.adoc["EXTRACT",role=fun]

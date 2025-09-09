@@ -29,7 +29,7 @@ import org.apache.commons.collections4.SetUtils;
  * A time unit can be used with functions such as {@code EXTRACT}, {@code FIRST_DAY}...
  */
 public enum TimeUnit {
-  /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
+  /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 UTC */
   EPOCH {
 
     @Override
@@ -189,7 +189,7 @@ public enum TimeUnit {
     }
   },
 
-  /** The number (1 - 12) of the month */
+  /** The number (1-12) of the month */
   MONTH("MONTHS") {
     @Override
     public long extract(final LocalDate date) {
@@ -217,7 +217,7 @@ public enum TimeUnit {
     }
   },
 
-  /** The number (1 - 31) of the day */
+  /** The number (1-31) of the day */
   DAY("DAYS", "DAYOFMONTH") {
     @Override
     public long extract(final LocalDate date) {
@@ -294,7 +294,7 @@ public enum TimeUnit {
     }
   },
 
-  /** A number (1 - 366) indicating the day of the year */
+  /** A number (1-366) indicating the day of the year */
   DAYOFYEAR {
     @Override
     public long extract(final LocalDate date) {
@@ -318,7 +318,7 @@ public enum TimeUnit {
   },
 
   /**
-   * The number (1 - 54) of the week of the year. Weeks begin with Sunday, and dates prior to the
+   * The number (1-54) of the week of the year. Weeks begin with Sunday, and dates prior to the
    * first Sunday of the year are in week 0.
    */
   WEEK("WEEKS", "WEEKOFYEAR") {
@@ -344,7 +344,7 @@ public enum TimeUnit {
   },
 
   /**
-   * The number (1 - 53) of the week of the year ISO 8601. The first week of the ISO year is the
+   * The number (1-53) of the week of the year ISO 8601. The first week of the ISO year is the
    * week that contains January 4.
    */
   ISOWEEK("ISOWEEKOFYEAR") {

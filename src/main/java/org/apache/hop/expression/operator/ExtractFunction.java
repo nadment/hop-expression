@@ -97,7 +97,7 @@ public class ExtractFunction extends Function {
     }
   }
 
-  /** Extracts the specified time unit from a interval. */
+  /** Extracts the specified time unit from an interval. */
   public static final class IntervalExtractFunction extends ExtractFunction {
     public static final IntervalExtractFunction INSTANCE = new IntervalExtractFunction();
 

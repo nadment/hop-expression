@@ -5201,6 +5201,7 @@ public class FunctionTest extends ExpressionTest {
 
     // Replace EXTRACT with the corresponding function
     optimize("EXTRACT(CENTURY FROM FIELD_DATE)");
+    optimize("EXTRACT(EPOCH FROM FIELD_DATE)", "EPOCH(FIELD_DATE)");
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
     optimize("EXTRACT(ISOYEAR FROM FIELD_DATE)", "ISOYEAR(FIELD_DATE)");
     optimize("EXTRACT(MONTH FROM FIELD_DATE)", "MONTH(FIELD_DATE)");

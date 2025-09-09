@@ -109,7 +109,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -590,10 +589,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           TreeItem item = wTree.getSelection()[0];
 
           if (item != null && item.getData() != null) {
-
-            Rectangle bounds = item.getBounds();
-            Point point = new Point(bounds.x, bounds.y);
-
             // Context menu to display help
             Menu menu = new Menu(wTree);
             MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
@@ -627,8 +622,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       this.wBrowser.setText(text);
 
       // If the help panel is too small (less than 20%), reset to 60%.
-      int[] weights =  this.wEditorSashForm.getWeights();
-      if ( ((float) weights[1] /(weights[0]+weights[1])) < 0.2f) {
+      int[] weights = this.wEditorSashForm.getWeights();
+      if (((float) weights[1] / (weights[0] + weights[1])) < 0.2f) {
         this.wEditorSashForm.setWeights(40, 60);
       }
     }

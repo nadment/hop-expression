@@ -25,26 +25,26 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * The year of a date
+ * The number of seconds since 1970-01-01.
  *
  * @see ExtractFunction
  */
 @FunctionPlugin
-public class YearFunction extends Function {
+public class EpochFunction extends Function {
 
-  public YearFunction() {
+  public EpochFunction() {
     super(
-        "YEAR",
+        "EPOCH",
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/year.html");
+        "/docs/epoch.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
-    return Long.valueOf(value.getYear());
+    return Long.valueOf(value.toEpochSecond());
   }
 }
