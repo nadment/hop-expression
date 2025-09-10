@@ -23,7 +23,9 @@ Generates a JSON object by using the specified key:value pairs.
 JSON_OBJECT([KEY] key1 VALUE value2 [, [KEY] key2 VALUE value2, ...])
 ----
 
-Return:: JSON object containing all the key-value pairs.
+== Returns
+
+JSON object containing all the key-value pairs.
 
 == Usage
 

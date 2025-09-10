@@ -24,7 +24,9 @@ Performs a bitwise OR (inclusive OR) operation between two integer or binary val
 BIT_OR( value1, value2 )
 ----
 
-Return:: Integer or Binary
+== Returns
+
+Integer or Binary
 
 == Usage
 

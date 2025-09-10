@@ -24,7 +24,9 @@ Performs a bitwise AND operation between two integer or binary values.
 BIT_AND( value1, value2 )
 ----
 
-Returns:: Integer or Binary
+== Returns
+
+Integer or Binary
 
 == Usage
 

@@ -30,4 +30,4 @@ Integer between 1 and 4.
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](QUARTER FROM <date>). 
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](QUARTER FROM date).

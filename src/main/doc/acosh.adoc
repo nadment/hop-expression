@@ -30,5 +30,5 @@ Number
 
 == Usage
 
-* Returns a value in the range of [0, ∞).
+* Returns a value in the range of [0, &infin;).
 * Returns NULL if the argument is NULL.

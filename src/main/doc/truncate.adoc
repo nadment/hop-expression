@@ -24,6 +24,10 @@ TRUNCATE( numeric [, scale] )
 TRUNC( numeric [, scale] )
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * Truncation is performed towards 0, not towards the smaller number. For example, TRUNCATE(-9.6) results in -9, not -10.

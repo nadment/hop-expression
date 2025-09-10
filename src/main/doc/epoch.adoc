@@ -21,7 +21,7 @@ Returns the integer that specifies the number of seconds since 1970-01-01 UTC.
 == Syntax
 
 ----
-EPOCH( date )
+EPOCH( {date | timestamp} )
 ----
 
 == Returns
@@ -30,4 +30,4 @@ Integer
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](EPOCH FROM <date>).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](EPOCH FROM date).

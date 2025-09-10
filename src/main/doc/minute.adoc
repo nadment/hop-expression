@@ -30,4 +30,4 @@ Integer between 0 and 59.
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](MINUTE FROM <timestamp>).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](MINUTE FROM timestamp).

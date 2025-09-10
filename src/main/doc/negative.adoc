@@ -24,6 +24,10 @@ Reverses the sign of a numeric expression.
 - expression
 ----
 
+== Returns
+
+Number
+
 == See also
 
 * xref:plus.adoc["+",role=fun]

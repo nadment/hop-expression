@@ -24,7 +24,9 @@ Reverses the order of characters in a string or bytes in a binary.
 REVERSE( value )
 ----
 
-Returns:: String or binary
+== Returns
+
+String or binary
 
 == Usage
 

@@ -24,6 +24,10 @@ Calculates the logarithm of number with base.
 LOG( base, numeric )
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * Arguments must be a positive numeric values.

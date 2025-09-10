@@ -36,7 +36,10 @@ REGEXP_SUBSTR( source, pattern [, position [, occurrence [, parameters ]]] )
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
 * `n` allows the period (.) which is the match-any-character character, to match the newline character.
-Return type:: String
+
+== Returns
+
+String
 
 == Usage
 

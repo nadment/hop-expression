@@ -28,6 +28,10 @@ The xref:mod.adoc["%",role=op] operator provides alternative syntax.
 dividend % divisor
 ----
 
+== Returns
+
+Number
+
 == Examples
 
 ----

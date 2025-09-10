@@ -23,3 +23,7 @@ Multiplies two numeric values.
 ----
 numeric1 * numeric2
 ----
+
+== Returns
+
+Number

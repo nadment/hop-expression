@@ -21,7 +21,7 @@ Returns the second of the specified timestamp.
 == Syntax
 
 ----
-SECOND( <timestamp> )
+SECOND( timestamp )
 ----
 
 == Returns
@@ -30,4 +30,4 @@ Integer between 0 and 59.
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](SECOND FROM date)
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](SECOND FROM timestamp)

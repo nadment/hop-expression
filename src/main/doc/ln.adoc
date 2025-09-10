@@ -24,6 +24,10 @@ Calculates the natural logarithm of number.
 LN( numeric )
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * If the input expression is less than or equal to 0, an error is returned.

@@ -36,7 +36,9 @@ REGEXP_INSTR( subject, pattern [, position [, occurrence [, return_options [, pa
 * `m` Multi-line mode.
 * `n` allows the period (.) which is the match-any-character character, to match the newline character. 
 
-Return type:: Integer
+== Returns
+
+Integer
 
 == Usage
 

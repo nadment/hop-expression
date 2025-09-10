@@ -344,8 +344,8 @@ public enum TimeUnit {
   },
 
   /**
-   * The number (1-53) of the week of the year ISO 8601. The first week of the ISO year is the
-   * week that contains January 4.
+   * The number (1-53) of the week of the year ISO 8601. The first week of the ISO year is the week
+   * that contains January 4.
    */
   ISOWEEK("ISOWEEKOFYEAR") {
     @Override

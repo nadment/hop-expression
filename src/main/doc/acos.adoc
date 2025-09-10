@@ -31,5 +31,5 @@ Number
 == Usage 
 
 * Argument must be in the interval [-1;1].
-* Returns a value in the range of [0, π].
+* Returns a value in the range of [0, &pi;].
 * Returns NULL if the argument is NULL.

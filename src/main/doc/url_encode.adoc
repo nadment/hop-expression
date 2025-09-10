@@ -24,6 +24,6 @@ Encode a string to be used in a query part of a URL.
 URL_ENCODE( string )
 ----
 
-== Return
+== Returns
 
 String

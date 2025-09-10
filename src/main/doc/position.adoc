@@ -24,7 +24,9 @@ Returns the position in the string that is the first character of a specified oc
 POSITION( substring IN string )
 ----
 
-Returns:: Integer
+== Returns
+
+Integer
 
 == Usage
 

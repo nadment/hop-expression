@@ -30,4 +30,4 @@ Integer between 1 and 12.
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](MONTH FROM <date>)
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](MONTH FROM date)

@@ -31,4 +31,4 @@ Integer between 1 and 31.
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAY FROM {date | timestamp}).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAY FROM date).

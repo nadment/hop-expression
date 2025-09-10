@@ -24,6 +24,10 @@ Divide 2 numeric values.
 dividend / divisor
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * If divisor is 0 the operator raises a division-by-zero error.
