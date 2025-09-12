@@ -17,6 +17,8 @@ package org.apache.hop.expression;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
@@ -40,7 +42,11 @@ import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
 
+@TestInstance(PER_CLASS)
+@Execution(CONCURRENT)
 public class FunctionTest extends ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
 
@@ -266,14 +272,14 @@ public class FunctionTest extends ExpressionTest {
 
     // String to Number
     evalEquals("TRY_CAST('-12.5' as Number)", -12.5D).returnType(Types.NUMBER_NOT_NULL);
-    evalNull("TRY_CAST('X12.5' as Number)").returnType(Types.NUMBER_NOT_NULL);
+    evalNull("TRY_CAST('X12.5' as Number)").returnType(Types.NUMBER);
 
     // String to Date
     evalEquals("TRY_CAST('2024' as DATE format 'YYYY')", LocalDate.of(2024, 1, 1))
         .returnType(Types.DATE_NOT_NULL);
     evalNull("TRY_CAST('XXXX' as DATE format 'YYYY')").returnType(Types.DATE);
 
-    // String to Json
+    // String to JSON
     evalEquals(
             "TRY_CAST(FIELD_STRING_JSON as JSON)",
             JsonConversion.convert("{id:\"01\",name:\"John\",age:29}"))
@@ -290,7 +296,7 @@ public class FunctionTest extends ExpressionTest {
     // Date to String
     evalEquals("TRY_CAST(DATE '2019-02-25' AS STRING FORMAT 'DD/MM/YYYY')", "25/02/2019")
         .returnType(Types.STRING_NOT_NULL);
-    evalNull("TRY_CAST('2019-99-25' AS DATE)").returnType(Types.DATE_NOT_NULL);
+    evalNull("TRY_CAST('2019-99-25' AS DATE)").returnType(Types.DATE);
     evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
     evalNull("TRY_CAST(NULL_STRING AS DATE)");
 
@@ -341,6 +347,8 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("TRY_TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("TRY_TO_BINARY('te','t','s')", ErrorCode.TOO_MANY_ARGUMENT);
+
+    optimize("TRY_TO_BINARY(FIELD_STRING)");
   }
 
   @Test
@@ -358,6 +366,8 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("TRY_TO_BOOLEAN('yes',3)", ErrorCode.TOO_MANY_ARGUMENT);
+
+    optimize("TRY_TO_BOOLEAN(FIELD_STRING)");
   }
 
   @Test
@@ -372,7 +382,7 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("TRY_TO_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    // Failed if format is bad
+    // Failed if the format is bad
     evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Date to Epoch
@@ -382,6 +392,8 @@ public class FunctionTest extends ExpressionTest {
         "TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
         new BigDecimal("1284352323.123456789"));
     evalNull("TRY_TO_NUMBER(NULL_DATE)");
+
+    optimize("TRY_TO_NUMBER(FIELD_STRING)");
   }
 
   @Test
@@ -418,6 +430,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("TRY_TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
     evalEquals(
         "TRY_TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+
+    optimize("TRY_TO_DATE(FIELD_STRING)");
   }
 
   @Test
@@ -437,6 +451,8 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Try_To_Json(FIELD_JSON, NULL_JSON)", ErrorCode.TOO_MANY_ARGUMENT);
+
+    optimize("TRY_TO_JSON(FIELD_STRING)");
   }
 
   @Test
@@ -2975,7 +2991,7 @@ public class FunctionTest extends ExpressionTest {
     // TODO: Enforce field date conversion
     // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR_TO_BOOLEAN);
+    evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test
@@ -3813,8 +3829,8 @@ public class FunctionTest extends ExpressionTest {
     // Check operands
     evalFails("To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.CONVERSION_ERROR_TO_JSON);
-    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.CONVERSION_ERROR_TO_JSON);
+    evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.CONVERSION_ERROR);
+    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test

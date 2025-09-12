@@ -40,7 +40,6 @@ import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.IntervalQualifier;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.util.FormatParseException;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 
@@ -319,7 +318,7 @@ public class TypeTest extends ExpressionTest {
         timestamp, type.cast("2022-12-28 13:32:55.123456789", "YYYY-MM-DD HH24:MI:SS.FF9"));
 
     assertThrows(ConversionException.class, () -> type.cast(true));
-    assertThrows(FormatParseException.class, () -> type.cast("2022"));
+    assertThrows(ExpressionException.class, () -> type.cast("2022"));
   }
 
   @Test
@@ -492,7 +491,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(-123), type.convert("-123", Long.class));
     assertEquals(BigDecimal.ONE, type.convert("1", BigDecimal.class));
 
-    assertThrows(FormatParseException.class, () -> type.convert("ABC", ZonedDateTime.class));
+    assertThrows(ExpressionException.class, () -> type.convert("ABC", ZonedDateTime.class));
   }
 
   @Test

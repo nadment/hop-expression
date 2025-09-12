@@ -58,9 +58,9 @@ public final class StringConversion extends Conversion<String> {
   }
 
   /**
-   * Convert Json value to String.
+   * Convert JSON value to String.
    *
-   * @param json the json to convert
+   * @param json the JSON to convert
    * @return String
    */
   public static String convert(final JsonNode json) throws ConversionException {
@@ -68,7 +68,8 @@ public final class StringConversion extends Conversion<String> {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_STRING, TypeName.JSON, json);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.JSON, TypeName.STRING, json);
     }
   }
 

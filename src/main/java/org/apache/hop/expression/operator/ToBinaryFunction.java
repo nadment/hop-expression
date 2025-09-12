@@ -34,6 +34,7 @@ import org.apache.hop.expression.util.Hex;
 /** Converts the string expression to a binary value. */
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
+  public static final ToBinaryFunction INSTANCE = new ToBinaryFunction();
 
   public ToBinaryFunction() {
     super(
@@ -83,7 +84,11 @@ public class ToBinaryFunction extends Function {
       if (value == null) {
         return null;
       }
-      return Hex.decode(value);
+      try {
+        return Hex.decode(value);
+      } catch (Exception e) {
+        throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY, value);
+      }
     }
   }
 
@@ -109,7 +114,12 @@ public class ToBinaryFunction extends Function {
       if (value == null) {
         return null;
       }
-      return Base64.getDecoder().decode(value);
+
+      try {
+        return Base64.getDecoder().decode(value);
+      } catch (Exception e) {
+        throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY, value);
+      }
     }
   }
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
@@ -180,9 +181,9 @@ public abstract class NumberFormat extends BaseFormat {
    *
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws FormatParseException
+   * @throws ExpressionException
    */
-  public abstract BigDecimal parse(String text) throws FormatParseException;
+  public abstract BigDecimal parse(String text) throws ExpressionException;
 
   /**
    * Format number with number format.
@@ -192,12 +193,12 @@ public abstract class NumberFormat extends BaseFormat {
    */
   public abstract String format(BigDecimal number);
 
-  protected final FormatParseException createInvalidFormat(final String format) {
-    return new FormatParseException(ErrorCode.INVALID_NUMBER_FORMAT, format);
+  protected final ExpressionException createInvalidFormat(final String format) {
+    return new ExpressionException(ErrorCode.INVALID_NUMBER_FORMAT, format);
   }
 
-  protected final FormatParseException createUnparsableNumber(
+  protected final ExpressionException createUnparsableNumber(
       final String format, final String text, int index) {
-    return new FormatParseException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
+    return new ExpressionException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format, index);
   }
 }

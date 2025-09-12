@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class NumberConversion extends Conversion<BigDecimal> {
@@ -34,7 +35,7 @@ public final class NumberConversion extends Conversion<BigDecimal> {
   public static BigDecimal convert(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
-    } catch (FormatParseException e) {
+    } catch (ExpressionException e) {
       throw new ConversionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.NUMBER, str);
     }

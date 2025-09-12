@@ -268,7 +268,7 @@ public abstract class DateTimeFormat extends BaseFormat {
     }
   }
 
-  public abstract ZonedDateTime parse(String text) throws FormatParseException;
+  public abstract ZonedDateTime parse(String text) throws ExpressionException;
 
   /**
    * See also TO_CHAR(datetime) and datetime format models.

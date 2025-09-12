@@ -16,11 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -29,7 +25,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Hex;
 
 /** Converts the string expression to a binary value. */
 @FunctionPlugin
@@ -47,83 +42,6 @@ public class TryToBinaryFunction extends Function {
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-    // Default format
-    String format = (String) context.getAttribute(ExpressionContext.EXPRESSION_BINARY_FORMAT);
-
-    // With specified format
-    if (call.getOperandCount() == 2) {
-      format = call.getOperand(1).getValue(String.class);
-    }
-
-    if (format != null) {
-      // Normalize pattern
-      format = format.toUpperCase();
-
-      switch (format) {
-        case "HEX" -> {
-          return new Call(StringHexTryToBinaryFunction.INSTANCE, call.getOperands());
-        }
-        case "BASE64" -> {
-          return new Call(StringBase64TryToBinaryFunction.INSTANCE, call.getOperands());
-        }
-        case "UTF8", "UTF-8" -> {
-          return new Call(StringUtf8TryToBinaryFunction.INSTANCE, call.getOperands());
-        }
-      }
-    }
-
-    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
-  }
-
-  public static final class StringHexTryToBinaryFunction extends TryToBinaryFunction {
-    public static final TryToBinaryFunction INSTANCE = new StringHexTryToBinaryFunction();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      final String value = operands[0].getValue(String.class);
-      if (value == null) {
-        return null;
-      }
-      try {
-        return Hex.decode(value);
-      } catch (RuntimeException e) {
-        return null;
-      }
-    }
-  }
-
-  public static final class StringUtf8TryToBinaryFunction extends TryToBinaryFunction {
-
-    public static final TryToBinaryFunction INSTANCE = new StringUtf8TryToBinaryFunction();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      final String value = operands[0].getValue(String.class);
-      if (value == null) {
-        return null;
-      }
-      try {
-        return value.getBytes(StandardCharsets.UTF_8);
-      } catch (RuntimeException e) {
-        return null;
-      }
-    }
-  }
-
-  public static final class StringBase64TryToBinaryFunction extends TryToBinaryFunction {
-    public static final TryToBinaryFunction INSTANCE = new StringBase64TryToBinaryFunction();
-
-    @Override
-    public Object eval(final IExpression[] operands) {
-      final String value = operands[0].getValue(String.class);
-      if (value == null) {
-        return null;
-      }
-      try {
-        return Base64.getDecoder().decode(value);
-      } catch (RuntimeException e) {
-        return null;
-      }
-    }
+    return new Call(TryFunction.INSTANCE, new Call(ToBinaryFunction.INSTANCE, call.getOperands()));
   }
 }

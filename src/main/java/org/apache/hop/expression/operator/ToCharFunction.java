@@ -42,6 +42,7 @@ import org.apache.hop.expression.util.StringConversion;
 /** Converts a numeric or date expression to a string value. */
 @FunctionPlugin
 public class ToCharFunction extends Function {
+  public static final ToCharFunction INSTANCE = new ToCharFunction();
 
   public ToCharFunction() {
     super(

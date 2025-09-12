@@ -14,6 +14,9 @@
  */
 package org.apache.hop.expression;
 
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
+
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.time.LocalDate;
@@ -27,7 +30,11 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
 
+@TestInstance(PER_CLASS)
+@Execution(CONCURRENT)
 public class OperatorTest extends ExpressionTest {
   @Nested
   class NotEqualTo {
@@ -1210,7 +1217,7 @@ public class OperatorTest extends ExpressionTest {
       // TODO: Incompatible return type
       evalFails(
           "case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end",
-          ErrorCode.CONVERSION_ERROR_TO_INTEGER);
+          ErrorCode.CONVERSION_ERROR);
 
       // Missing 'END'
       evalFails(
@@ -2346,7 +2353,7 @@ public class OperatorTest extends ExpressionTest {
       evalNull("CAST(NULL_STRING as Boolean)").returnType(Types.BOOLEAN);
       evalNull("CAST(NULL_BOOLEAN as Boolean)").returnType(Types.BOOLEAN);
 
-      evalFails("'YEP'::Boolean", ErrorCode.CONVERSION_ERROR_TO_BOOLEAN);
+      evalFails("'YEP'::Boolean", ErrorCode.CONVERSION_ERROR);
 
       // Unsupported conversion
       evalFails("CAST(DATE '2019-02-25' AS BOOLEAN)", ErrorCode.UNSUPPORTED_CONVERSION);
@@ -2668,7 +2675,7 @@ public class OperatorTest extends ExpressionTest {
       // Null
       evalNull("CAST(NULL_STRING as INET)");
 
-      evalFails("CAST('xyz' as INET)", ErrorCode.CONVERSION_ERROR_TO_INET);
+      evalFails("CAST('xyz' as INET)", ErrorCode.CONVERSION_ERROR);
       evalFails("CAST(TRUE as INET)", ErrorCode.UNSUPPORTED_CONVERSION);
     }
   }

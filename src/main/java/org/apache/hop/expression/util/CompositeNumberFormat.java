@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 final class CompositeNumberFormat extends NumberFormat {
   private final String pattern;
@@ -34,7 +35,7 @@ final class CompositeNumberFormat extends NumberFormat {
   }
 
   @Override
-  public BigDecimal parse(final String text) throws FormatParseException {
+  public BigDecimal parse(final String text) throws ExpressionException {
     for (NumberFormat format : formats) {
       try {
         return format.parse(text);
@@ -43,7 +44,7 @@ final class CompositeNumberFormat extends NumberFormat {
       }
     }
 
-    throw new FormatParseException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, pattern, 0);
+    throw new ExpressionException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, pattern, 0);
   }
 
   @Override

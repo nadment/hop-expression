@@ -22,12 +22,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.NumberFormat;
 
 /**
  * Converts a value of one data type into another data type <code>
@@ -44,57 +38,8 @@ public class TryCastFunction extends CastFunction {
   }
 
   @Override
-  public IExpression compile(final IExpressionContext context, Call call)
+  public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-
-    // Cast null value
-    if (call.getOperand(0).isNull()) {
-      return new Literal(null, call.getType());
-    }
-
-    // When cast without format
-    if (call.getOperandCount() == 2) {
-
-      // Cast constant value
-      if (call.getOperand(0).isConstant()) {
-        return new Literal(call.getValue(), call.getType());
-      }
-
-      // Remove loss-less cast
-      if (Types.isLosslessCast(call.getOperand(0).getType(), call.getType())) {
-        return call.getOperand(0);
-      }
-    } else {
-
-      // Compile format to check it
-      String pattern = call.getOperand(2).getValue(String.class);
-
-      if (call.getType().isFamily(TypeFamily.TEMPORAL)) {
-        DateTimeFormat.of(pattern);
-      } else if (call.getType().isFamily(TypeFamily.NUMERIC)) {
-        NumberFormat.of(pattern);
-      }
-    }
-
-    return call;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
-    if (value == null) return null;
-
-    Type type = operands[1].getValue(Type.class);
-
-    String format = null;
-    if (operands.length == 3) {
-      format = operands[2].getValue(String.class);
-    }
-
-    try {
-      return type.cast(value, format);
-    } catch (ExpressionException e) {
-      return null;
-    }
+    return new Call(TryFunction.INSTANCE, new Call(CastFunction.INSTANCE, call.getOperands()));
   }
 }

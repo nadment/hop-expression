@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 public class CompositeDateTimeFormat extends DateTimeFormat {
   private final String pattern;
@@ -54,7 +55,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
       }
     }
 
-    throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, pattern);
+    throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, pattern);
   }
 
   @Override

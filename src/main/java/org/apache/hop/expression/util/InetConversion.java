@@ -41,7 +41,8 @@ public final class InetConversion extends Conversion<InetAddress> {
     try {
       return InetAddress.getByName(str);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INET, TypeName.STRING, str);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INET, str);
     }
   }
 

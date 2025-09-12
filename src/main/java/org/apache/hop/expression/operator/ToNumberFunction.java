@@ -35,6 +35,8 @@ import org.apache.hop.expression.util.NumberFormat;
 @FunctionPlugin
 public class ToNumberFunction extends Function {
 
+  public static final ToNumberFunction INSTANCE = new ToNumberFunction();
+
   public ToNumberFunction() {
     super(
         "TO_NUMBER",

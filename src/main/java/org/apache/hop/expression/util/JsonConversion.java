@@ -43,7 +43,8 @@ public final class JsonConversion extends Conversion<JsonNode> {
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return mapper.readTree(str);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_JSON, TypeName.STRING, str);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
     }
   }
 

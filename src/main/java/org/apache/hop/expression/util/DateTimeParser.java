@@ -22,6 +22,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 /* package */ class DateTimeParser {
 
@@ -95,18 +96,18 @@ import org.apache.hop.expression.ErrorCode;
     return text.charAt(index++);
   }
 
-  protected char parseChar(char expectedChar) throws FormatParseException {
+  protected char parseChar(char expectedChar) throws ExpressionException {
     if (index == length) return 0;
     char c = text.charAt(index);
     if (c != expectedChar) {
-      throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, index);
+      throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, index);
     }
     index++;
 
     return c;
   }
 
-  protected int parseNano() throws FormatParseException {
+  protected int parseNano() throws ExpressionException {
     int result = 0;
     int initialIndex = index;
     int scale = 0;
@@ -116,7 +117,7 @@ import org.apache.hop.expression.ErrorCode;
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
         if (index == initialIndex) {
-          throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
+          throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
         }
         break;
       }
@@ -135,9 +136,9 @@ import org.apache.hop.expression.ErrorCode;
    *
    * @param len number of digits to parse in the string
    * @return the int
-   * @throws FormatParseException if the value is not a number
+   * @throws ExpressionException if the value is not a number
    */
-  protected int parseInt(int len) throws FormatParseException {
+  protected int parseInt(int len) throws ExpressionException {
     // start at the first not white space symbol
     for (; index < length; index++) {
       if (!Characters.isSpace(text.charAt(index))) {
@@ -156,7 +157,7 @@ import org.apache.hop.expression.ErrorCode;
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
         if (index == initialIndex) {
-          throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
+          throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
         }
         break;
       }
@@ -168,17 +169,17 @@ import org.apache.hop.expression.ErrorCode;
     return result;
   }
 
-  protected int parseExactInt(final int len) throws FormatParseException {
+  protected int parseExactInt(final int len) throws ExpressionException {
     int result = 0;
     if (index + len > length)
-      throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
+      throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
 
     for (int i = 0; i < len; i++, index++) {
       char ch = text.charAt(index);
 
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
-        throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
+        throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
       }
 
       result *= 10;
@@ -188,7 +189,7 @@ import org.apache.hop.expression.ErrorCode;
     return result;
   }
 
-  /** Skip white space symbol */
+  /** Skip white space symbols */
   protected void skipSpace() {
     for (; index < length; index++) {
       char c = text.charAt(index);
@@ -279,7 +280,7 @@ import org.apache.hop.expression.ErrorCode;
       }
       return ZonedDateTime.of(localDatetime, zoneId);
     } catch (Exception e) {
-      throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
+      throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, format);
     }
   }
 }

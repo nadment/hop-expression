@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.ExpressionException;
 
 final class RomanNumberFormat extends NumberFormat {
 
@@ -50,7 +51,7 @@ final class RomanNumberFormat extends NumberFormat {
   }
 
   @Override
-  public BigDecimal parse(String str) throws FormatParseException {
+  public BigDecimal parse(String str) throws ExpressionException {
     long value = RomanNumeral.parse(str);
     return BigDecimal.valueOf(value);
   }

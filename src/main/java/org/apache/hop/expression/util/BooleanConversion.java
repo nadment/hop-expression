@@ -78,7 +78,8 @@ public final class BooleanConversion extends Conversion<Boolean> {
         break;
     }
 
-    throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_BOOLEAN, TypeName.STRING, value);
+    throw new ConversionException(
+        ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.BOOLEAN, value);
   }
 
   @Override

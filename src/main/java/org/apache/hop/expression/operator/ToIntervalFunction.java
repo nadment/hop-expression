@@ -27,6 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /** Converts a string expression to an interval. */
 @FunctionPlugin
 public class ToIntervalFunction extends Function {
+  public static final ToIntervalFunction INSTANCE = new ToIntervalFunction();
 
   public ToIntervalFunction() {
     super(

@@ -50,13 +50,15 @@ public final class IntegerConversion extends Conversion<Long> {
       BigDecimal number = numberFormat.parse(str);
       return convert(number);
     } catch (Exception e) {
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.STRING, str);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INTEGER, str);
     }
   }
 
   public static Long convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR_TO_INTEGER, TypeName.BINARY, bytes);
+      throw new ConversionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.INTEGER, bytes);
     long result = 0;
     for (byte aByte : bytes) {
       result <<= Byte.SIZE;

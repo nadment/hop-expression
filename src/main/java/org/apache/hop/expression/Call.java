@@ -190,6 +190,11 @@ public class Call implements IExpression {
 
   /** Inferring the return type. */
   public void inferReturnType() {
+    for (IExpression operand : operands) {
+      if (operand instanceof Call call) {
+        call.inferReturnType();
+      }
+    }
     type = operator.inferReturnType(this);
   }
 
@@ -261,9 +266,7 @@ public class Call implements IExpression {
    * @return call
    */
   protected Call reverse() {
-    Call reverse = new Call(operator.reverse(), getOperand(1), getOperand(0));
-    reverse.inferReturnType();
-    return reverse;
+    return new Call(operator.reverse(), getOperand(1), getOperand(0));
   }
 
   /**
@@ -272,9 +275,7 @@ public class Call implements IExpression {
    * @return call
    */
   protected Call swap() {
-    Call swapped = new Call(operator, getOperand(1), getOperand(0));
-    swapped.inferReturnType();
-    return swapped;
+    return new Call(operator, getOperand(1), getOperand(0));
   }
 
   public Deque<IExpression> getChainedOperands(boolean allowDuplicate) {

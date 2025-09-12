@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 
 /**
  * The AUTO datetime format ISO 8601
@@ -50,7 +51,7 @@ public class AutoDateTimeFormat extends DateTimeFormat {
   }
 
   @Override
-  public ZonedDateTime parse(final String str) throws FormatParseException {
+  public ZonedDateTime parse(final String str) throws ExpressionException {
     DateTimeParser parser = new DateTimeParser(this, str);
 
     parser.skipSpace();
@@ -144,7 +145,7 @@ public class AutoDateTimeFormat extends DateTimeFormat {
     parser.skipSpace();
 
     if (!parser.isAllCharParsed()) {
-      throw new FormatParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, str, this);
+      throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, str, this);
     }
 
     // Build the date

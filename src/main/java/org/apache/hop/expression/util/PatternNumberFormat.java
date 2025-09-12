@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.ExpressionException;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
@@ -414,7 +415,7 @@ final class PatternNumberFormat extends NumberFormat {
    * @param text the string to be parsed
    * @return the parsed value
    */
-  public BigDecimal parse(final String text) throws FormatParseException {
+  public BigDecimal parse(final String text) throws ExpressionException {
 
     int start = 0; // first not white space symbol
     try {

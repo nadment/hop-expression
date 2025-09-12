@@ -16,35 +16,46 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
+import java.io.StringWriter;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** Converts a string expression to a date value. */
-@FunctionPlugin
-public class TryToDateFunction extends Function {
+/** For now, it is an internal function so as not to duplicate the code in the TRY_XXX functions. */
+public class TryFunction extends Function {
 
-  public TryToDateFunction() {
-    super(
-        "TRY_TO_DATE",
-        ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING
-            .or(OperandTypes.STRING_TEXT)
-            .or(OperandTypes.INTEGER)
-            .or(OperandTypes.NUMBER),
-        OperatorCategory.CONVERSION,
-        "/docs/to_date.html");
+  public static final TryFunction INSTANCE = new TryFunction();
+
+  public TryFunction() {
+    super("TRY", ReturnTypes.ARG0, OperandTypes.ANY, OperatorCategory.SPECIAL, "/docs/try.html");
   }
 
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-    return new Call(TryFunction.INSTANCE, new Call(ToDateFunction.INSTANCE, call.getOperands()));
+  public Object eval(final IExpression[] operands) {
+    try {
+      return operands[0].getValue();
+    } catch (ExpressionException exception) {
+      return switch (exception.getErrorCode()) {
+        case
+            ARITHMETIC_OVERFLOW,
+            DIVISION_BY_ZERO,
+            CONVERSION_ERROR,
+            CONVERSION_OVERFLOW,
+            UNPARSABLE_NUMBER_WITH_FORMAT,
+            UNPARSABLE_DATE_WITH_FORMAT,
+            UNPARSABLE_BINARY ->
+            null;
+        default -> throw exception;
+      };
+    }
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append("TRY_");
+    operands[0].unparse(writer, 0, 0);
   }
 }

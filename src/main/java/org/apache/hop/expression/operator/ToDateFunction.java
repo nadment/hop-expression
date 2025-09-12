@@ -39,6 +39,8 @@ import org.apache.hop.expression.util.DateTimeFormat;
 @FunctionPlugin
 public class ToDateFunction extends Function {
 
+  public static final ToDateFunction INSTANCE = new ToDateFunction();
+
   public ToDateFunction() {
     super(
         "TO_DATE",

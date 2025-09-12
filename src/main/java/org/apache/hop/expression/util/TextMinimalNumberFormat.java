@@ -17,6 +17,7 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
+import org.apache.hop.expression.ExpressionException;
 
 final class TextMinimalNumberFormat extends NumberFormat {
 
@@ -71,7 +72,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
   }
 
   @Override
-  public BigDecimal parse(String text) throws FormatParseException {
+  public BigDecimal parse(String text) throws ExpressionException {
 
     int start = 0; // first not white space symbol
     int position = 0; // first not white space symbol

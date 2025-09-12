@@ -56,7 +56,7 @@ public class IdentifierTest extends ExpressionTest {
     evalFails("BIDON||'X'", ErrorCode.UNRESOLVED_IDENTIFIER);
     evalFails("ABS(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("SIN(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("CAST(FIELD_STRING as INTEGER)", ErrorCode.CONVERSION_ERROR_TO_INTEGER);
+    evalFails("CAST(FIELD_STRING as INTEGER)", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test

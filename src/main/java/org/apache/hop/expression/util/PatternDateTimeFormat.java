@@ -723,7 +723,7 @@ import org.apache.hop.expression.ExpressionException;
     return list.toArray(new Format[0]);
   }
 
-  public ZonedDateTime parse(final String text) throws FormatParseException {
+  public ZonedDateTime parse(final String text) throws ExpressionException {
 
     DateTimeParser parser = new DateTimeParser(this, text);
     for (Format format : formats) {
@@ -731,7 +731,7 @@ import org.apache.hop.expression.ExpressionException;
     }
 
     if (!parser.isAllCharParsed()) {
-      throw new FormatParseException(
+      throw new ExpressionException(
           ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
     }
 
@@ -801,7 +801,7 @@ import org.apache.hop.expression.ExpressionException;
      */
     public void append(StringBuilder buffer, ZonedDateTime datetime) throws DateTimeException {}
 
-    public void parse(DateTimeParser parser) throws FormatParseException {}
+    public void parse(DateTimeParser parser) throws ExpressionException {}
   }
 
   private static class StringFormat extends Format {
@@ -842,7 +842,7 @@ import org.apache.hop.expression.ExpressionException;
     public void parse(final DateTimeParser parser) {
       char c = parser.parseChar();
       if (exactMode && ch != c) {
-        throw new FormatParseException(
+        throw new ExpressionException(
             ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
       }
     }
@@ -975,7 +975,7 @@ import org.apache.hop.expression.ExpressionException;
         }
       }
 
-      throw new FormatParseException(
+      throw new ExpressionException(
           ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
     }
   }
@@ -1301,7 +1301,7 @@ import org.apache.hop.expression.ExpressionException;
       } else
         try {
           parser.month = parser.parseInt(2);
-        } catch (FormatParseException e) {
+        } catch (ExpressionException e) {
           // Rule to try alternate format MONTH and MON
           parseNameOfMonth(parser);
         }
@@ -1333,7 +1333,7 @@ import org.apache.hop.expression.ExpressionException;
         month++;
       }
 
-      throw new FormatParseException(
+      throw new ExpressionException(
           ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
     }
   }

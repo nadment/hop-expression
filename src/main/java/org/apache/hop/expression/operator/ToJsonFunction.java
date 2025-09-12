@@ -24,9 +24,10 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.JsonConversion;
 
-/** Converts a string expression to a Json value. */
+/** Converts a string expression to a JSON value. */
 @FunctionPlugin
 public class ToJsonFunction extends Function {
+  public static final ToJsonFunction INSTANCE = new ToJsonFunction();
 
   public ToJsonFunction() {
     super(

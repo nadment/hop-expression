@@ -82,7 +82,7 @@ public enum ErrorCode {
   ARITHMETIC_OVERFLOW,
   /** Integer conversion overflow with value “{0}” */
   CONVERSION_OVERFLOW,
-  /** Argument {0} is out of range with value “{1}” */
+  /** Argument {0} is out of range with the value “{1}” */
   ARGUMENT_OUT_OF_RANGE,
   /** Padding length exceeds maximum limit {0} */
   PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT,
@@ -120,7 +120,7 @@ public enum ErrorCode {
   INVALID_NUMBER_FORMAT,
   /** Invalid binary format “{0}” */
   INVALID_BINARY_FORMAT,
-  /** Invalid json path “{0}” */
+  /** Invalid JSON path “{0}” */
   INVALID_JSON_PATH,
   /** Invalid regexp pattern “{0}” */
   INVALID_REGEXP_PATTERN,
@@ -128,9 +128,9 @@ public enum ErrorCode {
   INVALID_REGEXP_ESCAPE,
   /** Data type “{0}” is not recognized */
   INVALID_TYPE,
-  /** Json path is null */
+  /** JSON path is null */
   JSON_PATH_IS_NULL,
-  /** Json property cannot be found in specified path “{0}” */
+  /** JSON property cannot be found in the specified path “{0}” */
   JSON_PATH_NOT_FOUND,
   /** Error compile user defined function “{0}” */
   UDF_COMPILATION_ERROR,
@@ -138,32 +138,16 @@ public enum ErrorCode {
   UNSUPPORTED_CONVERSION,
   /** Field “{0}” of type “{1}” not supported */
   UNSUPPORTED_VALUEMETA,
-  /** Unsupported json type “{0}” */
+  /** Unsupported JSON type “{0}” */
   UNSUPPORTED_JSON_TYPE,
   /** Unsupported time unit “{0}” */
   UNSUPPORTED_TIME_UNIT,
   /** Unsupported array type “{0}” */
   UNSUPPORTED_ARRAY_TYPE,
-  /** Error converting {0} value “{2}” to {1} */
+  /**
+   * Error converting {0} value “{2}” to {1}
+   */
   CONVERSION_ERROR,
-  /** Error converting {0} value “{1}” to BINARY */
-  CONVERSION_ERROR_TO_BINARY,
-  /** Error converting {0} value “{1}” to BOOLEAN */
-  CONVERSION_ERROR_TO_BOOLEAN,
-  /** Error converting {0} value “{1}” to DATE */
-  CONVERSION_ERROR_TO_DATE,
-  /** Error converting {0} value “{1}” to INET */
-  CONVERSION_ERROR_TO_INET,
-  /** Error converting {0} value “{1}” to INTEGER */
-  CONVERSION_ERROR_TO_INTEGER,
-  /** Error converting {0} value “{1}” to INTERVAL */
-  CONVERSION_ERROR_TO_INTERVAL,
-  /** Error converting {0} value “{1}” to JSON */
-  CONVERSION_ERROR_TO_JSON,
-  /** Error converting {0} value “{1}” to NUMBER */
-  CONVERSION_ERROR_TO_NUMBER,
-  /** Error converting {0} value “{1}” to STRING */
-  CONVERSION_ERROR_TO_STRING,
   /** Compression error */
   COMPRESSION_ERROR,
   /** Decompression error */
