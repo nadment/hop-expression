@@ -160,7 +160,7 @@ public class Types {
     return call;
   }
 
-  /** Determines common type for a comparison operator. */
+  /** Determines a common type for a comparison operator. */
   public static Type getCommonTypeForComparison(final Type type1, final Type type2) {
 
     if (type1 == null || type2 == null) return null;
@@ -208,7 +208,7 @@ public class Types {
     return expression.getType().getName().ordinal() < toType.getName().ordinal();
   }
 
-  /** Coerces the operands of an addition or subtract expression into numeric type. */
+  /** Coerces the operands of an addition or subtract expression into a numeric type. */
   public static boolean coercionArithmeticOperator(Call call) {
 
     Type left = call.getOperand(0).getType();
@@ -452,6 +452,7 @@ public class Types {
       case NUMBER -> new ValueMetaBigNumber(valueMetaName, type.getPrecision(), type.getScale());
       case STRING -> new ValueMetaString(valueMetaName, type.getPrecision(), type.getScale());
       case DATE -> new ValueMetaDate(valueMetaName);
+      case BINARY -> new ValueMetaBinary(valueMetaName, type.getPrecision(), -1);
       case JSON -> new ValueMetaJson(valueMetaName);
       case INET -> new ValueMetaInternetAddress(valueMetaName);
       default -> new ValueMetaNone(valueMetaName);
