@@ -24,14 +24,14 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.IntegerConversion;
 
 public final class IntegerType extends Type {
-    /** Default INTEGER type with maximum precision. */
-    public static final IntegerType INTEGER =
-            new IntegerType(TypeName.INTEGER.getMaxPrecision(), true);
+  /** Default INTEGER type with maximum precision. */
+  public static final IntegerType INTEGER =
+      new IntegerType(TypeName.INTEGER.getMaxPrecision(), true);
 
-    /** Default INTEGER NOT NULL type with maximum precision. */
-    public static final IntegerType INTEGER_NOT_NULL =
-            new IntegerType(TypeName.INTEGER.getMaxPrecision(), false);
-    
+  /** Default INTEGER NOT NULL type with maximum precision. */
+  public static final IntegerType INTEGER_NOT_NULL =
+      new IntegerType(TypeName.INTEGER.getMaxPrecision(), false);
+
   IntegerType(int precision, boolean nullable) {
     super(precision, 0, nullable);
     this.signature = generateSignature();

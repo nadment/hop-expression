@@ -25,12 +25,12 @@ import org.apache.hop.expression.util.StringConversion;
 
 public final class BinaryType extends Type {
 
-    /** Default BINARY type with maximum precision. */
-    public static final BinaryType BINARY = new BinaryType(TypeName.BINARY.getMaxPrecision(), true);
+  /** Default BINARY type with maximum precision. */
+  public static final BinaryType BINARY = new BinaryType(TypeName.BINARY.getMaxPrecision(), true);
 
-    /** Default BINARY NOT NULL type with maximum precision. */
-    public static final BinaryType BINARY_NOT_NULL =
-            new BinaryType(TypeName.BINARY.getMaxPrecision(), false);
+  /** Default BINARY NOT NULL type with maximum precision. */
+  public static final BinaryType BINARY_NOT_NULL =
+      new BinaryType(TypeName.BINARY.getMaxPrecision(), false);
 
   BinaryType(int precision, boolean nullable) {
     super(precision, 0, nullable);

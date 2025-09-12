@@ -21,7 +21,8 @@ import java.util.Objects;
 import org.apache.hop.expression.ExpressionException;
 
 public final class ArrayType extends Type {
-    public static final ArrayType ARRAY = new ArrayType(UnknownType.UNKNOWN, true);
+  public static final ArrayType ARRAY = new ArrayType(UnknownType.UNKNOWN, true);
+
   /** The maximum allowed cardinality of array. */
   public static final int MAX_ARRAY_CARDINALITY = Integer.MAX_VALUE;
 

@@ -20,7 +20,6 @@ import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
-import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
 class AggregateFunctionTest extends ExpressionTest {

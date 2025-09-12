@@ -375,7 +375,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Try_To_Number() throws Exception {
-    evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D)
+        .returnType(NumberType.NUMBER_NOT_NULL);
 
     // Return NULL if parsing failed
     evalNull("TRY_TO_NUMBER('54Z67z12', '999999D99')");
@@ -461,7 +462,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Coalesce() throws Exception {
     // Coalesce string
-    evalEquals("Coalesce(NULL_STRING,'TEST','BIDON')", "TEST").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Coalesce(NULL_STRING,'TEST','BIDON')", "TEST")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Coalesce('TEST','BIDON')", "TEST").returnType(StringType.STRING_NOT_NULL);
 
     // Coalesce numeric
@@ -1094,7 +1096,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void InitCap() throws Exception {
-    evalEquals("InitCap('hello the wORLD')", "Hello The World").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("InitCap('hello the wORLD')", "Hello The World")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("InitCap('tRy a littlE  ')", "Try A Little  ");
     evalEquals("InitCap('won''t it?no')", "Won'T It?No");
     evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
@@ -1993,7 +1996,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Acos() throws Exception {
-    evalEquals("Acos(0)", new BigDecimal("1.5707963267948966")).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Acos(0)", new BigDecimal("1.5707963267948966"))
+        .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Acos(1)", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
 
     // Null handling
@@ -2577,7 +2581,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Least(5,2,9,4)", 2L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Least(123,FIELD_INTEGER,789)", 40L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Least(-5,2.1,9,4)", -5D).returnType(NumberType.NUMBER_NOT_NULL);
-    evalEquals("Least(FIELD_INTEGER,FIELD_NUMBER,789)", -5.12D).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Least(FIELD_INTEGER,FIELD_NUMBER,789)", -5.12D)
+        .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Least(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", -5.12D)
         .returnType(NumberType.NUMBER);
 
@@ -2720,7 +2725,8 @@ public class FunctionTest extends ExpressionTest {
     evalNull("ARRAY_POSITION([1,2,3],2,NULL_INTEGER)");
 
     // TODO: The position of a sub-array in a multi-dimensional array
-    // evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6]], [4,5,6])", 2L).returnType(IntegerType.INTEGER);
+    // evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6]], [4,5,6])",
+    // 2L).returnType(IntegerType.INTEGER);
 
     // Check operands
     evalFails("ARRAY_POSITION()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -2747,7 +2753,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Array_To_String() throws Exception {
-    evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world").returnType(StringType.STRING);
+    evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world")
+        .returnType(StringType.STRING);
     evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(StringType.STRING);
     evalEquals("ARRAY_TO_STRING(['A',[4,8+2],'B'],'')", "A410B");
 
@@ -2921,7 +2928,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Is_Json() throws Exception {
-    evalTrue("IS_JSON('{\"name\":\"Smith\", \"age\":29}')").returnType(BooleanType.BOOLEAN_NOT_NULL);
+    evalTrue("IS_JSON('{\"name\":\"Smith\", \"age\":29}')")
+        .returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalTrue("IS_JSON('{name:\"Smith\", age:29}')");
     evalTrue("IS_JSON('{id:1,coordinates:[10,20]}')");
     evalTrue("IS_JSON('[1,2]')");
@@ -4185,7 +4193,8 @@ public class FunctionTest extends ExpressionTest {
     evalFalse("CONTAINS(FIELD_STRING,'YZ')");
 
     // Binary
-    evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '1A2B')").returnType(BooleanType.BOOLEAN_NOT_NULL);
+    evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '1A2B')")
+        .returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '2B3C')");
     evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '5E6F')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B')");
@@ -4278,7 +4287,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Replace() throws Exception {
-    evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
     evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
     evalEquals("Regexp_Replace('AAA BBB CCC', '[:space:]+', '-')", "AAA BBB CCC");
@@ -4319,7 +4329,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Instr() throws Exception {
-    evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6L)
+        .returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Regexp_Instr('hello to YOU', '(.o).', 1, 3, 1,'i')", 13L);
     evalEquals(
         "Regexp_Instr('REGEXP_INSTR is an advanced extension of the INSTR function','[:a-z]{3,8}', 3, 2, 1)",
@@ -4362,7 +4373,8 @@ public class FunctionTest extends ExpressionTest {
     evalTrue("Equal_Null(NULL_STRING,NULL_STRING)").returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalTrue("Equal_Null(NULL_INTEGER,NULL_NUMBER)");
     evalTrue("Equal_Null(DATE '2019-01-01',DATE '2019-01-01')");
-    evalFalse("Equal_Null(DATE '2019-01-01',DATE '2018-01-01')").returnType(BooleanType.BOOLEAN_NOT_NULL);
+    evalFalse("Equal_Null(DATE '2019-01-01',DATE '2018-01-01')")
+        .returnType(BooleanType.BOOLEAN_NOT_NULL);
 
     evalFails("Equal_Null()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Equal_Null(NULL_INTEGER)", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -4624,7 +4636,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Base64_Encode() throws Exception {
-    evalEquals("Base64_Encode('Apache Hop')", "QXBhY2hlIEhvcA==").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Base64_Encode('Apache Hop')", "QXBhY2hlIEhvcA==")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base64_Encode('Apache Hop'::Binary)", "QXBhY2hlIEhvcA==")
         .returnType(StringType.STRING_NOT_NULL);
 
@@ -4637,7 +4650,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Base64_Decode() throws Exception {
-    evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop")
         .returnType(StringType.STRING_NOT_NULL);
 
@@ -4650,7 +4664,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Base32_Encode() throws Exception {
-    evalEquals("Base32_Encode('Apache Hop')", "IFYGCY3IMUQEQ33Q").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Base32_Encode('Apache Hop')", "IFYGCY3IMUQEQ33Q")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base32_Encode('Apache Hop'::Binary)", "IFYGCY3IMUQEQ33Q")
         .returnType(StringType.STRING_NOT_NULL);
 
@@ -4663,7 +4678,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void Base32_Decode() throws Exception {
-    evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q')", "Apache Hop").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q')", "Apache Hop")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q'::Binary)", "Apache Hop")
         .returnType(StringType.STRING_NOT_NULL);
 
@@ -4733,7 +4749,8 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Round(1)", 1D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Round(2.5)", 3D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Round(-2.5)", -3D).returnType(NumberType.NUMBER_NOT_NULL);
-    evalEquals("Round(12.123456,2)", new BigDecimal("12.12")).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Round(12.123456,2)", new BigDecimal("12.12"))
+        .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Round(12.123456,-1)", 10D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Round(125.49)", 125D);
     evalEquals("Round(125.99)", 126D);
@@ -4833,7 +4850,8 @@ public class FunctionTest extends ExpressionTest {
   @Test
   void Crc32() throws Exception {
     evalEquals("CRC32('Apache Hop')", "dbb81b5e").returnType(StringType.STRING_NOT_NULL);
-    evalEquals("CRC32(BINARY '123456789ABCDEF')", "2f720f20").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("CRC32(BINARY '123456789ABCDEF')", "2f720f20")
+        .returnType(StringType.STRING_NOT_NULL);
 
     // Null handling
     evalNull("CRC32(NULL_STRING)").returnType(StringType.STRING);
@@ -4844,7 +4862,8 @@ public class FunctionTest extends ExpressionTest {
 
   @Test
   void MD5() throws Exception {
-    evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals(
             "MD5(BINARY '123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF')",
             "99c415050a2cddbeb525670345ff0aee")

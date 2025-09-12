@@ -30,7 +30,8 @@ public final class ReturnTypes {
       explicit(BooleanType.BOOLEAN).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is BOOLEAN NOT NULL. */
-  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(BooleanType.BOOLEAN_NOT_NULL);
+  public static final IReturnTypeInference BOOLEAN_NOT_NULL =
+      explicit(BooleanType.BOOLEAN_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of the call is BINARY. */
   public static final IReturnTypeInference BINARY_NULLABLE =
@@ -51,7 +52,8 @@ public final class ReturnTypes {
       explicit(IntegerType.INTEGER).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of the call is INTEGER NOT NULL. */
-  public static final IReturnTypeInference INTEGER_NOT_NULL = explicit(IntegerType.INTEGER_NOT_NULL);
+  public static final IReturnTypeInference INTEGER_NOT_NULL =
+      explicit(IntegerType.INTEGER_NOT_NULL);
 
   /** Type-inference strategy whereby the result type of the call is NUMBER. */
   public static final IReturnTypeInference NUMBER_NULLABLE =
@@ -93,7 +95,9 @@ public final class ReturnTypes {
           .andThen(TypeTransforms.TO_MAX_PRECISION)
           .andThen(TypeTransforms.LEAST_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of the call is the element type of the array. */
+  /**
+   * Type-inference strategy whereby the result type of the call is the element type of the array.
+   */
   public static final IReturnTypeInference ARRAY_ELEMENT =
       call -> {
         Type type = call.getOperand(0).getType();
@@ -144,7 +148,8 @@ public final class ReturnTypes {
         if (type.is(TypeName.INTEGER) || type.is(TypeName.INTERVAL)) return type;
 
         // If boolean return integer
-        if (type.is(TypeName.BOOLEAN)) return IntegerType.INTEGER.withNullability(type.isNullable());
+        if (type.is(TypeName.BOOLEAN))
+          return IntegerType.INTEGER.withNullability(type.isNullable());
 
         // By default, coerce to Number
         return NumberType.NUMBER.withNullability(type.isNullable());

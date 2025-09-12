@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
@@ -64,7 +63,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     UserDefinedFunction udf = new UserDefinedFunction(meta);
     FunctionRegistry.register(udf.getName(), udf);
 
-    evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(DateType.DATE_NOT_NULL);
+    evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5))
+        .returnType(DateType.DATE_NOT_NULL);
     evalNull("DATE_FROM_ID(NULLIF(1,1))").returnType(DateType.DATE);
     evalFails("DATE_FROM_ID()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("DATE_FROM_ID(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);

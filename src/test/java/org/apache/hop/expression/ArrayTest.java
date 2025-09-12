@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.StringType;
-import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
 class ArrayTest extends ExpressionTest {

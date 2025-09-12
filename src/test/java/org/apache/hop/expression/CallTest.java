@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.InListOperator;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.Test;
 

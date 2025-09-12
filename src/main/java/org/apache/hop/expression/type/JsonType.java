@@ -25,11 +25,11 @@ import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.StringConversion;
 
 public final class JsonType extends Type {
-    /** Default JSON type. */
-    public static final JsonType JSON = new JsonType(true);
+  /** Default JSON type. */
+  public static final JsonType JSON = new JsonType(true);
 
-    /** Default JSON NOT NULL type. */
-    public static final JsonType JSON_NOT_NULL = new JsonType(false);
+  /** Default JSON NOT NULL type. */
+  public static final JsonType JSON_NOT_NULL = new JsonType(false);
 
   private static final JsonComparator JSON_COMPARATOR = new JsonComparator();
 

@@ -141,7 +141,10 @@ public class Identifier implements IExpression {
     }
 
     throw new ExpressionException(
-        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), AnyType.ANY, row[ordinal]);
+        ErrorCode.CONVERSION_ERROR,
+        valueMeta.getTypeDesc().toUpperCase(),
+        AnyType.ANY,
+        row[ordinal]);
   }
 
   @Override

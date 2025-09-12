@@ -72,7 +72,10 @@ public class JsonValueFunction extends Function {
     if (call.getOperandCount() == 2) {
       // Add default returning type arguments
       return new Call(
-          call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.of(StringType.STRING));
+          call.getOperator(),
+          call.getOperand(0),
+          call.getOperand(1),
+          Literal.of(StringType.STRING));
     }
 
     // Check if the returning type is supported

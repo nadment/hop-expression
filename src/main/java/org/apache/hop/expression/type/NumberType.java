@@ -28,14 +28,14 @@ import org.apache.hop.expression.util.NumberFormat;
 
 /** Number type with an optional precision and scale: */
 public final class NumberType extends Type {
-    /** Default NUMBER(38,9) type with max precision and default scale. */
-    public static final NumberType NUMBER =
-            new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), true);
+  /** Default NUMBER(38,9) type with max precision and default scale. */
+  public static final NumberType NUMBER =
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), true);
 
-    /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
-    public static final NumberType NUMBER_NOT_NULL =
-            new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), false);
-    
+  /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
+  public static final NumberType NUMBER_NOT_NULL =
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), false);
+
   NumberType(int precision, int scale, boolean nullable) {
     super(precision, scale, nullable);
     this.signature = generateSignature();

@@ -471,7 +471,7 @@ public class TypeTest extends ExpressionTest {
         BigDecimal.valueOf(-123.045), type.convert(new BigDecimal("-123.045"), BigDecimal.class));
 
     assertThrows(
-            ExpressionException.class,
+        ExpressionException.class,
         () -> type.convert(new BigDecimal("-123.045"), ZonedDateTime.class));
   }
 

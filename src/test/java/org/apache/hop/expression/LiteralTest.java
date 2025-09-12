@@ -38,7 +38,6 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.Test;
 
@@ -74,9 +73,11 @@ public class LiteralTest extends ExpressionTest {
   void Interval() throws Exception {
 
     evalEquals("INTERVAL 20 YEAR", Interval.of(20)).returnType(IntervalType.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate()).returnType(IntervalType.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate())
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '20' YEAR", Interval.of(20)).returnType(IntervalType.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate()).returnType(IntervalType.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate())
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5))
         .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate())
@@ -86,12 +87,15 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("INTERVAL 15 MONTH", Interval.of(0, 15)).returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate())
         .returnType(IntervalType.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15)).returnType(IntervalType.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15))
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate())
         .returnType(IntervalType.INTERVAL_NOT_NULL);
 
-    evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365)).returnType(IntervalType.INTERVAL_NOT_NULL);
-    evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365)).returnType(IntervalType.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365))
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365))
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '365 12' DAY TO HOUR", Interval.of(0, 0, 365, 12))
         .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", Interval.of(0, 0, 365, 12, 30))
@@ -99,7 +103,8 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", Interval.of(0, 0, 365, 12, 30, 58))
         .returnType(IntervalType.INTERVAL_NOT_NULL);
 
-    evalEquals("INTERVAL 12 HOUR", Interval.of(0, 0, 0, 12)).returnType(IntervalType.INTERVAL_NOT_NULL);
+    evalEquals("INTERVAL 12 HOUR", Interval.of(0, 0, 0, 12))
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("INTERVAL -12 HOUR", Interval.of(0, 0, 0, 12).negate());
     evalEquals("INTERVAL '12' HOUR", Interval.of(0, 0, 0, 12));
     evalEquals("INTERVAL '-12' HOUR", Interval.of(0, 0, 0, 12).negate());

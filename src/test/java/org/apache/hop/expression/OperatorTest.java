@@ -32,7 +32,6 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
-import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -1174,7 +1173,8 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L).returnType(IntegerType.INTEGER);
       evalEquals("CASE NULL_NUMBER WHEN 0 THEN 1.023 ELSE 1 END", BigDecimal.ONE)
           .returnType(NumberType.NUMBER);
-      evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B").returnType(StringType.STRING);
+      evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B")
+          .returnType(StringType.STRING);
 
       // Check null data type returned
       evalNull("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE NULL END").returnType(StringType.STRING);
@@ -1600,7 +1600,8 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testAddNumericToTemporal() throws Exception {
       // Addition of days to a temporal
-      evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26)).returnType(DateType.DATE_NOT_NULL);
+      evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26))
+          .returnType(DateType.DATE_NOT_NULL);
       evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
       evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
 
@@ -2658,8 +2659,10 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void castToInterval() throws Exception {
       // String
-      evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5)).returnType(IntervalType.INTERVAL_NOT_NULL);
-      evalEquals("'2 hour'::INTERVAL", Interval.of(0, 0, 0, 2)).returnType(IntervalType.INTERVAL_NOT_NULL);
+      evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5))
+          .returnType(IntervalType.INTERVAL_NOT_NULL);
+      evalEquals("'2 hour'::INTERVAL", Interval.of(0, 0, 0, 2))
+          .returnType(IntervalType.INTERVAL_NOT_NULL);
 
       // Null
       evalNull("CAST(NULL_STRING as INTERVAL)");

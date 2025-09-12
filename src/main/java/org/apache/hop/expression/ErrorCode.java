@@ -144,9 +144,7 @@ public enum ErrorCode {
   UNSUPPORTED_TIME_UNIT,
   /** Unsupported array type “{0}” */
   UNSUPPORTED_ARRAY_TYPE,
-  /**
-   * Error converting {0} value “{2}” to {1}
-   */
+  /** Error converting {0} value “{2}” to {1} */
   CONVERSION_ERROR,
   /** Compression error */
   COMPRESSION_ERROR,

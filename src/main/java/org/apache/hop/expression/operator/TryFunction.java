@@ -39,14 +39,13 @@ public class TryFunction extends Function {
       return operands[0].getValue();
     } catch (ExpressionException exception) {
       return switch (exception.getErrorCode()) {
-        case
-            ARITHMETIC_OVERFLOW,
-            DIVISION_BY_ZERO,
-            CONVERSION_ERROR,
-            CONVERSION_OVERFLOW,
-            UNPARSABLE_NUMBER_WITH_FORMAT,
-            UNPARSABLE_DATE_WITH_FORMAT,
-            UNPARSABLE_BINARY ->
+        case ARITHMETIC_OVERFLOW,
+                DIVISION_BY_ZERO,
+                CONVERSION_ERROR,
+                CONVERSION_OVERFLOW,
+                UNPARSABLE_NUMBER_WITH_FORMAT,
+                UNPARSABLE_DATE_WITH_FORMAT,
+                UNPARSABLE_BINARY ->
             null;
         default -> throw exception;
       };

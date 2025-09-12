@@ -22,11 +22,11 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Interval;
 
 public final class IntervalType extends Type {
-    /** Default INTERVAL type with default parameters. */
-    public static final IntervalType INTERVAL = new IntervalType(true);
+  /** Default INTERVAL type with default parameters. */
+  public static final IntervalType INTERVAL = new IntervalType(true);
 
-    /** Default INTERVAL NOT NULL type with default parameters. */
-    public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
+  /** Default INTERVAL NOT NULL type with default parameters. */
+  public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
 
   IntervalType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);

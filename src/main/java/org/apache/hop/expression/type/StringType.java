@@ -37,13 +37,13 @@ import org.apache.hop.expression.util.StringConversion;
 
 public final class StringType extends Type {
 
-    /** Default STRING type with maximum precision. */
-    public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision(), true);
+  /** Default STRING type with maximum precision. */
+  public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision(), true);
 
-    /** Default STRING NOT NULL type with maximum precision. */
-    public static final StringType STRING_NOT_NULL =
-            new StringType(TypeName.STRING.getMaxPrecision(), false);
-    
+  /** Default STRING NOT NULL type with maximum precision. */
+  public static final StringType STRING_NOT_NULL =
+      new StringType(TypeName.STRING.getMaxPrecision(), false);
+
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
     this.signature = generateSignature();
