@@ -37,6 +37,13 @@ import org.apache.hop.expression.util.StringConversion;
 
 public final class StringType extends Type {
 
+    /** Default STRING type with maximum precision. */
+    public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision(), true);
+
+    /** Default STRING NOT NULL type with maximum precision. */
+    public static final StringType STRING_NOT_NULL =
+            new StringType(TypeName.STRING.getMaxPrecision(), false);
+    
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
     this.signature = generateSignature();
@@ -50,7 +57,7 @@ public final class StringType extends Type {
   public static StringType of(int precision, boolean nullable) {
     if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.STRING.getMaxPrecision();
 
-    if (precision == TypeName.STRING.getMaxPrecision() && nullable) return Types.STRING;
+    if (precision == TypeName.STRING.getMaxPrecision() && nullable) return StringType.STRING;
 
     return new StringType(precision, nullable);
   }

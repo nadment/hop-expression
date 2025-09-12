@@ -39,9 +39,9 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
 
 /** Extracts a scalar value from a JSON string. */
 @FunctionPlugin
@@ -72,10 +72,10 @@ public class JsonValueFunction extends Function {
     if (call.getOperandCount() == 2) {
       // Add default returning type arguments
       return new Call(
-          call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.of(Types.STRING));
+          call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.of(StringType.STRING));
     }
 
-    // Check if returning type is supported
+    // Check if the returning type is supported
     Type type = call.getOperand(2).getValue(Type.class);
     if (!SUPPORTED_TYPES.contains(type.getName())) {
       throw new ExpressionException(ErrorCode.UNEXPECTED_DATA_TYPE, type, getName());

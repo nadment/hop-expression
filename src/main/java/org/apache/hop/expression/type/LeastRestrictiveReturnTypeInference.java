@@ -27,7 +27,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
 
   @Override
   public Type inferReturnType(final Call call) {
-    Type type = Types.UNKNOWN;
+    Type type = UnknownType.UNKNOWN;
     for (IExpression operand : call.getOperands()) {
       type = Types.getLeastRestrictive(type, operand.getType());
     }

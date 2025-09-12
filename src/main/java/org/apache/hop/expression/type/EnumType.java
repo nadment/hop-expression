@@ -20,6 +20,7 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ExpressionException;
 
 public final class EnumType extends Type {
+  public static final EnumType TIMEUNIT = new EnumType(false);
 
   EnumType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);

@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.InListOperator;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.Test;
 
 class CallTest extends ExpressionTest {
@@ -72,8 +73,8 @@ class CallTest extends ExpressionTest {
     assertEquals(11, call6.getCost());
 
     // Data type is unknown before validation
-    assertEquals(Types.UNKNOWN, call1.getType());
-    assertEquals(Types.UNKNOWN, call3.getType());
+    assertEquals(UnknownType.UNKNOWN, call1.getType());
+    assertEquals(UnknownType.UNKNOWN, call3.getType());
     assertNotEquals(null, call1);
     assertEquals("3+5", call1.toString());
 
@@ -94,7 +95,7 @@ class CallTest extends ExpressionTest {
     // evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
 
     // Coercion to string
-    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(Types.STRING);
+    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(StringType.STRING);
     //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
     //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
     //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");

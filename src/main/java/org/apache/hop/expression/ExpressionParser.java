@@ -66,12 +66,16 @@ import org.apache.hop.expression.operator.NthValueFunction;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
 import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.InetType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
+import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.InetConversion;
@@ -1444,15 +1448,15 @@ public class ExpressionParser {
 
     Type type =
         switch (name) {
-          case BOOLEAN -> Types.BOOLEAN;
+          case BOOLEAN -> BooleanType.BOOLEAN;
           case INTEGER -> IntegerType.of(precision);
           case NUMBER -> NumberType.of(precision, scale);
           case STRING -> StringType.of(precision);
           case BINARY -> BinaryType.of(precision);
-          case DATE -> Types.DATE;
-          case INET -> Types.INET;
-          case JSON -> Types.JSON;
-          case INTERVAL -> Types.INTERVAL;
+          case DATE -> DateType.DATE;
+          case INET -> InetType.INET;
+          case JSON -> JsonType.JSON;
+          case INTERVAL -> IntervalType.INTERVAL;
           default ->
               throw new ExpressionParseException(
                   token.start(), ErrorCode.INVALID_TYPE, token.text());

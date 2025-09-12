@@ -35,8 +35,8 @@ import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.operator.CountFunction;
+import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -68,7 +68,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return Date.from(dt.toInstant());
     }
     throw new IllegalArgumentException(
-        ErrorCode.UNSUPPORTED_CONVERSION.message(value, TypeName.fromValue(value), Types.DATE));
+        ErrorCode.UNSUPPORTED_CONVERSION.message(value, TypeName.fromValue(value), DateType.DATE));
   }
 
   @Override

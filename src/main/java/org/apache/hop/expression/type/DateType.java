@@ -29,6 +29,12 @@ import org.apache.hop.expression.util.StringConversion;
 
 public final class DateType extends Type {
 
+  /** Default DATE type with default parameters. */
+  public static final DateType DATE = new DateType(true);
+
+  /** Default DATE NOT NULL type with default parameters. */
+  public static final DateType DATE_NOT_NULL = new DateType(false);
+
   DateType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
     this.signature = generateSignature();

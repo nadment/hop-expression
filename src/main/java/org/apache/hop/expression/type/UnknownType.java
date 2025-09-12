@@ -20,6 +20,7 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ExpressionException;
 
 public final class UnknownType extends Type {
+  public static final UnknownType UNKNOWN = new UnknownType(true);
 
   UnknownType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);

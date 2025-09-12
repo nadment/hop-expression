@@ -23,11 +23,17 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.EnumType;
+import org.apache.hop.expression.type.InetType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
+import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.BaseFormat;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.StringConversion;
@@ -36,40 +42,40 @@ import org.apache.hop.expression.util.StringConversion;
 public class Literal implements IExpression {
 
   /** Literal null value without a known data type */
-  public static final Literal NULL = new Literal(null, Types.UNKNOWN);
+  public static final Literal NULL = new Literal(null, UnknownType.UNKNOWN);
 
   /** Literal null with binary data type */
-  public static final Literal NULL_BINARY = new Literal(null, Types.BINARY);
+  public static final Literal NULL_BINARY = new Literal(null, BinaryType.BINARY);
 
   /** Literal null with boolean data type */
-  public static final Literal NULL_BOOLEAN = new Literal(null, Types.BOOLEAN);
+  public static final Literal NULL_BOOLEAN = new Literal(null, BooleanType.BOOLEAN);
 
   /** Literal null with string data type */
-  public static final Literal NULL_STRING = new Literal(null, Types.STRING);
+  public static final Literal NULL_STRING = new Literal(null, StringType.STRING);
 
   /** Literal null with integer data type */
-  public static final Literal NULL_INTEGER = new Literal(null, Types.INTEGER);
+  public static final Literal NULL_INTEGER = new Literal(null, IntegerType.INTEGER);
 
   /** Literal null with number data type */
-  public static final Literal NULL_NUMBER = new Literal(null, Types.NUMBER);
+  public static final Literal NULL_NUMBER = new Literal(null, NumberType.NUMBER);
 
   /** Literal null with date data type */
-  public static final Literal NULL_DATE = new Literal(null, Types.DATE);
+  public static final Literal NULL_DATE = new Literal(null, DateType.DATE);
 
   /** Literal null with json data type */
-  public static final Literal NULL_JSON = new Literal(null, Types.JSON);
+  public static final Literal NULL_JSON = new Literal(null, JsonType.JSON);
 
   /** Literal null with inet data type */
-  public static final Literal NULL_INET = new Literal(null, Types.INET);
+  public static final Literal NULL_INET = new Literal(null, InetType.INET);
 
   /** Literal null with interval data type */
-  public static final Literal NULL_INTERVAL = new Literal(null, Types.INTERVAL);
+  public static final Literal NULL_INTERVAL = new Literal(null, IntervalType.INTERVAL);
 
   /** Literal true value with boolean data type */
-  public static final Literal TRUE = new Literal(Boolean.TRUE, Types.BOOLEAN_NOT_NULL);
+  public static final Literal TRUE = new Literal(Boolean.TRUE, BooleanType.BOOLEAN_NOT_NULL);
 
   /** Literal false value with boolean data type */
-  public static final Literal FALSE = new Literal(Boolean.FALSE, Types.BOOLEAN_NOT_NULL);
+  public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN_NOT_NULL);
 
   /** Literal 0 value with integer data type */
   public static final Literal ZERO = new Literal(0L, IntegerType.of(1, false));
@@ -143,37 +149,37 @@ public class Literal implements IExpression {
 
   public static Literal of(final Interval value) {
     if (value == null) return NULL_INTERVAL;
-    return new Literal(value, Types.INTERVAL_NOT_NULL);
+    return new Literal(value, IntervalType.INTERVAL_NOT_NULL);
   }
 
   public static Literal of(final ZonedDateTime value) {
     if (value == null) return NULL_DATE;
-    return new Literal(value, Types.DATE_NOT_NULL);
+    return new Literal(value, DateType.DATE_NOT_NULL);
   }
 
   public static Literal of(final JsonNode value) {
     if (value == null) return NULL_JSON;
-    return new Literal(value, Types.JSON_NOT_NULL);
+    return new Literal(value, JsonType.JSON_NOT_NULL);
   }
 
   public static Literal of(final InetAddress value) {
     if (value == null) return NULL_INET;
-    return new Literal(value, Types.INET_NOT_NULL);
+    return new Literal(value, InetType.INET_NOT_NULL);
   }
 
   public static Literal of(final Type value) {
     if (value == null) return NULL;
-    return new Literal(value, Types.TIMEUNIT);
+    return new Literal(value, EnumType.TIMEUNIT);
   }
 
   public static Literal of(final TimeUnit value) {
     if (value == null) return NULL;
-    return new Literal(value, Types.TIMEUNIT);
+    return new Literal(value, EnumType.TIMEUNIT);
   }
 
   public static Literal of(final BaseFormat value) {
     if (value == null) return NULL;
-    return new Literal(value, Types.UNKNOWN);
+    return new Literal(value, UnknownType.UNKNOWN);
   }
 
   @Override

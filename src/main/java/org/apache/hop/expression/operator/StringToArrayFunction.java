@@ -28,7 +28,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.type.StringType;
 
 /** Splits a string into an array of strings based on a specified delimiter. */
 @FunctionPlugin
@@ -36,7 +36,7 @@ public class StringToArrayFunction extends Function {
 
   public static final Function INSTANCE = new StringToArrayFunction();
 
-  private static final ArrayType DEFAULT_TYPE = ArrayType.of(Types.STRING);
+  private static final ArrayType DEFAULT_TYPE = ArrayType.of(StringType.STRING);
 
   public StringToArrayFunction() {
     super(

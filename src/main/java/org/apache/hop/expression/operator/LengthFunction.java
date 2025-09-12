@@ -25,6 +25,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
@@ -60,7 +61,7 @@ public class LengthFunction extends Function {
 
     @Override
     public boolean coerceOperandsType(Call call) {
-      return Types.coerceOperandType(call, Types.STRING, 0);
+      return Types.coerceOperandType(call, StringType.STRING, 0);
     }
 
     @Override

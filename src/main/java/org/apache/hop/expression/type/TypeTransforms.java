@@ -88,10 +88,10 @@ public final class TypeTransforms {
   public static final ITypeTransform TO_MAX_PRECISION =
       (call, typeToTransform) ->
           switch (requireNonNull(typeToTransform).getName()) {
-            case STRING -> Types.STRING;
-            case BINARY -> Types.BINARY;
-            case INTEGER -> Types.INTEGER;
-            case NUMBER -> Types.NUMBER;
+            case STRING -> StringType.STRING;
+            case BINARY -> BinaryType.BINARY;
+            case INTEGER -> IntegerType.INTEGER;
+            case NUMBER -> NumberType.NUMBER;
             default -> typeToTransform;
           };
 

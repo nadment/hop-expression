@@ -20,6 +20,7 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ExpressionException;
 
 public final class AnyType extends Type {
+  public static final AnyType ANY = new AnyType(true);
 
   AnyType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);

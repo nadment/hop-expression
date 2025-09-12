@@ -26,16 +26,16 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.Types;
 
 /** Returns the number of PI. */
 @FunctionPlugin
 public class PiFunction extends Function {
 
   public static final Literal PI =
-      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), Types.NUMBER_NOT_NULL);
+      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER_NOT_NULL);
 
   public PiFunction() {
     super(

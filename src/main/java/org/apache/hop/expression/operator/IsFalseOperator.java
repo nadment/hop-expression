@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
@@ -45,7 +46,7 @@ public class IsFalseOperator extends PostfixUnaryOperator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coerceOperandType(call, Types.BOOLEAN, 0);
+    return Types.coerceOperandType(call, BooleanType.BOOLEAN, 0);
   }
 
   @Override

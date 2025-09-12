@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.hop.expression.type.ArrayType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -33,11 +34,11 @@ class ArrayTest extends ExpressionTest {
     Array array2 = new Array(Literal.ONE, Literal.ZERO, Literal.NULL);
     Array array3 = new Array(Literal.NULL, Literal.NULL, Literal.NULL);
 
-    Array array4 = new Array(ArrayType.of(Types.STRING), Literal.of("A"), new Identifier("B"));
+    Array array4 = new Array(ArrayType.of(StringType.STRING), Literal.of("A"), new Identifier("B"));
 
     assertEquals(Kind.ARRAY, array1.getKind());
-    assertEquals(Types.ARRAY, array3.getType());
-    assertEquals(ArrayType.of(Types.STRING), array4.getType());
+    assertEquals(ArrayType.ARRAY, array3.getType());
+    assertEquals(ArrayType.of(StringType.STRING), array4.getType());
 
     assertEquals(0, array0.size());
     assertEquals(3, array1.size());

@@ -93,7 +93,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
         // Consecutive underscore is not allowed
         if (c == '_') {
           if (c == previous) {
-            createUnparsableNumber(format, text, position);
+            throw createUnparsableNumber(format, text, position);
           }
           position++;
           continue;
@@ -105,7 +105,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
 
       // Last char should not be an underscore
       if (previous == '_') {
-        createUnparsableNumber(format, text, position);
+        throw createUnparsableNumber(format, text, position);
       }
 
       // Text-minimal number in scientific notation

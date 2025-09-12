@@ -23,65 +23,65 @@ import org.apache.hop.expression.IExpression;
 /** A collection of strategies for return type inference. */
 public final class ReturnTypes {
 
-  public static final IReturnTypeInference ANY = explicit(Types.ANY);
+  public static final IReturnTypeInference ANY = explicit(AnyType.ANY);
 
   /** Type-inference strategy whereby the result type of call is BOOLEAN. */
   public static final IReturnTypeInference BOOLEAN_NULLABLE =
-      explicit(Types.BOOLEAN).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(BooleanType.BOOLEAN).andThen(TypeTransforms.TO_NULLABLE);
 
   /** Type-inference strategy whereby the result type of call is BOOLEAN NOT NULL. */
-  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN_NOT_NULL);
+  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(BooleanType.BOOLEAN_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of call is BINARY. */
+  /** Type-inference strategy whereby the result type of the call is BINARY. */
   public static final IReturnTypeInference BINARY_NULLABLE =
-      explicit(Types.BINARY).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(BinaryType.BINARY).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is BINARY NOT NULL. */
-  public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY_NOT_NULL);
+  /** Type-inference strategy whereby the result type of the call is BINARY NOT NULL. */
+  public static final IReturnTypeInference BINARY_NOT_NULL = explicit(BinaryType.BINARY_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of call is STRING. */
+  /** Type-inference strategy whereby the result type of the call is STRING. */
   public static final IReturnTypeInference STRING_NULLABLE =
-      explicit(Types.STRING).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(StringType.STRING).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is STRING NOT NULL. */
-  public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING_NOT_NULL);
+  /** Type-inference strategy whereby the result type of the call is STRING NOT NULL. */
+  public static final IReturnTypeInference STRING_NOT_NULL = explicit(StringType.STRING_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of call is INTEGER. */
+  /** Type-inference strategy whereby the result type of the call is INTEGER. */
   public static final IReturnTypeInference INTEGER_NULLABLE =
-      explicit(Types.INTEGER).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(IntegerType.INTEGER).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is INTEGER NOT NULL. */
-  public static final IReturnTypeInference INTEGER_NOT_NULL = explicit(Types.INTEGER_NOT_NULL);
+  /** Type-inference strategy whereby the result type of the call is INTEGER NOT NULL. */
+  public static final IReturnTypeInference INTEGER_NOT_NULL = explicit(IntegerType.INTEGER_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of call is NUMBER. */
+  /** Type-inference strategy whereby the result type of the call is NUMBER. */
   public static final IReturnTypeInference NUMBER_NULLABLE =
-      explicit(Types.NUMBER).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(NumberType.NUMBER).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is NUMBER NOT NULL. */
-  public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER_NOT_NULL);
+  /** Type-inference strategy whereby the result type of the call is NUMBER NOT NULL. */
+  public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(NumberType.NUMBER_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of call is DATE. */
+  /** Type-inference strategy whereby the result type of the call is DATE. */
   public static final IReturnTypeInference DATE_NULLABLE =
-      explicit(Types.DATE).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(DateType.DATE).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is DATE NOT NULL. */
-  public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE_NOT_NULL);
+  /** Type-inference strategy whereby the result type of the call is DATE NOT NULL. */
+  public static final IReturnTypeInference DATE_NOT_NULL = explicit(DateType.DATE_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of call is DATE. */
+  /** Type-inference strategy whereby the result type of the call is DATE. */
   public static final IReturnTypeInference JSON_NULLABLE =
-      explicit(Types.JSON).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(JsonType.JSON).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is INTERVAL. */
+  /** Type-inference strategy whereby the result type of the call is INTERVAL. */
   public static final IReturnTypeInference INTERVAL_NULLABLE =
-      explicit(Types.INTERVAL).andThen(TypeTransforms.TO_NULLABLE);
+      explicit(IntervalType.INTERVAL).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is the type of the operand #0. */
+  /** Type-inference strategy whereby the result type of the call is the type of the operand #0. */
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);
 
-  /** Type-inference strategy whereby the result type of call is the type of the operand #1. */
+  /** Type-inference strategy whereby the result type of the call is the type of the operand #1. */
   public static final IReturnTypeInference ARG1 = new OrdinalReturnTypeInference(1);
 
-  /** Type-inference strategy whereby the result type of call is the type of the operand #2. */
+  /** Type-inference strategy whereby the result type of the call is the type of the operand #2. */
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
 
   public static final IReturnTypeInference ARG1_OR_ARG2 =
@@ -93,14 +93,14 @@ public final class ReturnTypes {
           .andThen(TypeTransforms.TO_MAX_PRECISION)
           .andThen(TypeTransforms.LEAST_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is the element type of the array. */
+  /** Type-inference strategy whereby the result type of the call is the element type of the array. */
   public static final IReturnTypeInference ARRAY_ELEMENT =
       call -> {
         Type type = call.getOperand(0).getType();
         if (type instanceof ArrayType arrayType) {
           return arrayType.getElementType();
         }
-        return Types.UNKNOWN;
+        return UnknownType.UNKNOWN;
       };
 
   public static final IReturnTypeInference ARRAY =
@@ -115,7 +115,7 @@ public final class ReturnTypes {
       };
 
   /**
-   * Type-inference strategy whereby the result type of a call is a number with scale 0 with
+   * Type-inference strategy whereby the result type of the call is a number with scale 0 with
    * precision-scale and nullity than ARG0.
    *
    * <p>This rule is used for CEILING, FLOOR.
@@ -144,10 +144,10 @@ public final class ReturnTypes {
         if (type.is(TypeName.INTEGER) || type.is(TypeName.INTERVAL)) return type;
 
         // If boolean return integer
-        if (type.is(TypeName.BOOLEAN)) return Types.INTEGER.withNullability(type.isNullable());
+        if (type.is(TypeName.BOOLEAN)) return IntegerType.INTEGER.withNullability(type.isNullable());
 
         // By default, coerce to Number
-        return Types.NUMBER.withNullability(type.isNullable());
+        return NumberType.NUMBER.withNullability(type.isNullable());
       };
 
   /**
@@ -159,7 +159,7 @@ public final class ReturnTypes {
   public static final IReturnTypeInference CONCAT_FUNCTION =
       call -> {
         TypeName name = TypeName.STRING;
-        Type elementType = Types.UNKNOWN;
+        Type elementType = UnknownType.UNKNOWN;
         int precision = 0;
         boolean nullable = true;
 
@@ -263,14 +263,14 @@ public final class ReturnTypes {
               .getValue(Type.class)
               .withNullability(call.getOperand(0).getType().isNullable());
         } catch (Exception e) {
-          return Types.UNKNOWN;
+          return UnknownType.UNKNOWN;
         }
       };
 
   /** Type-inference strategy for IF function. */
   public static final IReturnTypeInference IF_FUNCTION =
       call -> {
-        if (call.getOperandCount() < 2) return Types.UNKNOWN;
+        if (call.getOperandCount() < 2) return UnknownType.UNKNOWN;
 
         ITypeTransform transform = TypeTransforms.TO_MAX_PRECISION;
 
@@ -295,9 +295,9 @@ public final class ReturnTypes {
           }
 
           // By default return STRING
-          return Types.STRING;
+          return StringType.STRING;
         } catch (Exception e) {
-          return Types.UNKNOWN;
+          return UnknownType.UNKNOWN;
         }
       };
 
@@ -356,7 +356,7 @@ public final class ReturnTypes {
       return type1;
     }
     if (type1.is(TypeName.STRING) || type2.is(TypeName.STRING)) {
-      return Types.NUMBER;
+      return NumberType.NUMBER;
     }
 
     int p1 = type1.getPrecision();
@@ -403,7 +403,7 @@ public final class ReturnTypes {
     boolean nullable = type1.isNullable() || type2.isNullable();
 
     if (Types.isString(type1) || Types.isString(type2)) {
-      return Types.NUMBER.withNullability(nullable);
+      return NumberType.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();
@@ -447,7 +447,7 @@ public final class ReturnTypes {
     boolean nullable = type1.isNullable() || type2.isNullable();
 
     if (Types.isString(type1) || Types.isString(type2)) {
-      return Types.NUMBER.withNullability(nullable);
+      return NumberType.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();
@@ -488,7 +488,7 @@ public final class ReturnTypes {
     boolean nullable = type1.isNullable() || type2.isNullable();
 
     if (Types.isString(type1) || Types.isString(type2)) {
-      return Types.NUMBER.withNullability(nullable);
+      return NumberType.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();

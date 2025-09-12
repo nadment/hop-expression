@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
+import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
@@ -34,7 +35,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   private Type type;
 
   public Array(IExpression... expressions) {
-    this(Types.ARRAY, expressions);
+    this(ArrayType.ARRAY, expressions);
   }
 
   public Array(Type type, IExpression... expressions) {
@@ -43,7 +44,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   public Array(Collection<IExpression> expressions) {
-    this(Types.ARRAY, expressions);
+    this(ArrayType.ARRAY, expressions);
   }
 
   public Array(Type type, Collection<IExpression> expressions) {
@@ -167,7 +168,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
     // Empty array
     if (values.length == 0) {
-      type = ArrayType.of(Types.ANY);
+      type = ArrayType.of(AnyType.ANY);
       return;
     }
 

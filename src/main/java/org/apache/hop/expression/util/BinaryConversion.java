@@ -19,7 +19,6 @@ package org.apache.hop.expression.util;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class BinaryConversion extends Conversion<byte[]> {

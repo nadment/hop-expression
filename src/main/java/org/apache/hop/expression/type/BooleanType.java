@@ -24,6 +24,12 @@ import org.apache.hop.expression.util.BooleanConversion;
 
 public final class BooleanType extends Type {
 
+  /** Default BOOLEAN type. */
+  public static final BooleanType BOOLEAN = new BooleanType(true);
+
+  /** Default BOOLEAN NOT NULL type. */
+  public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
+
   BooleanType(boolean nullable) {
     super(1, 0, nullable);
     this.signature = generateSignature();
@@ -31,7 +37,7 @@ public final class BooleanType extends Type {
 
   @Override
   public BooleanType withNullability(boolean nullable) {
-    return (nullable) ? Types.BOOLEAN : Types.BOOLEAN_NOT_NULL;
+    return (nullable) ? BOOLEAN : BOOLEAN_NOT_NULL;
   }
 
   @Override

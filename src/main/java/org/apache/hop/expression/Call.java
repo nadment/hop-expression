@@ -25,7 +25,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.type.UnknownType;
 
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
@@ -42,7 +42,7 @@ public class Call implements IExpression {
   protected final IExpression[] operands;
 
   /** The return type. The type is unknown before validation. */
-  protected Type type = Types.UNKNOWN;
+  protected Type type = UnknownType.UNKNOWN;
 
   public Call(Operator operator, IExpression... operands) {
     this(0, operator, operands);

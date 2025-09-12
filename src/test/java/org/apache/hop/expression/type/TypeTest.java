@@ -213,21 +213,21 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void signature() {
-    assertEquals("BOOLEAN", String.valueOf(Types.BOOLEAN));
-    assertEquals("DATE", String.valueOf(Types.DATE));
-    assertEquals("JSON", String.valueOf(Types.JSON));
-    assertEquals("INET", String.valueOf(Types.INET));
-    assertEquals("INTEGER", String.valueOf(Types.INTEGER));
+    assertEquals("BOOLEAN", String.valueOf(BooleanType.BOOLEAN));
+    assertEquals("DATE", String.valueOf(DateType.DATE));
+    assertEquals("JSON", String.valueOf(JsonType.JSON));
+    assertEquals("INET", String.valueOf(InetType.INET));
+    assertEquals("INTEGER", String.valueOf(IntegerType.INTEGER));
     assertEquals("INTEGER", String.valueOf(IntegerType.of(-1)));
     assertEquals("INTEGER(6)", String.valueOf(IntegerType.of(6)));
-    assertEquals("NUMBER", String.valueOf(Types.NUMBER));
+    assertEquals("NUMBER", String.valueOf(NumberType.NUMBER));
     assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10)));
     assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10, 0)));
     assertEquals("NUMBER(10,2)", String.valueOf(NumberType.of(10, 2)));
-    assertEquals("STRING", String.valueOf(Types.STRING));
+    assertEquals("STRING", String.valueOf(StringType.STRING));
     assertEquals("STRING", String.valueOf(StringType.of(-1)));
     assertEquals("STRING(10)", String.valueOf(StringType.of(10)));
-    assertEquals("BINARY", String.valueOf(Types.BINARY));
+    assertEquals("BINARY", String.valueOf(BinaryType.BINARY));
     assertEquals("BINARY", String.valueOf(BinaryType.of(-1)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
     assertEquals("ARRAY<INTEGER(10)>", String.valueOf(ArrayType.of(IntegerType.of(10))));
@@ -253,7 +253,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToBoolean() {
-    BooleanType type = Types.BOOLEAN;
+    BooleanType type = BooleanType.BOOLEAN;
     assertNull(type.cast(null));
     assertEquals(Boolean.TRUE, type.cast(3L));
     assertEquals(Boolean.TRUE, type.cast(1L));
@@ -287,7 +287,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToBinary() {
-    BinaryType type = Types.BINARY;
+    BinaryType type = BinaryType.BINARY;
     assertNull(type.cast(null));
     // assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
 
@@ -300,7 +300,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToDate() {
-    DateType type = Types.DATE;
+    DateType type = DateType.DATE;
     ZonedDateTime date =
         LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
     assertNull(type.cast(null));
@@ -322,7 +322,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToString() {
-    StringType type = Types.STRING;
+    StringType type = StringType.STRING;
     assertNull(type.cast(null));
     assertEquals("TRUE", type.cast(true));
     assertEquals("FALSE", type.cast(false));
@@ -338,7 +338,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToInteger() {
-    IntegerType type = Types.INTEGER;
+    IntegerType type = IntegerType.INTEGER;
     assertNull(type.cast(null));
     assertEquals(Long.valueOf(1L), type.cast(true));
     assertEquals(Long.valueOf(0L), type.cast(false));
@@ -358,7 +358,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToNumber() {
-    NumberType type = Types.NUMBER;
+    NumberType type = NumberType.NUMBER;
     assertNull(type.cast(null));
     assertEquals(BigDecimal.ZERO, type.cast(false));
     assertEquals(BigDecimal.ZERO, type.cast(0L));
@@ -388,7 +388,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void castToUnknown() {
-    UnknownType type = Types.UNKNOWN;
+    UnknownType type = UnknownType.UNKNOWN;
     assertThrows(ExpressionException.class, () -> type.cast(null));
     assertThrows(ExpressionException.class, () -> type.cast(true));
     assertThrows(ExpressionException.class, () -> type.cast("Test", "MM"));
@@ -421,7 +421,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void convertToBoolean() {
-    BooleanType type = Types.BOOLEAN;
+    BooleanType type = BooleanType.BOOLEAN;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
@@ -440,7 +440,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void convertToInteger() {
-    IntegerType type = Types.INTEGER;
+    IntegerType type = IntegerType.INTEGER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
     assertNull(type.convert(null, String.class));
@@ -458,7 +458,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void convertToNumber() {
-    NumberType type = Types.NUMBER;
+    NumberType type = NumberType.NUMBER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
     assertNull(type.convert(null, String.class));
@@ -477,7 +477,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void convertToString() {
-    StringType type = Types.STRING;
+    StringType type = StringType.STRING;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, String.class));
@@ -495,7 +495,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   void convertToDate() {
-    DateType type = Types.DATE;
+    DateType type = DateType.DATE;
 
     ZonedDateTime date =
         LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);

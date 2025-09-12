@@ -25,6 +25,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
@@ -44,7 +45,7 @@ public class FactorialFunction extends Function {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coerceOperandType(call, Types.INTEGER, 0);
+    return Types.coerceOperandType(call, IntegerType.INTEGER, 0);
   }
 
   @Override

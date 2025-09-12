@@ -41,71 +41,6 @@ import org.apache.hop.expression.operator.CastOperator;
 
 public class Types {
 
-  public static final UnknownType UNKNOWN = new UnknownType(true);
-  public static final EnumType TIMEUNIT = new EnumType(false);
-  public static final ArrayType ARRAY = new ArrayType(UNKNOWN, true);
-  public static final AnyType ANY = new AnyType(true);
-
-  /** Default BINARY type with maximum precision. */
-  public static final BinaryType BINARY = new BinaryType(TypeName.BINARY.getMaxPrecision(), true);
-
-  /** Default BINARY NOT NULL type with maximum precision. */
-  public static final BinaryType BINARY_NOT_NULL =
-      new BinaryType(TypeName.BINARY.getMaxPrecision(), false);
-
-  /** Default BOOLEAN type. */
-  public static final BooleanType BOOLEAN = new BooleanType(true);
-
-  /** Default BOOLEAN NOT NULL type. */
-  public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
-
-  /** Default STRING type with maximum precision. */
-  public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision(), true);
-
-  /** Default STRING NOT NULL type with maximum precision. */
-  public static final StringType STRING_NOT_NULL =
-      new StringType(TypeName.STRING.getMaxPrecision(), false);
-
-  /** Default INTEGER type with maximum precision. */
-  public static final IntegerType INTEGER =
-      new IntegerType(TypeName.INTEGER.getMaxPrecision(), true);
-
-  /** Default INTEGER NOT NULL type with maximum precision. */
-  public static final IntegerType INTEGER_NOT_NULL =
-      new IntegerType(TypeName.INTEGER.getMaxPrecision(), false);
-
-  /** Default NUMBER(38,9) type with max precision and default scale. */
-  public static final NumberType NUMBER =
-      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), true);
-
-  /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
-  public static final NumberType NUMBER_NOT_NULL =
-      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), false);
-
-  /** Default DATE type with default parameters. */
-  public static final DateType DATE = new DateType(true);
-
-  /** Default DATE NOT NULL type with default parameters. */
-  public static final DateType DATE_NOT_NULL = new DateType(false);
-
-  /** Default INTERVAL type with default parameters. */
-  public static final IntervalType INTERVAL = new IntervalType(true);
-
-  /** Default INTERVAL NOT NULL type with default parameters. */
-  public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
-
-  /** Default INET type. */
-  public static final InetType INET = new InetType(true);
-
-  /** Default INET NOT NULL type. */
-  public static final InetType INET_NOT_NULL = new InetType(false);
-
-  /** Default JSON type. */
-  public static final JsonType JSON = new JsonType(true);
-
-  /** Default JSON NOT NULL type. */
-  public static final JsonType JSON_NOT_NULL = new JsonType(false);
-
   private Types() {
     // Utility class
   }
@@ -113,7 +48,7 @@ public class Types {
   /** Returns the most general of a set of types */
   public static Type getLeastRestrictive(List<Type> types) {
 
-    if (types.isEmpty()) return Types.UNKNOWN;
+    if (types.isEmpty()) return UnknownType.UNKNOWN;
 
     Type result = null;
     for (Type type : types) {
@@ -250,11 +185,11 @@ public class Types {
     }
     // STRING compare numeric -> NUMBER
     if (isString(type1) && isNumeric(type2)) {
-      return NUMBER;
+      return NumberType.NUMBER;
     }
     // Numeric compare STRING -> NUMBER
     if (isNumeric(type1) && isString(type2)) {
-      return NUMBER;
+      return NumberType.NUMBER;
     }
     // BOOLEAN compare numeric -> NUMBER
     if (isBoolean(type1) && isNumeric(type2)) {
@@ -268,7 +203,7 @@ public class Types {
     return getLeastRestrictive(type1, type2);
   }
 
-  /** Returns whether a IExpression should be cast to a target type. */
+  /** Returns whether an IExpression should be cast to a target type. */
   public static boolean needToCast(IExpression expression, Type toType) {
     return expression.getType().getName().ordinal() < toType.getName().ordinal();
   }
@@ -283,11 +218,11 @@ public class Types {
 
     // STRING <operator> numeric -> NUMBER
     if (isString(left) && isNumeric(right)) {
-      return coerceOperandsType(call, NUMBER);
+      return coerceOperandsType(call, NumberType.NUMBER);
     }
     // Numeric <operator> STRING -> NUMBER
     if (isNumeric(left) && isString(right)) {
-      return coerceOperandsType(call, NUMBER);
+      return coerceOperandsType(call, NumberType.NUMBER);
     }
 
     // Numeric <operator> BOOLEAN -> Same type as left numeric
@@ -322,11 +257,11 @@ public class Types {
 
     // STRING <operator> numeric -> NUMBER
     if (isString(left) && isNumeric(right)) {
-      return Types.coerceOperandType(call, NUMBER, 0);
+      return Types.coerceOperandType(call, NumberType.NUMBER, 0);
     }
     // Numeric <operator> STRING -> NUMBER
     if (isNumeric(left) && isString(right)) {
-      return Types.coerceOperandType(call, NUMBER, 1);
+      return Types.coerceOperandType(call, NumberType.NUMBER, 1);
     }
 
     // Numeric <operator> BOOLEAN -> Same type as left numeric
@@ -459,9 +394,9 @@ public class Types {
    */
   public static Type inferTypeFromValue(Object value) {
     if (value == null) {
-      return Types.STRING;
+      return StringType.STRING;
     } else if (value instanceof Boolean) {
-      return Types.BOOLEAN;
+      return BooleanType.BOOLEAN;
     } else if (value instanceof Long integer) {
       return IntegerType.from(integer);
     } else if (value instanceof BigDecimal number) {
@@ -469,13 +404,13 @@ public class Types {
     } else if (value instanceof String string) {
       return StringType.from(string);
     } else if (value instanceof ZonedDateTime) {
-      return Types.DATE;
+      return DateType.DATE;
     } else if (value instanceof Interval) {
-      return Types.INTERVAL;
+      return IntervalType.INTERVAL;
     } else if (value instanceof JsonNode) {
-      return Types.JSON;
+      return JsonType.JSON;
     } else if (value instanceof InetAddress) {
-      return Types.INET;
+      return InetType.INET;
     } else if (value instanceof byte[] bytes) {
       return BinaryType.from(bytes);
     }

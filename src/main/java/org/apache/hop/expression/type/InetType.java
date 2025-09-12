@@ -24,6 +24,11 @@ import org.apache.hop.expression.util.InetConversion;
 import org.apache.hop.expression.util.StringConversion;
 
 public final class InetType extends Type {
+    /** Default INET type. */
+    public static final InetType INET = new InetType(true);
+
+    /** Default INET NOT NULL type. */
+    public static final InetType INET_NOT_NULL = new InetType(false);
 
   InetType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);

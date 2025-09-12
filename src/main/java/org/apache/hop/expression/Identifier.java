@@ -26,13 +26,18 @@ import java.util.Objects;
 import lombok.Getter;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.InetType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.type.UnknownType;
 
 /** Expression representing a named column in an input row. */
 public class Identifier implements IExpression {
@@ -60,7 +65,7 @@ public class Identifier implements IExpression {
 
   public Identifier(int position, final String name) {
     this.name = requireNonNull(name, "name");
-    this.type = Types.UNKNOWN;
+    this.type = UnknownType.UNKNOWN;
     this.position = position;
     this.context = null;
     this.valueMeta = null;
@@ -136,7 +141,7 @@ public class Identifier implements IExpression {
     }
 
     throw new ExpressionException(
-        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), Types.ANY, row[ordinal]);
+        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), AnyType.ANY, row[ordinal]);
   }
 
   @Override
@@ -263,14 +268,14 @@ public class Identifier implements IExpression {
 
   protected Type createDataType(final IValueMeta meta) {
     return switch (meta.getType()) {
-      case IValueMeta.TYPE_BOOLEAN -> Types.BOOLEAN;
-      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP -> Types.DATE;
+      case IValueMeta.TYPE_BOOLEAN -> BooleanType.BOOLEAN;
+      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP -> DateType.DATE;
       case IValueMeta.TYPE_STRING -> StringType.of(meta.getLength());
       case IValueMeta.TYPE_INTEGER -> IntegerType.of(meta.getLength());
       case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER ->
           NumberType.of(meta.getLength(), meta.getPrecision());
-      case IValueMeta.TYPE_JSON -> Types.JSON;
-      case IValueMeta.TYPE_INET -> Types.INET;
+      case IValueMeta.TYPE_JSON -> JsonType.JSON;
+      case IValueMeta.TYPE_INET -> InetType.INET;
       case IValueMeta.TYPE_BINARY -> BinaryType.of(meta.getLength());
       default ->
           throw new ExpressionException(

@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import java.time.LocalDate;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
@@ -46,8 +48,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     UserDefinedFunction udf = new UserDefinedFunction(meta);
     FunctionRegistry.register(udf.getName(), udf);
 
-    evalEquals("UCASE('abcd',3)", "ABC").returnType(Types.STRING);
-    evalEquals("UCASE(NULL_STRING,2)", "*").returnType(Types.STRING);
+    evalEquals("UCASE('abcd',3)", "ABC").returnType(StringType.STRING);
+    evalEquals("UCASE(NULL_STRING,2)", "*").returnType(StringType.STRING);
     evalFails("UCASE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("UCASE(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
   }
@@ -62,8 +64,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     UserDefinedFunction udf = new UserDefinedFunction(meta);
     FunctionRegistry.register(udf.getName(), udf);
 
-    evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(Types.DATE_NOT_NULL);
-    evalNull("DATE_FROM_ID(NULLIF(1,1))").returnType(Types.DATE);
+    evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(DateType.DATE_NOT_NULL);
+    evalNull("DATE_FROM_ID(NULLIF(1,1))").returnType(DateType.DATE);
     evalFails("DATE_FROM_ID()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("DATE_FROM_ID(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 

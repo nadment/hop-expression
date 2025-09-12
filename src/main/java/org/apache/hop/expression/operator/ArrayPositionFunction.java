@@ -48,8 +48,7 @@ public class ArrayPositionFunction extends Function {
 
   @Override
   public boolean checkOperandTypes(Call call) {
-    boolean success = super.checkOperandTypes(call);
-    if (!success) {
+    if (!super.checkOperandTypes(call)) {
       return false;
     }
 
@@ -64,11 +63,7 @@ public class ArrayPositionFunction extends Function {
     }
 
     // Array elements and searched value should be coercible
-    if (!elementType.isCoercible(arrayType)) {
-      return false;
-    }
-
-    return success;
+    return elementType.isCoercible(arrayType);
   }
 
   @Override

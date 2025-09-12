@@ -15,7 +15,10 @@
 
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.jupiter.api.Test;
@@ -27,8 +30,8 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("AVG(2,4)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("AVG(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    optimize("AVG(FIELD_INTEGER)").returnType(Types.NUMBER);
-    optimize("AVG(FIELD_NUMBER)").returnType(Types.NUMBER);
+    optimize("AVG(FIELD_INTEGER)").returnType(NumberType.NUMBER);
+    optimize("AVG(FIELD_NUMBER)").returnType(NumberType.NUMBER);
   }
 
   @Test
@@ -38,9 +41,9 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("Count(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Count(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    optimize("COUNT(*)").returnType(Types.INTEGER_NOT_NULL);
-    optimize("COUNT(FIELD_INTEGER)").returnType(Types.INTEGER_NOT_NULL);
-    optimize("COUNT(DISTINCT FIELD_STRING)").returnType(Types.INTEGER_NOT_NULL);
+    optimize("COUNT(*)").returnType(IntegerType.INTEGER_NOT_NULL);
+    optimize("COUNT(FIELD_INTEGER)").returnType(IntegerType.INTEGER_NOT_NULL);
+    optimize("COUNT(DISTINCT FIELD_STRING)").returnType(IntegerType.INTEGER_NOT_NULL);
   }
 
   @Test
@@ -49,7 +52,7 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("CountIf(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    optimize("COUNTIF(FIELD_INTEGER>=10)").returnType(Types.INTEGER);
+    optimize("COUNTIF(FIELD_INTEGER>=10)").returnType(IntegerType.INTEGER);
     optimize("COUNTIF(FIELD_INTEGER>=10)", "COUNTIF(FIELD_INTEGER>=10)");
   }
 
@@ -58,7 +61,7 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("SUM()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("SUM(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    optimize("SUM(FIELD_INTEGER)").returnType(Types.NUMBER);
+    optimize("SUM(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
@@ -67,9 +70,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
     optimize("MAX(FIELD_STRING)").returnType(StringType.of(1000));
     optimize("MAX(FIELD_INTEGER)").returnType(IntegerType.of(12));
-    optimize("MAX(FIELD_NUMBER)").returnType(Types.NUMBER);
-    optimize("MAX(FIELD_DATE)").returnType(Types.DATE);
-    optimize("MAX(FIELD_BINARY)").returnType(Types.BINARY);
+    optimize("MAX(FIELD_NUMBER)").returnType(NumberType.NUMBER);
+    optimize("MAX(FIELD_DATE)").returnType(DateType.DATE);
+    optimize("MAX(FIELD_BINARY)").returnType(BinaryType.BINARY);
   }
 
   @Test
@@ -78,9 +81,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
     optimize("MIN(FIELD_STRING)").returnType(StringType.of(1000));
     optimize("MIN(FIELD_INTEGER)").returnType(IntegerType.of(12));
-    optimize("MIN(FIELD_NUMBER)").returnType(Types.NUMBER);
-    optimize("MIN(FIELD_DATE)").returnType(Types.DATE);
-    optimize("MIN(FIELD_BINARY)").returnType(Types.BINARY);
+    optimize("MIN(FIELD_NUMBER)").returnType(NumberType.NUMBER);
+    optimize("MIN(FIELD_DATE)").returnType(DateType.DATE);
+    optimize("MIN(FIELD_BINARY)").returnType(BinaryType.BINARY);
   }
 
   @Test
@@ -88,14 +91,14 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("MEDIAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("MEDIAN(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
-    optimize("MEDIAN(FIELD_INTEGER)").returnType(Types.NUMBER);
+    optimize("MEDIAN(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void AnyValue() throws Exception {
     evalFails("ANY_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("ANY_VALUE(FIELD_DATE)").returnType(Types.DATE);
+    optimize("ANY_VALUE(FIELD_DATE)").returnType(DateType.DATE);
     optimize("ANY_VALUE(FIELD_INTEGER)").returnType(IntegerType.of(12));
     optimize("ANY_VALUE(FIELD_STRING)").returnType(StringType.of(1000));
   }
@@ -104,7 +107,7 @@ class AggregateFunctionTest extends ExpressionTest {
   void FirstValue() throws Exception {
     optimize("FIRST_VALUE(FIELD_STRING)").returnType(StringType.of(1000));
 
-    optimize("FIRST_VALUE(FIELD_DATE)").returnType(Types.DATE);
+    optimize("FIRST_VALUE(FIELD_DATE)").returnType(DateType.DATE);
     optimize("FIRST_VALUE(FIELD_DATE) RESPECT NULLS", "FIRST_VALUE(FIELD_DATE)");
     optimize("FIRST_VALUE(FIELD_DATE) IGNORE NULLS");
 
@@ -125,9 +128,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
     optimize("LAST_VALUE(FIELD_STRING)").returnType(StringType.of(1000));
     optimize("LAST_VALUE(FIELD_INTEGER)").returnType(IntegerType.of(12));
-    optimize("LAST_VALUE(FIELD_DATE)").returnType(Types.DATE);
+    optimize("LAST_VALUE(FIELD_DATE)").returnType(DateType.DATE);
     optimize("LAST_VALUE(FIELD_DATE) RESPECT NULLS", "LAST_VALUE(FIELD_DATE)");
-    optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS").returnType(Types.DATE);
+    optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS").returnType(DateType.DATE);
   }
 
   @Test
@@ -139,7 +142,7 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("NTH_VALUE(FIELD_DATE,1) NULLS", ErrorCode.UNEXPECTED_CHARACTER);
 
     optimize("NTH_VALUE(FIELD_STRING,1)").returnType(StringType.of(1000));
-    optimize("NTH_VALUE(FIELD_DATE,3)").returnType(Types.DATE);
+    optimize("NTH_VALUE(FIELD_DATE,3)").returnType(DateType.DATE);
     optimize("NTH_VALUE(FIELD_DATE,2) RESPECT NULLS", "NTH_VALUE(FIELD_DATE,2)");
     optimize("NTH_VALUE(FIELD_DATE,2) IGNORE NULLS");
   }
@@ -148,41 +151,41 @@ class AggregateFunctionTest extends ExpressionTest {
   void ListAgg() throws Exception {
     evalFails("LISTAGG()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("LISTAGG(FIELD_STRING,',')").returnType(Types.STRING);
+    optimize("LISTAGG(FIELD_STRING,',')").returnType(StringType.STRING);
   }
 
   @Test
   void Percentile() throws Exception {
     evalFails("PERCENTILE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("PERCENTILE(FIELD_INTEGER,0.75)").returnType(Types.NUMBER);
+    optimize("PERCENTILE(FIELD_INTEGER,0.75)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void VarPop() throws Exception {
     evalFails("VARIANCE_POP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("VARIANCE_POP(FIELD_INTEGER)").returnType(Types.NUMBER);
+    optimize("VARIANCE_POP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void VarSamp() throws Exception {
     evalFails("ANY_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("VARIANCE_SAMP(FIELD_INTEGER)").returnType(Types.NUMBER);
+    optimize("VARIANCE_SAMP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void StdDevPop() throws Exception {
     evalFails("STDDEV_POP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("STDDEV_POP(FIELD_INTEGER)").returnType(Types.NUMBER);
+    optimize("STDDEV_POP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void StdDevSamp() throws Exception {
     evalFails("STDDEV_SAMP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
 
-    optimize("STDDEV_SAMP(FIELD_INTEGER)").returnType(Types.NUMBER);
+    optimize("STDDEV_SAMP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 }

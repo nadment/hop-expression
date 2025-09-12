@@ -32,10 +32,10 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
 
 /** A search case operator describing the <code>CASE</code> operator. */
 public class CaseSearchOperator extends Operator {
@@ -185,7 +185,7 @@ public class CaseSearchOperator extends Operator {
     IExpression elseTerm = call.getOperand(3);
 
     // Search case should be a predicate
-    Type valueType = Types.BOOLEAN;
+    Type valueType = BooleanType.BOOLEAN;
 
     // Check WHEN operands
     for (IExpression operand : whenTerm) {
