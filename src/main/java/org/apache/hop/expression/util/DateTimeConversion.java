@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class DateTimeConversion extends Conversion<ZonedDateTime> {
@@ -30,12 +29,12 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     // Utility class
   }
 
-  public static ZonedDateTime convert(final String value) throws ConversionException {
+  public static ZonedDateTime convert(final String value) {
     return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
   }
 
   /**
-   * Convert the epoch time value to a timestamp with UTC time zone.
+   * Convert the epoch time value to a timestamp with a UTC time zone.
    *
    * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
    *     1970)

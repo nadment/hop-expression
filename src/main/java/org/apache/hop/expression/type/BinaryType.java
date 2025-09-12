@@ -19,8 +19,8 @@ package org.apache.hop.expression.type;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.StringConversion;
 
 public final class BinaryType extends Type {
@@ -66,7 +66,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
     if (value == null) return null;
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
@@ -79,7 +79,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public byte[] cast(final Object value) throws ConversionException {
+  public byte[] cast(final Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -92,7 +92,7 @@ public final class BinaryType extends Type {
    * @return the converted value
    */
   @Override
-  public byte[] cast(final Object value, String pattern) throws ConversionException {
+  public byte[] cast(final Object value, String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -104,7 +104,7 @@ public final class BinaryType extends Type {
       return str.getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 

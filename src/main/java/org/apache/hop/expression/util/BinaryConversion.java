@@ -19,7 +19,7 @@ package org.apache.hop.expression.util;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class BinaryConversion extends Conversion<byte[]> {
@@ -28,13 +28,13 @@ public final class BinaryConversion extends Conversion<byte[]> {
     // Utility class
   }
 
-  public static byte[] convert(Long number) throws ConversionException {
+  public static byte[] convert(Long number) {
     ByteBuffer bytes = ByteBuffer.allocate(Long.BYTES);
     bytes.putLong(number);
     return bytes.array();
   }
 
-  public static byte[] convert(final String str) throws ConversionException {
+  public static byte[] convert(final String str) {
     return str.getBytes(StandardCharsets.UTF_8);
   }
 

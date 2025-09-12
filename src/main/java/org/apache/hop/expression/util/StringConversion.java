@@ -23,8 +23,8 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class StringConversion extends Conversion<String> {
@@ -63,12 +63,12 @@ public final class StringConversion extends Conversion<String> {
    * @param json the JSON to convert
    * @return String
    */
-  public static String convert(final JsonNode json) throws ConversionException {
+  public static String convert(final JsonNode json) throws ExpressionException {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.JSON, TypeName.STRING, json);
     }
   }

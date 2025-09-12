@@ -18,8 +18,8 @@
 package org.apache.hop.expression.type;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.JsonComparator;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.StringConversion;
@@ -51,7 +51,7 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
+  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -67,7 +67,7 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public JsonNode cast(final Object value) throws ConversionException {
+  public JsonNode cast(final Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -80,7 +80,7 @@ public final class JsonType extends Type {
    * @return the converted value
    */
   @Override
-  public JsonNode cast(final Object value, String pattern) throws ConversionException {
+  public JsonNode cast(final Object value, String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -94,7 +94,7 @@ public final class JsonType extends Type {
       return JsonConversion.convert(str);
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 

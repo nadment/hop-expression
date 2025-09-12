@@ -19,8 +19,8 @@ package org.apache.hop.expression.util;
 
 import java.net.InetAddress;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class InetConversion extends Conversion<InetAddress> {
@@ -35,13 +35,13 @@ public final class InetConversion extends Conversion<InetAddress> {
    * @param str the string to convert
    * @return InetAddress
    */
-  public static InetAddress convert(final String str) throws ConversionException {
+  public static InetAddress convert(final String str) {
     if (str == null || Utils.isEmpty(str)) return null;
 
     try {
       return InetAddress.getByName(str);
     } catch (Exception e) {
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INET, str);
     }
   }

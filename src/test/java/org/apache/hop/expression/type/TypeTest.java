@@ -33,7 +33,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Random;
 import org.apache.hop.expression.Array;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionTest;
@@ -279,11 +278,11 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Boolean.FALSE, type.cast("No"));
     assertEquals(Boolean.FALSE, type.cast("Off"));
 
-    assertThrows(ConversionException.class, () -> type.cast("3"));
-    assertThrows(ConversionException.class, () -> type.cast("MO"));
-    assertThrows(ConversionException.class, () -> type.cast("BAD"));
-    assertThrows(ConversionException.class, () -> type.cast("TRUL"));
-    assertThrows(ConversionException.class, () -> type.cast("FILSE"));
+    assertThrows(ExpressionException.class, () -> type.cast("3"));
+    assertThrows(ExpressionException.class, () -> type.cast("MO"));
+    assertThrows(ExpressionException.class, () -> type.cast("BAD"));
+    assertThrows(ExpressionException.class, () -> type.cast("TRUL"));
+    assertThrows(ExpressionException.class, () -> type.cast("FILSE"));
   }
 
   @Test
@@ -292,11 +291,11 @@ public class TypeTest extends ExpressionTest {
     assertNull(type.cast(null));
     // assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
 
-    assertThrows(ConversionException.class, () -> type.cast(true));
-    assertThrows(ConversionException.class, () -> type.cast(1L));
-    assertThrows(ConversionException.class, () -> type.cast(1D));
-    assertThrows(ConversionException.class, () -> type.cast(BigDecimal.ONE));
-    assertThrows(ConversionException.class, () -> type.cast(ZonedDateTime.now()));
+    assertThrows(ExpressionException.class, () -> type.cast(true));
+    assertThrows(ExpressionException.class, () -> type.cast(1L));
+    assertThrows(ExpressionException.class, () -> type.cast(1D));
+    assertThrows(ExpressionException.class, () -> type.cast(BigDecimal.ONE));
+    assertThrows(ExpressionException.class, () -> type.cast(ZonedDateTime.now()));
   }
 
   @Test
@@ -317,7 +316,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(
         timestamp, type.cast("2022-12-28 13:32:55.123456789", "YYYY-MM-DD HH24:MI:SS.FF9"));
 
-    assertThrows(ConversionException.class, () -> type.cast(true));
+    assertThrows(ExpressionException.class, () -> type.cast(true));
     assertThrows(ExpressionException.class, () -> type.cast("2022"));
   }
 
@@ -384,15 +383,15 @@ public class TypeTest extends ExpressionTest {
         new BigDecimal("1672234375.123456789"),
         type.cast(ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneOffset.UTC)));
 
-    assertThrows(ConversionException.class, () -> type.cast("TRUE"));
+    assertThrows(ExpressionException.class, () -> type.cast("TRUE"));
   }
 
   @Test
   void castToUnknown() {
     UnknownType type = Types.UNKNOWN;
-    assertThrows(ConversionException.class, () -> type.cast(null));
-    assertThrows(ConversionException.class, () -> type.cast(true));
-    assertThrows(ConversionException.class, () -> type.cast("Test", "MM"));
+    assertThrows(ExpressionException.class, () -> type.cast(null));
+    assertThrows(ExpressionException.class, () -> type.cast(true));
+    assertThrows(ExpressionException.class, () -> type.cast("Test", "MM"));
   }
 
   @Test
@@ -436,7 +435,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(BigDecimal.ONE, type.convert(true, BigDecimal.class));
     assertEquals(BigDecimal.ZERO, type.convert(false, BigDecimal.class));
 
-    assertThrows(ConversionException.class, () -> type.convert(true, ZonedDateTime.class));
+    assertThrows(ExpressionException.class, () -> type.convert(true, ZonedDateTime.class));
   }
 
   @Test
@@ -454,7 +453,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(123), type.convert(123L, Long.class));
     assertEquals(BigDecimal.valueOf(123), type.convert(123L, BigDecimal.class));
 
-    assertThrows(ConversionException.class, () -> type.convert(1672185600L, ZonedDateTime.class));
+    assertThrows(ExpressionException.class, () -> type.convert(1672185600L, ZonedDateTime.class));
   }
 
   @Test
@@ -472,7 +471,7 @@ public class TypeTest extends ExpressionTest {
         BigDecimal.valueOf(-123.045), type.convert(new BigDecimal("-123.045"), BigDecimal.class));
 
     assertThrows(
-        ConversionException.class,
+            ExpressionException.class,
         () -> type.convert(new BigDecimal("-123.045"), ZonedDateTime.class));
   }
 
@@ -510,6 +509,6 @@ public class TypeTest extends ExpressionTest {
     assertEquals(BigDecimal.valueOf(1672185600L), type.convert(date, BigDecimal.class));
     assertEquals("2022-12-28", type.convert(date, String.class));
 
-    assertThrows(ConversionException.class, () -> type.convert(date, Boolean.class));
+    assertThrows(ExpressionException.class, () -> type.convert(date, Boolean.class));
   }
 }

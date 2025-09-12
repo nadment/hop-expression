@@ -19,7 +19,6 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
@@ -32,18 +31,18 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     // Utility class
   }
 
-  public static BigDecimal convert(final String str) throws ConversionException {
+  public static BigDecimal convert(final String str) throws ExpressionException {
     try {
       return FORMAT.parse(str);
     } catch (ExpressionException e) {
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.NUMBER, str);
     }
   }
 
-  public static BigDecimal convert(final byte[] bytes) throws ConversionException {
+  public static BigDecimal convert(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
     long result = 0;
     for (byte aByte : bytes) {
@@ -53,7 +52,7 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     return new BigDecimal(result);
   }
 
-  public static BigDecimal convert(final ZonedDateTime datetime) throws ConversionException {
+  public static BigDecimal convert(final ZonedDateTime datetime) throws ExpressionException {
 
     BigDecimal result = new BigDecimal(datetime.toEpochSecond());
     int nanos = datetime.getNano();

@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ExpressionException;
 
 public final class AnyType extends Type {
 
@@ -45,7 +45,7 @@ public final class AnyType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
 
     if (value == null) {
       return null;

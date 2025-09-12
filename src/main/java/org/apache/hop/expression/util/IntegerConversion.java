@@ -20,8 +20,8 @@ package org.apache.hop.expression.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class IntegerConversion extends Conversion<Long> {
@@ -38,26 +38,26 @@ public final class IntegerConversion extends Conversion<Long> {
     // Utility class
   }
 
-  public static Long convert(final BigDecimal number) throws ConversionException {
+  public static Long convert(final BigDecimal number) throws ExpressionException {
     BigInteger integer = number.toBigInteger();
     if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
-      throw new ConversionException(ErrorCode.CONVERSION_OVERFLOW, number);
+      throw new ExpressionException(ErrorCode.CONVERSION_OVERFLOW, number);
     return number.longValue();
   }
 
-  public static Long convert(final String str) throws ConversionException {
+  public static Long convert(final String str) throws ExpressionException {
     try {
       BigDecimal number = numberFormat.parse(str);
       return convert(number);
     } catch (Exception e) {
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INTEGER, str);
     }
   }
 
-  public static Long convert(final byte[] bytes) throws ConversionException {
+  public static Long convert(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.INTEGER, bytes);
     long result = 0;
     for (byte aByte : bytes) {
@@ -67,7 +67,7 @@ public final class IntegerConversion extends Conversion<Long> {
     return result;
   }
 
-  public static Long convert(final ZonedDateTime datetime) throws ConversionException {
+  public static Long convert(final ZonedDateTime datetime) throws ExpressionException {
     return datetime.toEpochSecond();
   }
 

@@ -21,8 +21,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 
@@ -91,7 +91,7 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
+  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -113,7 +113,7 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public BigDecimal cast(final Object value) throws ConversionException {
+  public BigDecimal cast(final Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -126,7 +126,7 @@ public final class NumberType extends Type {
    * @return the converted value
    */
   @Override
-  public BigDecimal cast(final Object value, final String pattern) throws ConversionException {
+  public BigDecimal cast(final Object value, final String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -156,7 +156,7 @@ public final class NumberType extends Type {
       return NumberConversion.convert(dt);
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 

@@ -22,8 +22,8 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.BinaryConversion;
 import org.apache.hop.expression.util.BooleanConversion;
 import org.apache.hop.expression.util.DateTimeConversion;
@@ -80,7 +80,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -112,7 +112,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public String cast(final Object value) throws ConversionException {
+  public String cast(final Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -126,7 +126,7 @@ public final class StringType extends Type {
    * @return the converted value
    */
   @Override
-  public String cast(final Object value, String pattern) throws ConversionException {
+  public String cast(final Object value, String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -161,7 +161,7 @@ public final class StringType extends Type {
     }
 
     if (result == null) {
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), this, value);
     }
 

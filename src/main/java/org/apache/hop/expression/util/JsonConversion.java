@@ -20,8 +20,8 @@ package org.apache.hop.expression.util;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class JsonConversion extends Conversion<JsonNode> {
@@ -36,14 +36,14 @@ public final class JsonConversion extends Conversion<JsonNode> {
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode convert(final String str) throws ConversionException {
+  public static JsonNode convert(final String str) throws ExpressionException {
     if (str == null) return null;
     try {
       JsonMapper mapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return mapper.readTree(str);
     } catch (Exception e) {
-      throw new ConversionException(
+      throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
     }
   }

@@ -19,8 +19,8 @@ package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.IntegerConversion;
 
 public final class IntegerType extends Type {
@@ -119,7 +119,7 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
+  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -141,12 +141,12 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public Long cast(final Object value) throws ConversionException {
+  public Long cast(final Object value) throws ExpressionException {
     return cast(value, null);
   }
 
   @Override
-  public Long cast(final Object value, String pattern) throws ConversionException {
+  public Long cast(final Object value, String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -170,7 +170,7 @@ public final class IntegerType extends Type {
       return IntegerConversion.convert(datetime);
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 

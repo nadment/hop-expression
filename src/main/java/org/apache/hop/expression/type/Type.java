@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import java.util.Objects;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 
@@ -224,10 +223,10 @@ public abstract class Type {
    * @param value the value to convert
    * @param clazz Desired Java type
    * @return the converted value
-   * @throws ConversionException if the casting fail
+   * @throws ExpressionException if the casting fail
    */
-  public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
-    throw new ConversionException(
+  public <T> T convert(final Object value, Class<T> clazz) throws ExpressionException {
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION,
         value,
         TypeName.fromValue(value),
@@ -239,10 +238,10 @@ public abstract class Type {
    *
    * @param value the value to convert
    * @return the converted value
-   * @throws ConversionException if the casting fail
+   * @throws ExpressionException if the casting fail
    */
-  public Object cast(final Object value) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
+  public Object cast(final Object value) throws ExpressionException {
+    throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
   }
 
   /**
@@ -252,10 +251,10 @@ public abstract class Type {
    * @param pattern the optional pattern to use for conversion to string when value is date or
    *     numeric, or null if none
    * @return the converted value
-   * @throws ConversionException if the casting fail
+   * @throws ExpressionException if the casting fail
    */
-  public Object cast(final Object value, final String pattern) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
+  public Object cast(final Object value, final String pattern) throws ExpressionException {
+    throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
   }
 
   /** Gets a string representation of this type for LITERAL string for the type. */

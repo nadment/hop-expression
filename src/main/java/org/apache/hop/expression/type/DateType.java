@@ -19,8 +19,8 @@ package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.IntegerConversion;
@@ -54,7 +54,7 @@ public final class DateType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -74,7 +74,7 @@ public final class DateType extends Type {
   }
 
   @Override
-  public ZonedDateTime cast(final Object value) throws ConversionException {
+  public ZonedDateTime cast(final Object value) throws ExpressionException {
     return cast(value, "FXYYYY-MM-DD");
   }
 
@@ -82,12 +82,12 @@ public final class DateType extends Type {
    * Convert a value to the specified type {@link DateType} with a pattern.
    *
    * @param value the value to convert
-   * @param pattern the optional pattern to use for conversion to string when value is date or
+   * @param pattern the optional pattern to use for conversion to string when the value is date or
    *     numeric, or null if none
    * @return the converted value
    */
   @Override
-  public ZonedDateTime cast(final Object value, final String pattern) throws ConversionException {
+  public ZonedDateTime cast(final Object value, final String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -106,7 +106,7 @@ public final class DateType extends Type {
       return DateTimeConversion.convert(number);
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 

@@ -60,6 +60,6 @@ class ArrayTest extends ExpressionTest {
     assertEquals("[1,0,NULL]", array1.toString());
 
     // Not evaluable alone
-    assertThrows(ConversionException.class, () -> array1.getValue(String.class));
+    assertThrows(ExpressionException.class, () -> array1.getValue(String.class));
   }
 }

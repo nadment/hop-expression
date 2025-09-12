@@ -226,7 +226,7 @@ public class Identifier implements IExpression {
         default:
           // Internal error
       }
-    } catch (ConversionException e) {
+    } catch (ExpressionException e) {
       throw e;
     } catch (Exception e) {
       // Ignore

@@ -17,8 +17,8 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class BooleanConversion extends Conversion<Boolean> {
@@ -78,7 +78,7 @@ public final class BooleanConversion extends Conversion<Boolean> {
         break;
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.BOOLEAN, value);
   }
 

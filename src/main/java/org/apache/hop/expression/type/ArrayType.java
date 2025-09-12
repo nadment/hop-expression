@@ -18,7 +18,7 @@
 package org.apache.hop.expression.type;
 
 import java.util.Objects;
-import org.apache.hop.expression.ConversionException;
+import org.apache.hop.expression.ExpressionException;
 
 public final class ArrayType extends Type {
 
@@ -72,7 +72,7 @@ public final class ArrayType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
     if (value == null) {
       return null;
     }

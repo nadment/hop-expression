@@ -18,8 +18,8 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.BooleanConversion;
 
 public final class BooleanType extends Type {
@@ -45,7 +45,7 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
+  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -67,7 +67,7 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public Boolean cast(final Object value) throws ConversionException {
+  public Boolean cast(final Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -80,7 +80,7 @@ public final class BooleanType extends Type {
    * @return the converted value
    */
   @Override
-  public Boolean cast(final Object value, final String pattern) throws ConversionException {
+  public Boolean cast(final Object value, final String pattern) throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -98,7 +98,7 @@ public final class BooleanType extends Type {
       return BooleanConversion.convert(str);
     }
 
-    throw new ConversionException(
+    throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
