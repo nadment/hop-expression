@@ -806,7 +806,8 @@ public class ExpressionParser {
       // Return as BINARY
       return Literal.of(bytes);
     } catch (Exception e) {
-      throw new ExpressionParseException(token.start(), ErrorCode.UNPARSABLE_BINARY, token.text());
+      throw new ExpressionParseException(
+          token.start(), ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT, token.text(), "HEX");
     }
   }
 

@@ -40,5 +40,5 @@ Boolean
 == Examples
 
 ----
-ARRAY_CONTAINS([1,2,3],2) = TRUE
+ARRAY_CONTAINS([1,2,3],2) return TRUE
 ----

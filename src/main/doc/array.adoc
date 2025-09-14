@@ -39,5 +39,5 @@ This function returns an ARRAY
 == Examples
 
 ----
-ARRAY(1,2,3) = [1,2,3]
+ARRAY(1,2,3) return [1,2,3]
 ----

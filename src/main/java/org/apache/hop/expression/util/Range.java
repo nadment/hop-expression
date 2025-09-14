@@ -249,7 +249,7 @@ public final class Range<T extends Comparable<? super T>> {
       if (other == AboveAll.INSTANCE) {
         return -1;
       }
-      int result = Range.compareOrThrow(endpoint, other.endpoint);
+      int result = Range.compareOrThrow(this.endpoint, other.endpoint);
       if (result != 0) {
         return result;
       }

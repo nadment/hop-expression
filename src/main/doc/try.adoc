@@ -14,42 +14,34 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_BOOLEAN, TRY_TO_BOOLEAN
+= TRY
 
-Converts the input text or numeric expression to a Boolean value.
+The function ensures that errors during expression evaluation result in NULL instead of causing an error.
 
 == Syntax
 
 ----
-TO_BOOLEAN( {string | numeric} )
-TRY_TO_BOOLEAN( {string | numeric} )
+TRY( expression )
 ----
+
+== Arguments
+
+expression:: A string expression
 
 == Returns
 
-Boolean
+The data type of the returned value is the same as the data type of the expression.
 
 == Usage
 
-If the conversion is not possible, TO_BOOLEAN raises an error and TRY_TO_BOOLEAN returns a NULL value.
-
-=== For a text expression, string must be
-
-* 'true', 't', 'yes', 'y', 'on', '1' return TRUE
-* 'false', 'f', 'no', 'n', 'off', '0' return FALSE
-* TO_BOOLEAN return an error for all other strings
-* TRY_TO_BOOLEAN return NULL for all other strings
-
-Strings are case-insensitive.
-
-=== For a numeric expression
-* 0 returns FALSE.
-* All non-zero values return TRUE.
+* Returns NULL if argument is NULL. 
 
 == Examples
 
-----
-TO_BOOLEAN('no') return FALSE
-TO_BOOLEAN(2) return TRUE
-----
+The following calls return errors when invoked without the TRY expression. When they are wrapped into as TRY expression, they return NULL:
 
+----
+TRY(5/0) return NULL
+TRY('abc'::INTEGER) return NULL
+TRY(LN(0)) return NULL
+----

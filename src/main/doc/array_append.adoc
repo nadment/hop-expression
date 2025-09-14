@@ -40,5 +40,5 @@ Returns an array.
 == Examples
 
 ----
-ARRAY_APPEND([1,2,3],4) = [1,2,3,4]
+ARRAY_APPEND([1,2,3],4) return [1,2,3,4]
 ----

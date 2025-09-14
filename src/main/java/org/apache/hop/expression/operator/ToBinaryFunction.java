@@ -87,7 +87,7 @@ public class ToBinaryFunction extends Function {
       try {
         return Hex.decode(value);
       } catch (Exception e) {
-        throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY, value);
+        throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT, value, "HEX");
       }
     }
   }
@@ -118,7 +118,7 @@ public class ToBinaryFunction extends Function {
       try {
         return Base64.getDecoder().decode(value);
       } catch (Exception e) {
-        throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY, value);
+        throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT, value, "BASE64");
       }
     }
   }

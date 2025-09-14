@@ -41,5 +41,5 @@ Returns a string value.
 == Examples
 
 ----
-ARRAY_TO_STRING(['Hello','world'],' ')
+ARRAY_TO_STRING(['Hello','world'],' ') return 'Hello world'
 ----

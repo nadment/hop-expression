@@ -265,6 +265,58 @@ public class FunctionTest extends ExpressionTest {
     }
   }
 
+  @Nested
+  class Try {
+
+    /** Exceptions that should be suppressed */
+    @Test
+    void exceptionSuppressed() throws Exception {
+      // @code{ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT}
+      evalEquals("TRY('123'::INTEGER)", 123L).returnType(IntegerType.INTEGER_NOT_NULL);
+      evalNull("TRY('abc'::INTEGER)").returnType(IntegerType.INTEGER);
+      optimize("TRY('abc'::INTEGER)", "NULL");
+
+      // @code{ErrorCode.UNPARSABLE_DATE_WITH_FORMAT}
+      evalEquals("TRY(CAST('0000-01-01' AS DATE))", LocalDate.of(0, 1, 1))
+          .returnType(DateType.DATE_NOT_NULL);
+      evalNull("TRY(CAST('0000-00-01' AS DATE))").returnType(DateType.DATE);
+      optimize("TRY(CAST('0000-00-01' AS DATE))", "NULL");
+
+      // @code{ErrorCode.UNPARSABLE_BINARY}
+      evalNull("TRY(TO_BINARY('0Z','HEX'))").returnType(BinaryType.BINARY);
+      optimize("TRY(TO_BINARY('0Z','HEX'))", "NULL");
+
+      // @code{ErrorCode.ARITHMETIC_OVERFLOW}
+      evalNull("TRY(9223372036854775807::INTEGER+1::INTEGER)").returnType(IntegerType.INTEGER);
+      optimize("TRY(9223372036854775807::INTEGER+1::INTEGER)", "NULL");
+
+      // @code{ErrorCode.CONVERSION_OVERFLOW}
+      evalNull("TRY(CAST(9223372036854775808 as INTEGER))").returnType(IntegerType.INTEGER);
+      optimize("TRY(CAST(9223372036854775808 as INTEGER))", "NULL");
+
+      // @code{ErrorCode.CONVERSION_ERROR}
+      evalNull("TRY('ABC'::Boolean)").returnType(BooleanType.BOOLEAN);
+      optimize("TRY('ABC'::Boolean)", "NULL");
+
+      // @code{ErrorCode.DIVISION_BY_ZERO}
+      evalEquals("TRY(5.2/2)", 2.6D).returnType(NumberType.of(7, 6, false));
+      evalNull("TRY(5.2/0)").returnType(NumberType.of(7, 6));
+      optimize("TRY(5.2/0)", "NULL");
+
+      // @code{ErrorCode.ARGUMENT_OUT_OF_RANGE}
+      evalEquals("TRY(LN(1))", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
+      evalNull("TRY(LN(0))").returnType(NumberType.NUMBER);
+      optimize("TRY(LN(0))", "NULL");
+    }
+
+    /** Exceptions that should not be suppressed */
+    @Test
+    void exceptionNotSuppressed() throws Exception {
+      evalFails("TRY(ERROR('test'))", ErrorCode.MESSAGE_ERROR);
+      evalFails("TRY(CAST(TRUE as INET))", ErrorCode.UNSUPPORTED_CONVERSION);
+    }
+  }
+
   @Test
   void Try_Cast() throws Exception {
 
@@ -320,9 +372,11 @@ public class FunctionTest extends ExpressionTest {
     // Bad format
     evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
 
-    optimize("TRY_CAST(FIELD_STRING AS BINARY)");
-    optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)");
-    optimize("TRY_CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')");
+    optimize("TRY_CAST(FIELD_STRING AS BINARY)", "TRY(CAST(FIELD_STRING AS BINARY))");
+    optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)", "TRY(CAST(FIELD_INTEGER AS NUMBER))");
+    optimize(
+        "TRY_CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')",
+        "TRY(CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD'))");
   }
 
   @Test
@@ -351,7 +405,7 @@ public class FunctionTest extends ExpressionTest {
     evalFails("TRY_TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("TRY_TO_BINARY('te','t','s')", ErrorCode.TOO_MANY_ARGUMENT);
 
-    optimize("TRY_TO_BINARY(FIELD_STRING)");
+    optimize("TRY_TO_BINARY(FIELD_STRING)", "TRY(TO_BINARY(FIELD_STRING))");
   }
 
   @Test
@@ -370,7 +424,7 @@ public class FunctionTest extends ExpressionTest {
     evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("TRY_TO_BOOLEAN('yes',3)", ErrorCode.TOO_MANY_ARGUMENT);
 
-    optimize("TRY_TO_BOOLEAN(FIELD_STRING)");
+    optimize("TRY_TO_BOOLEAN(FIELD_STRING)", "TRY(TO_BOOLEAN(FIELD_STRING))");
   }
 
   @Test
@@ -397,7 +451,7 @@ public class FunctionTest extends ExpressionTest {
         new BigDecimal("1284352323.123456789"));
     evalNull("TRY_TO_NUMBER(NULL_DATE)");
 
-    optimize("TRY_TO_NUMBER(FIELD_STRING)");
+    optimize("TRY_TO_NUMBER(FIELD_STRING)", "TRY(TO_NUMBER(FIELD_STRING))");
   }
 
   @Test
@@ -435,7 +489,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals(
         "TRY_TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
 
-    optimize("TRY_TO_DATE(FIELD_STRING)");
+    optimize("TRY_TO_DATE(FIELD_STRING)", "TRY(TO_DATE(FIELD_STRING))");
   }
 
   @Test
@@ -456,7 +510,7 @@ public class FunctionTest extends ExpressionTest {
     evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Try_To_Json(FIELD_JSON, NULL_JSON)", ErrorCode.TOO_MANY_ARGUMENT);
 
-    optimize("TRY_TO_JSON(FIELD_STRING)");
+    optimize("TRY_TO_JSON(FIELD_STRING)", "TRY(TO_JSON(FIELD_STRING))");
   }
 
   @Test
@@ -3988,11 +4042,6 @@ public class FunctionTest extends ExpressionTest {
         "JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')",
         "JSON '{\"name\":\"Smith\",\"langue\":\"english\"}'");
     optimize("JSON_OBJECT(KEY 'name' VALUE FIELD_STRING,KEY 'langue' VALUE 'english')");
-  }
-
-  @Test
-  void z() throws Exception {
-    evalFails("Json_Object(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
   }
 
   @Test

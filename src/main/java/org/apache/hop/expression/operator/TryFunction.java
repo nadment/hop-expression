@@ -16,15 +16,19 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-/** For now, it is an internal function so as not to duplicate the code in the TRY_XXX functions. */
+/**
+ * The function ensures that errors during expression evaluation result in NULL instead of causing
+ * an error.
+ */
+@FunctionPlugin
 public class TryFunction extends Function {
 
   public static final TryFunction INSTANCE = new TryFunction();
@@ -40,21 +44,16 @@ public class TryFunction extends Function {
     } catch (ExpressionException exception) {
       return switch (exception.getErrorCode()) {
         case ARITHMETIC_OVERFLOW,
+                ARGUMENT_OUT_OF_RANGE,
                 DIVISION_BY_ZERO,
                 CONVERSION_ERROR,
                 CONVERSION_OVERFLOW,
                 UNPARSABLE_NUMBER_WITH_FORMAT,
                 UNPARSABLE_DATE_WITH_FORMAT,
-                UNPARSABLE_BINARY ->
+                UNPARSABLE_BINARY_WITH_FORMAT ->
             null;
         default -> throw exception;
       };
     }
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("TRY_");
-    operands[0].unparse(writer, 0, 0);
   }
 }

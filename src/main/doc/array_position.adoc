@@ -38,5 +38,5 @@ Integer
 == Examples
 
 ----
-ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon') = 2
+ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon') return 2
 ----

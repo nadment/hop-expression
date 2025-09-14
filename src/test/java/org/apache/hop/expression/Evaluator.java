@@ -57,9 +57,8 @@ public class Evaluator {
               + expression.getCost()
               + ")"
               + ANSI_RESET);
-
     } catch (Exception ex) {
-      System.err.println(
+      System.out.println(
           ANSI_WHITE + source + ANSI_YELLOW + " → " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
     }
@@ -70,7 +69,8 @@ public class Evaluator {
     try {
       return expression.getValue();
     } catch (Exception ex) {
-      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+      System.out.println(
+          ANSI_WHITE + source + ANSI_YELLOW + " → " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
     }
   }
@@ -79,7 +79,8 @@ public class Evaluator {
     try {
       return expression.getValue(clazz);
     } catch (Exception ex) {
-      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+      System.err.println(
+          ANSI_WHITE + source + ANSI_YELLOW + " → " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
     }
   }

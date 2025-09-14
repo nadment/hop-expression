@@ -83,7 +83,12 @@ public class CastFunction extends Function {
 
       // Cast constant value
       if (call.getOperand(0).isConstant() && call.getOperand(0).getType().isAtomic()) {
-        return new Literal(call.getValue(), call.getType());
+        try {
+          return new Literal(call.getValue(), call.getType());
+        } catch (Exception e) {
+          // If an error occurs, do not change the call
+          return call;
+        }
       }
 
       // Remove unnecessary chained cast CAST(CAST(x as type(10)) as type(5)) → CAST(x as type(5))

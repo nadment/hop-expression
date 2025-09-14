@@ -40,5 +40,5 @@ Returns an array.
 == Examples
 
 ----
-ARRAY_PREPEND(0,[1,2,3]) = [0,1,2,3]
+ARRAY_PREPEND(0,[1,2,3]) return [0,1,2,3]
 ----

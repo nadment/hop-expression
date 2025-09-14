@@ -35,9 +35,9 @@ Number
 == Examples
 
 ----
-ROUND( 28.05) = 28
-ROUND( 28.05, 1 ) = 28.1
-ROUND( 28.05, -1 ) = 30
+ROUND( 28.05) return 28
+ROUND( 28.05, 1 ) return 28.1
+ROUND( 28.05, -1 ) return 30
 ----
 
 == See also 

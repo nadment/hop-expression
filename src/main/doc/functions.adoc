@@ -211,6 +211,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:to_json.adoc["TO_JSON",role=fun]
 * xref:to_number.adoc["TO_NUMBER",role=fun]
 * xref:translate.adoc["TRANSLATE",role=fun]
+* xref:try.adoc["TRY",role=fun]
 * xref:trim.adoc["TRIM",role=fun]
 * xref:truncate.adoc["TRUNCATE",role=fun]
 * xref:cast.adoc["TRY_CAST",role=fun]

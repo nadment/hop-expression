@@ -274,7 +274,7 @@ public class LiteralTest extends ExpressionTest {
     // Minimum precision for empty binary is 1
     evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1, false));
 
-    evalFails("BINARY '0Z'", ErrorCode.UNPARSABLE_BINARY);
+    evalFails("BINARY '0Z'", ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT);
 
     optimize("BINARY '12AF'", "BINARY '12AF'");
   }

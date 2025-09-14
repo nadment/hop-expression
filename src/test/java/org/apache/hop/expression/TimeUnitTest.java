@@ -40,6 +40,7 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.DAY, TimeUnit.of("dayS"));
     assertEquals(TimeUnit.DAY, TimeUnit.of("dayofmonth"));
     assertEquals(TimeUnit.DAYOFWEEK, TimeUnit.of("DayOfWeek"));
+    assertEquals(TimeUnit.EPOCH, TimeUnit.of("Epoch"));
     assertEquals(TimeUnit.HOUR, TimeUnit.of("HOUR"));
     assertEquals(TimeUnit.HOUR, TimeUnit.of("hours"));
     assertEquals(TimeUnit.MINUTE, TimeUnit.of("minute"));
@@ -62,6 +63,8 @@ public class TimeUnitTest extends ExpressionTest {
 
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
     assertNotEquals(null, TimeUnit.of("HOUR"));
+
+    // TODO: throw exception or return NULL ?
     assertNull(TimeUnit.of("NOP"));
   }
 }
