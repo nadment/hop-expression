@@ -57,6 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {
+    protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
 
   // TODO: Use Junit 5  @RegisterExtension static RestoreHopEngineEnvironmentExtension env = new
   // RestoreHopEngineEnvironmentExtension();

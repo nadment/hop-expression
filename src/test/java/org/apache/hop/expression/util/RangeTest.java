@@ -20,10 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
-import org.apache.hop.expression.ExpressionTest;
 import org.junit.jupiter.api.Test;
 
-public class RangeTest extends ExpressionTest {
+public class RangeTest {
 
   @Test
   void lessThan() {
@@ -149,7 +148,4 @@ public class RangeTest extends ExpressionTest {
             .intersect(Range.of(5L, Range.BoundType.INCLUSIVE, 9L, Range.BoundType.EXCLUSIVE))
             .toString());
   }
-
-  @Test
-  void x() {}
 }

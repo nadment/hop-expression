@@ -79,7 +79,7 @@ public class Evaluator {
     try {
       return expression.getValue(clazz);
     } catch (Exception ex) {
-      System.err.println(
+      System.out.println(
           ANSI_WHITE + source + ANSI_YELLOW + " → " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
     }
