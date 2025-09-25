@@ -50,7 +50,15 @@ public final class StringConversion extends Conversion<String> {
   }
 
   public static String convert(final ZonedDateTime value) {
-    return DateTimeFormat.of("YYYY-MM-DD").format(value);
+    String pattern = "YYYY-MM-DD";
+    if (value.getNano() > 0) {
+      pattern = "YYYY-MM-DD HH24:MI:SS.FFFFFFFFF";
+    }
+    if (value.getHour() > 0 || value.getMinute() > 0 || value.getSecond() > 0) {
+      pattern = "YYYY-MM-DD HH24:MI:SS";
+    }
+
+    return DateTimeFormat.of(pattern).format(value);
   }
 
   public static String convert(final InetAddress value) {

@@ -57,7 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {
-    protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
+  protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
 
   // TODO: Use Junit 5  @RegisterExtension static RestoreHopEngineEnvironmentExtension env = new
   // RestoreHopEngineEnvironmentExtension();
@@ -111,6 +111,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
     rowMeta.addValueMeta(new ValueMetaBinary("NULL_BINARY"));
     rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
+    rowMeta.addValueMeta(new ValueMetaJson("NULL_INET"));
 
     // Zero values
     rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER_ZERO"));
@@ -123,6 +124,8 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_INTEGER"));
     rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_NUMBER"));
     rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_JSON"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_DATE"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_INET"));
 
     // Reserved words
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
@@ -139,10 +142,11 @@ public class ExpressionTest {
     RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
 
     Calendar calendar = Calendar.getInstance();
-    calendar.set(1981, Calendar.JUNE, 23);
+    calendar.set(1981, Calendar.JUNE, 23, 21, 44, 58);
+    calendar.set(Calendar.MILLISECOND, 123);
     calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 
-    Object[] row = new Object[37];
+    Object[] row = new Object[40];
     row[0] = "TEST";
     row[1] = calendar.getTime();
     row[2] = 40L;
@@ -150,8 +154,8 @@ public class ExpressionTest {
     row[4] = BigDecimal.valueOf(123456.789);
     row[5] = calendar.getTime();
     row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
-    row[7] = true;
-    row[8] = false;
+    row[7] = Boolean.TRUE;
+    row[8] = Boolean.FALSE;
     row[9] = "TEST".getBytes(Charsets.UTF_8);
     row[10] = InetAddress.getByName("10.10.10.1");
     // row[11] = JsonType.convertToJson("{\"sstudent\": [{\"id\":\"01\",name:\"Tom\",\"lastname\":
@@ -171,30 +175,33 @@ public class ExpressionTest {
     row[18] = null;
     row[19] = null;
     row[20] = null;
+    row[21] = null;
 
     // Zero values
-    row[21] = 0L;
-    row[22] = 0D;
-    row[23] = BigDecimal.ZERO;
+    row[22] = 0L;
+    row[23] = 0D;
+    row[24] = BigDecimal.ZERO;
 
     // String
-    row[24] = "True";
-    row[25] = "False";
-    row[26] = "25";
-    row[27] = "-12.56";
-    row[28] = "{id:\"01\",name:\"John\",age:29}";
+    row[25] = "True";
+    row[26] = "False";
+    row[27] = "25";
+    row[28] = "-12.56";
+    row[29] = "{id:\"01\",name:\"John\",age:29}";
+    row[30] = "2025-11-23";
+    row[31] = "10.10.10.1";
 
     // Reserved words
-    row[29] = 2020L;
-    row[30] = "Paris";
-    row[31] = true;
-    row[32] = "A";
-    row[33] = 2;
+    row[32] = 2020L;
+    row[33] = "Paris";
+    row[34] = true;
+    row[35] = "A";
+    row[36] = 2;
 
     // Identifier
-    row[34] = "SPACE";
-    row[35] = "UNDERSCORE";
-    row[36] = "lower";
+    row[37] = "SPACE";
+    row[38] = "UNDERSCORE";
+    row[39] = "lower";
 
     context.setRow(row);
 
@@ -419,6 +426,5 @@ public class ExpressionTest {
     // evalEquals("TIMESTAMP '2001-02-16 20:38:40' AT TIME ZONE 'Asia/Tokyo' AT TIME ZONE
     // 'America/Chicago'",  ZonedDateTime.of(2001, 2, 16, 5, 38, 40, 0,
     // ZoneId.of("America/Chicago")));
-    evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR);
   }
 }

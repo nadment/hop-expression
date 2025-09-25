@@ -19,9 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.InListOperator;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +37,6 @@ class CallTest extends ExpressionTest {
   void testCall() {
     Call call1 = new Call(3, AddOperator.INSTANCE, Literal.of(3), Literal.of(5));
     Call call2 = new Call(AddOperator.INSTANCE, List.of(Literal.of(3), Literal.of(5)));
-
     Call call3 = new Call(AddOperator.INSTANCE, Literal.of(3), Literal.of(6));
 
     Call call4 =
@@ -84,30 +89,47 @@ class CallTest extends ExpressionTest {
   }
 
   @Test
-  void testCoercion() throws Exception {
-
-    // Coercion to boolean
-    // evalTrue("FIELD_STRING_BOOLEAN_TRUE::BOOLEAN IS TRUE");
-    // evalTrue("FIELD_INTEGER::BOOLEAN IS TRUE");
-    // evalTrue("FIELD_NUMBER IS TRUE");
-    // evalTrue("Cast(Month(FIELD_DATE) as BOOLEAN)");
-    // evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
-
-    // Coercion to string
-    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(StringType.STRING);
-    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
-    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
-    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
-    //    evalEquals("Lower(FIELD_INTEGER::BOOLEAN)", "true");
-    //    evalEquals("Lower(FIELD_NUMBER::BOOLEAN)", "true");
-    //    evalEquals("Upper(FIELD_NUMBER::BOOLEAN)", "TRUE");
-    //    evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
-    //    evalEquals("Upper(FIELD_INTEGER::INTEGER)", "40");
-
-    // Coercion boolean to integer
-    evalEquals("Abs(FIELD_BOOLEAN_TRUE)", 1L);
-    // evalEquals("Abs(FIELD_STRING_NUMBER)", 12.56D);
+  void testImplicitCoercionToBoolean() throws Exception {
+    evalTrue("FIELD_INTEGER IS TRUE");
+    evalTrue("FIELD_NUMBER IS TRUE");
   }
+
+  @Test
+  void testImplicitCoercionToInteger() throws Exception {
+    evalEquals("Abs(FIELD_BOOLEAN_TRUE)", 1L).returnType(IntegerType.INTEGER);
+    evalEquals("1+FALSE", 1L);
+    evalEquals("TRUE+1", 2L);
+  }
+
+  @Test
+  void testImplicitCoercionToNumber() throws Exception {
+    evalEquals("Cos(FIELD_BOOLEAN_FALSE)", BigDecimal.ONE).returnType(NumberType.NUMBER);
+    evalEquals("Cos(FIELD_INTEGER)", new BigDecimal("-0.6669380616522618443840927819337"))
+        .returnType(NumberType.NUMBER);
+  }
+
+  @Test
+  void testImplicitCoercionToDate() throws Exception {
+    evalEquals("FIRST_DAY(FIELD_TIMESTAMP)", LocalDate.of(2023, 2, 1)).returnType(DateType.DATE);
+  }
+
+  @Test
+  void testImplicitCoercionToString() throws Exception {
+    evalEquals("Upper(FIELD_BOOLEAN_TRUE)", "TRUE").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_INTEGER)", "40").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_NUMBER)", "-5.12").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_DATE)", "1981-06-23 21:44:58").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_TIMESTAMP)", "2023-02-28 22:11:01").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_INET)", "10.10.10.1").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_BINARY)", "TEST").returnType(StringType.STRING);
+    evalEquals(
+            "Upper(FIELD_JSON)",
+            "{\"STORE\":{\"BOOK\":[{\"CATEGORY\":\"REFERENCE\",\"AUTHOR\":\"NIGEL REES\",\"TITLE\":\"SAYINGS OF THE CENTURY\",\"PRICE\":8.95},{\"CATEGORY\":\"FICTION\",\"AUTHOR\":\"EVELYN WAUGH\",\"TITLE\":\"SWORD OF HONOUR\",\"PRICE\":12.99},{\"CATEGORY\":\"FICTION\",\"AUTHOR\":\"HERMAN MELVILLE\",\"TITLE\":\"MOBY DICK\",\"ISBN\":\"0-553-21311-3\",\"PRICE\":8.99},{\"CATEGORY\":\"FICTION\",\"AUTHOR\":\"J. R. R. TOLKIEN\",\"TITLE\":\"THE LORD OF THE RINGS\",\"ISBN\":\"0-395-19395-8\",\"PRICE\":22.99}],\"BICYCLE\":{\"COLOR\":\"RED\",\"PRICE\":19.95}}}")
+        .returnType(StringType.STRING);
+  }
+
+  @Test
+  void testImplicitCoercionToBinary() throws Exception {}
 
   @Test
   void normalizeReversibleOperator() throws Exception {

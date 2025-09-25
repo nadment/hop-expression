@@ -82,6 +82,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Year(NULL_DATE)").returnType(IntegerType.INTEGER);
+    evalNull("Year(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -122,6 +123,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Month(NULL_DATE)").returnType(IntegerType.INTEGER);
+    evalNull("Month(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Month()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -288,6 +290,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Quarter(NULL_DATE)").returnType(IntegerType.INTEGER);
+    evalNull("Quarter(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Quarter()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -324,6 +327,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Day(NULL_DATE)").returnType(IntegerType.INTEGER);
+    evalNull("Day(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -622,9 +626,11 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Hour() throws Exception {
     evalEquals("Hour(TIMESTAMP '2019-01-01 15:28:59')", 15L);
+    evalEquals("HOUR(FIELD_TIMESTAMP)", 22L);
 
     // Null handling
     evalNull("Hour(NULL_DATE)");
+    evalNull("Hour(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Hour()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -633,9 +639,11 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Minute() throws Exception {
     evalEquals("Minute(TIMESTAMP '2019-01-01 15:28:59')", 28L);
+    evalEquals("MINUTE(FIELD_TIMESTAMP)", 11L);
 
     // Null handling
     evalNull("Minute(NULL_DATE)");
+    evalNull("Minute(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Minute()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -644,7 +652,11 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Second() throws Exception {
     evalEquals("Second(TIMESTAMP '2019-01-01 15:28:59')", 59L);
+    evalEquals("MINUTE(FIELD_TIMESTAMP)", 11L);
+
+    // Null handling
     evalNull("Second(NULL_DATE)");
+    evalNull("Second(NULL_TIMESTAMP)");
 
     // Check operands
     evalFails("Second()", ErrorCode.NOT_ENOUGH_ARGUMENT);

@@ -19,6 +19,7 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -39,10 +40,11 @@ public final class IntegerConversion extends Conversion<Long> {
   }
 
   public static Long convert(final BigDecimal number) throws ExpressionException {
-    BigInteger integer = number.toBigInteger();
+    BigInteger integer = number.setScale(0, RoundingMode.HALF_UP).toBigInteger();
     if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
       throw new ExpressionException(ErrorCode.CONVERSION_OVERFLOW, number);
-    return number.longValue();
+
+    return integer.longValue();
   }
 
   public static Long convert(final String str) throws ExpressionException {

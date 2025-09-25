@@ -19,12 +19,9 @@ package org.apache.hop.expression.operator;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
-import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
@@ -109,6 +106,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("IS_DATE(FIELD_NUMBER,'YYYY-MM-DD')");
     evalFalse("IS_DATE(FIELD_BINARY,'YYYY-MM-DD')");
     evalFalse("IS_DATE(FIELD_JSON,'YYYY-MM-DD')");
+
+    // Check operands
+    evalFails("IS_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test

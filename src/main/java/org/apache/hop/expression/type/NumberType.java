@@ -156,9 +156,6 @@ public final class NumberType extends Type {
     if (value instanceof String str) {
       return NumberConversion.convert(str);
     }
-    if (value instanceof byte[] bytes) {
-      return NumberConversion.convert(bytes);
-    }
     if (value instanceof ZonedDateTime dt) {
       return NumberConversion.convert(dt);
     }

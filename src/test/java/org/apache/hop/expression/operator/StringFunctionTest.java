@@ -599,7 +599,7 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Coercion to String
     evalEquals("Right(FIELD_BOOLEAN_TRUE,1)", "E");
-    evalEquals("Right(FIELD_DATE,2)", "23");
+    evalEquals("Right(FIELD_DATE,8)", "21:44:58");
 
     // Check operands
     evalFails("Right()", ErrorCode.NOT_ENOUGH_ARGUMENT);

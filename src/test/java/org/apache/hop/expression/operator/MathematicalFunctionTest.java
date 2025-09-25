@@ -67,6 +67,11 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Abs(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Abs(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Abs(FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Abs(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Abs(FIELD_TIMESTAMP)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Abs(FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Abs(FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("Abs(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("ABS(-FIELD_INTEGER)");

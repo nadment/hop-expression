@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import org.apache.hop.expression.type.DateType;
 import org.junit.jupiter.api.Test;
 
 public class IdentifierTest extends ExpressionTest {
@@ -120,6 +121,15 @@ public class IdentifierTest extends ExpressionTest {
   void coercionValueMetaBinary() throws Exception {
     // From binary value meta
     evalEquals("FIELD_BINARY::STRING", "TEST");
+  }
+
+  @Test
+  void coercionValueMetaDate() throws Exception {}
+
+  @Test
+  void coercionValueMetaTimestamp() throws Exception {
+    evalEquals("FIRST_DAY(FIELD_TIMESTAMP)", LocalDate.of(2023, 2, 1)).returnType(DateType.DATE);
+    evalEquals("HOUR(FIELD_TIMESTAMP)", 22L);
   }
 
   @Test

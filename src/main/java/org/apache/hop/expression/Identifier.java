@@ -168,7 +168,7 @@ public class Identifier implements IExpression {
             if (timestamp == null) {
               return null;
             }
-            return clazz.cast(timestamp.toLocalDateTime().atZone(ZoneOffset.UTC));
+            return type.convert(timestamp.toLocalDateTime().atZone(ZoneOffset.UTC), clazz);
           }
 
         case IValueMeta.TYPE_DATE:

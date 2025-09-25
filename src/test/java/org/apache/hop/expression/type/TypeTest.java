@@ -346,11 +346,18 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(3L), type.cast(3L));
     assertEquals(Long.valueOf(0L), type.cast(BigDecimal.ZERO));
     assertEquals(Long.valueOf(1L), type.cast(BigDecimal.ONE));
+
+    // Casting operations that result in loss of precision are allowed
     assertEquals(Long.valueOf(3L), type.cast(BigDecimal.valueOf(3.125)));
-    assertEquals(Long.valueOf(0L), type.cast("0.9"));
-    assertEquals(Long.valueOf(5L), type.cast("5.9"));
+    assertEquals(Long.valueOf(1L), type.cast(BigDecimal.valueOf(1.1)));
+    assertEquals(Long.valueOf(2L), type.cast(BigDecimal.valueOf(1.5)));
+    assertEquals(Long.valueOf(2L), type.cast(BigDecimal.valueOf(1.75)));
+    assertEquals(Long.valueOf(-2L), type.cast(BigDecimal.valueOf(-1.7)));
+
+    assertEquals(Long.valueOf(2L), type.cast("1.9"));
+    assertEquals(Long.valueOf(6L), type.cast("5.9"));
     assertEquals(Long.valueOf(-5L), type.cast("-5.2"));
-    assertEquals(Long.valueOf(15L), type.cast(new byte[] {0xF}));
+
     assertEquals(
         Long.valueOf(1672185600L),
         type.cast(LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC)));
@@ -365,20 +372,16 @@ public class TypeTest extends ExpressionTest {
     assertEquals(BigDecimal.ZERO, NumberType.of(10, 0).cast(BigDecimal.ZERO));
     assertEquals(new BigDecimal("0.00"), NumberType.of(10, 2).cast(BigDecimal.ZERO));
     assertEquals(BigDecimal.ZERO, type.cast("0"));
-    assertEquals(BigDecimal.ZERO, type.cast(new byte[] {0x00}));
     assertEquals(BigDecimal.ONE, type.cast(true));
     assertEquals(BigDecimal.ONE, type.cast(1L));
     assertEquals(BigDecimal.ONE, NumberType.of(10, 0).cast(BigDecimal.ONE));
     assertEquals(BigDecimal.ONE, type.cast("1"));
     assertEquals(new BigDecimal("0.1"), type.cast("0.1"));
     assertEquals(new BigDecimal("0.1"), type.cast(".1"));
-    assertEquals(BigDecimal.ONE, type.cast(new byte[] {0x01}));
     assertEquals(BigDecimal.valueOf(-356L), type.cast(-356L));
-    // assertEquals(BigDecimal.valueOf(-3.56E2D), type.cast(-3.56E+2D));
     assertEquals(new BigDecimal("0.000"), type.cast("0.000"));
     assertEquals(new BigDecimal("-3.56E2"), type.cast("-3.56E+2"));
     assertEquals(new BigDecimal("-2.3E-2"), type.cast("-2.3e-2"));
-    assertEquals(BigDecimal.valueOf(15), type.cast(new byte[] {0xF}));
     assertEquals(
         new BigDecimal("1672234375.123456789"),
         type.cast(ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneOffset.UTC)));
