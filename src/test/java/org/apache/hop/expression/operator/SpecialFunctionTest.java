@@ -21,8 +21,10 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import org.apache.hop.core.HopVersionProvider;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -57,6 +59,14 @@ class SpecialFunctionTest extends ExpressionTest {
     evalEquals("Current_User()", System.getProperty("user.name"))
         .returnType(StringType.of(System.getProperty("user.name").length(), false));
   }
+
+    @Test
+    void Current_Version() throws Exception {
+       HopVersionProvider versionProvider = new HopVersionProvider();
+       String version = versionProvider.getVersion()[0];
+
+       evalEquals("Current_Version()", version).returnType(StringType.of(version.length(), false));
+    }
 
   @Nested
   class Try {

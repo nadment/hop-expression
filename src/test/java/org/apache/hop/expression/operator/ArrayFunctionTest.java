@@ -123,9 +123,13 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], 10, 12)", "[]");
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -10, -12)", "[]");
 
+    // Null handling
     evalNull("ARRAY_SLICE(NULL, 2, 3)");
     evalNull("ARRAY_SLICE([1,2,3,4,5,6],NULL,3)");
     evalNull("ARRAY_SLICE([1,2,3,4,5,6],1,NULL)");
+
+    // Check operands
+    evalFails("ARRAY_SLICE([1,2,3,4,5,6],1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
   }
 
   @Test
@@ -134,6 +138,9 @@ class ArrayFunctionTest extends ExpressionTest {
         .returnType(StringType.STRING);
     evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(StringType.STRING);
     evalEquals("ARRAY_TO_STRING(['A',[4,8+2],'B'],'')", "A410B");
+
+    // Null handling
+    evalNull("ARRAY_TO_STRING(['Hello','world'],NULL::STRING)");
 
     // Check operands
     evalFails("ARRAY_TO_STRING([1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENT);

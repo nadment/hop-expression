@@ -701,6 +701,7 @@ public class OperatorTest extends ExpressionTest {
       // Normalize
       optimize("0/0");
       optimize("FIELD_INTEGER/4");
+      optimize("FIELD_NUMBER/FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
 
       // Simplify arithmetic with NULL
       optimizeNull("NULL::INTEGER/FIELD_INTEGER");

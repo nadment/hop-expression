@@ -170,9 +170,6 @@ public final class IntegerType extends Type {
     if (value instanceof String str) {
       return IntegerConversion.convert(str);
     }
-//    if (value instanceof byte[] bytes) {
-//      return IntegerConversion.convert(bytes);
-//    }
     if (value instanceof ZonedDateTime datetime) {
       return IntegerConversion.convert(datetime);
     }

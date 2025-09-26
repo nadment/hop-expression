@@ -52,8 +52,8 @@ If the cast is not possible, CAST raises an error and TRY_CAST return a NULL val
 * When converting a boolean to a number, false is 0 and true is 1. 
 * When converting a number to a number of another type, the value is checked for overflow. 
 * When converting a string to binary, it is hex encoded (every byte two characters).
-* When converting a integer to date, value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
-* When converting a number to date, value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
+* When converting an integer to date, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
+* When converting a number to date, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
 * When converting a date to integer, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
 * When converting a date to number, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
 
@@ -68,7 +68,7 @@ CAST('yes' AS BOOLEAN) result TRUE
 // if the cast is not possible, a NULL value is returned.
 TRY_CAST('-1234.56' AS INTEGER FORMAT '###0'))
 
-'-1234.56'::INTEGER result -1234
+'-1234.56'::INTEGER result -1235
 
 CAST('-1234.56' AS NUMBER FORMAT '###0.00')
 

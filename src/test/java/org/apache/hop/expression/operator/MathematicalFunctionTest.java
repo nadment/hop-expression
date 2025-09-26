@@ -122,6 +122,9 @@ class MathematicalFunctionTest extends ExpressionTest {
 
     // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
+    optimize("DIV0(-FIELD_NUMBER,FIELD_INTEGER)", "DIV0(-FIELD_NUMBER,FIELD_INTEGER)");
+    optimize("DIV0(FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,-FIELD_INTEGER)");
+    optimize("DIV0(FIELD_NUMBER,FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
   }
 
   @Test
