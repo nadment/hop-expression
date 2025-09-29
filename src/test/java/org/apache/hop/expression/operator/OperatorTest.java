@@ -2469,7 +2469,8 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Integer)", 1L);
       evalEquals("CAST(DATE '2019-02-25' AS INTEGER)", 1551052800L);
       evalEquals("CAST(DATE '1800-01-01' AS INTEGER)", -5364662400L);
-      evalEquals("Date '2025-12-23'::INTEGER", 1766448000L).returnType(IntegerType.INTEGER_NOT_NULL);
+      evalEquals("Date '2025-12-23'::INTEGER", 1766448000L)
+          .returnType(IntegerType.INTEGER_NOT_NULL);
 
       // Null
       evalNull("CAST(NULL_NUMBER as Integer)").returnType(IntegerType.INTEGER);
@@ -2553,7 +2554,7 @@ public class OperatorTest extends ExpressionTest {
 
       // String
       evalEquals("FIELD_STRING_NUMBER::NUMBER", new BigDecimal("-12.56"))
-                .returnType(NumberType.NUMBER);
+          .returnType(NumberType.NUMBER);
       evalEquals("CAST('0' as Number)", 0D).returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("CAST('1' As Number)", 1D);
       evalEquals("CAST('-1e-37' as Number(38,37))", -1e-37d);
@@ -2568,7 +2569,8 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST('1_2.3_4E1_0' as NUMBER)", 12.34E10D);
 
       // Date to Unix Epoch
-      evalEquals("FIELD_DATE::NUMBER", new BigDecimal("362180698.123")).returnType(NumberType.NUMBER);
+      evalEquals("FIELD_DATE::NUMBER", new BigDecimal("362180698.123"))
+          .returnType(NumberType.NUMBER);
       evalEquals("CAST(DATE '1970-01-01' as Number)", 0D).returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("CAST(DATE '2019-02-25' AS Number)", 1551052800D)
           .returnType(NumberType.NUMBER_NOT_NULL);

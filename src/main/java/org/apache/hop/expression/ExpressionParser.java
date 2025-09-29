@@ -1268,7 +1268,7 @@ public class ExpressionParser {
 
     operands.add(this.parseLogicalOr());
     if (isThenNext(Id.COMMA)) {
-      operands.add(this.parseLiteralString(next()));
+      operands.add(this.parseLogicalOr());
       if (isThenNext(Id.RETURNING)) {
         operands.add(this.parseLiteralType(next()));
       }

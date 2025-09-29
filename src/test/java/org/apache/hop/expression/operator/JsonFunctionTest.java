@@ -20,9 +20,13 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import java.math.BigDecimal;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -64,32 +68,33 @@ class JsonFunctionTest extends ExpressionTest {
     // evalEquals("Json_Value('[0, 1, 2, 3]', '$[1]')", 1L);
     // evalEquals("Json_Value('[{\"a\":100}, {\"a\":200}, {\"a\":300}]', '$[1].a')", 200L);
 
-    // Json 'null' should return a NULL value
+    // JSON 'null' should return a NULL value
     evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29, \"department\":null}','$.department')");
 
-    // Support Json without field name quotes
+    // Support JSON without field name quotes
     evalEquals("Json_Value('{name:\"Smith\", age:29}','$.name')", "Smith");
 
-    // Support Json function
+    // Support JSON function
     evalEquals("Json_Value(FIELD_JSON, '$..book.length()' RETURNING INTEGER)", 4L);
 
     // Return NULL from NULL value
     evalNull("Json_Value(NULL_STRING,'$.name')");
     evalNull("Json_Value(NULL_JSON,'$.name')");
 
-    // Return NULL if JsonPath does not match a value
+    // Return NULL if the JSON path does not match a value
     evalNull("Json_Value(FIELD_JSON,'$.notexist')");
 
-    // Return NULL if json path is null
+    // Return NULL if the JSON path is null
     evalNull("Json_Value(FIELD_JSON,NULL_STRING)");
 
     evalFails("Json_Value(FIELD_JSON)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Value(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
     evalFails("Json_Value(FIELD_JSON,'$.notexist' RETURNING INET)", ErrorCode.UNEXPECTED_DATA_TYPE);
   }
 
   @Test
   void Json_Query() throws Exception {
-    // No Json path
+    // No JSON path
     evalEquals(
             "Json_Query('{name:\"Smith\",age:29}'::JSON)",
             JsonConversion.convert("{name:\"Smith\",age:29}"))
@@ -133,13 +138,17 @@ class JsonFunctionTest extends ExpressionTest {
         "Json_Query(FIELD_JSON, '$..book[?(@.price<10)].price')",
         JsonConversion.convert("[8.95,8.99]"));
 
+    // Null handling
     evalNull("Json_Query(NULL_JSON,'$')").returnType(JsonType.JSON);
+    evalNull("Json_Query(FIELD_JSON,NULL_STRING)").returnType(JsonType.JSON);
+    evalNull("Json_Query(FIELD_JSON,'$.notexist')").returnType(JsonType.JSON);
 
     // Check operands
+    evalFails("Json_Query()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Query(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails(
-        "Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails(
-        "Json_Query('{\"name\":\"Smith\", \"age\":29}','$.notexist')", ErrorCode.ILLEGAL_ARGUMENT);
+        "Json_Query(JSON '{\"name\":\"Smith\", \"age\":29}','$$.invalid')",
+        ErrorCode.INVALID_JSON_PATH);
   }
 
   @Test
@@ -177,4 +186,48 @@ class JsonFunctionTest extends ExpressionTest {
         "JSON '{\"name\":\"Smith\",\"langue\":\"english\"}'");
     optimize("JSON_OBJECT(KEY 'name' VALUE FIELD_STRING,KEY 'langue' VALUE 'english')");
   }
+
+  @Test
+  void Json_Keys() throws Exception {
+    // No JSON path
+    evalEquals(
+        "Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}')",
+        new Array(ArrayType.of(StringType.STRING), Literal.of("a"), Literal.of("b")));
+
+    // Root JSON path
+    evalEquals(
+        "Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$')",
+        new Array(ArrayType.of(StringType.STRING), Literal.of("a"), Literal.of("b")));
+
+    evalEquals(
+        "Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$.b')",
+        new Array(ArrayType.of(StringType.STRING), Literal.of("c")));
+
+    // If the JSON object has no keys, an empty array is returned.
+    evalEquals("Json_Keys(JSON '{}')", new Array(ArrayType.of(StringType.STRING)));
+
+    // Keys are de-duplicated and returned in alphabetical order.
+    evalEquals(
+        "Json_Keys(JSON '{\"b\": 1, \"a\": 1, \"c\": 30, \"a\": 1}')",
+        new Array(
+            ArrayType.of(StringType.STRING), Literal.of("a"), Literal.of("b"), Literal.of("c")));
+
+    // Null handling
+    evalNull("Json_Keys(NULL_JSON)").returnType(ArrayType.of(StringType.STRING));
+    // evalNull("Json_Keys(NULL_STRING)").returnType(ArrayType.of(StringType.STRING));
+    evalNull("Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}',NULL_STRING)");
+
+    // Returns `NULL` if the given path does not locate an object
+    evalNull("Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$.c')");
+
+    // Check operands
+    evalFails("Json_Keys()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Keys(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails(
+        "Json_Keys(JSON '{\"name\":\"Smith\", \"age\":29}','$$.invalid')",
+        ErrorCode.INVALID_JSON_PATH);
+  }
+
+  @Test
+  void debug() throws Exception {}
 }

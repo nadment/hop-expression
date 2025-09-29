@@ -76,7 +76,7 @@ public enum ErrorCode {
   MISSING_RIGHT_PARENTHESIS,
   /** Unexpected character “{0}” */
   UNEXPECTED_CHARACTER,
-  /** Unexpected data type {1} with function {0} */
+  /** Unexpected data type {0} with function {1} */
   UNEXPECTED_DATA_TYPE,
   /** Arithmetic overflow in “{0}” operator (consider adding explicit CAST to NUMBER) */
   ARITHMETIC_OVERFLOW,
@@ -128,11 +128,7 @@ public enum ErrorCode {
   INVALID_REGEXP_ESCAPE,
   /** Data type “{0}” is not recognized */
   INVALID_TYPE,
-  /** JSON path is null */
-  JSON_PATH_IS_NULL,
-  /** JSON property cannot be found in the specified path “{0}” */
-  JSON_PATH_NOT_FOUND,
-  /** Error compile user defined function “{0}” */
+  /** Error compiles user defined function “{0}” */
   UDF_COMPILATION_ERROR,
   /** Conversion from {1} to {2} is not supported for value “{0}” */
   UNSUPPORTED_CONVERSION,

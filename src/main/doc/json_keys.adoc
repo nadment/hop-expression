@@ -14,31 +14,36 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= JSON_VALUE
+= JSON_KEYS
 
-Extracts scalar value from JSON object or string representing a JSON.
+Extracts unique JSON keys from a JSON expression.
 
 == Syntax
 
 ----
-JSON_VALUE( {string | json}, path )
+JSON_KEYS( {string | json} [, path] )
 ----
 
 == Returns
 
-Json
+Array of String
 
 == Usage
 
 * The path must begin with a dollar sign `$`, which represents the root. 
-* If the path does not match a value, `NULL` is returned.
+* Returns `NULL` if any of the arguments are null, a given path does not locate an object, or if the JSON argument is not an object.
+* If the JSON object has no keys, an empty array is returned.
+* Keys are de-duplicated and returned in alphabetical order.
+* Keys are case-sensitive.
 
 include::jsonpath.adoc[]
 
 == Examples
 
 ----
-JSON_VALUE('{"language":["English", "French"]}','$.language[1]') >>> French
-JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') >>> 12345
-JSON_VALUE(FIELD_JSON, '$..book.length()')
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}') >>> ['a','b']
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$') >>> ['a','b']
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$.b') >>> ['c']
+JSON_KEYS(JSON '{"b": 1, "a": 1, "c": 30, "a": 2}') >>> ['a','b','c']
+JSON_KEYS(JSON '{}') >>> []
 ----

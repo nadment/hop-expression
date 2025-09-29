@@ -416,15 +416,4 @@ public class ExpressionTest {
     assertEquals("NULL", evaluator.getExpression().toString());
     return evaluator;
   }
-
-  @Test
-  public void test() throws Exception {
-    // Locale.setDefault(new Locale("fr", "BE"));
-    // evalEquals("Json_Value('{\"name\":\"Smith\", \"createTime\":\"2024-06-14
-    // 13:07:21\"}','$.createTime' RETURNING DATE)", LocalDateTime.of(2024,6,14,13,7,21));
-    // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
-    // evalEquals("TIMESTAMP '2001-02-16 20:38:40' AT TIME ZONE 'Asia/Tokyo' AT TIME ZONE
-    // 'America/Chicago'",  ZonedDateTime.of(2001, 2, 16, 5, 38, 40, 0,
-    // ZoneId.of("America/Chicago")));
-  }
 }

@@ -20,8 +20,8 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
@@ -93,7 +93,8 @@ public class JsonValueFunction extends Function {
     if (jsonNode == null) return null;
 
     String path = operands[1].getValue(String.class);
-    if (path == null) throw new ExpressionException(ErrorCode.JSON_PATH_IS_NULL);
+    // Return NULL if the JSON path is null
+    if (path == null) return null;
 
     Object value = null;
     try {
@@ -125,7 +126,7 @@ public class JsonValueFunction extends Function {
         return result;
       }
 
-      // Json function can return integer
+      // JSON function can return integer
       else if (value instanceof Integer integer) {
         return Long.valueOf(integer);
       } else if (value instanceof Double number) {
@@ -134,13 +135,13 @@ public class JsonValueFunction extends Function {
 
       return value;
     } catch (PathNotFoundException e) {
-      // Return NULL if path not found
+        // Returns NULL if the path does not locate an object
       return null;
     } catch (ClassCastException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.ANY, value);
-    } catch (JsonPathException e) {
-      throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
+    } catch (InvalidPathException e) {
+        throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
   }
 }

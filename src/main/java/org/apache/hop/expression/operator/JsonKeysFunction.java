@@ -26,22 +26,32 @@ import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
 
 /**
- * Extracts a JSON fragment from a JSON object or string representing a JSON.
+ * Extracts unique JSON keys from a JSON expression.
  *
- * <p><code>JSON_QUERY( expression [, path] )</code>
+ * <p><code>JSON_KEYS( expression [, path] )</code>
  */
 @FunctionPlugin
-public class JsonQueryFunction extends Function {
+public class JsonKeysFunction extends Function {
 
   public static final Configuration JSONPATH_CONFIGURATION =
       Configuration.builder()
@@ -51,13 +61,13 @@ public class JsonQueryFunction extends Function {
           .jsonProvider(new JacksonJsonNodeJsonProvider())
           .build();
 
-  public JsonQueryFunction() {
+  public JsonKeysFunction() {
     super(
-        "JSON_QUERY",
-        ReturnTypes.JSON_NULLABLE,
+        "JSON_KEYS",
+        ReturnTypes.ARRAY_OF_STRING,
         OperandTypes.JSON.or(OperandTypes.JSON_STRING),
         OperatorCategory.JSON,
-        "/docs/json_query.html");
+        "/docs/json_keys.html");
   }
 
   @Override
@@ -65,19 +75,24 @@ public class JsonQueryFunction extends Function {
     JsonNode jsonNode = operands[0].getValue(JsonNode.class);
     if (jsonNode == null) return null;
 
-    if (operands.length == 1) return jsonNode;
-
-    String path = operands[1].getValue(String.class);
-    if (path == null) return null;
-
-    try {
-      JsonPath jsonPath = JsonPath.compile(path);
-      return jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-    } catch (PathNotFoundException e) {
-        // Returns NULL if the path does not locate an object
-        return null;
-    } catch (InvalidPathException e) {
-      throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
+    if (operands.length == 2) {
+      String path = operands[1].getValue(String.class);
+      if (path == null) return null;
+      try {
+        JsonPath jsonPath = JsonPath.compile(path);
+        jsonNode = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+      } catch (PathNotFoundException e) {
+          // Returns NULL if the path does not locate an object
+          return null;
+      } catch (InvalidPathException e) {
+        throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
+      }
     }
+
+    Set<IExpression> keys = new HashSet<>();
+    Iterator<String> iterator = jsonNode.fieldNames();
+    iterator.forEachRemaining(key -> keys.add(Literal.of(key)));
+
+    return new Array(ArrayType.of(StringType.STRING), keys);
   }
 }

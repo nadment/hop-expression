@@ -128,6 +128,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:is_number.adoc["IS_NUMBER",role=fun]
 * xref:isoweek.adoc["ISOWEEK",role=fun]
 * xref:julian_day.adoc["JULIAN_DAY",role=fun]
+* xref:json_keys.adoc["JSON_KEYS",role=fun]
 * xref:json_object.adoc["JSON_OBJECT",role=fun]
 * xref:json_query.adoc["JSON_QUERY",role=fun]
 * xref:json_value.adoc["JSON_VALUE",role=fun]
@@ -233,8 +234,3 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:year.adoc["YEAR",role=fun]
 * xref:years_between.adoc["YEARS_BETWEEN",role=fun]
 * xref:zeroifnull.adoc["ZEROIFNULL",role=fun]
-
-
-
-
-

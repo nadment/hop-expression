@@ -221,10 +221,10 @@ public final class OperandTypes {
 
   /** Operand type-checking strategy for JSON_VALUE function. */
   public static final IOperandTypeChecker JSON_VALUE =
-      sequence(JSON, TEXT)
-          .or(sequence(JSON, TEXT, DATATYPE))
-          .or(sequence(STRING, TEXT))
-          .or(sequence(STRING, TEXT, DATATYPE));
+      sequence(JSON, STRING)
+          .or(sequence(JSON, STRING, DATATYPE))
+          .or(sequence(STRING, STRING))
+          .or(sequence(STRING, STRING, DATATYPE));
 
   private OperandTypes() {
     // Utility class
