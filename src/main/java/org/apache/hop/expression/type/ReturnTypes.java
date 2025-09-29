@@ -95,8 +95,8 @@ public final class ReturnTypes {
           .andThen(TypeTransforms.TO_MAX_PRECISION)
           .andThen(TypeTransforms.LEAST_NULLABLE);
 
-    public static final IReturnTypeInference ARRAY_OF_STRING =
-            explicit(ArrayType.of(StringType.STRING));
+  public static final IReturnTypeInference ARRAY_OF_STRING =
+      explicit(ArrayType.of(StringType.STRING));
 
   /**
    * Type-inference strategy whereby the result type of the call is the element type of the array.

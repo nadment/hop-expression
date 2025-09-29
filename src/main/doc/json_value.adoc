@@ -38,7 +38,7 @@ include::jsonpath.adoc[]
 == Examples
 
 ----
-JSON_VALUE('{"language":["English", "French"]}','$.language[1]') >>> French
-JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') >>> 12345
+JSON_VALUE('{"language":["English", "French"]}','$.language[1]') return 'French'
+JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') return 12345
 JSON_VALUE(FIELD_JSON, '$..book.length()')
 ----

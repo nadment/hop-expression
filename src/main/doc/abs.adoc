@@ -35,6 +35,6 @@ The data type of the returned value is the same as the data type of the input va
 == Examples
 
 ----
-ABS(-123) = 123
-ABS(INTERVAL -5 YEARS) = INTERVAL 5 YEARS
+ABS(-123) return 123
+ABS(INTERVAL -5 YEARS) return INTERVAL 5 YEARS
 ----

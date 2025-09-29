@@ -37,8 +37,8 @@ If the conversion is not possible, TO_BOOLEAN raises an error and TRY_TO_BOOLEAN
 
 * 'true', 't', 'yes', 'y', 'on', '1' return TRUE
 * 'false', 'f', 'no', 'n', 'off', '0' return FALSE
-* TO_BOOLEAN return an error for all other strings
-* TRY_TO_BOOLEAN return NULL for all other strings
+* TO_BOOLEAN returns an error for all other strings
+* TRY_TO_BOOLEAN returns NULL for all other strings
 
 Strings are case-insensitive.
 

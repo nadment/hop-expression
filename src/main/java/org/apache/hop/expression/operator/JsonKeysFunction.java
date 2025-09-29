@@ -22,15 +22,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ErrorCode;
@@ -82,8 +78,8 @@ public class JsonKeysFunction extends Function {
         JsonPath jsonPath = JsonPath.compile(path);
         jsonNode = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
       } catch (PathNotFoundException e) {
-          // Returns NULL if the path does not locate an object
-          return null;
+        // Returns NULL if the path does not locate an object
+        return null;
       } catch (InvalidPathException e) {
         throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
       }

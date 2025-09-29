@@ -16,7 +16,7 @@ under the License.
 ////
 = RIGHT
 
-Extracts a number of characters from a string or bytes from binary starting from right.
+Extracts a number of characters from a string or bytes from a binary starting from right.
 		
 == Syntax
 
@@ -33,7 +33,7 @@ RIGHT( value, length )
 == Examples
 
 ----
-RIGHT('ABCDEF',3) = 'DEF'
+RIGHT('ABCDEF',3) return 'DEF'
 ----
 
 == See also

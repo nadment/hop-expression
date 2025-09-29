@@ -135,13 +135,13 @@ public class JsonValueFunction extends Function {
 
       return value;
     } catch (PathNotFoundException e) {
-        // Returns NULL if the path does not locate an object
+      // Returns NULL if the path does not locate an object
       return null;
     } catch (ClassCastException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.ANY, value);
     } catch (InvalidPathException e) {
-        throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
+      throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
   }
 }

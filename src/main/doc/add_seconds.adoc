@@ -31,5 +31,5 @@ Date
 == Usage
 
 * Decimals are rounded before adding that number.
-* The number of seconds, can be a positive or negative integer to either add or subtract seconds, respectively.
+* The number of seconds can be a positive or negative integer to either add or subtract seconds, respectively.
 * Returns NULL if one of the arguments is NULL.

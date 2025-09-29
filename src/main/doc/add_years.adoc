@@ -31,5 +31,5 @@ Date
 == Usage
 
 * Decimals are rounded before adding that number.
-* The number of years, can be a positive or negative integer to either add or subtract years, respectively.
+* The number of years can be a positive or negative integer to either add or subtract years, respectively.
 * Returns NULL if one of the arguments is NULL.

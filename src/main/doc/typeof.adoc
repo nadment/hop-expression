@@ -31,5 +31,5 @@ String, for example, `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
 == Examples
 
 ----
-TYPEOF('str') >>> STRING
+TYPEOF('str') return 'STRING'
 ----

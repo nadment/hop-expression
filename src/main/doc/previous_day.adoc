@@ -16,7 +16,7 @@ under the License.
 ////
 = PREVIOUS_DAY
 
-Returns the date of the first specified day of week that occurs before the input date.
+Returns the date of the first specified day of the week that occurs before the input date.
 
 == Syntax
 ----

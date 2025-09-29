@@ -37,7 +37,7 @@ String or Binary
 == Examples
 
 ----
-LEFT('ABCDEF',3) = 'ABC'
+LEFT('ABCDEF',3) return 'ABC'
 ----
 
 == See also 

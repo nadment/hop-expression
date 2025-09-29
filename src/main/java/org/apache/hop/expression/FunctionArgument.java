@@ -14,14 +14,15 @@
  */
 package org.apache.hop.expression;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class FunctionArgument {
+  @Getter @Setter @HopMetadataProperty private String name;
 
-  @HopMetadataProperty private String name;
-
-  @HopMetadataProperty private TypeName type;
+  @Getter @Setter @HopMetadataProperty private TypeName type;
 
   public FunctionArgument() {
     super();
@@ -30,22 +31,6 @@ public class FunctionArgument {
   public FunctionArgument(String name, TypeName type) {
     super();
     this.name = name;
-    this.type = type;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public TypeName getType() {
-    return type;
-  }
-
-  public void setType(TypeName type) {
     this.type = type;
   }
 

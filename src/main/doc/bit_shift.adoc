@@ -37,5 +37,5 @@ Integer
 
 == Usage
 
-* If absolute value of distance is larger than 64, there will be no error but will result in overflow/underflow.
+* If the absolute value of distance is larger than 64, there will be no error but will result in overflow/underflow.
 * Returns NULL if one of the arguments is NULL. 

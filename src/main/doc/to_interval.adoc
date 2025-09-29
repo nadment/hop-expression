@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_INTERVAL
 
-Converts the input text to a interval value.
+Converts the input text to an interval value.
 
 == Syntax
 
@@ -34,12 +34,12 @@ Interval
 
 == Examples
 
-The following example illustrate use of the verbose syntax
+The following example illustrates the use of the verbose syntax
 ----
 TO_INTERVAL('1 year 6 months 12 hours')
 ----
 
-The following example illustrate use of the short syntax
+The following example illustrates the use of the short syntax
 ----
 TO_INTERVAL('1-6 0 12:00:00')
 ----

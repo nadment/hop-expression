@@ -30,10 +30,10 @@ Integer
 
 == Usage
 
-* Returns NULL if expression is NULL. 
+* Returns NULL if the expression is NULL.
 
 == Examples
 
 ----
-LENGTH('ABC') = 3
+LENGTH('ABC') return 3
 ----

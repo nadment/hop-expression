@@ -34,7 +34,7 @@ Number
 == Examples
 
 ----
-CEIL( 28.05 ) = 29
+CEIL( 28.05 ) return 29
 ----
 
 == See also

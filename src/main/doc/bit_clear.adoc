@@ -35,5 +35,5 @@ Integer
 == Usage
 
 * The first position of a bit has position 1. 
-* Returns NULL if position is negative or zero.
+* Returns NULL if the position is negative or zero.
 * Returns NULL if one of the arguments is NULL. 

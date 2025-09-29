@@ -31,5 +31,5 @@ Date
 == Usage
 
 * Decimals are rounded before adding that number.
-* The number of nanoseconds, can be a positive or negative integer to either add or subtract nanoseconds, respectively.
+* The number of nanoseconds can be a positive or negative integer to either add or subtract nanoseconds, respectively.
 * Returns NULL if one of the arguments is NULL.

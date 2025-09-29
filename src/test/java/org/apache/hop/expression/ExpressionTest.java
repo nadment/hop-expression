@@ -53,7 +53,6 @@ import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
 public class ExpressionTest {

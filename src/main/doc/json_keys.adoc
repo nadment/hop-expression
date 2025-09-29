@@ -41,9 +41,9 @@ include::jsonpath.adoc[]
 == Examples
 
 ----
-JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}') >>> ['a','b']
-JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$') >>> ['a','b']
-JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$.b') >>> ['c']
-JSON_KEYS(JSON '{"b": 1, "a": 1, "c": 30, "a": 2}') >>> ['a','b','c']
-JSON_KEYS(JSON '{}') >>> []
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}') return ['a','b']
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$') return ['a','b']
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$.b') return ['c']
+JSON_KEYS(JSON '{"b": 1, "a": 1, "c": 30, "a": 2}') return ['a','b','c']
+JSON_KEYS(JSON '{}') return []
 ----

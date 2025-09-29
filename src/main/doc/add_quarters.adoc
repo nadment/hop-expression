@@ -31,6 +31,6 @@ Date
 == Usage
 
 * Decimals are rounded before adding that number.
-* The number of quarters, can be a positive or negative integer to either add or subtract quarters, respectively.
-* If the resulting quarters has fewer days than the day component of date, then the result is the last day of the resulting quarter. Otherwise, the result has the same day component as a date.
+* The number of quarters can be a positive or negative integer to either add or subtract quarters, respectively.
+* If the resulting quarter has fewer days than the day component of date, then the result is the last day of the resulting quarter. Otherwise, the result has the same day component as a date.
 * Returns NULL if one of the arguments is NULL.

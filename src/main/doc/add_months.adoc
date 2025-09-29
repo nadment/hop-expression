@@ -31,6 +31,6 @@ Date
 == Usage
 
 * Decimals are rounded before adding that number.
-* The number of months, can be a positive or negative integer to either add or subtract months, respectively.
+* The number of months can be a positive or negative integer to either add or subtract months, respectively.
 * If the resulting month has fewer days than the day component of date, then the result is the last day of the resulting month. Otherwise, the result has the same day component as a date.
 * Returns NULL if one of the arguments is NULL.

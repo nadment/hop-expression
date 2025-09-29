@@ -38,7 +38,7 @@ The data type of the returned value is the same as the data type of the input va
 == Examples
 
 ----
-LPAD('123',5,'*') = '**123'
+LPAD('123',5,'*') return '**123'
 ----
 
 == See also

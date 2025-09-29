@@ -35,7 +35,7 @@ Number
 
 == Examples
 ----
-TRUNCATE( 28.52) = 28
-TRUNCATE( 28.52, 1 ) = 28.5
-TRUNCATE( 28.52, -1 ) = 20
+TRUNCATE( 28.52) return 28
+TRUNCATE( 28.52, 1 ) return 28.5
+TRUNCATE( 28.52, -1 ) return 20
 ----

@@ -36,6 +36,6 @@ Array
 == Examples
 
 ----
-STRING_TO_ARRAY('blue|orange|yellow','|') = ['blue','orange','yellow']
-STRING_TO_ARRAY('blue|orange|yellow','') = ['blue|orange|yellow']
+STRING_TO_ARRAY('blue|orange|yellow','|') return ['blue','orange','yellow']
+STRING_TO_ARRAY('blue|orange|yellow','') return ['blue|orange|yellow']
 ----
