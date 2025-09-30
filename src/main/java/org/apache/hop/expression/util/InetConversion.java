@@ -30,14 +30,14 @@ public final class InetConversion extends Conversion<InetAddress> {
   }
 
   /**
-   * Convert String value to Inet.
+   * Convert String value to InetAddress.
    *
    * @param str the string to convert
    * @return InetAddress
+   * @throws ExpressionException - When the conversion is not possible
    */
   public static InetAddress convert(final String str) {
-    if (str == null || Utils.isEmpty(str)) return null;
-
+    if (Utils.isEmpty(str)) return null;
     try {
       return InetAddress.getByName(str);
     } catch (Exception e) {

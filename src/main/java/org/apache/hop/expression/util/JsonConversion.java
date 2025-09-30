@@ -17,7 +17,9 @@
 
 package org.apache.hop.expression.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.hop.expression.ErrorCode;
@@ -26,23 +28,26 @@ import org.apache.hop.expression.type.TypeName;
 
 public final class JsonConversion extends Conversion<JsonNode> {
 
+  // JsonMapper is thread-safe after its configuration
+  private static final JsonMapper JSON_READER =
+      JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+
   private JsonConversion() {
     // Utility class
   }
 
   /**
-   * Convert String value to Json.
+   * Convert String value to JSON.
    *
    * @param str the string to convert
    * @return JsonNode
+   * @throws ExpressionException - When the conversion is not possible
    */
   public static JsonNode convert(final String str) throws ExpressionException {
     if (str == null) return null;
     try {
-      JsonMapper mapper =
-          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
-      return mapper.readTree(str);
-    } catch (Exception e) {
+      return JSON_READER.readTree(str);
+    } catch (JsonProcessingException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
     }

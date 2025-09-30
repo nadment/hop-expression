@@ -37,6 +37,13 @@ public final class BooleanConversion extends Conversion<Boolean> {
     return value.signum() != 0;
   }
 
+  /**
+   * Convert String value to Boolean.
+   *
+   * @param value the string to convert
+   * @return Boolean
+   * @throws ExpressionException - When the conversion is not possible
+   */
   public static Boolean convert(final String value) {
     if (value == null) return null;
     switch (value.length()) {

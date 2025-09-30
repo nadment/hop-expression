@@ -31,6 +31,13 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     // Utility class
   }
 
+  /**
+   * Convert String value to BigDecimal.
+   *
+   * @param str the string to convert
+   * @return BigDecimal
+   * @throws ExpressionException - When the conversion is not possible
+   */
   public static BigDecimal convert(final String str) throws ExpressionException {
     try {
       return FORMAT.parse(str);
@@ -52,6 +59,13 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     return new BigDecimal(result);
   }
 
+  /**
+   * Convert String value to BigDecimal.
+   *
+   * @param datetime the datetime to convert
+   * @return BigDecimal
+   * @throws ExpressionException - When the conversion is not possible
+   */
   public static BigDecimal convert(final ZonedDateTime datetime) throws ExpressionException {
 
     BigDecimal result = new BigDecimal(datetime.toEpochSecond());

@@ -170,7 +170,7 @@ class JsonFunctionTest extends ExpressionTest {
         "Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'John')",
         JsonConversion.convert("{\"name\":\"Smith\", \"name\":\"John\"}"));
 
-    // Accept optional missing KEY
+    // Accept optional syntax with missing KEY
     evalEquals("Json_Object('name' VALUE 'Smith')", JsonConversion.convert("{\"name\":\"Smith\"}"));
 
     evalFails("Json_Object()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -229,5 +229,7 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
-  void debug() throws Exception {}
+  void debug() throws Exception {
+      //evalEquals("Json_Object(KEY 'updated' VALUE 362180698)", JsonConversion.convert("{\"updated\":362180698}"));
+  }
 }

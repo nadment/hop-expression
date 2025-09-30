@@ -17,8 +17,11 @@
 
 package org.apache.hop.expression.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +31,13 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 
 public final class StringConversion extends Conversion<String> {
+
+  // JsonMapper is thread-safe after its configuration
+  private static final JsonMapper JSON_WRITER = JsonMapper.builder().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
+  {
+      // StdDateFormat is ISO8601
+      JSON_WRITER.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
+  }
 
   private StringConversion() {
     // Utility class
@@ -70,12 +80,12 @@ public final class StringConversion extends Conversion<String> {
    *
    * @param json the JSON to convert
    * @return String
+   * @throws ExpressionException - When the conversion is not possible
    */
   public static String convert(final JsonNode json) throws ExpressionException {
     try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      return objectMapper.writeValueAsString(json);
-    } catch (Exception e) {
+      return JSON_WRITER.writeValueAsString(json);
+    } catch (JsonProcessingException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.JSON, TypeName.STRING, json);
     }

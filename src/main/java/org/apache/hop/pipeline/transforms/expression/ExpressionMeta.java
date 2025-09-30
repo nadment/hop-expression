@@ -38,7 +38,7 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
-/** This transform create field value with expression. */
+/** This transform creates field value with expression. */
 @Setter
 @Getter
 @Transform(
@@ -102,7 +102,7 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
           vm.setOrigin(transformName);
           vm.setLength(field.getLength(), field.getPrecision());
 
-          // field already exist
+          // field already exists
           int index = unalteredInputRowMeta.indexOfValue(field.getName());
           if (index >= 0) {
             rowMeta.removeValueMeta(index);
