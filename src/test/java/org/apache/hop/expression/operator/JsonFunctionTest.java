@@ -230,6 +230,7 @@ class JsonFunctionTest extends ExpressionTest {
 
   @Test
   void debug() throws Exception {
-      //evalEquals("Json_Object(KEY 'updated' VALUE 362180698)", JsonConversion.convert("{\"updated\":362180698}"));
+    // evalEquals("Json_Object(KEY 'updated' VALUE 362180698)",
+    // JsonConversion.convert("{\"updated\":362180698}"));
   }
 }

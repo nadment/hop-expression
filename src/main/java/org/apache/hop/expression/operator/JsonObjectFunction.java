@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.EnumSet;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -46,7 +45,8 @@ public class JsonObjectFunction extends Function {
   public static final IOperandTypeChecker OTC = new JsonObjectFunctionOperandTypeChecker();
 
   private static final EnumSet<TypeFamily> VALUE_TYPES =
-      EnumSet.of(TypeFamily.STRING, TypeFamily.BOOLEAN, TypeFamily.NUMERIC); // TODO: TypeFamily.TEMPORAL);
+      EnumSet.of(
+          TypeFamily.STRING, TypeFamily.BOOLEAN, TypeFamily.NUMERIC); // TODO: TypeFamily.TEMPORAL);
 
   public JsonObjectFunction() {
     super(
@@ -77,9 +77,9 @@ public class JsonObjectFunction extends Function {
         node.put(key, number);
       }
       // TODO: Support Json Date
-      //else if (value instanceof ZonedDateTime date) {
+      // else if (value instanceof ZonedDateTime date) {
       //  node.put(key, date.toEpochSecond());
-      //}
+      // }
 
       else {
         throw new ExpressionException(ErrorCode.UNSUPPORTED_JSON_TYPE);

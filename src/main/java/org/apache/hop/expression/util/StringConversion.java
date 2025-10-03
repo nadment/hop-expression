@@ -33,10 +33,12 @@ import org.apache.hop.expression.type.TypeName;
 public final class StringConversion extends Conversion<String> {
 
   // JsonMapper is thread-safe after its configuration
-  private static final JsonMapper JSON_WRITER = JsonMapper.builder().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
+  private static final JsonMapper JSON_WRITER =
+      JsonMapper.builder().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
+
   {
-      // StdDateFormat is ISO8601
-      JSON_WRITER.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
+    // StdDateFormat is ISO8601
+    JSON_WRITER.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
   }
 
   private StringConversion() {
