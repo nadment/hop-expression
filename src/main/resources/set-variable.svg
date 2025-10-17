@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1"
-     xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="42px" height="42px"
-     viewBox="0 0 42 42" enable-background="new 0 0 42 42" xml:space="preserve">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="42px" height="42px">
 <g>
 	<polygon fill="#0E3A5A" points="21.041,2.697 38.917,20.932 21.041,39.166 3.167,20.932 	"/>
     <path fill="#FFFFFF" d="M20.492,21.212v6.728c-1.374,0-2.473-0.562-2.747-1.683c-0.55-0.28-0.55-1.121-0.55-2.243h-2.199
