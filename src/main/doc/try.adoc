@@ -16,7 +16,7 @@ under the License.
 ////
 = TRY
 
-The function ensures that errors during expression evaluation result in NULL instead of causing an error.
+Evaluate an expression and handle certain types of errors by returning NULL.
 
 == Syntax
 
@@ -35,6 +35,10 @@ The data type of the returned value is the same as the data type of the expressi
 == Usage
 
 * Returns NULL if argument is NULL. 
+* TRY handles the following errors:
+- Division by zero
+- Invalid cast or function argument
+- Argument value out of range
 
 == Examples
 
