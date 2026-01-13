@@ -50,7 +50,6 @@ import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.util.JsonConversion;
-import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
@@ -58,15 +57,8 @@ import org.junit.platform.commons.util.UnrecoverableExceptions;
 public class ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
 
-  // TODO: Use Junit 5  @RegisterExtension static RestoreHopEngineEnvironmentExtension env = new
-  // RestoreHopEngineEnvironmentExtension();
-
-  public static RestoreHopEnvironment env;
-
   @BeforeAll
   static void setup() throws Throwable {
-    // Can't use RestoreHopEnvironment because it is for Junit 4
-    // RestoreHopEnvironment env = new RestoreHopEnvironment();
     Locale.setDefault(Locale.ENGLISH);
     HopClientEnvironment.init();
     FunctionRegistry.registerFunctions();

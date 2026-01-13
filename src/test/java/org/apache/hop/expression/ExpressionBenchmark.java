@@ -30,7 +30,6 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -52,8 +51,6 @@ public class ExpressionBenchmark {
    * @throws RunnerException
    */
   public static void main(String[] args) throws RunnerException {
-    RestoreHopEnvironment env = new RestoreHopEnvironment();
-
     Options opt =
         new OptionsBuilder()
             .include(ExpressionBenchmark.class.getSimpleName())
