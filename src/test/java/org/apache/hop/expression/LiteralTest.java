@@ -39,11 +39,13 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.UnknownType;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class LiteralTest extends ExpressionTest {
 
   @Test
+  @DisplayName("Literal with same value should be equals")
   void testEquals() {
     assertEquals(Literal.ZERO, Literal.of(0L));
     assertEquals(Literal.ONE, Literal.of(1L));
@@ -52,7 +54,8 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  void Null() {
+  @DisplayName("Literal NULL")
+  void testNull() {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Objects.hash(null, UnknownType.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is(null));
@@ -61,6 +64,8 @@ public class LiteralTest extends ExpressionTest {
     assertNotEquals(Literal.NULL, null);
     assertNotEquals(Literal.NULL, Literal.ZERO);
     assertEquals(UnknownType.UNKNOWN, Literal.NULL.getType());
+    assertEquals(BooleanType.BOOLEAN, Literal.NULL_BOOLEAN.getType());
+    assertEquals(DateType.DATE, Literal.NULL_DATE.getType());
     assertNull(Literal.NULL.getValue());
   }
 
