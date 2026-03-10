@@ -69,7 +69,7 @@ public class Token {
 
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
-    /** The "&". */
+    /** The "&amp;". */
     AMPERSAND("&"),
     /** The "~". */
     TILDE("~"),
@@ -79,7 +79,7 @@ public class Token {
     CARET("^"),
     /** Case when operator */
     CASE,
-    /** Concat operator <code>||<code>. */
+    /** Concat operator <code>||</code>. */
     CONCAT("||"),
     /** Used by function CAST(value AS type) */
     AS,
@@ -87,7 +87,7 @@ public class Token {
     AT,
     /** Used by function CAST(value AS type FORMAT '9999') */
     FORMAT,
-    /** Cast operator <code>::<code>. */
+    /** Cast operator <code>::</code>. */
     CAST("::"),
     /** Comment */
     COMMENT,

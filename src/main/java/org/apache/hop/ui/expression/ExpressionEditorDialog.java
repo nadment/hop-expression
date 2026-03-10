@@ -101,6 +101,9 @@ public class ExpressionEditorDialog extends Dialog {
     wEditor.setLayoutData(
         new FormDataBuilder().top().bottom(btnOK, -PropsUi.getMargin()).left().right().result());
 
+    // Default size when no previous size is saved; minimum size so the editor stays usable
+    shell.setMinimumSize(900, 600);
+    shell.setSize(1000, 700);
     BaseTransformDialog.setSize(shell);
 
     shell.open();

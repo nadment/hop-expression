@@ -37,7 +37,7 @@ import org.apache.hop.expression.type.Types;
 
 /**
  * Build a JSON object from a list of key=values pairs. <code>
- * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)</code>
+ * JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...)</code>
  */
 @FunctionPlugin
 public class JsonObjectFunction extends Function {

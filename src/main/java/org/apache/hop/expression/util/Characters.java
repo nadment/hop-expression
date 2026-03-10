@@ -121,7 +121,7 @@ public class Characters {
   /**
    * Is the character a word delimiter
    *
-   * <p>! ? @ " ^ # $ & ~ _ , . : ; = + - * % / | \ [ ] ( ) { } < >
+   * <p>! ? @ " ^ # $ &amp; ~ _ , . : ; = + - * % / | \ [ ] ( ) { } &lt; &gt;
    *
    * @param ch the character to check
    * @return true if it is a delimiter

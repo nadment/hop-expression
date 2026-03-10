@@ -25,13 +25,13 @@ import org.apache.hop.expression.ExpressionException;
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
  * TO_CHAR(datetime, format)</code> functions.
  *
- * <p>
- *
  * <table border="1">
- * <th>
- * <td>Input</td>
- * <td>Output</td>
- * <td>Closest {@link PatternDateTimeFormat} Equivalent</td></th>
+ * <caption>Format elements</caption>
+ * <tr>
+ * <th>Input</th>
+ * <th>Output</th>
+ * <th>Closest {@link PatternDateTimeFormat} Equivalent</th>
+ * </tr>
  * <tr>
  * <td>- / , . ; : "text"</td>
  * <td>Reproduced verbatim.</td>

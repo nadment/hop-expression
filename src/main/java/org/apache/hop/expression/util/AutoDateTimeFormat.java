@@ -25,7 +25,7 @@ import org.apache.hop.expression.ExpressionException;
  *
  * <ul>
  *   <li>yyyy-[m]m-[d]d hh:mm:ss[.f...][ ][tz].
- *   <li>yyyymmddhhmmss[.f...][tz]</il>
+ *   <li>yyyymmddhhmmss[.f...][tz]
  * </ul>
  *
  * <ul>

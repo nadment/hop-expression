@@ -26,12 +26,13 @@ import org.apache.hop.expression.ExpressionException;
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
  * TO_CHAR(number, format)</code> functions.
  *
- * <p>
- *
  * <table border="1">
- * <th>
- * <td>Input</td>
- * <td>Output</td></th>
+ * <caption>Format elements</caption>
+ * <tr>
+ * <th>Input</th>
+ * <th>Output</th>
+ * <th>Format</th>
+ * </tr>
  * <tr>
  * <td>, (comma)</td>
  * <td>Grouping separator.</td>

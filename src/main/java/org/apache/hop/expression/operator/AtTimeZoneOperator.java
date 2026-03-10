@@ -28,8 +28,8 @@ import org.apache.hop.expression.util.DateTimeFormat;
 
 /**
  * Converts a value of one time zone into another time zone.
- * <p>
- * <code>value AT TIME ZONE zone.<code>
+ *
+ * <p><code>value AT TIME ZONE zone.</code>
  */
 public class AtTimeZoneOperator extends Operator {
 

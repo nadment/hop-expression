@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 
-/** Comparison not equals operator '<code>!=</code>' or '<code><></code>'. */
+/** Comparison not equals operator '<code>!=</code>' or '<code>&lt;&gt;</code>'. */
 public class NotEqualOperator extends BinaryOperator {
   public static final NotEqualOperator INSTANCE = new NotEqualOperator("!=");
 

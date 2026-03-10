@@ -190,7 +190,10 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
         IRowMeta rowMeta = futurRowMeta.get();
         if (rowMeta != null) {
           for (IValueMeta vm : rowMeta.getValueMetaList()) {
-            rule.addWord(vm.getName(), identifier);
+            String name = vm != null ? vm.getName() : null;
+            if (name != null && !name.isEmpty()) {
+              rule.addWord(name, identifier);
+            }
           }
         }
       } catch (InterruptedException e) {
@@ -205,18 +208,24 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // If word not found use Token.WHITESPACE to signal problem
     WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
     for (String name : FunctionRegistry.getFunctionNames()) {
-      rule.addWord(name, function);
+      if (name != null && !name.isEmpty()) {
+        rule.addWord(name, function);
+      }
     }
     for (String word : ExpressionParser.getReservedWords()) {
-      if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
-      else rule.addWord(word, keyword);
+      if (word != null && !word.isEmpty()) {
+        if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
+        else rule.addWord(word, keyword);
+      }
     }
     for (TypeName type : TypeName.values()) {
       rule.addWord(type.name(), extra);
     }
     for (TimeUnit unit : TimeUnit.values()) {
       for (String name : unit.names()) {
-        rule.addWord(name, extra);
+        if (name != null && !name.isEmpty()) {
+          rule.addWord(name, extra);
+        }
       }
     }
     rules.add(rule);

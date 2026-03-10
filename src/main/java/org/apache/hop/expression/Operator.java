@@ -436,8 +436,8 @@ public abstract class Operator {
    * Normalize reversible operator
    *
    * <ul>
-   *   <li>swap term to identifier operator literal 1>A → A<1
-   *   <li>ordering identifiers by name with case-sensitive B>A → A<B
+   *   <li>swap term to identifier operator literal 1&gt;A → A&lt;1
+   *   <li>ordering identifiers by name with case-sensitive B&gt;A → A&lt;B
    *   <li>ordering the low-cost operand to the left
    * </ul>
    *

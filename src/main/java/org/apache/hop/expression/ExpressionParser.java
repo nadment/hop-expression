@@ -139,11 +139,11 @@ import org.apache.hop.expression.util.NumberFormat;
  * ComparisonExpression :=
  *     RelationalExpression
  *     RelationalExpression = RelationalExpression
- *     RelationalExpression < RelationalExpression
- *     RelationalExpression <= RelationalExpression
- *     RelationalExpression > RelationalExpression
- *     RelationalExpression >= RelationalExpression
- *     RelationalExpression <> RelationalExpression
+ *     RelationalExpression &lt; RelationalExpression
+ *     RelationalExpression &lt;= RelationalExpression
+ *     RelationalExpression &gt; RelationalExpression
+ *     RelationalExpression &gt;= RelationalExpression
+ *     RelationalExpression &lt;&gt; RelationalExpression
  *     RelationalExpression != RelationalExpression
  * ConditionalExpression :=
  *     ComparisonExpression

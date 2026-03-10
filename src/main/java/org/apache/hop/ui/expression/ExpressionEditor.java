@@ -80,6 +80,8 @@ import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.dialog.MessageBox;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
+import org.apache.hop.ui.core.gui.IToolbarContainer;
+import org.apache.hop.ui.hopgui.ToolbarFacade;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocumentListener;
@@ -253,21 +255,23 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     Composite composite = new Composite(parent, SWT.BORDER);
     composite.setLayout(new FormLayout());
 
-    ToolBar toolbar = new ToolBar(composite, SWT.FLAT | SWT.HORIZONTAL);
-    toolbar.setLayoutData(new FormDataBuilder().top().fullWidth().result());
-    PropsUi.setLook(toolbar, Props.WIDGET_STYLE_TOOLBAR);
+    IToolbarContainer toolbarContainer =
+        ToolbarFacade.createToolbarContainer(composite, SWT.FLAT | SWT.HORIZONTAL);
+    toolbarContainer.getControl().setLayoutData(new FormDataBuilder().top().fullWidth().result());
+    PropsUi.setLook(toolbarContainer.getControl(), Props.WIDGET_STYLE_TOOLBAR);
 
     // Create an empty place to make it easier for plugins to use the toolbar widgets.
     //
     toolbarWidgets = new GuiToolbarWidgets();
     toolbarWidgets.registerGuiPluginObject(this);
-    toolbarWidgets.createToolbarWidgets(toolbar, ID_TOOLBAR);
+    toolbarWidgets.createToolbarWidgets(toolbarContainer, ID_TOOLBAR);
 
     wViewer =
         new SourceViewer(composite, createVerticalRuler(), SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
     wViewer
         .getControl()
-        .setLayoutData(new FormDataBuilder().top(toolbar).bottom().fullWidth().result());
+        .setLayoutData(
+            new FormDataBuilder().top(toolbarContainer.getControl()).bottom().fullWidth().result());
 
     final StyledText widget = wViewer.getTextWidget();
 
