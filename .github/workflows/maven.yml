@@ -41,7 +41,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
             ${{ runner.os }}-m2-
-            ${{ runner.os }}-                  
+            ${{ runner.os }}-
+      - name: RAT Check
+        run: mvn clean apache-rat:check
+      - name: Checkstyle
+        run: mvn clean checkstyle:check
+      - name: Spotless check
+        run: mvn spotless:check
       - name: Build with Maven
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

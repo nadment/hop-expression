@@ -100,7 +100,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("To_Boolean(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 
     // TODO: Enforce field date conversion
-    // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+   // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
     evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR);
   }
@@ -124,9 +124,9 @@ class ConversionFunctionTest extends ExpressionTest {
     // Format with Decimals
     evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12D);
     evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5D);
-    Locale.setDefault(new Locale("en", "EN"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_NUMBER('5467.12', '999999D99')", 5467.12D);
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_NUMBER('5467,12', '999999D99')", 5467.12D);
 
     // Format No Decimals
@@ -160,31 +160,31 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("TO_NUMBER('-5','PR9999')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Format with a Thousand Group Markers
-    Locale.setDefault(new Locale("en", "US"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678D);
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_NUMBER('12 345 678', '999G999G999')", 12_345_678D);
     evalEquals("TO_NUMBER('12 345 678,123', '999G999G999D000')", 12_345_678.123D);
-    Locale.setDefault(new Locale("de", "DE"));
+    Locale.setDefault(Locale.GERMANY);
     evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678D);
 
     // Format with Currency dollar
-    Locale.setDefault(new Locale("en", "US"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169D);
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169D);
 
     // Format with Currency symbol
-    Locale.setDefault(new Locale("en", "US"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169D);
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_NUMBER('€65.169', 'L99.999')", 65.169D);
     evalEquals("TO_NUMBER('65.16€', '99.999L')", 65.16D);
 
     // Format with Currency code
-    Locale.setDefault(new Locale("en", "US"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_NUMBER('USD65.169', 'C99.999')", 65.169D);
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_NUMBER('EUR65.169', 'C99.999')", 65.169D);
     evalEquals("TO_NUMBER('65.16EUR', '99.999C')", 65.16D);
 
@@ -272,18 +272,19 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
     evalEquals("TO_CHAR(555.0, 'FM999.009')", "555.00");
 
-    Locale.setDefault(new Locale("fr", "BE"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
     evalEquals("TO_CHAR(0,'90D99')", "  0,  ");
     evalEquals("TO_CHAR(0,'90d00')", "  0,00");
 
     // Format fixed length with grouping
-    Locale.setDefault(new Locale("en", "EN"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
-    Locale.setDefault(new Locale("fr", "FR"));
+    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3,148.5  ");
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3 148,5  ");
     evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3 148,500");
-    Locale.setDefault(new Locale("de", "DE"));
+    Locale.setDefault(Locale.GERMANY);
     evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5  ");
 
     // Sign
@@ -315,21 +316,21 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(124,'FM$99')", "###");
 
     // Currency code ISO 4217
-    Locale.setDefault(new Locale("en", "GB"));
+    Locale.setDefault(Locale.UK);
     evalEquals("TO_CHAR(12,'C99')", " GBP12");
-    Locale.setDefault(new Locale("en", "US"));
+    Locale.setDefault(Locale.US);
     evalEquals("TO_CHAR(-7,'C99')", " -USD7");
-    Locale.setDefault(new Locale("fr", "FR"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_CHAR(-77,'99C')", "-77EUR");
-    Locale.setDefault(new Locale("et", "EE"));
+    Locale.setDefault(Locale.GERMANY);
     evalEquals("TO_CHAR(-7,'99C')", " -7EUR");
     // Only currency ISO code
     evalEquals("TO_CHAR(0,'FMC')", "EUR");
 
     // Currency symbol
-    Locale.setDefault(new Locale("en", "GB"));
+    Locale.setDefault(Locale.UK);
     evalEquals("TO_CHAR(12,'FML99')", "£12");
-    Locale.setDefault(new Locale("fr", "FR"));
+    Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_CHAR(-7,'L99')", " -€7");
     evalEquals("TO_CHAR(-7,'99L')", " -7€");
     evalEquals("TO_CHAR(123.45,'L999.99')", " €123.45");
