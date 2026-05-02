@@ -100,7 +100,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("To_Boolean(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
 
     // TODO: Enforce field date conversion
-   // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
 
     evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR);
   }

@@ -35,9 +35,10 @@ http://www.apache.org/licenses/LICENSE-2.0
         <hop.version>2.18.0-SNAPSHOT</hop.version>
         <jmh.version>1.37</jmh.version>
         <json-path.version>2.9.0</json-path.version>
-        <junit-jupiter.version>5.10.3</junit-jupiter.version>
+        <junit.version>6.0.3</junit.version>
         <license.licenseName>apache_v2</license.licenseName>
-        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.source>${target.jdk.version}</maven.compiler.source>
+        <maven.compiler.target>${target.jdk.version}</maven.compiler.target>
         <org.eclipse.core.runtime.version>3.29.0</org.eclipse.core.runtime.version>
         <org.eclipse.jface.text.version>3.25.0</org.eclipse.jface.text.version>
         <org.eclipse.jface.version>3.33.0</org.eclipse.jface.version>
@@ -166,7 +167,7 @@ http://www.apache.org/licenses/LICENSE-2.0
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
