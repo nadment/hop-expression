@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -46,6 +46,6 @@ public class HtmlEncodeFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    return StringEscapeUtils.escapeHtml(value);
+    return StringEscapeUtils.escapeHtml4(value);
   }
 }

@@ -69,10 +69,8 @@ public class ExpressionEditorDialog extends Dialog {
             ConstUi.SMALL_ICON_SIZE));
 
     FormLayout layout = new FormLayout();
-    layout.marginTop = PropsUi.getFormMargin();
-    layout.marginBottom = PropsUi.getFormMargin();
-    layout.marginLeft = PropsUi.getFormMargin();
-    layout.marginRight = PropsUi.getFormMargin();
+    layout.marginHeight = PropsUi.getFormMargin();
+    layout.marginWidth = PropsUi.getFormMargin();
     shell.setLayout(layout);
 
     Button btnCancel = new Button(shell, SWT.PUSH);
@@ -92,6 +90,7 @@ public class ExpressionEditorDialog extends Dialog {
     buttons.add(btnCancel);
     BaseTransformDialog.positionBottomButtons(
         shell, buttons.toArray(new Button[0]), PropsUi.getMargin(), null);
+    shell.setDefaultButton(btnOK);
 
     // ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
 
