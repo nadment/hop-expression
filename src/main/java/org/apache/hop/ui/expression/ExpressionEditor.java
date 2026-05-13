@@ -345,17 +345,13 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     Menu menu = new Menu(getShell(), SWT.POP_UP);
     MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
     undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Undo.Label"));
-    undoItem.setImage(
-        GuiResource.getInstance()
-            .getImage("ui/images/undo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    undoItem.setImage(GuiResource.getInstance().getImageUndo());
     undoItem.setAccelerator(SWT.MOD1 | 'Z');
     undoItem.addListener(SWT.Selection, e -> onUndo());
 
     MenuItem redoItem = new MenuItem(menu, SWT.PUSH);
     redoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Redo.Label"));
-    redoItem.setImage(
-        GuiResource.getInstance()
-            .getImage("ui/images/redo.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    redoItem.setImage(GuiResource.getInstance().getImageRedo());
     redoItem.setAccelerator(SWT.MOD1 + SWT.SHIFT | 'Z');
     redoItem.addListener(SWT.Selection, e -> onRedo());
 
@@ -363,24 +359,18 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     MenuItem cutItem = new MenuItem(menu, SWT.PUSH);
     cutItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Cut.Label"));
-    cutItem.setImage(
-        GuiResource.getInstance()
-            .getImage("ui/images/cut.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    cutItem.setImage(GuiResource.getInstance().getImageCut());
     cutItem.addListener(SWT.Selection, e -> onCut());
 
     MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
     copyItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Copy.Label"));
-    copyItem.setImage(
-        GuiResource.getInstance()
-            .getImage("ui/images/copy.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    copyItem.setImage(GuiResource.getInstance().getImageCopy());
     copyItem.setAccelerator(SWT.MOD1 | 'C');
     copyItem.addListener(SWT.Selection, e -> onCopy());
 
     MenuItem pasteItem = new MenuItem(menu, SWT.PUSH);
     pasteItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Paste.Label"));
-    pasteItem.setImage(
-        GuiResource.getInstance()
-            .getImage("ui/images/paste.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    pasteItem.setImage(GuiResource.getInstance().getImagePaste());
     pasteItem.setAccelerator(SWT.MOD1 | 'V');
     pasteItem.addListener(SWT.Selection, e -> onPaste());
 
@@ -388,10 +378,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
     selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.SelectAll.Label"));
-    selectAllItem.setImage(
-        GuiResource.getInstance()
-            .getImage(
-                "ui/images/select-all.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
+    selectAllItem.setImage(GuiResource.getInstance().getImageSelectAll());
     selectAllItem.setAccelerator(SWT.MOD1 | 'A');
     selectAllItem.addListener(SWT.Selection, e -> onSelectAll());
 
