@@ -2086,11 +2086,19 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testPredicateWithTimestamp() throws Exception {
-      evalTrue("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
-      evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
+      // Two timestamps in different time zones are different if they represent different UTC time
       evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
+      evalFalse(
+          "Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
+      evalFalse(
+          "Timestamp '2019-01-01 8:10:10' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 08:10:10' AT TIME ZONE 'America/Los_Angeles'");
+
+      // Two timestamps in different time zones are equal if they represent the same UTC time
+      evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
       evalTrue(
           "Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
+      evalTrue(
+          "Timestamp '2019-01-01 8:10:10' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 05:10:10' AT TIME ZONE 'America/Los_Angeles'");
     }
 
     @Test

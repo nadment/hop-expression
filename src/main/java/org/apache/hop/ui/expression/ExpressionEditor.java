@@ -641,6 +641,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   protected IVerticalRuler createVerticalRuler() {
     LineNumberRulerColumn lineNumberRulerColumn = new LineNumberRulerColumn();
     lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
+    lineNumberRulerColumn.setFont(GuiResource.getInstance().getFontFixed());
 
     PropsUi props = PropsUi.getInstance();
     // Adapte annotation ruler to zoom factor
@@ -699,8 +700,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_SELECT_ALL,
       image = "ui/images/select-all.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip",
-      separator = true)
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip")
   public void onSelectAll() {
     wViewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
