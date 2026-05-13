@@ -51,14 +51,6 @@
             <includes>
                 <include>com.jayway.jsonpath:json-path:jar</include>
                 <include>ch.obermuhlner:big-math</include>
-                <include>org.eclipse.platform:org.eclipse.equinox.common:jar</include>
-                <include>org.eclipse.platform:org.eclipse.osgi:jar</include>
-                <include>org.eclipse.platform:org.eclipse.core.jobs:jar</include>
-                <include>org.eclipse.platform:org.eclipse.core.commands:jar</include>
-                <include>org.eclipse.platform:org.eclipse.core.runtime:jar</include>
-                <include>org.eclipse.platform:org.eclipse.text:jar</include>
-                <include>org.eclipse.platform:org.eclipse.jface:jar</include>
-                <include>org.eclipse.platform:org.eclipse.jface.text:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
