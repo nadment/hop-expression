@@ -82,7 +82,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
       data.context = new RowExpressionContext(this, data.outputRowMeta);
 
-      // For all fields expression
+      // For all fields expressions
       for (ExpressionField field : meta.getFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
 

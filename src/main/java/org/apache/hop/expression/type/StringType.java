@@ -146,30 +146,33 @@ public final class StringType extends Type {
 
     String result = null;
 
-    if (value instanceof String str) {
-      result = str;
-    } else if (value instanceof Boolean bool) {
-      result = StringConversion.convert(bool);
-    } else if (value instanceof Number) {
-      if (pattern == null) {
-        pattern = "TM";
+    switch (value) {
+      case String str -> result = str;
+      case Boolean bool -> result = StringConversion.convert(bool);
+      case Number num -> {
+        if (pattern == null) {
+          pattern = "TM";
+        }
+        BigDecimal number;
+        if (value instanceof Long l) {
+          number = BigDecimal.valueOf(l);
+        } else {
+          number = (BigDecimal) value;
+        }
+        result = NumberFormat.of(pattern).format(number);
       }
-      BigDecimal number;
-      if (value instanceof Long l) {
-        number = BigDecimal.valueOf(l);
-      } else {
-        number = (BigDecimal) value;
+      case ZonedDateTime datetime -> {
+        if (pattern == null) pattern = "YYYY-MM-DD";
+        result = DateTimeFormat.of(pattern).format(datetime);
       }
-      result = NumberFormat.of(pattern).format(number);
-    } else if (value instanceof ZonedDateTime datetime) {
-      if (pattern == null) pattern = "YYYY-MM-DD";
-      result = DateTimeFormat.of(pattern).format(datetime);
-    } else if (value instanceof byte[] bytes) {
-      result = new String(bytes, StandardCharsets.UTF_8);
-    } else if (value instanceof JsonNode json) {
-      return StringConversion.convert(json);
-    } else if (value instanceof InetAddress inet) {
-      return StringConversion.convert(inet);
+      case byte[] bytes -> result = new String(bytes, StandardCharsets.UTF_8);
+      case JsonNode json -> {
+        return StringConversion.convert(json);
+      }
+      case InetAddress inet -> {
+        return StringConversion.convert(inet);
+      }
+      default -> {}
     }
 
     if (result == null) {
@@ -183,12 +186,6 @@ public final class StringType extends Type {
     }
 
     return result;
-  }
-
-  private boolean checkPrecision(String result) {
-    if (result == null) return true;
-
-    return this.precision < 0 || this.precision >= result.length();
   }
 
   @Override

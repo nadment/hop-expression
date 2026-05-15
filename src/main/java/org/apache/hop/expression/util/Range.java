@@ -115,7 +115,7 @@ public final class Range<T extends Comparable<? super T>> {
         new Above<>(lower, BoundType.INCLUSIVE), new Below<>(upper, BoundType.INCLUSIVE));
   }
 
-  static int compareOrThrow(@Nullable Comparable left, @Nullable Comparable right) {
+  static int compareOrThrow(Comparable left, Comparable right) {
     return left.compareTo(right);
   }
 

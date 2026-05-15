@@ -29,9 +29,12 @@ import org.apache.hop.core.variables.resolver.VariableResolverPlugin;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @Setter
+@NullMarked
 @GuiPlugin
 @VariableResolverPlugin(
     id = "Expression-Variable-Resolver",
@@ -41,7 +44,7 @@ import org.apache.hop.expression.IExpression;
 public class ExpressionVariableResolver implements IVariableResolver {
 
   @Override
-  public String resolve(String source, IVariables variables) throws HopException {
+  public @Nullable String resolve(String source, IVariables variables) throws HopException {
     try {
       // Compile expression
       IExpression expression = ExpressionFactory.create(new ExpressionContext(variables), source);

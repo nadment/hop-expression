@@ -24,12 +24,13 @@ import org.jspecify.annotations.Nullable;
 public class RowExpressionContext extends ExpressionContext implements IRowExpressionContext {
 
   private final IRowMeta rowMeta;
-  private Object[] row;
+  private Object @Nullable [] row;
 
   public RowExpressionContext(IVariables variables, IRowMeta rowMeta) {
     super(variables);
 
     this.rowMeta = Objects.requireNonNull(rowMeta);
+    this.row = null;
   }
 
   @Override
@@ -38,7 +39,7 @@ public class RowExpressionContext extends ExpressionContext implements IRowExpre
   }
 
   @Override
-  public @Nullable Object[] getRow() {
+  public Object @Nullable [] getRow() {
     return this.row;
   }
 

@@ -18,7 +18,9 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextViewer;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class DoubleClickStrategy implements ITextDoubleClickStrategy {
 
   public void doubleClicked(ITextViewer viewer) {
