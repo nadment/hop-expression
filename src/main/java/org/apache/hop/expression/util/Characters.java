@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression.util;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class Characters {
 
   private static final byte[] FLAGS = new byte[256];

@@ -21,7 +21,9 @@ import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class StdDevPopProcessor implements IExpressionProcessor {
 
   private final List<Double> values;

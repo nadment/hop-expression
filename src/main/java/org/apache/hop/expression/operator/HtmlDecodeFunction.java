@@ -23,6 +23,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function decode special HTML entities.
@@ -30,6 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see HtmlEncodeFunction
  */
 @FunctionPlugin
+@NullMarked
 public class HtmlDecodeFunction extends Function {
 
   public HtmlDecodeFunction() {
@@ -42,7 +45,7 @@ public class HtmlDecodeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     return StringEscapeUtils.unescapeHtml4(value);
   }

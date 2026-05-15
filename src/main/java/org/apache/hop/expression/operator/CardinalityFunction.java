@@ -23,9 +23,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** The function returns the number of elements of an array. */
 @FunctionPlugin
+@NullMarked
 public class CardinalityFunction extends Function {
 
   public CardinalityFunction() {
@@ -38,7 +41,7 @@ public class CardinalityFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Array array = (Array) operands[0];
     return Long.valueOf(array.size());
   }

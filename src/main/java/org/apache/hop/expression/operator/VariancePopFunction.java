@@ -21,8 +21,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 @FunctionPlugin(names = "VAR_POP")
+@NullMarked
 public class VariancePopFunction extends AggregateFunction {
 
   public VariancePopFunction() {

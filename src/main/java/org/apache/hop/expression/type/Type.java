@@ -19,6 +19,8 @@ package org.apache.hop.expression.type;
 import java.util.Objects;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Data type
@@ -26,6 +28,7 @@ import org.apache.hop.expression.ExpressionException;
  * <p>Identity is based upon the {@link #signature} field, which each derived class should set
  * during construction.
  */
+@NullMarked
 public abstract class Type {
 
   public static final int SCALE_NOT_SPECIFIED = -1;
@@ -105,16 +108,16 @@ public abstract class Type {
     return getName().getFamily();
   }
 
-  public boolean is(final TypeName name) {
+  public boolean is(TypeName name) {
     return getName() == name;
   }
 
-  public boolean isFamily(final TypeFamily family) {
+  public boolean isFamily(TypeFamily family) {
     return getName().isFamily(family);
   }
 
   /** Returns whether this {@link Type} support implicit coercion to the specified {@link Type}. */
-  public boolean isCoercible(final Type type) {
+  public boolean isCoercible(Type type) {
     return getName().isCoercible(type.getName());
   }
 
@@ -137,11 +140,11 @@ public abstract class Type {
    */
   public abstract TypeComparability getComparability();
 
-  public boolean compareEqual(final Object left, final Object right) {
+  public boolean compareEqual(final @Nullable Object left, final @Nullable Object right) {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Equals error");
   }
 
-  public boolean compareEqualNull(final Object left, final Object right) {
+  public boolean compareEqualNull(final @Nullable Object left, final @Nullable Object right) {
     if (left == null) {
       return right == null;
     }
@@ -150,7 +153,7 @@ public abstract class Type {
     return compareEqual(left, right);
   }
 
-  public int compare(final Object left, final Object right) {
+  public int compare(final @Nullable Object left, final @Nullable Object right) {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Compare error");
   }
 
@@ -199,13 +202,13 @@ public abstract class Type {
   }
 
   /** Indicates whether that type is equal with each other by ignoring the nullability. */
-  public boolean equalsIgnoreNullability(final Type type) {
+  public boolean equalsIgnoreNullability(final @Nullable Type type) {
     if (type == null) return false;
     return this.signature.equals(type.signature);
   }
 
   @Override
-  public final boolean equals(Object obj) {
+  public final boolean equals(@Nullable Object obj) {
     return this == obj
         || obj instanceof Type type
             && Objects.equals(this.signature, type.signature)
@@ -225,7 +228,8 @@ public abstract class Type {
    * @return the converted value
    * @throws ExpressionException if the casting fail
    */
-  public <T> T convert(final Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(final @Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
     throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION,
         value,
@@ -240,7 +244,7 @@ public abstract class Type {
    * @return the converted value
    * @throws ExpressionException if the casting fail
    */
-  public Object cast(final Object value) throws ExpressionException {
+  public @Nullable Object cast(final @Nullable Object value) throws ExpressionException {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
   }
 
@@ -253,7 +257,8 @@ public abstract class Type {
    * @return the converted value
    * @throws ExpressionException if the casting fail
    */
-  public Object cast(final Object value, final String pattern) throws ExpressionException {
+  public @Nullable Object cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
   }
 

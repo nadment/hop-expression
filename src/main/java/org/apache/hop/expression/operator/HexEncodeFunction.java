@@ -23,9 +23,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a string value to a hexadecimal string. */
 @FunctionPlugin
+@NullMarked
 public class HexEncodeFunction extends Function {
 
   public HexEncodeFunction() {
@@ -38,7 +41,7 @@ public class HexEncodeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;

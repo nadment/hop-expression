@@ -31,12 +31,15 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Converts a string expression to a date value with optional format or a Unix epoch numeric in
  * second to a date.
  */
 @FunctionPlugin
+@NullMarked
 public class ToDateFunction extends Function {
 
   public static final ToDateFunction INSTANCE = new ToDateFunction();
@@ -83,7 +86,7 @@ public class ToDateFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
       return format.parse(value);
@@ -94,7 +97,7 @@ public class ToDateFunction extends Function {
     public static final IntegerToDateFunction INSTANCE = new IntegerToDateFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
       return DateTimeConversion.convert(value);
@@ -105,7 +108,7 @@ public class ToDateFunction extends Function {
     public static final ToDateFunction INSTANCE = new NumberToDateFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) return null;
       return DateTimeConversion.convert(value);

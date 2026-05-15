@@ -17,8 +17,10 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.jspecify.annotations.NullMarked;
 
 /** Strategy interface to check for allowed operand types of an operator call. */
+@NullMarked
 public interface IOperandTypeChecker {
 
   /**

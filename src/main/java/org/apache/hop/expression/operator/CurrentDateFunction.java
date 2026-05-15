@@ -27,9 +27,11 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** The function return the current date at time 00:00 */
 @FunctionPlugin(names = "TODAY")
+@NullMarked
 public class CurrentDateFunction extends Function {
 
   public CurrentDateFunction() {

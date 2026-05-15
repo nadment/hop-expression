@@ -28,9 +28,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** The function returns the number of characters of the specified string or binary. */
 @FunctionPlugin(names = "LEN")
+@NullMarked
 public class LengthFunction extends Function {
 
   public LengthFunction() {
@@ -65,7 +68,7 @@ public class LengthFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
       return Long.valueOf(value.length());
@@ -77,7 +80,7 @@ public class LengthFunction extends Function {
     public static final BinaryLengthFunction INSTANCE = new BinaryLengthFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
       return Long.valueOf(value.length);

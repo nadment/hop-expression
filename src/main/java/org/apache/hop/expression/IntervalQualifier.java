@@ -17,6 +17,10 @@
 
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public enum IntervalQualifier {
   YEAR,
   YEAR_TO_MONTH,
@@ -47,7 +51,8 @@ public enum IntervalQualifier {
    * @param endUnit The end time unit or null if not applicable
    * @return qualifier, or null if not valid
    */
-  public static IntervalQualifier of(TimeUnit startUnit, TimeUnit endUnit) {
+  public static @Nullable IntervalQualifier of(
+      @Nullable TimeUnit startUnit, @Nullable TimeUnit endUnit) {
     if (startUnit == null) return null;
 
     switch (startUnit) {
@@ -88,7 +93,7 @@ public enum IntervalQualifier {
     return null;
   }
 
-  public static IntervalQualifier of(final Interval interval) {
+  public static @Nullable IntervalQualifier of(final Interval interval) {
     TimeUnit start = null;
     TimeUnit end = null;
 
@@ -152,7 +157,7 @@ public enum IntervalQualifier {
     };
   }
 
-  public Interval parse(final String text) {
+  public @Nullable Interval parse(final String text) {
     return switch (this) {
       case YEAR -> Interval.year(text);
       case YEAR_TO_MONTH -> Interval.yearToMonth(text);

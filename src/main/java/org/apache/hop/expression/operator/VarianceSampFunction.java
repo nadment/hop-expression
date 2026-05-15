@@ -21,9 +21,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** Returns the sample variance calculated from values of a group of row. */
 @FunctionPlugin(names = "VAR_SAMP")
+@NullMarked
 public class VarianceSampFunction extends AggregateFunction {
 
   public VarianceSampFunction() {

@@ -25,9 +25,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a timestamp to another time zone. */
 @FunctionPlugin
+@NullMarked
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
@@ -40,7 +43,7 @@ public class ConvertTimezone extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     if (operands.length == 3) {
       ZoneId zoneSource = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
       ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[1].getValue(String.class));

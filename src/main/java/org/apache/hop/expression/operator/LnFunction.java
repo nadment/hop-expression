@@ -28,9 +28,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Calculates the natural logarithm of a numeric value. */
 @FunctionPlugin
+@NullMarked
 public class LnFunction extends Function {
 
   public LnFunction() {
@@ -48,7 +51,7 @@ public class LnFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
 
     if (value == null) return null;

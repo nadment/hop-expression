@@ -17,7 +17,9 @@
 package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract class Conversion<T> {
 
   /**

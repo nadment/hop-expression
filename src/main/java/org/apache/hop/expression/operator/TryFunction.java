@@ -23,12 +23,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function ensures that errors during expression evaluation result in NULL instead of causing
  * an error.
  */
 @FunctionPlugin
+@NullMarked
 public class TryFunction extends Function {
 
   public static final TryFunction INSTANCE = new TryFunction();
@@ -38,7 +41,7 @@ public class TryFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     try {
       return operands[0].getValue();
     } catch (ExpressionException exception) {

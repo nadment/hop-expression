@@ -31,12 +31,15 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Compares the select expression to each search expression in order. As soon as a search expression
  * matches the selection expression, the corresponding result expression is returned.
  */
 @FunctionPlugin
+@NullMarked
 public class DecodeFunction extends Function {
 
   public static final IOperandTypeChecker OTC = new DecodeFunctionOperandTypeChecker();
@@ -77,7 +80,7 @@ public class DecodeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Type type = operands[0].getType();
     Object search = operands[0].getValue();
 

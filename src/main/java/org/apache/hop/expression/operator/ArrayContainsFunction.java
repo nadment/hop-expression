@@ -25,9 +25,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns TRUE if the value is found in the array. */
 @FunctionPlugin
+@NullMarked
 public class ArrayContainsFunction extends Function {
 
   public static final Function INSTANCE = new ArrayContainsFunction();
@@ -56,7 +59,7 @@ public class ArrayContainsFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Array array = (Array) operands[0];
     IExpression element = operands[1];
     return array.contains(element);

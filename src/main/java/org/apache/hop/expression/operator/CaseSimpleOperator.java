@@ -32,8 +32,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** An operator describing the <code>CASE</code> operator. */
+@NullMarked
 public class CaseSimpleOperator extends Operator {
   public static final CaseSimpleOperator INSTANCE = new CaseSimpleOperator();
 
@@ -49,7 +52,7 @@ public class CaseSimpleOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     int index = 0;
     IExpression valueExpression = operands[0];
     Array whenTerm = (Array) operands[1];

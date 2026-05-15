@@ -22,8 +22,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 @FunctionPlugin
+@NullMarked
 public class CountFunction extends AggregateFunction {
   public static final CountFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
   public static final CountFunction COUNT_VALUE = new CountFunction(Count.VALUE);

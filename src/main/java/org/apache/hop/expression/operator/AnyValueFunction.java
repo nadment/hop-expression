@@ -21,9 +21,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** Returns any value over a group of rows. */
 @FunctionPlugin
+@NullMarked
 public class AnyValueFunction extends AggregateFunction {
 
   public AnyValueFunction() {

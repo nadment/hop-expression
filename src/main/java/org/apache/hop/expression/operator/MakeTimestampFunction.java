@@ -25,11 +25,14 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Build a timestamp from its separate year, month, day, hour, minute, second[.fractional] fields.
  */
 @FunctionPlugin
+@NullMarked
 public class MakeTimestampFunction extends Function {
 
   public MakeTimestampFunction() {
@@ -42,7 +45,7 @@ public class MakeTimestampFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
     if (v0 == null) return null;
 

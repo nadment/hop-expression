@@ -24,7 +24,9 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class UserDefinedFunction extends Function {
 
   private final UserDefinedFunctionMeta meta;

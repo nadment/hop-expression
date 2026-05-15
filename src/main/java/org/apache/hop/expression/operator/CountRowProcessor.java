@@ -16,8 +16,10 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
 /** Returns the number of rows. */
+@NullMarked
 public class CountRowProcessor implements IExpressionProcessor {
 
   private long count;

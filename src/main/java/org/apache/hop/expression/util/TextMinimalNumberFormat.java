@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.Nullable;
 
 final class TextMinimalNumberFormat extends NumberFormat {
 
@@ -121,7 +122,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (obj == null) {
       return false;
     }

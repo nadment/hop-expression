@@ -27,6 +27,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function returns TRUE if the first value ends with second value. Both values must be data
@@ -35,6 +37,7 @@ import org.apache.hop.expression.type.Types;
  * @see StartsWithFunction
  */
 @FunctionPlugin
+@NullMarked
 public class EndsWithFunction extends Function {
   public static final EndsWithFunction INSTANCE = new EndsWithFunction();
 
@@ -66,7 +69,7 @@ public class EndsWithFunction extends Function {
     public static final StringEndsWithFunction INSTANCE = new StringEndsWithFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
       String suffix = operands[1].getValue(String.class);
@@ -84,7 +87,7 @@ public class EndsWithFunction extends Function {
     public static final BinaryEndsWithFunction INSTANCE = new BinaryEndsWithFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
       byte[] suffix = operands[1].getValue(byte[].class);

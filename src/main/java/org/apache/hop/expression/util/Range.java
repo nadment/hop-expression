@@ -15,12 +15,15 @@
 package org.apache.hop.expression.util;
 
 import java.util.Objects;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An immutable range of objects from a lower to upper point inclusive or exclusive.
  *
  * <p>The objects need to either be implementations of {@link Comparable}.
  */
+@NullMarked
 public final class Range<T extends Comparable<? super T>> {
 
   private static final String VALUE_IS_NULL = "value must not be null";
@@ -112,8 +115,7 @@ public final class Range<T extends Comparable<? super T>> {
         new Above<>(lower, BoundType.INCLUSIVE), new Below<>(upper, BoundType.INCLUSIVE));
   }
 
-  @SuppressWarnings("unchecked") // this method may throw CCE
-  static int compareOrThrow(Comparable left, Comparable right) {
+  static int compareOrThrow(@Nullable Comparable left, @Nullable Comparable right) {
     return left.compareTo(right);
   }
 
@@ -287,7 +289,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
       return obj instanceof BelowAll;
     }
 
@@ -320,7 +322,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
       if (obj instanceof Bound) {
         // It might not really be a Bound<T>, but we'll catch a CCE if it's not
         Bound<T> that = (Bound<T>) obj;
@@ -368,7 +370,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
       return obj instanceof AboveAll;
     }
 
@@ -401,7 +403,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
       if (obj instanceof Bound) {
         // It might not really be a Bound<T>, but we'll catch a CCE if it's not
         Bound<T> that = (Bound<T>) obj;

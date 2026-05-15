@@ -34,6 +34,8 @@ import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.LastDayOfQuarter;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the last day of the time unit.
@@ -44,6 +46,7 @@ import org.apache.hop.expression.util.LastDayOfQuarter;
  * @see FirstDayFunction
  */
 @FunctionPlugin
+@NullMarked
 public class LastDayFunction extends Function {
 
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
@@ -76,7 +79,7 @@ public class LastDayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
 

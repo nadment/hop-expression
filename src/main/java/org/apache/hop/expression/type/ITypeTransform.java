@@ -17,8 +17,10 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.jspecify.annotations.NullMarked;
 
 /** Strategy to transform one type to another. */
+@NullMarked
 public interface ITypeTransform {
   /**
    * Transforms a {@link Type}.

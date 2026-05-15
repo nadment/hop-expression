@@ -24,9 +24,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns the number of bits that are set */
 @FunctionPlugin
+@NullMarked
 public class BitCountFunction extends Function {
 
   public BitCountFunction() {
@@ -44,7 +47,7 @@ public class BitCountFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
 

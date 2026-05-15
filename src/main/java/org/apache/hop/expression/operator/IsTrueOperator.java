@@ -24,12 +24,14 @@ import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * An operator describing the <code>IS TRUE</code> operator.
  *
  * @see IsNotTrueOperator
  */
+@NullMarked
 public class IsTrueOperator extends PostfixUnaryOperator {
   public static final IsTrueOperator INSTANCE = new IsTrueOperator();
 

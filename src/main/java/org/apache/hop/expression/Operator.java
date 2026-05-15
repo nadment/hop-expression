@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
+import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
@@ -31,6 +32,8 @@ import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ...
@@ -39,6 +42,7 @@ import org.apache.hop.expression.type.Type;
  * <p>Operators have the precedence levels. An operator on higher levels is evaluated before an
  * operator on a lower level
  */
+@NullMarked
 public abstract class Operator {
   /**
    * A {@code MathContext} object with precision 32 digits, and a rounding mode of {@link
@@ -49,36 +53,38 @@ public abstract class Operator {
   private static final ILogChannel LOG = new LogChannel("Expression");
 
   /** The unique identifier of the operator/function. Example: "COS" or "TRIM" */
-  private final String id;
+  @Getter private final String id;
 
   /**
    * The symbol of the operator or name of the function. Example: id is "TRUNCATE" but the alias
    * name is "TRUNC"
    */
-  private final String name;
+  @Getter private final String name;
 
   /**
    * The precedence with which this operator binds to the expression to the left. This is less than
    * the right precedence if the operator is left-associative.
    */
-  private final int leftPrec;
+  @Getter private final int leftPrec;
 
   /**
    * The precedence with which this operator binds to the expression to the right. This is greater
    * than the left precedence if the operator is left-associative.
    */
-  private final int rightPrec;
+  @Getter private final int rightPrec;
 
   /** Used to infer the return type of call to this operator. */
   private final IReturnTypeInference returnTypeInference;
 
-  /** Used to validate operand types. */
-  private final IOperandTypeChecker operandTypeChecker;
+  /** The strategy to validate operand types expected by this operator. */
+  @Getter private final @Nullable IOperandTypeChecker operandTypeChecker;
 
-  private final String category;
+  /** The category of this operator. */
+  @Getter private final String category;
+
   private final String documentationUrl;
-  private final String documentation;
-  private final String description;
+  private final @Nullable String documentation;
+  private final @Nullable String description;
 
   /**
    * Create a new operator for use in expressions.
@@ -95,7 +101,7 @@ public abstract class Operator {
       int precedence,
       Associativity associativity,
       IReturnTypeInference returnTypeInference,
-      IOperandTypeChecker operandTypeChecker,
+      @Nullable IOperandTypeChecker operandTypeChecker,
       String category,
       String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id");
@@ -115,7 +121,7 @@ public abstract class Operator {
       int precedence,
       Associativity associativity,
       IReturnTypeInference returnTypeInference,
-      IOperandTypeChecker operandTypeChecker,
+      @Nullable IOperandTypeChecker operandTypeChecker,
       String category,
       String documentationUrl) {
     this(
@@ -143,7 +149,7 @@ public abstract class Operator {
     return precedence;
   }
 
-  protected static MethodHandle findMethodHandle(final Class<?> clazz, final String methodName) {
+  protected static MethodHandle findMethodHandle(Class<?> clazz, String methodName) {
     try {
       MethodHandles.Lookup lookup = MethodHandles.publicLookup();
       MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
@@ -153,8 +159,7 @@ public abstract class Operator {
     }
   }
 
-  protected static MethodHandle findStaticMethodHandle(
-      final Class<?> clazz, final String methodName) {
+  protected static MethodHandle findStaticMethodHandle(Class<?> clazz, String methodName) {
     try {
       MethodHandles.Lookup lookup = MethodHandles.publicLookup();
       MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
@@ -169,7 +174,7 @@ public abstract class Operator {
    *
    * @return this instance cast to a class
    */
-  protected static Call call(final IExpression expression) {
+  protected static Call call(IExpression expression) {
     return (Call) expression;
   }
 
@@ -178,7 +183,7 @@ public abstract class Operator {
    *
    * @return this instance cast to a class
    */
-  protected static Identifier identifier(final IExpression expression) {
+  protected static Identifier identifier(IExpression expression) {
     return (Identifier) expression;
   }
 
@@ -187,26 +192,8 @@ public abstract class Operator {
    *
    * @return this instance cast to a class
    */
-  protected static Array array(final IExpression expression) {
+  protected static Array array(IExpression expression) {
     return (Array) expression;
-  }
-
-  /** The unique identifier of the operator */
-  public String getId() {
-    return id;
-  }
-
-  /** The name of the operator */
-  public String getName() {
-    return name;
-  }
-
-  public int getLeftPrec() {
-    return leftPrec;
-  }
-
-  public int getRightPrec() {
-    return rightPrec;
   }
 
   /**
@@ -240,11 +227,6 @@ public abstract class Operator {
     return this.returnTypeInference;
   }
 
-  /** Returns a strategy to validate operand types expected by this operator. */
-  public IOperandTypeChecker getOperandTypeChecker() {
-    return operandTypeChecker;
-  }
-
   /**
    * Returns a constraint on the number of operands expected by this operator.
    *
@@ -259,7 +241,7 @@ public abstract class Operator {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (obj == null) {
       return false;
     }
@@ -277,7 +259,7 @@ public abstract class Operator {
    * @param other the operator to compare
    * @return true if the operator is the same
    */
-  public boolean is(Operator other) {
+  public boolean is(@Nullable Operator other) {
     if (other == null) return false;
     return id.equals(other.id);
   }
@@ -295,7 +277,7 @@ public abstract class Operator {
    *
    * <p>By default, returns {@code null}, which means there is no inverse operator.
    */
-  public Operator not() {
+  public @Nullable Operator not() {
     return null;
   }
 
@@ -304,21 +286,12 @@ public abstract class Operator {
    *
    * <p>By default, returns {@code null}, which means there is no inverse operator.
    */
-  public Operator reverse() {
+  public @Nullable Operator reverse() {
     return null;
   }
 
-  /**
-   * Get the category of this operator.
-   *
-   * @return the category
-   */
-  public String getCategory() {
-    return category;
-  }
-
   /** Get the description of this operator. */
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return description;
   }
 
@@ -327,7 +300,7 @@ public abstract class Operator {
    *
    * @return the result of the evaluation
    */
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message());
   }
 
@@ -336,7 +309,7 @@ public abstract class Operator {
    *
    * @param call The call to check
    */
-  public void checkOperandCount(final Call call) {
+  public void checkOperandCount(Call call) {
     if (operandTypeChecker == null) return;
 
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
@@ -356,11 +329,8 @@ public abstract class Operator {
    * @param call The call to check
    * @return whether check succeeded
    */
-  public boolean checkOperandTypes(final Call call) {
-    if (operandTypeChecker != null) {
-      return operandTypeChecker.checkOperandTypes(call);
-    }
-    return true;
+  public boolean checkOperandTypes(Call call) {
+    return operandTypeChecker.checkOperandTypes(call);
   }
 
   /**
@@ -371,7 +341,7 @@ public abstract class Operator {
    *     in that case)
    * @return whether check succeeded
    */
-  public boolean checkOperandTypes(final Call call, boolean throwOnFailure) {
+  public boolean checkOperandTypes(Call call, boolean throwOnFailure) {
 
     boolean success = checkOperandTypes(call);
     if (success) {
@@ -416,14 +386,13 @@ public abstract class Operator {
    * @return compiled The compiled expression
    * @throws ExpressionException if an error occurs.
    */
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return call;
   }
 
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
-  public String getDocumentation() {
+  public @Nullable String getDocumentation() {
     return this.documentation;
   }
 
@@ -528,7 +497,7 @@ public abstract class Operator {
     return call;
   }
 
-  private String loadDocumentation() {
+  private @Nullable String loadDocumentation() {
     try (StringWriter writer = new StringWriter()) {
       InputStream is = this.getClass().getResourceAsStream(documentationUrl);
       if (is != null) {

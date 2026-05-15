@@ -24,9 +24,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Number of days from January 1, 4713 B.C. (the start of the Julian date calendar). */
 @FunctionPlugin
+@NullMarked
 public class JulianDayFunction extends Function {
 
   public JulianDayFunction() {
@@ -39,7 +42,7 @@ public class JulianDayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
 

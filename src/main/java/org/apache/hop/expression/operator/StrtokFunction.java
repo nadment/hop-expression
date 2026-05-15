@@ -24,12 +24,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Splits a string on the specified list of delimiter characters and returns the part at the
  * specified position. @See {@link SplitPartFunction}
  */
 @FunctionPlugin
+@NullMarked
 public class StrtokFunction extends Function {
 
   private static final IOperandTypeChecker OTC =
@@ -43,7 +46,7 @@ public class StrtokFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) return null;
 

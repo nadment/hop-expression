@@ -22,7 +22,10 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class InetConversion extends Conversion<InetAddress> {
 
   private InetConversion() {
@@ -36,7 +39,7 @@ public final class InetConversion extends Conversion<InetAddress> {
    * @return InetAddress
    * @throws ExpressionException - When the conversion is not possible
    */
-  public static InetAddress convert(final String str) {
+  public static @Nullable InetAddress convert(final @Nullable String str) {
     if (Utils.isEmpty(str)) return null;
     try {
       return InetAddress.getByName(str);

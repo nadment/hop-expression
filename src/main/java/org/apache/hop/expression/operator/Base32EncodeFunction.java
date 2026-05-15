@@ -23,6 +23,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function encode the input (string or binary) using Base32 encoding.
@@ -30,6 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see Base32DecodeFunction
  */
 @FunctionPlugin
+@NullMarked
 public class Base32EncodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
 
@@ -43,7 +46,7 @@ public class Base32EncodeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) return null;
 

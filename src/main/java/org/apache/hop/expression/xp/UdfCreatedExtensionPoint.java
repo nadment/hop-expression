@@ -33,7 +33,7 @@ import org.apache.hop.metadata.api.IHopMetadata;
     description = "User Defined Function created")
 public class UdfCreatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override
-  public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object) {
+  public void callExtensionPoint(ILogChannel log, IVariables variables, IHopMetadata object) {
 
     if (object instanceof UserDefinedFunctionMeta meta) {
       log.logBasic("User Defined Function created " + meta.getName());

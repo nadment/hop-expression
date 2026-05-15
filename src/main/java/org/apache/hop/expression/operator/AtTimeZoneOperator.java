@@ -25,12 +25,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Converts a value of one time zone into another time zone.
  *
  * <p><code>value AT TIME ZONE zone.</code>
  */
+@NullMarked
 public class AtTimeZoneOperator extends Operator {
 
   public static final AtTimeZoneOperator INSTANCE = new AtTimeZoneOperator();
@@ -48,7 +51,7 @@ public class AtTimeZoneOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
 

@@ -29,12 +29,15 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Replaces a substring of the specified length, starting at the specified position, with a new
  * string or binary value.
  */
 @FunctionPlugin
+@NullMarked
 public class InsertFunction extends Function {
 
   public InsertFunction() {
@@ -70,7 +73,7 @@ public class InsertFunction extends Function {
     public static final InsertFunction INSTANCE = new StringInsertFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String original = operands[0].getValue(String.class);
       if (original == null) return null;
       Long pos = operands[1].getValue(Long.class);
@@ -105,7 +108,7 @@ public class InsertFunction extends Function {
     public static final InsertFunction INSTANCE = new BinaryInsertFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
       Long pos = operands[1].getValue(Long.class);

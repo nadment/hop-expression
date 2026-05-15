@@ -29,9 +29,12 @@ import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Splits a string into an array of strings based on a specified delimiter. */
 @FunctionPlugin
+@NullMarked
 public class StringToArrayFunction extends Function {
 
   public static final Function INSTANCE = new StringToArrayFunction();
@@ -48,7 +51,7 @@ public class StringToArrayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) return null;
 

@@ -24,12 +24,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the position in the string that is the first character of a specified occurrence of the
  * substring.
  */
 @FunctionPlugin
+@NullMarked
 public class InstrFunction extends Function {
 
   public InstrFunction() {
@@ -44,7 +47,7 @@ public class InstrFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) {
       return null;

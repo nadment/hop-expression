@@ -22,7 +22,10 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class DateTimeConversion extends Conversion<ZonedDateTime> {
 
   private DateTimeConversion() {
@@ -39,7 +42,7 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
    * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
    *     1970)
    */
-  public static ZonedDateTime convert(final Long seconds) {
+  public static @Nullable ZonedDateTime convert(final @Nullable Long seconds) {
     if (seconds == null) {
       return null;
     }
@@ -47,7 +50,7 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }
 
-  public static ZonedDateTime convert(final BigDecimal number) {
+  public static @Nullable ZonedDateTime convert(final @Nullable BigDecimal number) {
     if (number == null) {
       return null;
     }

@@ -21,7 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ExpressionContext implements IExpressionContext {
 
   /**
@@ -82,7 +85,7 @@ public class ExpressionContext implements IExpressionContext {
     this.setAttribute(variables, EXPRESSION_BINARY_FORMAT, "HEX");
   }
 
-  protected void setAttribute(IVariables variables, String name, String defaultValue) {
+  protected void setAttribute(IVariables variables, String name, @Nullable String defaultValue) {
     attributes.put(name, variables.getVariable(name, defaultValue));
   }
 
@@ -101,7 +104,7 @@ public class ExpressionContext implements IExpressionContext {
   }
 
   @Override
-  public Object getAttribute(String id) {
+  public @Nullable Object getAttribute(@Nullable String id) {
     return attributes.get(id);
   }
 }

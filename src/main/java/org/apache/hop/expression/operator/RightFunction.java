@@ -28,6 +28,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function extracts a number of characters from a string or bytes from binary starting from
@@ -36,6 +38,7 @@ import org.apache.hop.expression.type.Types;
  * @see LeftFunction
  */
 @FunctionPlugin
+@NullMarked
 public class RightFunction extends Function {
 
   public RightFunction() {
@@ -65,7 +68,7 @@ public class RightFunction extends Function {
     public static final RightFunction INSTANCE = new StringRightFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
       if (str == null) return null;
 
@@ -88,7 +91,7 @@ public class RightFunction extends Function {
     public static final RightFunction INSTANCE = new BinaryRightFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
       if (bytes == null) return null;
 

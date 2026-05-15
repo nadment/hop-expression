@@ -27,9 +27,11 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** The function return the current date and time */
 @FunctionPlugin(names = {"NOW"})
+@NullMarked
 public class CurrentTimestampFunction extends Function {
 
   public CurrentTimestampFunction() {

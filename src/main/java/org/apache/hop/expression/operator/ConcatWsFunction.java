@@ -29,9 +29,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** String or binary concatenation function with separator */
 @FunctionPlugin
+@NullMarked
 public class ConcatWsFunction extends Function {
 
   public ConcatWsFunction() {
@@ -58,7 +61,7 @@ public class ConcatWsFunction extends Function {
     public static final ConcatWsFunction INSTANCE = new StringConcatWsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
 
       String separator = operands[0].getValue(String.class);
       if (separator == null) return null;
@@ -85,7 +88,7 @@ public class ConcatWsFunction extends Function {
     public static final ConcatWsFunction INSTANCE = new BinaryConcatWsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
 
       byte[] separator = operands[0].getValue(byte[].class);
       if (separator == null) return null;

@@ -25,6 +25,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns number of months between two date.
@@ -32,6 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * <p>The difference is calculated based on 31 days per month.
  */
 @FunctionPlugin
+@NullMarked
 public class MonthsBetweenFunction extends Function {
 
   public MonthsBetweenFunction() {
@@ -44,7 +47,7 @@ public class MonthsBetweenFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
     if (startDateTime == null) return null;
     ZonedDateTime endDateTime = operands[1].getValue(ZonedDateTime.class);

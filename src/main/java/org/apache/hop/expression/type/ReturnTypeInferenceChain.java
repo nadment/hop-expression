@@ -17,7 +17,9 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ReturnTypeInferenceChain implements IReturnTypeInference {
   private final IReturnTypeInference[] rules;
 

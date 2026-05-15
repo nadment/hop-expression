@@ -25,9 +25,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** Converts a string or numeric expression to a boolean value. */
 @FunctionPlugin
+@NullMarked
 public class TryToBooleanFunction extends Function {
 
   public static final TryToBooleanFunction INSTANCE = new TryToBooleanFunction();

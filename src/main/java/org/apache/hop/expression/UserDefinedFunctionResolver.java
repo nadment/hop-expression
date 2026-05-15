@@ -18,7 +18,9 @@ package org.apache.hop.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpression> {
 
   private final IExpression[] operands;

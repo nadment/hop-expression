@@ -16,25 +16,29 @@
  */
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public class Token {
 
   private final Id id;
   private final int start;
   private final int end;
-  private final String text;
+  private final @Nullable String text;
 
   protected Token(Id id, int start) {
     this(id, start, start + 1, id.label);
   }
 
-  protected Token(Id id, int start, int end, String text) {
+  protected Token(Id id, int start, int end, @Nullable String text) {
     this.id = id;
     this.start = start;
     this.end = end;
     this.text = text;
   }
 
-  public boolean is(final Id id) {
+  public boolean is(Id id) {
     return this.id == id;
   }
 
@@ -58,7 +62,7 @@ public class Token {
   }
 
   /** Returns the token value. */
-  public String text() {
+  public @Nullable String text() {
     return text;
   }
 
@@ -227,7 +231,7 @@ public class Token {
       this.label = name();
     }
 
-    Id(final String label) {
+    Id(String label) {
       this.label = label;
     }
 

@@ -24,9 +24,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** This function throws the given error message and abort execution of the pipeline or workflow. */
 @FunctionPlugin
+@NullMarked
 public class ErrorFunction extends Function {
 
   public ErrorFunction() {
@@ -39,7 +42,7 @@ public class ErrorFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String message = operands[0].getValue(String.class);
     throw new ExpressionException(ErrorCode.MESSAGE_ERROR, message);
   }

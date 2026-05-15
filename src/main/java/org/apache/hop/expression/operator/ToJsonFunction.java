@@ -23,9 +23,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.JsonConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a string expression to a JSON value. */
 @FunctionPlugin
+@NullMarked
 public class ToJsonFunction extends Function {
   public static final ToJsonFunction INSTANCE = new ToJsonFunction();
 
@@ -39,7 +42,7 @@ public class ToJsonFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     return JsonConversion.convert(value);
   }

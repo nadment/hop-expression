@@ -20,7 +20,10 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Interval;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class IntervalType extends Type {
   /** Default INTERVAL type with default parameters. */
   public static final IntervalType INTERVAL = new IntervalType(true);
@@ -40,7 +43,7 @@ public final class IntervalType extends Type {
    * @param str the string to convert
    * @return Interval
    */
-  public static Interval convert(final String str) throws ExpressionException {
+  public static @Nullable Interval convert(final @Nullable String str) throws ExpressionException {
     if (str == null) return null;
     return Interval.of(str);
   }
@@ -64,7 +67,8 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -76,12 +80,13 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public Object cast(final Object value) throws ExpressionException {
+  public @Nullable Object cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
   @Override
-  public Object cast(final Object value, final String pattern) throws ExpressionException {
+  public @Nullable Object cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -96,7 +101,7 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof Interval l && right instanceof Interval r) {
       return l.compareTo(r) == 0;
     }
@@ -104,7 +109,7 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof Interval l && right instanceof Interval r) {
       return l.compareTo(r);
     }

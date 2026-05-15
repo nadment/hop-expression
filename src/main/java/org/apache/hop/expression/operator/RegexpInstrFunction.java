@@ -28,9 +28,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** */
 @FunctionPlugin
+@NullMarked
 public class RegexpInstrFunction extends Function {
 
   public RegexpInstrFunction() {
@@ -47,7 +50,7 @@ public class RegexpInstrFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;

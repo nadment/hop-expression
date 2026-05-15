@@ -25,8 +25,11 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Number type with an optional precision and scale: */
+@NullMarked
 public final class NumberType extends Type {
   /** Default NUMBER(38,9) type with max precision and default scale. */
   public static final NumberType NUMBER =
@@ -98,7 +101,8 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -120,7 +124,7 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public BigDecimal cast(final Object value) throws ExpressionException {
+  public @Nullable BigDecimal cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -133,7 +137,8 @@ public final class NumberType extends Type {
    * @return the converted value
    */
   @Override
-  public BigDecimal cast(final Object value, final String pattern) throws ExpressionException {
+  public @Nullable BigDecimal cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -165,7 +170,7 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof BigDecimal l && right instanceof BigDecimal r) {
       return l.compareTo(r) == 0;
     }
@@ -173,7 +178,7 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof BigDecimal l && right instanceof BigDecimal r) {
       return l.compareTo(r);
     }

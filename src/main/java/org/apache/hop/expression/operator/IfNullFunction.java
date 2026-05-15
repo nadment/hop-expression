@@ -30,6 +30,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The IFNULL function replaces the null with value (Alias NVL).
@@ -37,6 +39,7 @@ import org.apache.hop.expression.type.Types;
  * @see CoalesceFunction
  */
 @FunctionPlugin(names = "NVL")
+@NullMarked
 public class IfNullFunction extends Function {
 
   public static final Function INSTANCE = new IfNullFunction();
@@ -97,7 +100,7 @@ public class IfNullFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null) return operands[1].getValue();
     return value;

@@ -18,7 +18,10 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class EnumType extends Type {
   public static final EnumType TIMEUNIT = new EnumType(false);
 
@@ -46,7 +49,8 @@ public final class EnumType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
 
     if (value == null) {
       return null;

@@ -18,11 +18,14 @@ package org.apache.hop.expression;
 
 import java.io.StringWriter;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An expression is a combination of one or more literal, identifiers, a list of expressions or a
  * call to an operator that evaluate to a value.
  */
+@NullMarked
 public interface IExpression {
 
   /**
@@ -80,7 +83,7 @@ public interface IExpression {
    *
    * @return The result of evaluating the expression.
    */
-  default Object getValue() {
+  default @Nullable Object getValue() {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
@@ -91,7 +94,7 @@ public interface IExpression {
    * @param <T> Value type
    * @return The result of evaluating the expression in the desired type
    */
-  default <T> T getValue(Class<T> clazz) {
+  default @Nullable <T> T getValue(Class<T> clazz) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
@@ -121,5 +124,5 @@ public interface IExpression {
    * @param leftPrec The precedence of the {@link IExpression} immediately preceding
    * @param rightPrec The precedence of the {@link IExpression} immediately
    */
-  void unparse(final StringWriter writer, int leftPrec, int rightPrec);
+  void unparse(StringWriter writer, int leftPrec, int rightPrec);
 }

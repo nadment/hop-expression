@@ -22,7 +22,10 @@ import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class BinaryType extends Type {
 
   /** Default BINARY type with maximum precision. */
@@ -73,7 +76,8 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
     if (value == null) return null;
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
@@ -86,7 +90,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public byte[] cast(final Object value) throws ExpressionException {
+  public byte @Nullable [] cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -99,24 +103,20 @@ public final class BinaryType extends Type {
    * @return the converted value
    */
   @Override
-  public byte[] cast(final Object value, String pattern) throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof byte[] bytes) {
-      return bytes;
-    }
-    if (value instanceof String str) {
-      return str.getBytes(StandardCharsets.UTF_8);
-    }
-
-    throw new ExpressionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  public byte @Nullable [] cast(final @Nullable Object value, @Nullable String pattern)
+      throws ExpressionException {
+    return switch (value) {
+      case null -> null;
+      case byte[] bytes -> bytes;
+      case String str -> str.getBytes(StandardCharsets.UTF_8);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
       if (l.length != r.length) return false;
       for (int i = 0; i < l.length; i++) {
@@ -131,7 +131,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
       return ByteBuffer.wrap(l).compareTo(ByteBuffer.wrap(r));
     }

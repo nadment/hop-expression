@@ -210,7 +210,7 @@ public class ExpressionParser {
   // Index in tokens
   private int index = 0;
 
-  public ExpressionParser(final String source) {
+  public ExpressionParser(String source) {
     super();
     this.source = source;
   }
@@ -219,7 +219,7 @@ public class ExpressionParser {
     return RESERVED_WORDS;
   }
 
-  public static boolean isReservedWord(final String name) {
+  public static boolean isReservedWord(String name) {
     if (name == null) return false;
     return RESERVED_WORDS.contains(name.toUpperCase());
   }
@@ -244,7 +244,7 @@ public class ExpressionParser {
     return tokens.get(index++);
   }
 
-  protected void checkEndOfExpression(final Id id) {
+  protected void checkEndOfExpression(Id id) {
     if (!hasNext()) {
       throw new ExpressionParseException(getPosition(), ErrorCode.SYNTAX_ERROR, id);
     }
@@ -259,14 +259,14 @@ public class ExpressionParser {
     return tokens.get(--index);
   }
 
-  protected boolean is(final Id id) {
+  protected boolean is(Id id) {
     if (hasNext()) {
       return tokens.get(index).is(id);
     }
     return false;
   }
 
-  protected boolean isThenNext(final Id id) {
+  protected boolean isThenNext(Id id) {
     if (hasNext() && tokens.get(index).is(id)) {
       index++;
       return true;
@@ -274,7 +274,7 @@ public class ExpressionParser {
     return false;
   }
 
-  protected boolean isThenNext(final Id... ids) {
+  protected boolean isThenNext(Id... ids) {
     for (Id id : ids) {
       if (hasNext() && tokens.get(index).is(id)) {
         index++;
@@ -285,7 +285,7 @@ public class ExpressionParser {
     return true;
   }
 
-  protected boolean isNotThenNext(final Id id) {
+  protected boolean isNotThenNext(Id id) {
     return !this.isThenNext(id);
   }
 
@@ -784,7 +784,7 @@ public class ExpressionParser {
     return new Array(operands);
   }
 
-  private IExpression parseLiteralNumericDecimal(final Token token) throws ExpressionException {
+  private IExpression parseLiteralNumericDecimal(Token token) throws ExpressionException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
     try {
       return Literal.of(number.longValueExact());
@@ -793,7 +793,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralBinary(final Token token) throws ExpressionException {
+  private IExpression parseLiteralBinary(Token token) throws ExpressionException {
     try {
       String str = token.text();
       if (str.length() % 2 > 0) str = '0' + str;
@@ -811,7 +811,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralNumericHexa(final Token token) {
+  private IExpression parseLiteralNumericHexa(Token token) {
     String str = token.text().substring(2);
     BigInteger value = new BigInteger(str, 16);
     try {
@@ -821,7 +821,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralNumericOctal(final Token token) {
+  private IExpression parseLiteralNumericOctal(Token token) {
     String str = token.text().substring(2);
     BigInteger value = new BigInteger(str, 8);
     try {
@@ -831,7 +831,7 @@ public class ExpressionParser {
     }
   }
 
-  private IExpression parseLiteralNumericBinary(final Token token) {
+  private IExpression parseLiteralNumericBinary(Token token) {
     String str = token.text().substring(2);
     BigInteger value = new BigInteger(str, 2);
     try {
@@ -845,7 +845,7 @@ public class ExpressionParser {
    * Parses a date literal. The parsing is strict and requires months to be between 1 and 12, days
    * to be less than 31, etc.
    */
-  private IExpression parseLiteralDate(final Token token) throws ExpressionException {
+  private IExpression parseLiteralDate(Token token) throws ExpressionException {
     try {
       // Literal date use exact mode ISO 8601
       DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
@@ -863,7 +863,7 @@ public class ExpressionParser {
    * <p>The parsing is strict and requires months to be between 1 and 12, days to be less than 31,
    * etc.
    */
-  private IExpression parseLiteralTimestamp(final Token token) throws ExpressionException {
+  private IExpression parseLiteralTimestamp(Token token) throws ExpressionException {
     try {
       DateTimeFormat format = DateTimeFormat.of("AUTO");
       ZonedDateTime datetime = format.parse(token.text());
@@ -1125,7 +1125,7 @@ public class ExpressionParser {
   }
 
   /** Parse function <code>EXTRACT(part FROM expression)</code> */
-  private IExpression parseFunctionExtract(Token token, final Function function)
+  private IExpression parseFunctionExtract(Token token, Function function)
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
@@ -1193,7 +1193,7 @@ public class ExpressionParser {
   }
 
   /** Parse function <code>LISTAGG([DISTINCT] expression [, delimiter] )</code> */
-  private IExpression parseFunctionListAgg(Token token, final Function function)
+  private IExpression parseFunctionListAgg(Token token, Function function)
       throws ExpressionException {
 
     AggregateFunction aggregator = ListAggFunction.LISTAGG_ALL;
@@ -1215,7 +1215,7 @@ public class ExpressionParser {
    * Parse function <code>JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...)
    * </code>
    */
-  private IExpression parseFunctionJsonObject(Token token, final Function function)
+  private IExpression parseFunctionJsonObject(Token token, Function function)
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
@@ -1258,7 +1258,7 @@ public class ExpressionParser {
   }
 
   /** Parse function <code>JSON_VALUE(json, path [RETURNING type])</code> */
-  private IExpression parseFunctionJsonValue(Token token, final Function function)
+  private IExpression parseFunctionJsonValue(Token token, Function function)
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
@@ -1281,7 +1281,7 @@ public class ExpressionParser {
   }
 
   /** Parse function */
-  private IExpression parseFunction(final Token token) throws ExpressionException {
+  private IExpression parseFunction(Token token) throws ExpressionException {
     Function function = FunctionRegistry.getFunction(token.text());
 
     // Function is never null

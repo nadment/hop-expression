@@ -25,9 +25,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Bitwise NOT function. <br> */
 @FunctionPlugin
+@NullMarked
 public class BitNotFunction extends Function {
 
   public static final BitNotFunction INSTANCE = new BitNotFunction();
@@ -54,7 +57,7 @@ public class BitNotFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
 

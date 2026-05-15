@@ -30,9 +30,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Return a random number between 0 (inclusive) and 1 (exclusive). */
 @FunctionPlugin(names = "RAND")
+@NullMarked
 public class RandomFunction extends Function {
 
   private final Random random;
@@ -57,7 +60,7 @@ public class RandomFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     return BigDecimal.valueOf(random.nextDouble());
   }
 

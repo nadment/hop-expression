@@ -30,9 +30,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Hex;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts the string expression to a binary value. */
 @FunctionPlugin
+@NullMarked
 public class ToBinaryFunction extends Function {
   public static final ToBinaryFunction INSTANCE = new ToBinaryFunction();
 
@@ -79,7 +82,7 @@ public class ToBinaryFunction extends Function {
     public static final StringHexToBinaryFunction INSTANCE = new StringHexToBinaryFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
       if (value == null) {
         return null;
@@ -96,7 +99,7 @@ public class ToBinaryFunction extends Function {
     public static final StringUtf8ToBinaryFunction INSTANCE = new StringUtf8ToBinaryFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
       if (value == null) {
         return null;
@@ -109,7 +112,7 @@ public class ToBinaryFunction extends Function {
     public static final StringBase6ToBinaryFunction INSTANCE = new StringBase6ToBinaryFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       final String value = operands[0].getValue(String.class);
       if (value == null) {
         return null;

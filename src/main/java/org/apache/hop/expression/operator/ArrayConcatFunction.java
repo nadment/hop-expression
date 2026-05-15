@@ -19,14 +19,17 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Array to array concatenation */
+@NullMarked
 public class ArrayConcatFunction extends ConcatFunction {
 
   public static final Function INSTANCE = new ArrayConcatFunction();
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     Array array0 = (Array) operands[0];
     Array array1 = (Array) operands[1];
 

@@ -28,9 +28,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns characters from a string by searching it for a regular expression pattern. */
 @FunctionPlugin
+@NullMarked
 public class RegexpSubstrFunction extends Function {
 
   public RegexpSubstrFunction() {
@@ -46,7 +49,7 @@ public class RegexpSubstrFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;

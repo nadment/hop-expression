@@ -26,9 +26,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Function to converts radians to degrees. */
 @FunctionPlugin
+@NullMarked
 public class DegreesFunction extends Function {
 
   public DegreesFunction() {
@@ -46,7 +49,7 @@ public class DegreesFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
     return BigDecimalMath.toDegrees(value, MATH_CONTEXT);

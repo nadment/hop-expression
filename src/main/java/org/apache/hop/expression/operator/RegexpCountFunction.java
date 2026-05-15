@@ -26,6 +26,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Searches a string for a regular expression pattern and returns an integer that indicates the
@@ -35,6 +37,7 @@ import org.apache.hop.expression.util.Regexp;
  * <p>REGEXP_COUNT ( source, pattern [, start [, parameters ] ] )
  */
 @FunctionPlugin
+@NullMarked
 public class RegexpCountFunction extends Function {
 
   public RegexpCountFunction() {
@@ -49,7 +52,7 @@ public class RegexpCountFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
 
     long count = 0L;
 

@@ -23,6 +23,8 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Interval;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Enumeration of the data type identifier which can be used to construct an expression.
@@ -32,6 +34,7 @@ import org.apache.hop.expression.Interval;
  * <p>If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
+@NullMarked
 public enum TypeName {
 
   /** The null value. It has its own special type. */
@@ -121,7 +124,7 @@ public enum TypeName {
    * @param name The name of the data name
    * @return data name, or null if not valid
    */
-  public static TypeName of(final String name) {
+  public static @Nullable TypeName of(final @Nullable String name) {
     for (TypeName type : TypeName.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
@@ -135,7 +138,7 @@ public enum TypeName {
    *
    * @return The {@link TypeName} or 'UNKNOWN' if not found
    */
-  public static TypeName fromClass(final Class<?> clazz) {
+  public static TypeName fromClass(final @Nullable Class<?> clazz) {
     if (clazz == null) return UNKNOWN;
 
     for (TypeName id : values()) {
@@ -155,7 +158,7 @@ public enum TypeName {
    *
    * @return The type id or 'UNKNOWN' if not found
    */
-  public static TypeName fromValue(final Object value) {
+  public static TypeName fromValue(final @Nullable Object value) {
     if (value == null) return UNKNOWN;
 
     if (value instanceof Integer) {
@@ -188,7 +191,7 @@ public enum TypeName {
   /**
    * Returns whether this {@link TypeName} support explicit cast to the specified {@link TypeName}.
    */
-  public boolean isCastable(final TypeName name) {
+  public boolean isCastable(final @Nullable TypeName name) {
     if (name == null) return false;
     if (name == this) return true;
 
@@ -208,7 +211,7 @@ public enum TypeName {
    * Returns whether this {@link TypeName} support implicit coercion to the specified {@link
    * TypeName}. Implicit coercions is generally only possible when the cast cannot fail.
    */
-  public boolean isCoercible(final TypeName name) {
+  public boolean isCoercible(final @Nullable TypeName name) {
     if (name == null) return false;
     if (ANY == this || name == ANY || this.equals(name)) return true;
     return switch (this) {

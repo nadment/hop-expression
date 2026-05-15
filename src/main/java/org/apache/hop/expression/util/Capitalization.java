@@ -17,8 +17,11 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Represents a capitalization strategy. */
+@NullMarked
 public enum Capitalization {
 
   /** All letters are upper case. */
@@ -38,7 +41,7 @@ public enum Capitalization {
    * @param up2 whether the second letter is upper case
    * @return the capitalization strategy
    */
-  static Capitalization of(Boolean up1, Boolean up2) {
+  static Capitalization of(@Nullable Boolean up1, @Nullable Boolean up2) {
     if (up1 == null) {
       return Capitalization.CAPITALIZE;
     } else if (up2 == null) {
@@ -51,12 +54,52 @@ public enum Capitalization {
   }
 
   /**
+   * Returns a capitalization strategy if the specified string contains any of the specified
+   * substrings at the specified index. The capitalization strategy indicates the casing of the
+   * substring that was found. If none of the specified substrings are found, this method returns
+   * <code>null</code> .
+   *
+   * @param s the string to check
+   * @param index the index to check at
+   * @param substrings the substrings to check for within the string
+   * @return a capitalization strategy if the specified string contains any of the specified
+   *     substrings at the specified index, <code>null</code> otherwise
+   */
+  static @Nullable Capitalization match(String s, int index, String... substrings) {
+    for (String substring : substrings) {
+      if (index + substring.length() <= s.length()) {
+        boolean found = true;
+        Boolean up1 = null;
+        Boolean up2 = null;
+        for (int i = 0; i < substring.length(); i++) {
+          char c1 = s.charAt(index + i);
+          char c2 = substring.charAt(i);
+          if (c1 != c2 && Character.toUpperCase(c1) != Character.toUpperCase(c2)) {
+            found = false;
+            break;
+          } else if (Character.isLetter(c1)) {
+            if (up1 == null) {
+              up1 = Character.isUpperCase(c1);
+            } else if (up2 == null) {
+              up2 = Character.isUpperCase(c1);
+            }
+          }
+        }
+        if (found) {
+          return Capitalization.of(up1, up2);
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * Applies this capitalization strategy to the specified string.
    *
    * @param str the string to apply this strategy to
    * @return the resultant string
    */
-  public String apply(final String str) {
+  public @Nullable String apply(final @Nullable String str) {
     if (str == null || str.isEmpty()) {
       return str;
     }

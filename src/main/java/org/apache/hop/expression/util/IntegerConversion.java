@@ -24,7 +24,10 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class IntegerConversion extends Conversion<Long> {
 
   /** BigInteger equal to Long.MIN_VALUE. */
@@ -39,7 +42,8 @@ public final class IntegerConversion extends Conversion<Long> {
     // Utility class
   }
 
-  public static Long convert(final BigDecimal number) throws ExpressionException {
+  public static @Nullable Long convert(@Nullable BigDecimal number) throws ExpressionException {
+    if (number == null) return null;
     BigInteger integer = number.setScale(0, RoundingMode.HALF_UP).toBigInteger();
     if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
       throw new ExpressionException(ErrorCode.CONVERSION_OVERFLOW, number);
@@ -47,7 +51,8 @@ public final class IntegerConversion extends Conversion<Long> {
     return integer.longValue();
   }
 
-  public static Long convert(final String str) throws ExpressionException {
+  public static @Nullable Long convert(final @Nullable String str) throws ExpressionException {
+    if (str == null) return null;
     try {
       BigDecimal number = numberFormat.parse(str);
       return convert(number);
@@ -57,7 +62,8 @@ public final class IntegerConversion extends Conversion<Long> {
     }
   }
 
-  public static Long convert(final byte[] bytes) throws ExpressionException {
+  public static @Nullable Long convert(byte @Nullable [] bytes) throws ExpressionException {
+    if (bytes == null) return null;
     if (bytes.length > 8)
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.INTEGER, bytes);
@@ -69,7 +75,9 @@ public final class IntegerConversion extends Conversion<Long> {
     return result;
   }
 
-  public static Long convert(final ZonedDateTime datetime) throws ExpressionException {
+  public static @Nullable Long convert(@Nullable ZonedDateTime datetime)
+      throws ExpressionException {
+    if (datetime == null) return null;
     return datetime.toEpochSecond();
   }
 

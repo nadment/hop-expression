@@ -17,7 +17,10 @@ package org.apache.hop.expression;
 import java.util.Objects;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class RowExpressionContext extends ExpressionContext implements IRowExpressionContext {
 
   private final IRowMeta rowMeta;
@@ -35,7 +38,7 @@ public class RowExpressionContext extends ExpressionContext implements IRowExpre
   }
 
   @Override
-  public Object[] getRow() {
+  public @Nullable Object[] getRow() {
     return this.row;
   }
 

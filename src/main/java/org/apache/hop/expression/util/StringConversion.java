@@ -29,7 +29,9 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public final class StringConversion extends Conversion<String> {
 
   // JsonMapper is thread-safe after its configuration

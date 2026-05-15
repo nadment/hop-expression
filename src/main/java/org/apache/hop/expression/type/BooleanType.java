@@ -21,7 +21,10 @@ import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.BooleanConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class BooleanType extends Type {
 
   /** Default BOOLEAN type. */
@@ -51,7 +54,8 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -73,7 +77,7 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public Boolean cast(final Object value) throws ExpressionException {
+  public @Nullable Boolean cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -86,30 +90,22 @@ public final class BooleanType extends Type {
    * @return the converted value
    */
   @Override
-  public Boolean cast(final Object value, final String pattern) throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof Boolean bool) {
-      return bool;
-    }
-    if (value instanceof Long number) {
-      return number != 0;
-    }
-    if (value instanceof BigDecimal number) {
-      return number.signum() != 0;
-    }
-    if (value instanceof String str) {
-      return BooleanConversion.convert(str);
-    }
-
-    throw new ExpressionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  public @Nullable Boolean cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
+    return switch (value) {
+      case null -> null;
+      case Boolean bool -> bool;
+      case Long number -> number != 0;
+      case BigDecimal number -> number.signum() != 0;
+      case String str -> BooleanConversion.convert(str);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof Boolean l && right instanceof Boolean r) {
       return l.equals(r);
     }
@@ -117,7 +113,7 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof Boolean l && right instanceof Boolean r) {
       return l.compareTo(r);
     }

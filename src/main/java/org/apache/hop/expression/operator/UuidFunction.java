@@ -23,9 +23,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.UUIDv7;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns a randomly generated UUID (Universal Unique Identifier version 7 defined by RFC 9562) */
 @FunctionPlugin
+@NullMarked
 public class UuidFunction extends Function {
 
   public UuidFunction() {
@@ -38,7 +41,7 @@ public class UuidFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     return UUIDv7.randomUUID().toString();
   }
 

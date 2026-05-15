@@ -25,6 +25,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function returns the smallest value that is not NULL, or NULL if all values are NULL.
@@ -32,6 +34,7 @@ import org.apache.hop.expression.type.Types;
  * @see GreatestFunction
  */
 @FunctionPlugin
+@NullMarked
 public class LeastFunction extends Function {
 
   public LeastFunction() {
@@ -54,7 +57,7 @@ public class LeastFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object result = null;
     Type type = operands[0].getType();
     for (IExpression operand : operands) {

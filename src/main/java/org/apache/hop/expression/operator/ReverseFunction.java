@@ -27,11 +27,14 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
  */
 @FunctionPlugin
+@NullMarked
 public class ReverseFunction extends Function {
 
   public ReverseFunction() {
@@ -59,7 +62,7 @@ public class ReverseFunction extends Function {
     public static final ReverseFunction INSTANCE = new StringReverseFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
 
@@ -73,7 +76,7 @@ public class ReverseFunction extends Function {
     public static final ReverseFunction INSTANCE = new BinaryReverseFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       final byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
 

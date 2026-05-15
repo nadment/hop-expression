@@ -37,8 +37,11 @@ import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.BaseFormat;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Constant value in a expression. */
+@NullMarked
 public class Literal implements IExpression {
 
   /** Literal null value without a known data type */
@@ -87,7 +90,7 @@ public class Literal implements IExpression {
   private final Type type;
 
   /** The value of this literal. */
-  private final Object value;
+  private final @Nullable Object value;
 
   /**
    * Create a typed literal value
@@ -95,27 +98,27 @@ public class Literal implements IExpression {
    * @param value the constant value
    * @param type the type of the value
    */
-  public Literal(final Object value, final Type type) {
+  public Literal(@Nullable Object value, Type type) {
     this.value = value;
     this.type = type;
   }
 
-  public static Literal of(final Boolean value) {
+  public static Literal of(@Nullable Boolean value) {
     if (value == null) return NULL_BOOLEAN;
     return value ? TRUE : FALSE;
   }
 
-  public static Literal of(final byte[] value) {
+  public static Literal of(byte @Nullable [] value) {
     if (value == null) return NULL_BINARY;
     return new Literal(value, BinaryType.from(value));
   }
 
-  public static Literal of(final String value) {
+  public static Literal of(@Nullable String value) {
     if (value == null) return NULL_STRING;
     return new Literal(value, StringType.from(value));
   }
 
-  public static Literal of(final Integer value) {
+  public static Literal of(@Nullable Integer value) {
     if (value == null) return NULL_INTEGER;
     if (value == 0) return ZERO;
     if (value == 1) return ONE;
@@ -123,14 +126,14 @@ public class Literal implements IExpression {
     return new Literal(longValue, IntegerType.from(longValue));
   }
 
-  public static Literal of(final Long value) {
+  public static Literal of(@Nullable Long value) {
     if (value == null) return NULL_INTEGER;
     if (value == 0L) return ZERO;
     if (value == 1L) return ONE;
     return new Literal(value, IntegerType.from(value));
   }
 
-  public static Literal of(final BigDecimal number) {
+  public static Literal of(@Nullable BigDecimal number) {
     if (number == null) return NULL_NUMBER;
 
     if (BigDecimal.ZERO.compareTo(number) == 0) {
@@ -147,48 +150,48 @@ public class Literal implements IExpression {
     return new Literal(number, NumberType.from(number));
   }
 
-  public static Literal of(final Interval value) {
+  public static Literal of(@Nullable Interval value) {
     if (value == null) return NULL_INTERVAL;
     return new Literal(value, IntervalType.INTERVAL_NOT_NULL);
   }
 
-  public static Literal of(final ZonedDateTime value) {
+  public static Literal of(@Nullable ZonedDateTime value) {
     if (value == null) return NULL_DATE;
     return new Literal(value, DateType.DATE_NOT_NULL);
   }
 
-  public static Literal of(final JsonNode value) {
+  public static Literal of(@Nullable JsonNode value) {
     if (value == null) return NULL_JSON;
     return new Literal(value, JsonType.JSON_NOT_NULL);
   }
 
-  public static Literal of(final InetAddress value) {
+  public static Literal of(@Nullable InetAddress value) {
     if (value == null) return NULL_INET;
     return new Literal(value, InetType.INET_NOT_NULL);
   }
 
-  public static Literal of(final Type value) {
+  public static Literal of(@Nullable Type value) {
     if (value == null) return NULL;
     return new Literal(value, EnumType.TIMEUNIT);
   }
 
-  public static Literal of(final TimeUnit value) {
+  public static Literal of(@Nullable TimeUnit value) {
     if (value == null) return NULL;
     return new Literal(value, EnumType.TIMEUNIT);
   }
 
-  public static Literal of(final BaseFormat value) {
+  public static Literal of(@Nullable BaseFormat value) {
     if (value == null) return NULL;
     return new Literal(value, UnknownType.UNKNOWN);
   }
 
   @Override
-  public Object getValue() {
+  public @Nullable Object getValue() {
     return value;
   }
 
   @Override
-  public <T> T getValue(final Class<T> clazz) {
+  public @Nullable <T> T getValue(final Class<T> clazz) {
     return type.convert(value, clazz);
   }
 

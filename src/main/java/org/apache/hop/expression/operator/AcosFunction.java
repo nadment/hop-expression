@@ -28,12 +28,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Calculates the inverse cosine (arc cosine) of a number in radians; the result is a number in the
  * interval [0, pi].
  */
 @FunctionPlugin
+@NullMarked
 public class AcosFunction extends Function {
 
   public AcosFunction() {
@@ -51,7 +54,7 @@ public class AcosFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
 

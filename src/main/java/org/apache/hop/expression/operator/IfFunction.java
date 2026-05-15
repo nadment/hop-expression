@@ -30,9 +30,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Single-level if-then-else expression. Similar to CASE, but only allows a single condition. */
 @FunctionPlugin
+@NullMarked
 public class IfFunction extends Function {
 
   public static final Function INSTANCE = new IfFunction();
@@ -114,7 +117,7 @@ public class IfFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null) value = Boolean.FALSE;
 

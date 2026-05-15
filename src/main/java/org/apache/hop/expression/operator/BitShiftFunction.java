@@ -22,9 +22,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** */
 @FunctionPlugin
+@NullMarked
 public class BitShiftFunction extends Function {
 
   public BitShiftFunction() {
@@ -37,7 +40,7 @@ public class BitShiftFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
     Long v1 = operands[1].getValue(Long.class);

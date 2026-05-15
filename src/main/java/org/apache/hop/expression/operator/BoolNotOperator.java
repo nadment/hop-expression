@@ -25,6 +25,8 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Logical negation <code>NOT</code> operator
@@ -37,6 +39,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *   <li><code>NOT(field BETWEEN start AND end)</code>
  * </ul>
  */
+@NullMarked
 public class BoolNotOperator extends PrefixUnaryOperator {
   public static final BoolNotOperator INSTANCE = new BoolNotOperator();
 
@@ -93,7 +96,7 @@ public class BoolNotOperator extends PrefixUnaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null) {
       return null;

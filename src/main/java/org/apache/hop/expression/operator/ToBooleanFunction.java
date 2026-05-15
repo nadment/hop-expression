@@ -29,9 +29,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.BooleanConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a string or numeric expression to a boolean value. */
 @FunctionPlugin
+@NullMarked
 public class ToBooleanFunction extends Function {
   public static final ToBooleanFunction INSTANCE = new ToBooleanFunction();
 
@@ -67,7 +70,7 @@ public class ToBooleanFunction extends Function {
     public static final StringToBooleanFunction INSTANCE = new StringToBooleanFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       return BooleanConversion.convert(value);
     }
@@ -77,7 +80,7 @@ public class ToBooleanFunction extends Function {
     public static final IntegerToBooleanFunction INSTANCE = new IntegerToBooleanFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       return BooleanConversion.convert(value);
     }
@@ -87,7 +90,7 @@ public class ToBooleanFunction extends Function {
     public static final NumberToBooleanFunction INSTANCE = new NumberToBooleanFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       return BooleanConversion.convert(value);
     }

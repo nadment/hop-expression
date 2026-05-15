@@ -25,11 +25,13 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Dot operator to access a field of a record.<br>
  * <strong>Syntax:</strong> <code>json.field</code>
  */
+@NullMarked
 public class DotOperator extends Operator {
 
   public DotOperator() {

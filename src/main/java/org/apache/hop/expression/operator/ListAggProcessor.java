@@ -18,7 +18,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ListAggProcessor implements IExpressionProcessor {
   private final String delimiter;
   private final Queue<String> values;
@@ -39,7 +42,7 @@ public class ListAggProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object getValue() throws Exception {
+  public @Nullable Object getValue() throws Exception {
 
     if (values.isEmpty()) {
       return null;

@@ -24,12 +24,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the second argument when the first argument is not NULL. If the first argument is NULL,
  * the third argument is returned.
  */
 @FunctionPlugin
+@NullMarked
 public class Nvl2Function extends Function {
 
   public static final Function INSTANCE = new Nvl2Function();
@@ -53,7 +56,7 @@ public class Nvl2Function extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object condition = operands[0].getValue();
 
     if (condition == null) {

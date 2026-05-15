@@ -28,6 +28,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns an array concatenating an element to the beginning of an array.
@@ -35,6 +37,7 @@ import org.apache.hop.expression.type.Type;
  * @see ArrayAppendFunction
  */
 @FunctionPlugin
+@NullMarked
 public class ArrayPrependFunction extends Function {
 
   public static final Function INSTANCE = new ArrayPrependFunction();
@@ -72,7 +75,7 @@ public class ArrayPrependFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     IExpression element = operands[0];
     Array array = (Array) operands[1];
     return array.prepend(element);

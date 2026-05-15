@@ -42,9 +42,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Extracts a scalar value from a JSON string. */
 @FunctionPlugin
+@NullMarked
 public class JsonValueFunction extends Function {
 
   public static final Configuration JSONPATH_CONFIGURATION =
@@ -88,7 +91,7 @@ public class JsonValueFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     JsonNode jsonNode = operands[0].getValue(JsonNode.class);
     if (jsonNode == null) return null;
 

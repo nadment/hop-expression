@@ -30,9 +30,12 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns the absolute (positive) value of the numeric or interval value. */
 @FunctionPlugin
+@NullMarked
 public class AbsFunction extends Function {
 
   public AbsFunction() {
@@ -75,7 +78,7 @@ public class AbsFunction extends Function {
     public static final IntegerAbsFunction INSTANCE = new IntegerAbsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
 
@@ -88,7 +91,7 @@ public class AbsFunction extends Function {
     public static final NumberAbsFunction INSTANCE = new NumberAbsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) return null;
 
@@ -101,7 +104,7 @@ public class AbsFunction extends Function {
     public static final IntervalAbsFunction INSTANCE = new IntervalAbsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Interval value = operands[0].getValue(Interval.class);
       if (value == null) return null;
 

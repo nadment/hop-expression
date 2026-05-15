@@ -23,6 +23,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The second (0-59).
@@ -31,6 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see MinuteFunction
  */
 @FunctionPlugin
+@NullMarked
 public class SecondFunction extends Function {
 
   public SecondFunction() {
@@ -43,7 +46,7 @@ public class SecondFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
     return Long.valueOf(value.getSecond());

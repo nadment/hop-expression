@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
@@ -135,11 +137,12 @@ import org.apache.hop.expression.ExpressionException;
  * </tr>
  * </table>
  */
+@NullMarked
 public abstract class NumberFormat extends BaseFormat {
 
   private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
-  public static NumberFormat of(final String pattern) {
+  public static NumberFormat of(final @Nullable String pattern) {
 
     if (pattern == null || pattern.isEmpty()) {
       throw new NumberFormatException("Pattern is null or empty");

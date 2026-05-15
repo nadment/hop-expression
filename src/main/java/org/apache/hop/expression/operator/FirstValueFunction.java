@@ -22,6 +22,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Returns the first value over a group of rows.
@@ -31,6 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * <p>The default is RESPECT NULLS.
  */
 @FunctionPlugin
+@NullMarked
 public class FirstValueFunction extends AggregateFunction {
 
   public static final FirstValueFunction FIRST_VALUE_RESPECT_NULLS = new FirstValueFunction(false);

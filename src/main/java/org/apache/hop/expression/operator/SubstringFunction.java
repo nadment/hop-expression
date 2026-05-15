@@ -22,12 +22,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the portion of the string from string, starting from the character/byte specified by
  * start, with optionally limited length.
  */
 @FunctionPlugin(names = {"SUBSTR"})
+@NullMarked
 public class SubstringFunction extends Function {
 
   public SubstringFunction() {
@@ -40,7 +43,7 @@ public class SubstringFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
     if (string == null) return null;
 

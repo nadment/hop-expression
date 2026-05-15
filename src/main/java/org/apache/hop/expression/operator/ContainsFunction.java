@@ -28,9 +28,12 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Contains function */
 @FunctionPlugin
+@NullMarked
 public class ContainsFunction extends Function {
   public static final Function INSTANCE = new ContainsFunction();
 
@@ -59,7 +62,7 @@ public class ContainsFunction extends Function {
     public static final ContainsFunction INSTANCE = new StringContainsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
 
@@ -75,7 +78,7 @@ public class ContainsFunction extends Function {
     public static final ContainsFunction INSTANCE = new BinaryContainsFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
 

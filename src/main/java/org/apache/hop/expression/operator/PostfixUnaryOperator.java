@@ -21,8 +21,10 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
+import org.jspecify.annotations.NullMarked;
 
 /** Postfix unary operator, as in "x is null". */
+@NullMarked
 public abstract class PostfixUnaryOperator extends Operator {
 
   protected PostfixUnaryOperator(

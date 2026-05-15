@@ -16,7 +16,9 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public final class ExpressionFactory {
 
   private ExpressionFactory() {

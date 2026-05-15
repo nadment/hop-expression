@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Adds or subtracts a specified number of time unit to a date or timestamp
@@ -42,6 +43,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see AddNanosecondsFunction
  */
 @FunctionPlugin
+@NullMarked
 public class DateAddFunction extends Function {
 
   public DateAddFunction() {

@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import java.util.Comparator;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Compare Json Node
@@ -27,6 +28,7 @@ import java.util.Comparator;
  *   <li>Considers numeric values 5.0 and 5 as equals
  * </ul>
  */
+@NullMarked
 public class JsonComparator implements Comparator<JsonNode> {
   @Override
   public int compare(final JsonNode o1, final JsonNode o2) {

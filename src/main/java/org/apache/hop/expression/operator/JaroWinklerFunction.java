@@ -23,9 +23,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** The function compute Jaro Winkler distance. */
 @FunctionPlugin
+@NullMarked
 public class JaroWinklerFunction extends Function {
 
   public JaroWinklerFunction() {
@@ -38,7 +41,7 @@ public class JaroWinklerFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
     if (v0 == null) return null;
     String v1 = operands[1].getValue(String.class);

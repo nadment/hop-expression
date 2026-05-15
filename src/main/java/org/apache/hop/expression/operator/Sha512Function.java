@@ -23,6 +23,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function calculates the SHA-512 hash of a data value. The hash will be returned as 128
@@ -35,6 +37,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see Sha384Function
  */
 @FunctionPlugin
+@NullMarked
 public class Sha512Function extends Function {
 
   public Sha512Function() {
@@ -47,7 +50,7 @@ public class Sha512Function extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) {
       return null;

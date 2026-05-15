@@ -21,11 +21,13 @@ import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Returns the standard deviation of all values in the expression over a group of rows. Null values
  * are ignored.
  */
+@NullMarked
 public class StdDevSampProcessor implements IExpressionProcessor {
 
   private final List<Double> values;

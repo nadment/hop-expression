@@ -19,8 +19,11 @@ package org.apache.hop.expression.type;
 import java.util.AbstractList;
 import java.util.List;
 import org.apache.hop.expression.Call;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Allows multiple {@link IOperandTypeChecker} rules to be combined into one rule. */
+@NullMarked
 public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
   protected final Composition composition;
@@ -28,7 +31,9 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
   protected final IOperandCountRange repeatRange;
 
   CompositeOperandTypeChecker(
-      Composition composition, List<IOperandTypeChecker> rules, IOperandCountRange repeatRange) {
+      Composition composition,
+      List<IOperandTypeChecker> rules,
+      @Nullable IOperandCountRange repeatRange) {
     super();
     this.composition = composition;
     this.rules = rules;

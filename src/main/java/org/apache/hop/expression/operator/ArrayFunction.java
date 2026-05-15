@@ -26,9 +26,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** The ARRAY function creates an ARRAY containing the argument values. */
 @FunctionPlugin
+@NullMarked
 public class ArrayFunction extends Function {
 
   public static final Function INSTANCE = new ArrayFunction();

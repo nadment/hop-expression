@@ -24,9 +24,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Build a date from its separate year, month and day fields. */
 @FunctionPlugin
+@NullMarked
 public class MakeDateFunction extends Function {
 
   public MakeDateFunction() {
@@ -39,7 +42,7 @@ public class MakeDateFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
     if (v0 == null) return null;
 

@@ -22,8 +22,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 @FunctionPlugin
+@NullMarked
 public class ListAggFunction extends AggregateFunction {
   public static final ListAggFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
   public static final ListAggFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);

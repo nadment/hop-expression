@@ -30,9 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Check if a value is a valid date. */
 @FunctionPlugin
+@NullMarked
 public class IsDateFunction extends Function {
 
   public IsDateFunction() {
@@ -75,7 +78,7 @@ public class IsDateFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
 
     // Return FALSE if a value is NULL.

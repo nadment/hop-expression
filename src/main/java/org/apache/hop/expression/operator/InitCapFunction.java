@@ -26,6 +26,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Characters;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns a string with the first letter of each word in uppercase and the subsequent letters in
@@ -35,6 +37,7 @@ import org.apache.hop.expression.util.Characters;
  * @see UpperFunction
  */
 @FunctionPlugin
+@NullMarked
 public class InitCapFunction extends Function {
 
   public static final InitCapFunction INSTANCE = new InitCapFunction();
@@ -63,7 +66,7 @@ public class InitCapFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 

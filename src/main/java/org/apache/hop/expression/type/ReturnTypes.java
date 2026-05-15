@@ -18,9 +18,12 @@ package org.apache.hop.expression.type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
 /** A collection of strategies for return type inference. */
+@NullMarked
 public final class ReturnTypes {
 
   public static final IReturnTypeInference ANY = explicit(AnyType.ANY);
@@ -299,7 +302,7 @@ public final class ReturnTypes {
       call -> {
         try {
           if (call.getOperandCount() == 3) {
-            return call.getOperand(2).getValue(Type.class);
+            return Objects.requireNonNull(call.getOperand(2).getValue(Type.class));
           }
 
           // By default return STRING

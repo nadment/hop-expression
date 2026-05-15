@@ -34,6 +34,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Logical <code>IN</code> operator tests for a value's membership in a list of values. The IN
@@ -45,6 +47,7 @@ import org.apache.hop.expression.type.Types;
  *   <li><code>field NOT IN (list of values)</code>
  * </ul>
  */
+@NullMarked
 public class NotInListOperator extends Operator {
 
   public static final NotInListOperator INSTANCE = new NotInListOperator();
@@ -167,7 +170,7 @@ public class NotInListOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
     if (left == null) {
       return null;

@@ -38,11 +38,11 @@ public final class IntegerType extends Type {
     this.checkPrecisionAndScale();
   }
 
-  public static IntegerType from(final Long value) {
+  public static IntegerType from(Long value) {
     return of(numberOfDigit(value), false);
   }
 
-  public static IntegerType from(final Integer value) {
+  public static IntegerType from(Integer value) {
     return of(numberOfDigit(value), false);
   }
 

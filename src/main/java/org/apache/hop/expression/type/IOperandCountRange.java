@@ -16,7 +16,10 @@
  */
 package org.apache.hop.expression.type;
 
+import org.jspecify.annotations.NullMarked;
+
 /** A class that describes how many operands an operator can take. */
+@NullMarked
 public interface IOperandCountRange {
   /** Returns whether {@code count} is a valid number of operands. */
   boolean isValid(int count);

@@ -27,6 +27,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Arithmetic division operator. <br>
@@ -34,6 +36,7 @@ import org.apache.hop.expression.type.Types;
  *
  * @see Div0Function
  */
+@NullMarked
 public class DivOperator extends BinaryOperator {
   public static final DivOperator INSTANCE = new DivOperator();
 
@@ -104,7 +107,7 @@ public class DivOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
     BigDecimal divisor = operands[1].getValue(BigDecimal.class);

@@ -27,6 +27,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function converts a string value to lower case.
@@ -35,6 +37,7 @@ import org.apache.hop.expression.type.Types;
  * @see UpperFunction
  */
 @FunctionPlugin
+@NullMarked
 public class LowerFunction extends Function {
 
   public static final LowerFunction INSTANCE = new LowerFunction();
@@ -54,7 +57,7 @@ public class LowerFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
     return value.toLowerCase(Locale.getDefault());

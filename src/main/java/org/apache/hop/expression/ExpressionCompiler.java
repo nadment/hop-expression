@@ -22,7 +22,9 @@ import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
   private static final int MAX_LOOP_ATTEMPTS = 1000;
@@ -49,12 +51,12 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression visitIdentifier(final Identifier identifier) {
+  public IExpression visitIdentifier(Identifier identifier) {
     return identifier;
   }
 
   @Override
-  public IExpression visitCall(final Call original) {
+  public IExpression visitCall(Call original) {
 
     // Compile the operands of a call
     for (int i = 0; i < original.getOperandCount(); i++) {
@@ -111,7 +113,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression visitArray(final Array array) {
+  public IExpression visitArray(Array array) {
     int size = array.size();
     List<IExpression> expressions = new ArrayList<>(size);
     List<Type> types = new ArrayList<>(size);
@@ -127,7 +129,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression visitLiteral(final Literal literal) {
+  public IExpression visitLiteral(Literal literal) {
     return literal;
   }
 }

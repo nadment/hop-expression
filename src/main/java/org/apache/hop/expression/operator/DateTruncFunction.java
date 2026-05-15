@@ -29,9 +29,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Truncates a date or timestamp to the specified time unit. */
 @FunctionPlugin
+@NullMarked
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {
@@ -44,7 +47,7 @@ public class DateTruncFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 

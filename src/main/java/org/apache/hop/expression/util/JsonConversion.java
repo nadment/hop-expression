@@ -24,7 +24,10 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class JsonConversion extends Conversion<JsonNode> {
 
   // JsonMapper is thread-safe after its configuration
@@ -42,7 +45,7 @@ public final class JsonConversion extends Conversion<JsonNode> {
    * @return JsonNode
    * @throws ExpressionException - When the conversion is not possible
    */
-  public static JsonNode convert(final String str) throws ExpressionException {
+  public static @Nullable JsonNode convert(final @Nullable String str) throws ExpressionException {
     if (str == null) return null;
     try {
       return JSON_READER.readTree(str);

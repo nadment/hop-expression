@@ -23,12 +23,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Splits a string on the specified string delimiter and returns the part at the specified
  * position. @See {@link StrtokFunction}
  */
 @FunctionPlugin
+@NullMarked
 public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {
@@ -41,7 +44,7 @@ public class SplitPartFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) return null;
 

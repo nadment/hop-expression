@@ -20,8 +20,10 @@ import java.util.List;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
 /** Returns the median of all values in the expression over a group of rows. */
+@NullMarked
 public class MedianProcessor implements IExpressionProcessor {
 
   private static final Median MEDIAN = new Median();

@@ -36,8 +36,11 @@ import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** A search case operator describing the <code>CASE</code> operator. */
+@NullMarked
 public class CaseSearchOperator extends Operator {
 
   public static final CaseSearchOperator INSTANCE = new CaseSearchOperator();
@@ -54,7 +57,7 @@ public class CaseSearchOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     int index = 0;
     Array whenTerm = (Array) operands[1];
     Array thenTerm = (Array) operands[2];

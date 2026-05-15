@@ -20,7 +20,10 @@ package org.apache.hop.expression.util;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class BinaryConversion extends Conversion<byte[]> {
 
   private BinaryConversion() {
@@ -33,7 +36,8 @@ public final class BinaryConversion extends Conversion<byte[]> {
     return bytes.array();
   }
 
-  public static byte[] convert(final String str) {
+  public static byte @Nullable [] convert(final @Nullable String str) {
+    if (str == null) return null;
     return str.getBytes(StandardCharsets.UTF_8);
   }
 

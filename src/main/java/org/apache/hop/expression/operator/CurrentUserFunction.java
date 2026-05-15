@@ -26,9 +26,11 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** The function return the current user. */
 @FunctionPlugin
+@NullMarked
 public class CurrentUserFunction extends Function {
 
   public CurrentUserFunction() {

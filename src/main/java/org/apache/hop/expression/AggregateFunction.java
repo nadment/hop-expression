@@ -18,7 +18,9 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract class AggregateFunction extends Function {
 
   protected AggregateFunction(

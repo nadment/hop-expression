@@ -28,9 +28,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Calculates the square-root of a non-negative numeric expression. @See {@link CbrtFunction} */
 @FunctionPlugin
+@NullMarked
 public class SqrtFunction extends Function {
 
   public SqrtFunction() {
@@ -48,7 +51,7 @@ public class SqrtFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
     if (value.signum() < 0) {

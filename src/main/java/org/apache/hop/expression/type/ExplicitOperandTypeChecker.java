@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.function.Predicate;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
 /** Operand type-checking strategy which checks operands for inclusion in type families. */
+@NullMarked
 public class ExplicitOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
 
   private final List<TypeName> names;
@@ -45,7 +47,7 @@ public class ExplicitOperandTypeChecker implements IOperandTypeChecker, ISingleO
     // Variadic
     if (names.size() != range.getMax()) {
       for (IExpression operand : call.getOperands()) {
-        if (!operand.getType().getName().isCoercible(names.get(0))) {
+        if (!operand.getType().getName().isCoercible(names.getFirst())) {
           return false;
         }
       }
@@ -82,6 +84,6 @@ public class ExplicitOperandTypeChecker implements IOperandTypeChecker, ISingleO
 
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
-    return !operand.getType().getName().isCoercible(names.get(0));
+    return !operand.getType().getName().isCoercible(names.getFirst());
   }
 }

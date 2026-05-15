@@ -26,8 +26,10 @@ import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /** An array is an immutable-ordered list of expressions. */
+@NullMarked
 public final class Array implements IExpression, Iterable<IExpression> {
 
   public static final Array EMPTY = new Array();
@@ -141,7 +143,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public void unparse(final StringWriter writer, int leftPrec, int rightPrec) {
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append('[');
     this.unparseValues(writer);
     writer.append(']');
@@ -152,7 +154,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
    *
    * @param writer
    */
-  public void unparseValues(final StringWriter writer) {
+  public void unparseValues(StringWriter writer) {
     boolean first = true;
     for (IExpression expression : values) {
       if (first) first = false;

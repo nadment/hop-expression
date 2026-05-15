@@ -19,8 +19,10 @@ package org.apache.hop.expression.type;
 import java.util.List;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.CompositeOperandTypeChecker.Composition;
+import org.jspecify.annotations.NullMarked;
 
 /** A collection of strategies for checking operand types. */
+@NullMarked
 public final class OperandTypes {
 
   /** Operand type-checking strategy type must be a data type. */

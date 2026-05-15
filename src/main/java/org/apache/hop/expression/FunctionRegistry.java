@@ -28,7 +28,10 @@ import org.apache.hop.metadata.util.HopMetadataUtil;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
 
@@ -38,7 +41,7 @@ public class FunctionRegistry {
   /** Initialize the registry, keep private to keep this a singleton */
   private FunctionRegistry() {}
 
-  public static boolean isFunction(final String name) {
+  public static boolean isFunction(String name) {
     return functions.containsKey(name);
   }
 
@@ -52,7 +55,7 @@ public class FunctionRegistry {
    * @param name the name of the function to search
    * @return the function or null of not found
    */
-  public static Function getFunction(final String name) {
+  public static @Nullable Function getFunction(@Nullable String name) {
     if (name == null) return null;
 
     return functions.get(name.toUpperCase());
@@ -112,7 +115,7 @@ public class FunctionRegistry {
     functions.clear();
   }
 
-  public static void register(final String name, final Function function) {
+  public static void register(@Nullable String name, Function function) {
     if (name == null) return;
 
     if (functions.containsKey(name)) {
@@ -127,7 +130,7 @@ public class FunctionRegistry {
     functions.put(name, function);
   }
 
-  public static Function unregister(final String name) {
+  public static @Nullable Function unregister(@Nullable String name) {
     if (name == null) return null;
 
     Function function = functions.remove(name);

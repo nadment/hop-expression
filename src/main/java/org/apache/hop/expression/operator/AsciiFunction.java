@@ -22,12 +22,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Return the ASCII value of the first character in a string. If the string is empty, a value of 0
  * is returned.
  */
 @FunctionPlugin
+@NullMarked
 public class AsciiFunction extends Function {
 
   public AsciiFunction() {
@@ -40,7 +43,7 @@ public class AsciiFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 

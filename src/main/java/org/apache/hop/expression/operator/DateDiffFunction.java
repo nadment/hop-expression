@@ -27,6 +27,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the difference in complete time unit between two date or timestamp.
@@ -40,6 +42,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see SecondsBetweenFunction
  */
 @FunctionPlugin
+@NullMarked
 public class DateDiffFunction extends Function {
 
   public DateDiffFunction() {
@@ -52,7 +55,7 @@ public class DateDiffFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 

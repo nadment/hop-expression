@@ -34,9 +34,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** String or binary concatenation operator '<code>||</code>' */
 @FunctionPlugin
+@NullMarked
 public class ConcatFunction extends Function {
 
   public static final ConcatFunction INSTANCE = new ConcatFunction();
@@ -128,7 +131,7 @@ public class ConcatFunction extends Function {
     public static final ConcatFunction INSTANCE = new StringConcatFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
 
       boolean nulls = true;
       StringBuilder builder = new StringBuilder();
@@ -149,7 +152,7 @@ public class ConcatFunction extends Function {
     public static final ConcatFunction INSTANCE = new BinaryConcatFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[][] values = new byte[operands.length][];
       int i = 0;
       int length = 0;

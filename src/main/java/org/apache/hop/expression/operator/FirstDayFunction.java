@@ -34,6 +34,8 @@ import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.FirstDayOfQuarter;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the first day of the time unit.
@@ -44,6 +46,7 @@ import org.apache.hop.expression.util.FirstDayOfQuarter;
  * @see LastDayFunction
  */
 @FunctionPlugin
+@NullMarked
 public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
   private static final EnumSet<TimeUnit> SUPPORTED_TIME_UNITS =
@@ -73,7 +76,7 @@ public class FirstDayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
 

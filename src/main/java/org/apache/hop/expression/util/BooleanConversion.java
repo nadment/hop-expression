@@ -20,19 +20,22 @@ import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class BooleanConversion extends Conversion<Boolean> {
 
-  public static Boolean convert(final Boolean value) {
+  public static Boolean convert(Boolean value) {
     return value;
   }
 
-  public static Boolean convert(final Long value) {
+  public static @Nullable Boolean convert(@Nullable Long value) {
     if (value == null) return null;
     return value != 0;
   }
 
-  public static Boolean convert(final BigDecimal value) {
+  public static @Nullable Boolean convert(@Nullable BigDecimal value) {
     if (value == null) return null;
     return value.signum() != 0;
   }
@@ -44,7 +47,7 @@ public final class BooleanConversion extends Conversion<Boolean> {
    * @return Boolean
    * @throws ExpressionException - When the conversion is not possible
    */
-  public static Boolean convert(final String value) {
+  public static @Nullable Boolean convert(@Nullable String value) {
     if (value == null) return null;
     switch (value.length()) {
       case 1:

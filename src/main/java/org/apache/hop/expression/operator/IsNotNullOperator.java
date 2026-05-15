@@ -25,12 +25,14 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * An operator describing the <code>IS NOT NULL</code> operator.
  *
  * @see IsNotNullOperator
  */
+@NullMarked
 public class IsNotNullOperator extends PostfixUnaryOperator {
 
   public static final IsNotNullOperator INSTANCE = new IsNotNullOperator();

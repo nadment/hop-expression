@@ -38,8 +38,11 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Expression representing a named column in an input row. */
+@NullMarked
 public class Identifier implements IExpression {
 
   /** The name of the identifier */
@@ -57,13 +60,13 @@ public class Identifier implements IExpression {
   @Getter private int ordinal;
 
   // The IValueMeta when resolved or null if unresolved.
-  private IValueMeta valueMeta;
+  private @Nullable IValueMeta valueMeta;
 
-  public Identifier(final String name) {
+  public Identifier(String name) {
     this(0, name);
   }
 
-  public Identifier(int position, final String name) {
+  public Identifier(int position, String name) {
     this.name = requireNonNull(name, "name");
     this.type = UnknownType.UNKNOWN;
     this.position = position;
@@ -101,7 +104,7 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public Object getValue() {
+  public @Nullable Object getValue() {
     Object[] row = context.getRow();
     if (row == null) {
       throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
@@ -148,7 +151,7 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public <T> T getValue(Class<T> clazz) {
+  public @Nullable <T> T getValue(Class<T> clazz) {
     Object[] row = context.getRow();
     if (row == null) {
       throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
@@ -313,7 +316,7 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;

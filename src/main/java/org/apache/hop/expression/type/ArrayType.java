@@ -19,7 +19,10 @@ package org.apache.hop.expression.type;
 
 import java.util.Objects;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class ArrayType extends Type {
   public static final ArrayType ARRAY = new ArrayType(UnknownType.UNKNOWN, true);
 
@@ -73,7 +76,8 @@ public final class ArrayType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
     if (value == null) {
       return null;
     }

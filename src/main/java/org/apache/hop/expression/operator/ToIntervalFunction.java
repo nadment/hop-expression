@@ -23,9 +23,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a string expression to an interval. */
 @FunctionPlugin
+@NullMarked
 public class ToIntervalFunction extends Function {
   public static final ToIntervalFunction INSTANCE = new ToIntervalFunction();
 
@@ -39,7 +42,7 @@ public class ToIntervalFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     return IntervalType.convert(value);
   }

@@ -27,12 +27,15 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeComparability;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Return a 1-based index of the first occurrence of an element in the input array. Optionally,
  * starts searching at the specified index.
  */
 @FunctionPlugin
+@NullMarked
 public class ArrayPositionFunction extends Function {
 
   public static final Function INSTANCE = new ArrayPositionFunction();
@@ -67,7 +70,7 @@ public class ArrayPositionFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     Array array = (Array) operands[0];
     if (array == null) return null;
     Object value = operands[1].getValue();

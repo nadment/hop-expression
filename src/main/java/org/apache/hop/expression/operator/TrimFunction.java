@@ -26,6 +26,8 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function removes leading and trailing characters from a string.
@@ -34,6 +36,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see RTrimFunction
  */
 @FunctionPlugin
+@NullMarked
 public class TrimFunction extends Function {
   public static final TrimFunction INSTANCE = new TrimFunction();
 
@@ -47,7 +50,7 @@ public class TrimFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 

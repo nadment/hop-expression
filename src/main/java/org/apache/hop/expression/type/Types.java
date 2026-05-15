@@ -74,7 +74,7 @@ public class Types {
     return expression.getType();
   }
 
-  public static Type getLeastRestrictive(final Type type1, final Type type2) {
+  public static Type getLeastRestrictive(Type type1, Type type2) {
     if (type1 == null) return type2;
     if (type2 == null) return type1;
     if (type1.getName().ordinal() > type2.getName().ordinal()
@@ -98,7 +98,7 @@ public class Types {
    * @param call the call
    * @param type common type to coerce to
    */
-  public static boolean coerceOperandsType(final Call call, final Type type) {
+  public static boolean coerceOperandsType(Call call, Type type) {
     boolean coerced = false;
     for (int index = 0; index < call.getOperandCount(); index++) {
       coerced |= coerceOperandType(call, type, index);
@@ -115,7 +115,7 @@ public class Types {
    *
    * <p>If the operand is a {@code Array}, coercion of all its elements
    */
-  public static boolean coerceOperandType(final Call call, final Type type, int index) {
+  public static boolean coerceOperandType(Call call, Type type, int index) {
 
     IExpression operand = call.getOperand(index);
 
@@ -140,7 +140,7 @@ public class Types {
     return true;
   }
 
-  public static Array coerceOperandType(final Array array, final Type type) {
+  public static Array coerceOperandType(Array array, Type type) {
     List<IExpression> list = new ArrayList<>();
     for (IExpression operand : array) {
       if (operand instanceof Array child) {
@@ -161,7 +161,7 @@ public class Types {
   }
 
   /** Determines a common type for a comparison operator. */
-  public static Type getCommonTypeForComparison(final Type type1, final Type type2) {
+  public static Type getCommonTypeForComparison(Type type1, Type type2) {
 
     if (type1 == null || type2 == null) return null;
 
@@ -339,37 +339,37 @@ public class Types {
     // }
   }
 
-  public static boolean isBinary(final Type type) {
+  public static boolean isBinary(Type type) {
     if (type == null) return false;
     return type.is(TypeName.BINARY);
   }
 
-  public static boolean isBoolean(final Type type) {
+  public static boolean isBoolean(Type type) {
     if (type == null) return false;
     return type.is(TypeName.BOOLEAN);
   }
 
-  public static boolean isNumeric(final Type type) {
+  public static boolean isNumeric(Type type) {
     if (type == null) return false;
     return type.isFamily(TypeFamily.NUMERIC);
   }
 
-  public static boolean isInteger(final Type type) {
+  public static boolean isInteger(Type type) {
     if (type == null) return false;
     return type.is(TypeName.INTEGER);
   }
 
-  public static boolean isNumber(final Type type) {
+  public static boolean isNumber(Type type) {
     if (type == null) return false;
     return type.is(TypeName.NUMBER);
   }
 
-  public static boolean isString(final Type type) {
+  public static boolean isString(Type type) {
     if (type == null) return false;
     return type.is(TypeName.STRING);
   }
 
-  public static boolean isDate(final Type type) {
+  public static boolean isDate(Type type) {
     if (type == null) return false;
     return type.is(TypeName.DATE);
   }
@@ -380,7 +380,7 @@ public class Types {
    * @param type the {@code Type} to be checked, which may be null
    * @return {@code true} if the type is INTERVAL; {@code false} otherwise
    */
-  public static boolean isInterval(final Type type) {
+  public static boolean isInterval(Type type) {
     if (type == null) return false;
     return type.is(TypeName.INTERVAL);
   }

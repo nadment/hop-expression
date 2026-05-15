@@ -29,6 +29,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An operator describing the <code>LIKE</code> operator.
@@ -43,6 +45,7 @@ import org.apache.hop.expression.util.Regexp;
  * to <code>
  * NOT (field LIKE pattern ...)</code>
  */
+@NullMarked
 public class LikeOperator extends Operator {
 
   public static final LikeOperator INSTANCE = new LikeOperator();
@@ -137,7 +140,7 @@ public class LikeOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;

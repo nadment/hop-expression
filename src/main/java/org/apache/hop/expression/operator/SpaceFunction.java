@@ -22,9 +22,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns a string consisting of a specified number of blank spaces. */
 @FunctionPlugin
+@NullMarked
 public class SpaceFunction extends Function {
 
   public SpaceFunction() {
@@ -37,7 +40,7 @@ public class SpaceFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
 

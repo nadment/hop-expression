@@ -42,6 +42,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
 import org.apache.hop.expression.util.Strong;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Logical disjunction <code>OR</code> operator.
@@ -49,6 +51,7 @@ import org.apache.hop.expression.util.Strong;
  * <p>If any of the arguments are true, result is true; else if any arguments are null, result is
  * null; else false.
  */
+@NullMarked
 public class BoolOrOperator extends BinaryOperator {
 
   public static final BoolOrOperator INSTANCE = new BoolOrOperator();
@@ -268,7 +271,7 @@ public class BoolOrOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     Boolean right = operands[1].getValue(Boolean.class);
 

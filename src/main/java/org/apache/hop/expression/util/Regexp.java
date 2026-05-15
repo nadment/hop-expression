@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 import java.util.regex.Pattern;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.Nullable;
 
 public class Regexp {
   private static final String JAVA_REGEXP_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
@@ -79,7 +80,7 @@ public class Regexp {
     return javaPattern.toString();
   }
 
-  public static int parseFlags(String str) {
+  public static int parseFlags(@Nullable String str) {
     int flags = Pattern.UNICODE_CASE;
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {

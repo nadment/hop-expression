@@ -27,6 +27,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Compress the data using the GZIP algorithm.
@@ -37,6 +39,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * <p>The function returns a byte array of type.
  */
 @FunctionPlugin
+@NullMarked
 public class CompressFunction extends Function {
 
   public CompressFunction() {
@@ -49,7 +52,7 @@ public class CompressFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
 

@@ -19,7 +19,9 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public interface ISingleOperandTypeChecker extends IOperandTypeChecker {
 
   boolean checkSingleOperandType(IExpression operand);

@@ -24,12 +24,15 @@ import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An operator describing the <code>IS NOT FALSE</code> operator.
  *
  * @see IsFalseOperator
  */
+@NullMarked
 public class IsNotFalseOperator extends PostfixUnaryOperator {
   public static final IsNotFalseOperator INSTANCE = new IsNotFalseOperator();
 
@@ -55,7 +58,7 @@ public class IsNotFalseOperator extends PostfixUnaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
 
     // NULL is always NOT FALSE

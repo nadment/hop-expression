@@ -43,6 +43,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
 import org.apache.hop.expression.util.Strong;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Logical conjunction <code>AND</code> operator.
@@ -232,7 +233,7 @@ public class BoolAndOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     if (left == Boolean.FALSE) {
       return Boolean.FALSE;

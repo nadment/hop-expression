@@ -16,11 +16,14 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class NthValueRespectNullsProcessor implements IExpressionProcessor {
 
   private long offset;
-  private Object value;
+  private @Nullable Object value;
 
   public NthValueRespectNullsProcessor(long offset) {
     this.offset = offset;
@@ -38,7 +41,7 @@ public class NthValueRespectNullsProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object getValue() throws Exception {
+  public @Nullable Object getValue() throws Exception {
     return value;
   }
 }

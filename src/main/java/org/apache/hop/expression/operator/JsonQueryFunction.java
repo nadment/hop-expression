@@ -33,6 +33,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extracts a JSON fragment from a JSON object or string representing a JSON.
@@ -40,6 +42,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * <p><code>JSON_QUERY( expression [, path] )</code>
  */
 @FunctionPlugin
+@NullMarked
 public class JsonQueryFunction extends Function {
 
   public static final Configuration JSONPATH_CONFIGURATION =
@@ -60,7 +63,7 @@ public class JsonQueryFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     JsonNode jsonNode = operands[0].getValue(JsonNode.class);
     if (jsonNode == null) return null;
 

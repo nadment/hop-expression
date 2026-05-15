@@ -21,7 +21,9 @@ import java.time.Month;
 import java.time.temporal.IsoFields;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjuster;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class LastDayOfQuarter implements TemporalAdjuster {
 
   @Override

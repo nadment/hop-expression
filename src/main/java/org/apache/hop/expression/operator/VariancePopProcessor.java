@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Computes the statistical variance of a population of all values over a group of rows.
@@ -29,6 +30,7 @@ import org.apache.hop.expression.IExpressionProcessor;
  *
  * <p>Null values are ignored.
  */
+@NullMarked
 public class VariancePopProcessor implements IExpressionProcessor {
 
   private static final Variance VARIANCE = new Variance(false);

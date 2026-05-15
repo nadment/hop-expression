@@ -24,9 +24,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Quarter of the year (number from 1-4). */
 @FunctionPlugin
+@NullMarked
 public class QuarterFunction extends Function {
 
   public QuarterFunction() {
@@ -39,7 +42,7 @@ public class QuarterFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
     return Long.valueOf(value.get(IsoFields.QUARTER_OF_YEAR));

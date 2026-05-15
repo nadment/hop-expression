@@ -31,11 +31,14 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Generic addition operator. <br>
  * <strong>Syntax:</strong> <code>x + y</code>
  */
+@NullMarked
 public class AddOperator extends BinaryOperator {
 
   public static final AddOperator INSTANCE = new AddOperator();
@@ -150,7 +153,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
       if (left == null) return null;
       Long right = operands[1].getValue(Long.class);
@@ -179,7 +182,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);
       if (left == null) return null;
       BigDecimal right = operands[1].getValue(BigDecimal.class);
@@ -210,7 +213,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
       if (datetime == null) return null;
 
@@ -240,7 +243,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Interval interval0 = operands[0].getValue(Interval.class);
       if (interval0 == null) return null;
 

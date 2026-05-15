@@ -26,8 +26,11 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** <code>BETWEEN ASYMMETRIC</code> operator. */
+@NullMarked
 public class BetweenAsymmetricOperator extends Operator {
   public static final BetweenAsymmetricOperator INSTANCE = new BetweenAsymmetricOperator();
 
@@ -48,7 +51,7 @@ public class BetweenAsymmetricOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     Object start = operands[1].getValue();
     Object end = operands[2].getValue();

@@ -370,26 +370,26 @@ import org.apache.hop.expression.ExpressionException;
       }
 
       // AD indicator without periods
-      if ((cap = match(pattern, index, "AD", "BC")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "AD", "BC")) != null) {
         list.add(new AdBcFormat(cap, "AD", "BC"));
         index += 2;
         continue;
       }
 
       // AD indicator with periods
-      if ((cap = match(pattern, index, "A.D.", "B.C.")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "A.D.", "B.C.")) != null) {
         list.add(new AdBcFormat(cap, "A.D.", "B.C."));
         index += 4;
         continue;
       }
 
-      if ((cap = match(pattern, index, "AM", "PM")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "AM", "PM")) != null) {
         list.add(new MeridianFormat(cap, "AM", "PM"));
         index += 2;
         continue;
       }
 
-      if ((cap = match(pattern, index, "A.M.", "P.M.")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "A.M.", "P.M.")) != null) {
         list.add(new MeridianFormat(cap, "A.M.", "P.M."));
         index += 4;
         continue;
@@ -488,21 +488,21 @@ import org.apache.hop.expression.ExpressionException;
       }
 
       // Full name of month, padded with blanks
-      if ((cap = match(pattern, index, "MONTH")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "MONTH")) != null) {
         list.add(new NameOfMonthFormat(cap, fillMode, exactMode, TextStyle.FULL));
         index += 5;
         continue;
       }
 
       // Abbreviated name of month
-      if ((cap = match(pattern, index, "MON")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "MON")) != null) {
         list.add(new NameOfMonthFormat(cap, false, exactMode, TextStyle.SHORT));
         index += 3;
         continue;
       }
 
       // Roman numeral month (I-XII; January = I)
-      if ((cap = match(pattern, index, "RM")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "RM")) != null) {
         list.add(new RomanMonthFormat(cap));
         index += 2;
         continue;
@@ -550,7 +550,7 @@ import org.apache.hop.expression.ExpressionException;
         continue;
       }
 
-      if ((cap = match(pattern, index, "SYEAR")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "SYEAR")) != null) {
         list.add(new WordYearFormat(cap, fillMode, true));
         index += 5;
         continue;
@@ -564,14 +564,14 @@ import org.apache.hop.expression.ExpressionException;
       }
 
       // Abbreviated name of day
-      if ((cap = match(pattern, index, "DY")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "DY")) != null) {
         list.add(new NameOfDayFormat(cap, false, TextStyle.SHORT));
         index += 2;
         continue;
       }
 
       // Full name of day
-      if ((cap = match(pattern, index, "DAY")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "DAY")) != null) {
         list.add(new NameOfDayFormat(cap, fillMode, TextStyle.FULL));
         index += 3;
         continue;
@@ -620,7 +620,7 @@ import org.apache.hop.expression.ExpressionException;
       }
 
       // Year
-      if ((cap = match(pattern, index, "YEAR")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "YEAR")) != null) {
         list.add(new WordYearFormat(cap, fillMode, false));
         index += 4;
         continue;
@@ -670,7 +670,7 @@ import org.apache.hop.expression.ExpressionException;
       }
 
       // Time format
-      if ((cap = match(pattern, index, "TS")) != null) {
+      if ((cap = Capitalization.match(pattern, index, "TS")) != null) {
         list.add(new TimeFormat(cap));
         index += 2;
         continue;

@@ -22,6 +22,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function return the Unicode code point for the first Unicode character in a string. If the
@@ -31,6 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see AsciiFunction
  */
 @FunctionPlugin
+@NullMarked
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {
@@ -43,7 +46,7 @@ public class UnicodeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 

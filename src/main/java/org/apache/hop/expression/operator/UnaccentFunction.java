@@ -27,12 +27,15 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function removes accents (diacritic marks) from a given string. Note that ligatures will be
  * left as is.
  */
 @FunctionPlugin
+@NullMarked
 public class UnaccentFunction extends Function {
 
   private static final Pattern DIACRITICS =
@@ -60,7 +63,7 @@ public class UnaccentFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 

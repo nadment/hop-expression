@@ -20,11 +20,13 @@ import java.util.List;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
  * values are ignored.
  */
+@NullMarked
 public class PercentileProcessor implements IExpressionProcessor {
 
   private static final Percentile PERCENTILE = new Percentile();

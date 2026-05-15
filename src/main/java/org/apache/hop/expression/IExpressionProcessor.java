@@ -14,6 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public interface IExpressionProcessor {
 
   /**
@@ -24,5 +28,5 @@ public interface IExpressionProcessor {
   void process(IExpression[] operands) throws Exception;
 
   /** This method returns the computed aggregate value. */
-  Object getValue() throws Exception;
+  @Nullable Object getValue() throws Exception;
 }

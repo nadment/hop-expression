@@ -30,9 +30,12 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.JsonConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Check if a string is a valid JSON. */
 @FunctionPlugin
+@NullMarked
 public class IsJsonFunction extends Function {
 
   public IsJsonFunction() {
@@ -63,7 +66,7 @@ public class IsJsonFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
 
     // Return FALSE if a value is NULL.

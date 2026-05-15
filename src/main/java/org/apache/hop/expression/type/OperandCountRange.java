@@ -16,7 +16,10 @@
  */
 package org.apache.hop.expression.type;
 
+import org.jspecify.annotations.NullMarked;
+
 /** A class that describes how many operands an operator can take. */
+@NullMarked
 public class OperandCountRange implements IOperandCountRange {
 
   private final int min;

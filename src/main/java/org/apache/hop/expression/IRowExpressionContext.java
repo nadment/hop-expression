@@ -17,6 +17,8 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.row.IRowMeta;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface representing a context that provides information about rows and their associated
@@ -25,11 +27,12 @@ import org.apache.hop.core.row.IRowMeta;
  * <p>This interface extends {@link IExpressionContext} and adds functionality specific to handling
  * row data and metadata within an expression context.
  */
+@NullMarked
 public interface IRowExpressionContext extends IExpressionContext {
 
   IRowMeta getRowMeta();
 
-  Object[] getRow();
+  @Nullable Object[] getRow();
 
   void setRow(Object[] row);
 }

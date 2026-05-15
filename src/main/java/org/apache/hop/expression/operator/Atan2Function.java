@@ -26,9 +26,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Calculates the arc tangent (inverted tangent) of y / x in the range -pi to pi. */
 @FunctionPlugin
+@NullMarked
 public class Atan2Function extends Function {
 
   public Atan2Function() {
@@ -46,7 +49,7 @@ public class Atan2Function extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     BigDecimal value0 = operands[0].getValue(BigDecimal.class);
     if (value0 == null) return null;
     BigDecimal value1 = operands[1].getValue(BigDecimal.class);

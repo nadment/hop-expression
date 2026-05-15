@@ -26,7 +26,10 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class DateType extends Type {
 
   /** Default DATE type with default parameters. */
@@ -60,7 +63,8 @@ public final class DateType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -80,7 +84,7 @@ public final class DateType extends Type {
   }
 
   @Override
-  public ZonedDateTime cast(final Object value) throws ExpressionException {
+  public @Nullable ZonedDateTime cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, "FXYYYY-MM-DD");
   }
 
@@ -93,31 +97,22 @@ public final class DateType extends Type {
    * @return the converted value
    */
   @Override
-  public ZonedDateTime cast(final Object value, final String pattern) throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-
-    if (value instanceof ZonedDateTime datetime) {
-      return datetime;
-    }
-    if (value instanceof String str) {
-      return DateTimeFormat.of(pattern).parse(str);
-    }
-    if (value instanceof Long number) {
-      return DateTimeConversion.convert(number);
-    }
-    if (value instanceof BigDecimal number) {
-      return DateTimeConversion.convert(number);
-    }
-
-    throw new ExpressionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  public @Nullable ZonedDateTime cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
+    return switch (value) {
+      case null -> null;
+      case ZonedDateTime datetime -> datetime;
+      case String str -> DateTimeFormat.of(pattern).parse(str);
+      case Long number -> DateTimeConversion.convert(number);
+      case BigDecimal number -> DateTimeConversion.convert(number);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
       return l.isEqual(r);
     }
@@ -125,7 +120,7 @@ public final class DateType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
       // Two timestamp are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'

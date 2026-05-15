@@ -30,9 +30,12 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
+@NullMarked
 public class ToNumberFunction extends Function {
 
   public static final ToNumberFunction INSTANCE = new ToNumberFunction();
@@ -75,7 +78,7 @@ public class ToNumberFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
       return format.parse(value);
@@ -86,7 +89,7 @@ public class ToNumberFunction extends Function {
     public static final ToNumberFunction INSTANCE = new DateToNumberFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) return null;
       return NumberConversion.convert(value);

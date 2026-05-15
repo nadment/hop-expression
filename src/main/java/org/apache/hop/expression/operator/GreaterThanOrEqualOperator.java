@@ -27,8 +27,11 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Comparison greater than or equal operator '<code>&gt;=</code>'. */
+@NullMarked
 public class GreaterThanOrEqualOperator extends BinaryOperator {
   public static final GreaterThanOrEqualOperator INSTANCE = new GreaterThanOrEqualOperator();
 
@@ -55,7 +58,7 @@ public class GreaterThanOrEqualOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
     if (left == null) {
       return null;

@@ -23,12 +23,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Removes all occurrences of a specified substring and optionally replaces them with another
  * string.
  */
 @FunctionPlugin
+@NullMarked
 public class ReplaceFunction extends Function {
 
   public ReplaceFunction() {
@@ -41,7 +44,7 @@ public class ReplaceFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
     if (string == null) return null;
     String search = operands[1].getValue(String.class);

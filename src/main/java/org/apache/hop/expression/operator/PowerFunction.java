@@ -29,9 +29,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns a number raised to the specified power exponent. */
 @FunctionPlugin(names = "POW")
+@NullMarked
 public class PowerFunction extends Function {
 
   public PowerFunction() {
@@ -49,7 +52,7 @@ public class PowerFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal number = operands[0].getValue(BigDecimal.class);
     if (number == null) {
       return null;

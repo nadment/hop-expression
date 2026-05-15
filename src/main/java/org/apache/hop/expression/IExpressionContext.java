@@ -16,6 +16,10 @@
  */
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public interface IExpressionContext {
 
   /**
@@ -26,5 +30,5 @@ public interface IExpressionContext {
    * @throws IllegalArgumentException if the name is empty.
    * @throws NullPointerException if the name is null.
    */
-  Object getAttribute(String name);
+  @Nullable Object getAttribute(@Nullable String name);
 }

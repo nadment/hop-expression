@@ -24,22 +24,26 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
+import lombok.Getter;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
  */
+@NullMarked
 public class Call implements IExpression {
 
   /** The position of this expression in the source before compilation else 0. */
-  protected final int position;
+  @Getter protected final int position;
 
   /** The operator of this call. */
-  protected final Operator operator;
+  @Getter protected final Operator operator;
 
-  /** The operands of this call. */
-  protected final IExpression[] operands;
+  /** The operands of this call. An empty array is returned if no operands */
+  @Getter protected final IExpression[] operands;
 
   /** The return type. The type is unknown before validation. */
   protected Type type = UnknownType.UNKNOWN;
@@ -84,33 +88,6 @@ public class Call implements IExpression {
     return type;
   }
 
-  /**
-   * Returns the position of this expression in the source before compilation else 0.
-   *
-   * @return position
-   */
-  public int getPosition() {
-    return position;
-  }
-
-  /**
-   * Get the operator
-   *
-   * @return the operator
-   */
-  public Operator getOperator() {
-    return operator;
-  }
-
-  /**
-   * Get array of operands. An empty array is returned if no operands
-   *
-   * @return the operands
-   */
-  public IExpression[] getOperands() {
-    return operands;
-  }
-
   public IExpression getOperand(int index) {
     return operands[index];
   }
@@ -135,7 +112,7 @@ public class Call implements IExpression {
   }
 
   @Override
-  public Object getValue() {
+  public @Nullable Object getValue() {
     try {
       return operator.eval(operands);
     } catch (ExpressionException e) {
@@ -150,7 +127,7 @@ public class Call implements IExpression {
   }
 
   @Override
-  public <T> T getValue(final Class<T> clazz) {
+  public @Nullable <T> T getValue(final Class<T> clazz) {
     try {
       Object value = operator.eval(operands);
       return type.convert(value, clazz);
@@ -171,7 +148,7 @@ public class Call implements IExpression {
    * @param context The context against which the expression will be validated.
    */
   @Override
-  public void validate(final IExpressionContext context) throws ExpressionException {
+  public void validate(IExpressionContext context) throws ExpressionException {
 
     // Validates the operands of a call
     for (IExpression operand : operands) {
@@ -204,12 +181,12 @@ public class Call implements IExpression {
   }
 
   @Override
-  public boolean isOperator(final Operator other) {
+  public boolean isOperator(@Nullable Operator other) {
     return operator.is(other);
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
 
     if (o == null || getClass() != o.getClass()) {
@@ -228,7 +205,7 @@ public class Call implements IExpression {
   }
 
   @Override
-  public void unparse(final StringWriter writer, int leftPrec, int rightPrec) {
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
     if ((leftPrec < operator.getLeftPrec() && (leftPrec != 0))
         || (operator.getRightPrec() > rightPrec && (rightPrec != 0))) {
       writer.append('(');
@@ -261,12 +238,16 @@ public class Call implements IExpression {
   }
 
   /**
-   * Swap the first and second operands, reverse the operator and preserve type.
+   * Swap the first and second operands, reverse the operator, and preserve the type.
    *
    * @return call
    */
   protected Call reverse() {
-    return new Call(operator.reverse(), getOperand(1), getOperand(0));
+    Operator reversedOperator = operator.reverse();
+    if (reversedOperator == null) {
+      throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Operator is not reversible");
+    }
+    return new Call(reversedOperator, getOperand(1), getOperand(0));
   }
 
   /**

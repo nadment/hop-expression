@@ -18,8 +18,10 @@ package org.apache.hop.expression.util;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.UUID;
+import org.jspecify.annotations.NullMarked;
 
 /** Universal Unique Identifier version 7 defined by RFC 9562 */
+@NullMarked
 public class UUIDv7 {
   private static final SecureRandom random = new SecureRandom();
 

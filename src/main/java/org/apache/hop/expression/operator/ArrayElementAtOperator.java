@@ -31,11 +31,14 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns an array element at the given an index <br>
  * <strong>Syntax:</strong> <code>array[3]</code>
  */
+@NullMarked
 public class ArrayElementAtOperator extends Operator {
 
   public static final ArrayElementAtOperator INSTANCE = new ArrayElementAtOperator();
@@ -77,7 +80,7 @@ public class ArrayElementAtOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     Array array = (Array) operands[0];
     Long index = operands[1].getValue(Long.class);
     if (index == null) return null;

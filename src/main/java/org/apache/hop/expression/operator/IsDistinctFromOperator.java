@@ -28,6 +28,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Comparison <code>IS DISTINCT FROM</code> operator. <br>
@@ -35,6 +37,7 @@ import org.apache.hop.expression.type.Types;
  *
  * @see IsNotDistinctFromOperator
  */
+@NullMarked
 public class IsDistinctFromOperator extends BinaryOperator {
 
   public static final IsDistinctFromOperator INSTANCE = new IsDistinctFromOperator();
@@ -67,7 +70,7 @@ public class IsDistinctFromOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
     Object right = operands[1].getValue();
 

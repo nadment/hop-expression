@@ -17,8 +17,10 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.jspecify.annotations.NullMarked;
 
 /** Least restrictive <code>then</code> expression or <code>else</code> expression */
+@NullMarked
 public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   public CaseOperatorReturnTypeInference() {

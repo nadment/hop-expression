@@ -23,9 +23,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Day of the month (number from 1-31). */
 @FunctionPlugin
+@NullMarked
 public class DayFunction extends Function {
 
   public DayFunction() {
@@ -38,7 +41,7 @@ public class DayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
     return Long.valueOf(value.getDayOfMonth());

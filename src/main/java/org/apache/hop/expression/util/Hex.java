@@ -15,6 +15,9 @@
 
 package org.apache.hop.expression.util;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class Hex {
 
   /** Used to build output as hex. */

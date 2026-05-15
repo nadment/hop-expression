@@ -23,7 +23,10 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.JsonComparator;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class JsonType extends Type {
   /** Default JSON type. */
   public static final JsonType JSON = new JsonType(true);
@@ -57,7 +60,8 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -73,7 +77,7 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public JsonNode cast(final Object value) throws ExpressionException {
+  public @Nullable JsonNode cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -86,26 +90,20 @@ public final class JsonType extends Type {
    * @return the converted value
    */
   @Override
-  public JsonNode cast(final Object value, String pattern) throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-
-    if (value instanceof JsonNode json) {
-      return json;
-    }
-
-    if (value instanceof String str) {
-      return JsonConversion.convert(str);
-    }
-
-    throw new ExpressionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  public @Nullable JsonNode cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
+    return switch (value) {
+      case null -> null;
+      case JsonNode json -> json;
+      case String str -> JsonConversion.convert(str);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof JsonNode l && right instanceof JsonNode r) {
       // Ignores the order of attributes
       return l.equals(JSON_COMPARATOR, r);

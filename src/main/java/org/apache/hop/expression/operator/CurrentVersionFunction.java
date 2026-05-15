@@ -27,9 +27,11 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** The function return the Apache Hop version. */
 @FunctionPlugin
+@NullMarked
 public class CurrentVersionFunction extends Function {
 
   private static final Literal version;

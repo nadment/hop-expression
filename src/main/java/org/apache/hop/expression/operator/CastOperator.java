@@ -27,6 +27,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Converts a value of one data type into another data type <code>::</code>
@@ -34,6 +36,7 @@ import org.apache.hop.expression.type.Type;
  * @see CastFunction
  * @see TryCastFunction
  */
+@NullMarked
 public class CastOperator extends Operator {
 
   public static final CastOperator INSTANCE = new CastOperator();
@@ -57,7 +60,7 @@ public class CastOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     Type type = operands[1].getValue(Type.class);
 

@@ -19,8 +19,10 @@ package org.apache.hop.expression.type;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
 /** A collection of reusable instances of {@link ITypeTransform}. */
+@NullMarked
 public final class TypeTransforms {
 
   /**

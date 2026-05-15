@@ -22,9 +22,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** This function returns the data type name of an expression. */
 @FunctionPlugin
+@NullMarked
 public class TypeOfFunction extends Function {
 
   public TypeOfFunction() {
@@ -37,7 +40,7 @@ public class TypeOfFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     return operands[0].getType().getName().name();
   }
 }

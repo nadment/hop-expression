@@ -29,6 +29,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function left-pads a string or binary with another string or binary, to a certain length.
@@ -36,6 +38,7 @@ import org.apache.hop.expression.type.Types;
  * @see RPadFunction
  */
 @FunctionPlugin
+@NullMarked
 public class LPadFunction extends Function {
 
   /** The maximum size to which the padding can expand. */
@@ -70,7 +73,7 @@ public class LPadFunction extends Function {
     public static final StringLPadFunction INSTANCE = new StringLPadFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
 
@@ -124,7 +127,7 @@ public class LPadFunction extends Function {
     private static final byte[] DEFAULT = new byte[] {0x00};
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
 

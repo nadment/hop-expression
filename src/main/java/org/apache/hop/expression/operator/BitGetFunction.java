@@ -22,6 +22,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns TRUE if the specified bit in a value is a 1; otherwise FALSE is returned.
@@ -30,6 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see BitClearFunction
  */
 @FunctionPlugin
+@NullMarked
 public class BitGetFunction extends Function {
 
   public BitGetFunction() {
@@ -42,7 +45,7 @@ public class BitGetFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
     Long v1 = operands[1].getValue(Long.class);

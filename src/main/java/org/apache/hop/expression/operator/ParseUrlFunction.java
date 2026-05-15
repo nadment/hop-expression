@@ -29,9 +29,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns the specified part of the URL or the value for the specified QUERY key. */
 @FunctionPlugin
+@NullMarked
 public class ParseUrlFunction extends Function {
 
   private static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
@@ -50,7 +53,7 @@ public class ParseUrlFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String url = operands[0].getValue(String.class);
     if (url == null) return null;
 

@@ -23,12 +23,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The ARRAY_TO_STRING function converts an input array to a string by casting all values to strings
  * and concatenating them, using the string from the second argument to separate the elements.
  */
 @FunctionPlugin
+@NullMarked
 public class ArrayToStringFunction extends Function {
 
   public static final Function INSTANCE = new ArrayToStringFunction();
@@ -43,7 +46,7 @@ public class ArrayToStringFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     Array array = (Array) operands[0];
     if (array == null) return null;
     String separator = operands[1].getValue(String.class);

@@ -34,6 +34,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extracts the specified time unit from a date, timestamp or interval.
@@ -41,6 +43,7 @@ import org.apache.hop.expression.type.Types;
  * <p>Time unit: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
  */
 @FunctionPlugin(names = "DATE_PART")
+@NullMarked
 public class ExtractFunction extends Function {
 
   public ExtractFunction() {
@@ -88,7 +91,7 @@ public class ExtractFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
       ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
       if (datetime == null) return null;
@@ -102,7 +105,7 @@ public class ExtractFunction extends Function {
     public static final IntervalExtractFunction INSTANCE = new IntervalExtractFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
       Interval interval = operands[1].getValue(Interval.class);
       if (interval == null) return null;

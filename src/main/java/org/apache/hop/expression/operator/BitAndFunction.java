@@ -33,9 +33,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Bitwise AND function.<br> */
 @FunctionPlugin
+@NullMarked
 public class BitAndFunction extends Function {
 
   public static final BitAndFunction INSTANCE = new BitAndFunction();
@@ -104,7 +107,7 @@ public class BitAndFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
       if (left == null) return null;
       Long right = operands[1].getValue(Long.class);
@@ -117,7 +120,7 @@ public class BitAndFunction extends Function {
     public static final BinaryBitAndFunction INSTANCE = new BinaryBitAndFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] left = operands[0].getValue(byte[].class);
       if (left == null) return null;
       byte[] right = operands[1].getValue(byte[].class);

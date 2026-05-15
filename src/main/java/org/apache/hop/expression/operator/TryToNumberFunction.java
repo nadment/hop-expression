@@ -26,9 +26,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** Converts a string expression to a number value with optional format. */
 @FunctionPlugin
+@NullMarked
 public class TryToNumberFunction extends Function {
 
   public TryToNumberFunction() {

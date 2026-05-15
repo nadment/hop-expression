@@ -29,9 +29,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** Returns the number of PI. */
 @FunctionPlugin
+@NullMarked
 public class PiFunction extends Function {
 
   public static final Literal PI =

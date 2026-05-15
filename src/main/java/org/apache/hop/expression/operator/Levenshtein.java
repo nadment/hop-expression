@@ -23,9 +23,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** The function computes Levenshtein distance. */
 @FunctionPlugin
+@NullMarked
 public class Levenshtein extends Function {
 
   private static final LevenshteinDistance LEVENSHTEIN_DISTANCE =
@@ -41,7 +44,7 @@ public class Levenshtein extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str1 = operands[0].getValue(String.class);
     if (str1 == null) return null;
     String str2 = operands[1].getValue(String.class);

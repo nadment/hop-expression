@@ -17,7 +17,9 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
 
   private final TypeComparability requiredComparability;

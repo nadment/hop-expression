@@ -18,11 +18,13 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Kind;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Operand type-checking strategy which checks operand type must be a literal with the specified
  * class.
  */
+@NullMarked
 public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
   private final Class<?> javaClass;
 

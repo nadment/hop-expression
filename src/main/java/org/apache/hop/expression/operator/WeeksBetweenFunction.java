@@ -24,9 +24,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns number of weeks between two date. */
 @FunctionPlugin
+@NullMarked
 public class WeeksBetweenFunction extends Function {
 
   public WeeksBetweenFunction() {
@@ -39,7 +42,7 @@ public class WeeksBetweenFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
     if (startDateTime == null) return null;
     ZonedDateTime endDateTime = operands[1].getValue(ZonedDateTime.class);

@@ -26,9 +26,12 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Calculates the arc sine of a number. */
 @FunctionPlugin
+@NullMarked
 public class AsinFunction extends Function {
 
   public AsinFunction() {
@@ -46,7 +49,7 @@ public class AsinFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
     return BigDecimalMath.asin(value, MATH_CONTEXT);

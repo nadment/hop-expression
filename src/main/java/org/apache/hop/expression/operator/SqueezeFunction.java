@@ -26,6 +26,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Characters;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Trims white space from the beginning and end of the string, and replaces all other white space
@@ -35,6 +37,7 @@ import org.apache.hop.expression.util.Characters;
  * carriage returns, horizontal tabs and form feeds (vertical tabs).
  */
 @FunctionPlugin
+@NullMarked
 public class SqueezeFunction extends Function {
 
   public static final SqueezeFunction INSTANCE = new SqueezeFunction();
@@ -61,7 +64,7 @@ public class SqueezeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
     final int size = value.length();

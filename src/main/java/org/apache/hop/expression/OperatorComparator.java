@@ -15,7 +15,9 @@
 package org.apache.hop.expression;
 
 import java.util.Comparator;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class OperatorComparator implements Comparator<Operator> {
 
   public OperatorComparator() {

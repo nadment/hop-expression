@@ -21,8 +21,10 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
+import org.jspecify.annotations.NullMarked;
 
 /** Binary operator, as in "x + y". */
+@NullMarked
 public abstract class BinaryOperator extends Operator {
 
   protected BinaryOperator(

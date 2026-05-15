@@ -14,7 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+
 /** Visitor pattern for traversing a tree of {@link IExpression} objects. */
+@NullMarked
 public interface IExpressionVisitor<E> {
   E visitIdentifier(Identifier identifier);
 

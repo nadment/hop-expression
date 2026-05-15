@@ -23,9 +23,11 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeTransforms;
+import org.jspecify.annotations.NullMarked;
 
 /** Returns 0 if its argument is null; otherwise, returns its argument. */
 @FunctionPlugin
+@NullMarked
 public class ZeroIfNullFunction extends Function {
 
   public ZeroIfNullFunction() {

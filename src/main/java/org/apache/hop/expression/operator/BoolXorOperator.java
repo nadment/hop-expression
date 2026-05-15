@@ -25,6 +25,8 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Logical exclusive disjunction <code>XOR</code> operator.
@@ -35,6 +37,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  *   <li>NULL if one or both expressions are NULL.
  * </ul>
  */
+@NullMarked
 public class BoolXorOperator extends BinaryOperator {
 
   public static final BoolXorOperator INSTANCE = new BoolXorOperator();
@@ -63,7 +66,7 @@ public class BoolXorOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     if (left == null) {
       return null;

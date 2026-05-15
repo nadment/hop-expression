@@ -17,8 +17,10 @@ package org.apache.hop.expression;
 import java.io.StringWriter;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
+import org.jspecify.annotations.NullMarked;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
+@NullMarked
 public abstract class Function extends Operator {
 
   /**

@@ -22,6 +22,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Returns the last value over a group of rows.
@@ -31,6 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * <p>The default is RESPECT NULLS.
  */
 @FunctionPlugin
+@NullMarked
 public class LastValueFunction extends AggregateFunction {
   public static final LastValueFunction LAST_VALUE_RESPECT_NULLS = new LastValueFunction(false);
   public static final LastValueFunction LAST_VALUE_IGNORE_NULLS = new LastValueFunction(true);

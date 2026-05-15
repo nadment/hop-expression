@@ -22,9 +22,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** The function replaces input with replace that starts at pos and is of length len. */
 @FunctionPlugin
+@NullMarked
 public class OverlayFunction extends Function {
 
   public OverlayFunction() {
@@ -37,7 +40,7 @@ public class OverlayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) return null;
 

@@ -22,6 +22,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the result after clearing the specified bit on in a value.
@@ -30,6 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see BitSetFunction
  */
 @FunctionPlugin
+@NullMarked
 public class BitClearFunction extends Function {
 
   public BitClearFunction() {
@@ -42,7 +45,7 @@ public class BitClearFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
     Long position = operands[1].getValue(Long.class);

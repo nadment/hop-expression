@@ -28,6 +28,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Arithmetic division function. <br>
@@ -36,6 +38,7 @@ import org.apache.hop.expression.type.Types;
  * @see DivOperator
  */
 @FunctionPlugin
+@NullMarked
 public class Div0Function extends Function {
 
   public Div0Function() {
@@ -86,7 +89,7 @@ public class Div0Function extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
     BigDecimal divisor = operands[1].getValue(BigDecimal.class);

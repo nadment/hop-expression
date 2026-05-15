@@ -34,12 +34,15 @@ import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Build a JSON object from a list of key=values pairs. <code>
  * JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...)</code>
  */
 @FunctionPlugin
+@NullMarked
 public class JsonObjectFunction extends Function {
 
   public static final IOperandTypeChecker OTC = new JsonObjectFunctionOperandTypeChecker();
@@ -58,7 +61,7 @@ public class JsonObjectFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 

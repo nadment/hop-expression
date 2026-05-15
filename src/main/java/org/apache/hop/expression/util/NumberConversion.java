@@ -22,7 +22,10 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class NumberConversion extends Conversion<BigDecimal> {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
@@ -38,7 +41,9 @@ public final class NumberConversion extends Conversion<BigDecimal> {
    * @return BigDecimal
    * @throws ExpressionException - When the conversion is not possible
    */
-  public static BigDecimal convert(final String str) throws ExpressionException {
+  public static @Nullable BigDecimal convert(final @Nullable String str)
+      throws ExpressionException {
+    if (str == null) return null;
     try {
       return FORMAT.parse(str);
     } catch (ExpressionException e) {
@@ -47,7 +52,9 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     }
   }
 
-  public static BigDecimal convert(final byte[] bytes) throws ExpressionException {
+  public static @Nullable BigDecimal convert(final byte @Nullable [] bytes)
+      throws ExpressionException {
+    if (bytes == null) return null;
     if (bytes.length > 8)
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
@@ -66,8 +73,9 @@ public final class NumberConversion extends Conversion<BigDecimal> {
    * @return BigDecimal
    * @throws ExpressionException - When the conversion is not possible
    */
-  public static BigDecimal convert(final ZonedDateTime datetime) throws ExpressionException {
-
+  public static @Nullable BigDecimal convert(final @Nullable ZonedDateTime datetime)
+      throws ExpressionException {
+    if (datetime == null) return null;
     BigDecimal result = new BigDecimal(datetime.toEpochSecond());
     int nanos = datetime.getNano();
     if (nanos != 0) {

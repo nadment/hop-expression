@@ -16,10 +16,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class LastValueRespectNullsProcessor implements IExpressionProcessor {
-
-  private Object value;
+  private @Nullable Object value;
 
   public LastValueRespectNullsProcessor() {
     value = null;
@@ -31,7 +33,7 @@ public class LastValueRespectNullsProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object getValue() throws Exception {
+  public @Nullable Object getValue() throws Exception {
     return value;
   }
 }

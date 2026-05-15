@@ -38,9 +38,12 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Hex;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Converts a numeric or date expression to a string value. */
 @FunctionPlugin
+@NullMarked
 public class ToCharFunction extends Function {
   public static final ToCharFunction INSTANCE = new ToCharFunction();
 
@@ -127,7 +130,7 @@ public class ToCharFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) {
         return null;
@@ -147,7 +150,7 @@ public class ToCharFunction extends Function {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) {
         return null;
@@ -161,7 +164,7 @@ public class ToCharFunction extends Function {
     public static final ToCharFunction INSTANCE = new BooleanToCharFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Boolean value = operands[0].getValue(Boolean.class);
       if (value == null) {
         return null;
@@ -175,7 +178,7 @@ public class ToCharFunction extends Function {
     public static final ToCharFunction INSTANCE = new BinaryHexToCharFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
       if (bytes == null) {
         return null;
@@ -188,7 +191,7 @@ public class ToCharFunction extends Function {
     public static final ToCharFunction INSTANCE = new BinaryUtf8ToCharFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
       if (bytes == null) {
         return null;
@@ -201,7 +204,7 @@ public class ToCharFunction extends Function {
     public static final ToCharFunction INSTANCE = new BinaryBase64ToCharFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
       if (bytes == null) {
         return null;

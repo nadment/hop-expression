@@ -34,7 +34,10 @@ import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class StringType extends Type {
 
   /** Default STRING type with maximum precision. */
@@ -62,7 +65,7 @@ public final class StringType extends Type {
     return new StringType(precision, nullable);
   }
 
-  public static StringType from(final String value) {
+  public static StringType from(String value) {
     int precision = value.length();
     // Empty string should return 1
     if (precision < 1) precision = 1;
@@ -87,7 +90,8 @@ public final class StringType extends Type {
   }
 
   @Override
-  public <T> T convert(Object value, Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+      throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -119,7 +123,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public String cast(final Object value) throws ExpressionException {
+  public @Nullable String cast(@Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -133,7 +137,8 @@ public final class StringType extends Type {
    * @return the converted value
    */
   @Override
-  public String cast(final Object value, String pattern) throws ExpressionException {
+  public @Nullable String cast(@Nullable Object value, @Nullable String pattern)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -180,14 +185,14 @@ public final class StringType extends Type {
     return result;
   }
 
-  private boolean checkPrecision(final String result) {
+  private boolean checkPrecision(String result) {
     if (result == null) return true;
 
     return this.precision < 0 || this.precision >= result.length();
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof String l && right instanceof String r) {
       return l.compareTo(r) == 0;
     }
@@ -195,7 +200,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof String l && right instanceof String r) {
       return l.compareTo(r);
     }

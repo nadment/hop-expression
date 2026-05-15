@@ -29,9 +29,12 @@ import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Calculates the factorial value of a numeric expression. */
 @FunctionPlugin
+@NullMarked
 public class FactorialFunction extends Function {
 
   public FactorialFunction() {
@@ -49,7 +52,7 @@ public class FactorialFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
 

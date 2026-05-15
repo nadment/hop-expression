@@ -22,6 +22,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Converts a value of one data type into another data type <code>
@@ -31,6 +32,7 @@ import org.apache.hop.expression.IExpressionContext;
  * @see CastOperator
  */
 @FunctionPlugin
+@NullMarked
 public class TryCastFunction extends CastFunction {
 
   public TryCastFunction() {

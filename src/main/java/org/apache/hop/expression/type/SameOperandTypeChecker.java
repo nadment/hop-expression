@@ -18,8 +18,10 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
 /** Operand type-checking strategy which checks all operand types must be the same. */
+@NullMarked
 public class SameOperandTypeChecker implements IOperandTypeChecker {
   private final IOperandCountRange range;
   private final int start;

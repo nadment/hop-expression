@@ -30,6 +30,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The COALESCE function returns the first of its arguments that is not null. Null is returned only
@@ -38,6 +40,7 @@ import org.apache.hop.expression.type.Types;
  * @see IfNullFunction
  */
 @FunctionPlugin
+@NullMarked
 public class CoalesceFunction extends Function {
 
   public static final Function INSTANCE = new CoalesceFunction();
@@ -57,7 +60,7 @@ public class CoalesceFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     for (IExpression operand : operands) {
       Object value = operand.getValue();
       if (value != null) return value;

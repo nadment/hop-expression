@@ -26,9 +26,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Calculates the specified base logarithm of a numeric value. */
 @FunctionPlugin
+@NullMarked
 public class LogFunction extends Function {
 
   public LogFunction() {
@@ -41,7 +44,7 @@ public class LogFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal base = operands[0].getValue(BigDecimal.class);
     if (base == null) return null;
 

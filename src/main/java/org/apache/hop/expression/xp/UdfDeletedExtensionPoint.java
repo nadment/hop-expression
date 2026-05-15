@@ -33,7 +33,7 @@ import org.apache.hop.metadata.api.IHopMetadata;
     description = "User Defined Function deleted")
 public class UdfDeletedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override
-  public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object)
+  public void callExtensionPoint(ILogChannel log, IVariables variables, IHopMetadata object)
       throws HopException {
 
     log.logBasic("MetadataObjectDeleted");

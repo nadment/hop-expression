@@ -24,6 +24,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The function converts a Unicode code point (including 7-bit ASCII) into the character that
@@ -32,6 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see AsciiFunction
  */
 @FunctionPlugin
+@NullMarked
 public class ChrFunction extends Function {
 
   public ChrFunction() {
@@ -44,7 +47,7 @@ public class ChrFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
     int codePoint = value.intValue();

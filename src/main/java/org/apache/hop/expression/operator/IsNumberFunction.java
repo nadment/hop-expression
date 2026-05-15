@@ -29,9 +29,11 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.NumberConversion;
+import org.jspecify.annotations.NullMarked;
 
 /** Check if a string or a numeric is a valid number. */
 @FunctionPlugin
+@NullMarked
 public class IsNumberFunction extends Function {
 
   public IsNumberFunction() {

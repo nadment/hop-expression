@@ -18,11 +18,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
  * values are ignored.
  */
+@NullMarked
 public class AvgProcessor implements IExpressionProcessor {
 
   private BigDecimal sum;

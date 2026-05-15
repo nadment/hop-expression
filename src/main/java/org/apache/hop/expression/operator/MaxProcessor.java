@@ -17,11 +17,14 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.Type;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns the maximum of an expression across all input rows. */
+@NullMarked
 public class MaxProcessor implements IExpressionProcessor {
 
-  private Object max;
+  private @Nullable Object max;
 
   public MaxProcessor() {
     max = null;
@@ -38,7 +41,7 @@ public class MaxProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object getValue() throws Exception {
+  public @Nullable Object getValue() throws Exception {
     return max;
   }
 }

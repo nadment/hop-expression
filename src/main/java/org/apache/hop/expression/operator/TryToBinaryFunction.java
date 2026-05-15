@@ -25,9 +25,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
 
 /** Converts the string expression to a binary value. */
 @FunctionPlugin
+@NullMarked
 public class TryToBinaryFunction extends Function {
 
   public TryToBinaryFunction() {

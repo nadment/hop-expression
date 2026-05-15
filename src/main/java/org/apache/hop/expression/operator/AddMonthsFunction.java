@@ -27,9 +27,12 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Adds or subtracts a specified number of months to a date or timestamp */
 @FunctionPlugin
+@NullMarked
 public class AddMonthsFunction extends Function {
   public static final Function INSTANCE = new AddMonthsFunction();
 
@@ -54,7 +57,7 @@ public class AddMonthsFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
     if (datetime == null) return null;
 

@@ -46,12 +46,12 @@ public class AutoDateTimeFormat extends DateTimeFormat {
   }
 
   @Override
-  public String format(final ZonedDateTime value) {
+  public String format(ZonedDateTime value) {
     return defaultFormat.format(value);
   }
 
   @Override
-  public ZonedDateTime parse(final String str) throws ExpressionException {
+  public ZonedDateTime parse(String str) throws ExpressionException {
     DateTimeParser parser = new DateTimeParser(this, str);
 
     parser.skipSpace();

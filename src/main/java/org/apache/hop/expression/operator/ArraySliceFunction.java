@@ -23,9 +23,12 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns an array constructed from a specified subset of elements of the input array. */
 @FunctionPlugin
+@NullMarked
 public class ArraySliceFunction extends Function {
 
   public static final Function INSTANCE = new ArraySliceFunction();
@@ -40,7 +43,7 @@ public class ArraySliceFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(IExpression[] operands) {
     Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
     Long fromLong = operands[1].getValue(Long.class);

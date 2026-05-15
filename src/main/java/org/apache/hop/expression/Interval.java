@@ -24,8 +24,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.util.Characters;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** An interval represents a duration of time which can be used in date/time arithmetic. */
+@NullMarked
 public class Interval implements Serializable, Comparable<Interval> {
 
   /** The number of months per year. */
@@ -128,7 +131,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>YEAR</code> object, or <code>null</code> if the string could not be
    *     parsed.
    */
-  public static Interval year(final String string) {
+  public static @Nullable Interval year(@Nullable String string) {
     try {
       return string == null ? null : new Interval(Integer.parseInt(string), 0, 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
@@ -143,7 +146,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>YEAR TO MONTH</code> object, or <code>null</code> if the string could
    *     not be parsed.
    */
-  public static Interval yearToMonth(final String string) {
+  public static @Nullable Interval yearToMonth(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_YTM.matcher(string);
 
@@ -165,7 +168,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL QUARTER</code> object, or <code>null</code> if the string
    *     could not be parsed.
    */
-  public static Interval quarter(final String string) {
+  public static @Nullable Interval quarter(@Nullable String string) {
     try {
 
       return string == null ? null : new Interval(0, 3 * Integer.parseInt(string), 0, 0, 0, 0, 0);
@@ -181,7 +184,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>MONTH</code> object, or <code>null</code> if the string could not be
    *     parsed.
    */
-  public static Interval month(final String string) {
+  public static @Nullable Interval month(@Nullable String string) {
     try {
       return string == null ? null : new Interval(0, Integer.parseInt(string), 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
@@ -196,7 +199,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL WEEK</code> object, or <code>null</code> if the string could
    *     not be parsed.
    */
-  public static Interval week(final String string) {
+  public static @Nullable Interval week(@Nullable String string) {
     try {
 
       return string == null ? null : new Interval(0, 0, 7 * Integer.parseInt(string), 0, 0, 0, 0);
@@ -212,7 +215,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL DAY</code> object, or <code>null</code> if the string could
    *     not be parsed.
    */
-  public static Interval day(final String string) {
+  public static @Nullable Interval day(@Nullable String string) {
     try {
       return string == null ? null : new Interval(0, 0, Integer.parseInt(string), 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
@@ -227,7 +230,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL DAY TO HOUR</code> object, or <code>null</code> if the string
    *     could not be parsed.
    */
-  public static Interval dayToHour(final String string) {
+  public static @Nullable Interval dayToHour(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_DTH.matcher(string);
 
@@ -250,7 +253,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL DAY TO MINUTE</code> object, or <code>null</code> if the
    *     string could not be parsed.
    */
-  public static Interval dayToMinute(final String string) {
+  public static @Nullable Interval dayToMinute(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_DTM.matcher(string);
 
@@ -271,11 +274,11 @@ public class Interval implements Serializable, Comparable<Interval> {
    * Parse a string representation of a <code>INTERVAL DAY TO SECOND</code>.
    *
    * @param string A string representation of the form <code>
-   *     [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
+   *               [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
    * @return The parsed <code>INTERVAL DAY TO MINUTE</code> object, or <code>null</code> if the
    *     string could not be parsed.
    */
-  public static Interval dayToSecond(final String string) {
+  public static @Nullable Interval dayToSecond(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_DTS.matcher(string);
 
@@ -301,7 +304,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL HOUR</code> object, or <code>null</code> if the string could
    *     not be parsed.
    */
-  public static Interval hour(final String string) {
+  public static @Nullable Interval hour(@Nullable String string) {
     try {
       return string == null ? null : new Interval(0, 0, 0, Integer.parseInt(string), 0, 0, 0);
     } catch (NumberFormatException ignore) {
@@ -316,7 +319,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL HOUR TO MINUTE</code> object, or <code>null</code> if the
    *     string could not be parsed.
    */
-  public static Interval hourToMinute(final String string) {
+  public static @Nullable Interval hourToMinute(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_HTM.matcher(string);
 
@@ -337,11 +340,11 @@ public class Interval implements Serializable, Comparable<Interval> {
    * Parse a string representation of a <code>INTERVAL HOUR TO SECOND</code>.
    *
    * @param string A string representation of the form <code>
-   *     [+|-][hours]:[minutes]:[seconds].[fractional seconds]</code>
+   *               [+|-][hours]:[minutes]:[seconds].[fractional seconds]</code>
    * @return The parsed <code>INTERVAL HOUR TO SECOND</code> object, or <code>null</code> if the
    *     string could not be parsed.
    */
-  public static Interval hourToSecond(final String string) {
+  public static @Nullable Interval hourToSecond(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_HTS.matcher(string);
 
@@ -366,7 +369,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @return The parsed <code>INTERVAL MINUTE</code> object, or <code>null</code> if the string
    *     could not be parsed.
    */
-  public static Interval minute(final String string) {
+  public static @Nullable Interval minute(@Nullable String string) {
     try {
       return string == null ? null : new Interval(0, 0, 0, 0, Integer.parseInt(string), 0, 0);
     } catch (NumberFormatException ignore) {
@@ -378,11 +381,11 @@ public class Interval implements Serializable, Comparable<Interval> {
    * Parse a string representation of a <code>INTERVAL MINUTE TO SECOND</code>.
    *
    * @param string A string representation of the form <code>
-   *     [+|-][[minutes]:[seconds].[fractional seconds]</code>
+   *               [+|-][[minutes]:[seconds].[fractional seconds]</code>
    * @return The parsed <code>INTERVAL MINUTE TO SECOND</code> object, or <code>null</code> if the
    *     string could not be parsed.
    */
-  public static Interval minuteToSecond(final String string) {
+  public static @Nullable Interval minuteToSecond(@Nullable String string) {
     if (string != null) {
       Matcher matcher = PATTERN_MTS.matcher(string);
 
@@ -403,11 +406,11 @@ public class Interval implements Serializable, Comparable<Interval> {
    * Parse a string representation of a <code>INTERVAL SECOND</code>.
    *
    * @param string A string representation of the form <code>[+|-][seconds].[fractional seconds]
-   *     </code>
+   *               </code>
    * @return The parsed <code>INTERVAL SECOND</code> object, or <code>null</code> if the string
    *     could not be parsed.
    */
-  public static Interval second(final String string) {
+  public static @Nullable Interval second(@Nullable String string) {
     if (string == null) return null;
 
     try {
@@ -486,11 +489,12 @@ public class Interval implements Serializable, Comparable<Interval> {
    * Parse a string representation of a <code>INTERVAL YEAR TO SECOND</code>
    *
    * @param string A string representation of the form <code>
-   *     [+|-][years]-[months] [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]</code>
+   *               [+|-][years]-[months] [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]
+   *     </code>
    * @return The parsed <code>YEAR TO SECOND</code> object
    * @throws ExpressionException if the string could not be parsed.
    */
-  public static Interval of(String string) {
+  public static @Nullable Interval of(@Nullable String string) {
     if (string != null) {
 
       Matcher matcher = PATTERN_YTS.matcher(string);
@@ -517,7 +521,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   // Interval API
   // -------------------------------------------------------------------------
 
-  protected static int parseField(String str) {
+  protected static int parseField(@Nullable String str) {
     if (str == null || str.isEmpty()) return 0;
     return Integer.parseInt(str);
   }
@@ -715,7 +719,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   @Override
-  public final boolean equals(Object obj) {
+  public final boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
     if (obj == null) return false;
     if (getClass() == obj.getClass()) {

@@ -29,8 +29,11 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Prefix arithmetic minus (negative) operator '<code>-</code>' for numeric or interval. */
+@NullMarked
 public class NegativeOperator extends PrefixUnaryOperator {
   public static final NegativeOperator INSTANCE = new NegativeOperator();
 
@@ -93,7 +96,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
       try {
@@ -112,7 +115,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) return null;
       return value.negate();
@@ -127,7 +130,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
     }
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Interval interval = operands[0].getValue(Interval.class);
       if (interval == null) return null;
       return interval.negate();

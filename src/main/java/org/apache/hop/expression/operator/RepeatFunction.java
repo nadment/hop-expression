@@ -29,9 +29,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** The function repeats a string or binary as many times as specified. */
 @FunctionPlugin
+@NullMarked
 public class RepeatFunction extends Function {
 
   public RepeatFunction() {
@@ -61,7 +64,7 @@ public class RepeatFunction extends Function {
     public static final StringRepeatFunction INSTANCE = new StringRepeatFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
@@ -90,7 +93,7 @@ public class RepeatFunction extends Function {
     public static final BinaryRepeatFunction INSTANCE = new BinaryRepeatFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);

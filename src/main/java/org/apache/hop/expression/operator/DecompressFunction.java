@@ -28,11 +28,14 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Decompress an input value, using the GZIP algorithm. The function returns a byte array of type.
  */
 @FunctionPlugin
+@NullMarked
 public class DecompressFunction extends Function {
 
   public DecompressFunction() {
@@ -45,7 +48,7 @@ public class DecompressFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
 

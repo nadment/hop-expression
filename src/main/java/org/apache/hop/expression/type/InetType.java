@@ -22,7 +22,10 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.InetConversion;
 import org.apache.hop.expression.util.StringConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class InetType extends Type {
   /** Default INET type. */
   public static final InetType INET = new InetType(true);
@@ -54,7 +57,8 @@ public final class InetType extends Type {
   }
 
   @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -70,7 +74,7 @@ public final class InetType extends Type {
   }
 
   @Override
-  public InetAddress cast(final Object value) throws ExpressionException {
+  public @Nullable InetAddress cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
@@ -83,26 +87,20 @@ public final class InetType extends Type {
    * @return the converted value
    */
   @Override
-  public InetAddress cast(final Object value, String pattern) throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-
-    if (value instanceof InetAddress inet) {
-      return inet;
-    }
-
-    if (value instanceof String str) {
-      return InetConversion.convert(str);
-    }
-
-    throw new ExpressionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  public @Nullable InetAddress cast(final @Nullable Object value, @Nullable String pattern)
+      throws ExpressionException {
+    return switch (value) {
+      case null -> null;
+      case InetAddress inet -> inet;
+      case String str -> InetConversion.convert(str);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof InetAddress l && right instanceof InetAddress r) {
       return l.equals(r);
     }

@@ -26,11 +26,14 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Comparison SIMILAR TO operator. <br>
  * <strong>Syntax:</strong> <code>'abc' SIMILAR TO 'regexp'</code>
  */
+@NullMarked
 public class SimilarToOperator extends BinaryOperator {
 
   public static final SimilarToOperator INSTANCE = new SimilarToOperator();
@@ -53,7 +56,7 @@ public class SimilarToOperator extends BinaryOperator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;

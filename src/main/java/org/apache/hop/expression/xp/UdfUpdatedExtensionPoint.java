@@ -34,7 +34,7 @@ import org.apache.hop.metadata.api.IHopMetadata;
     description = "User Defined Function updated")
 public class UdfUpdatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override
-  public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object)
+  public void callExtensionPoint(ILogChannel log, IVariables variables, IHopMetadata object)
       throws HopException {
 
     if (object instanceof UserDefinedFunctionMeta meta) {

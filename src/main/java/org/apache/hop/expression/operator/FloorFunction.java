@@ -28,6 +28,8 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the values rounded to the nearest equal or smaller integer.
@@ -37,6 +39,7 @@ import org.apache.hop.expression.type.Types;
  * @see TruncateFunction
  */
 @FunctionPlugin
+@NullMarked
 public class FloorFunction extends Function {
 
   public static final Function INSTANCE = new FloorFunction();
@@ -56,7 +59,7 @@ public class FloorFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
 

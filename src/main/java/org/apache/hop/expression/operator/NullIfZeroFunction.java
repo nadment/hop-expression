@@ -28,9 +28,12 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns NULL if the argument evaluates to 0; otherwise, returns the argument. */
 @FunctionPlugin
+@NullMarked
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {
@@ -56,7 +59,7 @@ public class NullIfZeroFunction extends Function {
     public static final NumberNullIfZeroFunction INSTANCE = new NumberNullIfZeroFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null || value.signum() == 0) {
         return null;
@@ -69,7 +72,7 @@ public class NullIfZeroFunction extends Function {
     public static final IntegerNullIfZeroFunction INSTANCE = new IntegerNullIfZeroFunction();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
       if (value == null || value == 0) {
         return null;

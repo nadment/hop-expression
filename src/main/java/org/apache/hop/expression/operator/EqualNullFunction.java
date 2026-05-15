@@ -28,6 +28,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Compares whether two expressions are equal.
@@ -37,6 +39,7 @@ import org.apache.hop.expression.type.Types;
  * values.
  */
 @FunctionPlugin
+@NullMarked
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {
@@ -54,7 +57,7 @@ public class EqualNullFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public @Nullable Object eval(final IExpression[] operands) {
     Type type = operands[0].getType();
     Object left = operands[0].getValue();
     Object right = operands[1].getValue();

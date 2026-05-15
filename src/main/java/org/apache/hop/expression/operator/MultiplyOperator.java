@@ -33,11 +33,14 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Arithmetic multiply operator. <br>
  * <strong>Syntax:</strong> <code>x * y</code>
  */
+@NullMarked
 public class MultiplyOperator extends BinaryOperator {
   public static final MultiplyOperator INSTANCE = new MultiplyOperator();
 
@@ -179,7 +182,7 @@ public class MultiplyOperator extends BinaryOperator {
     public static final MultiplyOperator INSTANCE = new IntegerMultiplyOperator();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
       if (left == null) return null;
       Long right = operands[1].getValue(Long.class);
@@ -197,7 +200,7 @@ public class MultiplyOperator extends BinaryOperator {
     public static final MultiplyOperator INSTANCE = new NumberMultiplyOperator();
 
     @Override
-    public Object eval(final IExpression[] operands) {
+    public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);
       if (left == null) return null;
       BigDecimal right = operands[1].getValue(BigDecimal.class);
