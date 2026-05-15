@@ -187,6 +187,20 @@ http://www.apache.org/licenses/LICENSE-2.0
 
     </dependencies>
 
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
     <build>
         <pluginManagement>
             <plugins>
