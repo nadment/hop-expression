@@ -34,7 +34,7 @@ http://www.apache.org/licenses/LICENSE-2.0
         <hop.home>C:\hop</hop.home>
         <hop.version>2.18.0-SNAPSHOT</hop.version>
         <jmh.version>1.37</jmh.version>
-        <json-path.version>2.9.0</json-path.version>
+        <json-path.version>3.0.0</json-path.version>
         <junit.version>6.0.3</junit.version>
         <license.licenseName>apache_v2</license.licenseName>
         <maven.compiler.source>${target.jdk.version}</maven.compiler.source>
