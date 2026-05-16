@@ -57,7 +57,7 @@ public class IsJsonFunction extends Function {
     }
 
     // Optimize "IS_JSON(json)" to "json IS NOT NULL"
-    if (call.getOperand(0).getType().is(TypeName.JSON)) {
+    if (call.getOperand(0).getType().isName(TypeName.JSON)) {
       return new Call(IsNotNullOperator.INSTANCE, call.getOperand(0));
     }
 

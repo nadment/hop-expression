@@ -165,7 +165,7 @@ public class Types {
 
     if (type1 == null || type2 == null) return null;
 
-    if (type2.is(TypeName.UNKNOWN)) return type1;
+    if (type2.isName(TypeName.UNKNOWN)) return type1;
 
     // NUMBER compare INTEGER -> NUMBER
     if (isNumber(type1) && isInteger(type2)) {
@@ -341,12 +341,12 @@ public class Types {
 
   public static boolean isBinary(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.BINARY);
+    return type.isName(TypeName.BINARY);
   }
 
   public static boolean isBoolean(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.BOOLEAN);
+    return type.isName(TypeName.BOOLEAN);
   }
 
   public static boolean isNumeric(Type type) {
@@ -356,22 +356,22 @@ public class Types {
 
   public static boolean isInteger(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.INTEGER);
+    return type.isName(TypeName.INTEGER);
   }
 
   public static boolean isNumber(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.NUMBER);
+    return type.isName(TypeName.NUMBER);
   }
 
   public static boolean isString(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.STRING);
+    return type.isName(TypeName.STRING);
   }
 
   public static boolean isDate(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.DATE);
+    return type.isName(TypeName.DATE);
   }
 
   /**
@@ -382,7 +382,7 @@ public class Types {
    */
   public static boolean isInterval(Type type) {
     if (type == null) return false;
-    return type.is(TypeName.INTERVAL);
+    return type.isName(TypeName.INTERVAL);
   }
 
   /**

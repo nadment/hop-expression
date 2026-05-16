@@ -72,7 +72,7 @@ public class ParseUrlFunction extends Function {
     return parseUrl(url, part);
   }
 
-  public String parseUrl(String url, String partStr) {
+  public @Nullable String parseUrl(String url, String partStr) {
     UrlPart part;
 
     URI uri;
@@ -117,7 +117,7 @@ public class ParseUrlFunction extends Function {
     }
   }
 
-  public String parseUrl(String url, String part, String keyToExtract) {
+  public @Nullable String parseUrl(String url, String part, String keyToExtract) {
     if (part.equals("QUERY")) {
       String query = parseUrl(url, part);
       if (query != null) {

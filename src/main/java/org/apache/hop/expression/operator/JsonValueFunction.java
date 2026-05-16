@@ -106,19 +106,19 @@ public class JsonValueFunction extends Function {
       if (value instanceof JsonNode result) {
         if (result.isNull()) return null;
         Type type = operands[2].getValue(Type.class);
-        if (type.is(TypeName.STRING)) {
+        if (type.isName(TypeName.STRING)) {
           return result.asText();
         }
-        if (type.is(TypeName.BOOLEAN)) {
+        if (type.isName(TypeName.BOOLEAN)) {
           return result.asBoolean();
         }
-        if (type.is(TypeName.INTEGER)) {
+        if (type.isName(TypeName.INTEGER)) {
           return result.asLong();
         }
-        if (type.is(TypeName.NUMBER)) {
+        if (type.isName(TypeName.NUMBER)) {
           return result.decimalValue();
         }
-        if (type.is(TypeName.BINARY)) {
+        if (type.isName(TypeName.BINARY)) {
           try {
             return result.binaryValue();
           } catch (IOException e) {

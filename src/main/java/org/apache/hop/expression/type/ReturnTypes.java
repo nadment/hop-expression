@@ -135,9 +135,9 @@ public final class ReturnTypes {
         Type type = call.getOperand(0).getType();
 
         int precision = TypeName.NUMBER.getMaxPrecision();
-        if (type.is(TypeName.INTEGER)) {
+        if (type.isName(TypeName.INTEGER)) {
           precision = type.getPrecision();
-        } else if (type.is(TypeName.NUMBER)) {
+        } else if (type.isName(TypeName.NUMBER)) {
           precision = type.getPrecision() - type.getScale();
           if (precision == 0) precision = 1;
         }
@@ -151,10 +151,10 @@ public final class ReturnTypes {
         Type type = call.getOperand(0).getType();
 
         // Keep ARG0 type
-        if (type.is(TypeName.INTEGER) || type.is(TypeName.INTERVAL)) return type;
+        if (type.isName(TypeName.INTEGER) || type.isName(TypeName.INTERVAL)) return type;
 
         // If boolean return integer
-        if (type.is(TypeName.BOOLEAN))
+        if (type.isName(TypeName.BOOLEAN))
           return IntegerType.INTEGER.withNullability(type.isNullable());
 
         // By default, coerce to Number
@@ -177,10 +177,10 @@ public final class ReturnTypes {
         for (IExpression operand : call.getOperands()) {
           Type type = operand.getType();
           precision += type.getPrecision();
-          if (type.is(TypeName.ARRAY)) {
+          if (type.isName(TypeName.ARRAY)) {
             name = TypeName.ARRAY;
             elementType = Types.getLeastRestrictive(operand);
-          } else if (type.is(TypeName.BINARY)) {
+          } else if (type.isName(TypeName.BINARY)) {
             name = TypeName.BINARY;
           }
           if (!type.isNullable()) {
@@ -225,7 +225,7 @@ public final class ReturnTypes {
               }
             }
 
-            if (type.is(TypeName.BINARY)) {
+            if (type.isName(TypeName.BINARY)) {
               typeName = TypeName.BINARY;
             }
 
@@ -357,16 +357,16 @@ public final class ReturnTypes {
    */
   public static Type deriveAdditiveType(final Type type1, final Type type2) {
 
-    if (type1.is(TypeName.DATE) && type2.is(TypeName.INTERVAL)) {
+    if (type1.isName(TypeName.DATE) && type2.isName(TypeName.INTERVAL)) {
       return type1;
     }
-    if (type1.is(TypeName.INTERVAL) && type2.is(TypeName.DATE)) {
+    if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.DATE)) {
       return type2;
     }
-    if (type1.is(TypeName.INTERVAL) && type2.is(TypeName.INTERVAL)) {
+    if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.INTERVAL)) {
       return type1;
     }
-    if (type1.is(TypeName.STRING) || type2.is(TypeName.STRING)) {
+    if (type1.isName(TypeName.STRING) || type2.isName(TypeName.STRING)) {
       return NumberType.NUMBER;
     }
 
@@ -374,8 +374,8 @@ public final class ReturnTypes {
     int p2 = type2.getPrecision();
 
     // Preserve integer type and adjust precision
-    if ((type1.is(TypeName.INTEGER) || type1.is(TypeName.BOOLEAN))
-        && (type2.is(TypeName.INTEGER) || type2.is(TypeName.BOOLEAN))) {
+    if ((type1.isName(TypeName.INTEGER) || type1.isName(TypeName.BOOLEAN))
+        && (type2.isName(TypeName.INTEGER) || type2.isName(TypeName.BOOLEAN))) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), Math.max(p1, p2) + 1);
       return IntegerType.of(p);
     }
@@ -421,7 +421,7 @@ public final class ReturnTypes {
     int p2 = type2.getPrecision();
 
     // Preserve integer type and adjust precision
-    if (type1.is(TypeName.INTEGER) && type2.is(TypeName.INTEGER)) {
+    if (type1.isName(TypeName.INTEGER) && type2.isName(TypeName.INTEGER)) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), p1 + p2);
       return IntegerType.of(p, nullable);
     }

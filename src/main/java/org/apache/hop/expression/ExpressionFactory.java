@@ -41,7 +41,7 @@ public final class ExpressionFactory {
 
     // Check return type, Unknown or Enum are not expected here
     Type type = expression.getType();
-    if (!expression.isNull() && (type.is(TypeName.UNKNOWN) || type.is(TypeName.ENUM))) {
+    if (!expression.isNull() && (type.isName(TypeName.UNKNOWN) || type.isName(TypeName.ENUM))) {
       throw new ExpressionParseException(0, ErrorCode.SYNTAX_ERROR, expression);
     }
 

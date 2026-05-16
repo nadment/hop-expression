@@ -59,7 +59,7 @@ public class ArrayPositionFunction extends Function {
     Type elementType = call.getOperand(1).getType();
 
     // Array elements and searched value should be comparable
-    if (!arrayType.is(TypeName.ANY)
+    if (!arrayType.isName(TypeName.ANY)
         && (arrayType.getComparability() == TypeComparability.NONE
             || elementType.getComparability() == TypeComparability.NONE)) {
       return false;

@@ -182,7 +182,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
     type = ArrayType.of(Types.getLeastRestrictive(this));
 
     // Don't validate multi-dimensional array
-    if (type.is(TypeName.ARRAY)) {
+    if (type.isName(TypeName.ARRAY)) {
       return;
     }
 

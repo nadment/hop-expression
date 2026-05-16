@@ -29,7 +29,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Returns an array concatenating an element at the end of an array.
@@ -75,7 +74,7 @@ public class ArrayAppendFunction extends Function {
   }
 
   @Override
-  public @Nullable Object eval(IExpression[] operands) {
+  public Object eval(IExpression[] operands) {
     Array array = (Array) operands[0];
     IExpression element = operands[1];
     return array.append(element);

@@ -106,9 +106,9 @@ public class ConcatFunction extends Function {
       default:
         Operator operator = StringConcatFunction.INSTANCE;
         if (type != null) {
-          if (type.is(TypeName.ARRAY)) {
+          if (type.isName(TypeName.ARRAY)) {
             operator = ArrayConcatFunction.INSTANCE;
-          } else if (type.is(TypeName.BINARY)) {
+          } else if (type.isName(TypeName.BINARY)) {
             operator = BinaryConcatFunction.INSTANCE;
           }
         }

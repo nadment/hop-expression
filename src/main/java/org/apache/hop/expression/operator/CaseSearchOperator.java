@@ -206,7 +206,7 @@ public class CaseSearchOperator extends Operator {
 
     // Determine common return type
     Type returnType = getLeastRestrictive(getLeastRestrictive(thenTerm), elseTerm.getType());
-    if (returnType.is(TypeName.UNKNOWN)) return false;
+    if (returnType.isName(TypeName.UNKNOWN)) return false;
 
     // Check then operands
     for (IExpression thenOperand : thenTerm) {
