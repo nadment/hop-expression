@@ -18,6 +18,8 @@ package org.apache.hop.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
@@ -40,7 +42,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     do {
       hasChanged = false;
       expression = expression.accept(this);
-      // Vérification pour éviter une boucle infinie
+      // Avoid infinite loop
       if (attemptCount++ > MAX_LOOP_ATTEMPTS) {
         throw new ExpressionException(
             ErrorCode.INTERNAL_ERROR,
@@ -52,7 +54,22 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
   @Override
   public IExpression visitIdentifier(Identifier identifier) {
-    return identifier;
+    // Check if already compiled
+    if ( identifier instanceof Field ) {
+      return identifier;
+    }
+
+    if (context instanceof IRowExpressionContext rowContext) {
+      IRowMeta rowMeta = rowContext.getRowMeta();
+      int ordinal = rowMeta.indexOfValue(identifier.getName());
+      if (ordinal >= 0) {
+        hasChanged = true;
+        return new Field(rowContext, identifier.getType(), rowMeta.getValueMeta(ordinal), ordinal);
+      }
+    }
+
+    throw new ExpressionParseException(
+        identifier.getPosition(), ErrorCode.UNRESOLVED_IDENTIFIER, identifier.getName());
   }
 
   @Override

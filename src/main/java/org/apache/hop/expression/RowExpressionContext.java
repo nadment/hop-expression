@@ -24,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 public class RowExpressionContext extends ExpressionContext implements IRowExpressionContext {
 
   private final IRowMeta rowMeta;
-  private Object @Nullable [] row;
+  private @Nullable Object @Nullable [] row;
 
   public RowExpressionContext(IVariables variables, IRowMeta rowMeta) {
     super(variables);
@@ -39,12 +39,12 @@ public class RowExpressionContext extends ExpressionContext implements IRowExpre
   }
 
   @Override
-  public Object @Nullable [] getRow() {
+  public @Nullable Object @Nullable [] getRow() {
     return this.row;
   }
 
   @Override
-  public void setRow(Object[] row) {
+  public void setRow(@Nullable Object @Nullable [] row) {
     this.row = row;
   }
 }
