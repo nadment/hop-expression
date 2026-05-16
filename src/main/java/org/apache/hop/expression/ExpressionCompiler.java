@@ -54,7 +54,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   @Override
   public IExpression visitIdentifier(Identifier identifier) {
     // Check if already compiled
-    if (identifier instanceof Field) {
+    if ( identifier instanceof Field ) {
       return identifier;
     }
 

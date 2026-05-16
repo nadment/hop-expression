@@ -136,8 +136,8 @@ public class Identifier implements IExpression {
   public boolean equals(@Nullable Object other) {
     if (other instanceof Identifier identifier) {
       return this.name.equals(identifier.name)
-          && this.type.equals(identifier.type)
-          && this.ordinal == identifier.ordinal;
+              && this.type.equals(identifier.type)
+              && this.ordinal == identifier.ordinal;
     }
     return false;
   }
