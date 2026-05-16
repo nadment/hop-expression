@@ -26,7 +26,7 @@ import org.jspecify.annotations.Nullable;
 public final class ArrayType extends Type {
   public static final ArrayType ARRAY = new ArrayType(UnknownType.UNKNOWN, true);
 
-  /** The maximum allowed cardinality of array. */
+  /** The maximum allowed cardinality of the array. */
   public static final int MAX_ARRAY_CARDINALITY = Integer.MAX_VALUE;
 
   private final Type elementType;

@@ -21,7 +21,7 @@ import org.apache.hop.expression.Kind;
 import org.jspecify.annotations.NullMarked;
 
 /**
- * Operand type-checking strategy which checks operand type must be a literal with the specified
+ * Operand type-checking strategy which checks the operand type must be a literal with the specified
  * class.
  */
 @NullMarked

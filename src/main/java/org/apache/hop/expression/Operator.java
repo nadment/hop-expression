@@ -74,7 +74,7 @@ public abstract class Operator {
   @Getter private final int rightPrec;
 
   /** Used to infer the return type of call to this operator. */
-  private final IReturnTypeInference returnTypeInference;
+  @Getter private final IReturnTypeInference returnTypeInference;
 
   /** The strategy to validate operand types expected by this operator. */
   @Getter private final @Nullable IOperandTypeChecker operandTypeChecker;
@@ -82,9 +82,12 @@ public abstract class Operator {
   /** The category of this operator. */
   @Getter private final String category;
 
-  private final String documentationUrl;
-  private final @Nullable String documentation;
-  private final @Nullable String description;
+  @Getter private final String documentationUrl;
+
+  @Getter private final @Nullable String documentation;
+
+  /** Get the description of this operator. */
+  @Getter private final @Nullable String description;
 
   /**
    * Create a new operator for use in expressions.
@@ -222,11 +225,6 @@ public abstract class Operator {
     return false;
   }
 
-  /** Return type inference strategy. */
-  public final IReturnTypeInference getReturnTypeInference() {
-    return this.returnTypeInference;
-  }
-
   /**
    * Returns a constraint on the number of operands expected by this operator.
    *
@@ -234,10 +232,6 @@ public abstract class Operator {
    */
   public IOperandCountRange getOperandCountRange() {
     return operandTypeChecker.getOperandCountRange();
-  }
-
-  public String getDocumentationUrl() {
-    return this.documentationUrl;
   }
 
   @Override
@@ -285,11 +279,6 @@ public abstract class Operator {
     return null;
   }
 
-  /** Get the description of this operator. */
-  public @Nullable String getDescription() {
-    return description;
-  }
-
   /**
    * Evaluate the result of the operator with operands.
    *
@@ -325,6 +314,7 @@ public abstract class Operator {
    * @return whether check succeeded
    */
   public boolean checkOperandTypes(Call call) {
+    if (operandTypeChecker == null) return true;
     return operandTypeChecker.checkOperandTypes(call);
   }
 
@@ -386,10 +376,6 @@ public abstract class Operator {
   }
 
   public abstract void unparse(StringWriter writer, IExpression[] operands);
-
-  public @Nullable String getDocumentation() {
-    return this.documentation;
-  }
 
   @Override
   public String toString() {

@@ -16,12 +16,12 @@ package org.apache.hop.expression;
 
 /** Enumerates the possible types of {@link IExpression}. */
 public enum Kind {
-  /** An object of type {@link Literal} */
+  /** An object of a type {@link Literal} */
   LITERAL,
-  /** An object of type {@link Array} */
+  /** An object of a type {@link Array} */
   ARRAY,
-  /** An object of type {@link Identifier} */
+  /** An object of a type {@link Identifier} */
   IDENTIFIER,
-  /** An object of type {@link Call} */
+  /** An object of a type {@link Call} */
   CALL
 }

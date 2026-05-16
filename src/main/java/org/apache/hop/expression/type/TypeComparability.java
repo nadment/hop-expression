@@ -17,7 +17,7 @@
 package org.apache.hop.expression.type;
 
 /**
- * TypeComparability is an enumeration of the categories of comparison operators which types may
+ * TypeComparability is an enumeration of the categories of comparison operators that types may
  * support.
  *
  * <p>The order of values of this enumeration is* significant (from least inclusive to most

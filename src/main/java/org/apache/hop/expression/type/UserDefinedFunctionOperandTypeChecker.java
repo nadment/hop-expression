@@ -19,7 +19,7 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 
-/** Operand type-checking strategy which checks operand type. */
+/** Operand type-checking strategy that checks the operand type. */
 public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecker {
   private final UserDefinedFunctionMeta meta;
 

@@ -122,7 +122,7 @@ public final class DateType extends Type {
   @Override
   public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
-      // Two timestamp are equal if they represent the same moment in time:
+      // Two timestamps are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       return l.compareTo(r);
     }

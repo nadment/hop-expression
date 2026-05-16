@@ -85,7 +85,7 @@ public final class BooleanType extends Type {
    * Convert a value to the specified type {@link BooleanType} with a pattern.
    *
    * @param value the value to convert
-   * @param pattern the optional pattern to use for conversion to string when value is date or
+   * @param pattern the optional pattern to use for conversion to string when the value is date or
    *     numeric, or null if none
    * @return the converted value
    */

@@ -22,7 +22,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 
-/** Operand type-checking strategy which checks operands for inclusion in type families. */
+/** Operand type-checking strategy that checks operands for inclusion in type families. */
 @NullMarked
 public class ExplicitOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
 

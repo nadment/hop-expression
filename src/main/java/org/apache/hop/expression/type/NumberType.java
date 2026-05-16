@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.NumberFormat;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** Number type with an optional precision and scale: */
+/** Number type with optional precision and scale: */
 @NullMarked
 public final class NumberType extends Type {
   /** Default NUMBER(38,9) type with max precision and default scale. */
@@ -132,7 +132,7 @@ public final class NumberType extends Type {
    * Convert a value to the specified type {@link NumberType} with a pattern.
    *
    * @param value the value to convert
-   * @param pattern the optional pattern to use for conversion to string when value is date or
+   * @param pattern the optional pattern to use for conversion to string when the value is date or
    *     numeric, or null if none
    * @return the converted value
    */
