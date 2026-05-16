@@ -22,7 +22,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
- * An expression is a combination of one or more literal, identifiers, a list of expressions or a
+ * An expression is a combination of one or more literal, identifiers, a list of expressions, or a
  * call to an operator that evaluate to a value.
  */
 @NullMarked
@@ -122,7 +122,7 @@ public interface IExpression {
    *
    * @param writer Target writer
    * @param leftPrec The precedence of the {@link IExpression} immediately preceding
-   * @param rightPrec The precedence of the {@link IExpression} immediately
+   * @param rightPrec The precedence of the {@link IExpression} immediately succeding
    */
   void unparse(StringWriter writer, int leftPrec, int rightPrec);
 }

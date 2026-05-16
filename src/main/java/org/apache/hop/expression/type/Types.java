@@ -33,6 +33,8 @@ import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Kind;
@@ -456,6 +458,23 @@ public class Types {
       case JSON -> new ValueMetaJson(valueMetaName);
       case INET -> new ValueMetaInternetAddress(valueMetaName);
       default -> new ValueMetaNone(valueMetaName);
+    };
+  }
+
+  public static Type createType(final IValueMeta meta) {
+    return switch (meta.getType()) {
+      case IValueMeta.TYPE_BOOLEAN -> BooleanType.BOOLEAN;
+      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP -> DateType.DATE;
+      case IValueMeta.TYPE_STRING -> StringType.of(meta.getLength());
+      case IValueMeta.TYPE_INTEGER -> IntegerType.of(meta.getLength());
+      case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER ->
+          NumberType.of(meta.getLength(), meta.getPrecision());
+      case IValueMeta.TYPE_JSON -> JsonType.JSON;
+      case IValueMeta.TYPE_INET -> InetType.INET;
+      case IValueMeta.TYPE_BINARY -> BinaryType.of(meta.getLength());
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_VALUEMETA, meta.getName(), meta.getTypeDesc());
     };
   }
 }

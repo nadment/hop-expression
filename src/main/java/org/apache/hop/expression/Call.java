@@ -45,8 +45,8 @@ public class Call implements IExpression {
   /** The operands of this call. An empty array is returned if no operands */
   @Getter protected final IExpression[] operands;
 
-  /** The return type. The type is unknown before validation. */
-  protected Type type = UnknownType.UNKNOWN;
+  /** The return type of this call. The type is unknown before validation. */
+  @Getter protected Type type;
 
   public Call(Operator operator, IExpression... operands) {
     this(0, operator, operands);
@@ -57,15 +57,17 @@ public class Call implements IExpression {
   }
 
   public Call(int position, Operator operator, IExpression... operands) {
+    this.position = position;
     this.operator = requireNonNull(operator, "operator");
     this.operands = requireNonNull(operands, "operands");
-    this.position = position;
+    this.type = UnknownType.UNKNOWN;
   }
 
   public Call(int position, Operator operator, Collection<IExpression> operands) {
+    this.position = position;
     this.operator = requireNonNull(operator, "operator");
     this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);
-    this.position = position;
+    this.type = UnknownType.UNKNOWN;
   }
 
   @Override
@@ -80,12 +82,6 @@ public class Call implements IExpression {
       cost += operand.getCost();
     }
     return cost;
-  }
-
-  /** Data type is unknown before validation. */
-  @Override
-  public Type getType() {
-    return type;
   }
 
   public IExpression getOperand(int index) {

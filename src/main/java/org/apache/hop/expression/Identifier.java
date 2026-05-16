@@ -17,26 +17,12 @@ package org.apache.hop.expression;
 import static java.util.Objects.requireNonNull;
 
 import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Objects;
 import lombok.Getter;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.expression.type.AnyType;
-import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.DateType;
-import org.apache.hop.expression.type.InetType;
-import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.NumberType;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -45,33 +31,26 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class Identifier implements IExpression {
 
+  /** The position in the expression source */
+  @Getter private final int position;
+
   /** The name of the identifier */
   @Getter private final String name;
 
-  /** The position in the expression source */
-  private final int position;
+  /** The data type of the identifier when resolved or UNKNOWN if unresolved */
+  @Getter protected Type type;
 
-  private @Nullable IRowExpressionContext context;
-
-  /** The data type when resolved or UNKNOWN if unresolved */
-  @Getter private Type type;
-
-  /** The index in IRowMeta when resolved or -1 if unresolved */
-  @Getter private int ordinal;
-
-  // The IValueMeta when resolved or null if unresolved.
-  private @Nullable IValueMeta valueMeta;
+  /** The index of the identifier in IRowMeta */
+  @Getter protected int ordinal;
 
   public Identifier(String name) {
     this(0, name);
   }
 
   public Identifier(int position, String name) {
+    this.position = position;
     this.name = requireNonNull(name, "name");
     this.type = UnknownType.UNKNOWN;
-    this.position = position;
-    this.context = null;
-    this.valueMeta = null;
     this.ordinal = -1;
   }
 
@@ -103,152 +82,8 @@ public class Identifier implements IExpression {
     return 2;
   }
 
-  @Override
-  public @Nullable Object getValue() {
-    Object[] row = context.getRow();
-    if (row == null) {
-      throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
-    }
-
-    try {
-      switch (valueMeta.getType()) {
-        case IValueMeta.TYPE_BOOLEAN:
-          return valueMeta.getBoolean(row[ordinal]);
-        case IValueMeta.TYPE_TIMESTAMP:
-          Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
-          if (timestamp == null) return null;
-          return timestamp.toLocalDateTime().atZone(ZoneOffset.UTC);
-        case IValueMeta.TYPE_DATE:
-          Date date = valueMeta.getDate(row[ordinal]);
-          if (date == null) return null;
-          return ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
-        case IValueMeta.TYPE_STRING:
-          return valueMeta.getString(row[ordinal]);
-        case IValueMeta.TYPE_INTEGER:
-          return valueMeta.getInteger(row[ordinal]);
-        case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER:
-          return valueMeta.getBigNumber(row[ordinal]);
-        case IValueMeta.TYPE_JSON:
-          return valueMeta.getNativeDataType(row[ordinal]);
-        case IValueMeta.TYPE_BINARY:
-          return valueMeta.getBinary(row[ordinal]);
-        case IValueMeta.TYPE_INET:
-          {
-            return valueMeta.getNativeDataType(row[ordinal]);
-          }
-        default:
-          // Internal error
-      }
-    } catch (Exception e) {
-      // Ignore
-    }
-
-    throw new ExpressionException(
-        ErrorCode.CONVERSION_ERROR,
-        valueMeta.getTypeDesc().toUpperCase(),
-        AnyType.ANY,
-        row[ordinal]);
-  }
-
-  @Override
-  public @Nullable <T> T getValue(Class<T> clazz) {
-    Object[] row = context.getRow();
-    if (row == null) {
-      throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
-    }
-
-    try {
-      switch (valueMeta.getType()) {
-        case IValueMeta.TYPE_BOOLEAN:
-          {
-            Boolean value = valueMeta.getBoolean(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_TIMESTAMP:
-          {
-            Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
-            if (timestamp == null) {
-              return null;
-            }
-            return type.convert(timestamp.toLocalDateTime().atZone(ZoneOffset.UTC), clazz);
-          }
-
-        case IValueMeta.TYPE_DATE:
-          {
-            Date date = valueMeta.getDate(row[ordinal]);
-            if (date == null) {
-              return null;
-            }
-            return type.convert(date.toInstant().atZone(ZoneOffset.UTC), clazz);
-          }
-
-        case IValueMeta.TYPE_STRING:
-          {
-            String value = valueMeta.getString(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_INTEGER:
-          {
-            Long value = valueMeta.getInteger(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_NUMBER:
-          {
-            Double value = valueMeta.getNumber(row[ordinal]);
-            if (value == null) {
-              return null;
-            }
-            if (clazz == Long.class) {
-              return clazz.cast(value.longValue());
-            }
-            if (clazz == BigDecimal.class) {
-              return clazz.cast(BigDecimal.valueOf(value));
-            }
-            if (clazz == Boolean.class) {
-              return clazz.cast(value != 0);
-            }
-            if (clazz == String.class) {
-              return clazz.cast(String.valueOf(value));
-            }
-            break;
-          }
-
-        case IValueMeta.TYPE_BIGNUMBER:
-          {
-            BigDecimal value = valueMeta.getBigNumber(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_BINARY:
-          {
-            byte[] value = valueMeta.getBinary(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_JSON, IValueMeta.TYPE_INET:
-          {
-            Object value = row[ordinal];
-            return type.convert(value, clazz);
-          }
-
-        default:
-          // Internal error
-      }
-    } catch (ExpressionException e) {
-      throw e;
-    } catch (Exception e) {
-      // Ignore
-    }
-    throw new ExpressionException(
-        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), clazz, row[ordinal]);
-  }
-
   /**
-   * Validate an identifier in the context. An identifier is valid only if the context is
-   * IRowExpressionContext.
+   * Validate an identifier in the context.
    *
    * <ul>
    *   <li>Resolve index in IRowMeta
@@ -257,36 +92,18 @@ public class Identifier implements IExpression {
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
+
+    // An identifier is valid only if the context is IRowExpressionContext.
     if (context instanceof IRowExpressionContext rowContext) {
-      this.context = rowContext;
-      IRowMeta rowMeta = this.context.getRowMeta();
+      IRowMeta rowMeta = rowContext.getRowMeta();
       this.ordinal = rowMeta.indexOfValue(name);
       if (ordinal >= 0) {
-        this.valueMeta = rowMeta.getValueMeta(ordinal);
-        this.type = createDataType(valueMeta);
+        this.type = Types.createType(rowMeta.getValueMeta(ordinal));
+        return;
       }
     }
 
-    if (valueMeta == null) {
-      throw new ExpressionParseException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
-    }
-  }
-
-  protected Type createDataType(final IValueMeta meta) {
-    return switch (meta.getType()) {
-      case IValueMeta.TYPE_BOOLEAN -> BooleanType.BOOLEAN;
-      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP -> DateType.DATE;
-      case IValueMeta.TYPE_STRING -> StringType.of(meta.getLength());
-      case IValueMeta.TYPE_INTEGER -> IntegerType.of(meta.getLength());
-      case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER ->
-          NumberType.of(meta.getLength(), meta.getPrecision());
-      case IValueMeta.TYPE_JSON -> JsonType.JSON;
-      case IValueMeta.TYPE_INET -> InetType.INET;
-      case IValueMeta.TYPE_BINARY -> BinaryType.of(meta.getLength());
-      default ->
-          throw new ExpressionException(
-              ErrorCode.UNSUPPORTED_VALUEMETA, getName(), meta.getTypeDesc());
-    };
+    throw new ExpressionParseException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
   }
 
   @Override
@@ -312,19 +129,17 @@ public class Identifier implements IExpression {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, ordinal);
+    return Objects.hash(name);
   }
 
   @Override
-  public boolean equals(@Nullable Object o) {
-    if (this == o) return true;
-    if (o == null) return false;
-    if (getClass() != o.getClass()) return false;
-
-    Identifier other = (Identifier) o;
-    return this.name.equals(other.name)
-        && this.type.equals(other.type)
-        && this.ordinal == other.ordinal;
+  public boolean equals(@Nullable Object other) {
+    if (other instanceof Identifier identifier) {
+      return this.name.equals(identifier.name)
+          && this.type.equals(identifier.type)
+          && this.ordinal == identifier.ordinal;
+    }
+    return false;
   }
 
   @Override

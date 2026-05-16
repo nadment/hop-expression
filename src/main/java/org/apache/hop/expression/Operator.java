@@ -241,16 +241,11 @@ public abstract class Operator {
   }
 
   @Override
-  public boolean equals(@Nullable Object obj) {
-    if (obj == null) {
-      return false;
+  public boolean equals(@Nullable Object other) {
+    if (other instanceof Operator operator) {
+      return id.equals(operator.id) && name.equals(operator.name);
     }
-    if (!obj.getClass().equals(this.getClass())) {
-      return false;
-    }
-
-    Operator other = (Operator) obj;
-    return id.equals(other.id) && name.equals(other.name);
+    return false;
   }
 
   /**

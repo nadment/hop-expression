@@ -32,7 +32,7 @@ public interface IRowExpressionContext extends IExpressionContext {
 
   IRowMeta getRowMeta();
 
-  Object @Nullable [] getRow();
+  @Nullable Object @Nullable [] getRow();
 
-  void setRow(Object[] row);
+  void setRow(@Nullable Object @Nullable [] row);
 }
