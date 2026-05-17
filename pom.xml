@@ -247,6 +247,7 @@ http://www.apache.org/licenses/LICENSE-2.0
                         <exclude>**/*.ebnf</exclude>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.yml</exclude>
+                        <exclude>**/*.md</exclude>
                     </excludes>
                 </configuration>
                 <executions>
