@@ -36,6 +36,12 @@ public interface IExpression {
    */
   Kind getKind();
 
+  /**
+   * Check if the expression is of a certain kind.
+   *
+   * @param kind The kind to check
+   * @return {@code true} if the expression is of the specified kind
+   */
   default boolean is(final Kind kind) {
     return getKind() == kind;
   }
@@ -47,7 +53,12 @@ public interface IExpression {
    */
   Type getType();
 
-  /** Check if the expression is a call to this operator or an alias of this operator. */
+  /**
+   * Check if the expression is a call to this operator or an alias of this operator.
+   *
+   * @param operator The operator to check
+   * @return {@code true} if the expression is a call to the specified operator
+   */
   default boolean isOperator(Operator operator) {
     return false;
   }
@@ -82,6 +93,7 @@ public interface IExpression {
    * Evaluates the value of this expression.
    *
    * @return The result of evaluating the expression.
+   * @throws ExpressionException if an error occurs during evaluation.
    */
   default @Nullable Object getValue() {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
@@ -93,13 +105,14 @@ public interface IExpression {
    * @param clazz Desired value type
    * @param <T> Value type
    * @return The result of evaluating the expression in the desired type
+   * @throws ExpressionException if an error occurs during evaluation or conversion.
    */
   default @Nullable <T> T getValue(Class<T> clazz) {
-    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
+    return getType().convert(getValue(), clazz);
   }
 
   /**
-   * Validate the expression
+   * Validate the expression.
    *
    * @param context The context against which the expression will be validated.
    * @throws ExpressionException if an error occurs.
@@ -108,6 +121,10 @@ public interface IExpression {
 
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IExpressionVisitor} method.
+   *
+   * @param <E> The return type of the visitor
+   * @param visitor The visitor
+   * @return The result of the visitor
    */
   <E> E accept(IExpressionVisitor<E> visitor);
 
@@ -122,7 +139,7 @@ public interface IExpression {
    *
    * @param writer Target writer
    * @param leftPrec The precedence of the {@link IExpression} immediately preceding
-   * @param rightPrec The precedence of the {@link IExpression} immediately succeding
+   * @param rightPrec The precedence of the {@link IExpression} immediately succeeding
    */
   void unparse(StringWriter writer, int leftPrec, int rightPrec);
 }

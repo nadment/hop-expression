@@ -42,7 +42,7 @@ import org.jspecify.annotations.Nullable;
 
 /** Constant value in a expression. */
 @NullMarked
-public class Literal implements IExpression {
+public final class Literal implements IExpression {
 
   /** Literal null value without a known data type */
   public static final Literal NULL = new Literal(null, UnknownType.UNKNOWN);

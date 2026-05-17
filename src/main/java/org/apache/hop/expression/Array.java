@@ -27,6 +27,7 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** An array is an immutable-ordered list of expressions. */
 @NullMarked
@@ -79,7 +80,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public <T> T getValue(final Class<T> clazz) {
+  public <T> @Nullable T getValue(final Class<T> clazz) {
     return type.convert(this, clazz);
   }
 
