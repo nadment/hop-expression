@@ -96,17 +96,18 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       }
 
       // Evaluate if the call is constant
-      if (expression.isConstant()) {
+      if (call.isConstant()) {
         try {
-          Type type = expression.getType();
-          Object value = expression.getValue();
+          Object value = call.getValue();
 
           if (value instanceof Array array) {
             return array;
           }
 
+          Type type = call.getType();
+
           // For CAST operator, it's important to return type
-          else if (expression.isOperator(CastOperator.INSTANCE)) {
+          if (call.isOperator(CastOperator.INSTANCE)) {
             value = type.cast(value);
           }
 
@@ -120,7 +121,6 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           return new Literal(value, type);
         } catch (Exception e) {
           // Ignore error like division by zero "X IN (1,3/0)" and continue
-          return call;
         }
       }
     }
@@ -130,18 +130,27 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
   @Override
   public IExpression visitArray(Array array) {
+    boolean changed = false;
     int size = array.size();
     List<IExpression> expressions = new ArrayList<>(size);
     List<Type> types = new ArrayList<>(size);
 
     for (IExpression expression : array) {
-      expression = expression.accept(this);
-      expressions.add(expression);
-      types.add(expression.getType());
+      IExpression compiled = expression.accept(this);
+      if (compiled != expression) {
+        changed = true;
+      }
+      expressions.add(compiled);
+      types.add(compiled.getType());
     }
 
-    Type elementType = Types.getLeastRestrictive(types);
-    return new Array(ArrayType.of(elementType), expressions);
+    if (changed) {
+      hasChanged = true;
+      Type elementType = Types.getLeastRestrictive(types);
+      return new Array(ArrayType.of(elementType), expressions);
+    }
+
+    return array;
   }
 
   @Override
