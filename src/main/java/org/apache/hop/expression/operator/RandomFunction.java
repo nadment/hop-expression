@@ -38,20 +38,15 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class RandomFunction extends Function {
 
-  private final Random random;
+  private @Nullable Random random;
 
   public RandomFunction() {
-    this(null);
-  }
-
-  public RandomFunction(Random random) {
     super(
         "RANDOM",
         ReturnTypes.NUMBER_NOT_NULL,
         OperandTypes.NILADIC.or(OperandTypes.INTEGER),
         OperatorCategory.MATHEMATICAL,
         "/docs/random.html");
-    this.random = random;
   }
 
   @Override
@@ -61,6 +56,7 @@ public class RandomFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
+    assert random != null;
     return BigDecimal.valueOf(random.nextDouble());
   }
 
@@ -75,15 +71,16 @@ public class RandomFunction extends Function {
     if (call.getOperandCount() == 1) {
       try {
         Long seed = call.getOperand(0).getValue(Long.class);
-        RandomFunction function = new RandomFunction(new Random(seed));
-        return new Call(function, call.getOperands());
+        random = new Random(seed);
+        return call;
       } catch (Exception e) {
         throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
       }
+    } else {
+      random = ThreadLocalRandom.current();
     }
 
-    RandomFunction function = new RandomFunction(ThreadLocalRandom.current());
-    return new Call(function, call.getOperands());
+    return call;
   }
 
   @Override

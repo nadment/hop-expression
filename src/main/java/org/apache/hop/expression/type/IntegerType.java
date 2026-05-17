@@ -154,16 +154,17 @@ public final class IntegerType extends Type {
 
   @Override
   public Long cast(final Object value, String pattern) throws ExpressionException {
-      return switch (value) {
-          case null -> null;
-          case Long integer -> integer;
-          case BigDecimal number -> IntegerConversion.convert(number);
-          case Boolean bool -> (bool) ? 1L : 0L;
-          case String str -> IntegerConversion.convert(str);
-          case ZonedDateTime datetime -> IntegerConversion.convert(datetime);
-          default -> throw new ExpressionException(
-                  ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-      };
+    return switch (value) {
+      case null -> null;
+      case Long integer -> integer;
+      case BigDecimal number -> IntegerConversion.convert(number);
+      case Boolean bool -> (bool) ? 1L : 0L;
+      case String str -> IntegerConversion.convert(str);
+      case ZonedDateTime datetime -> IntegerConversion.convert(datetime);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override

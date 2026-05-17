@@ -137,7 +137,16 @@ public abstract class Type {
     return getName().isCoercible(type.getName());
   }
 
-  /** Returns whether a type is atomic (date, numeric, string or BOOLEAN). */
+  /**
+   * Returns whether a type is atomic
+   *
+   * <ul>
+   *   <li>DATE, NUMERIC, STRING, or BOOLEAN are atomic type
+   *   <li>JSON, ARRAY are not atomic
+   * </ul>
+   *
+   * (date, numeric, string, or BOOLEAN).
+   */
   public boolean isAtomic() {
     TypeName name = getName();
     return name == TypeName.STRING

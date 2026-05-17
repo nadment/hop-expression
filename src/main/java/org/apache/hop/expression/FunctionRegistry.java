@@ -36,7 +36,7 @@ public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
 
   /** Set of functions or alias by name. */
-  private static final HashMap<String, Function> functions = new HashMap<>(256);
+  private static final HashMap<String, Function> functions = new HashMap<>();
 
   /** Initialize the registry, keep private to keep this a singleton */
   private FunctionRegistry() {}

@@ -47,7 +47,6 @@ import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -67,7 +66,6 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
   private final ExpressionMeta input;
   private TableView wTableFields;
-  private ModifyListener lsMod;
 
   public ExpressionDialog(
       Shell parent, IVariables variables, ExpressionMeta transformMeta, PipelineMeta pipelineMeta) {

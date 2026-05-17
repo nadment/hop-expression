@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.Text;
 public class SetVariableActionDialog extends ActionDialog implements IActionDialog {
   private static final Class<?> PKG = SetVariableAction.class; // For Translator
 
-  private Text wName;
   private SetVariableAction action;
   private TableView wFields;
 
@@ -94,17 +93,17 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     // Buttons go at the very bottom
     //
     Button wOk = new Button(shell, SWT.PUSH);
-    wOk.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+    wOk.setText(BaseMessages.getString("System.Button.OK"));
     wOk.addListener(SWT.Selection, e -> ok());
     Button wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+    wCancel.setText(BaseMessages.getString("System.Button.Cancel"));
     wCancel.addListener(SWT.Selection, e -> cancel());
     BaseTransformDialog.positionBottomButtons(shell, new Button[] {wOk, wCancel}, margin, null);
 
     // Name line
     Label wlName = new Label(shell, SWT.RIGHT);
-    wlName.setText(BaseMessages.getString(PKG, "System.ActionName.Label"));
-    wlName.setToolTipText(BaseMessages.getString(PKG, "System.ActionName.Tooltip"));
+    wlName.setText(BaseMessages.getString("System.ActionName.Label"));
+    wlName.setToolTipText(BaseMessages.getString("System.ActionName.Tooltip"));
     PropsUi.setLook(wlName);
     FormData fdlName = new FormData();
     fdlName.left = new FormAttachment(0, 0);
@@ -237,8 +236,8 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
   private void ok() {
     if (Utils.isEmpty(wName.getText())) {
       MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-      mb.setText(BaseMessages.getString(PKG, "System.TransformActionNameMissing.Title"));
-      mb.setMessage(BaseMessages.getString(PKG, "System.ActionNameMissing.Msg"));
+      mb.setText(BaseMessages.getString("System.TransformActionNameMissing.Title"));
+      mb.setMessage(BaseMessages.getString("System.ActionNameMissing.Msg"));
       mb.open();
       return;
     }

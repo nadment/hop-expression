@@ -27,48 +27,48 @@ import org.jspecify.annotations.NullMarked;
 @FunctionPlugin
 @NullMarked
 public class ListAggFunction extends AggregateFunction {
-    public static final ListAggFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
-    public static final ListAggFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);
+  public static final ListAggFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
+  public static final ListAggFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);
 
-    private final ListAgg option;
+  private final ListAgg option;
 
-    /**
-     * Default constructor to register function but not used. The different options are detected by
-     * parser.
-     */
-    public ListAggFunction() {
-        this(ListAgg.ALL);
+  /**
+   * Default constructor to register function but not used. The different options are detected by
+   * parser.
+   */
+  public ListAggFunction() {
+    this(ListAgg.ALL);
+  }
+
+  public ListAggFunction(ListAgg option) {
+    super(
+        "LISTAGG",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        "/docs/listagg.html");
+    this.option = option;
+  }
+
+  @Override
+  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+
+    String delimiter = ",";
+    if (operands.length == 2) {
+      delimiter = operands[1].getValue(String.class);
+      if (delimiter == null) {
+        delimiter = ",";
+      }
     }
 
-    public ListAggFunction(ListAgg option) {
-        super(
-                "LISTAGG",
-                ReturnTypes.STRING_NULLABLE,
-                OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-                "/docs/listagg.html");
-        this.option = option;
+    if (option == ListAgg.DISTINCT) {
+      return new ListAggDistinctProcessor(delimiter);
     }
+    return new ListAggProcessor(delimiter);
+  }
 
-    @Override
-    public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands)
-            throws ExpressionException {
-
-        String delimiter = ",";
-        if (operands.length == 2) {
-            delimiter = operands[1].getValue(String.class);
-            if (delimiter == null) {
-                delimiter = ",";
-            }
-        }
-
-        if (option == ListAgg.DISTINCT) {
-            return new ListAggDistinctProcessor(delimiter);
-        }
-        return new ListAggProcessor(delimiter);
-    }
-
-    public enum ListAgg {
-        ALL,
-        DISTINCT
-    }
+  public enum ListAgg {
+    ALL,
+    DISTINCT
+  }
 }

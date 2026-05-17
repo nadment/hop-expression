@@ -60,7 +60,6 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
   private LoopAction action;
   private boolean changed;
 
-  private Text wName;
   private TextVar wFilename;
   private ExpressionText wCondition;
   private TableView wParameters;
@@ -95,8 +94,8 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     int margin = PropsUi.getMargin();
 
     Label wlName = new Label(shell, SWT.RIGHT);
-    wlName.setText(BaseMessages.getString(PKG, "System.ActionName.Label"));
-    wlName.setToolTipText(BaseMessages.getString(PKG, "System.ActionName.Tooltip"));
+    wlName.setText(BaseMessages.getString("System.ActionName.Label"));
+    wlName.setToolTipText(BaseMessages.getString("System.ActionName.Tooltip"));
     PropsUi.setLook(wlName);
     FormData fdlName = new FormData();
     fdlName.left = new FormAttachment(0, 0);
@@ -127,9 +126,8 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     // Browse for a file
     Button wbbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
     PropsUi.setLook(wbbFilename);
-    wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
-    wbbFilename.setToolTipText(
-        BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
+    wbbFilename.setText(BaseMessages.getString("System.Button.Browse"));
+    wbbFilename.setToolTipText(BaseMessages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
     FormData fdbFilename = new FormData();
     fdbFilename.top = new FormAttachment(wlFilename, 0, SWT.CENTER);
     fdbFilename.right = new FormAttachment(100, 0);
@@ -210,10 +208,10 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
     // Add buttons first, then the script field can use dynamic sizing
     //
     Button wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+    wOK.setText(BaseMessages.getString("System.Button.OK"));
     wOK.addListener(SWT.Selection, e -> ok());
     Button wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+    wCancel.setText(BaseMessages.getString("System.Button.Cancel"));
     wCancel.addListener(SWT.Selection, e -> cancel());
 
     // Put these buttons at the bottom
