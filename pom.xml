@@ -317,12 +317,11 @@ http://www.apache.org/licenses/LICENSE-2.0
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <echo level="info" message="Install the plugin in HOP installation in ${hop.home}."></echo>
+                                <echo level="info" message="Install the plugin in HOP installation in ${hop.home}/custom."></echo>
                                 <!-- remove previous installations -->
-                                <delete dir="${hop.home}/plugins/misc/expression"></delete>
+                                <delete dir="${hop.home}/custom/plugins/misc/expression"></delete>
                                 <!-- put fresh files in place -->
-                                <mkdir dir="${hop.home}/plugins/misc/expression"></mkdir>
-                                <unzip dest="${hop.home}/plugins/" src="${project.build.directory}/${project.artifactId}-${project.version}.zip"></unzip>
+                                <unzip dest="${hop.home}/custom/" src="${project.build.directory}/${project.artifactId}-${project.version}.zip"></unzip>
                             </target>
                         </configuration>
                     </execution>

@@ -17,7 +17,7 @@
     <formats>
         <format>zip</format>
     </formats>
-    <baseDirectory>misc/expression</baseDirectory>
+    <baseDirectory>plugins/misc/expression</baseDirectory>
     <files>
         <file>
             <source>${project.basedir}/src/main/resources/version.xml</source>
