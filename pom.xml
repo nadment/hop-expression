@@ -111,7 +111,7 @@ http://www.apache.org/licenses/LICENSE-2.0
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>19.0.0</version>
+            <version>26.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
