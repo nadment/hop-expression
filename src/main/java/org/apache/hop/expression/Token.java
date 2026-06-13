@@ -72,9 +72,9 @@ public record Token(Id id, int start, int end, String text) {
     /** Right parenthesis */
     RPARENTHESIS(")"),
     /** Left bracket */
-    LBRACKET("]"),
+    LBRACKET("["),
     /** Right bracket */
-    RBRACKET("["),
+    RBRACKET("]"),
     /** Literal decimal number. */
     LITERAL_NUMERIC_DECIMAL,
     /** Literal hexadecimal number 0x1234567890ABCDEF */
