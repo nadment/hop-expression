@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.Characters;
-import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Lazy expression lexer. */
 @NullMarked
