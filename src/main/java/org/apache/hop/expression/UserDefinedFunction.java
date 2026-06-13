@@ -63,7 +63,8 @@ public class UserDefinedFunction extends Function {
               new Variables(), createRowMetaFromArguments(meta.getArguments()));
 
       // Parse function source
-      ExpressionParser parser = new ExpressionParser(getSource());
+      ExpressionLexer lexer = new ExpressionLexer(getSource());
+      ExpressionParser parser = new ExpressionParser(lexer);
       IExpression expression = parser.parse();
       expression.validate(ctx);
 

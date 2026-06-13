@@ -174,11 +174,11 @@ class JsonFunctionTest extends ExpressionTest {
     evalEquals("Json_Object('name' VALUE 'Smith')", JsonConversion.convert("{\"name\":\"Smith\"}"));
 
     evalFails("Json_Object()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Object(", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Json_Object(KEY)", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Json_Object(KEY 'name' VALUE )", ErrorCode.SYNTAX_ERROR);
     evalFails("Json_Object(KEY 'name' VALUE 3,)", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Json_Object(KEY VALUE 'Smith')", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("Json_Object(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Json_Object(KEY 'name' VALUE 'Smith'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize(

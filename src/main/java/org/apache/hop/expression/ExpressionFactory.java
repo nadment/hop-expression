@@ -28,14 +28,17 @@ public final class ExpressionFactory {
   public static IExpression create(IExpressionContext context, String source)
       throws ExpressionException {
 
+    // Tokenize the source
+    ExpressionLexer lexer = new ExpressionLexer(source);
+
     // Syntax analysis
-    ExpressionParser parser = new ExpressionParser(source);
+    ExpressionParser parser = new ExpressionParser(lexer);
     IExpression expression = parser.parse();
 
     // Semantic analysis
     expression.validate(context);
 
-    // Compile expression
+    // Compile and optimize expression
     ExpressionCompiler compiler = new ExpressionCompiler(context);
     expression = compiler.compile(expression);
 

@@ -24,6 +24,10 @@ import org.apache.hop.expression.Token.Id;
 import org.junit.jupiter.api.Test;
 
 class ExpressionLexerTest {
+  @Test
+  void testNullSource() {
+    assertThrows(ExpressionException.class, () -> new ExpressionLexer(null));
+  }
 
   @Test
   void testOperators() throws Exception {

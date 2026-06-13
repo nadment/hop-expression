@@ -61,8 +61,6 @@ public record Token(Id id, int start, int end, String text) {
     FORMAT,
     /** Cast operator <code>::</code>. */
     CAST("::"),
-    /** Comment */
-    COMMENT,
     /** DOT */
     DOT("."),
     /** Comma separator */

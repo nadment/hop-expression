@@ -56,12 +56,6 @@ import org.junit.jupiter.api.Test;
 public class ExpressionParserTest extends ExpressionTest {
 
   @Test
-  void sourceNullSource() {
-    ExpressionParser parser = new ExpressionParser(null);
-    assertNull(parser.getSource());
-  }
-
-  @Test
   void sourceEmptyOrNull() throws Exception {
     // Empty source return NULL
     evalNull("");

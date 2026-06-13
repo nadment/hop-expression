@@ -24,7 +24,7 @@ import org.apache.hop.expression.util.Characters;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
-/** Expression lexer. */
+/** Lazy expression lexer. */
 @NullMarked
 public class ExpressionLexer {
 
@@ -74,10 +74,93 @@ public class ExpressionLexer {
           "ZONE");
 
   @Getter private final String source;
+  private final List<Token> tokens;
+
+  /** Position in the source */
   private int position = 0;
 
-  public ExpressionLexer(String source) {
+  /** Index of the current token */
+  private int index = 0;
+
+  public ExpressionLexer(@Nullable String source) {
+    if (source == null) throw new ExpressionParseException(0, ErrorCode.NULL_SOURCE_ERROR);
     this.source = source;
+    this.tokens = new ArrayList<>();
+  }
+
+  public int getPosition() {
+    if (index >= 0 && index < tokens.size()) return tokens.get(index).start();
+    return source.length();
+  }
+
+  private @Nullable Token peekToken() throws ExpressionException {
+    while (index >= tokens.size()) {
+      Token token = nextToken();
+      if (token == null) return null;
+      tokens.add(token);
+    }
+    return tokens.get(index);
+  }
+
+  public boolean hasNext() throws ExpressionException {
+    return peekToken() != null;
+  }
+
+  public void hasNextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
+    Token token = peekToken();
+    if (token == null) {
+        throw new ExpressionParseException(position, errorCode, values);
+    }
+  }
+
+  public Token next() throws ExpressionException {
+    Token token = peekToken();
+    if (token == null) {
+      throw new ExpressionParseException(
+          getPosition(), ErrorCode.INTERNAL_ERROR, "Unexpected end of expression");
+    }
+
+    index++;
+    return token;
+  }
+
+  public Token previous() {
+    return tokens.get(--index);
+  }
+
+  public boolean is(Id id) throws ExpressionException {
+    Token token = peekToken();
+    return token != null && token.is(id);
+  }
+
+  public boolean isThenNext(Id id) throws ExpressionException {
+    if (is(id)) {
+      index++;
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isThenNextAndNotEnd(Id id)  throws ExpressionException {
+    Token token = peekToken();
+    if (token != null && token.is(id)) {
+      index++;
+      if (!hasNext()) {
+        throw new ExpressionParseException(token.start(), ErrorCode.SYNTAX_ERROR, id);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public void nextOrThrows(Id id, ErrorCode errorCode, Object... values)
+      throws ExpressionException {
+    if (is(id)) {
+      index++;
+      return;
+    }
+    Token token = peekToken();
+    throw new ExpressionParseException(token != null ? token.start() : position, errorCode, values);
   }
 
   public static Set<String> getReservedWords() {
@@ -97,13 +180,16 @@ public class ExpressionLexer {
   public List<Token> getTokens() throws ExpressionException {
     List<Token> tokens = new ArrayList<>();
     for (Token token = nextToken(); token != null; token = nextToken()) {
-      // Ignore comment
-      if (token.is(Id.COMMENT)) continue;
       tokens.add(token);
     }
     return tokens;
   }
 
+  /**
+   * Returns the next token.
+   *
+   * @return The next token, or null if end of source.
+   */
   @Nullable
   protected Token nextToken() throws ExpressionException {
 
@@ -172,7 +258,9 @@ public class ExpressionLexer {
                 if (c == '\r' || c == '\n') break;
                 position++;
               }
-              return new Token(Id.COMMENT, start, position, source.substring(start, position));
+              //return new Token(Id.COMMENT, start, position, source.substring(start, position));
+              // Ignore comment
+              continue;
             }
 
             // Minus sign
@@ -272,8 +360,9 @@ public class ExpressionLexer {
                     throw new ExpressionParseException(start, ErrorCode.MISSING_END_BLOCK_COMMENT);
                   }
                 }
-
-                return new Token(Id.COMMENT, start, position, source.substring(start, position));
+                // Ignore comment
+                continue;
+                // return new Token(Id.COMMENT, start, position, source.substring(start, position));
               }
               // Line comment
               if (c1 == '/') {
@@ -285,7 +374,9 @@ public class ExpressionLexer {
                   position++;
                 }
 
-                return new Token(Id.COMMENT, start, position, source.substring(start, position));
+                // Ignore comment
+                continue;
+                //return new Token(Id.COMMENT, start, position, source.substring(start, position));
               }
             }
             return new Token(Id.SLASH, start);
