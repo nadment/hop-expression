@@ -109,7 +109,7 @@ public class ExpressionLexer {
   public void hasNextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peekToken();
     if (token == null) {
-        throw new ExpressionParseException(position, errorCode, values);
+      throw new ExpressionParseException(position, errorCode, values);
     }
   }
 
@@ -133,7 +133,7 @@ public class ExpressionLexer {
     return token != null && token.is(id);
   }
 
-  public boolean isThenNext(Id id) throws ExpressionException {
+  public boolean ifThenNext(Id id) throws ExpressionException {
     if (is(id)) {
       index++;
       return true;
@@ -141,7 +141,7 @@ public class ExpressionLexer {
     return false;
   }
 
-  public boolean isThenNextAndNotEnd(Id id)  throws ExpressionException {
+  public boolean isThenNextAndNotEnd(Id id) throws ExpressionException {
     Token token = peekToken();
     if (token != null && token.is(id)) {
       index++;
@@ -151,6 +151,15 @@ public class ExpressionLexer {
       return true;
     }
     return false;
+  }
+
+  public Token nextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
+    Token token = peekToken();
+    if (token == null) {
+      throw new ExpressionParseException(getPosition(), errorCode, values);
+    }
+    index++;
+    return token;
   }
 
   public void nextOrThrows(Id id, ErrorCode errorCode, Object... values)
@@ -258,7 +267,6 @@ public class ExpressionLexer {
                 if (c == '\r' || c == '\n') break;
                 position++;
               }
-              //return new Token(Id.COMMENT, start, position, source.substring(start, position));
               // Ignore comment
               continue;
             }
@@ -362,7 +370,6 @@ public class ExpressionLexer {
                 }
                 // Ignore comment
                 continue;
-                // return new Token(Id.COMMENT, start, position, source.substring(start, position));
               }
               // Line comment
               if (c1 == '/') {
@@ -376,7 +383,6 @@ public class ExpressionLexer {
 
                 // Ignore comment
                 continue;
-                //return new Token(Id.COMMENT, start, position, source.substring(start, position));
               }
             }
             return new Token(Id.SLASH, start);

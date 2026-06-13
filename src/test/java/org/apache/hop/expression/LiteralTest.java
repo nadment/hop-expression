@@ -129,13 +129,13 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("INTERVAL -58 SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
     evalEquals("INTERVAL '-58' SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
 
-    evalFails("INTERVAL", ErrorCode.SYNTAX_ERROR);
-    evalFails("INTERVAL 5", ErrorCode.SYNTAX_ERROR);
-    evalFails("INTERVAL -5", ErrorCode.SYNTAX_ERROR);
-    evalFails("INTERVAL '5'", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL 5", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL -5", ErrorCode.INVALID_INTERVAL);
+    evalFails("INTERVAL '5'", ErrorCode.INVALID_INTERVAL);
     evalFails("INTERVAL '' MONTH", ErrorCode.INVALID_INTERVAL);
     evalFails("INTERVAL '' YEAR", ErrorCode.INVALID_INTERVAL);
-    evalFails("INTERVAL MONTH", ErrorCode.SYNTAX_ERROR);
+    evalFails("INTERVAL MONTH", ErrorCode.INVALID_INTERVAL);
     evalFails("INTERVAL 5 MONTH TO", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("INTERVAL '5' MONTH TO", ErrorCode.SYNTAX_ERROR);
     evalFails("INTERVAL '5 10' TO MONTH", ErrorCode.INVALID_INTERVAL);
