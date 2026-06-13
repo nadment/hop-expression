@@ -109,7 +109,7 @@ public class ExpressionLexer {
   public void hasNextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peekToken();
     if (token == null) {
-        throw new ExpressionParseException(position, errorCode, values);
+      throw new ExpressionParseException(position, errorCode, values);
     }
   }
 
@@ -141,7 +141,7 @@ public class ExpressionLexer {
     return false;
   }
 
-  public boolean isThenNextAndNotEnd(Id id)  throws ExpressionException {
+  public boolean isThenNextAndNotEnd(Id id) throws ExpressionException {
     Token token = peekToken();
     if (token != null && token.is(id)) {
       index++;
@@ -258,7 +258,7 @@ public class ExpressionLexer {
                 if (c == '\r' || c == '\n') break;
                 position++;
               }
-              //return new Token(Id.COMMENT, start, position, source.substring(start, position));
+              // return new Token(Id.COMMENT, start, position, source.substring(start, position));
               // Ignore comment
               continue;
             }
@@ -376,7 +376,7 @@ public class ExpressionLexer {
 
                 // Ignore comment
                 continue;
-                //return new Token(Id.COMMENT, start, position, source.substring(start, position));
+                // return new Token(Id.COMMENT, start, position, source.substring(start, position));
               }
             }
             return new Token(Id.SLASH, start);
