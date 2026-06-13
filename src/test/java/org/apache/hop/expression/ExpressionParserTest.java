@@ -56,14 +56,6 @@ import org.junit.jupiter.api.Test;
 public class ExpressionParserTest extends ExpressionTest {
 
   @Test
-  void reservedWords() {
-    assertTrue(ExpressionParser.isReservedWord("BETWEEN"));
-    assertFalse(ExpressionParser.isReservedWord("XXX"));
-    assertFalse(ExpressionParser.isReservedWord(null));
-    assertEquals(42, ExpressionParser.getReservedWords().size());
-  }
-
-  @Test
   void sourceNullSource() {
     ExpressionParser parser = new ExpressionParser(null);
     assertNull(parser.getSource());

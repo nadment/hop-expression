@@ -78,7 +78,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
         ++pos;
       }
       end = pos;
-    } catch (BadLocationException x) {
+    } catch (BadLocationException ignored) {
     }
 
     // if a mouse is hovered over an invalid word

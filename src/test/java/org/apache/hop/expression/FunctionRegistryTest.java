@@ -40,12 +40,12 @@ class FunctionRegistryTest extends ExpressionTest {
   }
 
   @Test
-  void unregistrer() throws Exception {
+  void unregister() throws Exception {
     assertEquals(TrimFunction.INSTANCE, FunctionRegistry.unregister("TRIM"));
   }
 
   @Test
-  void failOnAlreadyRegistredFunction() throws Exception {
+  void failOnAlreadyRegisteredFunction() throws Exception {
     FunctionRegistry.register("COALESCE", new CoalesceFunction());
   }
 }

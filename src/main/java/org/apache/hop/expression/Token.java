@@ -17,43 +17,16 @@
 package org.apache.hop.expression;
 
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public class Token {
+public record Token(Id id, int start, int end, String text) {
 
-  private final Id id;
-  private final int start;
-  private final int end;
-  private final @Nullable String text;
-
-  protected Token(Id id, int start) {
+  public Token(Id id, int start) {
     this(id, start, start + 1, id.label);
-  }
-
-  protected Token(Id id, int start, int end, @Nullable String text) {
-    this.id = id;
-    this.start = start;
-    this.end = end;
-    this.text = text;
   }
 
   public boolean is(Id id) {
     return this.id == id;
-  }
-
-  public Id id() {
-    return id;
-  }
-
-  /** Returns the start index of the token in the original source. */
-  public int start() {
-    return start;
-  }
-
-  /** Returns the end index of the token in the original source. */
-  public int end() {
-    return end;
   }
 
   /** Returns the length of the token. */
@@ -61,14 +34,9 @@ public class Token {
     return end - start;
   }
 
-  /** Returns the token value. */
-  public @Nullable String text() {
-    return text;
-  }
-
   @Override
   public String toString() {
-    return (text != null) ? text : id.toString();
+    return text;
   }
 
   /** Enumerates the possible types of {@link Token}. */

@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.ExpressionLexer;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.TypeName;
@@ -208,12 +208,12 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // If word not found use Token.WHITESPACE to signal problem
     WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
     for (String name : FunctionRegistry.getFunctionNames()) {
-      if (name != null && !name.isEmpty()) {
+      if (!name.isEmpty()) {
         rule.addWord(name, function);
       }
     }
-    for (String word : ExpressionParser.getReservedWords()) {
-      if (word != null && !word.isEmpty()) {
+    for (String word : ExpressionLexer.getReservedWords()) {
+      if (!word.isEmpty()) {
         if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
         else rule.addWord(word, keyword);
       }

@@ -42,7 +42,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
 
     assertEquals("UCASE", meta.getName());
     assertEquals("UDF test", meta.getDescription());
-    assertEquals("v0", meta.getArguments().get(0).getName());
+    assertEquals("v0", meta.getArguments().getFirst().getName());
 
     UserDefinedFunction udf = new UserDefinedFunction(meta);
     FunctionRegistry.register(udf.getName(), udf);
