@@ -75,8 +75,9 @@ public class ExpressionContext implements IExpressionContext {
     this.attributes = new HashMap<>();
 
     // Set cached attributes
-    ZonedDateTime now = ZonedDateTime.now();
-    this.setAttribute(Attribute.CURRENT_TIMEZONE.name(), ZoneId.systemDefault().getId());
+    ZoneId zoneId = ZoneId.systemDefault();
+    ZonedDateTime now = ZonedDateTime.now(zoneId);
+    this.setAttribute(Attribute.CURRENT_TIMEZONE.name(), zoneId.getId());
     this.setAttribute(Attribute.CURRENT_TIMESTAMP.name(), now);
     this.setAttribute(Attribute.CURRENT_DATE.name(), now.truncatedTo(ChronoUnit.DAYS));
     this.setAttribute(variables, EXPRESSION_TWO_DIGIT_YEAR_START, 1970);

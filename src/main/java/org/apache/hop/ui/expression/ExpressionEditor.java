@@ -236,7 +236,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     ToolItem toolbarItem = new ToolItem(toolbar, SWT.PUSH);
     toolbarItem.setToolTipText("Close");
-    toolbarItem.setImage(GuiResource.getInstance().getImageClosePanel());
+    toolbarItem.setImage(GuiResource.getInstance().getImageClose());
     toolbarItem.addListener(SWT.Selection, e -> hideHelp());
 
     // Create the widget browser

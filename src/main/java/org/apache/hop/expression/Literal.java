@@ -40,7 +40,7 @@ import org.apache.hop.expression.util.StringConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** Constant value in a expression. */
+/** Constant value in an expression. */
 @NullMarked
 public final class Literal implements IExpression {
 
@@ -65,10 +65,10 @@ public final class Literal implements IExpression {
   /** Literal null with date data type */
   public static final Literal NULL_DATE = new Literal(null, DateType.DATE);
 
-  /** Literal null with json data type */
+  /** Literal null with JSON data type */
   public static final Literal NULL_JSON = new Literal(null, JsonType.JSON);
 
-  /** Literal null with inet data type */
+  /** Literal null with INET data type */
   public static final Literal NULL_INET = new Literal(null, InetType.INET);
 
   /** Literal null with interval data type */

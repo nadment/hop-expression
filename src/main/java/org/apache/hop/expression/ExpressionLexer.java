@@ -141,7 +141,7 @@ public class ExpressionLexer {
     return false;
   }
 
-  public boolean isThenNextAndNotEnd(Id id) throws ExpressionException {
+  public boolean ifThenNextAndNotEnd(Id id) throws ExpressionException {
     Token token = peekToken();
     if (token != null && token.is(id)) {
       index++;
@@ -164,11 +164,11 @@ public class ExpressionLexer {
 
   public void nextOrThrows(Id id, ErrorCode errorCode, Object... values)
       throws ExpressionException {
-    if (is(id)) {
+    Token token = peekToken();
+    if (token != null && token.is(id)) {
       index++;
       return;
     }
-    Token token = peekToken();
     throw new ExpressionParseException(token != null ? token.start() : position, errorCode, values);
   }
 
@@ -187,17 +187,17 @@ public class ExpressionLexer {
    * @return The list of tokens.
    */
   public List<Token> getTokens() throws ExpressionException {
-    List<Token> tokens = new ArrayList<>();
+    List<Token> list = new ArrayList<>();
     for (Token token = nextToken(); token != null; token = nextToken()) {
-      tokens.add(token);
+      list.add(token);
     }
-    return tokens;
+    return list;
   }
 
   /**
    * Returns the next token.
    *
-   * @return The next token, or null if end of source.
+   * @return The next token, or null if the end of the source.
    */
   @Nullable
   protected Token nextToken() throws ExpressionException {
@@ -260,7 +260,6 @@ public class ExpressionLexer {
           {
             // Single line comment --
             if (position + 1 < source.length() && source.charAt(position + 1) == '-') {
-              int start = position;
               position++;
               while (position < source.length()) {
                 c = source.charAt(position);

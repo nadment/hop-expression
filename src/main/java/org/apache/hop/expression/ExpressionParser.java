@@ -165,10 +165,6 @@ public class ExpressionParser {
     this.lexer = lexer;
   }
 
-  protected void checkEndOfExpression(Id id) throws ExpressionException {
-    lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, id);
-  }
-
   /** Parse the expression */
   public IExpression parse() throws ExpressionException {
 
@@ -198,7 +194,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalOr() throws ExpressionException {
     IExpression expression = this.parseLogicalXor();
-    while (lexer.isThenNextAndNotEnd(Id.OR)) {
+    while (lexer.ifThenNextAndNotEnd(Id.OR)) {
       expression =
           new Call(lexer.getPosition(), BoolOrOperator.INSTANCE, expression, parseLogicalXor());
     }
@@ -215,7 +211,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalXor() throws ExpressionException {
     IExpression expression = this.parseLogicalAnd();
-    while (lexer.isThenNextAndNotEnd(Id.XOR)) {
+    while (lexer.ifThenNextAndNotEnd(Id.XOR)) {
       expression =
           new Call(lexer.getPosition(), BoolXorOperator.INSTANCE, expression, parseLogicalAnd());
     }
@@ -232,7 +228,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalAnd() throws ExpressionException {
     IExpression expression = this.parseLogicalNot();
-    while (lexer.isThenNextAndNotEnd(Id.AND)) {
+    while (lexer.ifThenNextAndNotEnd(Id.AND)) {
       expression =
           new Call(lexer.getPosition(), BoolAndOperator.INSTANCE, expression, parseLogicalNot());
     }
@@ -246,7 +242,7 @@ public class ExpressionParser {
    * <p><code>[NOT] ConditionalExpression</code>
    */
   private IExpression parseLogicalNot() throws ExpressionException {
-    if (lexer.isThenNextAndNotEnd(Id.NOT)) {
+    if (lexer.ifThenNextAndNotEnd(Id.NOT)) {
       return new Call(lexer.getPosition(), BoolNotOperator.INSTANCE, parseLogicalNot());
     }
 
@@ -272,9 +268,8 @@ public class ExpressionParser {
         not = true;
       }
 
-      checkEndOfExpression(Id.IS);
-
-      return switch (lexer.next().id()) {
+      Token token = lexer.nextOrThrows(ErrorCode.SYNTAX_ERROR, Id.IS);
+      return switch (token.id()) {
         case TRUE ->
             new Call(
                 start, (not) ? IsNotTrueOperator.INSTANCE : IsTrueOperator.INSTANCE, expression);
@@ -285,8 +280,7 @@ public class ExpressionParser {
             new Call(
                 start, (not) ? IsNotNullOperator.INSTANCE : IsNullOperator.INSTANCE, expression);
         case DISTINCT -> {
-          if (lexer.ifThenNext(Token.Id.FROM)) {
-            checkEndOfExpression(Token.Id.DISTINCT);
+          if (lexer.ifThenNextAndNotEnd(Token.Id.FROM)) {
             yield new Call(
                 start,
                 (not) ? IsNotDistinctFromOperator.INSTANCE : IsDistinctFromOperator.INSTANCE,
@@ -316,9 +310,7 @@ public class ExpressionParser {
     if (lexer.ifThenNext(Id.LIKE)) {
       IExpression pattern = this.parseAdditive();
 
-      if (lexer.ifThenNext(Id.ESCAPE)) {
-        checkEndOfExpression(Id.LIKE);
-
+      if (lexer.ifThenNextAndNotEnd(Id.ESCAPE)) {
         IExpression escape = this.parseLiteralString(lexer.next());
         expression = new Call(start, LikeOperator.INSTANCE, expression, pattern, escape);
       } else {
@@ -331,8 +323,7 @@ public class ExpressionParser {
       return expression;
     } else if (lexer.ifThenNext(Id.ILIKE)) {
       IExpression pattern = this.parseAdditive();
-      if (lexer.ifThenNext(Id.ESCAPE)) {
-        checkEndOfExpression(Id.ILIKE);
+      if (lexer.ifThenNextAndNotEnd(Id.ESCAPE)) {
         IExpression escape = this.parseLiteralString(lexer.next());
         expression = new Call(start, ILikeOperator.INSTANCE, expression, pattern, escape);
       } else {
@@ -361,7 +352,7 @@ public class ExpressionParser {
           not ? NotInListOperator.INSTANCE : InListOperator.INSTANCE,
           expression,
           new Array(list));
-    } else if (lexer.ifThenNext(Id.BETWEEN)) {
+    } else if (lexer.ifThenNextAndNotEnd(Id.BETWEEN)) {
       Operator operator;
       if (lexer.ifThenNext(Id.ASYMMETRIC)) {
         operator = BetweenAsymmetricOperator.INSTANCE;
@@ -371,12 +362,10 @@ public class ExpressionParser {
         // Default is asymmetric
         operator = BetweenAsymmetricOperator.INSTANCE;
       }
-      checkEndOfExpression(Id.BETWEEN);
       IExpression lower = this.parseAdditive();
 
       lexer.nextOrThrows(Id.AND, ErrorCode.SYNTAX_ERROR, Id.BETWEEN);
-
-      checkEndOfExpression(Id.BETWEEN);
+      lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, Id.BETWEEN);
       IExpression upper = this.parseAdditive();
 
       expression = new Call(start, operator, expression, lower, upper);
@@ -385,10 +374,10 @@ public class ExpressionParser {
         return new Call(start, BoolNotOperator.INSTANCE, expression);
       }
       return expression;
-    } else if (lexer.ifThenNext(Id.SIMILAR)) {
+    } else if (lexer.ifThenNextAndNotEnd(Id.SIMILAR)) {
       lexer.nextOrThrows(Id.TO, ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
+      lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
 
-      checkEndOfExpression(Id.SIMILAR);
       return new Call(
           start,
           not ? NotSimilarToOperator.INSTANCE : SimilarToOperator.INSTANCE,
@@ -411,11 +400,11 @@ public class ExpressionParser {
 
       int start = lexer.getPosition();
 
-      if (lexer.isThenNextAndNotEnd(Id.STAR)) {
+      if (lexer.ifThenNextAndNotEnd(Id.STAR)) {
         expression = new Call(start, MultiplyOperator.INSTANCE, expression, this.parseUnary());
-      } else if (lexer.isThenNextAndNotEnd(Id.SLASH)) {
+      } else if (lexer.ifThenNextAndNotEnd(Id.SLASH)) {
         expression = new Call(start, DivOperator.INSTANCE, expression, this.parseUnary());
-      } else if (lexer.isThenNextAndNotEnd(Id.PERCENT)) {
+      } else if (lexer.ifThenNextAndNotEnd(Id.PERCENT)) {
         expression = new Call(start, ModFunction.INSTANCE, expression, this.parseUnary());
       } else break;
     }
@@ -426,12 +415,12 @@ public class ExpressionParser {
   /** <code>('+' | '-') PrimaryExpression</code> */
   private IExpression parseUnary() throws ExpressionException {
     int start = lexer.getPosition();
-    if (lexer.isThenNextAndNotEnd(Id.MINUS)) {
+    if (lexer.ifThenNextAndNotEnd(Id.MINUS)) {
       return new Call(start, NegativeOperator.INSTANCE, this.parsePrimary());
     }
-    if (lexer.isThenNextAndNotEnd(Id.PLUS)) {
-      // Ignore
-    }
+
+    // Ignore
+    lexer.ifThenNextAndNotEnd(Id.PLUS);
 
     return this.parsePrimary();
   }
@@ -460,7 +449,7 @@ public class ExpressionParser {
     IExpression expression = this.parseTerm();
 
     // Cast operator ::
-    if (lexer.isThenNextAndNotEnd(Id.CAST)) {
+    if (lexer.ifThenNextAndNotEnd(Id.CAST)) {
       IExpression type = parseLiteralType(lexer.next());
       return new Call(lexer.getPosition(), CastOperator.INSTANCE, expression, type);
     }
@@ -476,9 +465,9 @@ public class ExpressionParser {
     }
 
     //  <term> AT TIMEZONE <timezone>
-    if (lexer.isThenNextAndNotEnd(Id.AT)) {
-      if (lexer.isThenNextAndNotEnd(Id.TIME)) {
-        if (lexer.isThenNextAndNotEnd(Id.ZONE)) {
+    if (lexer.ifThenNextAndNotEnd(Id.AT)) {
+      if (lexer.ifThenNextAndNotEnd(Id.TIME)) {
+        if (lexer.ifThenNextAndNotEnd(Id.ZONE)) {
           return new Call(
               lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parseTerm());
         }
@@ -530,23 +519,23 @@ public class ExpressionParser {
   private IExpression parseComparison() throws ExpressionException {
     IExpression expression = this.parseRelational();
     int start = lexer.getPosition();
-    if (lexer.isThenNextAndNotEnd(Id.EQUAL)) {
+    if (lexer.ifThenNextAndNotEnd(Id.EQUAL)) {
       return new Call(start, EqualOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.isThenNextAndNotEnd(Id.NOT_EQUAL)) {
+    if (lexer.ifThenNextAndNotEnd(Id.NOT_EQUAL)) {
       return new Call(start, NotEqualOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.isThenNextAndNotEnd(Id.GT)) {
+    if (lexer.ifThenNextAndNotEnd(Id.GT)) {
       return new Call(start, GreaterThanOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.isThenNextAndNotEnd(Id.GTE)) {
+    if (lexer.ifThenNextAndNotEnd(Id.GTE)) {
       return new Call(
           start, GreaterThanOrEqualOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.isThenNextAndNotEnd(Id.LT)) {
+    if (lexer.ifThenNextAndNotEnd(Id.LT)) {
       return new Call(start, LessThanOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.isThenNextAndNotEnd(Id.LTE)) {
+    if (lexer.ifThenNextAndNotEnd(Id.LTE)) {
       return new Call(start, LessThanOrEqualOperator.INSTANCE, expression, this.parseRelational());
     }
 
@@ -559,11 +548,11 @@ public class ExpressionParser {
     while (lexer.hasNext()) {
       int start = lexer.getPosition();
 
-      if (lexer.isThenNextAndNotEnd(Id.PLUS)) {
+      if (lexer.ifThenNextAndNotEnd(Id.PLUS)) {
         expression = new Call(start, AddOperator.INSTANCE, expression, this.parseFactor());
-      } else if (lexer.isThenNextAndNotEnd(Id.MINUS)) {
+      } else if (lexer.ifThenNextAndNotEnd(Id.MINUS)) {
         expression = new Call(start, SubtractOperator.INSTANCE, expression, this.parseFactor());
-      } else if (lexer.isThenNextAndNotEnd(Id.CONCAT)) {
+      } else if (lexer.ifThenNextAndNotEnd(Id.CONCAT)) {
         expression = new Call(start, ConcatFunction.INSTANCE, expression, this.parseFactor());
       } else break;
     }
@@ -586,7 +575,7 @@ public class ExpressionParser {
     }
 
     do {
-      checkEndOfExpression(Id.RBRACKET);
+      lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, Id.LBRACKET);
       operands.add(this.parseLogicalOr());
     } while (lexer.ifThenNext(Id.COMMA));
 
@@ -1002,9 +991,8 @@ public class ExpressionParser {
     lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
 
     do {
-      if (lexer.ifThenNext(Id.KEY)) {
-        // KEY is optional
-      }
+      // KEY is optional
+      lexer.ifThenNext(Id.KEY);
 
       if (lexer.hasNext()) {
         operands.add(this.parseLiteralString(lexer.next()));
@@ -1135,7 +1123,7 @@ public class ExpressionParser {
     if (token.is(Id.LITERAL_STRING)) {
       Token end;
       if (lexer.ifThenNext(Id.TO)) {
-        checkEndOfExpression(Id.INTERVAL);
+
         end = lexer.nextOrThrows(ErrorCode.INVALID_INTERVAL, text);
         endUnit = TimeUnit.of(end.text());
       }
@@ -1183,8 +1171,7 @@ public class ExpressionParser {
       }
 
       // Scale
-      if (lexer.ifThenNext(Id.COMMA)) {
-        checkEndOfExpression(token.id());
+      if (lexer.ifThenNextAndNotEnd(Id.COMMA)) {
         try {
           scale = Integer.parseInt(lexer.next().text());
         } catch (NumberFormatException e) {

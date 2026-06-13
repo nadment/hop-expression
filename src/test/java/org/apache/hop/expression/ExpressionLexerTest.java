@@ -33,45 +33,45 @@ class ExpressionLexerTest {
   void testOperators() throws Exception {
     ExpressionLexer lexer =
         new ExpressionLexer(", ( ) [ ] = + - * % < > <= <> >= != = = :: / ~ & ^ || |");
-    List<Token> tokens = lexer.getTokens();
 
-    int i = 0;
-    assertEquals(Id.COMMA, tokens.get(i++).id());
-    assertEquals(Id.LPARENTHESIS, tokens.get(i++).id());
-    assertEquals(Id.RPARENTHESIS, tokens.get(i++).id());
-    assertEquals(Id.LBRACKET, tokens.get(i++).id());
-    assertEquals(Id.RBRACKET, tokens.get(i++).id());
-    assertEquals(Id.EQUAL, tokens.get(i++).id());
-    assertEquals(Id.PLUS, tokens.get(i++).id());
-    assertEquals(Id.MINUS, tokens.get(i++).id());
-    assertEquals(Id.STAR, tokens.get(i++).id());
-    assertEquals(Id.PERCENT, tokens.get(i++).id());
-    assertEquals(Id.LT, tokens.get(i++).id());
-    assertEquals(Id.GT, tokens.get(i++).id());
-    assertEquals(Id.LTE, tokens.get(i++).id());
-    assertEquals(Id.NOT_EQUAL, tokens.get(i++).id()); // <>
-    assertEquals(Id.GTE, tokens.get(i++).id());
-    assertEquals(Id.NOT_EQUAL, tokens.get(i++).id()); // !=
-    assertEquals(Id.EQUAL, tokens.get(i++).id());
-    assertEquals(Id.EQUAL, tokens.get(i++).id());
-    assertEquals(Id.CAST, tokens.get(i++).id()); // ::
-    assertEquals(Id.SLASH, tokens.get(i++).id());
-    assertEquals(Id.TILDE, tokens.get(i++).id());
-    assertEquals(Id.AMPERSAND, tokens.get(i++).id());
-    assertEquals(Id.CARET, tokens.get(i++).id());
-    assertEquals(Id.CONCAT, tokens.get(i++).id()); // ||
-    assertEquals(Id.PIPE, tokens.get(i++).id()); // |
+    assertEquals(Id.COMMA, lexer.next().id());
+    assertEquals(Id.LPARENTHESIS, lexer.next().id());
+    assertEquals(Id.RPARENTHESIS, lexer.next().id());
+    assertEquals(Id.LBRACKET, lexer.next().id());
+    assertEquals(Id.RBRACKET, lexer.next().id());
+    assertEquals(Id.EQUAL, lexer.next().id());
+    assertEquals(Id.PLUS, lexer.next().id());
+    assertEquals(Id.MINUS, lexer.next().id());
+    assertEquals(Id.STAR, lexer.next().id());
+    assertEquals(Id.PERCENT, lexer.next().id());
+    assertEquals(Id.LT, lexer.next().id());
+    assertEquals(Id.GT, lexer.next().id());
+    assertEquals(Id.LTE, lexer.next().id());
+    assertEquals(Id.NOT_EQUAL, lexer.next().id());
+    assertEquals(Id.GTE, lexer.next().id());
+    assertEquals(Id.NOT_EQUAL, lexer.next().id());
+    assertEquals(Id.EQUAL, lexer.next().id());
+    assertEquals(Id.EQUAL, lexer.next().id());
+    assertEquals(Id.CAST, lexer.next().id());
+    assertEquals(Id.SLASH, lexer.next().id());
+    assertEquals(Id.TILDE, lexer.next().id());
+    assertEquals(Id.AMPERSAND, lexer.next().id());
+    assertEquals(Id.CARET, lexer.next().id());
+    assertEquals(Id.CONCAT, lexer.next().id());
+    assertEquals(Id.PIPE, lexer.next().id());
   }
 
   @Test
   void testStrings() throws Exception {
     ExpressionLexer lexer = new ExpressionLexer("'hello' 'it''s me'");
-    List<Token> tokens = lexer.getTokens();
 
-    assertEquals(Id.LITERAL_STRING, tokens.get(0).id());
-    assertEquals("hello", tokens.get(0).text());
-    assertEquals(Id.LITERAL_STRING, tokens.get(1).id());
-    assertEquals("it's me", tokens.get(1).text());
+    Token token = lexer.next();
+    assertEquals(Id.LITERAL_STRING, token.id());
+    assertEquals("hello", token.text());
+
+    token = lexer.next();
+    assertEquals(Id.LITERAL_STRING, token.id());
+    assertEquals("it's me", token.text());
   }
 
   @Test
