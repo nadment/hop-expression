@@ -26,7 +26,6 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -96,7 +95,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
         // Compile expression
         try {
-          data.expressions[index] = ExpressionFactory.create(data.context, resolve(source));
+          data.expressions[index] = IExpression.of(data.context, resolve(source));
         } catch (Exception e) {
           String message =
               BaseMessages.getString(

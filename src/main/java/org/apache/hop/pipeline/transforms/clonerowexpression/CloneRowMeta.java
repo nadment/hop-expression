@@ -39,7 +39,6 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -112,7 +111,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
 
     try {
       IExpression expression =
-          ExpressionFactory.create(new ExpressionContext(new Variables()), value.substring(1));
+          IExpression.of(new ExpressionContext(new Variables()), value.substring(1));
       Object result = expression.getValue();
       return String.valueOf(result);
     } catch (ExpressionException e) {

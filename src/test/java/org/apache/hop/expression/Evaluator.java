@@ -40,7 +40,7 @@ public class Evaluator {
   public Evaluator(IExpressionContext context, String source) {
 
     try {
-      this.expression = ExpressionFactory.create(context, source);
+      this.expression = IExpression.of(context, source);
       System.out.println(
           ANSI_WHITE
               + source

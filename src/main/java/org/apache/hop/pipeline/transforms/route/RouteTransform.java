@@ -23,7 +23,6 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -82,8 +81,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
         // Compile expression
         try {
-          IExpression expression =
-              ExpressionFactory.create(data.context, resolve(route.getCondition()));
+          IExpression expression = IExpression.of(data.context, resolve(route.getCondition()));
           data.targets.add(new RouteTarget(route, expression, rowSet));
         } catch (Exception e) {
           String message =
@@ -123,9 +121,9 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     for (RouteTarget target : data.targets) {
 
       try {
-        boolean predicate = target.getExpression().getValue(Boolean.class);
+        Boolean predicate = target.getExpression().getValue(Boolean.class);
 
-        if (predicate) {
+        if (Boolean.TRUE.equals(predicate)) {
           toDefault = false;
           putRowTo(data.rowMeta, row, target.getRowSet());
           break;

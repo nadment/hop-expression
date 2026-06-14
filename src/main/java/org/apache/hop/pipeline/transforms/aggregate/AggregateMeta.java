@@ -32,7 +32,6 @@ import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.expression.Kind;
@@ -133,7 +132,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     for (AggregateField field : aggregateFields) {
       // Compile expression
       try {
-        IExpression expression = ExpressionFactory.create(context, field.getExpression());
+        IExpression expression = IExpression.of(context, field.getExpression());
         if (!expression.is(Kind.CALL)) {
           throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
         }

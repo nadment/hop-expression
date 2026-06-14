@@ -34,7 +34,6 @@ import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.ExpressionParseException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
@@ -721,8 +720,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     String source = wViewer.getTextWidget().getText();
 
-    IExpression expression =
-        ExpressionFactory.create(new RowExpressionContext(variables, rowMeta), source);
+    IExpression expression = IExpression.of(new RowExpressionContext(variables, rowMeta), source);
 
     MessageBox dialog = new MessageBox(getShell());
     dialog.setText("Expression simplified");
@@ -795,7 +793,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
         context = new RowExpressionContext(variables, rowMeta);
       }
 
-      ExpressionFactory.create(context, expression);
+      IExpression.of(context, expression);
     } catch (ExpressionParseException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
       annotationModel.addAnnotation(annotation, new Position(e.getPosition(), 0));

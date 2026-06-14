@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.ExpressionFactory;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -69,19 +69,19 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
 
         first = false;
 
-        // clone the input row structure and place it in our data object
+        // Clone the input row structure and place it in our data object
         data.outputRowMeta = getInputRowMeta().clone();
         data.context = new RowExpressionContext(this, getInputRowMeta());
 
-        // Compile expression
-        data.condition = ExpressionFactory.create(data.context, resolve(meta.getCondition()));
+        // Compile the condition expression
+        data.condition = IExpression.of(data.context, resolve(meta.getCondition()));
 
         // Cache the position of the RowSet for the output.
         List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
 
         // Find TRUE output row set
         if (!Utils.isEmpty(streams.get(0).getTransformName())) {
-          TransformMeta to = streams.get(0).getTransformMeta();
+          TransformMeta to = streams.getFirst().getTransformMeta();
           PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
           if (hop != null && hop.isEnabled()) {
             data.trueRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
@@ -90,7 +90,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
                   BaseMessages.getString(
                       PKG,
                       "Where.Exception.TargetTransformInvalid",
-                      streams.get(0).getTransformName()));
+                      streams.getFirst().getTransformName()));
             }
           }
         } else {

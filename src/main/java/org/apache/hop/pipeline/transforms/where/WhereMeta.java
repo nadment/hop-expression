@@ -27,7 +27,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionFactory;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -138,7 +138,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     else
       try {
         RowExpressionContext context = new RowExpressionContext(variables, prev);
-        ExpressionFactory.create(context, variables.resolve(getCondition()));
+        IExpression.of(context, variables.resolve(getCondition()));
       } catch (ExpressionException e) {
         remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR, e.getMessage(), transformMeta));
       }
@@ -229,9 +229,9 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     }
     if (index == 1) {
       // False
-      TransformMeta trueTransform = targets.get(0).getTransformMeta();
+      TransformMeta trueTransform = targets.getFirst().getTransformMeta();
       if (trueTransform != null && trueTransform.equals(stream.getTransformMeta())) {
-        targets.get(0).setTransformMeta(null);
+        targets.getFirst().setTransformMeta(null);
       }
     }
   }

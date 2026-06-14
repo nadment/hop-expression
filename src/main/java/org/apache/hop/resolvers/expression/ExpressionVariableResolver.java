@@ -27,7 +27,6 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.resolver.IVariableResolver;
 import org.apache.hop.core.variables.resolver.VariableResolverPlugin;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -47,7 +46,7 @@ public class ExpressionVariableResolver implements IVariableResolver {
   public @Nullable String resolve(String source, IVariables variables) throws HopException {
     try {
       // Compile expression
-      IExpression expression = ExpressionFactory.create(new ExpressionContext(variables), source);
+      IExpression expression = IExpression.of(new ExpressionContext(variables), source);
       return expression.getValue(String.class);
     } catch (Exception e) {
       LogChannel.GENERAL.logError("Error evaluate expression: " + source, e);

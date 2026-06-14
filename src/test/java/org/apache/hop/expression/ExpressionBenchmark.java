@@ -112,7 +112,7 @@ public class ExpressionBenchmark {
   }
 
   protected Object eval(String source) throws Exception {
-    IExpression expression = ExpressionFactory.create(createExpressionContext(), source);
+    IExpression expression = IExpression.of(createExpressionContext(), source);
     return expression.getValue();
   }
 

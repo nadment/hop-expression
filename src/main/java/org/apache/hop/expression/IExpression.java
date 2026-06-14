@@ -18,6 +18,7 @@ package org.apache.hop.expression;
 
 import java.io.StringWriter;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -27,6 +28,31 @@ import org.jspecify.annotations.Nullable;
  */
 @NullMarked
 public interface IExpression {
+
+  static IExpression of(IExpressionContext context, String source) throws ExpressionException {
+
+    // Lexical analysis to tokenize the source
+    ExpressionLexer lexer = new ExpressionLexer(source);
+
+    // Syntax analysis
+    ExpressionParser parser = new ExpressionParser(lexer);
+    IExpression expression = parser.parse();
+
+    // Semantic analysis
+    expression.validate(context);
+
+    // Compile and optimize expression
+    ExpressionCompiler compiler = new ExpressionCompiler(context);
+    expression = compiler.compile(expression);
+
+    // Check return type, Unknown or Enum are not expected here
+    Type type = expression.getType();
+    if (!expression.isNull() && (type.isName(TypeName.UNKNOWN) || type.isName(TypeName.ENUM))) {
+      throw new ExpressionParseException(0, ErrorCode.SYNTAX_ERROR, expression);
+    }
+
+    return expression;
+  }
 
   /**
    * Returns the kind of expression.

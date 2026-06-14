@@ -35,7 +35,6 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -52,271 +51,263 @@ import org.apache.hop.workflow.engine.WorkflowEngineFactory;
 @Setter
 @Getter
 @Action(
-        id = "LOOP",
-        name = "i18n::LoopAction.Name",
-        description = "i18n::LoopAction.Description",
-        categoryDescription = "i18n:org.apache.hop.workflow:ActionCategory.Category.General",
-        keywords = "i18n::LoopAction.Keywords",
-        image = "loop.svg",
-        documentationUrl = "/workflow/actions/loop.html")
+    id = "LOOP",
+    name = "i18n::LoopAction.Name",
+    description = "i18n::LoopAction.Description",
+    categoryDescription = "i18n:org.apache.hop.workflow:ActionCategory.Category.General",
+    keywords = "i18n::LoopAction.Keywords",
+    image = "loop.svg",
+    documentationUrl = "/workflow/actions/loop.html")
 public class LoopAction extends ActionBase implements IAction {
-    static final Class<?> PKG = LoopAction.class;
+  static final Class<?> PKG = LoopAction.class;
 
-    /**
-     * The workflow to execute
-     */
-    @HopMetadataProperty(key = "filename")
-    private String filename;
+  /** The workflow to execute */
+  @HopMetadataProperty(key = "filename")
+  private String filename;
 
-    /**
-     * The run configuration to use to execute workflow
-     */
-    @HopMetadataProperty(key = "run_configuration")
-    private String runConfigurationName;
+  /** The run configuration to use to execute workflow */
+  @HopMetadataProperty(key = "run_configuration")
+  private String runConfigurationName;
 
-    /**
-     * The condition expression to evaluate
-     */
-    @HopMetadataProperty(key = "condition")
-    private String condition;
+  /** The condition expression to evaluate */
+  @HopMetadataProperty(key = "condition")
+  private String condition;
 
-    /**
-     * The parameters
-     */
-    @HopMetadataProperty(groupKey = "parameters", key = "parameter")
-    private List<Parameter> parameters;
+  /** The parameters */
+  @HopMetadataProperty(groupKey = "parameters", key = "parameter")
+  private List<Parameter> parameters;
 
-    public LoopAction(String name, String description) {
-        super(name, description);
-        parameters = new ArrayList<>();
+  public LoopAction(String name, String description) {
+    super(name, description);
+    parameters = new ArrayList<>();
+  }
+
+  public LoopAction() {
+    this("", "");
+  }
+
+  @Override
+  public Result execute(Result prevResult, int numberOfRows) throws HopException {
+
+    // Load the workflow meta to execute
+    //
+    String realFilename = resolve(filename);
+    if (StringUtils.isEmpty(realFilename)) {
+      throw new HopException("Please specify a workflow to execute");
     }
 
-    public LoopAction() {
-        this("", "");
-    }
+    this.logBasic("Execute workflow '" + realFilename + "'");
 
-    @Override
-    public Result execute(Result prevResult, int numberOfRows) throws HopException {
+    WorkflowMeta workflowMeta = loadWorkflow(realFilename, getMetadataProvider(), this);
 
-        // Load the workflow meta to execute
+    ExecutionContext execution = new ExecutionContext(null, getVariablesAndParameters());
+
+    // If the condition is false at the beginning of the loop, don't execute at all!
+    //
+    boolean repeat = isConditionTrue(execution.variables);
+    while (repeat && !parentWorkflow.isStopped()) {
+
+      execution = executeWorkflow(workflowMeta, numberOfRows, execution);
+      Result result = execution.result;
+      if (result.getNrErrors() > 0 || result.isStopped()) {
+        logError(
+            "Workflow execution has encountered an error or has been stopped. This ends the loop.");
+
+        // On error or a false result, stop the loop
         //
-        String realFilename = resolve(filename);
-        if (StringUtils.isEmpty(realFilename)) {
-            throw new HopException("Please specify a workflow to execute");
-        }
+        prevResult.setResult(false);
 
-        this.logBasic("Execute workflow '" + realFilename + "'");
-
-        WorkflowMeta workflowMeta = loadWorkflow(realFilename, getMetadataProvider(), this);
-
-        ExecutionContext execution = new ExecutionContext(null, getVariablesAndParameters());
-
-        // If the condition is false at the beginning of the loop, don't execute at all!
+        repeat = false;
+      } else {
+        // Loop while the condition is true
         //
-        boolean repeat = isConditionTrue(execution.variables);
-        while (repeat && !parentWorkflow.isStopped()) {
-
-            execution = executeWorkflow(workflowMeta, numberOfRows, execution);
-            Result result = execution.result;
-            if (result.getNrErrors() > 0 || result.isStopped()) {
-                logError(
-                        "Workflow execution has encountered an error or has been stopped. This ends the loop.");
-
-                // On error or a false result, stop the loop
-                //
-                prevResult.setResult(false);
-
-                repeat = false;
-            } else {
-                // Loop while the condition is true
-                //
-                repeat = isConditionTrue(execution.variables);
-            }
-        }
-
-        // Add last execution results
-        //
-        if (execution.result != null) {
-            prevResult.add(execution.result);
-        }
-
-        return prevResult;
+        repeat = isConditionTrue(execution.variables);
+      }
     }
 
-    private ExecutionContext executeWorkflow(
-            WorkflowMeta workflowMeta, int numberOfRows, ExecutionContext executionContext)
-            throws HopException {
-
-        IWorkflowEngine<WorkflowMeta> workflow =
-                WorkflowEngineFactory.createWorkflowEngine(
-                        this, resolve(runConfigurationName), getMetadataProvider(), workflowMeta, this);
-        workflow.setParentWorkflow(getParentWorkflow());
-        workflow.setParentVariables(this);
-        workflow.initializeFrom(executionContext.variables);
-
-        // The internal variables need to be reset to be able to use them properly.
-        workflow.getWorkflowMeta().setInternalHopVariables(workflow);
-
-        // workflow.setVariables(getVariablesMap(workflow, previousResult));
-        workflow.setLogLevel(getLogLevel());
-        workflow.getActionListeners().addAll(parentWorkflow.getActionListeners());
-
-        // Link the workflow with the sub-workflow
-        parentWorkflow.getWorkflowTracker().addWorkflowTracker(workflow.getWorkflowTracker());
-        // Link both ways!
-        workflow.getWorkflowTracker().setParentWorkflowTracker(parentWorkflow.getWorkflowTracker());
-
-        Result result = workflow.startExecution();
-        return new ExecutionContext(result, workflow);
+    // Add last execution results
+    //
+    if (execution.result != null) {
+      prevResult.add(execution.result);
     }
 
-    public IVariables getVariablesAndParameters() {
-        Variables variablesAndParameters = new Variables();
-        variablesAndParameters.initializeFrom(getVariables());
-        for (Parameter parameter : getParameters()) {
-            variablesAndParameters.setVariable(parameter.getName(), parameter.getValue());
-        }
-        return variablesAndParameters;
+    return prevResult;
+  }
+
+  private ExecutionContext executeWorkflow(
+      WorkflowMeta workflowMeta, int numberOfRows, ExecutionContext executionContext)
+      throws HopException {
+
+    IWorkflowEngine<WorkflowMeta> workflow =
+        WorkflowEngineFactory.createWorkflowEngine(
+            this, resolve(runConfigurationName), getMetadataProvider(), workflowMeta, this);
+    workflow.setParentWorkflow(getParentWorkflow());
+    workflow.setParentVariables(this);
+    workflow.initializeFrom(executionContext.variables);
+
+    // The internal variables need to be reset to be able to use them properly.
+    workflow.getWorkflowMeta().setInternalHopVariables(workflow);
+
+    // workflow.setVariables(getVariablesMap(workflow, previousResult));
+    workflow.setLogLevel(getLogLevel());
+    workflow.getActionListeners().addAll(parentWorkflow.getActionListeners());
+
+    // Link the workflow with the sub-workflow
+    parentWorkflow.getWorkflowTracker().addWorkflowTracker(workflow.getWorkflowTracker());
+    // Link both ways!
+    workflow.getWorkflowTracker().setParentWorkflowTracker(parentWorkflow.getWorkflowTracker());
+
+    Result result = workflow.startExecution();
+    return new ExecutionContext(result, workflow);
+  }
+
+  public IVariables getVariablesAndParameters() {
+    Variables variablesAndParameters = new Variables();
+    variablesAndParameters.initializeFrom(getVariables());
+    for (Parameter parameter : getParameters()) {
+      variablesAndParameters.setVariable(parameter.getName(), parameter.getValue());
+    }
+    return variablesAndParameters;
+  }
+
+  private boolean isConditionTrue(IVariables variables) {
+    String source = variables.resolve(condition);
+    IExpression expression = IExpression.of(new ExpressionContext(variables), source);
+
+    Boolean result = expression.getValue(Boolean.class);
+
+    this.logBasic("Evaluate loop condition '" + source + "' is " + result);
+
+    return Boolean.TRUE.equals(result);
+  }
+
+  @Override
+  public String[] getReferencedObjectDescriptions() {
+    String referenceDescription;
+    if (StringUtils.isEmpty(filename)) {
+      referenceDescription = "";
+    } else {
+      referenceDescription = "Workflow";
     }
 
-    private boolean isConditionTrue(IVariables variables) {
-        String source = variables.resolve(condition);
-        IExpression expression = ExpressionFactory.create(new ExpressionContext(variables), source);
+    return new String[] {referenceDescription};
+  }
 
-        Boolean result = expression.getValue(Boolean.class);
+  @Override
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] {StringUtils.isNotEmpty(filename)};
+  }
 
-        this.logBasic("Evaluate loop condition '" + source + "' is " + result);
+  @Override
+  public IHasFilename loadReferencedObject(
+      int index, IHopMetadataProvider metadataProvider, IVariables variables) throws HopException {
+    String realFilename = variables.resolve(filename);
+    return loadWorkflow(realFilename, metadataProvider, variables);
+  }
 
-        return Boolean.TRUE.equals(result);
+  @Override
+  public String exportResources(
+      IVariables variables,
+      Map<String, ResourceDefinition> definitions,
+      IResourceNaming namingInterface,
+      IHopMetadataProvider metadataProvider)
+      throws HopException {
+
+    copyFrom(variables);
+    String realFileName = resolve(filename);
+    AbstractMeta meta;
+
+    meta = loadWorkflow(realFileName, metadataProvider, this);
+
+    String proposedNewFilename =
+        ((IResourceExport) meta)
+            .exportResources(variables, definitions, namingInterface, metadataProvider);
+    String newFilename =
+        "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_FOLDER + "}/" + proposedNewFilename;
+    meta.setFilename(newFilename);
+    filename = newFilename;
+    return proposedNewFilename;
+  }
+
+  private WorkflowMeta loadWorkflow(
+      String realFilename, IHopMetadataProvider metadataProvider, IVariables variables)
+      throws HopException {
+    return new WorkflowMeta(variables, realFilename, metadataProvider);
+  }
+
+  @Override
+  public boolean isEvaluation() {
+    return true;
+  }
+
+  @Override
+  public boolean isUnconditional() {
+    return false;
+  }
+
+  @Override
+  public void check(
+      List<ICheckResult> remarks,
+      WorkflowMeta workflowMeta,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
+
+    // Check condition expression
+    if (Utils.isEmpty(condition)) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "LoopAction.CheckResult.LoopConditionIsMissing"),
+              this));
+    } else
+      try {
+        ExpressionContext context = new ExpressionContext(variables);
+        IExpression.of(context, variables.resolve(condition));
+      } catch (Exception e) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "LoopAction.CheckResult.LoopConditionExpressionError", e.getMessage()),
+                this));
+      }
+
+    // Check workflow exist
+    // Load the workflow meta to execute
+    //
+    String realFilename = variables.resolve(filename);
+    if (StringUtils.isEmpty(realFilename)) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "LoopAction.CheckResult.WorkflowToExecuteIsMissing"),
+              this));
+    } else {
+      WorkflowMeta workflowToExecute = null;
+      try {
+        workflowToExecute = loadWorkflow(realFilename, getMetadataProvider(), variables);
+      } catch (HopException e) {
+        // Ignore
+      }
+
+      if (workflowToExecute == null) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "LoopAction.CheckResult.WorkflowToExecuteNotFound", realFilename),
+                this));
+      }
     }
+  }
 
-    @Override
-    public String[] getReferencedObjectDescriptions() {
-        String referenceDescription;
-        if (StringUtils.isEmpty(filename)) {
-            referenceDescription = "";
-        } else {
-            referenceDescription = "Workflow";
-        }
+  private static class ExecutionContext {
+    public Result result;
+    public IVariables variables;
 
-        return new String[]{referenceDescription};
+    public ExecutionContext(Result result, IVariables variables) {
+      this.result = result;
+      this.variables = variables;
     }
-
-    @Override
-    public boolean[] isReferencedObjectEnabled() {
-        return new boolean[]{StringUtils.isNotEmpty(filename)};
-    }
-
-    @Override
-    public IHasFilename loadReferencedObject(
-            int index, IHopMetadataProvider metadataProvider, IVariables variables) throws HopException {
-        String realFilename = variables.resolve(filename);
-        return loadWorkflow(realFilename, metadataProvider, variables);
-    }
-
-    @Override
-    public String exportResources(
-            IVariables variables,
-            Map<String, ResourceDefinition> definitions,
-            IResourceNaming namingInterface,
-            IHopMetadataProvider metadataProvider)
-            throws HopException {
-
-        copyFrom(variables);
-        String realFileName = resolve(filename);
-        AbstractMeta meta;
-
-        meta = loadWorkflow(realFileName, metadataProvider, this);
-
-        String proposedNewFilename =
-                ((IResourceExport) meta)
-                        .exportResources(variables, definitions, namingInterface, metadataProvider);
-        String newFilename =
-                "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_FOLDER + "}/" + proposedNewFilename;
-        meta.setFilename(newFilename);
-        filename = newFilename;
-        return proposedNewFilename;
-    }
-
-    private WorkflowMeta loadWorkflow(
-            String realFilename, IHopMetadataProvider metadataProvider, IVariables variables)
-            throws HopException {
-        return new WorkflowMeta(variables, realFilename, metadataProvider);
-    }
-
-    @Override
-    public boolean isEvaluation() {
-        return true;
-    }
-
-    @Override
-    public boolean isUnconditional() {
-        return false;
-    }
-
-    @Override
-    public void check(
-            List<ICheckResult> remarks,
-            WorkflowMeta workflowMeta,
-            IVariables variables,
-            IHopMetadataProvider metadataProvider) {
-
-        // Check condition expression
-        if (Utils.isEmpty(condition)) {
-            remarks.add(
-                    new CheckResult(
-                            ICheckResult.TYPE_RESULT_ERROR,
-                            BaseMessages.getString(PKG, "LoopAction.CheckResult.LoopConditionIsMissing"),
-                            this));
-        } else
-            try {
-                ExpressionContext context = new ExpressionContext(variables);
-                ExpressionFactory.create(context, variables.resolve(condition));
-            } catch (Exception e) {
-                remarks.add(
-                        new CheckResult(
-                                ICheckResult.TYPE_RESULT_ERROR,
-                                BaseMessages.getString(
-                                        PKG, "LoopAction.CheckResult.LoopConditionExpressionError", e.getMessage()),
-                                this));
-            }
-
-        // Check workflow exist
-        // Load the workflow meta to execute
-        //
-        String realFilename = variables.resolve(filename);
-        if (StringUtils.isEmpty(realFilename)) {
-            remarks.add(
-                    new CheckResult(
-                            ICheckResult.TYPE_RESULT_ERROR,
-                            BaseMessages.getString(PKG, "LoopAction.CheckResult.WorkflowToExecuteIsMissing"),
-                            this));
-        } else {
-            WorkflowMeta workflowToExecute = null;
-            try {
-                workflowToExecute = loadWorkflow(realFilename, getMetadataProvider(), variables);
-            } catch (HopException e) {
-                // Ignore
-            }
-
-            if (workflowToExecute == null) {
-                remarks.add(
-                        new CheckResult(
-                                ICheckResult.TYPE_RESULT_ERROR,
-                                BaseMessages.getString(
-                                        PKG, "LoopAction.CheckResult.WorkflowToExecuteNotFound", realFilename),
-                                this));
-            }
-        }
-    }
-
-    private static class ExecutionContext {
-        public Result result;
-        public IVariables variables;
-
-        public ExecutionContext(Result result, IVariables variables) {
-            this.result = result;
-            this.variables = variables;
-        }
-    }
+  }
 }

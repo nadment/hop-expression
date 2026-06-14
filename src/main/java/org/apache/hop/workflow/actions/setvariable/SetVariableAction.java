@@ -30,7 +30,6 @@ import org.apache.hop.core.exception.HopWorkflowException;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionFactory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -101,8 +100,7 @@ public class SetVariableAction extends ActionBase implements IAction {
 
         try {
           IExpression expression =
-              ExpressionFactory.create(
-                  new ExpressionContext(this), resolve(definition.getExpression()));
+              IExpression.of(new ExpressionContext(this), resolve(definition.getExpression()));
           String value = expression.getValue(String.class);
 
           // OK, where do we set this value...
@@ -241,7 +239,7 @@ public class SetVariableAction extends ActionBase implements IAction {
                 this));
       } else
         try {
-          ExpressionFactory.create(context, variables.resolve(definition.getExpression()));
+          IExpression.of(context, variables.resolve(definition.getExpression()));
         } catch (Exception e) {
           remarks.add(
               new CheckResult(
