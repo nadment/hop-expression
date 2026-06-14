@@ -48,7 +48,7 @@ import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.ArrayElementAtOperator;
 import org.apache.hop.expression.operator.BetweenAsymmetricOperator;
 import org.apache.hop.expression.operator.BoolAndOperator;
-import org.apache.hop.expression.operator.BoolNotOperator;
+import org.apache.hop.expression.operator.BoolNotFunction;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.CaseSearchOperator;
@@ -171,7 +171,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           CaseSearchOperator.INSTANCE,
           // LOGICAL OPERATORS
           BoolAndOperator.INSTANCE,
-          BoolNotOperator.INSTANCE,
+          new BoolNotFunction("NOT"),
           BoolOrOperator.INSTANCE,
           BoolXorOperator.INSTANCE);
 

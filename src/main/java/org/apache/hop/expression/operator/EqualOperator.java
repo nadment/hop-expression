@@ -100,7 +100,7 @@ public class EqualOperator extends BinaryOperator {
         return left;
       }
       if (right == Literal.FALSE) {
-        return new Call(BoolNotOperator.INSTANCE, left);
+        return new Call(BoolNotFunction.INSTANCE, left);
       }
     }
 

@@ -606,13 +606,8 @@ public class ExpressionLexer {
           String identifier = source.substring(start, position);
           String name = identifier.toUpperCase();
 
+          // Function is follow by a parenthesis
           if (c == '(') {
-
-            // Syntax NOT(TRUE)
-            if ("NOT".equals(name)) {
-              return new Token(Id.NOT, start, position, name);
-            }
-
             return new Token(Id.FUNCTION, start, position, name);
           }
 

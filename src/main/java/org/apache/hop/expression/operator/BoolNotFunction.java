@@ -16,9 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -29,7 +30,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Logical negation <code>NOT</code> operator
+ * Logical negation <code>NOT</code> operator and function
  *
  * <p>Syntax of the operator:
  *
@@ -39,14 +40,27 @@ import org.jspecify.annotations.Nullable;
  *   <li><code>NOT(field BETWEEN start AND end)</code>
  * </ul>
  */
+@FunctionPlugin
 @NullMarked
-public class BoolNotOperator extends PrefixUnaryOperator {
-  public static final BoolNotOperator INSTANCE = new BoolNotOperator();
+public class BoolNotFunction extends Function {
 
-  public BoolNotOperator() {
+  public static final BoolNotFunction INSTANCE = new BoolNotFunction();
+
+  // Function
+  public BoolNotFunction() {
+    super(
+        "NOT",
+        ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.BOOLEAN,
+        OperatorCategory.LOGICAL,
+        "/docs/boolnot.html");
+  }
+
+  // Operator
+  public BoolNotFunction(String name) {
     super(
         "BOOLNOT",
-        "NOT",
+        name,
         110,
         Associativity.RIGHT,
         ReturnTypes.BOOLEAN_NULLABLE,
@@ -102,11 +116,5 @@ public class BoolNotOperator extends PrefixUnaryOperator {
       return null;
     }
     return !value;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("NOT ");
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
   }
 }

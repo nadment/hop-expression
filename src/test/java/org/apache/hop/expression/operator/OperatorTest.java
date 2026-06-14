@@ -127,8 +127,8 @@ public class OperatorTest extends ExpressionTest {
       // Simplify comparison when operands is of boolean type
       optimize("FIELD_BOOLEAN_TRUE<>FALSE", "FIELD_BOOLEAN_TRUE");
       optimize("FALSE<>FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
-      optimize("FIELD_BOOLEAN_TRUE<>TRUE", "NOT FIELD_BOOLEAN_TRUE");
-      optimize("TRUE<>FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
+      optimize("FIELD_BOOLEAN_TRUE<>TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
+      optimize("TRUE<>FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
 
       // Simplify comparison with arithmetic
       optimize("FIELD_INTEGER+1!=3", "FIELD_INTEGER!=2");
@@ -731,6 +731,7 @@ public class OperatorTest extends ExpressionTest {
   class BoolNot {
     @Test
     void testPredicate() throws Exception {
+      // Operator syntax
       evalTrue("FIELD_BOOLEAN_TRUE is not false").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("NULL_BOOLEAN is null").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("NOT (NULL_BOOLEAN is not null)").returnType(BooleanType.BOOLEAN_NOT_NULL);
@@ -758,9 +759,9 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testOptimize() throws Exception {
-      optimize("NOT FIELD_BOOLEAN_TRUE");
+      optimize("NOT FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
       optimize("NOT NOT FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
-      optimize("NOT NOT NOT FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
+      optimize("NOT NOT NOT FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
       optimizeFalse("not true");
       optimizeTrue("not false");
       optimizeTrue("not not true");
@@ -2144,8 +2145,8 @@ public class OperatorTest extends ExpressionTest {
       // Simplify comparison when operands are of a boolean type
       optimize("FIELD_BOOLEAN_TRUE=TRUE", "FIELD_BOOLEAN_TRUE");
       optimize("TRUE=FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
-      optimize("FIELD_BOOLEAN_TRUE=FALSE", "NOT FIELD_BOOLEAN_TRUE");
-      optimize("FALSE=FIELD_BOOLEAN_TRUE", "NOT FIELD_BOOLEAN_TRUE");
+      optimize("FIELD_BOOLEAN_TRUE=FALSE", "NOT(FIELD_BOOLEAN_TRUE)");
+      optimize("FALSE=FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
 
       // Simplify comparison with arithmetic
       optimize("FIELD_INTEGER+1=3", "FIELD_INTEGER=2");

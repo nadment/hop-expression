@@ -93,7 +93,7 @@ public class NotEqualOperator extends BinaryOperator {
     // x<>FALSE → NOT x
     if (Types.isBoolean(left.getType())) {
       if (right == Literal.TRUE) {
-        return new Call(BoolNotOperator.INSTANCE, left);
+        return new Call(BoolNotFunction.INSTANCE, left);
       }
       if (right == Literal.FALSE) {
         return left;

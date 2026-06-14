@@ -26,7 +26,7 @@ import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenAsymmetricOperator;
 import org.apache.hop.expression.operator.BetweenSymmetricOperator;
 import org.apache.hop.expression.operator.BoolAndOperator;
-import org.apache.hop.expression.operator.BoolNotOperator;
+import org.apache.hop.expression.operator.BoolNotFunction;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.CaseSearchOperator;
@@ -243,7 +243,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalNot() throws ExpressionException {
     if (lexer.ifThenNextAndNotEnd(Id.NOT)) {
-      return new Call(lexer.getPosition(), BoolNotOperator.INSTANCE, parseLogicalNot());
+      return new Call(lexer.getPosition(), BoolNotFunction.INSTANCE, parseLogicalNot());
     }
 
     return this.parseConditional();
@@ -318,7 +318,7 @@ public class ExpressionParser {
       }
 
       if (not) {
-        return new Call(start, BoolNotOperator.INSTANCE, expression);
+        return new Call(start, BoolNotFunction.INSTANCE, expression);
       }
       return expression;
     } else if (lexer.ifThenNext(Id.ILIKE)) {
@@ -331,7 +331,7 @@ public class ExpressionParser {
       }
 
       if (not) {
-        return new Call(start, BoolNotOperator.INSTANCE, expression);
+        return new Call(start, BoolNotFunction.INSTANCE, expression);
       }
       return expression;
     } else if (lexer.ifThenNext(Id.IN)) {
@@ -371,7 +371,7 @@ public class ExpressionParser {
       expression = new Call(start, operator, expression, lower, upper);
 
       if (not) {
-        return new Call(start, BoolNotOperator.INSTANCE, expression);
+        return new Call(start, BoolNotFunction.INSTANCE, expression);
       }
       return expression;
     } else if (lexer.ifThenNextAndNotEnd(Id.SIMILAR)) {

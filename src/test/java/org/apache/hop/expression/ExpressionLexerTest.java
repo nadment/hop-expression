@@ -161,7 +161,7 @@ class ExpressionLexerTest {
 
   @Test
   void testFunctions() throws Exception {
-    ExpressionLexer lexer = new ExpressionLexer("ABS(x) UPPER('a') NOT(TRUE)");
+    ExpressionLexer lexer = new ExpressionLexer("ABS(x) UPPER('a') NOT(TRUE) NOT TRUE");
     List<Token> tokens = lexer.getTokens();
 
     assertEquals(Id.FUNCTION, tokens.get(0).id());
@@ -172,8 +172,9 @@ class ExpressionLexerTest {
     assertEquals(Id.FUNCTION, tokens.get(4).id());
     assertEquals("UPPER", tokens.get(4).text());
 
-    // NOT(TRUE) is special case in lexer
-    assertEquals(Id.NOT, tokens.get(8).id());
+    // Special case NOT(TRUE) is a function and NOT TRUE is an operator
+    assertEquals(Id.FUNCTION, tokens.get(8).id());
+    assertEquals(Id.NOT, tokens.get(12).id());
   }
 
   @Test

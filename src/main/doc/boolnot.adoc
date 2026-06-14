@@ -22,6 +22,7 @@ Does not match the expression.
 
 ----
 NOT boolean
+NOT(boolean)
 ----
 
 == Returns

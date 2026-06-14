@@ -95,7 +95,7 @@ public class ConcatFunction extends Function {
     for (IExpression operand : call.getChainedOperands(true)) {
       if (operand.isNull()) continue;
       if (type == null) type = operand.getType();
-      operands.add(0, operand);
+      operands.addFirst(operand);
     }
 
     switch (operands.size()) {
