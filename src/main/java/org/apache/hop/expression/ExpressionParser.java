@@ -448,7 +448,7 @@ public class ExpressionParser {
   private IExpression parsePrimary() throws ExpressionException {
     IExpression expression = this.parseTerm();
 
-    // Cast operator ::
+    // Cast operator '::'
     if (lexer.ifThenNextAndNotEnd(Id.CAST)) {
       IExpression type = parseLiteralType(lexer.next());
       return new Call(lexer.getPosition(), CastOperator.INSTANCE, expression, type);
@@ -835,7 +835,7 @@ public class ExpressionParser {
 
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    // NULL treatment clause
+    // NULL treatment clauses
     if (this.parseNullTreatment(function)) {
       function = FirstValueFunction.FIRST_VALUE_IGNORE_NULLS;
     } else {
@@ -853,7 +853,7 @@ public class ExpressionParser {
 
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    // NULL treatment clause
+    // NULL treatment clauses
     if (this.parseNullTreatment(function)) {
       function = LastValueFunction.LAST_VALUE_IGNORE_NULLS;
     } else {
@@ -871,7 +871,7 @@ public class ExpressionParser {
 
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    // NULL treatment clause
+    // NULL treatment clauses
     if (this.parseNullTreatment(function)) {
       function = NthValueFunction.NTH_VALUE_IGNORE_NULLS;
     } else {
