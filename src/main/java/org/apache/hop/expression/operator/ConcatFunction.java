@@ -105,12 +105,20 @@ public class ConcatFunction extends Function {
         return operands.get(0);
       default:
         Operator operator = StringConcatFunction.INSTANCE;
-        if (type != null) {
-          if (type.isName(TypeName.ARRAY)) {
-            operator = ArrayConcatFunction.INSTANCE;
-          } else if (type.isName(TypeName.BINARY)) {
-            operator = BinaryConcatFunction.INSTANCE;
+        if (call.getType().isName(TypeName.ARRAY)) {
+          if (operands.size() == 2) {
+            IExpression left = operands.get(0);
+            IExpression right = operands.get(1);
+            if (left.getType().isName(TypeName.ARRAY) && !right.getType().isName(TypeName.ARRAY)) {
+              return new Call(ArrayAppendFunction.INSTANCE, left, right);
+            }
+            if (!left.getType().isName(TypeName.ARRAY) && right.getType().isName(TypeName.ARRAY)) {
+              return new Call(ArrayPrependFunction.INSTANCE, left, right);
+            }
           }
+          operator = ArrayConcatFunction.INSTANCE;
+        } else if (call.getType().isName(TypeName.BINARY)) {
+          operator = BinaryConcatFunction.INSTANCE;
         }
         return new Call(operator, operands);
     }

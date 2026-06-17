@@ -968,10 +968,13 @@ public class StringFunctionTest extends ExpressionTest {
 
     // optimize("[1,2,3] || [[4,5,6],[7,8,9]]", "[[1,2,3],[4,5,6],[7,8,9]]");
 
-    // TODO: Element to array concatenation
-    // optimize("1 || [2,3,4]", "[1,2,3,4]");
-    // TODO: Array to element concatenation
-    // optimize("[1,2,3] || 4", "[1,2,3,4]");
+    // Element to array concatenation
+    optimize("1 || [2,3,4]", "[1,2,3,4]");
+    optimize("FIELD_STRING || ['A','B','C']", "[FIELD_STRING,'A','B','C']");
+
+    // Array to element concatenation
+    optimize("[1,2,3] || 4", "[1,2,3,4]");
+    optimize("['A','B','C'] || FIELD_STRING", "['A','B','C',FIELD_STRING]");
 
     // Check syntax
     evalFails("||'text'", ErrorCode.SYNTAX_ERROR);

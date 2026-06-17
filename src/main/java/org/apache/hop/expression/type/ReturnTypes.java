@@ -170,7 +170,6 @@ public final class ReturnTypes {
   public static final IReturnTypeInference CONCAT_FUNCTION =
       call -> {
         TypeName name = TypeName.STRING;
-        Type elementType = UnknownType.UNKNOWN;
         int precision = 0;
         boolean nullable = true;
 
@@ -179,8 +178,8 @@ public final class ReturnTypes {
           precision += type.getPrecision();
           if (type.isName(TypeName.ARRAY)) {
             name = TypeName.ARRAY;
-            elementType = Types.getLeastRestrictive(operand);
-          } else if (type.isName(TypeName.BINARY)) {
+          //} else if (type.isName(TypeName.BINARY) && name != TypeName.ARRAY) {
+          } else if (type.isName(TypeName.BINARY) ) {
             name = TypeName.BINARY;
           }
           if (!type.isNullable()) {
@@ -189,10 +188,21 @@ public final class ReturnTypes {
         }
 
         if (name == TypeName.ARRAY) {
-          return ArrayType.of(elementType);
+          Type elementType = null;
+          for (IExpression operand : call.getOperands()) {
+            Type type = operand.getType();
+            if (type.isName(TypeName.ARRAY)) {
+              elementType =
+                  Types.getLeastRestrictive(elementType, ((ArrayType) type).getElementType());
+            } else {
+              elementType = Types.getLeastRestrictive(elementType, type);
+            }
+          }
+          return ArrayType.of(elementType == null ? UnknownType.UNKNOWN : elementType)
+              .withNullability(nullable);
         }
 
-        if (precision > name.getMaxPrecision()) {
+        if (precision > name.getMaxPrecision() || precision < 0) {
           precision = name.getMaxPrecision();
         }
 

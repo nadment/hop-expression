@@ -75,8 +75,9 @@ public class ArrayPrependFunction extends Function {
 
   @Override
   public Object eval(IExpression[] operands) {
+    Array array = operands[1].getValue(Array.class);
+    if (array == null) return null;
     IExpression element = operands[0];
-    Array array = (Array) operands[1];
     return array.prepend(element);
   }
 }

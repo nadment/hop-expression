@@ -22,6 +22,7 @@ Returns an array concatenating an element at the end of an array.
 
 ----
 ARRAY_APPEND( array, element )
+array || element
 ----
 
 == Arguments

@@ -17,8 +17,11 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Array;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -29,22 +32,45 @@ public class ArrayConcatFunction extends ConcatFunction {
   public static final Function INSTANCE = new ArrayConcatFunction();
 
   @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (call.isConstant()) {
+      return (IExpression) eval(call.getOperands());
+    }
+    return call;
+  }
+
+  @Override
   public @Nullable Object eval(IExpression[] operands) {
-    Array array0 = (Array) operands[0];
-    Array array1 = (Array) operands[1];
+    Array result = null;
 
-    int size0 = array0.size();
-    int size1 = array1.size();
+    for (IExpression operand : operands) {
+      if (operand.isNull()) continue;
 
-    IExpression[] values = new IExpression[size0 + size1];
-    int i = 0;
-    for (; i < size0; i++) {
-      values[i] = array0.get(i);
+      Array array = operand.getValue(Array.class);
+      if (array != null) {
+        if (result == null) {
+          result = array;
+        } else {
+          int size0 = result.size();
+          int size1 = array.size();
+          IExpression[] values = new IExpression[size0 + size1];
+          for (int i = 0; i < size0; i++) {
+            values[i] = result.get(i);
+          }
+          for (int i = 0; i < size1; i++) {
+            values[size0 + i] = array.get(i);
+          }
+          result = new Array(result.getType(), values);
+        }
+      } else {
+        if (result == null) {
+          result = new Array(operand);
+        } else {
+          result = result.append(operand);
+        }
+      }
     }
-    for (int j = 0; j < size1; i++, j++) {
-      values[i] = array1.get(j);
-    }
 
-    return new Array(array0.getType(), values);
+    return result;
   }
 }
