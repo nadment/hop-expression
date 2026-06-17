@@ -111,7 +111,19 @@ public class BitOrFunction extends Function {
         return right;
       }
 
-      // TODO: Simplify A | !A → -1 (if A is not nullable)
+      // Simplify A | !A → -1 (if A is not nullable)
+      if (right.isOperator(BitNotFunction.INSTANCE)) {
+        Call callNot = (Call) right;
+        if (left.equals(callNot.getOperand(0)) && !left.getType().isNullable()) {
+          return Literal.of(-1L);
+        }
+      }
+      if (left.isOperator(BitNotFunction.INSTANCE)) {
+        Call callNot = (Call) left;
+        if (right.equals(callNot.getOperand(0)) && !right.getType().isNullable()) {
+          return Literal.of(-1L);
+        }
+      }
 
       return call;
     }

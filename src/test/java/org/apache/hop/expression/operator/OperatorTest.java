@@ -1793,7 +1793,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2, false));
       evalEquals("4*2.5", 10D).returnType(NumberType.of(3, 1, false));
       evalEquals("2.5*4", 10D).returnType(NumberType.of(3, 1, false));
-      evalEquals("-4*-1", 4L).returnType(IntegerType.of(2, false));
+      evalEquals("-4*-1", 4L).returnType(IntegerType.of(1, false));
       evalEquals("100 * .5", 50D).returnType(NumberType.of(5, 1, false));
       evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224)
           .returnType(NumberType.of(38, 15, false));
@@ -1867,6 +1867,9 @@ public class OperatorTest extends ExpressionTest {
       optimize("-2*(-FIELD_INTEGER)", "2*FIELD_INTEGER");
       optimize("2*(-FIELD_INTEGER)", "-2*FIELD_INTEGER");
       optimize("2*(-FIELD_INTEGER)*(-4)", "8*FIELD_INTEGER");
+
+      // Simplify arithmetic -1 * A → -A
+      optimize("-1*FIELD_INTEGER", "-FIELD_INTEGER");
 
       // Simplify arithmetic A*A → SQUARE(A)
       // optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");

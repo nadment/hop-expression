@@ -23,6 +23,7 @@ import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionComparator;
+import org.apache.hop.expression.ExpressionCompiler;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -64,11 +65,20 @@ public class MultiplyOperator extends BinaryOperator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // TODO: Simplify arithmetic -1 * A → -A
-
     // Reorder chained symmetric operator
     PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
     operands.addAll(call.getChainedOperands(true));
+
+    // Simplify arithmetic -1 * A → -A
+    if (operands.remove(Literal.of(-1L))) {
+      IExpression result;
+      if (operands.size() == 1) {
+        result = operands.poll();
+      } else {
+        result = new Call(this, new ArrayList<>(operands));
+      }
+      return new ExpressionCompiler(context).compile(new Call(NegativeOperator.INSTANCE, result));
+    }
 
     final List<IExpression> zeroTerms = new ArrayList<>();
     final List<IExpression> oneTerms = new ArrayList<>();

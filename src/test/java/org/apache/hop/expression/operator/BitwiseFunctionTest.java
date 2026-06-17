@@ -306,6 +306,9 @@ class BitwiseFunctionTest extends ExpressionTest {
       // Simplify BIT_OR(0,A) → A (even if A is null)
       optimize("BIT_OR(FIELD_INTEGER,0)", "FIELD_INTEGER");
       optimize("BIT_OR(0,FIELD_INTEGER)", "FIELD_INTEGER");
+
+      // Simplify BIT_OR(A, BIT_NOT(A)) → -1 (if A not nullable)
+      optimize("BIT_OR(IFNULL(FIELD_INTEGER,0), BIT_NOT(IFNULL(FIELD_INTEGER,0)))", "-1");
     }
   }
 
