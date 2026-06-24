@@ -17,8 +17,8 @@
 
 package org.apache.hop.expression.type;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.StringConversion;
@@ -133,7 +133,7 @@ public final class BinaryType extends Type {
   @Override
   public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
-      return ByteBuffer.wrap(l).compareTo(ByteBuffer.wrap(r));
+      return Arrays.compareUnsigned(l, r);
     }
     return super.compare(left, right);
   }

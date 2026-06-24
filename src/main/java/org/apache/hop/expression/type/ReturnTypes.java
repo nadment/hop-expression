@@ -178,8 +178,8 @@ public final class ReturnTypes {
           precision += type.getPrecision();
           if (type.isName(TypeName.ARRAY)) {
             name = TypeName.ARRAY;
-          //} else if (type.isName(TypeName.BINARY) && name != TypeName.ARRAY) {
-          } else if (type.isName(TypeName.BINARY) ) {
+            // } else if (type.isName(TypeName.BINARY) && name != TypeName.ARRAY) {
+          } else if (type.isName(TypeName.BINARY)) {
             name = TypeName.BINARY;
           }
           if (!type.isNullable()) {
