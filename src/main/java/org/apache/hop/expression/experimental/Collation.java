@@ -35,7 +35,7 @@ public class Collation {
 
   @Override
   public boolean equals(Object o) {
-    return this == o || o instanceof Collation && name.equals(((Collation) o).name);
+    return this == o || o instanceof Collation other && name.equals(other.name);
   }
 
   @Override
