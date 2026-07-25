@@ -114,6 +114,13 @@ public class SubtractOperator extends BinaryOperator {
         throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
       }
     }
+
+    @Override
+    public String generateCode(
+        org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+      return "org.apache.hop.expression.jit.JitRuntime.subtractLong(%s, %s)"
+          .formatted(operands[0], operands[1]);
+    }
   }
 
   public static final class NumberSubtractOperator extends SubtractOperator {
@@ -132,6 +139,13 @@ public class SubtractOperator extends BinaryOperator {
       if (right == null) return null;
 
       return left.subtract(right);
+    }
+
+    @Override
+    public String generateCode(
+        org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+      return "org.apache.hop.expression.jit.JitRuntime.subtractNumber(%s, %s)"
+          .formatted(operands[0], operands[1]);
     }
   }
 

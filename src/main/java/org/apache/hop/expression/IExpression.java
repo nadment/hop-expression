@@ -51,6 +51,14 @@ public interface IExpression {
       throw new ExpressionParseException(0, ErrorCode.SYNTAX_ERROR, expression);
     }
 
+    // Experimental: JIT-compile the expression to bytecode with Janino, when enabled. This is
+    // opt-in and never fails hard: any operator or error not covered by the JIT falls back
+    // transparently to the interpreted tree above. Off by default since this is a prototype
+    // covering only a subset of operators.
+    if (Boolean.getBoolean("hop.expression.jit.enabled")) {
+      expression = org.apache.hop.expression.jit.JitCompiler.tryCompile(expression);
+    }
+
     return expression;
   }
 

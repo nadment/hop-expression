@@ -77,6 +77,14 @@ public class NotEqualOperator extends BinaryOperator {
   }
 
   @Override
+  public String generateCode(
+      org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+    int index = context.addType(call.getOperand(0).getType());
+    return "org.apache.hop.expression.jit.JitRuntime.compareNotEqual(types[%d], %s, %s)"
+        .formatted(index, operands[0], operands[1]);
+  }
+
+  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Normalize

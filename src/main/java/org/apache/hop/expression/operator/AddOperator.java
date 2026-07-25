@@ -165,6 +165,13 @@ public class AddOperator extends BinaryOperator {
         throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
       }
     }
+
+    @Override
+    public String generateCode(
+        org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+      return "org.apache.hop.expression.jit.JitRuntime.addLong(%s, %s)"
+          .formatted(operands[0], operands[1]);
+    }
   }
 
   public static final class NumberAddOperator extends AddOperator {

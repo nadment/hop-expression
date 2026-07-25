@@ -118,4 +118,11 @@ public class DivOperator extends BinaryOperator {
 
     return value.divide(divisor, MATH_CONTEXT);
   }
+
+  @Override
+  public String generateCode(
+      org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+    return "org.apache.hop.expression.jit.JitRuntime.divideNumber(%s, %s)"
+        .formatted(operands[0], operands[1]);
+  }
 }

@@ -251,6 +251,13 @@ public class BoolAndOperator extends BinaryOperator {
   }
 
   @Override
+  public String generateCode(
+      org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+    return "org.apache.hop.expression.jit.JitRuntime.and(%s, %s)"
+        .formatted(operands[0], operands[1]);
+  }
+
+  @Override
   public boolean isSymmetrical() {
     return true;
   }

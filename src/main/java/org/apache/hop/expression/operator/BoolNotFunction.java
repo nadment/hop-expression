@@ -117,4 +117,10 @@ public class BoolNotFunction extends Function {
     }
     return !value;
   }
+
+  @Override
+  public String generateCode(
+      org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+    return "org.apache.hop.expression.jit.JitRuntime.not(%s)".formatted(operands[0]);
+  }
 }

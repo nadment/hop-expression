@@ -204,6 +204,13 @@ public class MultiplyOperator extends BinaryOperator {
         throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
       }
     }
+
+    @Override
+    public String generateCode(
+        org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+      return "org.apache.hop.expression.jit.JitRuntime.multiplyLong(%s, %s)"
+          .formatted(operands[0], operands[1]);
+    }
   }
 
   public static final class NumberMultiplyOperator extends MultiplyOperator {
@@ -217,6 +224,13 @@ public class MultiplyOperator extends BinaryOperator {
       if (right == null) return null;
 
       return left.multiply(right, MATH_CONTEXT);
+    }
+
+    @Override
+    public String generateCode(
+        org.apache.hop.expression.jit.JitContext context, Call call, String[] operands) {
+      return "org.apache.hop.expression.jit.JitRuntime.multiplyNumber(%s, %s)"
+          .formatted(operands[0], operands[1]);
     }
   }
 }

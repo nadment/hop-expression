@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
+import org.apache.hop.expression.jit.JitContext;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
@@ -373,6 +374,29 @@ public abstract class Operator {
    */
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return call;
+  }
+
+  /**
+   * Generates a Java source snippet equivalent to a call to this operator, for the experimental
+   * JIT compiler ({@link org.apache.hop.expression.jit.JitCompiler}).
+   *
+   * <p>Support is opt-in and incremental: the default implementation returns {@code null}, which
+   * tells the JIT compiler that this operator is not supported and the call must fall back to
+   * interpreted evaluation. An operator overriding this method must return a Java expression that
+   * evaluates, at runtime, to exactly the same (possibly {@code null}) {@code Object} that {@link
+   * #eval} would return for the same operands - including null-propagation and error semantics -
+   * since the interpreted and JIT-compiled paths must always agree.
+   *
+   * @param context the code generation context, used to capture runtime constants (such as {@link
+   *     org.apache.hop.expression.type.Type} instances) referenced by the generated code
+   * @param call the call being compiled
+   * @param operands Java source snippets for each operand, already generated; each evaluates to a
+   *     (possibly {@code null}) {@code Object}
+   * @return a Java source snippet evaluating to an {@code Object}, or {@code null} if this
+   *     operator has no code generation support
+   */
+  public @Nullable String generateCode(JitContext context, Call call, String[] operands) {
+    return null;
   }
 
   public abstract void unparse(StringWriter writer, IExpression[] operands);
