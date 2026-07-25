@@ -25,6 +25,7 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
+import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.gui.WindowProperty;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.HelpUtils;
@@ -103,15 +104,8 @@ public class ExpressionEditorDialog extends Dialog {
     // Default size when no previous size is saved; minimum size so the editor stays usable
     shell.setMinimumSize(900, 600);
     shell.setSize(1000, 700);
-    BaseTransformDialog.setSize(shell);
 
-    shell.open();
-    Display display = shell.getDisplay();
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch()) {
-        display.sleep();
-      }
-    }
+    BaseDialog.defaultShellHandling(shell, c -> onOkPressed(), c -> onCancelPressed());
 
     return this.expression;
   }
