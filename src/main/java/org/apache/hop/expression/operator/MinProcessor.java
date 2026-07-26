@@ -20,7 +20,7 @@ import org.apache.hop.expression.type.Type;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** Returns the maximum of an expression across all input rows. */
+/** Returns the minimum of an expression across all input rows. */
 @NullMarked
 public class MinProcessor implements IExpressionProcessor {
 
@@ -34,8 +34,8 @@ public class MinProcessor implements IExpressionProcessor {
   public void process(IExpression[] operands) throws Exception {
     Type type = operands[0].getType();
     Object value = operands[0].getValue();
-
-    if (min == null || (value != null && type.compare(value, min) < 0)) {
+    if (value == null) return;
+    if (min == null || type.compare(value, min) < 0) {
       min = value;
     }
   }
