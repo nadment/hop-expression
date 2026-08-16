@@ -18,7 +18,7 @@ package org.apache.hop.expression.util;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class Hex {
+public final class Hex {
 
   /** Used to build output as hex. */
   private static final char[] DIGITS_LOWER = {
