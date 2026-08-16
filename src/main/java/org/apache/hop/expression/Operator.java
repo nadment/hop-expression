@@ -14,8 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,14 +22,12 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
 import lombok.Getter;
-import org.apache.commons.io.IOUtils;
-import org.apache.hop.core.logging.ILogChannel;
-import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.util.DocumentationUtil;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -49,8 +45,6 @@ public abstract class Operator {
    * RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
-
-  private static final ILogChannel LOG = new LogChannel("Expression");
 
   /** The unique identifier of the operator/function. Example: "COS" or "TRIM" */
   @Getter private final String id;
@@ -115,8 +109,8 @@ public abstract class Operator {
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;
-    this.documentation = loadDocumentation();
-    this.description = findDocumentationDescription();
+    this.documentation = DocumentationUtil.loadDocumentation(this.getClass(), id, documentationUrl);
+    this.description = DocumentationUtil.findDocumentationDescription(this.documentation);
   }
 
   protected Operator(
@@ -476,37 +470,6 @@ public abstract class Operator {
     //    }
 
     return call;
-  }
-
-  private @Nullable String loadDocumentation() {
-    try (StringWriter writer = new StringWriter()) {
-      InputStream is = this.getClass().getResourceAsStream(documentationUrl);
-      if (is != null) {
-        InputStreamReader reader = new InputStreamReader(is);
-        IOUtils.copy(reader, writer);
-      }
-      return writer.toString();
-    } catch (Exception e) {
-      LOG.logError("Missing operator documentation: {0}", id);
-      return null;
-    }
-  }
-
-  private String findDocumentationDescription() {
-    if (documentation == null) {
-      return "";
-    }
-
-    int beginIndex = documentation.indexOf("id=\"preamble\"");
-    beginIndex = documentation.indexOf("<p>", beginIndex);
-
-    if (beginIndex > 0) {
-      int endIndex = documentation.indexOf("</p>", beginIndex);
-
-      return documentation.substring(beginIndex + 3, endIndex);
-    }
-
-    return "";
   }
 
   /**
