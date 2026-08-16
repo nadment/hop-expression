@@ -26,10 +26,10 @@ http://www.apache.org/licenses/LICENSE-2.0
     <url>https://hop.apache.org</url>
 
     <properties>
-        <asciidoctor.version>3.0.0</asciidoctor.version>
+        <asciidoctor.version>3.2.0</asciidoctor.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-math3.version>3.6.1</commons-math3.version>
-        <commons-text.version>1.14.0</commons-text.version>
+        <commons-text.version>1.15.0</commons-text.version>
         <commons-vfs2.version>2.10.0</commons-vfs2.version>
         <hop.home>C:\hop</hop.home>
         <hop.version>2.18.0</hop.version>
@@ -39,11 +39,11 @@ http://www.apache.org/licenses/LICENSE-2.0
         <license.licenseName>apache_v2</license.licenseName>
         <maven.compiler.source>${target.jdk.version}</maven.compiler.source>
         <maven.compiler.target>${target.jdk.version}</maven.compiler.target>
-        <org.eclipse.core.runtime.version>3.29.0</org.eclipse.core.runtime.version>
-        <org.eclipse.jface.text.version>3.25.0</org.eclipse.jface.text.version>
-        <org.eclipse.jface.version>3.33.0</org.eclipse.jface.version>
-        <org.eclipse.osgi.version>3.20.0</org.eclipse.osgi.version>
-        <org.eclipse.text.version>3.14.0</org.eclipse.text.version>
+        <org.eclipse.core.runtime.version>3.34.100</org.eclipse.core.runtime.version>
+        <org.eclipse.jface.text.version>3.29.0</org.eclipse.jface.text.version>
+        <org.eclipse.jface.version>3.38.100</org.eclipse.jface.version>
+        <org.eclipse.osgi.version>3.24.0</org.eclipse.osgi.version>
+        <org.eclipse.text.version>3.14.500</org.eclipse.text.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>nadment</sonar.organization>
