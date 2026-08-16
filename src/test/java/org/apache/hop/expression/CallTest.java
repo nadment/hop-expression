@@ -160,4 +160,10 @@ class CallTest extends ExpressionTest {
     optimize("FIELD_NUMBER>3 AND TRUE", "TRUE AND FIELD_NUMBER>3");
     optimize("2::INTEGER*FIELD_NUMBER*3::NUMBER", "6*FIELD_NUMBER");
   }
+
+  @Test
+  void testCaseComplex() throws Exception {
+    evalNull("Case When FIELD_NUMBER>0 Then Left(Upper(FIELD_STRING),5) Else Null End")
+        .returnType(StringType.STRING);
+  }
 }

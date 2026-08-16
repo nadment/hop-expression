@@ -137,7 +137,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
     for (IExpression expression : array) {
       IExpression compiled = expression.accept(this);
-      if (compiled != expression) {
+      if (!compiled.equals(expression)) {
         changed = true;
       }
       expressions.add(compiled);

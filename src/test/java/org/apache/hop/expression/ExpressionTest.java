@@ -47,6 +47,7 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
+import org.apache.hop.core.util.TestUtil;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.util.JsonConversion;
@@ -60,7 +61,7 @@ public class ExpressionTest {
   @BeforeAll
   static void setup() throws Throwable {
     Locale.setDefault(Locale.ENGLISH);
-    HopClientEnvironment.init();
+    TestUtil.registerTestPluginTypes();
     FunctionRegistry.registerFunctions();
   }
 
