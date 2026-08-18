@@ -240,6 +240,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     // Create the widget browser
     wBrowser = new Browser(composite, SWT.NONE);
+    wBrowser.setJavascriptEnabled(false);
     wBrowser.setLayoutData(new FormDataBuilder().top(toolbar).bottom().fullWidth().result());
 
     // Cancel opening of new windows
