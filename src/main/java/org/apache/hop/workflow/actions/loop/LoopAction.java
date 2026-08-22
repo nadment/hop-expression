@@ -38,6 +38,7 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
+import org.apache.hop.metadata.api.HopMetadataPropertyType;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.resource.IResourceExport;
 import org.apache.hop.resource.IResourceNaming;
@@ -62,7 +63,7 @@ public class LoopAction extends ActionBase implements IAction {
   static final Class<?> PKG = LoopAction.class;
 
   /** The workflow to execute */
-  @HopMetadataProperty(key = "filename")
+  @HopMetadataProperty(key = "filename", hopMetadataPropertyType = HopMetadataPropertyType.WORKFLOW_FILE)
   private String filename;
 
   /** The run configuration to use to execute workflow */
