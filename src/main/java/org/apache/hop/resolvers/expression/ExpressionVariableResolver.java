@@ -55,11 +55,6 @@ public class ExpressionVariableResolver implements IVariableResolver {
   }
 
   @Override
-  public void setPluginId() {
-    // Nothing to set
-  }
-
-  @Override
   public void init() {
     // Not used today
   }
@@ -67,11 +62,6 @@ public class ExpressionVariableResolver implements IVariableResolver {
   @Override
   public String getPluginId() {
     return "Expression-Variable-Resolver";
-  }
-
-  @Override
-  public void setPluginName(String pluginName) {
-    // Nothing to set
   }
 
   @Override
