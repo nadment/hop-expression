@@ -22,7 +22,10 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.IntegerConversion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class IntegerType extends Type {
   /** Default INTEGER type with maximum precision. */
   public static final IntegerType INTEGER =
@@ -58,47 +61,8 @@ public final class IntegerType extends Type {
     return new IntegerType(precision, nullable);
   }
 
-  private static int numberOfDigit(int number) {
-    if (number < 100000) {
-      if (number < 100) {
-        if (number < 10) {
-          return 1;
-        } else {
-          return 2;
-        }
-      } else {
-        if (number < 1000) {
-          return 3;
-        } else {
-          if (number < 10000) {
-            return 4;
-          } else {
-            return 5;
-          }
-        }
-      }
-    } else {
-      if (number < 10000000) {
-        if (number < 1000000) {
-          return 6;
-        } else {
-          return 7;
-        }
-      } else {
-        if (number < 100000000) {
-          return 8;
-        } else {
-          if (number < 1000000000) {
-            return 9;
-          } else {
-            return 10;
-          }
-        }
-      }
-    }
-  }
-
   private static int numberOfDigit(long number) {
+    if (number == 0) return 1;
     int count = 0;
     while (number != 0) {
       number = number / 10;
@@ -121,12 +85,8 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public TypeComparability getComparability() {
-    return TypeComparability.ALL;
-  }
-
-  @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ExpressionException {
+  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+      throws ExpressionException {
 
     if (value == null) {
       return null;
@@ -148,12 +108,13 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public Long cast(final Object value) throws ExpressionException {
+  public @Nullable Long cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, null);
   }
 
   @Override
-  public Long cast(final Object value, String pattern) throws ExpressionException {
+  public @Nullable Long cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
     return switch (value) {
       case null -> null;
       case Long integer -> integer;
@@ -168,7 +129,7 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public boolean compareEqual(Object left, Object right) {
+  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof Long l && right instanceof Long r) {
       return l.equals(r);
     }
@@ -176,7 +137,7 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public int compare(Object left, Object right) {
+  public int compare(@Nullable Object left, @Nullable Object right) {
     if (left instanceof Long l && right instanceof Long r) {
       return l.compareTo(r);
     }

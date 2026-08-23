@@ -49,11 +49,6 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public TypeComparability getComparability() {
-    return TypeComparability.ALL;
-  }
-
-  @Override
   public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
       throws ExpressionException {
 

@@ -44,11 +44,6 @@ public final class UnknownType extends Type {
   }
 
   @Override
-  public TypeComparability getComparability() {
-    return TypeComparability.NONE;
-  }
-
-  @Override
   public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
       throws ExpressionException {
     if (value == null) return null;

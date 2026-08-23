@@ -148,22 +148,20 @@ public abstract class Type {
    * (date, numeric, string, or BOOLEAN).
    */
   public boolean isAtomic() {
-    TypeName name = getName();
-    return name == TypeName.STRING
-        || name == TypeName.DATE
-        || name == TypeName.INTEGER
-        || name == TypeName.NUMBER
-        || name == TypeName.BOOLEAN
-        || name == TypeName.BINARY
-        || name == TypeName.INET;
+    return getName().isAtomic();
   }
 
   /**
    * Gets the {@link TypeComparability} of this type used by comparison operators.
    *
+   * <p>Defaults to the comparability declared by this type's {@link TypeName}. Types whose
+   * comparability depends on runtime state (e.g. {@link ArrayType}) should override this.
+   *
    * @return comparability, never null
    */
-  public abstract TypeComparability getComparability();
+  public TypeComparability getComparability() {
+    return getName().getComparability();
+  }
 
   public boolean compareEqual(final @Nullable Object left, final @Nullable Object right) {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Equals error");

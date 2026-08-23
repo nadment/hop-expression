@@ -39,45 +39,118 @@ import org.jspecify.annotations.Nullable;
 public enum TypeName {
 
   /** The null value. It has its own special type. */
-  UNKNOWN(TypeFamily.UNKNOWN, false, false, -1, -1, -1, -1, Void.class),
+  UNKNOWN(
+      TypeFamily.UNKNOWN, TypeComparability.NONE, false, false, false, -1, -1, -1, -1, Void.class),
 
-  ANY(TypeFamily.ANY, false, false, -1, -1, -1, -1, Object.class),
+  ANY(TypeFamily.ANY, TypeComparability.NONE, false, false, false, -1, -1, -1, -1, Object.class),
 
   /** Unlimited length text */
-  STRING(TypeFamily.STRING, true, false, 16_777_216, 1, 0, 0, String.class),
+  STRING(
+      TypeFamily.STRING,
+      TypeComparability.ALL,
+      true,
+      true,
+      false,
+      16_777_216,
+      1,
+      0,
+      0,
+      String.class),
 
   /** Boolean (true or false) */
-  BOOLEAN(TypeFamily.BOOLEAN, false, false, 1, 0, 0, 0, Boolean.class),
+  BOOLEAN(TypeFamily.BOOLEAN, TypeComparability.ALL, true, false, false, 1, 0, 0, 0, Boolean.class),
 
   /** Signed integer (64-bit) */
-  INTEGER(TypeFamily.NUMERIC, true, false, 19, 1, 0, 0, Long.class),
+  INTEGER(TypeFamily.NUMERIC, TypeComparability.ALL, true, true, false, 19, 1, 0, 0, Long.class),
 
   /** Unlimited precision number */
-  NUMBER(TypeFamily.NUMERIC, true, true, 38, 1, 37, 0, BigDecimal.class),
+  NUMBER(
+      TypeFamily.NUMERIC, TypeComparability.ALL, true, true, true, 38, 1, 37, 0, BigDecimal.class),
 
   /** A interval type TODO: add precision for nanoseconds */
-  INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class),
+  INTERVAL(
+      TypeFamily.INTERVAL,
+      TypeComparability.ALL,
+      false,
+      false,
+      false,
+      -1,
+      -1,
+      -1,
+      -1,
+      Interval.class),
 
   /** Date-time value with nanosecond precision and time zone TODO: add precision for nanoseconds */
-  DATE(TypeFamily.TEMPORAL, false, false, -1, -1, -1, -1, ZonedDateTime.class),
+  DATE(
+      TypeFamily.TEMPORAL,
+      TypeComparability.ALL,
+      true,
+      false,
+      false,
+      -1,
+      -1,
+      -1,
+      -1,
+      ZonedDateTime.class),
 
   /** A Json type */
-  JSON(TypeFamily.JSON, false, false, -1, -1, -1, -1, JsonNode.class),
+  JSON(
+      TypeFamily.JSON,
+      TypeComparability.UNORDERED,
+      false,
+      false,
+      false,
+      -1,
+      -1,
+      -1,
+      -1,
+      JsonNode.class),
 
   /** A INET type */
-  INET(TypeFamily.NETWORK, false, false, -1, -1, -1, -1, InetAddress.class),
+  INET(
+      TypeFamily.NETWORK,
+      TypeComparability.UNORDERED,
+      true,
+      false,
+      false,
+      -1,
+      -1,
+      -1,
+      -1,
+      InetAddress.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
+  BINARY(
+      TypeFamily.BINARY,
+      TypeComparability.ALL,
+      true,
+      true,
+      false,
+      16_777_216,
+      1,
+      0,
+      0,
+      byte[].class),
 
-  /** An Array type */
-  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Array.class),
+  /**
+   * An Array type.
+   *
+   * <p>Comparability is not fixed per type name: it depends on the element type at runtime, see
+   * {@link ArrayType#getComparability()}.
+   */
+  ARRAY(TypeFamily.ARRAY, TypeComparability.NONE, false, false, false, -1, -1, 0, 0, Array.class),
 
-  ENUM(TypeFamily.ENUM, false, false, -1, -1, -1, -1, Enum.class);
+  ENUM(TypeFamily.ENUM, TypeComparability.NONE, false, false, false, -1, -1, -1, -1, Enum.class);
 
   public static final Set<String> ALL_NAMES =
       Set.of(
           "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
+
+  /** Whether a value of this type is atomic (DATE, NUMERIC, STRING, BOOLEAN, BINARY, INET, ...). */
+  @Getter private final boolean atomic;
+
+  /** The {@link TypeComparability} used by comparison operators for this type. */
+  @Getter private final TypeComparability comparability;
 
   /** If the precision parameter is supported. */
   private final boolean supportsPrecision;
@@ -110,6 +183,8 @@ public enum TypeName {
 
   TypeName(
       TypeFamily family,
+      TypeComparability comparability,
+      boolean atomic,
       boolean supportsPrecision,
       boolean supportsScale,
       int maxPrecision,
@@ -118,6 +193,8 @@ public enum TypeName {
       int minScale,
       Class<?> javaClass) {
     this.family = family;
+    this.atomic = atomic;
+    this.comparability = comparability;
     this.supportsPrecision = supportsPrecision;
     this.supportsScale = supportsScale;
     this.maxPrecision = maxPrecision;

@@ -82,7 +82,7 @@ public class ListAggFunction extends AggregateFunction {
         operands[0].unparse(writer, 0, 0);
         break;
     }
-    if ( operands.length == 2) {
+    if (operands.length == 2) {
       writer.append(",");
       operands[1].unparse(writer, 0, 0);
     }

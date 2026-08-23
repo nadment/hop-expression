@@ -105,6 +105,17 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
+  void integerTypeFrom() {
+    // Regression: from(0) must not throw PRECISION_OUT_OF_RANGE
+    assertEquals(1, IntegerType.from(0L).getPrecision());
+    assertEquals(1, IntegerType.from(0).getPrecision());
+    assertEquals(1, IntegerType.from(1L).getPrecision());
+    assertEquals(1, IntegerType.from(-1L).getPrecision());
+    assertEquals(3, IntegerType.from(123L).getPrecision());
+    assertEquals(3, IntegerType.from(-123L).getPrecision());
+  }
+
+  @Test
   void typeOf() {
     assertThrows(ExpressionException.class, () -> IntegerType.of(20));
     assertThrows(ExpressionException.class, () -> NumberType.of(39));

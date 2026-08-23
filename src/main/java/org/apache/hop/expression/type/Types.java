@@ -395,28 +395,19 @@ public class Types {
    *     cannot be determined or the value's type is unsupported.
    */
   public static Type inferTypeFromValue(Object value) {
-    if (value == null) {
-      return StringType.STRING;
-    } else if (value instanceof Boolean) {
-      return BooleanType.BOOLEAN;
-    } else if (value instanceof Long integer) {
-      return IntegerType.from(integer);
-    } else if (value instanceof BigDecimal number) {
-      return NumberType.from(number);
-    } else if (value instanceof String string) {
-      return StringType.from(string);
-    } else if (value instanceof ZonedDateTime) {
-      return DateType.DATE;
-    } else if (value instanceof Interval) {
-      return IntervalType.INTERVAL;
-    } else if (value instanceof JsonNode) {
-      return JsonType.JSON;
-    } else if (value instanceof InetAddress) {
-      return InetType.INET;
-    } else if (value instanceof byte[] bytes) {
-      return BinaryType.from(bytes);
-    }
-    return null;
+    return switch (value) {
+      case null -> StringType.STRING;
+      case Boolean b -> BooleanType.BOOLEAN;
+      case Long integer -> IntegerType.from(integer);
+      case BigDecimal number -> NumberType.from(number);
+      case String string -> StringType.from(string);
+      case ZonedDateTime zonedDateTime -> DateType.DATE;
+      case Interval interval -> IntervalType.INTERVAL;
+      case JsonNode jsonNode -> JsonType.JSON;
+      case InetAddress inetAddress -> InetType.INET;
+      case byte[] bytes -> BinaryType.from(bytes);
+      default -> null;
+    };
   }
 
   public static IValueMeta createValueMeta(final String valueMetaName, final TypeName typeName) {

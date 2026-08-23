@@ -44,11 +44,6 @@ public final class AnyType extends Type {
   }
 
   @Override
-  public TypeComparability getComparability() {
-    return TypeComparability.NONE;
-  }
-
-  @Override
   public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
       throws ExpressionException {
 
