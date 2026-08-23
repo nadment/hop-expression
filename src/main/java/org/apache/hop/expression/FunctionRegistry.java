@@ -84,8 +84,14 @@ public class FunctionRegistry {
     }
   }
 
-  /** Discovery and register built-in and plugin functions */
-  public static void registerFunctions() throws HopException {
+  /**
+   * Initializes the function registry by discovering and registering all expression functions
+   * annotated with @FunctionPlugin.
+   *
+   * @throws HopException if an error occurs during the discovery or registration process, or
+   *     instantiating function classes
+   */
+  public static void init() throws HopException {
     if (log.isDebug()) {
       log.logDebug("Register expression functions");
     }
@@ -111,7 +117,14 @@ public class FunctionRegistry {
     }
   }
 
-  public static void unregisterFunctions() {
+  /**
+   * Resets the function registry by clearing all registered functions.
+   *
+   * <p>This method removes all functions that have been registered in the registry, including
+   * built-in functions, plugin functions, and user-defined functions. After calling this method,
+   * the registry will be empty and will need to be reinitialized to restore functionality.
+   */
+  public static void reset() {
     functions.clear();
   }
 

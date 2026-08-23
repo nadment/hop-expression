@@ -67,7 +67,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       }
     }
 
-    throw new ExpressionParseException(
+    throw new ParseExpressionException(
         identifier.getPosition(), ErrorCode.UNRESOLVED_IDENTIFIER, identifier.getName());
   }
 

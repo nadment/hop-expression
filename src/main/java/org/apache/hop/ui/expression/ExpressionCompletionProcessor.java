@@ -28,9 +28,9 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.DescribedVariable;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
-import org.apache.hop.expression.ExpressionLexer;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Keyword;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.TypeName;
@@ -196,7 +196,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   protected void computeReservedWordProposals(
       List<ICompletionProposal> proposals, String prefix, int start, int end) {
     // Keywords
-    for (String word : ExpressionLexer.getReservedWords()) {
+    for (String word : Keyword.get()) {
       if (word.length() >= prefix.length()
           && word.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
         CompletionProposal proposal =
@@ -252,7 +252,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           // quoted
           if (quoted
               || name.indexOf(' ') >= 0
-              || ExpressionLexer.isReservedWord(name)
+              || Keyword.is(name)
               || TypeName.of(name) != null
               || TimeUnit.of(name) != null
               || FunctionRegistry.isFunction(name)) {

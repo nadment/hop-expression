@@ -18,7 +18,7 @@ package org.apache.hop.expression;
 
 import java.io.Serial;
 
-public class ExpressionParseException extends ExpressionException {
+public class ParseExpressionException extends ExpressionException {
   @Serial private static final long serialVersionUID = 1L;
 
   /**
@@ -32,7 +32,7 @@ public class ExpressionParseException extends ExpressionException {
    *
    * @param error an error message
    */
-  public ExpressionParseException(int position, ErrorCode error, Object... values) {
+  public ParseExpressionException(int position, ErrorCode error, Object... values) {
     super(error, values);
 
     this.position = position;

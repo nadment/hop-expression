@@ -48,7 +48,7 @@ public interface IExpression {
     // Check return type, Unknown or Enum are not expected here
     Type type = expression.getType();
     if (!expression.isNull() && (type.isName(TypeName.UNKNOWN) || type.isName(TypeName.ENUM))) {
-      throw new ExpressionParseException(0, ErrorCode.SYNTAX_ERROR, expression);
+      throw new ParseExpressionException(0, ErrorCode.SYNTAX_ERROR, expression);
     }
 
     return expression;

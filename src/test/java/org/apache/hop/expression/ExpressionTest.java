@@ -32,9 +32,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
-import org.apache.hop.core.HopClientEnvironment;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -47,29 +45,16 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
-import org.apache.hop.core.util.TestUtil;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.util.JsonConversion;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.hop.junit.rules.RestoreHopEnvironmentExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.UnrecoverableExceptions;
 
+@ExtendWith({RestoreHopEnvironmentExtension.class, ExpressionExtension.class})
 public class ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
-
-  @BeforeAll
-  static void setup() throws Throwable {
-    Locale.setDefault(Locale.ENGLISH);
-    TestUtil.registerTestPluginTypes();
-    FunctionRegistry.registerFunctions();
-  }
-
-  @AfterAll
-  static void clean() {
-    FunctionRegistry.unregisterFunctions();
-    HopClientEnvironment.reset();
-  }
 
   protected IRowExpressionContext createExpressionContext() throws Exception {
     return this.createExpressionContext(new Variables());

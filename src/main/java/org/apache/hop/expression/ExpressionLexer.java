@@ -83,7 +83,7 @@ public class ExpressionLexer {
   private int index = 0;
 
   public ExpressionLexer(@Nullable String source) {
-    if (source == null) throw new ExpressionParseException(0, ErrorCode.NULL_SOURCE_ERROR);
+    if (source == null) throw new ParseExpressionException(0, ErrorCode.NULL_SOURCE_ERROR);
     this.source = source;
     this.tokens = new ArrayList<>();
   }
@@ -109,14 +109,14 @@ public class ExpressionLexer {
   public void hasNextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peekToken();
     if (token == null) {
-      throw new ExpressionParseException(position, errorCode, values);
+      throw new ParseExpressionException(position, errorCode, values);
     }
   }
 
   public Token next() throws ExpressionException {
     Token token = peekToken();
     if (token == null) {
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           getPosition(), ErrorCode.INTERNAL_ERROR, "Unexpected end of expression");
     }
 
@@ -146,7 +146,7 @@ public class ExpressionLexer {
     if (token != null && token.is(id)) {
       index++;
       if (!hasNext()) {
-        throw new ExpressionParseException(token.start(), ErrorCode.SYNTAX_ERROR, id);
+        throw new ParseExpressionException(token.start(), ErrorCode.SYNTAX_ERROR, id);
       }
       return true;
     }
@@ -156,7 +156,7 @@ public class ExpressionLexer {
   public Token nextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peekToken();
     if (token == null) {
-      throw new ExpressionParseException(getPosition(), errorCode, values);
+      throw new ParseExpressionException(getPosition(), errorCode, values);
     }
     index++;
     return token;
@@ -169,16 +169,17 @@ public class ExpressionLexer {
       index++;
       return;
     }
-    throw new ExpressionParseException(token != null ? token.start() : position, errorCode, values);
+    throw new ParseExpressionException(token != null ? token.start() : position, errorCode, values);
   }
 
+  /**
+   * Returns the set of reserved words used by the expression language. Reserved words are keywords
+   * that cannot be used as identifiers in expressions.
+   *
+   * @return an unmodifiable set containing all reserved words
+   */
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
-  }
-
-  public static boolean isReservedWord(@Nullable String name) {
-    if (name == null) return false;
-    return RESERVED_WORDS.contains(name.toUpperCase());
   }
 
   /**
@@ -244,7 +245,7 @@ public class ExpressionLexer {
             }
 
             if (c != '\'') {
-              throw new ExpressionParseException(start, ErrorCode.MISSING_END_SINGLE_QUOTED_STRING);
+              throw new ParseExpressionException(start, ErrorCode.MISSING_END_SINGLE_QUOTED_STRING);
             }
 
             return new Token(Id.LITERAL_STRING, start, position, text.toString());
@@ -323,7 +324,7 @@ public class ExpressionLexer {
                 return new Token(Id.NOT_EQUAL, start);
               }
             }
-            throw new ExpressionParseException(start, ErrorCode.UNEXPECTED_CHARACTER, '!');
+            throw new ParseExpressionException(start, ErrorCode.UNEXPECTED_CHARACTER, '!');
           }
 
           // cast operator
@@ -337,7 +338,7 @@ public class ExpressionLexer {
                 return new Token(Id.CAST, start);
               }
             }
-            throw new ExpressionParseException(start, ErrorCode.UNEXPECTED_CHARACTER, ':');
+            throw new ParseExpressionException(start, ErrorCode.UNEXPECTED_CHARACTER, ':');
           }
 
           // possible start of '/*' or '//' comment
@@ -364,7 +365,7 @@ public class ExpressionLexer {
                       position = end + 2;
                     } else position++;
                   } else {
-                    throw new ExpressionParseException(start, ErrorCode.MISSING_END_BLOCK_COMMENT);
+                    throw new ParseExpressionException(start, ErrorCode.MISSING_END_BLOCK_COMMENT);
                   }
                 }
                 // Ignore comment
@@ -421,7 +422,7 @@ public class ExpressionLexer {
                 return new Token(Id.IDENTIFIER, start, position, value);
               }
             }
-            throw new ExpressionParseException(start, ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
+            throw new ParseExpressionException(start, ErrorCode.MISSING_END_DOUBLE_QUOTED_STRING);
           }
 
         case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.': // Number without zero .1
@@ -451,7 +452,7 @@ public class ExpressionLexer {
                 String str = source.substring(start, position);
                 // Empty, consecutive underscore or last char is underscore
                 if (str.length() == 2 || previous == '_' || error) {
-                  throw new ExpressionParseException(position, ErrorCode.INVALID_NUMBER, str);
+                  throw new ParseExpressionException(position, ErrorCode.INVALID_NUMBER, str);
                 }
 
                 return new Token(Id.LITERAL_NUMERIC_HEXA, start, position, str.replace("_", ""));
@@ -475,7 +476,7 @@ public class ExpressionLexer {
                 String str = source.substring(start, position);
                 // Empty, consecutive underscore or last char is underscore
                 if (str.length() == 2 || previous == '_' || error) {
-                  throw new ExpressionParseException(position, ErrorCode.INVALID_NUMBER, str);
+                  throw new ParseExpressionException(position, ErrorCode.INVALID_NUMBER, str);
                 }
 
                 return new Token(Id.LITERAL_NUMERIC_BINARY, start, position, str.replace("_", ""));
@@ -499,7 +500,7 @@ public class ExpressionLexer {
                 String str = source.substring(start, position);
                 // Empty, consecutive underscore or last char is underscore
                 if (str.length() == 2 || previous == '_' || error) {
-                  throw new ExpressionParseException(position, ErrorCode.INVALID_NUMBER, str);
+                  throw new ParseExpressionException(position, ErrorCode.INVALID_NUMBER, str);
                 }
 
                 return new Token(Id.LITERAL_NUMERIC_OCTAL, start, position, str.replace("_", ""));
@@ -579,7 +580,7 @@ public class ExpressionLexer {
             String str = source.substring(start, position);
             // Empty, consecutive underscore or last char is underscore
             if (str.isEmpty() || previous == '_' || error) {
-              throw new ExpressionParseException(position, ErrorCode.INVALID_NUMBER, str);
+              throw new ParseExpressionException(position, ErrorCode.INVALID_NUMBER, str);
             }
 
             // Literal decimal number
@@ -612,7 +613,7 @@ public class ExpressionLexer {
           }
 
           // Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR
-          if (isReservedWord(name)) {
+          if (Keyword.is(name)) {
             return new Token(Id.valueOf(name), start, position, name);
           }
 

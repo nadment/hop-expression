@@ -62,7 +62,7 @@ public class Identifier implements IExpression {
   public static String quoteIfNeeded(final String name) {
 
     if (name.indexOf(' ') >= 0
-        || ExpressionLexer.isReservedWord(name)
+        || Keyword.is(name)
         || TypeName.of(name) != null
         || TimeUnit.of(name) != null
         || FunctionRegistry.isFunction(name)) {
@@ -103,7 +103,7 @@ public class Identifier implements IExpression {
       }
     }
 
-    throw new ExpressionParseException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
+    throw new ParseExpressionException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
   }
 
   @Override
@@ -115,7 +115,7 @@ public class Identifier implements IExpression {
   public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
     // If the identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0
-        || ExpressionLexer.isReservedWord(name)
+        || Keyword.is(name)
         || FunctionRegistry.isFunction(name)
         || TypeName.of(name) != null
         || TimeUnit.of(name) != null) {

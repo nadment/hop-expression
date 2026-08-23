@@ -178,7 +178,7 @@ public class ExpressionParser {
     // Unexpected end of expression
     if (lexer.hasNext()) {
       Token token = lexer.next();
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           token.start(), ErrorCode.UNEXPECTED_CHARACTER, token.text());
     }
 
@@ -287,9 +287,9 @@ public class ExpressionParser {
                 expression,
                 parseLogicalNot());
           }
-          throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Token.Id.DISTINCT);
+          throw new ParseExpressionException(start, ErrorCode.SYNTAX_ERROR, Token.Id.DISTINCT);
         }
-        default -> throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Token.Id.IS);
+        default -> throw new ParseExpressionException(start, ErrorCode.SYNTAX_ERROR, Token.Id.IS);
       };
     }
     return expression;
@@ -343,7 +343,7 @@ public class ExpressionParser {
       lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
       if (list.isEmpty()) {
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             lexer.getPosition(), ErrorCode.EMPTY_VALUE_LIST_FOR_IN_PREDICATE);
       }
 
@@ -386,7 +386,7 @@ public class ExpressionParser {
     }
 
     if (not) {
-      throw new ExpressionParseException(start, ErrorCode.SYNTAX_ERROR, Id.NOT);
+      throw new ParseExpressionException(start, ErrorCode.SYNTAX_ERROR, Id.NOT);
     }
 
     return expression;
@@ -472,7 +472,7 @@ public class ExpressionParser {
               lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parseTerm());
         }
       }
-      throw new ExpressionParseException(lexer.getPosition(), ErrorCode.SYNTAX_ERROR, Id.AT);
+      throw new ParseExpressionException(lexer.getPosition(), ErrorCode.SYNTAX_ERROR, Id.AT);
     }
     return expression;
   }
@@ -509,9 +509,9 @@ public class ExpressionParser {
             yield expression;
           }
         }
-        throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
+        throw new ParseExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
       }
-      default -> throw new ExpressionParseException(token.start(), ErrorCode.SYNTAX_ERROR, token);
+      default -> throw new ParseExpressionException(token.start(), ErrorCode.SYNTAX_ERROR, token);
     };
   }
 
@@ -564,7 +564,7 @@ public class ExpressionParser {
   private IExpression parseArray(final Token token) throws ExpressionException {
 
     if (!lexer.hasNext()) {
-      throw new ExpressionParseException(token.start(), ErrorCode.MISSING_RIGHT_BRACKET);
+      throw new ParseExpressionException(token.start(), ErrorCode.MISSING_RIGHT_BRACKET);
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -606,7 +606,7 @@ public class ExpressionParser {
       // Return as BINARY
       return Literal.of(bytes);
     } catch (Exception e) {
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           token.start(), ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT, token.text(), "HEX");
     }
   }
@@ -653,7 +653,7 @@ public class ExpressionParser {
 
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_DATE, token.text());
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_DATE, token.text());
     }
   }
 
@@ -670,7 +670,7 @@ public class ExpressionParser {
 
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TIMESTAMP, token.text());
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TIMESTAMP, token.text());
     }
   }
 
@@ -693,7 +693,7 @@ public class ExpressionParser {
     do {
       if (lexer.ifThenNext(Id.RPARENTHESIS)) {
         if (!first) {
-          throw new ExpressionParseException(lexer.getPosition(), ErrorCode.MISSING_ELEMENT);
+          throw new ParseExpressionException(lexer.getPosition(), ErrorCode.MISSING_ELEMENT);
         }
         return list;
       }
@@ -768,7 +768,7 @@ public class ExpressionParser {
     lexer.nextOrThrows(Id.AS, ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
 
     if (!lexer.hasNext() || lexer.is(Id.RPARENTHESIS)) {
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
@@ -776,13 +776,13 @@ public class ExpressionParser {
 
     if (lexer.ifThenNext(Id.FORMAT)) {
       if (!lexer.hasNext()) {
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
       }
       Token format = lexer.next();
       if (format.is(Id.LITERAL_STRING)) operands.add(this.parseLiteralString(format));
       else
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             format.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
@@ -802,7 +802,7 @@ public class ExpressionParser {
     }
 
     if (!lexer.hasNext()) {
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
@@ -816,7 +816,7 @@ public class ExpressionParser {
     lexer.nextOrThrows(Id.IN, ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
 
     if (!lexer.hasNext()) {
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
     }
 
@@ -891,14 +891,14 @@ public class ExpressionParser {
       if (lexer.ifThenNext(Id.NULLS)) {
         return true;
       }
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           lexer.getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function);
     }
     if (lexer.ifThenNext(Id.RESPECT)) {
       if (lexer.ifThenNext(Id.NULLS)) {
         return false;
       }
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           lexer.getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function);
     }
 
@@ -997,14 +997,14 @@ public class ExpressionParser {
       if (lexer.hasNext()) {
         operands.add(this.parseLiteralString(lexer.next()));
       } else {
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
       }
 
       if (lexer.ifThenNext(Id.VALUE)) {
         operands.add(this.parsePrimary());
       } else {
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
       }
 
@@ -1044,7 +1044,7 @@ public class ExpressionParser {
 
     // Function is never null
     if (function == null) {
-      throw new ExpressionParseException(
+      throw new ParseExpressionException(
           token.start(), ErrorCode.FUNCTION_DOES_NOT_EXIST, token.text());
     }
 
@@ -1094,7 +1094,7 @@ public class ExpressionParser {
   private IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {
     TimeUnit unit = TimeUnit.of(token.text());
     if (unit == null) {
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TIMEUNIT, token.text());
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TIMEUNIT, token.text());
     }
     return Literal.of(unit);
   }
@@ -1136,11 +1136,11 @@ public class ExpressionParser {
 
     IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
     if (qualifier == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, text);
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_INTERVAL, text);
 
     Interval interval = qualifier.parse(text);
     if (interval == null)
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_INTERVAL, text);
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_INTERVAL, text);
 
     if (negative) interval = interval.negate();
 
@@ -1151,7 +1151,7 @@ public class ExpressionParser {
 
     TypeName name = TypeName.of(token.text());
     if (name == null) {
-      throw new ExpressionParseException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TYPE, token.text());
     }
 
     int precision = Type.PRECISION_NOT_SPECIFIED;
@@ -1162,11 +1162,11 @@ public class ExpressionParser {
       try {
         precision = Integer.parseInt(lexer.next().text());
       } catch (NumberFormatException e) {
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_PRECISION);
       }
       if (!name.supportsPrecision()) {
-        throw new ExpressionParseException(
+        throw new ParseExpressionException(
             token.start(), ErrorCode.PRECISION_NOT_SUPPORTED, token.text());
       }
 
@@ -1175,11 +1175,11 @@ public class ExpressionParser {
         try {
           scale = Integer.parseInt(lexer.next().text());
         } catch (NumberFormatException e) {
-          throw new ExpressionParseException(
+          throw new ParseExpressionException(
               token.start(), ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_SCALE);
         }
         if (!name.supportsScale()) {
-          throw new ExpressionParseException(
+          throw new ParseExpressionException(
               token.start(), ErrorCode.SCALE_NOT_SUPPORTED, token.text());
         }
       }
@@ -1199,7 +1199,7 @@ public class ExpressionParser {
           case JSON -> JsonType.JSON;
           case INTERVAL -> IntervalType.INTERVAL;
           default ->
-              throw new ExpressionParseException(
+              throw new ParseExpressionException(
                   token.start(), ErrorCode.INVALID_TYPE, token.text());
         };
 
