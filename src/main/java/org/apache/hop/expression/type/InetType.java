@@ -52,11 +52,6 @@ public final class InetType extends Type {
   }
 
   @Override
-  public TypeComparability getComparability() {
-    return TypeComparability.UNORDERED;
-  }
-
-  @Override
   public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
       throws ExpressionException {
 

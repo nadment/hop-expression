@@ -71,11 +71,6 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public TypeComparability getComparability() {
-    return TypeComparability.ALL;
-  }
-
-  @Override
   public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
       throws ExpressionException {
     if (value == null) return null;
@@ -118,14 +113,7 @@ public final class BinaryType extends Type {
   @Override
   public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
-      if (l.length != r.length) return false;
-      for (int i = 0; i < l.length; i++) {
-        int compare = l[i] - r[i];
-        if (compare != 0) {
-          return false;
-        }
-      }
-      return true;
+      return Arrays.equals(l, r);
     }
     return super.compareEqual(left, right);
   }
