@@ -934,7 +934,7 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** Parse function <code>COUNT(*) | COUNT([DISTINCT] expression)</code> */
+  /** Parse function <code>COUNT(*) | COUNT([ALL | DISTINCT] expression)</code> */
   private IExpression parseFunctionCount(Token token, Function function)
       throws ExpressionException {
 
@@ -950,6 +950,7 @@ public class ExpressionParser {
       operands = this.parseListExpression();
       aggregator = CountFunction.COUNT_DISTINCT;
     } else {
+      lexer.ifThenNext(Id.ALL);
       operands = this.parseListExpression();
     }
 

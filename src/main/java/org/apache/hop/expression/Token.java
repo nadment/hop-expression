@@ -53,6 +53,8 @@ public record Token(Id id, int start, int end, String text) {
     CASE,
     /** Concat operator <code>||</code>. */
     CONCAT("||"),
+    /** Used by functions: COUNT([ALL] field) */
+    ALL,
     /** Used by function CAST(value AS type) */
     AS,
     /** Used by operator AT TIME ZONE */
@@ -184,7 +186,7 @@ public record Token(Id id, int start, int end, String text) {
     TO,
     /** The "SIMILAR TO" operator. */
     SIMILAR,
-    /** Used by functions: COUNT([DISTINCT] numeric), LISTAGG( [DISTINCT] string [, delimiter]) */
+    /** Used by functions: COUNT([DISTINCT] field), LISTAGG( [DISTINCT] string [, delimiter]) */
     DISTINCT,
     /** Data type element DATE, NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,

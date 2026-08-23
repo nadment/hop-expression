@@ -25,6 +25,7 @@ public class Keyword {
   private static final Set<String> WORDS =
       Set.of(
           "AND",
+          "ALL",
           "AS",
           "ASYMMETRIC",
           "AT",

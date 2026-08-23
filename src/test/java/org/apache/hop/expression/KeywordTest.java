@@ -33,6 +33,6 @@ class KeywordTest {
 
   @Test
   void testGet() throws Exception {
-    assertEquals(42, Keyword.get().size());
+    assertEquals(43, Keyword.get().size());
   }
 }

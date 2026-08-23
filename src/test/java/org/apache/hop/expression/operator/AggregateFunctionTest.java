@@ -41,12 +41,15 @@ class AggregateFunctionTest extends ExpressionTest {
   @Test
   void Count() throws Exception {
     evalFails("Count()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Count(ALL )", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Count(DISTINCT )", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("Count(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("Count(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("COUNT(*)").returnType(IntegerType.INTEGER_NOT_NULL);
     optimize("COUNT(FIELD_INTEGER)").returnType(IntegerType.INTEGER_NOT_NULL);
+    optimize("COUNT(ALL FIELD_STRING)", "COUNT(FIELD_STRING)")
+        .returnType(IntegerType.INTEGER_NOT_NULL);
     optimize("COUNT(DISTINCT FIELD_STRING)").returnType(IntegerType.INTEGER_NOT_NULL);
   }
 
