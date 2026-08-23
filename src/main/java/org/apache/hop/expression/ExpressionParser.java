@@ -832,56 +832,19 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  /** Parse function <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
-  private IExpression parseFunctionFirstValue(Token token, Function function)
-      throws ExpressionException {
+  /**
+   * Parse aggregate function with NULL treatment clause <code>
+   * NAME(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
+   */
+  private IExpression parseFunctionWithNullTreatment(
+      Token token, Function ignoreNulls, Function respectNulls) throws ExpressionException {
 
     List<IExpression> operands = this.parseListExpression();
 
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    // NULL treatment clauses
-    if (this.parseIgnoreOrRespectNulls(function)) {
-      function = FirstValueFunction.FIRST_VALUE_IGNORE_NULLS;
-    } else {
-      function = FirstValueFunction.FIRST_VALUE_RESPECT_NULLS;
-    }
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /** Parse function <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
-  private IExpression parseFunctionLastValue(Token token, Function function)
-      throws ExpressionException {
-
-    List<IExpression> operands = this.parseListExpression();
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    // NULL treatment clauses
-    if (this.parseIgnoreOrRespectNulls(function)) {
-      function = LastValueFunction.LAST_VALUE_IGNORE_NULLS;
-    } else {
-      function = LastValueFunction.LAST_VALUE_RESPECT_NULLS;
-    }
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /** Parse function <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code> */
-  private IExpression parseFunctionNthValue(Token token, Function function)
-      throws ExpressionException {
-
-    List<IExpression> operands = this.parseListExpression();
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    // NULL treatment clauses
-    if (this.parseIgnoreOrRespectNulls(function)) {
-      function = NthValueFunction.NTH_VALUE_IGNORE_NULLS;
-    } else {
-      function = NthValueFunction.NTH_VALUE_RESPECT_NULLS;
-    }
+    // NULL treatment clause
+    Function function = this.parseIgnoreOrRespectNulls(respectNulls) ? ignoreNulls : respectNulls;
 
     return new Call(token.start(), function, operands);
   }
@@ -940,16 +903,14 @@ public class ExpressionParser {
   }
 
   /** Parse function <code>COUNT(*) | COUNT([ALL | DISTINCT] expression)</code> */
-  private IExpression parseFunctionCount(Token token, Function function)
-      throws ExpressionException {
+  private IExpression parseFunctionCount(Token token) throws ExpressionException {
 
-    AggregateFunction aggregator = CountFunction.COUNT_VALUE;
+    AggregateFunction aggregator = CountFunction.COUNT_ALL;
     List<IExpression> operands = new ArrayList<>();
 
-    // COUNT(*) no operand
     if (lexer.ifThenNext(Id.STAR)) {
-      aggregator = CountFunction.COUNT_ALL;
-      // Use fictive operand
+      aggregator = CountFunction.COUNT_ROW;
+      // COUNT(*)  use fictive operand
       operands.add(Literal.NULL);
     } else if (lexer.ifThenNext(Id.DISTINCT)) {
       operands = this.parseListExpression();
@@ -964,14 +925,15 @@ public class ExpressionParser {
     return new Call(token.start(), aggregator, operands);
   }
 
-  /** Parse function <code>LISTAGG([DISTINCT] expression [, delimiter] )</code> */
-  private IExpression parseFunctionListAgg(Token token, Function function)
-      throws ExpressionException {
+  /** Parse function <code>LISTAGG([ALL | DISTINCT] expression [, delimiter] )</code> */
+  private IExpression parseFunctionListAgg(Token token) throws ExpressionException {
 
     AggregateFunction aggregator = ListAggFunction.LISTAGG_ALL;
 
     if (lexer.ifThenNext(Id.DISTINCT)) {
       aggregator = ListAggFunction.LISTAGG_DISTINCT;
+    } else {
+      lexer.ifThenNext(Id.ALL);
     }
 
     List<IExpression> operands = this.parseListExpression();
@@ -1056,45 +1018,36 @@ public class ExpressionParser {
 
     lexer.nextOrThrows(Id.LPARENTHESIS, ErrorCode.MISSING_LEFT_PARENTHESIS);
 
-    // Parse function with custom syntax
-    switch (token.text()) {
-      case "CAST", "TRY_CAST" -> {
-        return parseFunctionCast(token, function);
+    // Parse function with custom syntax, fallback to generic argument list
+    return switch (token.text()) {
+      case "CAST", "TRY_CAST" -> parseFunctionCast(token, function);
+      case "EXTRACT" -> parseFunctionExtract(token, function);
+      case "POSITION" -> parseFunctionPosition(token, function);
+      case "COUNT" -> parseFunctionCount(token);
+      case "FIRST_VALUE" ->
+          parseFunctionWithNullTreatment(
+              token,
+              FirstValueFunction.FIRST_VALUE_IGNORE_NULLS,
+              FirstValueFunction.FIRST_VALUE_RESPECT_NULLS);
+      case "LAST_VALUE" ->
+          parseFunctionWithNullTreatment(
+              token,
+              LastValueFunction.LAST_VALUE_IGNORE_NULLS,
+              LastValueFunction.LAST_VALUE_RESPECT_NULLS);
+      case "NTH_VALUE" ->
+          parseFunctionWithNullTreatment(
+              token,
+              NthValueFunction.NTH_VALUE_IGNORE_NULLS,
+              NthValueFunction.NTH_VALUE_RESPECT_NULLS);
+      case "LISTAGG" -> parseFunctionListAgg(token);
+      case "JSON_OBJECT" -> parseFunctionJsonObject(token, function);
+      case "JSON_VALUE" -> parseFunctionJsonValue(token, function);
+      default -> {
+        List<IExpression> operands = this.parseListExpression();
+        lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+        yield new Call(token.start(), function, operands);
       }
-      case "EXTRACT" -> {
-        return parseFunctionExtract(token, function);
-      }
-      case "POSITION" -> {
-        return parseFunctionPosition(token, function);
-      }
-      case "COUNT" -> {
-        return parseFunctionCount(token, function);
-      }
-      case "FIRST_VALUE" -> {
-        return this.parseFunctionFirstValue(token, function);
-      }
-      case "LAST_VALUE" -> {
-        return this.parseFunctionLastValue(token, function);
-      }
-      case "NTH_VALUE" -> {
-        return this.parseFunctionNthValue(token, function);
-      }
-      case "LISTAGG" -> {
-        return this.parseFunctionListAgg(token, function);
-      }
-      case "JSON_OBJECT" -> {
-        return this.parseFunctionJsonObject(token, function);
-      }
-      case "JSON_VALUE" -> {
-        return this.parseFunctionJsonValue(token, function);
-      }
-    }
-
-    List<IExpression> operands = this.parseListExpression();
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), function, operands);
+    };
   }
 
   private IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {

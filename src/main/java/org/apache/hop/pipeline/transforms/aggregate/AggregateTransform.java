@@ -240,7 +240,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
         Object value = null;
 
-        if (data.aggregates[i].getOperator().is(CountFunction.COUNT_VALUE)) {
+        if (data.aggregates[i].getOperator().is(CountFunction.COUNT_ALL)) {
           value = 0L;
         }
         outputRow[index++] = value;

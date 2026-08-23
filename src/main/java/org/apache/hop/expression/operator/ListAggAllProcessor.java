@@ -22,11 +22,11 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public class ListAggProcessor implements IExpressionProcessor {
+public class ListAggAllProcessor implements IExpressionProcessor {
   private final String delimiter;
   private final Queue<String> values;
 
-  public ListAggProcessor(String delimiter) {
+  public ListAggAllProcessor(String delimiter) {
     this.values = new LinkedList<>();
     this.delimiter = delimiter;
   }

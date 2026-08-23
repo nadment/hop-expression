@@ -20,11 +20,11 @@ import org.jspecify.annotations.NullMarked;
 
 /** Returns the number of input values. Null values are not counted. */
 @NullMarked
-public class CountValueProcessor implements IExpressionProcessor {
+public class CountAllProcessor implements IExpressionProcessor {
 
   private long count;
 
-  public CountValueProcessor() {
+  public CountAllProcessor() {
     count = 0L;
   }
 

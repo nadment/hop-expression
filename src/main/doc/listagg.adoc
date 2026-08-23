@@ -21,7 +21,7 @@ Returns the concatenated input values over a group of rows, separated by the del
 == Syntax
 
 ----
-LISTAGG( [DISTINCT] expression [, delimiter] )
+LISTAGG( [ALL | DISTINCT] expression [, delimiter] )
 ----
 
 

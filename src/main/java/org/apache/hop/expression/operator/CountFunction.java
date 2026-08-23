@@ -27,9 +27,9 @@ import org.jspecify.annotations.NullMarked;
 @FunctionPlugin
 @NullMarked
 public class CountFunction extends AggregateFunction {
-  public static final CountFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
-  public static final CountFunction COUNT_VALUE = new CountFunction(Count.VALUE);
   public static final CountFunction COUNT_ALL = new CountFunction(Count.ALL);
+  public static final CountFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
+  public static final CountFunction COUNT_ROW = new CountFunction(Count.ROW);
   private final Count count;
 
   /**
@@ -37,7 +37,7 @@ public class CountFunction extends AggregateFunction {
    * modes.
    */
   public CountFunction() {
-    this(Count.VALUE);
+    this(Count.ROW);
   }
 
   public CountFunction(Count count) {
@@ -47,14 +47,11 @@ public class CountFunction extends AggregateFunction {
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    switch (count) {
-      case DISTINCT:
-        return new CountDistinctValueProcessor();
-      case ALL:
-        return new CountRowProcessor();
-      case VALUE:
-    }
-    return new CountValueProcessor();
+    return switch (count) {
+      case ALL -> new CountAllProcessor();
+      case DISTINCT -> new CountDistinctProcessor();
+      case ROW -> new CountRowProcessor();
+    };
   }
 
   @Override
@@ -63,22 +60,23 @@ public class CountFunction extends AggregateFunction {
     writer.append('(');
     switch (count) {
       case ALL:
-        writer.append('*');
+        writer.append("ALL ");
+        operands[0].unparse(writer, 0, 0);
         break;
       case DISTINCT:
         writer.append("DISTINCT ");
         operands[0].unparse(writer, 0, 0);
         break;
-      case VALUE:
-        operands[0].unparse(writer, 0, 0);
+      case ROW:
+        writer.append('*');
         break;
     }
     writer.append(')');
   }
 
   public enum Count {
-    VALUE,
+    ALL,
     DISTINCT,
-    ALL
+    ROW
   }
 }

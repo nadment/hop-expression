@@ -22,11 +22,11 @@ import org.jspecify.annotations.NullMarked;
 
 /** Returns the number of distinct values. */
 @NullMarked
-public class CountDistinctValueProcessor implements IExpressionProcessor {
+public class CountDistinctProcessor implements IExpressionProcessor {
 
   private final Set<Object> values;
 
-  public CountDistinctValueProcessor() {
+  public CountDistinctProcessor() {
     values = new HashSet<>();
   }
 

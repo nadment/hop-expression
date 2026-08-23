@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
@@ -64,7 +65,28 @@ public class ListAggFunction extends AggregateFunction {
     if (option == ListAgg.DISTINCT) {
       return new ListAggDistinctProcessor(delimiter);
     }
-    return new ListAggProcessor(delimiter);
+    return new ListAggAllProcessor(delimiter);
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append(this.getName());
+    writer.append('(');
+    switch (option) {
+      case ALL:
+        writer.append("ALL ");
+        operands[0].unparse(writer, 0, 0);
+        break;
+      case DISTINCT:
+        writer.append("DISTINCT ");
+        operands[0].unparse(writer, 0, 0);
+        break;
+    }
+    if ( operands.length == 2) {
+      writer.append(",");
+      operands[1].unparse(writer, 0, 0);
+    }
+    writer.append(')');
   }
 
   public enum ListAgg {

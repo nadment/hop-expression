@@ -47,9 +47,8 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("Count(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("COUNT(*)").returnType(IntegerType.INTEGER_NOT_NULL);
-    optimize("COUNT(FIELD_INTEGER)").returnType(IntegerType.INTEGER_NOT_NULL);
-    optimize("COUNT(ALL FIELD_STRING)", "COUNT(FIELD_STRING)")
-        .returnType(IntegerType.INTEGER_NOT_NULL);
+    optimize("COUNT(FIELD_INTEGER)", "COUNT(ALL FIELD_INTEGER)").returnType(IntegerType.INTEGER_NOT_NULL);
+    optimize("COUNT(ALL FIELD_STRING)").returnType(IntegerType.INTEGER_NOT_NULL);
     optimize("COUNT(DISTINCT FIELD_STRING)").returnType(IntegerType.INTEGER_NOT_NULL);
   }
 
@@ -167,7 +166,9 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("LISTAGG()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("LISTAGG(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    optimize("LISTAGG(FIELD_STRING,',')").returnType(StringType.STRING);
+    optimize("LISTAGG(FIELD_STRING,',')", "LISTAGG(ALL FIELD_STRING,',')").returnType(StringType.STRING);
+    optimize("LISTAGG(ALL FIELD_STRING,',')").returnType(StringType.STRING);
+    optimize("LISTAGG(DISTINCT FIELD_STRING,',')").returnType(StringType.STRING);
   }
 
   @Test
