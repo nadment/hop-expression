@@ -84,49 +84,50 @@ import org.jspecify.annotations.NullMarked;
  * Expression parser.
  *
  * <p>EBNF Syntax: <code>
- * Literal :=
- * BooleanLiteral
- * StringLiteral
- * IntegerLiteral
- * NumberLiteral
- * BinaryLiteral
- * JsonLiteral
- * 'NULL'
- * 'TRUE'
- * 'FALSE'
- * TermExpression :=
- * Literal
- * Identifier
- * ParenthesizedExpression
- * FunctionExpression
- * CaseExpression
- * PrimaryExpression :=
- * CastOperatorExpression
- * ElementAtExpression
- * AtTimeZoneExpression
- * ParenthesizedExpression := ('(' LogicalOrExpression ')') | LogicalOrExpression
+ * <p>
+ * Literal := BooleanLiteral | StringLiteral | IntegerLiteral | NumberLiteral | BinaryLiteral | JsonLiteral
+ * <p>
+ * Constant := 'NULL' | 'TRUE' | 'FALSE'
+ * <p>
+ * TermExpression := Literal | Identifier | ParenthesisExpression  | FunctionExpression | CaseExpression
+ * <p>
+ * ParenthesisExpression  := ('(' LogicalOrExpression ')') | LogicalOrExpression
+ * <p>
  * FunctionExpression := FunctionName '(' ListExpression ')'
+ * <p>
  * ListExpression := LogicalOrExpression ( ',' LogicalOrExpression )*
+ * <p>
  * CaseExpression := SimpleCaseExpression | SearchedCaseExpression
+ * <p>
  * SimpleCaseExpression := 'CASE' Expr ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
+ * <p>
  * SearchedCaseExpression := 'CASE' ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
+ * <p>
  * CastOperatorExpression := TermExpression '::' TypeExpression
+ * <p>
  * ElementAtExpression := TermExpression '[' AdditiveExpression ']'
+ * <p>
  * AtTimeZoneExpression := TermExpression AT TIME ZONE TimezoneExpression
+ * <p>
+ * PrimaryExpression := CastOperatorExpression | ElementAtExpression | AtTimeZoneExpression
+ * <p>
  * UnaryExpression :=
  * PrimaryExpression
  * - PrimaryExpression
  * + PrimaryExpression
- * FactorExpression :=
+ * <p>
+ * MultiplicativeExpression  :=
  * UnaryExpression
  * UnaryExpression * UnaryExpression
  * UnaryExpression / UnaryExpression
  * UnaryExpression % UnaryExpression
+ * <p>
  * AdditiveExpression :=
- * FactorExpression
- * FactorExpression + FactorExpression
- * FactorExpression - FactorExpression
- * FactorExpression || FactorExpression
+ * MultiplicativeExpression
+ * MultiplicativeExpression  + MultiplicativeExpression
+ * MultiplicativeExpression  - MultiplicativeExpression
+ * MultiplicativeExpression  || MultiplicativeExpression
+ * <p>
  * RelationExpression :=
  * AdditiveExpression
  * AdditiveExpression [NOT] IN '(' ListExpression ')'
@@ -134,6 +135,7 @@ import org.jspecify.annotations.NullMarked;
  * AdditiveExpression [NOT] LIKE AdditiveExpression [ESCAPE StringExpression]
  * AdditiveExpression [NOT] ILIKE AdditiveExpression [ESCAPE StringExpression]
  * AdditiveExpression [NOT] SIMILAR TO AdditiveExpression
+ * <p>
  * ComparisonExpression :=
  * RelationalExpression
  * RelationalExpression = RelationalExpression
@@ -143,16 +145,17 @@ import org.jspecify.annotations.NullMarked;
  * RelationalExpression &gt;= RelationalExpression
  * RelationalExpression &lt;&gt; RelationalExpression
  * RelationalExpression != RelationalExpression
+ * <p>
  * ConditionalExpression :=
  * ComparisonExpression
  * ComparisonExpression IS [NOT] TRUE|FALSE|NULL
  * ComparisonExpression IS [NOT] DISTINCT FROM LogicalNotExpression
- * LogicalNotExpression :=
- * ConditionalExpression
- * [NOT] LogicalNotExpression
+ * <p>
+ * LogicalNotExpression := ConditionalExpression [NOT] LogicalNotExpression
  * LogicalAndExpression := LogicalNotExpression ( AND LogicalNotExpression )*
  * LogicalXorExpression := LogicalAndExpression ( OR LogicalAndExpression )*
  * LogicalOrExpression := LogicalXorExpression ( OR LogicalXorExpression )*
+ *
  * </code>
  */
 @NullMarked
@@ -393,7 +396,7 @@ public class ExpressionParser {
   }
 
   /** <code>UnaryExpression ( (* | / | %) UnaryExpression())</code>* */
-  private IExpression parseFactor() throws ExpressionException {
+  private IExpression parseMultiplicative() throws ExpressionException {
     IExpression expression = this.parseUnary();
 
     while (lexer.hasNext()) {
@@ -542,18 +545,20 @@ public class ExpressionParser {
     return expression;
   }
 
-  /** <code>FactorExpression ( (+ | - | "||") FactorExpression )*</code> */
+  /** <code>MultiplicativeExpression ( (+ | - | "||") MultiplicativeExpression )*</code> */
   private IExpression parseAdditive() throws ExpressionException {
-    IExpression expression = this.parseFactor();
+    IExpression expression = this.parseMultiplicative();
     while (lexer.hasNext()) {
       int start = lexer.getPosition();
 
       if (lexer.ifThenNextAndNotEnd(Id.PLUS)) {
-        expression = new Call(start, AddOperator.INSTANCE, expression, this.parseFactor());
+        expression = new Call(start, AddOperator.INSTANCE, expression, this.parseMultiplicative());
       } else if (lexer.ifThenNextAndNotEnd(Id.MINUS)) {
-        expression = new Call(start, SubtractOperator.INSTANCE, expression, this.parseFactor());
+        expression =
+            new Call(start, SubtractOperator.INSTANCE, expression, this.parseMultiplicative());
       } else if (lexer.ifThenNextAndNotEnd(Id.CONCAT)) {
-        expression = new Call(start, ConcatFunction.INSTANCE, expression, this.parseFactor());
+        expression =
+            new Call(start, ConcatFunction.INSTANCE, expression, this.parseMultiplicative());
       } else break;
     }
 
