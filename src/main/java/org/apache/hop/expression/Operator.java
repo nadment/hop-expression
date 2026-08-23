@@ -293,10 +293,10 @@ public abstract class Operator {
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionParseException(call.getPosition(), ErrorCode.NOT_ENOUGH_ARGUMENT, this);
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.NOT_ENOUGH_ARGUMENT, this);
       }
       if (call.getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionParseException(call.getPosition(), ErrorCode.TOO_MANY_ARGUMENT, this);
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.TOO_MANY_ARGUMENT, this);
       }
     }
   }
@@ -328,7 +328,7 @@ public abstract class Operator {
     }
 
     if (throwOnFailure) {
-      throw new ExpressionParseException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT, this);
+      throw new ParseExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT, this);
     }
 
     return false;

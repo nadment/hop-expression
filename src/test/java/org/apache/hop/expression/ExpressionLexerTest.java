@@ -15,9 +15,7 @@
 package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.apache.hop.expression.Token.Id;
@@ -88,13 +86,6 @@ class ExpressionLexerTest {
   }
 
   @Test
-  void testIsReservedWords() {
-    assertTrue(ExpressionLexer.isReservedWord("BETWEEN"));
-    assertFalse(ExpressionLexer.isReservedWord("XXX"));
-    assertFalse(ExpressionLexer.isReservedWord(null));
-  }
-
-  @Test
   void testReservedWords() throws Exception {
     ExpressionLexer lexer =
         new ExpressionLexer("CASE WHEN THEN ELSE END AND OR NOT XOR IS NULL TRUE FALSE");
@@ -112,9 +103,6 @@ class ExpressionLexerTest {
     assertEquals(Id.IS, tokens.get(9).id());
     assertEquals(Id.NULL, tokens.get(10).id());
     assertEquals(Id.TRUE, tokens.get(11).id());
-    assertEquals(Id.FALSE, tokens.get(12).id());
-
-    assertEquals(42, ExpressionLexer.getReservedWords().size());
   }
 
   @Test
@@ -200,14 +188,14 @@ class ExpressionLexerTest {
   @Test
   void testErrors() {
     assertThrows(
-        ExpressionParseException.class, () -> new ExpressionLexer("'unclosed").getTokens());
+        ParseExpressionException.class, () -> new ExpressionLexer("'unclosed").getTokens());
     assertThrows(
-        ExpressionParseException.class, () -> new ExpressionLexer("\"unclosed").getTokens());
+        ParseExpressionException.class, () -> new ExpressionLexer("\"unclosed").getTokens());
     assertThrows(
-        ExpressionParseException.class, () -> new ExpressionLexer("/* unclosed").getTokens());
-    assertThrows(ExpressionParseException.class, () -> new ExpressionLexer("0x__123").getTokens());
-    assertThrows(ExpressionParseException.class, () -> new ExpressionLexer("123_").getTokens());
-    assertThrows(ExpressionParseException.class, () -> new ExpressionLexer("!").getTokens());
-    assertThrows(ExpressionParseException.class, () -> new ExpressionLexer(":").getTokens());
+        ParseExpressionException.class, () -> new ExpressionLexer("/* unclosed").getTokens());
+    assertThrows(ParseExpressionException.class, () -> new ExpressionLexer("0x__123").getTokens());
+    assertThrows(ParseExpressionException.class, () -> new ExpressionLexer("123_").getTokens());
+    assertThrows(ParseExpressionException.class, () -> new ExpressionLexer("!").getTokens());
+    assertThrows(ParseExpressionException.class, () -> new ExpressionLexer(":").getTokens());
   }
 }

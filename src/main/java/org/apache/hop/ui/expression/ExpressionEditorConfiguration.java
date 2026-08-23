@@ -23,8 +23,8 @@ import java.util.concurrent.ExecutionException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.ExpressionLexer;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Keyword;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.ui.core.gui.GuiResource;
@@ -212,11 +212,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
         rule.addWord(name, function);
       }
     }
-    for (String word : ExpressionLexer.getReservedWords()) {
-      if (!word.isEmpty()) {
-        if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
-        else rule.addWord(word, keyword);
-      }
+    for (String word : Keyword.get()) {
+      if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
+      else rule.addWord(word, keyword);
     }
     for (TypeName type : TypeName.values()) {
       rule.addWord(type.name(), extra);
