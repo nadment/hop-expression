@@ -47,7 +47,7 @@ public class ExpressionLexer {
     return source.length();
   }
 
-  private @Nullable Token peekToken() throws ExpressionException {
+  private @Nullable Token peek() throws ExpressionException {
     while (index >= tokens.size()) {
       Token token = nextToken();
       if (token == null) return null;
@@ -57,18 +57,18 @@ public class ExpressionLexer {
   }
 
   public boolean hasNext() throws ExpressionException {
-    return peekToken() != null;
+    return peek() != null;
   }
 
   public void hasNextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
-    Token token = peekToken();
+    Token token = peek();
     if (token == null) {
       throw new ParseExpressionException(position, errorCode, values);
     }
   }
 
   public Token next() throws ExpressionException {
-    Token token = peekToken();
+    Token token = peek();
     if (token == null) {
       throw new ParseExpressionException(
           getPosition(), ErrorCode.INTERNAL_ERROR, "Unexpected end of expression");
@@ -83,7 +83,7 @@ public class ExpressionLexer {
   }
 
   public boolean is(Id id) throws ExpressionException {
-    Token token = peekToken();
+    Token token = peek();
     return token != null && token.is(id);
   }
 
@@ -96,7 +96,7 @@ public class ExpressionLexer {
   }
 
   public boolean ifThenNextAndNotEnd(Id id) throws ExpressionException {
-    Token token = peekToken();
+    Token token = peek();
     if (token != null && token.is(id)) {
       index++;
       if (!hasNext()) {
@@ -108,7 +108,7 @@ public class ExpressionLexer {
   }
 
   public Token nextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
-    Token token = peekToken();
+    Token token = peek();
     if (token == null) {
       throw new ParseExpressionException(getPosition(), errorCode, values);
     }
@@ -118,7 +118,7 @@ public class ExpressionLexer {
 
   public void nextOrThrows(Id id, ErrorCode errorCode, Object... values)
       throws ExpressionException {
-    Token token = peekToken();
+    Token token = peek();
     if (token != null && token.is(id)) {
       index++;
       return;

@@ -836,7 +836,7 @@ public class ExpressionParser {
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     // NULL treatment clauses
-    if (this.parseNullTreatment(function)) {
+    if (this.parseIgnoreOrRespectNulls(function)) {
       function = FirstValueFunction.FIRST_VALUE_IGNORE_NULLS;
     } else {
       function = FirstValueFunction.FIRST_VALUE_RESPECT_NULLS;
@@ -854,7 +854,7 @@ public class ExpressionParser {
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     // NULL treatment clauses
-    if (this.parseNullTreatment(function)) {
+    if (this.parseIgnoreOrRespectNulls(function)) {
       function = LastValueFunction.LAST_VALUE_IGNORE_NULLS;
     } else {
       function = LastValueFunction.LAST_VALUE_RESPECT_NULLS;
@@ -872,7 +872,7 @@ public class ExpressionParser {
     lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     // NULL treatment clauses
-    if (this.parseNullTreatment(function)) {
+    if (this.parseIgnoreOrRespectNulls(function)) {
       function = NthValueFunction.NTH_VALUE_IGNORE_NULLS;
     } else {
       function = NthValueFunction.NTH_VALUE_RESPECT_NULLS;
@@ -886,7 +886,7 @@ public class ExpressionParser {
    *
    * @return true if the function should ignore null values
    */
-  private boolean parseNullTreatment(Function function) throws ExpressionException {
+  private boolean parseIgnoreOrRespectNulls(Function function) throws ExpressionException {
     if (lexer.ifThenNext(Id.IGNORE)) {
       if (lexer.ifThenNext(Id.NULLS)) {
         return true;
