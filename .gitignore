@@ -3,6 +3,7 @@
 /.settings
 /.project
 /.idea
+/.claude
 /.junie
 .classpath
 /src/main/resources/demo/project-config.json

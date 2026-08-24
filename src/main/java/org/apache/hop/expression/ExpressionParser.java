@@ -84,50 +84,33 @@ import org.jspecify.annotations.NullMarked;
  * Expression parser.
  *
  * <p>EBNF Syntax: <code>
- * <p>
  * Literal := BooleanLiteral | StringLiteral | IntegerLiteral | NumberLiteral | BinaryLiteral | JsonLiteral
- * <p>
  * Constant := 'NULL' | 'TRUE' | 'FALSE'
- * <p>
  * TermExpression := Literal | Identifier | ParenthesisExpression  | FunctionExpression | CaseExpression
- * <p>
  * ParenthesisExpression  := ('(' LogicalOrExpression ')') | LogicalOrExpression
- * <p>
  * FunctionExpression := FunctionName '(' ListExpression ')'
- * <p>
  * ListExpression := LogicalOrExpression ( ',' LogicalOrExpression )*
- * <p>
  * CaseExpression := SimpleCaseExpression | SearchedCaseExpression
- * <p>
  * SimpleCaseExpression := 'CASE' Expr ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
- * <p>
  * SearchedCaseExpression := 'CASE' ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
- * <p>
  * CastOperatorExpression := TermExpression '::' TypeExpression
- * <p>
  * ElementAtExpression := TermExpression '[' AdditiveExpression ']'
- * <p>
  * AtTimeZoneExpression := TermExpression AT TIME ZONE TimezoneExpression
- * <p>
  * PrimaryExpression := CastOperatorExpression | ElementAtExpression | AtTimeZoneExpression
- * <p>
  * UnaryExpression :=
  * PrimaryExpression
  * - PrimaryExpression
  * + PrimaryExpression
- * <p>
  * MultiplicativeExpression  :=
  * UnaryExpression
  * UnaryExpression * UnaryExpression
  * UnaryExpression / UnaryExpression
  * UnaryExpression % UnaryExpression
- * <p>
  * AdditiveExpression :=
  * MultiplicativeExpression
  * MultiplicativeExpression  + MultiplicativeExpression
  * MultiplicativeExpression  - MultiplicativeExpression
  * MultiplicativeExpression  || MultiplicativeExpression
- * <p>
  * RelationExpression :=
  * AdditiveExpression
  * AdditiveExpression [NOT] IN '(' ListExpression ')'
@@ -135,7 +118,6 @@ import org.jspecify.annotations.NullMarked;
  * AdditiveExpression [NOT] LIKE AdditiveExpression [ESCAPE StringExpression]
  * AdditiveExpression [NOT] ILIKE AdditiveExpression [ESCAPE StringExpression]
  * AdditiveExpression [NOT] SIMILAR TO AdditiveExpression
- * <p>
  * ComparisonExpression :=
  * RelationalExpression
  * RelationalExpression = RelationalExpression
@@ -144,18 +126,15 @@ import org.jspecify.annotations.NullMarked;
  * RelationalExpression &gt; RelationalExpression
  * RelationalExpression &gt;= RelationalExpression
  * RelationalExpression &lt;&gt; RelationalExpression
- * RelationalExpression != RelationalExpression
- * <p>
+ * RelationalExpression != RelationalExpressio
  * ConditionalExpression :=
  * ComparisonExpression
  * ComparisonExpression IS [NOT] TRUE|FALSE|NULL
  * ComparisonExpression IS [NOT] DISTINCT FROM LogicalNotExpression
- * <p>
  * LogicalNotExpression := ConditionalExpression [NOT] LogicalNotExpression
  * LogicalAndExpression := LogicalNotExpression ( AND LogicalNotExpression )*
  * LogicalXorExpression := LogicalAndExpression ( OR LogicalAndExpression )*
  * LogicalOrExpression := LogicalXorExpression ( OR LogicalXorExpression )*
- *
  * </code>
  */
 @NullMarked
