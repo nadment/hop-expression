@@ -17,7 +17,7 @@ under the License.
 = WEEK
 
 This function return the aligned week within a year where week 1 starts on the first day of the year.
- 
+
 == Syntax
 
 ----

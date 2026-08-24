@@ -17,7 +17,7 @@ under the License.
 = ZEROIFNULL
 
 Returns 0 if its argument is null; otherwise, returns its argument.
-		
+
 == Syntax
 
 ----

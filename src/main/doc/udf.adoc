@@ -17,7 +17,11 @@ under the License.
 = User defined function (UDF)
 
 A scalar function that takes arguments and returns one output value, allow the developer to encapsulate complex algorithms into reusable code.
-		
+
+== Returns
+
+The data type of the returned value is defined by the user-defined function implementation.
+
 == Usage
 
 

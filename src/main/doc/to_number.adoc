@@ -44,4 +44,4 @@ When parsing strings, it is possible to specify multiple alternative formats by 
 TO_NUMBER('1234', 'S9999|9999S') result 1234
 TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03') result 1284352323
 TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03.123456789') result 1284352323.123456789
----- 
+----

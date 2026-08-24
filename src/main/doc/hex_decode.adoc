@@ -30,5 +30,5 @@ String
 
 == Usage
 
-* Returns NULL if argument is NULL. 
+* Returns NULL if argument is NULL.
 

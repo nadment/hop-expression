@@ -31,7 +31,7 @@ separator:: The string to put between each element.
 
 == Returns
 
-Returns a string value.
+String
 
 == Usage
 

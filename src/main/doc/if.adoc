@@ -24,6 +24,10 @@ Single-level if-then-else expression. Similar to CASE, but only allows a single 
 IF( condition, true_value [, false_value] )
 ----
 
+== Returns
+
+The data type of the returned value is the same as the data type of true_value and false_value.
+
 == Usage
 
 If the false_value is omitted, return NULL.

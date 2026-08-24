@@ -23,6 +23,10 @@ Returns the date of the first specified day of the week that occurs before the i
 PREVIOUS_DAY( date, weekday )
 ----
 
+== Returns
+
+Date
+
 == Examples
 ----
 PREVIOUS_DAY(Date '2021-06-15', 'Friday')

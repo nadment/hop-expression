@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SHA256
+= SHA224
 
 Calculate the SHA-224 hash of a value.
 

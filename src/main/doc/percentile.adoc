@@ -24,10 +24,14 @@ Returns the percentile of values at the specified percentage over a group of row
 PERCENTILE( expression, percentage )
 ----
 
-expression:: An expression that evaluates to a numeric.
-percentage:: A numeric expression between 0 and 1 
+== Arguments
 
-Return:: Number
+expression:: An expression that evaluates to a numeric.
+percentage:: A numeric expression between 0 and 1
+
+== Returns
+
+Number
 
 == Usage
 

@@ -30,5 +30,5 @@ Integer
 
 == Usage
 
-* If the first timestamp is earlier than second timestamp, then the result is negative. 
+* If the first timestamp is earlier than second timestamp, then the result is negative.
 * Returns NULL if either of timestamp1 or timestamp2 is NULL

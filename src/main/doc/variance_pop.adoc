@@ -26,15 +26,15 @@ VARIANCE_POP( expression )
 
 == Returns
 
-Number 
+Number
 
 == Usage
 
 This is defined as the sum of squares of the difference of expression from the mean of expression, divided by the number of remaining rows.
 ----
-(SUM( expression * expression ) - SUM( expression ) * SUM( expression ) / COUNT( expression )) / COUNT( expression ) 
+(SUM( expression * expression ) - SUM( expression ) * SUM( expression ) / COUNT( expression )) / COUNT( expression )
 ----
 
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation. 
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 

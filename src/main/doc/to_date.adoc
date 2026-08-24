@@ -33,7 +33,7 @@ Date
 
 == Usage
 
-If the conversion is not possible, TO_DATE raises an error and TRY_TO_DATE returns a NULL value. 
+If the conversion is not possible, TO_DATE raises an error and TRY_TO_DATE returns a NULL value.
 
 include::dateformat.adoc[]
 
@@ -46,8 +46,8 @@ include::dateformat.adoc[]
 |===
 |Original format|Try alternative format elements
 |MM|MON and MONTH
-|MON|MONTH  
-|MONTH|MON 
+|MON|MONTH
+|MONTH|MON
 |===
 
 If used with numeric value, the value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
@@ -60,7 +60,7 @@ TO_DATE(1284352323.123) return 2010-09-13 04:32:03.123
 TO_DATE(1284352323.000000123) return 2010-09-13 04:32:03.000000123
 ----
 
-== See also 
+== See also
 
 * xref:make_date.adoc["MAKE_DATE",role=fun]
 * xref:make_timestamp.adoc["MAKE_TIMESTAMP",role=fun]

@@ -25,4 +25,6 @@ Decode string using the Java string literal encoding format.
 STRING_DECODE( string )
 ----
 
-Returns:: String
+== Returns
+
+String

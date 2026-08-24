@@ -30,5 +30,5 @@ Boolean
 
 == Usage
 
-* Returns the value True if substring is found inside string. 
+* Returns the value True if substring is found inside string.
 * Returns NULL if either input expression is NULL. Otherwise, returns False.

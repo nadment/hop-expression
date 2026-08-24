@@ -30,7 +30,7 @@ Array of String
 
 == Usage
 
-* The path must begin with a dollar sign `$`, which represents the root. 
+* The path must begin with a dollar sign `$`, which represents the root.
 * Returns `NULL` if any of the arguments are null, a given path does not locate an object, or if the JSON argument is not an object.
 * If the JSON object has no keys, an empty array is returned.
 * Keys are de-duplicated and returned in alphabetical order.

@@ -30,7 +30,7 @@ Date
 
 == Usage
 
-* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
+* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH).
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

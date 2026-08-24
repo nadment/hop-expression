@@ -17,7 +17,7 @@ under the License.
 = ARRAY_PREPEND
 
 Returns an array concatenating an element to the beginning of an array.
- 
+
 == Syntax
 
 ----
@@ -32,7 +32,7 @@ element:: The element to prepend to the array.
 
 == Returns
 
-Returns an array.
+Array
 
 == Usage
 

@@ -30,6 +30,6 @@ Integer
 
 == Usage
 
-* It returns a value of -1 for negative expressions, a value of 0 for zero expressions and a value of +1 for positive expressions. 
+* It returns a value of -1 for negative expressions, a value of 0 for zero expressions and a value of +1 for positive expressions.
 * If the expression is NULL then the return value is also NULL.
 

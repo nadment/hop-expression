@@ -30,7 +30,7 @@ Boolean
 
 == Usage
 
-Return FALSE if a value is NULL. 
+Return FALSE if a value is NULL.
 
 == Examples
 

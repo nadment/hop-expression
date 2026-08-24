@@ -17,12 +17,16 @@ under the License.
 = AVG [aggregate]
 
 Returns the average (arithmetic mean) of all non-null values over a group of rows.
- 
+
 == Syntax
 
 ----
 AVG( numeric )
 ----
+
+== Returns
+
+Number
 
 == Usage
 

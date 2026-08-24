@@ -26,14 +26,14 @@ REGEXP_COUNT( source, pattern [, position [, parameters ]] )
 
 == Arguments
 
-<source>:: The string to be searched for.
-<pattern>:: The regular expression pattern.
-<position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
-<parameters>:: One or more string literals that indicate how the function matches the pattern.
+source:: The string to be searched for.
+pattern:: The regular expression pattern.
+position:: The position in the source string where the search starts. This argument is also optional. Default value is 1.
+parameters:: One or more string literals that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character. 
+* `n` allows the period (.) which is the match-any-character character, to match the newline character.
 
 == Returns
 

@@ -24,9 +24,13 @@ Returns the largest value of all arguments, ignore null values.
 GREATEST( expression1 [, expressionN... ] )
 ----
 
+== Returns
+
+The data type of the returned value is the same as the data type of the input values.
+
 == Usage
 
-* Returns NULL only if all arguments are NULL. 
+* Returns NULL only if all arguments are NULL.
 
 == See also
 

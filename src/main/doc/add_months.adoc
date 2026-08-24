@@ -17,7 +17,7 @@ under the License.
 = ADD_MONTHS
 
 Adds or subtracts a specified number of months to a date or timestamp.
-		
+
 == Syntax
 
 ----

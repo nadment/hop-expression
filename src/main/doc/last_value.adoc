@@ -23,7 +23,9 @@ Returns the last value in an ordered set of values over a group of rows.
 LAST_VALUE( expression ) [ IGNORE NULLS | RESPECT NULLS ]
 ----
 
-Return:: The data type of the returned value is the same as the data type of the input values.
+== Returns
+
+The data type of the returned value is the same as the data type of the input values.
 
 == Usage
 

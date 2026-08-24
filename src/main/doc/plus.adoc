@@ -16,13 +16,18 @@ under the License.
 ////
 = Unary positive operator +
 
-Reverses the sign of a numeric expression.
+Indicates a positive numeric expression.
 
 == Syntax
 
 ----
 + expression
 ----
+
+== Returns
+
+Number
+
 == Usage
 
 A unary plus can appear before any numeric expression, it performs no operation on the value returned from the expression. Specifically, it doesn't return the positive value of a negative expression. To return positive value of a negative expression, use the ABS function.

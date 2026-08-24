@@ -24,6 +24,10 @@ Throws the given error message and abort execution of the pipeline or workflow.
 ERROR( message )
 ----
 
+== Returns
+
+This function never returns a value; it always raises an error.
+
 == Usage
 
 * Use ERROR within an CASE or DECODE function to set rules for aborting a pipeline.

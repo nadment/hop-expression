@@ -16,13 +16,17 @@ under the License.
 ////
 = NULLIFZERO
 
-Returns NULL if the argument evaluates to 0; otherwise, returns the argument.		
+Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
 
 == Syntax
 
 ----
 NULLIFZERO( expression )
 ----
+
+== Returns
+
+The data type of the returned value is the same as the data type of the input value (`INTEGER` or `NUMBER`).
 
 == Usage
 

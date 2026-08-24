@@ -26,7 +26,7 @@ SHA1( {string | binary} )
 
 == Arguments
 
-<string>:: A string expression, the message to be hashed.
+{string | binary}:: A string or binary expression.
 
 == Returns
 

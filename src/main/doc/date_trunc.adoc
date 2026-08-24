@@ -16,7 +16,7 @@ under the License.
 ////
 = DATE_TRUNC
 
-Truncate a date or datetime value to the start of a given unit of duration. 
+Truncate a date or datetime value to the start of a given unit of duration.
 
 == Syntax
 
@@ -30,9 +30,9 @@ Supported unit of date and time:
 - CENTURY
 - DECADE
 - YEAR
-- MONTH 
-- QUARTER 
-- WEEK        
+- MONTH
+- QUARTER
+- WEEK
 - DAY
 - HOUR
 - MINUTE

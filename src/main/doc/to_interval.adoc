@@ -30,7 +30,7 @@ Interval
 
 == Usage
 
-* Returns NULL if argument is NULL. 
+* Returns NULL if argument is NULL.
 
 == Examples
 
@@ -44,6 +44,6 @@ The following example illustrates the use of the short syntax
 TO_INTERVAL('1-6 0 12:00:00')
 ----
 
-== See also 
+== See also
 
 * xref:make_interval.adoc["MAKE_INTERVAL",role=fun]

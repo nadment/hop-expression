@@ -40,16 +40,20 @@ CASE
 END
 ----
 
-== Usage 
+== Returns
+
+The data type of the returned value is the same as the data type of the result expressions.
+
+== Usage
 === Simple CASE expressions
 A valued CASE expression tests for the first WHEN expression that is equal to a test expression and returns the value of the matching THEN expression. If no WHEN expression is equal to the test expression, CASE returns the ELSE expression, or, if omitted, NULL.
 
 The simple case allows one value or a list of values in the when clause.
 ----
-CASE expression 
+CASE expression
   WHEN 0, 1, 2 THEN 'good'
   WHEN 3, 7 THEN 'bad'
-  WHEN 9 THEN 'unknown'  
+  WHEN 9 THEN 'unknown'
   ELSE 'error'
 END
 ----

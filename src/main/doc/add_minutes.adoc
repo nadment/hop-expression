@@ -17,7 +17,7 @@ under the License.
 = ADD_MINUTES
 
 Adds or subtracts a specified number of minutes to a date or timestamp.
-		
+
 == Syntax
 
 ----

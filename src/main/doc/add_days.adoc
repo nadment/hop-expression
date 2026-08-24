@@ -17,7 +17,7 @@ under the License.
 = ADD_DAYS
 
 Adds or subtracts a specified number of days to a date or timestamp.
-		
+
 == Syntax
 
 ----

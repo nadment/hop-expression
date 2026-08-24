@@ -24,7 +24,7 @@ MEDIAN( expression )
 ----
 
 expression:: An expression that evaluates to a numeric.
- 
+
 == Returns
 
 Number

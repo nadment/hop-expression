@@ -17,7 +17,7 @@ under the License.
 = JULIAN_DAY
 
 Returns the number of days from January 1, 4713 B.C. (the start of the Julian date calendar) of the specified date or timestamp.
-		
+
 == Syntax
 
 [source,sql]

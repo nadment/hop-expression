@@ -34,4 +34,4 @@ Integer
 
 == Usage
 
-* Returns NULL if the argument is NULL. 
+* Returns NULL if the argument is NULL.

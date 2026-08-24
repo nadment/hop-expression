@@ -17,7 +17,7 @@ under the License.
 = ADD_WEEKS
 
 Adds or subtracts a specified number of weeks to a date or timestamp.
-		
+
 == Syntax
 
 ----

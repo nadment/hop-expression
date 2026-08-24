@@ -16,7 +16,7 @@ under the License.
 ////
 = ROUND
 
-Returns the values rounded to the nearest integer or decimal. 
+Returns the values rounded to the nearest integer or decimal.
 
 == Syntax
 
@@ -40,7 +40,7 @@ ROUND( 28.05, 1 ) return 28.1
 ROUND( 28.05, -1 ) return 30
 ----
 
-== See also 
+== See also
 
 * xref:ceil.adoc["CEIL",role=fun]
 * xref:floor.adoc["FLOOR",role=fun]

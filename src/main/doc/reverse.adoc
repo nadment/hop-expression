@@ -26,7 +26,7 @@ REVERSE( value )
 
 == Returns
 
-String or binary
+String or Binary
 
 == Usage
 

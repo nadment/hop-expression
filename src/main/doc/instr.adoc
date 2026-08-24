@@ -43,5 +43,5 @@ Integer
 * The first position in the string is 1.
 * The default values of both `position` and `occurrence` are 1.
 * If `substring` is not found in `string`, then the function will return 0.
-			
+
 

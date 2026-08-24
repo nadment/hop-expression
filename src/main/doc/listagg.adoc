@@ -25,7 +25,9 @@ LISTAGG( [ALL | DISTINCT] expression [, delimiter] )
 ----
 
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

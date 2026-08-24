@@ -35,7 +35,7 @@ SYMMETRIC has the useful property of indicating that the order is irrelevant
 
 == Examples
 
-The following statements are all equivalent: 
+The following statements are all equivalent:
 ----
 A BETWEEN SYMMETRIC B AND C
 (A BETWEEN B AND C) OR (A BETWEEN C AND B)

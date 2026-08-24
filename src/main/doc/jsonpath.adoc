@@ -22,7 +22,7 @@ These are the supported operators from the JsonPath standard.
 [cols="^1,<5", options="header"]
 |===
 |Operator|Description
-|`$`|The root element 
+|`$`|The root element
 |`@`|The current element being processed by a filter predicate.
 |`*`|All elements regardless their names
 |`.name`|Child property with dot notation

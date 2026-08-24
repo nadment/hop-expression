@@ -26,7 +26,7 @@ STDDEV_POP( expression )
 
 == Returns
 
-Number 
+Number
 
 == Usage
 
@@ -35,5 +35,5 @@ This is defined as the square root of VARIANCE_POP
 STDDEV_POP( expression ) = SQRT( VARIANCE_POP( expression ) )
 ----
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation. 
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 

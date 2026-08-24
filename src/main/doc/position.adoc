@@ -17,7 +17,7 @@ under the License.
 = POSITION
 
 Returns the position in the string that is the first character of a specified occurrence of the substring.
-		
+
 == Syntax
 
 ----
@@ -32,4 +32,4 @@ Integer
 
 * The first position in the string is 1.
 * If substring is not found in string, then the function will return 0.
-* Equivalent to xref:instr.adoc["INSTR",role=fun]( <string>, <substring> ). 
+* Equivalent to xref:instr.adoc["INSTR",role=fun]( <string>, <substring> ).

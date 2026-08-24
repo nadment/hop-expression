@@ -26,7 +26,7 @@ STDDEV_SAMP( expression )
 
 == Returns
 
-Number 
+Number
 
 == Usage
 
@@ -35,5 +35,5 @@ This is defined as the square root of VARIANCE_SAMP
 STDDEV_SAMP( expression ) = SQRT( VARIANCE_SAMP( expression ) )
 ----
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation. 
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 

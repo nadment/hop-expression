@@ -30,7 +30,7 @@ The `[]` provides alternative syntax.
 
 == Returns
 
-This function returns an ARRAY
+Array
 
 == Usage
 

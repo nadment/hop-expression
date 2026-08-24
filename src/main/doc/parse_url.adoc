@@ -20,10 +20,12 @@ Returns the specified part of the URL or the value for the specified QUERY key.
 
 == Syntax
 ----
-PARSE_URL(url, part [, key]) 
+PARSE_URL(url, part [, key])
 ----
 
-Return:: String
+== Returns
+
+String
 
 == Usage
 

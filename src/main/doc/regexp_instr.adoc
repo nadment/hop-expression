@@ -17,7 +17,7 @@ under the License.
 = REGEXP_INSTR
 
 Searches a string using a regular expression pattern and returns an integer that indicates the beginning
-position or ending position of the matched substring. 
+position or ending position of the matched substring.
 
 == Syntax
 
@@ -25,16 +25,18 @@ position or ending position of the matched substring.
 REGEXP_INSTR( subject, pattern [, position [, occurrence [, return_options [, parameters ]]]] )
 ----
 
-<source>:: The string to be searched for.
-<pattern>:: The regular expression pattern.
-<replacement>:: The string that replaces the matched pattern. This argument is optional. Default value is ''.
-<position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
-<occurrence>:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
-<parameters>:: One or more string literals that indicate how the function matches the pattern.
+== Arguments
+
+subject:: The string to be searched for.
+pattern:: The regular expression pattern.
+position:: The position in the subject string where the search starts. This argument is also optional. Default value is 1.
+occurrence:: Specifies which occurrence of the pattern to search for. This argument is also optional. Default value is 1 (the first occurrence).
+return_options:: Specifies what the function returns relative to the match. `0` (default) returns the position of the first character of the match; a nonzero value returns the position of the first character following the match.
+parameters:: One or more string literals that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character. 
+* `n` allows the period (.) which is the match-any-character character, to match the newline character.
 
 == Returns
 
@@ -43,4 +45,4 @@ Integer
 == Usage
 
 * If no match is found, then the function returns 0.
-* The <pattern> is defined according to Java language regular expression rules. 
+* The <pattern> is defined according to Java language regular expression rules.

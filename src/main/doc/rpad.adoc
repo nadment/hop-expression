@@ -34,7 +34,7 @@ The data type of the returned value is the same as the data type of the input va
 * If the padding argument is omitted, the function will pad spaces for string or 0x00 for binary.
 * Returns NULL if one of the arguments is NULL.
 
-== Example
+== Examples
 
 ----
 RPAD('123',5,'*') = '123**'

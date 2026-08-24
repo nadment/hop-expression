@@ -17,7 +17,7 @@ under the License.
 = DIFFERENCE
 
 Compares two SOUNDEX values, and return the value of the integer.
-		
+
 == Syntax
 
 ----
@@ -28,6 +28,6 @@ DIFFERENCE( string1, string2 )
 
 Integer
 
-== USAGE
+== Usage
 
 This value measures the degree that the SOUNDEX values match, on a scale of 0 to 4. A value of 0 indicates a weak or no similarity between the SOUNDEX values; 4 indicates that the SOUNDEX values are extremely similar, or even identical.

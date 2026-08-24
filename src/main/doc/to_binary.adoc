@@ -32,14 +32,14 @@ string:: A string expression
 format:: The format of the input string (case-insensitive): HEX, BASE64, UTF-8 or UTF8
 
 include::binaryformat.adoc[]
-    
+
 == Returns
 
 Binary
 
 == Usage
 
-* Returns NULL if argument is NULL. 
+* Returns NULL if argument is NULL.
 
 == Examples
 ----

@@ -24,6 +24,10 @@ Combines multiple strings or binaries into one with separator.
 CONCAT_WS( separator, string2 [, string3...])
 ----
 
+== Returns
+
+String or Binary
+
 == Usage
 
 * If the separator is NULL, then NULL is returned.

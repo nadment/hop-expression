@@ -17,7 +17,7 @@ under the License.
 = MAKE_DATE
 
 Creates a date from individual numeric components.
-		
+
 == Syntax
 
 ----
@@ -40,6 +40,6 @@ MAKE_DATE is typically used to handle values in normal ranges (e.g. months 1-12,
 * If day<1 or day>31 then date month is adjusted: MAKE_DATE(2020, 6, 50) >> 2020 JUNE 21
 * If month<1 or month>12 then date year is adjusted: MAKE_DATE(2020,19,1) >> 2021 JUNE 01
 
-== See also 
+== See also
 
 * xref:make_timestamp.adoc["MAKE_TIMESTAMP",role=fun]

@@ -28,6 +28,6 @@ ACOTH( numeric )
 
 Number
 
-== Usage 
+== Usage
 
 * Returns NULL if the argument is NULL.

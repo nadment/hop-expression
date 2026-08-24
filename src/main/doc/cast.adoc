@@ -29,6 +29,10 @@ The xref:concat.adoc["::",role=op] operator provides alternative syntax.
 value::type
 ----
 
+== Returns
+
+The data type of the returned value is the type specified in the AS clause.
+
 == Usage
 
 If the cast is not possible, CAST raises an error and TRY_CAST return a NULL value.
@@ -48,9 +52,9 @@ If the cast is not possible, CAST raises an error and TRY_CAST return a NULL val
 
 === Rules
 
-* When converting a number to a boolean, 0 is false and every other value is true. 
-* When converting a boolean to a number, false is 0 and true is 1. 
-* When converting a number to a number of another type, the value is checked for overflow. 
+* When converting a number to a boolean, 0 is false and every other value is true.
+* When converting a boolean to a number, false is 0 and true is 1.
+* When converting a number to a number of another type, the value is checked for overflow.
 * When converting a string to binary, it is hex encoded (every byte two characters).
 * When converting an integer to date, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
 * When converting a number to date, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
@@ -78,9 +82,9 @@ TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')
 
 ----
 
-== See also 
+== See also
 
-* xref:to_binary.adoc["TO_BINARY",role=fun] 
+* xref:to_binary.adoc["TO_BINARY",role=fun]
 * xref:to_boolean.adoc["TO_BOOLEAN",role=fun]
 * xref:to_char.adoc["TO_CHAR",role=fun]
 * xref:to_date.adoc["TO_DATE",role=fun]

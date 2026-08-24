@@ -26,16 +26,16 @@ REGEXP_REPLACE( source, pattern [, replacement [, position [, occurrence [, para
 
 == Arguments
 
-<source>:: The string to be searched for.
-<pattern>:: The regular expression pattern.
-<replacement>:: The string that replaces the matched pattern. This argument is optional. Default value is ''.
-<position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
-<occurrence>:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
-<parameters>:: One or more string literals that indicate how the function matches the pattern.
+source:: The string to be searched for.
+pattern:: The regular expression pattern.
+replacement:: The string that replaces the matched pattern. This argument is optional. Default value is ''.
+position:: The position in the source string where the search starts. This argument is also optional. Default value is 1.
+occurrence:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
+parameters:: One or more string literals that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character. 
+* `n` allows the period (.) which is the match-any-character character, to match the newline character.
 
 == Returns
 
@@ -45,7 +45,7 @@ String
 
 * If no matches are found, returns the original subject.
 * The replacement string can contain backreferences to capture groups. A capture group is a regular expression that is enclosed within parentheses (( )).
-* The <pattern> is defined according to Java language regular expression rules. 
+* The <pattern> is defined according to Java language regular expression rules.
 
 
 

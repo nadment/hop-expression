@@ -26,4 +26,4 @@ INSERT( source_string_or_binary, position, length, replacement )
 
 == Returns
 
-String or binary
+String or Binary

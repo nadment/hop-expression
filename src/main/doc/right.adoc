@@ -17,12 +17,16 @@ under the License.
 = RIGHT
 
 Extracts a number of characters from a string or bytes from a binary starting from right.
-		
+
 == Syntax
 
 ----
 RIGHT( value, length )
 ----
+
+== Returns
+
+String or Binary
 
 == Usage
 

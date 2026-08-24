@@ -24,6 +24,10 @@ Returns the first of its arguments that is not null.
 COALESCE( expression [, expression... ] )
 ----
 
+== Returns
+
+The data type of the returned value is the same as the data type of the input values.
+
 == Usage
 
 * All arguments must have the same data type.

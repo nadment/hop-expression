@@ -35,7 +35,7 @@ The data type of the returned value is the same as the data type of the input va
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
-== Example
+== Examples
 
 ----
 FIRST_VALUE( City ) IGNORE NULLS

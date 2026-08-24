@@ -28,12 +28,12 @@ BIT_SET( value, position )
 
 value:: This expression must evaluate to a data type that can be cast to Integer.
 
-== Return
+== Returns
 
 Integer
 
 == Usage
 
-* The first position of a bit is 1. 
+* The first position of a bit is 1.
 * Returns NULL if the position is negative or zero.
-* Returns NULL if one of the arguments is NULL. 
+* Returns NULL if one of the arguments is NULL.

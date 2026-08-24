@@ -26,7 +26,7 @@ ASCII( char )
 
 == Returns
 
-This function returns a value of type INTEGER.
+Integer
 
 == Usage
 

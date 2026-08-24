@@ -16,7 +16,7 @@ under the License.
 ////
 = TRUNC[ATE]
 
-Returns the values to the previous integer or decimal. 
+Returns the values to the previous integer or decimal.
 
 == Syntax
 ----

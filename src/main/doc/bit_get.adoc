@@ -34,6 +34,6 @@ Boolean
 
 == Usage
 
-* The first position of a bit is 1. 
+* The first position of a bit is 1.
 * Returns NULL if position is negative or zero.
-* Returns NULL if one of the arguments is NULL. 
+* Returns NULL if one of the arguments is NULL.

@@ -29,6 +29,10 @@ The xref:concat.adoc["||",role=op] operator provides alternative syntax.
 string1 || string2 [ || ... ]
 ----
 
+== Returns
+
+String, Binary or Array
+
 == Usage
 
 * All arguments must be of the same string or binary type.

@@ -24,6 +24,10 @@ Returns the sum of the values over a group of rows.
 SUM( numeric )
 ----
 
+== Returns
+
+Number
+
 == Usage
 
 * Null values are ignored.

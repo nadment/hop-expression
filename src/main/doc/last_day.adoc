@@ -30,7 +30,7 @@ Date
 
 == Usage
 
-* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
+* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH).
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
@@ -39,7 +39,7 @@ Date
 LAST_DAY(Date '2021-06-15', QUARTER)
 ----
 
-== See also 
+== See also
 
 * xref:first_day.adoc["FIRST_DAY",role=fun]
 * xref:next_day.adoc["NEXT_DAY",role=fun]

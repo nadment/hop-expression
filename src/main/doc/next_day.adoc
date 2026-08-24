@@ -32,7 +32,7 @@ Date
 NEXT_DAY(Date '2021-06-15', 'Friday')
 ----
 
-== See also 
+== See also
 
 * xref:first_day.adoc["PREVIOUS_DAY",role=fun]
 * xref:first_day.adoc["FIRST_DAY",role=fun]

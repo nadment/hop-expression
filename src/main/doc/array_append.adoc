@@ -17,7 +17,7 @@ under the License.
 = ARRAY_APPEND
 
 Returns an array concatenating an element at the end of an array.
- 
+
 == Syntax
 
 ----
@@ -32,7 +32,7 @@ element:: The element to append to the array.
 
 == Returns
 
-Returns an array.
+Array
 
 == Usage
 

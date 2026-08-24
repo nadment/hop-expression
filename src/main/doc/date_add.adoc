@@ -16,7 +16,7 @@ under the License.
 ////
 = DATE_ADD
 
-Adds or subtracts a specified number of time unit to a date or timestamp. 
+Adds or subtracts a specified number of time unit to a date or timestamp.
 
 == Syntax
 
@@ -27,8 +27,8 @@ DATE_ADD( unit, value, {date | timestamp} )
 Supported unit of date and time:
 
 - YEAR
-- MONTH 
-- WEEK        
+- MONTH
+- WEEK
 - DAY
 - HOUR
 - MINUTE

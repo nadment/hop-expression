@@ -20,44 +20,44 @@ under the License.
 [cols="<2,^1,<5", options="header"]
 |===
 |Input|Case sensitive|Description
-|- / , . ; : "text"||Always preserved as-is. 
-|A.D. AD B.C. BC|&#10003;|Era designator, with or without periods 
+|- / , . ; : "text"||Always preserved as-is.
+|A.D. AD B.C. BC|&#10003;|Era designator, with or without periods
 |A.M. AM P.M. PM|&#10003;|Ante Meridiem (am) / Post Meridiem (pm) for use with HH12
 |CC SCC||Century
-|D||Day of week 
-|DAY|&#10003;|Name of day 
-|DY|&#10003;|Abbreviated day name 
+|D||Day of week
+|DAY|&#10003;|Name of day
+|DY|&#10003;|Abbreviated day name
 |DD||Day of month (1-7)
 |DDD||Day in the year (001-366)
-|DL||Long date format 
-|DS||Short date format 
-|E|&#10003;|Abbreviated era name (Japanese, Chinese, Thai) 
+|DL||Long date format
+|DS||Short date format
+|E|&#10003;|Abbreviated era name (Japanese, Chinese, Thai)
 |EE|&#10003;|Full era name (Japanese, Chinese, Thai)
 |FF FF0 FF3 FF6 FF9||Fractional seconds. FF0 (seconds), FF3 (milliseconds), FF6 (microseconds), FF9 (nanoseconds). Specifying FF is equivalent to FF6
-|FM||Returns values with no leading or trailing spaces 
-|FX||Requires exact matches between character data and format model [NOT_IMPLEMENTED] 
+|FM||Returns values with no leading or trailing spaces
+|FX||Requires exact matches between character data and format model [NOT_IMPLEMENTED]
 |HH HH12||Hour in AM/PM (1-12)
 |HH24||Hour in day (0-23)
 |IW||Week of year (01-52 or 01-53) based on the ISO-8601 standard.
 |WW||Week of year (01-53) where week 1 starts on the first day of the year.
-|W||Week in month 
-|IYYY IYY IY I||Last 4/3/2/1 digit(s) of ISO year 
+|W||Week in month
+|IYYY IYY IY I||Last 4/3/2/1 digit(s) of ISO year
 |RRRR RR||Last 4/2 digits of year
 |Y,YYY||Year with comma
-|YEAR SYEAR|&#10003;|Year spelled out (S prefixes BC years with minus sign) 
-|YYYY SYYYY||4-digit year (S prefixes BC years with minus sign) 
+|YEAR SYEAR|&#10003;|Year spelled out (S prefixes BC years with minus sign)
+|YYYY SYYYY||4-digit year (S prefixes BC years with minus sign)
 |YYY YY Y||Last 3/2/1 digit(s) of year
-|J||Julian day (number of days since January 1, 4712 BC) 
+|J||Julian day (number of days since January 1, 4712 BC)
 |MI||Minutes (00-59)
 |MM||Month in year (01-12)
 |MON|&#10003;|Abbreviated name of month (JAN-DEC (ENG) or JAN-DEZ (DEU))
-|MONTH|&#10003;|Name of month, padded with spaces 
+|MONTH|&#10003;|Name of month, padded with spaces
 |RM|&#10003;|Roman numeral month
 |Q||Quarter of year (1-4)
 |SS||Seconds (00-59)
-|SSSSS||Seconds in day 
-|TS||Short time format 
-|TZD||Daylight savings time zone abbreviation 
+|SSSSS||Seconds in day
+|TS||Short time format
+|TZD||Daylight savings time zone abbreviation
 |TZR||Time zone region
 |TZH||Time zone hour. Can be prefixed by +/- for sign.
 |TZM||Time zone minute
@@ -65,7 +65,7 @@ under the License.
 |===
 
 === Date format examples
- 
+
 [cols="2,2"]
 |===
 |DY, DD MON YYYY HH12:MI:SS AM|Thu, 21 Dec 2021 04:01:07 PM

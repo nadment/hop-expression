@@ -17,7 +17,7 @@ under the License.
 = LEFT
 
 Extracts a number of characters from a string or bytes from binary starting from left.
-		
+
 == Syntax
 
 ----
@@ -40,6 +40,6 @@ String or Binary
 LEFT('ABCDEF',3) return 'ABC'
 ----
 
-== See also 
+== See also
 
 * xref:right.adoc["RIGHT",role=fun]

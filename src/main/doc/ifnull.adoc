@@ -17,7 +17,7 @@ under the License.
 = IFNULL, NVL
 
 Returns the second value if first value is null. This function replace the null with value.
-		
+
 == Syntax
 
 ----

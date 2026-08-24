@@ -17,7 +17,7 @@ under the License.
 = DAY
 
 Returns the day of month of the specified date or timestamp.
-		
+
 == Syntax
 
 [source,sql]

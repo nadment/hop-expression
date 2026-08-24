@@ -30,9 +30,9 @@ Supported unit of date and time:
 - CENTURY
 - DECADE
 - YEAR
-- MONTH 
-- QUARTER 
-- WEEK        
+- MONTH
+- QUARTER
+- WEEK
 - DAY
 - HOUR
 - MINUTE

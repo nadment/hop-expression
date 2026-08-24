@@ -32,7 +32,7 @@ Comments are sections of code text to aid readability.
 
 -- Single line-comment <1>
 
-/* 
+/*
  * Multi line	<2>
  * comment /* with nested block */
  */
@@ -85,20 +85,20 @@ Decimal integers are a sequence of decimal digits [0-9].
 1_500_000_000
 ----
 
-Hexadecimal integers are a sequence of hexadecimal digits [0-9A-Fa-f] preceded by a `0x` or `0X`. 
+Hexadecimal integers are a sequence of hexadecimal digits [0-9A-Fa-f] preceded by a `0x` or `0X`.
 ----
 0xAE
 0X12Ef
 0xFF69_048A_EFDD_010E
 ----
 
-Octal integers are a sequence of octal digits [0-7] preceded by a `0o` or `0O`. 
+Octal integers are a sequence of octal digits [0-7] preceded by a `0o` or `0O`.
 ----
 0o1234567
 0O123_4567
 ----
 
-Binary integers are a sequence of binary digits [0-1] preceded by a `0b` or `0B`. 
+Binary integers are a sequence of binary digits [0-1] preceded by a `0b` or `0B`.
 ----
 0b1000001011110
 0B1_0000_0101_1110
@@ -111,7 +111,7 @@ NOTE: The use of underscores is restricted to one underscore between digits or p
 
 === Number
 
-Literals can be either positive numbers or negative numbers and contain decimals. 
+Literals can be either positive numbers or negative numbers and contain decimals.
 
 The precision of a number is the total count of significant digits in the whole number, that is, the number of digits to both sides of the decimal point. The scale of a number is the count of decimal digits in the fractional part, to the right of the decimal point.
 The maximum supported precision is 38.
@@ -144,7 +144,7 @@ BINARY '4b657276656E'
 
 === Date
 
-Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a `YYYY-MM-DD` format. 
+Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a `YYYY-MM-DD` format.
 
 The following examples illustrate some date values:
 ----
@@ -191,7 +191,7 @@ INTERVAL '+2-6' YEAR TO MONTH
 INTERVAL '10 23:30:58.999' DAY TO SECOND
 ----
 
-Interval constants can also be expressed using the following formats: 
+Interval constants can also be expressed using the following formats:
 	INTERVAL 'Y-M D H:M:S.FFFFFFFFF'
 	INTERVAL 'Y-M' YEAR TO MONTH
 	INTERVAL 'D H:M:S.FFFFFFFFF' DAY TO SECOND
@@ -240,7 +240,7 @@ DATE '2023-03-31' - INTERVAL 4 MONTHS
 === Array
 
 Array values can be constructed using square brackets `[<value> [, <value> , ...]]`
- 
+
 ----
 [1,5,9]
 ----
@@ -256,11 +256,11 @@ JSON '{"name":"John","age":30}'
 
 == Identifier
 
-Identifiers are the names of fields and is case-sensitive. 
+Identifiers are the names of fields and is case-sensitive.
 
 The field name can be enclosed in double quotes `"` such as `"Employee Name"`, this would allow identifiers to contain spaces, other punctuation, and to be keywords.
 
-For example, `YEAR` cannot be used whereas `"YEAR"` can be accepted. 
+For example, `YEAR` cannot be used whereas `"YEAR"` can be accepted.
 
 NOTE: If you wish to include a double quote in an identifier, use another double quote to escape it.
 
@@ -313,7 +313,7 @@ xref:is-distinct-from.adoc["IS DISTINCT FROM",role=op]|Conditional|100|left
 |xref:boolor.adoc["OR",role=op]|Logical disjunction|140|left
 |===
 
-NOTE: When an operator combines expressions of different data types, the data type with the lower precedence is first converted to the data type with the higher precedence. If the conversion isn't a supported implicit conversion, an error is returned. 
+NOTE: When an operator combines expressions of different data types, the data type with the lower precedence is first converted to the data type with the higher precedence. If the conversion isn't a supported implicit conversion, an error is returned.
 
 == Type coercion
 

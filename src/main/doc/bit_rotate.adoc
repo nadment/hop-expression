@@ -37,4 +37,3 @@ Integer
 * If distance is positive, it will rotate to the left.
 * If distance is negative, it will rotate to the right.
 * Returns NULL if one of the arguments is NULL.
- 

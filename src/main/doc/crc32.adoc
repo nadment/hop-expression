@@ -36,4 +36,4 @@ A hexadecimal string
 
 * The result will be returned as a 8 characters hex-encoded string.
 * If the argument is NULL, then NULL is returned.
-* This function is based on the CRC-32C polynomial. 
+* This function is based on the CRC-32C polynomial.

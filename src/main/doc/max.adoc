@@ -29,7 +29,7 @@ MAX( expression )
 The data type of the returned value is the same as the data type of the input values.
 
 == Usage
- 
+
 * Input expressions with a NULL value are ignored.
 * Return NULL if all rows in the group contain a NULL value for the expression.
 

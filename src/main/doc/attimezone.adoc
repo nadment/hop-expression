@@ -24,6 +24,10 @@ Specifies which time zone to use with a TIMESTAMP.
 timestamp A TIME ZONE timezone
 ----
 
+== Returns
+
+Date
+
 == Usage
 
 Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').

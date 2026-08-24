@@ -38,6 +38,6 @@ Boolean
 == Usage
 
 * The function implicitly anchors a pattern at both ends.
-* The <pattern> is defined according to Java language regular expression rules. 
+* The <pattern> is defined according to Java language regular expression rules.
 
 

@@ -21,12 +21,17 @@ Returns a string or binary repeated some number of times.
 == Syntax
 
 ----
-REPEAT( {string | binary} , <n> )
+REPEAT( {string | binary}, n )
 ----
 
-{string | binary}:: The input value to repeat.
+== Arguments
 
-<n>:: The number of times the input value should be repeated. The minimum valid number is 0 (which results in an empty string).
+{string | binary}:: The input value to repeat.
+n:: The number of times the input value should be repeated. The minimum valid number is 0 (which results in an empty string).
+
+== Returns
+
+String or Binary
 
 == Usage
 

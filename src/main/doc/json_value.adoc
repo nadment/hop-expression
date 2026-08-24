@@ -30,7 +30,7 @@ Json
 
 == Usage
 
-* The path must begin with a dollar sign `$`, which represents the root. 
+* The path must begin with a dollar sign `$`, which represents the root.
 * If the path does not match a value, `NULL` is returned.
 
 include::jsonpath.adoc[]

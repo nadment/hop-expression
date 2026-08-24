@@ -17,7 +17,7 @@ under the License.
 = ADD_HOURS
 
 Adds or subtracts a specified number of hours to a date or timestamp.
-		
+
 == Syntax
 
 ----
