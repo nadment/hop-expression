@@ -41,6 +41,6 @@ public abstract class AggregateFunction extends Function {
     return true;
   }
 
-  public abstract IExpressionProcessor createProcessor(
+  public abstract IAggregateProcessor createProcessor(
       IExpressionContext context, IExpression[] operands) throws ExpressionException;
 }

@@ -14,13 +14,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public class AnyValueProcessor implements IExpressionProcessor {
+public class AnyValueProcessor implements IAggregateProcessor {
 
   private @Nullable Object value;
 

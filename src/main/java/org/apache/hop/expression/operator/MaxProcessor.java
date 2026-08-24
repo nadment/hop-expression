@@ -14,15 +14,15 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.Type;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /** Returns the maximum of an expression across all input rows. */
 @NullMarked
-public class MaxProcessor implements IExpressionProcessor {
+public class MaxProcessor implements IAggregateProcessor {
 
   private @Nullable Object max;
 

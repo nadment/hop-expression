@@ -15,14 +15,14 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /** Returns the sum of all values in the expression. Null values are ignored. */
 @NullMarked
-public class SumProcessor implements IExpressionProcessor {
+public class SumProcessor implements IAggregateProcessor {
 
   private @Nullable BigDecimal sum;
 

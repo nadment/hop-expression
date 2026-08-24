@@ -72,7 +72,7 @@ public abstract class Type {
    */
   protected final String getSignature() {
     if (signature == null) {
-      signature =  generateSignature();
+      signature = generateSignature();
     }
     return signature;
   }
@@ -118,9 +118,13 @@ public abstract class Type {
           typeName.getMinPrecision(),
           typeName.getMaxPrecision());
     }
-    if (typeName.supportsScale() && (scale < typeName.getMinScale() || scale > typeName.getMaxScale())) {
+    if (typeName.supportsScale()
+        && (scale < typeName.getMinScale() || scale > typeName.getMaxScale())) {
       throw new ExpressionException(
-          ErrorCode.SCALE_OUT_OF_RANGE, getSignature(), typeName.getMinScale(), typeName.getMaxScale());
+          ErrorCode.SCALE_OUT_OF_RANGE,
+          getSignature(),
+          typeName.getMinScale(),
+          typeName.getMaxScale());
     }
     if (scale > precision) {
       throw new ExpressionException(ErrorCode.SCALE_GREATER_THAN_PRECISION, getSignature());

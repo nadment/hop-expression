@@ -18,9 +18,9 @@ import java.math.BigDecimal;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -38,7 +38,7 @@ public class PercentileFunction extends AggregateFunction {
   }
 
   @Override
-  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands)
+  public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     BigDecimal percentile = operands[0].getValue(BigDecimal.class);
 

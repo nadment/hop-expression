@@ -16,13 +16,13 @@ package org.apache.hop.expression.operator;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 
 /** Returns the number of distinct values. */
 @NullMarked
-public class CountDistinctProcessor implements IExpressionProcessor {
+public class CountDistinctProcessor implements IAggregateProcessor {
 
   private final Set<Object> values;
 

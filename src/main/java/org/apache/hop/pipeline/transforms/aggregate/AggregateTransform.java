@@ -29,8 +29,8 @@ import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.operator.CountFunction;
@@ -209,7 +209,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
             data.groupMeta.getValueMeta(i).convertToNormalStorageType(key.getValues()[i]);
       }
 
-      IExpressionProcessor[] aggregators = data.map.get(key);
+      IAggregateProcessor[] aggregators = data.map.get(key);
       Object[] results = getAggregateResult(aggregators);
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
         Object value = results[i];
@@ -261,7 +261,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
     AggregateKey key = data.createAggregateKey(row);
 
-    IExpressionProcessor[] aggregators = data.map.get(key);
+    IAggregateProcessor[] aggregators = data.map.get(key);
     if (aggregators == null) {
 
       // Create a new processors...
@@ -282,9 +282,9 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
   }
 
   /** Create new aggregate */
-  protected IExpressionProcessor[] createAggregate() {
+  protected IAggregateProcessor[] createAggregate() {
 
-    IExpressionProcessor[] processors = new IExpressionProcessor[data.functions.length];
+    IAggregateProcessor[] processors = new IAggregateProcessor[data.functions.length];
 
     for (int i = 0; i < data.functions.length; i++) {
       processors[i] =
@@ -294,7 +294,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     return processors;
   }
 
-  protected Object[] getAggregateResult(IExpressionProcessor[] aggregators) throws HopException {
+  protected Object[] getAggregateResult(IAggregateProcessor[] aggregators) throws HopException {
     Object[] result = new Object[aggregators.length];
     try {
       for (int i = 0; i < aggregators.length; i++) {

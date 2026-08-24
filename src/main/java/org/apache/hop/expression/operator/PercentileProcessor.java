@@ -18,8 +18,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
  * values are ignored.
  */
 @NullMarked
-public class PercentileProcessor implements IExpressionProcessor {
+public class PercentileProcessor implements IAggregateProcessor {
 
   private static final Percentile PERCENTILE = new Percentile();
   private final double quantile;

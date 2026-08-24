@@ -18,7 +18,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public interface IExpressionProcessor {
+public interface IAggregateProcessor {
 
   /**
    * This method is called once for each row

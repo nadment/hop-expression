@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -28,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
  * are ignored.
  */
 @NullMarked
-public class StdDevSampProcessor implements IExpressionProcessor {
+public class StdDevSampProcessor implements IAggregateProcessor {
 
   private final List<Double> values;
 

@@ -16,8 +16,8 @@ package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
  * values are ignored.
  */
 @NullMarked
-public class AvgProcessor implements IExpressionProcessor {
+public class AvgProcessor implements IAggregateProcessor {
 
   private BigDecimal sum;
   private long count;

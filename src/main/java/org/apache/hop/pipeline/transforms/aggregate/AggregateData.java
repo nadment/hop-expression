@@ -25,13 +25,13 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionProcessor;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
 public final class AggregateData extends BaseTransformData implements ITransformData {
-  public Map<AggregateKey, IExpressionProcessor[]> map;
+  public Map<AggregateKey, IAggregateProcessor[]> map;
   public IRowMeta groupMeta;
   public int[] groupIndex;
   public IRowExpressionContext context;

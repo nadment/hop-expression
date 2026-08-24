@@ -16,9 +16,9 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -33,7 +33,7 @@ public class AnyValueFunction extends AggregateFunction {
   }
 
   @Override
-  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
+  public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     return new AnyValueProcessor();
   }
 

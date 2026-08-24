@@ -18,8 +18,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
+import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
  * <p>Null values are ignored.
  */
 @NullMarked
-public class VariancePopProcessor implements IExpressionProcessor {
+public class VariancePopProcessor implements IAggregateProcessor {
 
   private static final Variance VARIANCE = new Variance(false);
 
