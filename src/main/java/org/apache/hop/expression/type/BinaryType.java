@@ -37,8 +37,6 @@ public final class BinaryType extends Type {
 
   BinaryType(int precision, boolean nullable) {
     super(precision, 0, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   public static BinaryType from(final byte[] value) {

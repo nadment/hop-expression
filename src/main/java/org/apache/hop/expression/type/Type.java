@@ -26,8 +26,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Data type
  *
- * <p>Identity is based upon the {@link #signature} field, which each derived class should set
- * during construction.
+ * <p>Identity is based upon the signature computed by {@link #generateSignature()}, which each
+ * derived class should override if its signature depends on more than precision, scale, and
+ * nullability.
  */
 @NullMarked
 public abstract class Type {
@@ -53,27 +54,27 @@ public abstract class Type {
   /** Queries whether this type allows null values. */
   @Getter protected final boolean nullable;
 
-  protected String signature;
+  private @Nullable String signature;
 
   protected Type(int precision, int scale, boolean nullable) {
     this.precision = precision;
     this.scale = scale;
     this.nullable = nullable;
+
+    checkPrecisionAndScale();
   }
 
-  /** Generates a string representation of this type. */
-  private void generateLiteral(StringBuilder builder) {
-    TypeName id = getName();
-    builder.append(id.name());
-    if (precision != id.getMaxPrecision() || (scale > 0 && scale != id.getDefaultScale())) {
-      builder.append('(');
-      builder.append(precision);
-      if (scale > 0) {
-        builder.append(',');
-        builder.append(scale);
-      }
-      builder.append(')');
+  /**
+   * Generates a string representation of this type with full detail such as scale, precision, and
+   * nullability.
+   *
+   * @return string
+   */
+  protected final String getSignature() {
+    if (signature == null) {
+      signature =  generateSignature();
     }
+    return signature;
   }
 
   /**
@@ -91,20 +92,38 @@ public abstract class Type {
     return builder.toString();
   }
 
-  /** Check precision and scale. */
-  protected void checkPrecisionAndScale() {
+  /** Generates a string representation of this type. */
+  private void generateLiteral(StringBuilder builder) {
     TypeName id = getName();
-    if (id.supportsPrecision()
-        && (precision < id.getMinPrecision() || precision > id.getMaxPrecision())) {
-      throw new ExpressionException(
-          ErrorCode.PRECISION_OUT_OF_RANGE, signature, id.getMinPrecision(), id.getMaxPrecision());
+    builder.append(id.name());
+    if (precision != id.getMaxPrecision() || (scale > 0 && scale != id.getDefaultScale())) {
+      builder.append('(');
+      builder.append(precision);
+      if (scale > 0) {
+        builder.append(',');
+        builder.append(scale);
+      }
+      builder.append(')');
     }
-    if (id.supportsScale() && (scale < id.getMinScale() || scale > id.getMaxScale())) {
+  }
+
+  /** Check precision and scale. */
+  private void checkPrecisionAndScale() {
+    TypeName typeName = getName();
+    if (typeName.supportsPrecision()
+        && (precision < typeName.getMinPrecision() || precision > typeName.getMaxPrecision())) {
       throw new ExpressionException(
-          ErrorCode.SCALE_OUT_OF_RANGE, signature, id.getMinScale(), id.getMaxScale());
+          ErrorCode.PRECISION_OUT_OF_RANGE,
+          getSignature(),
+          typeName.getMinPrecision(),
+          typeName.getMaxPrecision());
+    }
+    if (typeName.supportsScale() && (scale < typeName.getMinScale() || scale > typeName.getMaxScale())) {
+      throw new ExpressionException(
+          ErrorCode.SCALE_OUT_OF_RANGE, getSignature(), typeName.getMinScale(), typeName.getMaxScale());
     }
     if (scale > precision) {
-      throw new ExpressionException(ErrorCode.SCALE_GREATER_THAN_PRECISION, signature);
+      throw new ExpressionException(ErrorCode.SCALE_GREATER_THAN_PRECISION, getSignature());
     }
   }
 
@@ -194,20 +213,20 @@ public abstract class Type {
   /** Indicates whether that type is equal with each other by ignoring the nullability. */
   public boolean equalsIgnoreNullability(final @Nullable Type type) {
     if (type == null) return false;
-    return this.signature.equals(type.signature);
+    return this.getSignature().equals(type.getSignature());
   }
 
   @Override
   public final boolean equals(@Nullable Object obj) {
     return this == obj
         || obj instanceof Type type
-            && Objects.equals(this.signature, type.signature)
+            && Objects.equals(this.getSignature(), type.getSignature())
             && nullable == type.nullable;
   }
 
   @Override
   public final int hashCode() {
-    return Objects.hash(signature, nullable);
+    return Objects.hash(getSignature(), nullable);
   }
 
   /**
@@ -268,6 +287,6 @@ public abstract class Type {
    */
   @Override
   public String toString() {
-    return signature;
+    return getSignature();
   }
 }

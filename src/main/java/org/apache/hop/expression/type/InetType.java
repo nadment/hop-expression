@@ -35,7 +35,6 @@ public final class InetType extends Type {
 
   InetType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
-    this.signature = generateSignature();
   }
 
   @Override

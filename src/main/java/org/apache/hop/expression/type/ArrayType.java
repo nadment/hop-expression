@@ -34,7 +34,6 @@ public final class ArrayType extends Type {
   ArrayType(Type elementType, boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
     this.elementType = Objects.requireNonNull(elementType);
-    this.signature = generateSignature();
   }
 
   /**
@@ -72,7 +71,7 @@ public final class ArrayType extends Type {
 
   @Override
   protected String generateSignature() {
-    return "ARRAY<" + elementType.generateSignature() + ">";
+    return "ARRAY<" + elementType.getSignature() + ">";
   }
 
   @Override

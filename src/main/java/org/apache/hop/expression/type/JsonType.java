@@ -38,7 +38,6 @@ public final class JsonType extends Type {
 
   JsonType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
-    this.signature = generateSignature();
   }
 
   @Override

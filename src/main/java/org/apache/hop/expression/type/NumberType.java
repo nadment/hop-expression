@@ -41,8 +41,6 @@ public final class NumberType extends Type {
 
   NumberType(int precision, int scale, boolean nullable) {
     super(precision, scale, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   public static NumberType from(final BigDecimal number) {

@@ -27,7 +27,6 @@ public final class UnknownType extends Type {
 
   UnknownType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
-    this.signature = generateSignature();
   }
 
   @Override

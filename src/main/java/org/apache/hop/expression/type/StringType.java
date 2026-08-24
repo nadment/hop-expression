@@ -49,8 +49,6 @@ public final class StringType extends Type {
 
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
-    this.signature = generateSignature();
-    this.checkPrecisionAndScale();
   }
 
   public static StringType of(int precision) {
