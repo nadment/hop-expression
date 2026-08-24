@@ -236,9 +236,12 @@ import org.apache.hop.expression.ExpressionException;
  */
 public abstract class DateTimeFormat extends BaseFormat {
 
+  /** Default century start year for 2-digit years, used when none is specified. */
+  public static final int DEFAULT_TWO_DIGIT_YEAR_START = 1970;
+
   private static final Map<String, DateTimeFormat> cache = new ConcurrentHashMap<>();
 
-  protected int twoDigitYearStart = 1970;
+  protected int twoDigitYearStart = DEFAULT_TWO_DIGIT_YEAR_START;
 
   public static DateTimeFormat of(String pattern) {
     if (pattern == null) {
@@ -246,6 +249,32 @@ public abstract class DateTimeFormat extends BaseFormat {
     }
 
     return cache.computeIfAbsent(pattern, DateTimeFormat::create);
+  }
+
+  /**
+   * Get a date/time format for the given pattern configured with a non-default century start year
+   * for 2-digit years.
+   *
+   * <p>Unlike {@link #of(String)}, the returned instance is never shared through the cache when
+   * {@code twoDigitYearStart} differs from the default: {@link #setTwoDigitYearStart} mutates
+   * instance state, and mutating a cached singleton would leak the setting to every other caller
+   * using the same pattern.
+   *
+   * @param pattern the format pattern, or {@code null} for "AUTO"
+   * @param twoDigitYearStart the century start year for 2-digit years
+   */
+  public static DateTimeFormat of(String pattern, int twoDigitYearStart) {
+    if (pattern == null) {
+      pattern = "AUTO";
+    }
+
+    if (twoDigitYearStart == DEFAULT_TWO_DIGIT_YEAR_START) {
+      return cache.computeIfAbsent(pattern, DateTimeFormat::create);
+    }
+
+    DateTimeFormat format = create(pattern);
+    format.setTwoDigitYearStart(twoDigitYearStart);
+    return format;
   }
 
   private static DateTimeFormat create(String pattern) {

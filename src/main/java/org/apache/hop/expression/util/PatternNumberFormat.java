@@ -138,7 +138,6 @@ final class PatternNumberFormat extends NumberFormat {
 
   // Original format
   private final String format;
-  private final boolean exactMode = false;
   private final String pattern;
   // Fill mode suppress padding blanks and zeroes.
   private boolean fillMode = true;
@@ -551,7 +550,7 @@ final class PatternNumberFormat extends NumberFormat {
               // If grouping is non-breaking space or narrow non-breaking space (special case for
               // fr-FR locale)
               || (Characters.isSpace(groupingSeparator) && Characters.isSpace(c))
-              || (!this.exactMode && c == ',')) continue;
+              || c == ',') continue;
         }
 
         throw createUnparsableNumber(format, text, i);

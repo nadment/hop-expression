@@ -278,19 +278,11 @@ import org.apache.hop.expression.ExpressionException;
   /** The pattern. */
   private final String pattern;
 
-  /** The locale. */
-  private final Locale locale;
-
   /** The parsed formats. */
   private final Format[] formats;
 
   public PatternDateTimeFormat(final String pattern) {
-    this(pattern, Locale.getDefault());
-  }
-
-  public PatternDateTimeFormat(final String pattern, final Locale locale) {
     this.pattern = pattern;
-    this.locale = locale;
     this.formats = formats();
   }
 
@@ -706,9 +698,7 @@ import org.apache.hop.expression.ExpressionException;
 
       // Local radix character
       if (startsWithIgnoreCase(pattern, index, "X")) {
-        list.add(
-            new CharFormat(
-                exactMode, DecimalFormatSymbols.getInstance(locale).getDecimalSeparator()));
+        list.add(new RadixCharFormat(exactMode));
         index += 1;
         continue;
       }
@@ -842,6 +832,33 @@ import org.apache.hop.expression.ExpressionException;
     public void parse(final DateTimeParser parser) {
       char c = parser.parseChar();
       if (exactMode && ch != c) {
+        throw new ExpressionException(
+            ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
+      }
+    }
+  }
+
+  /**
+   * Local radix character. Re-reads the JVM default locale on every use instead of capturing it
+   * once, since instances of this class are cached indefinitely and shared across callers.
+   */
+  private static class RadixCharFormat extends Format {
+
+    public RadixCharFormat(boolean exactMode) {
+      super(true, exactMode);
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
+      output.append(DecimalFormatSymbols.getInstance(Locale.getDefault()).getDecimalSeparator());
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      char c = parser.parseChar();
+      char expected = DecimalFormatSymbols.getInstance(Locale.getDefault()).getDecimalSeparator();
+      if (exactMode && expected != c) {
         throw new ExpressionException(
             ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
       }
