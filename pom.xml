@@ -119,7 +119,7 @@ http://www.apache.org/licenses/LICENSE-2.0
         <dependency>
             <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.equinox.common</artifactId>
-            <version>3.19.0</version>
+            <version>3.20.400</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
