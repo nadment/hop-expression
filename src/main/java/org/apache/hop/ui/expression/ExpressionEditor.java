@@ -25,6 +25,9 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.Props;
 import org.apache.hop.core.gui.plugin.GuiPlugin;
+import org.apache.hop.core.gui.plugin.key.GuiKeyboardShortcut;
+import org.apache.hop.core.gui.plugin.key.GuiOsxKeyboardShortcut;
+import org.apache.hop.core.gui.plugin.menu.GuiMenuElement;
 import org.apache.hop.core.gui.plugin.toolbar.GuiToolbarElement;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
@@ -77,6 +80,7 @@ import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.dialog.MessageBox;
+import org.apache.hop.ui.core.gui.GuiMenuWidgets;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
 import org.apache.hop.ui.core.gui.IToolbarContainer;
@@ -109,6 +113,7 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -123,16 +128,37 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 @GuiPlugin
-public class ExpressionEditor extends Composite implements IDocumentListener {
-  public static final String ID_TOOLBAR = "expression-editor-toolbar";
-  public static final String ID_TOOLBAR_SELECT_ALL = "expression-editor-toolbar-10300-select-all";
-  public static final String ID_TOOLBAR_COPY = "expression-editor-toolbar-10400-copy";
-  public static final String ID_TOOLBAR_PASTE = "expression-editor-toolbar-10410-paste";
-  public static final String ID_TOOLBAR_CUT = "expression-editor-toolbar-10420-cut";
-  public static final String ID_TOOLBAR_UNDO = "expression-editor-toolbar-10430-undo";
-  public static final String ID_TOOLBAR_REDO = "expression-editor-toolbar-10440-redo";
-  public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10450-simplify";
+public class ExpressionEditor extends Composite
+    implements /*IFindReplaceTarget,*/ IDocumentListener {
+  public static final String ID_TOOLBAR = "ExpressionEditor-Toolbar";
+  public static final String ID_TOOLBAR_UNDO = "ExpressionEditor-Toolbar-10000-undo";
+  public static final String ID_TOOLBAR_REDO = "ExpressionEditor-Toolbar-10010-redo";
+  public static final String ID_TOOLBAR_SELECT_ALL = "ExpressionEditor-Toolbar-10100-select-all";
+  public static final String ID_TOOLBAR_UNSELECT_ALL =
+      "ExpressionEditor-Toolbar-10110-unselect-all";
+  public static final String ID_TOOLBAR_COPY = "ExpressionEditor-Toolbar-10200-copy";
+  public static final String ID_TOOLBAR_PASTE = "ExpressionEditor-Toolbar-10210-paste";
+  public static final String ID_TOOLBAR_CUT = "ExpressionEditor-Toolbar-10230-cut";
+  public static final String ID_TOOLBAR_FIND = "ExpressionEditor-Toolbar-10300-find";
+  public static final String ID_TOOLBAR_FIND_REPLACE =
+      "ExpressionEditor-Toolbar-10310-find-replace";
+  public static final String ID_TOOLBAR_OPTIMIZE = "ExpressionEditor-Toolbar-10500-simplify";
+
   private static final Class<?> PKG = ExpressionEditor.class;
+  public static final String GUI_PLUGIN_CONTEXT_MENU_PARENT_ID = "ExpressionEditor-ContextMenu";
+  public static final String ID_CONTEXT_MENU_UNDO = "ExpressionEditor-ContextMenu-10000-undo";
+  public static final String ID_CONTEXT_MENU_REDO = "ExpressionEditor-ContextMenu-10010-redo";
+  public static final String ID_CONTEXT_MENU_SELECT_ALL =
+      "ExpressionEditor-ContextMenu-20000-select-all";
+  public static final String ID_CONTEXT_MENU_UNSELECT_ALL =
+      "ExpressionEditor-ContextMenu-20010-unselect-all";
+  public static final String ID_CONTEXT_MENU_COPY = "ExpressionEditor-ContextMenu-30000-copy";
+  public static final String ID_CONTEXT_MENU_PASTE = "ExpressionEditor-ContextMenu-30010-paste";
+  public static final String ID_CONTEXT_MENU_CUT = "ExpressionEditor-ContextMenu-30020-cut";
+  public static final String ID_CONTEXT_MENU_FIND = "ExpressionEditor-ContextMenu-40000-find";
+  public static final String ID_CONTEXT_MENU_FIND_REPLACE =
+      "ExpressionEditor-ContextMenu-40010-find-replace";
+
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
@@ -182,6 +208,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   private SourceViewer wViewer;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
+  private GuiMenuWidgets contextMenuWidgets;
   private IRowMeta rowMeta;
   private Browser wBrowser;
   private SashForm wEditorSashForm;
@@ -205,6 +232,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
     this.createTree(wSashForm);
     this.createSash(wSashForm);
+    this.createContextMenu();
 
     // When IRowMeta is ready
     if (rowMetaFutur != null) {
@@ -212,6 +240,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     }
 
     wSashForm.setWeights(25, 75);
+
+    updateToolbar();
   }
 
   protected void createSash(final Composite parent) {
@@ -268,10 +298,12 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
 
     wViewer =
         new SourceViewer(composite, createVerticalRuler(), SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+
     wViewer
         .getControl()
         .setLayoutData(
             new FormDataBuilder().top(toolbarContainer.getControl()).bottom().fullWidth().result());
+    wViewer.addSelectionChangedListener(event -> updateToolbar());
 
     final StyledText widget = wViewer.getTextWidget();
 
@@ -282,6 +314,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     final int modifierKeys =
         (System.getProperty("user.language").equals("zh")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
 
+    widget.setTabs(4);
     widget.addListener(SWT.FocusIn, e -> hideHelp());
     widget.addListener(
         SWT.KeyDown,
@@ -289,8 +322,22 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
           if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
             wViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
           }
-          if (event.keyCode == 'a' && (event.stateMask & SWT.MOD1) != 0) {
-            onSelectAll();
+          if ((event.stateMask & SWT.MOD1) == 0 || (event.stateMask & SWT.MOD2) != 0) {
+            return;
+          }
+          if (event.keyCode == 'a') {
+            selectAll();
+            event.doit = false;
+          } else if (event.keyCode == 'f') {
+            find();
+            event.doit = false;
+          } else if (event.keyCode == 'h') {
+            if (wViewer.isEditable()) {
+              findReplace();
+            } else {
+              find();
+            }
+            event.doit = false;
           } else if (event.keyCode == SWT.F1) {
             // TODO: Help
             event.doit = false;
@@ -340,57 +387,6 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
               styledText.insert(str);
             }
           }
-        });
-
-    Menu menu = new Menu(getShell(), SWT.POP_UP);
-    MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
-    undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Undo.Label"));
-    undoItem.setImage(GuiResource.getInstance().getImageUndo());
-    undoItem.setAccelerator(SWT.MOD1 | 'Z');
-    undoItem.addListener(SWT.Selection, e -> onUndo());
-
-    MenuItem redoItem = new MenuItem(menu, SWT.PUSH);
-    redoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Redo.Label"));
-    redoItem.setImage(GuiResource.getInstance().getImageRedo());
-    redoItem.setAccelerator(SWT.MOD1 + SWT.SHIFT | 'Z');
-    redoItem.addListener(SWT.Selection, e -> onRedo());
-
-    new MenuItem(menu, SWT.SEPARATOR);
-
-    MenuItem cutItem = new MenuItem(menu, SWT.PUSH);
-    cutItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Cut.Label"));
-    cutItem.setImage(GuiResource.getInstance().getImageCut());
-    cutItem.addListener(SWT.Selection, e -> onCut());
-
-    MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
-    copyItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Copy.Label"));
-    copyItem.setImage(GuiResource.getInstance().getImageCopy());
-    copyItem.setAccelerator(SWT.MOD1 | 'C');
-    copyItem.addListener(SWT.Selection, e -> onCopy());
-
-    MenuItem pasteItem = new MenuItem(menu, SWT.PUSH);
-    pasteItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Paste.Label"));
-    pasteItem.setImage(GuiResource.getInstance().getImagePaste());
-    pasteItem.setAccelerator(SWT.MOD1 | 'V');
-    pasteItem.addListener(SWT.Selection, e -> onPaste());
-
-    new MenuItem(menu, SWT.SEPARATOR);
-
-    MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
-    selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.SelectAll.Label"));
-    selectAllItem.setImage(GuiResource.getInstance().getImageSelectAll());
-    selectAllItem.setAccelerator(SWT.MOD1 | 'A');
-    selectAllItem.addListener(SWT.Selection, e -> onSelectAll());
-
-    widget.setMenu(menu);
-    widget.addListener(
-        SWT.MenuDetect,
-        event -> {
-          undoItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.UNDO));
-          redoItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.REDO));
-          cutItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.CUT));
-          copyItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.COPY));
-          pasteItem.setEnabled(wViewer.canDoOperation(ITextOperationTarget.PASTE));
         });
 
     Document document = new Document();
@@ -627,7 +623,16 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
    */
   protected IVerticalRuler createVerticalRuler() {
     LineNumberRulerColumn lineNumberRulerColumn = new LineNumberRulerColumn();
-    lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
+
+    boolean dark = PropsUi.getInstance().isDarkMode();
+    if (dark) {
+      lineNumberRulerColumn.setForeground(new Color(this.getDisplay(), 130, 130, 130));
+      lineNumberRulerColumn.setBackground(new Color(this.getDisplay(), 40, 40, 40));
+    } else {
+      lineNumberRulerColumn.setForeground(new Color(this.getDisplay(), 120, 120, 120));
+    }
+
+    // ineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
     lineNumberRulerColumn.setFont(GuiResource.getInstance().getFontFixed());
 
     PropsUi props = PropsUi.getInstance();
@@ -645,6 +650,39 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     return ruler;
   }
 
+  void createContextMenu() {
+    StyledText styledText = wViewer.getTextWidget();
+
+    Menu contextMenu = new Menu(styledText);
+    contextMenuWidgets = new GuiMenuWidgets();
+    contextMenuWidgets.registerGuiPluginObject(this);
+    contextMenuWidgets.createMenuWidgets(
+        GUI_PLUGIN_CONTEXT_MENU_PARENT_ID, styledText.getShell(), contextMenu);
+    styledText.setMenu(contextMenu);
+    styledText.addListener(
+        SWT.MenuDetect,
+        event -> {
+          // Update the context menu items...
+          contextMenuWidgets.enableMenuItem(
+              ID_CONTEXT_MENU_UNDO, wViewer.canDoOperation(ITextOperationTarget.UNDO));
+          contextMenuWidgets.enableMenuItem(
+              ID_CONTEXT_MENU_REDO, wViewer.canDoOperation(ITextOperationTarget.REDO));
+          contextMenuWidgets.enableMenuItem(
+              ID_CONTEXT_MENU_CUT, wViewer.canDoOperation(ITextOperationTarget.CUT));
+          contextMenuWidgets.enableMenuItem(
+              ID_CONTEXT_MENU_COPY, wViewer.canDoOperation(ITextOperationTarget.COPY));
+          contextMenuWidgets.enableMenuItem(
+              ID_CONTEXT_MENU_PASTE, wViewer.canDoOperation(ITextOperationTarget.PASTE));
+          contextMenuWidgets.enableMenuItem(ID_CONTEXT_MENU_FIND, false);
+          contextMenuWidgets.enableMenuItem(
+              ID_CONTEXT_MENU_FIND_REPLACE, false); // wViewer.isEditable());
+        });
+  }
+
+  public boolean isEditable() {
+    return wViewer.isEditable();
+  }
+
   public String getText() {
     return wViewer.getDocument().get();
   }
@@ -655,13 +693,65 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     wViewer.getDocument().set(expression);
   }
 
+  public String getSelectionText() {
+    return wViewer.getTextWidget().getSelectionText();
+  }
+
+  public int getSelectionCount() {
+    return wViewer.getTextWidget().getSelectionCount();
+  }
+
+  public int getCaretPosition() {
+    return wViewer.getTextWidget().getCaretOffset();
+  }
+
+  public void setCaretPosition(int position) {
+    wViewer.getTextWidget().setCaretOffset(position);
+  }
+
+  public void insert(String text) {
+    wViewer.getTextWidget().insert(text);
+  }
+
+  public boolean setFocus() {
+    return wViewer.getTextWidget().setFocus();
+  }
+
+  public void updateToolbar() {
+    boolean canUndo = wViewer.canDoOperation(ITextOperationTarget.UNDO);
+    boolean canRedo = wViewer.canDoOperation(ITextOperationTarget.REDO);
+    boolean canCut = wViewer.canDoOperation(ITextOperationTarget.CUT);
+    boolean canCopy = wViewer.canDoOperation(ITextOperationTarget.COPY);
+    boolean canPaste = wViewer.canDoOperation(ITextOperationTarget.PASTE);
+
+    // Update the toolbar items...
+    if (toolbarWidgets != null) {
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_UNDO, canUndo);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_REDO, canRedo);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_CUT, canCut);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_COPY, canCopy);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_PASTE, canPaste);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND, false);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND_REPLACE, false); // wViewer.isEditable());
+    }
+  }
+
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_COPY,
       image = "ui/images/copy.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Copy.ToolTip",
+      toolTip = "i18n::ExpressionEditor.ToolBar.Copy.ToolTip",
       separator = true)
-  public void onCopy() {
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_COPY,
+      label = "i18n::ExpressionEditor.Menu.Copy.Label",
+      image = "ui/images/copy.svg",
+      separator = true)
+  @GuiKeyboardShortcut(control = true, key = 'c')
+  @GuiOsxKeyboardShortcut(command = true, key = 'c')
+  public void copy() {
     wViewer.doOperation(ITextOperationTarget.COPY);
   }
 
@@ -669,8 +759,16 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_PASTE,
       image = "ui/images/paste.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Paste.ToolTip")
-  public void onPaste() {
+      toolTip = "i18n::ExpressionEditor.ToolBar.Paste.ToolTip")
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_PASTE,
+      label = "i18n::ExpressionEditor.Menu.Paste.Label",
+      image = "ui/images/paste.svg")
+  @GuiKeyboardShortcut(control = true, key = 'v')
+  @GuiOsxKeyboardShortcut(command = true, key = 'v')
+  public void paste() {
     wViewer.doOperation(ITextOperationTarget.PASTE);
   }
 
@@ -678,8 +776,16 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_CUT,
       image = "ui/images/cut.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Cut.ToolTip")
-  public void onCut() {
+      toolTip = "i18n::ExpressionEditor.ToolBar.Cut.ToolTip")
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_CUT,
+      label = "i18n::ExpressionEditor.Menu.Cut.Label",
+      image = "ui/images/cut.svg")
+  @GuiKeyboardShortcut(control = true, key = 'x')
+  @GuiOsxKeyboardShortcut(command = true, key = 'x')
+  public void cut() {
     wViewer.doOperation(ITextOperationTarget.CUT);
   }
 
@@ -687,18 +793,50 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_SELECT_ALL,
       image = "ui/images/select-all.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.SelectAll.ToolTip")
-  public void onSelectAll() {
+      toolTip = "i18n::ExpressionEditor.ToolBar.SelectAll.ToolTip",
+      separator = true)
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_SELECT_ALL,
+      label = "i18n::ExpressionEditor.Menu.SelectAll.Label",
+      image = "ui/images/select-all.svg",
+      separator = true)
+  @GuiKeyboardShortcut(control = true, key = 'a')
+  @GuiOsxKeyboardShortcut(command = true, key = 'a')
+  public void selectAll() {
     wViewer.doOperation(ITextOperationTarget.SELECT_ALL);
+  }
+
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_UNSELECT_ALL,
+      image = "ui/images/unselect-all.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBar.UnselectAll.ToolTip")
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_UNSELECT_ALL,
+      label = "i18n::ExpressionEditor.Menu.UnselectAll.Label",
+      image = "ui/images/unselect-all.svg")
+  public void unselectAll() {
+    wViewer.setSelectedRange(0, 0);
   }
 
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_UNDO,
       image = "ui/images/undo.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Undo.ToolTip",
-      separator = true)
-  public void onUndo() {
+      toolTip = "i18n::ExpressionEditor.ToolBar.Undo.ToolTip")
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_UNDO,
+      label = "i18n::ExpressionEditor.Menu.Undo.Label",
+      image = "ui/images/undo.svg")
+  @GuiKeyboardShortcut(control = true, key = 'z')
+  @GuiOsxKeyboardShortcut(command = true, key = 'z')
+  public void undo() {
     wViewer.doOperation(ITextOperationTarget.UNDO);
   }
 
@@ -706,18 +844,62 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_REDO,
       image = "ui/images/redo.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Redo.ToolTip")
-  public void onRedo() {
+      toolTip = "i18n::ExpressionEditor.ToolBar.Redo.ToolTip")
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_REDO,
+      label = "i18n::ExpressionEditor.Menu.Redo.Label",
+      image = "ui/images/redo.svg")
+  @GuiKeyboardShortcut(control = true, shift = true, key = 'z')
+  @GuiOsxKeyboardShortcut(command = true, shift = true, key = 'z')
+  public void redo() {
     wViewer.doOperation(ITextOperationTarget.REDO);
+  }
+
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_FIND,
+      image = "ui/images/search.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBar.Find.ToolTip",
+      separator = true)
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_FIND,
+      label = "i18n::ExpressionEditor.Menu.Find.Label",
+      image = "ui/images/search.svg",
+      separator = true)
+  @GuiKeyboardShortcut(control = true, key = 'f')
+  @GuiOsxKeyboardShortcut(command = true, key = 'f')
+  public static void find() {
+    // FindReplaceDialog.open(control.getShell(), this, false);
+  }
+
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_FIND_REPLACE,
+      image = "ui/images/find-replace.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBar.FindAndReplace.ToolTip")
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_FIND_REPLACE,
+      label = "i18n::ExpressionEditor.Menu.FindAndReplace.Label",
+      image = "ui/images/find-replace.svg")
+  @GuiKeyboardShortcut(control = true, key = 'h')
+  @GuiOsxKeyboardShortcut(command = true, key = 'h')
+  public static void findReplace() {
+    // FindReplaceDialog.open(control.getShell(), this, true);
   }
 
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_OPTIMIZE,
       image = "evaluate.svg",
-      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Evaluate.ToolTip",
+      toolTip = "i18n::ExpressionEditor.ToolBar.Evaluate.ToolTip",
       separator = true)
-  public void onEvaluate() {
+  public void evaluate() {
 
     String source = wViewer.getTextWidget().getText();
 
@@ -802,5 +984,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
       annotationModel.addAnnotation(annotation, new Position(0, 0));
     }
+
+    updateToolbar();
   }
 }
