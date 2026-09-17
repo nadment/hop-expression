@@ -43,9 +43,13 @@ class JsonFunctionTest extends ExpressionTest {
 
     // evalEquals("Json_Value('[{a:100}, {b:200}, {c:300}]', '$[*].c')", "300");
 
-    // TODO: bracket–notation
-    // evalEquals("Json_Value(FIELD_JSON, '$['store']['book'][0]['title']')", "Sayings of the
-    // Century");
+    // embedded in array (won't work in transformation after variables resolution because $[0] is translated)
+    // https://hop.apache.org/manual/latest/variables.html#_hexadecimal_values
+    evalEquals("JSON_VALUE('[ { \"id\":3902113,\"similarity\":0.95 } ]','$[0].similarity')", 0.95);
+
+    // bracket–notation
+    evalEquals(
+        "Json_Value(FIELD_JSON, '$[''store''][''book''][0][''title'']')", "Sayings of the Century");
 
     // boolean type
     evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]' RETURNING BOOLEAN)");

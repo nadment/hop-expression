@@ -41,4 +41,5 @@ include::jsonpath.adoc[]
 JSON_VALUE('{"language":["English", "French"]}','$.language[1]') return 'French'
 JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') return 12345
 JSON_VALUE(FIELD_JSON, '$..book.length()')
+JSON_VALUE('[{"id":123,similarity":0.95]},CHR(36)||'[0].similarity')
 ----
