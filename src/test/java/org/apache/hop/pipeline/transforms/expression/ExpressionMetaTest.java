@@ -20,6 +20,10 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hop.core.ICheckResult;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.pipeline.transform.TransformSerializationTestUtil;
 import org.junit.jupiter.api.Test;
 
@@ -32,5 +36,24 @@ public class ExpressionMetaTest {
             "/expression-transform.xml", ExpressionMeta.class);
 
     assertEquals(9, meta.getFields().size());
+  }
+
+  @Test
+  public void testCheckWithoutPreviousFields() {
+    ExpressionField field = new ExpressionField();
+    field.setName("result");
+    field.setExpression("1+2");
+
+    ExpressionMeta meta = new ExpressionMeta();
+    meta.setDefault();
+    meta.getFields().add(field);
+
+    List<ICheckResult> remarks = new ArrayList<>();
+    meta.check(
+        remarks, null, null, null, new String[] {"input"}, null, null, new Variables(), null);
+
+    // Only the warning about the missing input fields, the expression is valid
+    assertEquals(1, remarks.size());
+    assertEquals(ICheckResult.TYPE_RESULT_WARNING, remarks.get(0).getType());
   }
 }

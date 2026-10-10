@@ -26,6 +26,7 @@ import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
@@ -148,8 +149,9 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
               transformMeta));
     }
 
-    // Check expression
-    RowExpressionContext context = new RowExpressionContext(variables, prev);
+    // Check expression, without input fields if the previous transform is unknown
+    RowExpressionContext context =
+        new RowExpressionContext(variables, (prev == null) ? new RowMeta() : prev);
     for (ExpressionField field : this.fields) {
 
       if (Utils.isEmpty(field.getExpression())) {
