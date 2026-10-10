@@ -204,7 +204,7 @@ public class AddOperator extends BinaryOperator {
       IExpression operand = call.getOperand(1);
       if (operand.isConstant() && !operand.isNull()) {
         Interval interval = operand.getValue(Interval.class);
-        if (interval.isZero()) {
+        if (interval != null && interval.isZero()) {
           return call.getOperand(0);
         }
       }
@@ -234,7 +234,7 @@ public class AddOperator extends BinaryOperator {
       IExpression operand = call.getOperand(1);
       if (operand.isConstant() && !operand.isNull()) {
         Interval interval = operand.getValue(Interval.class);
-        if (interval.isZero()) {
+        if (interval != null && interval.isZero()) {
           return call.getOperand(0);
         }
       }

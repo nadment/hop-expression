@@ -212,6 +212,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
         Function function = FunctionRegistry.getFunction(name);
+        if (function == null) {
+          continue;
+        }
 
         // Skip UDF proposal in UDF mode
         if (mode == ExpressionMode.UDF && function instanceof UserDefinedFunction) {

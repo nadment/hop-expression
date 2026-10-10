@@ -140,7 +140,10 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
 
     data.context.setRow(r);
-    long nrClones = data.numberOfClones.getValue(Long.class);
+    Long nrClones = data.numberOfClones.getValue(Long.class);
+    if (nrClones == null) {
+      throw new HopException(BaseMessages.getString(PKG, "CloneRow.Log.NrClonesIsNull"));
+    }
 
     for (int i = 0; i < nrClones && !isStopped(); i++) {
       // Output now all clones row
