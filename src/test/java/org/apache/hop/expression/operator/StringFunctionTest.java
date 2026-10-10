@@ -226,6 +226,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("RPad(NULL_BINARY,2)").returnType(BinaryType.BINARY);
     evalNull("RPad(NULL_STRING,-8)");
     evalNull("RPad(NULL_BINARY,-8)");
+    evalNull("RPad('test',NULL_INTEGER)");
+    evalNull("RPad('test',NULL_INTEGER,'*')");
+    evalNull("RPad(BINARY '1A2B3C',NULL_INTEGER,BINARY '4D5E6F')");
 
     // Check operands
     evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
