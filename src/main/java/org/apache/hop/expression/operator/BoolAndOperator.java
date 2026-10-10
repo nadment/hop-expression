@@ -235,11 +235,11 @@ public class BoolAndOperator extends BinaryOperator {
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
-    if (left == Boolean.FALSE) {
+    if (Boolean.FALSE.equals(left)) {
       return Boolean.FALSE;
     }
     Boolean right = operands[1].getValue(Boolean.class);
-    if (right == Boolean.FALSE) {
+    if (Boolean.FALSE.equals(right)) {
       return Boolean.FALSE;
     }
 

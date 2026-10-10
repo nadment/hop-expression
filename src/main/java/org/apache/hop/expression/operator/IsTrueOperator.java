@@ -61,6 +61,6 @@ public class IsTrueOperator extends PostfixUnaryOperator {
     Boolean value = operands[0].getValue(Boolean.class);
 
     // NULL is never TRUE
-    return value == Boolean.TRUE;
+    return Boolean.TRUE.equals(value);
   }
 }

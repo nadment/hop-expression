@@ -31,7 +31,7 @@ public class CountIfProcessor implements IAggregateProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
     Boolean predicate = operands[0].getValue(Boolean.class);
-    if (predicate == Boolean.TRUE) {
+    if (Boolean.TRUE.equals(predicate)) {
       count++;
     }
   }

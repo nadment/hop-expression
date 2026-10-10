@@ -62,6 +62,6 @@ public class IsNotTrueOperator extends PostfixUnaryOperator {
     Boolean value = operands[0].getValue(Boolean.class);
 
     // NULL is always NOT TRUE
-    return value != Boolean.TRUE;
+    return !Boolean.TRUE.equals(value);
   }
 }
