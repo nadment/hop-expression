@@ -16,6 +16,7 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -49,7 +50,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
           IOUtils.copy(reader, writer);
         }
         css = writer.toString();
-      } catch (Exception e) {
+      } catch (IOException e) {
         css = "";
       }
     }

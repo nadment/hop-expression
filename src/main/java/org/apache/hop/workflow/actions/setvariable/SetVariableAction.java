@@ -184,7 +184,7 @@ public class SetVariableAction extends ActionBase implements IAction {
                 BaseMessages.getString(
                     PKG, "SetVariableAction.Log.SetVariableToValue", name, value));
           }
-        } catch (Exception e) {
+        } catch (HopWorkflowException | RuntimeException e) {
           result.setResult(false);
           result.increaseErrors(1);
           logError(

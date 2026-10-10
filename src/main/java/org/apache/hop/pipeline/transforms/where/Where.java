@@ -148,7 +148,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
           putRowTo(data.outputRowMeta, row, data.falseRowSet);
         }
       }
-    } catch (Exception e) {
+    } catch (HopException | RuntimeException e) {
       logError(e.getMessage());
       if (isDebug()) {
         logError(Const.getStackTracker(e));

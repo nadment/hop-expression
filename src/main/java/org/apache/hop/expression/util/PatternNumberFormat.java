@@ -571,7 +571,7 @@ final class PatternNumberFormat extends NumberFormat {
       String str = digits.toString();
 
       return new BigDecimal(new BigInteger(str), fraction);
-    } catch (Exception exception) {
+    } catch (RuntimeException exception) {
       throw createUnparsableNumber(format, text, start);
     }
   }
