@@ -18,6 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
@@ -193,6 +194,25 @@ class AggregateFunctionTest extends ExpressionTest {
     optimize("NTH_VALUE(FIELD_DATE,3)").returnType(DateType.DATE);
     optimize("NTH_VALUE(FIELD_DATE,2) RESPECT NULLS", "NTH_VALUE(FIELD_DATE,2)");
     optimize("NTH_VALUE(FIELD_DATE,2) IGNORE NULLS");
+
+    assertEquals(10L, evalAggregate("NTH_VALUE(FIELD_INTEGER,1)", 10L, 20L, 30L));
+    assertEquals(30L, evalAggregate("NTH_VALUE(FIELD_INTEGER,3)", 10L, 20L, 30L));
+
+    // The offset is beyond the number of rows
+    assertNull(evalAggregate("NTH_VALUE(FIELD_INTEGER,4)", 10L, 20L, 30L));
+
+    // Null values are counted unless IGNORE NULLS is specified
+    assertNull(evalAggregate("NTH_VALUE(FIELD_INTEGER,2)", 10L, null, 20L, 30L));
+    assertNull(evalAggregate("NTH_VALUE(FIELD_INTEGER,2) RESPECT NULLS", 10L, null, 20L, 30L));
+    assertEquals(
+        20L, evalAggregate("NTH_VALUE(FIELD_INTEGER,2) IGNORE NULLS", 10L, null, 20L, 30L));
+
+    // The offset is mandatory
+    ExpressionException exception =
+        assertThrows(
+            ExpressionException.class,
+            () -> evalAggregate("NTH_VALUE(FIELD_INTEGER,NULL_INTEGER)", 10L));
+    assertEquals(ErrorCode.ARGUMENT_OUT_OF_RANGE, exception.getErrorCode());
   }
 
   @Test
