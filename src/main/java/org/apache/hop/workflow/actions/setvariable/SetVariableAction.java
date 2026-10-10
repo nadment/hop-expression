@@ -196,7 +196,7 @@ public class SetVariableAction extends ActionBase implements IAction {
                   e.getMessage()));
         }
       }
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       result.setResult(false);
       result.setNrErrors(1);
       logError(BaseMessages.getString(PKG, "SetVariableAction.UnexpectedError", e.getMessage()));
