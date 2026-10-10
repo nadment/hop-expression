@@ -20,6 +20,7 @@ package org.apache.hop.expression.operator;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -82,6 +83,9 @@ public class ExtractFunction extends Function {
       // Replace EXTRACT from date with the corresponding function YEAR, DAY, HOUR... only if
       // without a time zone
       TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
+      if (unit == null) {
+        throw new ExpressionException(ErrorCode.INVALID_TIMEUNIT, call.getOperand(0));
+      }
       Function function = FunctionRegistry.getFunction(unit.name());
       if (function != null && !(function instanceof UserDefinedFunction)) {
         return new Call(function, call.getOperand(1));
