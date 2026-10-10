@@ -642,6 +642,7 @@ public class StringFunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Replace(NULL_STRING,'CD','EF')");
     evalNull("Replace('ABCD',NULL_STRING,'EF')");
+    evalNull("Replace('ABCD','CD',NULL_STRING)");
 
     // Check operands
     evalFails("Replace()", ErrorCode.NOT_ENOUGH_ARGUMENT);

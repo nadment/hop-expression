@@ -52,6 +52,7 @@ public class ReplaceFunction extends Function {
 
     if (operands.length == 3) {
       String replacement = operands[2].getValue(String.class);
+      if (replacement == null) return null;
       return string.replace(search, replacement);
     }
 
