@@ -17,7 +17,6 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
-import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import org.apache.hop.core.exception.HopValueException;
@@ -38,8 +37,6 @@ public final class AggregateData extends BaseTransformData implements ITransform
   public Call[] aggregates;
   public AggregateFunction[] functions;
   public IRowMeta aggregateMeta;
-  public boolean firstRead;
-  public boolean hasOutput;
   public IRowMeta inputRowMeta;
   public IRowMeta outputRowMeta;
   public boolean newBatch;
@@ -59,7 +56,9 @@ public final class AggregateData extends BaseTransformData implements ITransform
 
   /** Method responsible for clearing out memory hogs */
   public void clear() {
-    map = new HashMap<>();
+    if (map != null) {
+      map.clear();
+    }
   }
 
   @Getter
