@@ -170,13 +170,16 @@ public class Regexp {
             case "space" -> javaPattern.append("\\s");
 
               // Uppercase letters
-            case "upper" -> javaPattern.append("\\u");
+            case "upper" -> javaPattern.append("\\p{Upper}");
 
               // Lowercase letters
-            case "lower" -> javaPattern.append("\\l");
+            case "lower" -> javaPattern.append("\\p{Lower}");
 
               // Word characters (letters, numbers and underscores)
             case "word" -> javaPattern.append("\\w");
+
+              // Unknown character class
+            default -> throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, i);
           }
 
           i = end;
@@ -205,7 +208,7 @@ public class Regexp {
         continue;
       }
       if (c == wildcard) {
-        if (escapeCount % 2 == 1) {
+        if (escapeCount % 2 != 0) {
           builder.append(wildcard);
         } else if (wildcardCount == 0) {
           builder.append(wildcard);

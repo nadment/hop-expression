@@ -2175,6 +2175,11 @@ public class OperatorTest extends ExpressionTest {
 
       // evalTrue("'Erdbeere' SIMILAR TO 'Erd[a[:SPACE:]b]eere'");
       evalTrue("'12345TEST' SIMILAR TO '123[:ALNUM:]*'");
+      evalTrue("'TEST' SIMILAR TO '[:UPPER:]*'");
+      evalFalse("'Test' SIMILAR TO '[:UPPER:]*'");
+      evalTrue("'test' SIMILAR TO '[:LOWER:]*'");
+      evalFalse("'Test' SIMILAR TO '[:LOWER:]*'");
+      evalFails("'TEST' SIMILAR TO '[:UNKNOWN:]*'", ErrorCode.INVALID_REGEXP_PATTERN);
 
       evalFalse("'abc' SIMILAR TO 'a'");
       evalTrue("'abc' SIMILAR TO '.*(b|d).*'");
