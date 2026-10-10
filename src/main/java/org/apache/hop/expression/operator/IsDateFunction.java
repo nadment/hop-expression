@@ -61,10 +61,11 @@ public class IsDateFunction extends Function {
       String pattern = call.getOperand(1).getValue(String.class);
 
       // Compile format to check it
+      Object start = context.getAttribute(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START);
       DateTimeFormat format =
           DateTimeFormat.of(
               pattern,
-              (int) context.getAttribute(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START));
+              (start instanceof Integer year) ? year : DateTimeFormat.DEFAULT_TWO_DIGIT_YEAR_START);
 
       return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
     }
@@ -86,6 +87,7 @@ public class IsDateFunction extends Function {
     if (value == null) return Boolean.FALSE;
 
     DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
+    if (format == null) return Boolean.FALSE;
 
     try {
       format.parse(value);

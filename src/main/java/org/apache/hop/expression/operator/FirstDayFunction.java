@@ -92,7 +92,8 @@ public class FirstDayFunction extends Function {
             case MONTH -> TemporalAdjusters.firstDayOfMonth();
             case WEEK -> TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
             case QUARTER -> FirstDayOfQuarter;
-            default -> throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+            case null, default ->
+                throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
           };
     }
 

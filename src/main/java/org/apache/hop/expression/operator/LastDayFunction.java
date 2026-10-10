@@ -94,7 +94,8 @@ public class LastDayFunction extends Function {
             case MONTH -> TemporalAdjusters.lastDayOfMonth();
             case WEEK -> TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
             case QUARTER -> LastDayOfQuarter;
-            default -> throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
+            case null, default ->
+                throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
           };
     }
 
