@@ -71,7 +71,7 @@ public class DateAddFunction extends Function {
       case SECOND -> new Call(AddSecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case NANOSECOND ->
           new Call(AddNanosecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
-      default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
+      case null, default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
     };
   }
 }

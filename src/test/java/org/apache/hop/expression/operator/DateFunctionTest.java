@@ -621,6 +621,10 @@ class DateFunctionTest extends ExpressionTest {
     optimize("DATE_ADD(HOUR,1,FIELD_DATE)", "ADD_HOURS(FIELD_DATE,1)");
     optimize("DATE_ADD(MINUTE,1,FIELD_DATE)", "ADD_MINUTES(FIELD_DATE,1)");
     optimize("DATE_ADD(SECOND,1,FIELD_DATE)", "ADD_SECONDS(FIELD_DATE,1)");
+
+    // Check operands
+    evalFails("DATE_ADD(NULL,1,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("DATE_ADD('YEAR',1,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
   @Test
