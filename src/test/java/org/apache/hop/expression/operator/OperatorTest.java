@@ -923,6 +923,18 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "FIELD_INTEGER NOT IN (1,2,3) OR FIELD_INTEGER NOT IN (2,3,4,5)",
           "FIELD_INTEGER NOT IN (3,2)");
+
+      // Nothing to simplify if no value is excluded by all predicates
+      optimize("FIELD_INTEGER!=1 OR FIELD_INTEGER!=2", "FIELD_INTEGER!=1 OR FIELD_INTEGER!=2");
+      optimize(
+          "FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER NOT IN (3,4)",
+          "FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER NOT IN (3,4)");
+      optimize(
+          "FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER NOT IN (3,4) OR FIELD_INTEGER!=5",
+          "FIELD_INTEGER!=5 OR FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER NOT IN (3,4)");
+      evalTrue("FIELD_INTEGER!=1 OR FIELD_INTEGER!=2");
+      evalTrue("FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER NOT IN (3,4)");
+      evalNull("NULL_INTEGER!=1 OR NULL_INTEGER!=2");
     }
   }
 

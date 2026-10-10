@@ -20,11 +20,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -86,7 +84,6 @@ public class BoolAndOperator extends BinaryOperator {
     final List<IExpression> strongTerms = new ArrayList<>();
     final List<IExpression> nullTerms = new ArrayList<>();
     final List<IExpression> notNullTerms = new ArrayList<>();
-    final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
     final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
         new ArrayListValuedHashMap<>();
     final MultiValuedMap<IExpression, Pair<Call, IExpression>> inTerms =
@@ -110,7 +107,6 @@ public class BoolAndOperator extends BinaryOperator {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(NotEqualOperator.INSTANCE)) {
-          notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
             notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }

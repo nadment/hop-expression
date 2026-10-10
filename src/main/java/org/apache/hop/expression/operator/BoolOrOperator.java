@@ -84,7 +84,6 @@ public class BoolOrOperator extends BinaryOperator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(call.getChainedOperands(false));
 
-    final List<IExpression> nullTerms = new ArrayList<>();
     final List<IExpression> notNullTerms = new ArrayList<>();
     final List<Identifier> identifiers = new ArrayList<>();
     final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
@@ -112,9 +111,6 @@ public class BoolOrOperator extends BinaryOperator {
       if (predicate instanceof Identifier identifier) {
         identifiers.add(identifier);
       } else if (predicate instanceof Call term) {
-        if (term.isOperator(IsNullOperator.INSTANCE)) {
-          nullTerms.add(term.getOperand(0));
-        }
         if (term.isOperator(IsNotNullOperator.INSTANCE)) {
           notNullTerms.add(term.getOperand(0));
         }
@@ -150,39 +146,41 @@ public class BoolOrOperator extends BinaryOperator {
     }
 
     // Merge OR comparison
-    for (Pair<IExpression, IExpression> pair : lessThanTerms.keySet()) {
+    for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : lessThanTerms.entrySet()) {
+      Pair<IExpression, IExpression> pair = entry.getKey();
 
       // x<a OR x!=a → x!=a
       if (notEqualTerms.containsKey(pair)) {
-        predicates.remove(lessThanTerms.get(pair));
+        predicates.remove(entry.getValue());
       }
 
       // x<a OR x=a → x<=a
       if (equalTerms.containsKey(pair)) {
         predicates.remove(equalTerms.get(pair));
-        predicates.remove(lessThanTerms.get(pair));
+        predicates.remove(entry.getValue());
         predicates.add(new Call(LessThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
       }
 
       // x<a OR x>a → x!=a
       if (greaterThanTerms.containsKey(pair)) {
-        predicates.remove(lessThanTerms.get(pair));
+        predicates.remove(entry.getValue());
         predicates.remove(greaterThanTerms.get(pair));
         predicates.add(new Call(NotEqualOperator.INSTANCE, pair.left(), pair.right()));
       }
     }
 
-    for (Pair<IExpression, IExpression> pair : greaterThanTerms.keySet()) {
+    for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : greaterThanTerms.entrySet()) {
+      Pair<IExpression, IExpression> pair = entry.getKey();
 
       // x>a OR x!=a → x!=a
       if (notEqualTerms.containsKey(pair)) {
-        predicates.remove(greaterThanTerms.get(pair));
+        predicates.remove(entry.getValue());
       }
 
       // x>a OR x=a → x>=a
       if (equalTerms.containsKey(pair)) {
         predicates.remove(equalTerms.get(pair));
-        predicates.remove(greaterThanTerms.get(pair));
+        predicates.remove(entry.getValue());
         predicates.add(new Call(GreaterThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
       }
     }
@@ -190,10 +188,12 @@ public class BoolOrOperator extends BinaryOperator {
     // Simplify intersection NOT IN
     // X NOT IN (1,2,3) OR X NOT IN (2,3,4,5,6) → X NOT IN (2,3)
     for (IExpression reference : notInTerms.keySet()) {
-      Collection<IExpression> values = new LinkedList<>();
-      for (Pair<Call, IExpression> pair : notInTerms.get(reference)) {
+      Collection<Pair<Call, IExpression>> pairs = notInTerms.get(reference);
+      Collection<IExpression> values = null;
+      for (Pair<Call, IExpression> pair : pairs) {
         IExpression term = pair.right();
-        if (values.isEmpty()) {
+        if (values == null) {
+          values = new LinkedList<>();
           if (term.is(Kind.ARRAY)) {
             array(term).forEach(values::add);
           } else values.add(term);
@@ -204,11 +204,16 @@ public class BoolOrOperator extends BinaryOperator {
             values = CollectionUtils.intersection(values, List.of(term));
           }
         }
-        predicates.remove(pair.left());
       }
 
-      if (values.isEmpty()) {
-        return Literal.FALSE;
+      // No value is excluded by all predicates, nothing to simplify
+      // X NOT IN (1,2) OR X NOT IN (3,4) is TRUE for any value of X, except NULL
+      if (values == null || values.isEmpty()) {
+        continue;
+      }
+
+      for (Pair<Call, IExpression> pair : pairs) {
+        predicates.remove(pair.left());
       }
 
       Call predicate;
@@ -250,9 +255,10 @@ public class BoolOrOperator extends BinaryOperator {
     }
 
     // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
-    for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {
+    for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : strongTerms.entrySet()) {
+      Pair<IExpression, IExpression> pair = entry.getKey();
       if (notNullTerms.contains(pair.left()) || notNullTerms.contains(pair.right())) {
-        predicates.remove(strongTerms.get(pair));
+        predicates.remove(entry.getValue());
       }
     }
 
@@ -276,7 +282,7 @@ public class BoolOrOperator extends BinaryOperator {
     Boolean right = operands[1].getValue(Boolean.class);
 
     if (left == null) {
-      if (!right) return null;
+      if (right == null || !right) return null;
       return Boolean.TRUE;
     }
     if (right == null) {
