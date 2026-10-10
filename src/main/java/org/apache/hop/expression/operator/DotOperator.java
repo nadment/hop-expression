@@ -48,8 +48,8 @@ public class DotOperator extends Operator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    IExpression left = call.getOperand(0);
-    IExpression right = call.getOperand(1);
+
+    // TODO: Not implemented
 
     return call;
   }

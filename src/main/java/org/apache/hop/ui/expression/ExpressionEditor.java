@@ -366,12 +366,6 @@ public class ExpressionEditor extends Composite
           public void dragOver(DropTargetEvent event) {
 
             event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
-            if (textTransfer.isSupportedType(event.currentDataType)) {
-              // NOTE: on unsupported platforms this will return null
-              String str = (String) textTransfer.nativeToJava(event.currentDataType);
-
-              // if (t != null) System.out.println(t);
-            }
           }
 
           public void dragOperationChanged(DropTargetEvent event) {}

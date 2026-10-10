@@ -519,11 +519,6 @@ final class PatternNumberFormat extends NumberFormat {
 
       StringBuilder digits = new StringBuilder();
 
-      int e = text.indexOf("E");
-      if (e == -1) {
-        e = text.indexOf("e");
-      }
-
       char decimalSeparator = (this.localSymbols) ? symbols.getDecimalSeparator() : '.';
       char groupingSeparator = (this.localSymbols) ? symbols.getGroupingSeparator() : ',';
 
