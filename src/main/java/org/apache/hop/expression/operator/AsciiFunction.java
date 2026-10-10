@@ -47,6 +47,6 @@ public class AsciiFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    return (value.isEmpty() ? 0L : Long.valueOf(value.charAt(0)));
+    return Long.valueOf(value.isEmpty() ? 0L : value.charAt(0));
   }
 }
