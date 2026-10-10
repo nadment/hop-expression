@@ -62,8 +62,7 @@ public class CastFunction extends Function {
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
-    Type type = operands[1].getValue(Type.class);
-
+    Type type = operands[1].getType();
     String format = null;
     if (operands.length == 3) {
       format = operands[2].getValue(String.class);
@@ -142,7 +141,7 @@ public class CastFunction extends Function {
     writer.append('(');
     operands[0].unparse(writer, getLeftPrec(), getRightPrec());
     writer.append(" AS ");
-    Type type = operands[1].getValue(Type.class);
+    Type type = operands[1].getType();
     writer.append(type.getLiteral());
     if (operands.length == 3) {
       writer.append(" FORMAT ");

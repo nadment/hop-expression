@@ -195,6 +195,9 @@ public class LiteralTest extends ExpressionTest {
   @Test
   void Type() {
     assertEquals(NumberType.NUMBER, Literal.of(NumberType.NUMBER).getValue());
+    assertEquals(NumberType.NUMBER, Literal.of(NumberType.NUMBER).getType());
+    assertFalse(Literal.of(NumberType.NUMBER).isNull());
+    assertEquals("NUMBER", Literal.of(NumberType.NUMBER).toString());
   }
 
   @Test

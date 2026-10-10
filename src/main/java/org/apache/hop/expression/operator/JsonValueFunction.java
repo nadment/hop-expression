@@ -72,8 +72,8 @@ public class JsonValueFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Add default returning type arguments
     if (call.getOperandCount() == 2) {
-      // Add default returning type arguments
       return new Call(
           call.getOperator(),
           call.getOperand(0),
@@ -82,7 +82,7 @@ public class JsonValueFunction extends Function {
     }
 
     // Check if the returning type is supported
-    Type type = call.getOperand(2).getValue(Type.class);
+    Type type = call.getOperand(2).getType();
     if (!SUPPORTED_TYPES.contains(type.getName())) {
       throw new ExpressionException(ErrorCode.UNEXPECTED_DATA_TYPE, type, getName());
     }
@@ -105,7 +105,7 @@ public class JsonValueFunction extends Function {
       value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
       if (value instanceof JsonNode result) {
         if (result.isNull()) return null;
-        Type type = operands[2].getValue(Type.class);
+        Type type = operands[2].getType();
         if (type.isName(TypeName.STRING)) {
           return result.asText();
         }

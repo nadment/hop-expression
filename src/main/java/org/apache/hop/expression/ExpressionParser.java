@@ -473,7 +473,6 @@ public class ExpressionParser {
       case LITERAL_NUMERIC_BINARY -> parseLiteralNumericBinary(token);
       case LITERAL_NUMERIC_OCTAL -> parseLiteralNumericOctal(token);
       case LITERAL_TIMEUNIT -> parseLiteralTimeUnit(token);
-      case LITERAL_DATATYPE -> parseLiteralType(token);
       case DATE -> parseLiteralDate(lexer.nextOrThrows(ErrorCode.SYNTAX_ERROR, Id.DATE));
       case TIMESTAMP ->
           parseLiteralTimestamp(lexer.nextOrThrows(ErrorCode.SYNTAX_ERROR, Id.TIMESTAMP));

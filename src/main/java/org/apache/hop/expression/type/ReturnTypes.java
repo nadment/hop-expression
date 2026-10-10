@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 
@@ -91,8 +90,6 @@ public final class ReturnTypes {
 
   public static final IReturnTypeInference ARG1_OR_ARG2 =
       chain(new OrdinalReturnTypeInference(1), new OrdinalReturnTypeInference(2));
-  public static final IReturnTypeInference FIRST_KNOWN =
-      new FirstKnownReturnTypeInference().andThen(TypeTransforms.TO_MAX_PRECISION);
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
       new LeastRestrictiveReturnTypeInference()
           .andThen(TypeTransforms.TO_MAX_PRECISION)
@@ -281,7 +278,7 @@ public final class ReturnTypes {
       call -> {
         try {
           return call.getOperand(1)
-              .getValue(Type.class)
+              .getType()
               .withNullability(call.getOperand(0).getType().isNullable());
         } catch (Exception e) {
           return UnknownType.UNKNOWN;
@@ -312,7 +309,7 @@ public final class ReturnTypes {
       call -> {
         try {
           if (call.getOperandCount() == 3) {
-            return Objects.requireNonNull(call.getOperand(2).getValue(Type.class));
+            return call.getOperand(2).getType();
           }
 
           // By default return STRING

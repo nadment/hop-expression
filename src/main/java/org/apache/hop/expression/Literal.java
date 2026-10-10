@@ -170,9 +170,18 @@ public final class Literal implements IExpression {
     return new Literal(value, InetType.INET_NOT_NULL);
   }
 
-  public static Literal of(@Nullable Type value) {
-    if (value == null) return NULL;
-    return new Literal(value, EnumType.TIMEUNIT);
+  /**
+   * Creates a data type literal, as used by CAST or JSON_VALUE.
+   *
+   * <p>The data type is both the value and the type of the literal: the value keeps the literal
+   * distinct from a typed NULL, and {@link #getType()} gives the data type without conversion.
+   *
+   * @param type the data type
+   * @return the literal
+   */
+  public static Literal of(@Nullable Type type) {
+    if (type == null) return NULL;
+    return new Literal(type, type);
   }
 
   public static Literal of(@Nullable TimeUnit value) {
@@ -243,6 +252,9 @@ public final class Literal implements IExpression {
 
     if (value == null) {
       writer.append("NULL");
+    } else if (value instanceof Type) {
+      // Data type literal
+      writer.append(String.valueOf(value));
     } else
       switch (type.getName()) {
         case STRING:

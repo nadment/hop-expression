@@ -399,6 +399,17 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("INET", ErrorCode.SYNTAX_ERROR);
     evalFails("JSON ", ErrorCode.SYNTAX_ERROR);
 
+    // Type used as an operand
+    evalFails("COALESCE(NULL_STRING, STRING)", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_STRING=STRING", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER=INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("UPPER(STRING)", ErrorCode.SYNTAX_ERROR);
+    evalFails("1+INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_INTEGER+INTEGER", ErrorCode.SYNTAX_ERROR);
+    evalFails("NOT BOOLEAN", ErrorCode.SYNTAX_ERROR);
+    evalFails("FIELD_BOOLEAN_TRUE AND BOOLEAN", ErrorCode.SYNTAX_ERROR);
+    evalFails("ABS(NUMBER)", ErrorCode.SYNTAX_ERROR);
+
     // TimeUnit
     evalFails("QUARTER", ErrorCode.SYNTAX_ERROR);
     evalFails("YEAR", ErrorCode.SYNTAX_ERROR);
