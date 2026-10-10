@@ -54,6 +54,7 @@ class ArrayFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("ARRAY_PREPEND()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("ARRAY_PREPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_PREPEND(1,NULL)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("ARRAY_PREPEND([1,2,3],4)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("ARRAY_PREPEND('test',[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
   }
@@ -67,6 +68,7 @@ class ArrayFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("ARRAY_APPEND()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("ARRAY_APPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_APPEND(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("ARRAY_APPEND(0,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("ARRAY_APPEND([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT);
   }
@@ -82,6 +84,7 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("ARRAY_CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("ARRAY_CONTAINS([1,2,3],0,2)", ErrorCode.TOO_MANY_ARGUMENT);
     evalFails("ARRAY_CONTAINS(1,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_CONTAINS(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("ARRAY_CONTAINS([1,2,3], FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
   }
 
@@ -108,6 +111,7 @@ class ArrayFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("ARRAY_POSITION()", ErrorCode.NOT_ENOUGH_ARGUMENT);
     evalFails("ARRAY_POSITION('test','test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_POSITION(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT);
     evalFails("ARRAY_POSITION([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT);
   }
 

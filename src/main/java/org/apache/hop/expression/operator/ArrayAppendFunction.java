@@ -59,7 +59,7 @@ public class ArrayAppendFunction extends Function {
       Type elementType = call.getOperand(1).getType();
 
       // Check if the appended element is coercible to an array element type
-      success = elementType.isCoercible(arrayType);
+      success = arrayType != null && elementType.isCoercible(arrayType);
     }
 
     return success;

@@ -52,7 +52,7 @@ public class ArrayContainsFunction extends Function {
       Type elementType = call.getOperand(1).getType();
 
       // Check if the element is coercible to the array element type
-      success = elementType.isCoercible(arrayType);
+      success = arrayType != null && elementType.isCoercible(arrayType);
     }
 
     return success;

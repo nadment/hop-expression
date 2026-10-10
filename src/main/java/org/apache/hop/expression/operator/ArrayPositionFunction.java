@@ -57,6 +57,9 @@ public class ArrayPositionFunction extends Function {
 
     Type arrayType = call.getOperand(0).getType().getElementType();
     Type elementType = call.getOperand(1).getType();
+    if (arrayType == null) {
+      return false;
+    }
 
     // Array elements and searched value should be comparable
     if (!arrayType.isName(TypeName.ANY)
