@@ -856,6 +856,7 @@ public class StringFunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Regexp_Replace(NULL_STRING,'A')").returnType(StringType.STRING);
     evalNull("Regexp_Replace('A', NULL_STRING)");
+    evalNull("Regexp_Replace('A', 'A', NULL_STRING)");
 
     // Check operands
     evalFails("Regexp_Replace()", ErrorCode.NOT_ENOUGH_ARGUMENT);

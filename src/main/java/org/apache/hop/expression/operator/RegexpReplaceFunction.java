@@ -78,6 +78,9 @@ public class RegexpReplaceFunction extends Function {
     String replacement = "";
     if (operands.length >= 3) {
       replacement = operands[2].getValue(String.class);
+      if (replacement == null) {
+        return null;
+      }
     }
 
     // Default position 1
