@@ -868,6 +868,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', 20)", 1L);
     evalEquals(
         "Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', 'CENTS', 1, 'i')", 2L);
+
+    // Search from the first character if the position is null
+    evalEquals(
+        "Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', NULL_INTEGER)",
+        2L);
   }
 
   @Test

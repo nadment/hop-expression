@@ -75,7 +75,9 @@ public class RegexpCountFunction extends Function {
     int parameters = Pattern.UNICODE_CASE;
     if (operands.length >= 3) {
       Long v2 = operands[2].getValue(Long.class);
-      start = v2.intValue();
+      if (v2 != null) {
+        start = v2.intValue();
+      }
 
       if (operands.length == 4) {
         String v3 = operands[3].getValue(String.class);
