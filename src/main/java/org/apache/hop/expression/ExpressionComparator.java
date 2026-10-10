@@ -14,9 +14,12 @@
  */
 package org.apache.hop.expression;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class ExpressionComparator implements Comparator<IExpression> {
+public class ExpressionComparator implements Comparator<IExpression>, Serializable {
+  @Serial private static final long serialVersionUID = 1L;
 
   public ExpressionComparator() {
     // Constructor

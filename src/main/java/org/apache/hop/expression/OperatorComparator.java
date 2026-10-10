@@ -14,11 +14,14 @@
  */
 package org.apache.hop.expression;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Comparator;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class OperatorComparator implements Comparator<Operator> {
+public class OperatorComparator implements Comparator<Operator>, Serializable {
+  @Serial private static final long serialVersionUID = 1L;
 
   public OperatorComparator() {
     // Constructor

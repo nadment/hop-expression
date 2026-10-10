@@ -16,6 +16,8 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -309,7 +311,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     return message;
   }
 
-  static class ProposalComparator implements Comparator<ICompletionProposal> {
+  static class ProposalComparator implements Comparator<ICompletionProposal>, Serializable {
+    @Serial private static final long serialVersionUID = 1L;
+
     public int compare(ICompletionProposal p1, ICompletionProposal p2) {
       return p1.getDisplayString().compareTo(p2.getDisplayString());
     }

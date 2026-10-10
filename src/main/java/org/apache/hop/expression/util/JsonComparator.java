@@ -17,6 +17,8 @@ package org.apache.hop.expression.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Comparator;
 import org.jspecify.annotations.NullMarked;
 
@@ -29,7 +31,9 @@ import org.jspecify.annotations.NullMarked;
  * </ul>
  */
 @NullMarked
-public class JsonComparator implements Comparator<JsonNode> {
+public class JsonComparator implements Comparator<JsonNode>, Serializable {
+  @Serial private static final long serialVersionUID = 1L;
+
   @Override
   public int compare(final JsonNode o1, final JsonNode o2) {
     if (o1.equals(o2)) {
