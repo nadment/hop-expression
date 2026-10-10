@@ -270,6 +270,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("LPad(NULL_STRING,-8)");
     evalNull("LPad(NULL_BINARY,2)").returnType(BinaryType.BINARY);
     evalNull("LPad(NULL_BINARY,-8)");
+    evalNull("LPad('test',NULL_INTEGER)");
+    evalNull("LPad('test',NULL_INTEGER,'*')");
+    evalNull("LPad(BINARY '1A2B3C',NULL_INTEGER,BINARY '4D5E6F')");
 
     // Missing arguments
     evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);

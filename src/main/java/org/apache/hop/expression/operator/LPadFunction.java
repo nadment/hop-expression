@@ -78,6 +78,8 @@ public class LPadFunction extends Function {
       if (value == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
+      if (v1 == null) return null;
+
       int length = v1.intValue();
 
       // If this parameter is omitted, the function will pad spaces
@@ -132,6 +134,8 @@ public class LPadFunction extends Function {
       if (value == null) return null;
 
       Long v1 = operands[1].getValue(Long.class);
+      if (v1 == null) return null;
+
       int length = v1.intValue();
 
       // If this parameter is omitted, the function will pad 0x00
