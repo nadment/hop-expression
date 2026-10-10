@@ -38,15 +38,21 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class RandomFunction extends Function {
 
-  private @Nullable Random random;
+  private final @Nullable Random random;
 
   public RandomFunction() {
+    this(null);
+  }
+
+  /** Creates the function bound to its own generator, as used by a compiled call. */
+  private RandomFunction(@Nullable Random random) {
     super(
         "RANDOM",
         ReturnTypes.NUMBER_NOT_NULL,
         OperandTypes.NILADIC.or(OperandTypes.INTEGER),
         OperatorCategory.MATHEMATICAL,
         "/docs/random.html");
+    this.random = random;
   }
 
   @Override
@@ -68,19 +74,20 @@ public class RandomFunction extends Function {
       return call;
     }
 
+    // The registered function is shared by all expressions, so each call gets its own generator
     if (call.getOperandCount() == 1) {
       try {
         Long seed = call.getOperand(0).getValue(Long.class);
-        random = new Random(seed);
-        return call;
+        if (seed == null) {
+          throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
+        }
+        return new Call(new RandomFunction(new Random(seed)), call.getOperands());
       } catch (Exception e) {
         throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
       }
-    } else {
-      random = ThreadLocalRandom.current();
     }
 
-    return call;
+    return new Call(new RandomFunction(ThreadLocalRandom.current()), call.getOperands());
   }
 
   @Override

@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
+import java.util.Random;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Evaluator;
 import org.apache.hop.expression.ExpressionTest;
@@ -418,7 +419,12 @@ class MathematicalFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Random('test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Random(NULL_INTEGER)", ErrorCode.INVALID_NUMBER);
     evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+
+    // Each call has its own generator, so a seed always gives the same sequence
+    evalEquals("Random(180)", new Random(180).nextDouble());
+    evalEquals("Random(180)", new Random(180).nextDouble());
 
     // Alias
     evalTrue("Rand()>0");
