@@ -16,6 +16,7 @@ package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
 import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IAggregateProcessor;
@@ -40,7 +41,10 @@ public class PercentileFunction extends AggregateFunction {
   @Override
   public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
-    BigDecimal percentile = operands[0].getValue(BigDecimal.class);
+    BigDecimal percentile = operands[1].getValue(BigDecimal.class);
+    if (percentile == null) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, operands[1]);
+    }
 
     return new PercentileProcessor(percentile);
   }
