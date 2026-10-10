@@ -181,6 +181,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Instr(NULL_STRING,'test')");
     evalNull("Instr('test',NULL_STRING)");
     evalNull("Instr(NULL_STRING,NULL_STRING)");
+    evalNull("Instr('CORPORATE FLOOR','OR',NULL_INTEGER)");
+    evalNull("Instr('CORPORATE FLOOR','OR',3,NULL_INTEGER)");
 
     // Check operands
     evalFails("Instr()", ErrorCode.NOT_ENOUGH_ARGUMENT);

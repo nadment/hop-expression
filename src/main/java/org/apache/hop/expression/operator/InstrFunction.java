@@ -63,7 +63,11 @@ public class InstrFunction extends Function {
 
     // If 3 operands, indicate the position to start
     if (operands.length >= 3) {
-      start = operands[2].getValue(Long.class).intValue();
+      Long position = operands[2].getValue(Long.class);
+      if (position == null) {
+        return null;
+      }
+      start = position.intValue();
 
       if (start == 0) {
         throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
@@ -73,7 +77,11 @@ public class InstrFunction extends Function {
 
       // The occurrence to find, must be positive
       if (operands.length == 4) {
-        occurrence = operands[3].getValue(Long.class).intValue();
+        Long nth = operands[3].getValue(Long.class);
+        if (nth == null) {
+          return null;
+        }
+        occurrence = nth.intValue();
         if (occurrence < 1) {
           throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, occurrence);
         }
