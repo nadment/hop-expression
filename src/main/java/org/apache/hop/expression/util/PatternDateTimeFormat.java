@@ -1579,6 +1579,8 @@ import org.apache.hop.expression.ExpressionException;
         case 1:
           output.append(year % 10);
           break;
+        default:
+          break;
       }
     }
   }
@@ -1717,6 +1719,8 @@ import org.apache.hop.expression.ExpressionException;
           break;
         case 1:
           output.append(value % 10);
+          break;
+        default:
           break;
       }
     }
