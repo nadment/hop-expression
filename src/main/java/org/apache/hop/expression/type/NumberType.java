@@ -147,8 +147,6 @@ public final class NumberType extends Type {
       return (bool) ? BigDecimal.ONE : BigDecimal.ZERO;
     }
     if (value instanceof Long l) {
-      if (l == 0L) return BigDecimal.ZERO;
-      if (l == 1L) return BigDecimal.ONE;
       return BigDecimal.valueOf(l);
     }
     if (value instanceof String str) {
