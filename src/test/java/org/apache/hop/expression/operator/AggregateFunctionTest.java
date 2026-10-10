@@ -17,8 +17,18 @@
 
 package org.apache.hop.expression.operator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.math.BigDecimal;
+import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.IAggregateProcessor;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
@@ -27,6 +37,29 @@ import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.Test;
 
 class AggregateFunctionTest extends ExpressionTest {
+
+  /**
+   * Evaluate an aggregate expression over a group of rows, as the Aggregate transform does.
+   *
+   * @param source the aggregate expression
+   * @param values the values of FIELD_INTEGER, one per row
+   * @return the aggregated value
+   */
+  private Object evalAggregate(String source, Long... values) throws Exception {
+    IRowExpressionContext context = createExpressionContext();
+    Call call = (Call) IExpression.of(context, source);
+    AggregateFunction function = (AggregateFunction) call.getOperator();
+    IAggregateProcessor processor = function.createProcessor(context, call.getOperands());
+
+    Object[] row = context.getRow().clone();
+    for (Long value : values) {
+      row[context.getRowMeta().indexOfValue("FIELD_INTEGER")] = value;
+      context.setRow(row);
+      processor.process(call.getOperands());
+    }
+    return processor.getValue();
+  }
+
   @Test
   void Avg() throws Exception {
     evalFails("AVG()", ErrorCode.NOT_ENOUGH_ARGUMENT);
@@ -179,6 +212,28 @@ class AggregateFunctionTest extends ExpressionTest {
     evalFails("PERCENTILE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("PERCENTILE(FIELD_INTEGER,0.75)").returnType(NumberType.NUMBER);
+
+    assertEquals(
+        BigDecimal.valueOf(12.5),
+        evalAggregate("PERCENTILE(FIELD_INTEGER,0.25)", 10L, 20L, 30L, 40L));
+    assertEquals(
+        BigDecimal.valueOf(25.0),
+        evalAggregate("PERCENTILE(FIELD_INTEGER,0.5)", 10L, 20L, 30L, 40L));
+    assertEquals(
+        BigDecimal.valueOf(37.5),
+        evalAggregate("PERCENTILE(FIELD_INTEGER,0.75)", 10L, 20L, 30L, 40L));
+
+    // Null values are ignored
+    assertEquals(
+        BigDecimal.valueOf(25.0),
+        evalAggregate("PERCENTILE(FIELD_INTEGER,0.5)", 10L, null, 20L, 30L, 40L));
+
+    // The percentage is mandatory
+    ExpressionException exception =
+        assertThrows(
+            ExpressionException.class,
+            () -> evalAggregate("PERCENTILE(FIELD_INTEGER,NULL_NUMBER)", 10L));
+    assertEquals(ErrorCode.ARGUMENT_OUT_OF_RANGE, exception.getErrorCode());
   }
 
   @Test

@@ -35,7 +35,8 @@ public class PercentileProcessor implements IAggregateProcessor {
 
   public PercentileProcessor(BigDecimal quantile) {
     this.values = new ArrayList<>();
-    this.quantile = quantile.doubleValue();
+    // The percentage is between 0 and 1, but commons-math expects a value between 0 and 100
+    this.quantile = quantile.movePointRight(2).doubleValue();
   }
 
   @Override
