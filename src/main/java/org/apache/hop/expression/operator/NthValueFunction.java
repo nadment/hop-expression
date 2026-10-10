@@ -16,6 +16,8 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
@@ -52,6 +54,9 @@ public class NthValueFunction extends AggregateFunction {
   @Override
   public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     Long offset = operands[1].getValue(Long.class);
+    if (offset == null) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, operands[1]);
+    }
     return (ignoreNulls)
         ? new NthValueIgnoreNullsProcessor(offset)
         : new NthValueRespectNullsProcessor(offset);
