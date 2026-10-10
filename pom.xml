@@ -48,6 +48,7 @@ http://www.apache.org/licenses/LICENSE-2.0
         <sonar.organization>nadment</sonar.organization>
         <sonar.projectKey>hop-expression</sonar.projectKey>
         <sonar.projectName>Hop Plugins Expression</sonar.projectName>
+        <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -254,6 +255,26 @@ http://www.apache.org/licenses/LICENSE-2.0
                 </configuration>
                 <executions>
                     <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Static analysis, fails the build on any finding (skip with -Dspotbugs.skip=true) -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Medium</threshold>
+                    <excludeFilterFile>${basedir}/tools/maven/spotbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>spotbugs-check</id>
                         <goals>
                             <goal>check</goal>
                         </goals>
