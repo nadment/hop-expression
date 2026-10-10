@@ -48,7 +48,10 @@ public class SubstringFunction extends Function {
     if (string == null) return null;
 
     int length = string.length();
-    int start = operands[1].getValue(Long.class).intValue();
+    Long position = operands[1].getValue(Long.class);
+    if (position == null) return null;
+
+    int start = position.intValue();
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -62,7 +65,10 @@ public class SubstringFunction extends Function {
       return string.substring(start - 1);
     }
 
-    int end = start + operands[2].getValue(Long.class).intValue();
+    Long count = operands[2].getValue(Long.class);
+    if (count == null) return null;
+
+    int end = start + count.intValue();
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);

@@ -336,6 +336,9 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Substring(NULL_STRING,1,1)").returnType(StringType.STRING);
+    evalNull("Substring('TEST',NULL_INTEGER)");
+    evalNull("Substring('TEST',NULL_INTEGER,1)");
+    evalNull("Substring('TEST',1,NULL_INTEGER)");
 
     // Compatibility mode
     evalEquals("Substring('ABCDEFG',0,1)", "A");
