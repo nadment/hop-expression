@@ -92,7 +92,7 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
+  public boolean compareEqual(Object left, Object right) {
     if (left instanceof JsonNode l && right instanceof JsonNode r) {
       // Ignores the order of attributes
       return l.equals(JSON_COMPARATOR, r);

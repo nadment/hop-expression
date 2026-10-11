@@ -91,8 +91,9 @@ public class ArrayPositionFunction extends Function {
     int size = array.size();
     Type type = operands[1].getType();
     for (int index = start; index < size; index++) {
-      IExpression element = array.get(index);
-      if (type.compare(element.getValue(), value) == 0) {
+      // A null element never matches
+      Object element = array.get(index).getValue();
+      if (element != null && type.compare(element, value) == 0) {
         return Long.valueOf(index + 1L);
       }
     }

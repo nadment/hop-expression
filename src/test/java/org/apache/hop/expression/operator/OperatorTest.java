@@ -1222,6 +1222,16 @@ public class OperatorTest extends ExpressionTest {
           "B");
       evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 30, 40 THEN 'B' ELSE 'C' END", "B");
 
+      // Multi-values with a single WHEN
+      evalEquals("CASE FIELD_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END", "A");
+      evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' ELSE 'B' END", "B");
+      evalEquals("CASE FIELD_INTEGER WHEN NULL_INTEGER, 40 THEN 'A' ELSE 'B' END", "A");
+      evalEquals("CASE FIELD_INTEGER WHEN NULL_INTEGER, 20 THEN 'A' ELSE 'B' END", "B");
+      evalEquals("CASE NULL_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END", "B");
+      optimize(
+          "CASE FIELD_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END",
+          "IF(FIELD_INTEGER IN (10,40),'A','B')");
+
       evalEquals(
               "CASE WHEN FIELD_INTEGER IS NULL THEN '-' WHEN FIELD_INTEGER<0 THEN '' ELSE FIELD_STRING END",
               "TEST")
@@ -2321,6 +2331,8 @@ public class OperatorTest extends ExpressionTest {
       // Remove SYMMETRIC if operands are constant, and swap bound if necessary
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
+      // A null bound is not compared
+      evalNull("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND NULLIF(1,1)");
 
       optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
       optimizeFalse("2 between 3 and (5+1)");

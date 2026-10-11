@@ -104,7 +104,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
+  public boolean compareEqual(Object left, Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
       return Arrays.equals(l, r);
     }
@@ -112,7 +112,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public int compare(@Nullable Object left, @Nullable Object right) {
+  public int compare(Object left, Object right) {
     if (left instanceof byte[] l && right instanceof byte[] r) {
       return Arrays.compareUnsigned(l, r);
     }

@@ -69,13 +69,14 @@ public class CaseSimpleOperator extends Operator {
         if (whenOperand.is(Kind.ARRAY)) {
           for (IExpression expression : (Array) whenOperand) {
             Object value = expression.getValue();
-            if (type.compareEqual(condition, value)) {
+            // A null value never matches
+            if (value != null && type.compareEqual(condition, value)) {
               return thenTerm.get(index).getValue();
             }
           }
         } else {
           Object value = whenOperand.getValue();
-          if (type.compareEqual(condition, value)) {
+          if (value != null && type.compareEqual(condition, value)) {
             return thenTerm.get(index).getValue();
           }
         }
@@ -94,10 +95,21 @@ public class CaseSimpleOperator extends Operator {
     IExpression elseTerm = call.getOperand(3);
 
     if (whenTerm.size() == 1) {
+      IExpression whenOperand = whenTerm.get(0);
+
+      // Multi-values: CASE value WHEN x1,x2 THEN y ELSE z END → IF(value IN (x1,x2),y,z)
+      if (whenOperand.is(Kind.ARRAY)) {
+        return new Call(
+            IfFunction.INSTANCE,
+            new Call(InListOperator.INSTANCE, call.getOperand(0), whenOperand),
+            thenTerm.get(0),
+            elseTerm);
+      }
+
       // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
       return new Call(
           IfFunction.INSTANCE,
-          new Call(EqualOperator.INSTANCE, call.getOperand(0), whenTerm.get(0)),
+          new Call(EqualOperator.INSTANCE, call.getOperand(0), whenOperand),
           thenTerm.get(0),
           elseTerm);
     }

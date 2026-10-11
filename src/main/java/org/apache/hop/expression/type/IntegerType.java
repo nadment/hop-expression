@@ -122,7 +122,7 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
+  public boolean compareEqual(Object left, Object right) {
     if (left instanceof Long l && right instanceof Long r) {
       return l.equals(r);
     }
@@ -130,7 +130,7 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public int compare(@Nullable Object left, @Nullable Object right) {
+  public int compare(Object left, Object right) {
     if (left instanceof Long l && right instanceof Long r) {
       return l.compareTo(r);
     }

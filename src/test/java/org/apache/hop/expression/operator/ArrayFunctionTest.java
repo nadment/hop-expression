@@ -97,6 +97,8 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Element is not found in the array
     evalEquals("ARRAY_POSITION([1,2,3],4)", 0L);
+    // A null element never matches
+    evalEquals("ARRAY_POSITION([1,NULL_INTEGER,FIELD_INTEGER],40)", 3L);
     evalEquals("ARRAY_POSITION([],4)", 0L);
     evalEquals("ARRAY_POSITION([1,2,3],2,10)", 0L);
 

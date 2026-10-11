@@ -182,7 +182,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
+  public boolean compareEqual(Object left, Object right) {
     if (left instanceof String l && right instanceof String r) {
       return l.compareTo(r) == 0;
     }
@@ -190,7 +190,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public int compare(@Nullable Object left, @Nullable Object right) {
+  public int compare(Object left, Object right) {
     if (left instanceof String l && right instanceof String r) {
       return l.compareTo(r);
     }

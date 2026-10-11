@@ -186,7 +186,16 @@ public abstract class Type {
     return getName().getComparability();
   }
 
-  public boolean compareEqual(final @Nullable Object left, final @Nullable Object right) {
+  /**
+   * Checks if two non-null values of this type are equal.
+   *
+   * @param left the first value
+   * @param right the second value
+   * @return {@code true} if the values are equal
+   * @throws ExpressionException if this type doesn't support the comparison of these values
+   * @see #compareEqualNull(Object, Object)
+   */
+  public boolean compareEqual(final Object left, final Object right) {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Equals error");
   }
 
@@ -199,7 +208,16 @@ public abstract class Type {
     return compareEqual(left, right);
   }
 
-  public int compare(final @Nullable Object left, final @Nullable Object right) {
+  /**
+   * Compares two non-null values of this type.
+   *
+   * @param left the first value
+   * @param right the second value
+   * @return a negative integer, zero, or a positive integer as the first value is less than, equal
+   *     to, or greater than the second
+   * @throws ExpressionException if this type doesn't support the comparison of these values
+   */
+  public int compare(final Object left, final Object right) {
     throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Compare error");
   }
 

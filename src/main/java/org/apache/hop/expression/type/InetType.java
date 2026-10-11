@@ -89,7 +89,7 @@ public final class InetType extends Type {
   }
 
   @Override
-  public boolean compareEqual(@Nullable Object left, @Nullable Object right) {
+  public boolean compareEqual(Object left, Object right) {
     if (left instanceof InetAddress l && right instanceof InetAddress r) {
       return l.equals(r);
     }

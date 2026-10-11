@@ -58,7 +58,8 @@ public class BetweenSymmetricOperator extends Operator {
       Type type = call.getOperand(0).getType();
       Object lowerBound = call.getOperand(1).getValue();
       Object upperBound = call.getOperand(2).getValue();
-      if (type.compare(lowerBound, upperBound) < 0) {
+      // With a null bound the result is always null, whatever the order
+      if (lowerBound == null || upperBound == null || type.compare(lowerBound, upperBound) < 0) {
         return new Call(BetweenAsymmetricOperator.INSTANCE, call.getOperands());
       }
 
