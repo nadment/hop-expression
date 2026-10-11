@@ -860,6 +860,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         break;
 
       default:
+        break;
     }
 
     return sb.toString();
