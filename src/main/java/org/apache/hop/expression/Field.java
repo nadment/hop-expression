@@ -36,12 +36,41 @@ public class Field extends Identifier {
   /** The IValueMeta */
   @Getter private final IValueMeta valueMeta;
 
+  /**
+   * The class of the values stored in the row when they can be read without conversion, otherwise
+   * {@code null}.
+   */
+  private final @Nullable Class<?> nativeClass;
+
   public Field(IRowExpressionContext context, Type type, IValueMeta valueMeta, int ordinal) {
     super(0, valueMeta.getName());
     this.context = context;
     this.type = type;
     this.valueMeta = valueMeta;
     this.ordinal = ordinal;
+    this.nativeClass = findNativeClass(valueMeta);
+  }
+
+  /**
+   * Finds the class of the values stored in the row, when they can be used without conversion.
+   *
+   * @param valueMeta the value meta of the field
+   * @return the class, or {@code null} if a value must be converted when read
+   */
+  private static @Nullable Class<?> findNativeClass(IValueMeta valueMeta) {
+    if (!valueMeta.isStorageNormal()) {
+      return null;
+    }
+    return switch (valueMeta.getType()) {
+      case IValueMeta.TYPE_BOOLEAN -> Boolean.class;
+      case IValueMeta.TYPE_INTEGER -> Long.class;
+      case IValueMeta.TYPE_BIGNUMBER -> BigDecimal.class;
+      case IValueMeta.TYPE_BINARY -> byte[].class;
+        // A string with a trim type is trimmed when read
+      case IValueMeta.TYPE_STRING ->
+          valueMeta.getTrimType() == IValueMeta.TRIM_TYPE_NONE ? String.class : null;
+      default -> null;
+    };
   }
 
   @Override
@@ -52,6 +81,19 @@ public class Field extends Identifier {
       throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
     }
 
+    // Fast path, the value is read without conversion
+    if (nativeClass != null) {
+      Object value = row[ordinal];
+      if (value == null || nativeClass.isInstance(value)) {
+        return value;
+      }
+    }
+
+    return convertValue(row);
+  }
+
+  /** Reads the value from the row with the conversion defined by the value meta. */
+  private @Nullable Object convertValue(Object[] row) {
     try {
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
@@ -99,6 +141,19 @@ public class Field extends Identifier {
       throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
     }
 
+    // Fast path, the value is read without conversion
+    if (nativeClass != null) {
+      Object value = row[ordinal];
+      if (value == null || nativeClass.isInstance(value)) {
+        return type.convert(value, clazz);
+      }
+    }
+
+    return convertValue(row, clazz);
+  }
+
+  /** Reads the value from the row with the conversion defined by the value meta. */
+  private @Nullable <T> T convertValue(Object[] row, Class<T> clazz) {
     try {
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:

@@ -33,16 +33,42 @@ import org.apache.hop.core.variables.Variables;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
+@State(Scope.Benchmark)
 public class ExpressionBenchmark {
+
+  // Expressions compiled once, to measure the evaluation time only
+  private IExpression integerArithmetic;
+  private IExpression integerComparison;
+  private IExpression stringConcat;
+  private IExpression bigNumberBetween;
+  private IExpression booleanLogic;
+  private IExpression numberArithmetic;
+  private IExpression dateComparison;
 
   public ExpressionBenchmark() {
     super();
+  }
+
+  @Setup
+  public void setup() {
+    RowExpressionContext context = createExpressionContext();
+    integerArithmetic = IExpression.of(context, "AGE*2+\"YEAR\"");
+    integerComparison = IExpression.of(context, "AGE>10 and \"YEAR\"<2050");
+    stringConcat = IExpression.of(context, "NAME||'-'||SEX");
+    bigNumberBetween = IExpression.of(context, "AMOUNT between 123000 and 200200");
+    booleanLogic = IExpression.of(context, "FLAG and VALUE_NULL is null");
+    numberArithmetic = IExpression.of(context, "PRICE*2");
+    dateComparison = IExpression.of(context, "BIRTHDATE<DN");
   }
 
   /**
@@ -120,5 +146,54 @@ public class ExpressionBenchmark {
   @BenchmarkMode(Mode.AverageTime)
   public void performance() throws Exception {
     eval("AGE>10 or AMOUNT between 123000 and 200200");
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalIntegerArithmetic() {
+    return integerArithmetic.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalIntegerComparison() {
+    return integerComparison.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalStringConcat() {
+    return stringConcat.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalBigNumberBetween() {
+    return bigNumberBetween.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalBooleanLogic() {
+    return booleanLogic.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalNumberArithmetic() {
+    return numberArithmetic.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalDateComparison() {
+    return dateComparison.getValue();
   }
 }
