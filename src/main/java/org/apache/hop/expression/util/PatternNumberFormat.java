@@ -136,6 +136,9 @@ import org.apache.hop.expression.ExpressionException;
  */
 final class PatternNumberFormat extends NumberFormat {
 
+  // Symbols of the default locale, never modified
+  private static volatile DecimalFormatSymbols cachedSymbols;
+
   // Original format
   private final String format;
   private final String pattern;
@@ -338,6 +341,20 @@ final class PatternNumberFormat extends NumberFormat {
     this.pattern = builder.toString();
   }
 
+  /**
+   * Gets the symbols of the default locale. Creating the symbols is slow, so they are kept until
+   * the default locale changes.
+   */
+  private static DecimalFormatSymbols getSymbols() {
+    Locale locale = Locale.getDefault();
+    DecimalFormatSymbols symbols = cachedSymbols;
+    if (symbols == null || !locale.equals(symbols.getLocale())) {
+      symbols = DecimalFormatSymbols.getInstance(locale);
+      cachedSymbols = symbols;
+    }
+    return symbols;
+  }
+
   @Override
   public String toString() {
 
@@ -480,7 +497,7 @@ final class PatternNumberFormat extends NumberFormat {
         }
       }
 
-      DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
+      DecimalFormatSymbols symbols = getSymbols();
       String symbol;
       switch (this.currency) {
         case LOCAL_LEADING:
@@ -634,7 +651,7 @@ final class PatternNumberFormat extends NumberFormat {
     dot = number.precision() - number.scale();
     int length = 0;
 
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
+    DecimalFormatSymbols symbols = getSymbols();
 
     StringBuilder output = new StringBuilder();
     if (this.precision > 0) {

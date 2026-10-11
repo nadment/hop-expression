@@ -65,6 +65,8 @@ public class ExpressionBenchmark {
   private IExpression toCharDate;
   private IExpression parseUrlPart;
   private IExpression parseUrlKey;
+  private IExpression toCharNumberLocal;
+  private IExpression toNumber;
   private IExpression commonRegexp;
   private IExpression commonArithmetic;
 
@@ -96,6 +98,8 @@ public class ExpressionBenchmark {
     parseUrlKey =
         IExpression.of(
             context, "PARSE_URL('http://hop.apache.org:80/path?query=1&id='||NAME,'QUERY','id')");
+    toCharNumberLocal = IExpression.of(context, "TO_CHAR(AMOUNT,'999G999D999')");
+    toNumber = IExpression.of(context, "TO_NUMBER(CAST(\"YEAR\" AS STRING),'9999')");
     commonRegexp =
         IExpression.of(context, "REGEXP_SUBSTR(NAME,'[A-Z]+')||'-'||REGEXP_SUBSTR(NAME,'[A-Z]+')");
     commonArithmetic = IExpression.of(context, "(AGE+\"YEAR\")>10 and (AGE+\"YEAR\")<5000");
@@ -325,5 +329,19 @@ public class ExpressionBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public Object evalParseUrlKey() {
     return parseUrlKey.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalToCharNumberLocal() {
+    return toCharNumberLocal.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalToNumber() {
+    return toNumber.getValue();
   }
 }
