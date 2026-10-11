@@ -28,6 +28,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
@@ -128,6 +129,14 @@ public class CastFunction extends Function {
       //              call.getOperand(1),
       //              Literal.of(defaultDateFormat));
       //      }
+    }
+
+    // Cast a date to a string without truncation with a constant format
+    // CAST(date AS STRING FORMAT 'format') → TO_CHAR(date,'format'), its format is compiled once
+    else if (Types.isDate(call.getOperand(0).getType())
+        && call.getType().equalsIgnoreNullability(StringType.STRING)
+        && call.getOperand(2).isConstant()) {
+      return new Call(ToCharFunction.INSTANCE, call.getOperand(0), call.getOperand(2));
     }
 
     // TODO: the CAST function and the :: operator should call the appropriate conversion function.

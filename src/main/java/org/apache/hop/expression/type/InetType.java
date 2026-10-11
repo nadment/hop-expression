@@ -67,11 +67,6 @@ public final class InetType extends Type {
     return super.convert(value, clazz);
   }
 
-  @Override
-  public @Nullable InetAddress cast(final @Nullable Object value) throws ExpressionException {
-    return cast(value, null);
-  }
-
   /**
    * Convert a value to the specified type {@link InetType} with a pattern.
    *

@@ -106,11 +106,6 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public @Nullable Long cast(final @Nullable Object value) throws ExpressionException {
-    return cast(value, null);
-  }
-
-  @Override
   public @Nullable Long cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
     return switch (value) {

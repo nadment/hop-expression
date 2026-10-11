@@ -59,6 +59,10 @@ public class ExpressionBenchmark {
   private IExpression regexpReplace;
   private IExpression castNumberToString;
   private IExpression castDateToString;
+  private IExpression castNumberFormat;
+  private IExpression toCharNumber;
+  private IExpression castDateFormat;
+  private IExpression toCharDate;
   private IExpression commonRegexp;
   private IExpression commonArithmetic;
 
@@ -80,6 +84,10 @@ public class ExpressionBenchmark {
     regexpReplace = IExpression.of(context, "REGEXP_REPLACE(NAME,'[ES]+','-')");
     castNumberToString = IExpression.of(context, "CAST(AMOUNT AS STRING)");
     castDateToString = IExpression.of(context, "CAST(BIRTHDATE AS STRING)");
+    castNumberFormat = IExpression.of(context, "CAST(AMOUNT AS STRING FORMAT '999999.999')");
+    toCharNumber = IExpression.of(context, "TO_CHAR(AMOUNT,'999999.999')");
+    castDateFormat = IExpression.of(context, "CAST(BIRTHDATE AS STRING FORMAT 'DD/MM/YYYY')");
+    toCharDate = IExpression.of(context, "TO_CHAR(BIRTHDATE,'DD/MM/YYYY')");
     commonRegexp =
         IExpression.of(context, "REGEXP_SUBSTR(NAME,'[A-Z]+')||'-'||REGEXP_SUBSTR(NAME,'[A-Z]+')");
     commonArithmetic = IExpression.of(context, "(AGE+\"YEAR\")>10 and (AGE+\"YEAR\")<5000");
@@ -267,5 +275,33 @@ public class ExpressionBenchmark {
   public Object evalCommonArithmetic() {
     context.setRow(row);
     return commonArithmetic.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalCastNumberFormat() {
+    return castNumberFormat.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalToCharNumber() {
+    return toCharNumber.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalCastDateFormat() {
+    return castDateFormat.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalToCharDate() {
+    return toCharDate.getValue();
   }
 }

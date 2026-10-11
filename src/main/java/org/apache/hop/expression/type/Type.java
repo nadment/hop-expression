@@ -251,14 +251,15 @@ public abstract class Type {
   }
 
   /**
-   * Convert a value to the specified {@link Type}.
+   * Convert a value to the specified {@link Type}, without pattern unless the type overrides this
+   * method to use a default one.
    *
    * @param value the value to convert
    * @return the converted value
    * @throws ExpressionException if the casting fail
    */
   public @Nullable Object cast(final @Nullable Object value) throws ExpressionException {
-    throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
+    return cast(value, null);
   }
 
   /**
