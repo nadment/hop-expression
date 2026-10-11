@@ -54,14 +54,21 @@ public class ExpressionBenchmark {
   private IExpression booleanLogic;
   private IExpression numberArithmetic;
   private IExpression dateComparison;
+  private IExpression like;
+  private IExpression regexpLike;
+  private IExpression regexpReplace;
 
   public ExpressionBenchmark() {
     super();
   }
 
   @Setup
-  public void setup() {
+  public void setup() throws Exception {
+    FunctionRegistry.init();
     RowExpressionContext context = createExpressionContext();
+    like = IExpression.of(context, "NAME like 'T_S%T'");
+    regexpLike = IExpression.of(context, "REGEXP_LIKE(NAME,'^T[A-Z]+T$')");
+    regexpReplace = IExpression.of(context, "REGEXP_REPLACE(NAME,'[ES]+','-')");
     integerArithmetic = IExpression.of(context, "AGE*2+\"YEAR\"");
     integerComparison = IExpression.of(context, "AGE>10 and \"YEAR\"<2050");
     stringConcat = IExpression.of(context, "NAME||'-'||SEX");
@@ -195,5 +202,26 @@ public class ExpressionBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public Object evalDateComparison() {
     return dateComparison.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalLike() {
+    return like.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalRegexpLike() {
+    return regexpLike.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalRegexpReplace() {
+    return regexpReplace.getValue();
   }
 }

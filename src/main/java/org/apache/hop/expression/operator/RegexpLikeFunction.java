@@ -19,11 +19,13 @@ package org.apache.hop.expression.operator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,13 +38,32 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class RegexpLikeFunction extends Function {
 
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public RegexpLikeFunction() {
+    this(null);
+  }
+
+  private RegexpLikeFunction(@Nullable Pattern compiledPattern) {
     super(
         "REGEXP_LIKE",
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.COMPARISON,
         "/docs/regexp_like.html");
+    this.compiledPattern = compiledPattern;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPattern == null) {
+      Pattern pattern = Regexp.compileConstantPattern(call, 1, 2);
+      if (pattern != null) {
+        return new Call(new RegexpLikeFunction(pattern), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -70,7 +91,8 @@ public class RegexpLikeFunction extends Function {
     }
 
     try {
-      Matcher matcher = Pattern.compile(pattern, flags).matcher(input);
+      Pattern p = (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, flags);
+      Matcher matcher = p.matcher(input);
       return matcher.find();
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);

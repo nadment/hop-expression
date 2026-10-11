@@ -37,7 +37,16 @@ import org.jspecify.annotations.Nullable;
 public class ILikeOperator extends Operator {
   public static final ILikeOperator INSTANCE = new ILikeOperator();
 
+  private static final int FLAGS = Pattern.DOTALL | Pattern.CASE_INSENSITIVE;
+
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public ILikeOperator() {
+    this(null);
+  }
+
+  private ILikeOperator(@Nullable Pattern compiledPattern) {
     super(
         "ILIKE",
         80,
@@ -46,10 +55,14 @@ public class ILikeOperator extends Operator {
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.COMPARISON,
         "/docs/ilike.html");
+    this.compiledPattern = compiledPattern;
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Already compiled
+    if (compiledPattern != null) return call;
+
     // Optimize NULL ILIKE FIELD → NULL
     IExpression value = call.getOperand(0);
     if (value.isNull()) return value;
@@ -80,6 +93,11 @@ public class ILikeOperator extends Operator {
       }
     }
 
+    Pattern pattern = LikeOperator.createConstantPattern(call, FLAGS);
+    if (pattern != null) {
+      return new Call(new ILikeOperator(pattern), call.getOperands());
+    }
+
     return call;
   }
 
@@ -88,6 +106,10 @@ public class ILikeOperator extends Operator {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;
+    }
+
+    if (compiledPattern != null) {
+      return compiledPattern.matcher(value).matches();
     }
 
     String pattern = operands[1].getValue(String.class);
@@ -104,7 +126,7 @@ public class ILikeOperator extends Operator {
     }
 
     String regex = Regexp.toRegexLike(pattern, escape);
-    Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    Pattern p = Pattern.compile(regex, FLAGS);
     return p.matcher(value).matches();
   }
 

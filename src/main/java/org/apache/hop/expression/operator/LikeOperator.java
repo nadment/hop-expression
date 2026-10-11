@@ -55,7 +55,14 @@ public class LikeOperator extends Operator {
   static final Pattern contains = Pattern.compile("^%([^_%]+)%$");
   static final Pattern equalTo = Pattern.compile("^[^_%]*$");
 
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public LikeOperator() {
+    this(null);
+  }
+
+  private LikeOperator(@Nullable Pattern compiledPattern) {
     super(
         "LIKE",
         80,
@@ -64,6 +71,50 @@ public class LikeOperator extends Operator {
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.COMPARISON,
         "/docs/like.html");
+    this.compiledPattern = compiledPattern;
+  }
+
+  /**
+   * Compiles the pattern of a LIKE or ILIKE call ahead of evaluation, when the pattern and the
+   * escape character are constant.
+   *
+   * <p>An invalid pattern is not reported here, the error is raised at evaluation.
+   *
+   * @param call the call of a LIKE or ILIKE operator
+   * @param flags the match flags of the regular expression
+   * @return the compiled pattern, or {@code null} if it must be compiled at evaluation
+   */
+  static @Nullable Pattern createConstantPattern(Call call, int flags) {
+    if (!call.getOperand(1).isConstant()) {
+      return null;
+    }
+    try {
+      String pattern = call.getOperand(1).getValue(String.class);
+      if (pattern == null) {
+        return null;
+      }
+      String escape = null;
+      if (call.getOperandCount() == 3) {
+        if (!call.getOperand(2).isConstant()) {
+          return null;
+        }
+        escape = call.getOperand(2).getValue(String.class);
+        if (escape == null) {
+          return null;
+        }
+      }
+      return Pattern.compile(Regexp.toRegexLike(pattern, escape), flags);
+    } catch (RuntimeException e) {
+      return null;
+    }
+  }
+
+  private static IExpression precompile(Call call) {
+    Pattern pattern = createConstantPattern(call, Pattern.DOTALL);
+    if (pattern == null) {
+      return call;
+    }
+    return new Call(new LikeOperator(pattern), call.getOperands());
   }
 
   /**
@@ -73,6 +124,9 @@ public class LikeOperator extends Operator {
    */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Already compiled
+    if (compiledPattern != null) return call;
+
     // Simplify NULL LIKE FIELD → NULL
     IExpression value = call.getOperand(0);
     if (value.isNull()) return value;
@@ -103,7 +157,7 @@ public class LikeOperator extends Operator {
         }
 
         // For now, don't optimize if special escapes char
-        return call;
+        return precompile(call);
       }
 
       // Simplify x LIKE '%' → IFNULL(x,NULL,TRUE)
@@ -136,7 +190,7 @@ public class LikeOperator extends Operator {
       }
     }
 
-    return call;
+    return precompile(call);
   }
 
   @Override
@@ -144,6 +198,9 @@ public class LikeOperator extends Operator {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;
+    }
+    if (compiledPattern != null) {
+      return compiledPattern.matcher(value).matches();
     }
     String pattern = operands[1].getValue(String.class);
     if (pattern == null) {

@@ -19,11 +19,13 @@ package org.apache.hop.expression.operator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +38,14 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class RegexpSubstrFunction extends Function {
 
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public RegexpSubstrFunction() {
+    this(null);
+  }
+
+  private RegexpSubstrFunction(@Nullable Pattern compiledPattern) {
     super(
         "REGEXP_SUBSTR",
         ReturnTypes.STRING_NULLABLE,
@@ -46,6 +55,18 @@ public class RegexpSubstrFunction extends Function {
             .or(OperandTypes.STRING_STRING_INTEGER_INTEGER_STRING),
         OperatorCategory.STRING,
         "/docs/regexp_substr.html");
+    this.compiledPattern = compiledPattern;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPattern == null) {
+      Pattern pattern = Regexp.compileConstantPattern(call, 1, 4);
+      if (pattern != null) {
+        return new Call(new RegexpSubstrFunction(pattern), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -90,7 +111,8 @@ public class RegexpSubstrFunction extends Function {
     }
 
     try {
-      Matcher matcher = Pattern.compile(regexp, flags).matcher(input);
+      Pattern p = (compiledPattern != null) ? compiledPattern : Pattern.compile(regexp, flags);
+      Matcher matcher = p.matcher(input);
 
       boolean found = matcher.find(position);
       for (int index = 1; index < occurrence && found; index++) {

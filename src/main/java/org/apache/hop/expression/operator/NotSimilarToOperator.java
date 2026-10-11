@@ -17,15 +17,16 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.hop.core.util.Utils;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Regexp;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -37,7 +38,14 @@ import org.jspecify.annotations.Nullable;
 public class NotSimilarToOperator extends BinaryOperator {
   public static final NotSimilarToOperator INSTANCE = new NotSimilarToOperator();
 
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public NotSimilarToOperator() {
+    this(null);
+  }
+
+  private NotSimilarToOperator(@Nullable Pattern compiledPattern) {
     super(
         "NOT SIMILAR TO",
         "NOT SIMILAR TO",
@@ -47,6 +55,18 @@ public class NotSimilarToOperator extends BinaryOperator {
         OperandTypes.STRING_STRING,
         OperatorCategory.COMPARISON,
         "/docs/similar-to.html");
+    this.compiledPattern = compiledPattern;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPattern == null) {
+      Pattern pattern = SimilarToOperator.createConstantPattern(call);
+      if (pattern != null) {
+        return new Call(new NotSimilarToOperator(pattern), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -61,6 +81,10 @@ public class NotSimilarToOperator extends BinaryOperator {
       return null;
     }
 
+    if (compiledPattern != null) {
+      return !compiledPattern.matcher(value).matches();
+    }
+
     String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
       return null;
@@ -70,9 +94,7 @@ public class NotSimilarToOperator extends BinaryOperator {
       return false;
     }
 
-    pattern = Regexp.toSimilarTo(pattern, '\\');
-    Matcher matcher = Pattern.compile(pattern, Pattern.UNICODE_CASE).matcher(value);
-    return !matcher.matches();
+    return !SimilarToOperator.createPattern(pattern).matcher(value).matches();
   }
 
   @Override

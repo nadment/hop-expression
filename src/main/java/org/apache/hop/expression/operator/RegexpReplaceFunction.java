@@ -19,11 +19,13 @@ package org.apache.hop.expression.operator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
@@ -48,13 +50,32 @@ public class RegexpReplaceFunction extends Function {
               TypeName.STRING)
           .optional(i -> i >= 2);
 
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public RegexpReplaceFunction() {
+    this(null);
+  }
+
+  private RegexpReplaceFunction(@Nullable Pattern compiledPattern) {
     super(
         "REGEXP_REPLACE",
         ReturnTypes.STRING_NULLABLE,
         OTC,
         OperatorCategory.STRING,
         "/docs/regexp_replace.html");
+    this.compiledPattern = compiledPattern;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPattern == null) {
+      Pattern pattern = Regexp.compileConstantPattern(call, 1, 5);
+      if (pattern != null) {
+        return new Call(new RegexpReplaceFunction(pattern), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -125,8 +146,8 @@ public class RegexpReplaceFunction extends Function {
         replacement = builder.toString();
       }
 
-      Matcher matcher =
-          Pattern.compile(pattern, flags).matcher(input).region(position - 1, input.length());
+      Pattern p = (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, flags);
+      Matcher matcher = p.matcher(input).region(position - 1, input.length());
       if (occurrence == 0) {
         return matcher.replaceAll(replacement);
       } else {

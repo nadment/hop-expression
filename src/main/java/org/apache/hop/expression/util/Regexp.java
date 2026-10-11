@@ -16,8 +16,10 @@
 package org.apache.hop.expression.util;
 
 import java.util.regex.Pattern;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.Nullable;
 
 public class Regexp {
@@ -107,6 +109,46 @@ public class Regexp {
       }
     }
     return flags;
+  }
+
+  /**
+   * Compiles the regular expression of a call ahead of evaluation, when the pattern and the flags
+   * are constant.
+   *
+   * <p>An invalid pattern or flags are not reported here, the error is raised at evaluation.
+   *
+   * @param call the call of a regular expression function
+   * @param patternIndex the index of the pattern operand
+   * @param flagsIndex the index of the optional flags operand
+   * @return the compiled pattern, or {@code null} if it must be compiled at evaluation
+   */
+  public static @Nullable Pattern compileConstantPattern(
+      final Call call, int patternIndex, int flagsIndex) {
+    IExpression patternOperand = call.getOperand(patternIndex);
+    if (!patternOperand.isConstant()) {
+      return null;
+    }
+
+    try {
+      String pattern = patternOperand.getValue(String.class);
+      // A null or empty pattern is handled at evaluation
+      if (pattern == null || pattern.isEmpty()) {
+        return null;
+      }
+
+      int flags = Pattern.UNICODE_CASE;
+      if (call.getOperandCount() > flagsIndex) {
+        IExpression flagsOperand = call.getOperand(flagsIndex);
+        if (!flagsOperand.isConstant()) {
+          return null;
+        }
+        flags = parseFlags(flagsOperand.getValue(String.class));
+      }
+
+      return Pattern.compile(pattern, flags);
+    } catch (RuntimeException e) {
+      return null;
+    }
   }
 
   /** Translates a SIMILAR TO pattern to a Java regex pattern. */

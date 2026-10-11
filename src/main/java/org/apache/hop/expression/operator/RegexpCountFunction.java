@@ -17,11 +17,13 @@ package org.apache.hop.expression.operator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -40,7 +42,14 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class RegexpCountFunction extends Function {
 
+  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable Pattern compiledPattern;
+
   public RegexpCountFunction() {
+    this(null);
+  }
+
+  private RegexpCountFunction(@Nullable Pattern compiledPattern) {
     super(
         "REGEXP_COUNT",
         ReturnTypes.INTEGER_NULLABLE,
@@ -49,6 +58,18 @@ public class RegexpCountFunction extends Function {
             .or(OperandTypes.STRING_STRING_INTEGER_STRING),
         OperatorCategory.STRING,
         "/docs/regexp_count.html");
+    this.compiledPattern = compiledPattern;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPattern == null) {
+      Pattern pattern = Regexp.compileConstantPattern(call, 1, 3);
+      if (pattern != null) {
+        return new Call(new RegexpCountFunction(pattern), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -86,8 +107,9 @@ public class RegexpCountFunction extends Function {
     }
 
     try {
-      Matcher matcher =
-          Pattern.compile(pattern, parameters).matcher(source).region(start - 1, source.length());
+      Pattern p =
+          (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, parameters);
+      Matcher matcher = p.matcher(source).region(start - 1, source.length());
       while (matcher.find()) {
         count++;
       }
