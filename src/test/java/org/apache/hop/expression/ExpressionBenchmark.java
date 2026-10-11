@@ -57,6 +57,8 @@ public class ExpressionBenchmark {
   private IExpression like;
   private IExpression regexpLike;
   private IExpression regexpReplace;
+  private IExpression castNumberToString;
+  private IExpression castDateToString;
 
   public ExpressionBenchmark() {
     super();
@@ -69,6 +71,8 @@ public class ExpressionBenchmark {
     like = IExpression.of(context, "NAME like 'T_S%T'");
     regexpLike = IExpression.of(context, "REGEXP_LIKE(NAME,'^T[A-Z]+T$')");
     regexpReplace = IExpression.of(context, "REGEXP_REPLACE(NAME,'[ES]+','-')");
+    castNumberToString = IExpression.of(context, "CAST(AMOUNT AS STRING)");
+    castDateToString = IExpression.of(context, "CAST(BIRTHDATE AS STRING)");
     integerArithmetic = IExpression.of(context, "AGE*2+\"YEAR\"");
     integerComparison = IExpression.of(context, "AGE>10 and \"YEAR\"<2050");
     stringConcat = IExpression.of(context, "NAME||'-'||SEX");
@@ -223,5 +227,19 @@ public class ExpressionBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public Object evalRegexpReplace() {
     return regexpReplace.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalCastNumberToString() {
+    return castNumberToString.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalCastDateToString() {
+    return castDateToString.getValue();
   }
 }

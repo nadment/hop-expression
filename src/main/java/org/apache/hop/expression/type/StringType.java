@@ -47,6 +47,12 @@ public final class StringType extends Type {
   public static final StringType STRING_NOT_NULL =
       new StringType(TypeName.STRING.getMaxPrecision(), false);
 
+  /** The format used to cast a number to a string without pattern. */
+  private static final NumberFormat DEFAULT_NUMBER_FORMAT = NumberFormat.of("TM");
+
+  /** The format used to cast a date to a string without pattern. */
+  private static final DateTimeFormat DEFAULT_DATE_FORMAT = DateTimeFormat.of("YYYY-MM-DD");
+
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
   }
@@ -143,20 +149,19 @@ public final class StringType extends Type {
       case String str -> result = str;
       case Boolean bool -> result = StringConversion.convert(bool);
       case Number num -> {
-        if (pattern == null) {
-          pattern = "TM";
-        }
         BigDecimal number;
         if (value instanceof Long l) {
           number = BigDecimal.valueOf(l);
         } else {
           number = (BigDecimal) value;
         }
-        result = NumberFormat.of(pattern).format(number);
+        NumberFormat format = (pattern == null) ? DEFAULT_NUMBER_FORMAT : NumberFormat.of(pattern);
+        result = format.format(number);
       }
       case ZonedDateTime datetime -> {
-        if (pattern == null) pattern = "YYYY-MM-DD";
-        result = DateTimeFormat.of(pattern).format(datetime);
+        DateTimeFormat format =
+            (pattern == null) ? DEFAULT_DATE_FORMAT : DateTimeFormat.of(pattern);
+        result = format.format(datetime);
       }
       case byte[] bytes -> result = new String(bytes, StandardCharsets.UTF_8);
       case JsonNode json -> {

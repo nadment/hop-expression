@@ -24,7 +24,7 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.NumberConversion;
-import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.StringConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -110,7 +110,7 @@ public final class NumberType extends Type {
       return clazz.cast(((BigDecimal) value).longValue());
     }
     if (clazz == String.class) {
-      return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
+      return clazz.cast(StringConversion.convert((BigDecimal) value));
     }
 
     return super.convert(value, clazz);

@@ -28,12 +28,14 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class DateTimeConversion extends Conversion<ZonedDateTime> {
 
+  private static final DateTimeFormat FORMAT = DateTimeFormat.of("FXYYY-MM-DD");
+
   private DateTimeConversion() {
     // Utility class
   }
 
   public static ZonedDateTime convert(final String value) {
-    return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
+    return FORMAT.parse(value);
   }
 
   /**

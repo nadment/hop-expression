@@ -43,6 +43,12 @@ public final class StringConversion extends Conversion<String> {
     JSON_WRITER.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
   }
 
+  private static final NumberFormat NUMBER_FORMAT = NumberFormat.of("TM");
+  private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.of("YYYY-MM-DD");
+  private static final DateTimeFormat TIMESTAMP_FORMAT = DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS");
+  private static final DateTimeFormat TIMESTAMP_NANO_FORMAT =
+      DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9");
+
   private StringConversion() {
     // Utility class
   }
@@ -56,7 +62,7 @@ public final class StringConversion extends Conversion<String> {
   }
 
   public static String convert(final BigDecimal value) {
-    return NumberFormat.of("TM").format(value);
+    return NUMBER_FORMAT.format(value);
   }
 
   public static String convert(final byte[] bytes) {
@@ -64,15 +70,14 @@ public final class StringConversion extends Conversion<String> {
   }
 
   public static String convert(final ZonedDateTime value) {
-    String pattern = "YYYY-MM-DD";
-    if (value.getNano() > 0) {
-      pattern = "YYYY-MM-DD HH24:MI:SS.FFFFFFFFF";
-    }
     if (value.getHour() > 0 || value.getMinute() > 0 || value.getSecond() > 0) {
-      pattern = "YYYY-MM-DD HH24:MI:SS";
+      return TIMESTAMP_FORMAT.format(value);
+    }
+    if (value.getNano() > 0) {
+      return TIMESTAMP_NANO_FORMAT.format(value);
     }
 
-    return DateTimeFormat.of(pattern).format(value);
+    return DATE_FORMAT.format(value);
   }
 
   public static String convert(final InetAddress value) {

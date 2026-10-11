@@ -38,6 +38,9 @@ public final class DateType extends Type {
   /** Default DATE NOT NULL type with default parameters. */
   public static final DateType DATE_NOT_NULL = new DateType(false);
 
+  /** The format used to cast a string to a date without pattern. */
+  private static final DateTimeFormat DEFAULT_FORMAT = DateTimeFormat.of("AUTO");
+
   DateType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }
@@ -95,7 +98,8 @@ public final class DateType extends Type {
     return switch (value) {
       case null -> null;
       case ZonedDateTime datetime -> datetime;
-      case String str -> DateTimeFormat.of(pattern).parse(str);
+      case String str ->
+          ((pattern == null) ? DEFAULT_FORMAT : DateTimeFormat.of(pattern)).parse(str);
       case Long number -> DateTimeConversion.convert(number);
       case BigDecimal number -> DateTimeConversion.convert(number);
       default ->
