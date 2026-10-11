@@ -46,5 +46,6 @@ public class RowExpressionContext extends ExpressionContext implements IRowExpre
   @Override
   public void setRow(@Nullable Object @Nullable [] row) {
     this.row = row;
+    incrementContextVersion();
   }
 }

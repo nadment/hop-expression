@@ -59,6 +59,12 @@ public class ExpressionBenchmark {
   private IExpression regexpReplace;
   private IExpression castNumberToString;
   private IExpression castDateToString;
+  private IExpression commonRegexp;
+  private IExpression commonArithmetic;
+
+  // A row is set before each evaluation of an expression with common sub-expressions
+  private RowExpressionContext context;
+  private Object[] row;
 
   public ExpressionBenchmark() {
     super();
@@ -67,12 +73,16 @@ public class ExpressionBenchmark {
   @Setup
   public void setup() throws Exception {
     FunctionRegistry.init();
-    RowExpressionContext context = createExpressionContext();
+    context = createExpressionContext();
+    row = context.getRow();
     like = IExpression.of(context, "NAME like 'T_S%T'");
     regexpLike = IExpression.of(context, "REGEXP_LIKE(NAME,'^T[A-Z]+T$')");
     regexpReplace = IExpression.of(context, "REGEXP_REPLACE(NAME,'[ES]+','-')");
     castNumberToString = IExpression.of(context, "CAST(AMOUNT AS STRING)");
     castDateToString = IExpression.of(context, "CAST(BIRTHDATE AS STRING)");
+    commonRegexp =
+        IExpression.of(context, "REGEXP_SUBSTR(NAME,'[A-Z]+')||'-'||REGEXP_SUBSTR(NAME,'[A-Z]+')");
+    commonArithmetic = IExpression.of(context, "(AGE+\"YEAR\")>10 and (AGE+\"YEAR\")<5000");
     integerArithmetic = IExpression.of(context, "AGE*2+\"YEAR\"");
     integerComparison = IExpression.of(context, "AGE>10 and \"YEAR\"<2050");
     stringConcat = IExpression.of(context, "NAME||'-'||SEX");
@@ -241,5 +251,21 @@ public class ExpressionBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public Object evalCastDateToString() {
     return castDateToString.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalCommonRegexp() {
+    context.setRow(row);
+    return commonRegexp.getValue();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public Object evalCommonArithmetic() {
+    context.setRow(row);
+    return commonArithmetic.getValue();
   }
 }

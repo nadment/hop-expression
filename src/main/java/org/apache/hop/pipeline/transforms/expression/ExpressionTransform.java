@@ -20,11 +20,13 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Date;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.CommonSubexpressionEliminator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
@@ -81,9 +83,13 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
       data.context = new RowExpressionContext(this, data.outputRowMeta);
 
+      // The fields modified in the row when the expressions are evaluated
+      BitSet modifiedOrdinals = new BitSet();
+
       // For all fields expressions
       for (ExpressionField field : meta.getFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
+        modifiedOrdinals.set(index);
 
         String source = field.getExpression();
 
@@ -113,6 +119,9 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           return false;
         }
       }
+
+      // Evaluate once per row the sub-expressions common to several fields
+      CommonSubexpressionEliminator.eliminate(data.context, data.expressions, modifiedOrdinals);
     }
 
     String name = null;

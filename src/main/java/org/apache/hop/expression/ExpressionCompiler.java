@@ -48,7 +48,9 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
             "compilation: Too many attempts for expression %1$s".formatted(expression));
       }
     } while (hasChanged);
-    return expression;
+
+    // Evaluate the common sub-expressions once per state of the context
+    return CommonSubexpressionEliminator.eliminate(context, expression);
   }
 
   @Override

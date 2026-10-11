@@ -68,6 +68,9 @@ public class ExpressionContext implements IExpressionContext {
   /** The {@code Map} field stores the attributes. */
   private final Map<String, Object> attributes;
 
+  /** The version changed each time the state of the context changes. */
+  private long contextVersion;
+
   public ExpressionContext(IVariables variables) {
     super();
 
@@ -102,10 +105,22 @@ public class ExpressionContext implements IExpressionContext {
 
   public void setAttribute(String id, Object value) {
     attributes.put(id, value);
+    incrementContextVersion();
   }
 
   @Override
   public @Nullable Object getAttribute(@Nullable String id) {
     return attributes.get(id);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public long getContextVersion() {
+    return contextVersion;
+  }
+
+  /** Changes the version of the context, to call each time the state of the context changes. */
+  protected final void incrementContextVersion() {
+    contextVersion++;
   }
 }

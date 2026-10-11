@@ -31,4 +31,13 @@ public interface IExpressionContext {
    * @throws NullPointerException if the name is null.
    */
   @Nullable Object getAttribute(@Nullable String name);
+
+  /**
+   * Returns a version changed each time the state of the context changes, like when a row or an
+   * attribute is set. It is used to detect that the values computed for the previous state are no
+   * longer valid.
+   *
+   * @return the version of the context
+   */
+  long getContextVersion();
 }

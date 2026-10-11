@@ -18,11 +18,13 @@
 package org.apache.hop.pipeline.transforms.route;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
+import org.apache.hop.expression.CommonSubexpressionEliminator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -100,6 +102,22 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
           setOutputDone();
           return false;
         }
+      }
+
+      // Evaluate once per row the sub-expressions common to several routes.
+      // Each condition is compiled alone, so a call repeated in several conditions is not yet
+      // shared. For example with the routes "UPPER(COUNTRY)='FR'" and "UPPER(COUNTRY)='DE'",
+      // UPPER(COUNTRY) is evaluated by the first condition and its value reused by the second.
+      // The row is not modified by this transform, so there are no modified fields to exclude.
+      // The targets are created again as their expression can't be replaced.
+      IExpression[] expressions = new IExpression[data.targets.size()];
+      for (int i = 0; i < expressions.length; i++) {
+        expressions[i] = data.targets.get(i).getExpression();
+      }
+      CommonSubexpressionEliminator.eliminate(data.context, expressions, new BitSet());
+      for (int i = 0; i < expressions.length; i++) {
+        RouteTarget target = data.targets.get(i);
+        data.targets.set(i, new RouteTarget(target.getRoute(), expressions[i], target.getRowSet()));
       }
 
       if (StringUtils.isNotEmpty(meta.getDefaultTargetTransformName())) {
