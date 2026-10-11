@@ -114,6 +114,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER('98.76546')", 98.76546D);
     evalEquals("TO_NUMBER('1.2E3')", 1200D);
     evalEquals("TO_NUMBER('1.2E-3')", 0.0012D);
+    evalEquals("TO_NUMBER('1.2E+02')", 1.2E+02D);
 
     // Underscore
     evalEquals("TO_NUMBER('1_000')", 1000D);
