@@ -313,7 +313,6 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
             props);
     wTableFields.setLayoutData(new FormDataBuilder().top().bottom().left().right().result());
     wTableFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
-
     return wTableFields;
   }
 
