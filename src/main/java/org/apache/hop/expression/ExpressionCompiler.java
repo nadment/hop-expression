@@ -131,6 +131,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   @Override
   public IExpression visitArray(Array array) {
     boolean changed = false;
+    boolean replaced = false;
     int size = array.size();
     List<IExpression> expressions = new ArrayList<>(size);
     List<Type> types = new ArrayList<>(size);
@@ -140,12 +141,17 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       if (!compiled.equals(expression)) {
         changed = true;
       }
+      // An element can be replaced by an equal expression that must be kept, like the generic
+      // CONCAT replaced by its string, binary or array implementation.
+      if (compiled != expression) {
+        replaced = true;
+      }
       expressions.add(compiled);
       types.add(compiled.getType());
     }
 
-    if (changed) {
-      hasChanged = true;
+    if (replaced) {
+      hasChanged |= changed;
       Type elementType = Types.getLeastRestrictive(types);
       return new Array(ArrayType.of(elementType), expressions);
     }

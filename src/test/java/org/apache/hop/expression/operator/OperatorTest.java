@@ -1105,6 +1105,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("case when FIELD_INTEGER>80 then 'A' else 'B' end", "B");
       evalNull("case when FIELD_INTEGER>80 then 'A' end");
 
+      evalEquals(
+          "Case When FIELD_INTEGER>10 Then 'X' || TO_CHAR(\"YEAR\",'FM9999') Else Null End",
+          "X2020");
+
       // Search CASE WHEN
       evalEquals(
           "case when FIELD_INTEGER=10+20 then 1*5 when FIELD_INTEGER=20+20 then 2*5 else 50 end",
