@@ -56,6 +56,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals(
         "Parse_Url('https://hop.apache.org:80/path?query=1&lang=fr','QUERY')", "query=1&lang=fr");
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1&id=2','QUERY','id')", "2");
+    evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1&id=2','QUERY','query')", "1");
+    evalEquals("Parse_Url('https://hop.apache.org/path?xid=1&id=2&id=3','QUERY','id')", "2");
+    evalEquals("Parse_Url('https://hop.apache.org/path?id=&lang=fr','QUERY','id')", "");
+    // The key is not a regular expression
+    evalNull("Parse_Url('https://hop.apache.org/path?axb=1','QUERY','a.b')");
+    evalEquals("Parse_Url('https://hop.apache.org/path?axb=1&a.b=2','QUERY','a.b')", "2");
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1#fragment', 'REF')", "fragment");
 
     // Null handling

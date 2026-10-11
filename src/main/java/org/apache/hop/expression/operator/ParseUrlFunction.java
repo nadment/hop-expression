@@ -19,10 +19,6 @@ package org.apache.hop.expression.operator;
 import com.jayway.jsonpath.internal.Utils;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,8 +33,6 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class ParseUrlFunction extends Function {
 
-  private static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
-
   public ParseUrlFunction() {
     super(
         "PARSE_URL",
@@ -46,10 +40,6 @@ public class ParseUrlFunction extends Function {
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.STRING,
         "/docs/parse_url.html");
-  }
-
-  static Pattern keyToPattern(final String keyToExtract) {
-    return Pattern.compile("(&|^)" + keyToExtract + "=([^&]*)");
   }
 
   @Override
@@ -121,10 +111,32 @@ public class ParseUrlFunction extends Function {
     if (part.equals("QUERY")) {
       String query = parseUrl(url, part);
       if (query != null) {
-        Pattern pattern = cache.computeIfAbsent(keyToExtract, ParseUrlFunction::keyToPattern);
-        Matcher matcher = pattern.matcher(query);
-        return matcher.find() ? matcher.group(2) : null;
+        return extractValue(query, keyToExtract);
       }
+    }
+    return null;
+  }
+
+  /**
+   * Finds the value of the first {@code key=value} parameter of a query.
+   *
+   * @param query the query, with the parameters separated by {@code &}
+   * @param key the key to find
+   * @return the value, or {@code null} if the key is not found
+   */
+  private static @Nullable String extractValue(String query, String key) {
+    int start = 0;
+    while (start < query.length()) {
+      int equal = start + key.length();
+      if (equal < query.length() && query.charAt(equal) == '=' && query.startsWith(key, start)) {
+        int end = query.indexOf('&', equal + 1);
+        return query.substring(equal + 1, end < 0 ? query.length() : end);
+      }
+      int next = query.indexOf('&', start);
+      if (next < 0) {
+        break;
+      }
+      start = next + 1;
     }
     return null;
   }
