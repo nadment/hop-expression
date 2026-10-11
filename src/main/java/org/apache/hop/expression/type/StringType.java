@@ -159,12 +159,8 @@ public final class StringType extends Type {
         result = format.format(datetime);
       }
       case byte[] bytes -> result = new String(bytes, StandardCharsets.UTF_8);
-      case JsonNode json -> {
-        return StringConversion.convert(json);
-      }
-      case InetAddress inet -> {
-        return StringConversion.convert(inet);
-      }
+      case JsonNode json -> result = StringConversion.convert(json);
+      case InetAddress inet -> result = StringConversion.convert(inet);
       default -> {}
     }
 

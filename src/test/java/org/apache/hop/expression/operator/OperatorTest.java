@@ -2681,6 +2681,10 @@ public class OperatorTest extends ExpressionTest {
       // Inet
       evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
 
+      // Adjust length for all types of value
+      evalEquals("CAST(FIELD_INET AS String(5))", "10.10");
+      evalEquals("CAST(FIELD_JSON AS String(8))", "{\"store\"");
+
       // Null
       evalNull("CAST(NULL_BINARY as STRING)").returnType(StringType.STRING);
       evalNull("CAST(NULL_STRING as String)").returnType(StringType.STRING);
