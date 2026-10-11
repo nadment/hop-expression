@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.EnumSet;
@@ -30,6 +31,7 @@ import org.jspecify.annotations.Nullable;
 /** An interval represents a duration of time which can be used in date/time arithmetic. */
 @NullMarked
 public class Interval implements Serializable, Comparable<Interval> {
+  @Serial private static final long serialVersionUID = 1L;
 
   /** The number of months per year. */
   static final long MONTHS_PER_YEAR = 12;
