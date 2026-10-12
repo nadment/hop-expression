@@ -1133,13 +1133,13 @@ import org.apache.hop.expression.ExpressionException;
     public DateLongFormat() {
       super(true, true);
       this.formatter =
-          DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
+          DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
     }
 
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime)
         throws DateTimeException {
-      output.append(datetime.format(formatter));
+      output.append(datetime.format(formatter.withLocale(Locale.getDefault())));
     }
   }
 
@@ -1155,7 +1155,7 @@ import org.apache.hop.expression.ExpressionException;
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime)
         throws DateTimeException {
-      output.append(datetime.format(formatter));
+      output.append(datetime.format(formatter.withLocale(Locale.getDefault())));
     }
   }
 
@@ -1172,7 +1172,7 @@ import org.apache.hop.expression.ExpressionException;
 
     @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws DateTimeException {
-      output.append(cap.apply(datetime.format(formatter)));
+      output.append(cap.apply(datetime.format(formatter.withLocale(Locale.getDefault()))));
     }
   }
 

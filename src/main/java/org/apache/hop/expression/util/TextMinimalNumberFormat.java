@@ -49,8 +49,10 @@ final class TextMinimalNumberFormat extends NumberFormat {
 
     // Text-minimal number in scientific notation
     if (e > 0) {
-      int power = number.precision() - number.scale() - 1;
-      BigDecimal value = number.movePointLeft(power);
+      // The trailing zeros are not significant
+      BigDecimal value = number.stripTrailingZeros();
+      int power = value.precision() - value.scale() - 1;
+      value = value.movePointLeft(power);
 
       // Case of exponent
       return value.toPlainString()

@@ -2534,6 +2534,8 @@ public class OperatorTest extends ExpressionTest {
 
       // Casting operations that would result in a value overflow throw an error
       evalFails("CAST(9223372036854775807888 as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
+      evalFails("CAST('9223372036854775807888' as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
+      evalFails("CAST('ABC' as INTEGER)", ErrorCode.CONVERSION_ERROR);
 
       // Unsupported conversion
       evalFails("CAST(FIELD_BINARY AS INTEGER)", ErrorCode.UNSUPPORTED_CONVERSION);
@@ -2671,7 +2673,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("123.6::String", "123.6");
       evalEquals("CAST(0.45 AS STRING)", "0.45");
       evalEquals("CAST(0.45 AS STRING FORMAT 'FM000.00')", "000.45");
-      evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1234 ");
+      evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1235 ");
       evalEquals("CAST(12345678901234567890.123 AS STRING)", "12345678901234567890.123");
       evalEquals("CAST(FIELD_NUMBER as String)", "-5.12");
 

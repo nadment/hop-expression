@@ -53,13 +53,15 @@ public final class IntegerConversion extends Conversion<Long> {
 
   public static @Nullable Long convert(final @Nullable String str) throws ExpressionException {
     if (str == null) return null;
+    BigDecimal number;
     try {
-      BigDecimal number = numberFormat.parse(str);
-      return convert(number);
-    } catch (Exception e) {
+      number = numberFormat.parse(str);
+    } catch (ExpressionException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INTEGER, str);
     }
+    // A number out of range is an overflow, not a conversion error
+    return convert(number);
   }
 
   public static @Nullable Long convert(byte @Nullable [] bytes) throws ExpressionException {

@@ -587,7 +587,7 @@ final class PatternNumberFormat extends NumberFormat {
 
     // Adjust number scale to format scale
     if (this.scale < number.scale()) {
-      number = number.setScale(this.scale, RoundingMode.DOWN);
+      number = number.setScale(this.scale, RoundingMode.HALF_UP);
     }
 
     int power = 0;

@@ -284,7 +284,11 @@ class ConversionFunctionTest extends ExpressionTest {
     // evalEquals("TO_CHAR(485.8, '\"Pre:\"999\" Post:\" .999')", "Pre: 485 Post: .800");
 
     evalEquals("TO_CHAR(12345.567,'9,999')", "######");
-    evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
+    evalEquals("TO_CHAR(1234.94,'9999MI')", "1235 ");
+    evalEquals("TO_CHAR(1.999,'9.99')", " 2.00");
+    evalEquals("TO_CHAR(-1.995,'9.99')", "-2.00");
+    evalEquals("TO_CHAR(1.994,'9.99')", " 1.99");
+    evalEquals("TO_CHAR(9.99,'9.9')", "####");
     evalEquals("TO_CHAR(555.0, 'FM999.009')", "555.00");
 
     Locale.setDefault(Locale.FRANCE);
@@ -357,6 +361,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(123.456,'tm')", "123.456");
     evalEquals("TO_CHAR(123.456,'tm9')", "123.456");
     evalEquals("TO_CHAR(123.456,'TME')", "1.23456E+02");
+    evalEquals("TO_CHAR(1.50,'TME')", "1.5E+00");
+    evalEquals("TO_CHAR(1500,'TME')", "1.5E+03");
     evalEquals("TO_CHAR(123.456,'tMe')", "1.23456e+02");
     evalEquals("TO_CHAR(123.456,'tMe')", "1.23456e+02");
 
@@ -601,19 +607,15 @@ class ConversionFunctionTest extends ExpressionTest {
     // Java 21 use character NARROW NO-BREAK SPACE (NNBSP)
     evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "Jul 23, 2019 2:52:00\u202fPM");
     Locale.setDefault(Locale.UK);
-    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "Jul 23, 2019 2:52:00\u202fPM");
+    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "23 Jul 2019 14:52:00");
     Locale.setDefault(Locale.FRANCE);
-    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "Jul 23, 2019 2:52:00\u202fPM");
+    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DS TS')", "23 juil. 2019 14:52:00");
 
     // Long date
     Locale.setDefault(Locale.US);
-    evalEquals(
-        "To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')",
-        "Tuesday, July 23, 2019, 2:52:00\u202fPM Z");
+    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')", "Tuesday, July 23, 2019");
     Locale.setDefault(Locale.FRANCE);
-    evalEquals(
-        "To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')",
-        "Tuesday, July 23, 2019, 2:52:00\u202fPM Z");
+    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')", "mardi 23 juillet 2019");
 
     // Local radix character
     // Locale.setDefault(new Locale("en", "GB"));
