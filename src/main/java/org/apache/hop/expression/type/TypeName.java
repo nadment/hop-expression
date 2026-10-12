@@ -266,15 +266,15 @@ public enum TypeName {
    */
   public boolean isCastable(final @Nullable TypeName name) {
     if (name == null) return false;
-    if (name == this) return true;
+    if (name == this || name == ANY) return true;
 
     return switch (this) {
-      case BOOLEAN -> name.is(INTEGER, NUMBER, BINARY, STRING);
-      case STRING -> name.is(BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON, INET);
+      case BOOLEAN -> name.is(INTEGER, NUMBER, STRING);
+      case STRING -> name.is(BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON, INET, INTERVAL);
       case DATE -> name.is(INTEGER, NUMBER, STRING);
-      case INTEGER -> name.is(NUMBER, BOOLEAN, BINARY, STRING, DATE);
-      case NUMBER -> name.is(INTEGER, BOOLEAN, BINARY, STRING, DATE);
-      case BINARY, JSON, INET -> name.is(STRING);
+      case INTEGER -> name.is(NUMBER, BOOLEAN, STRING, DATE);
+      case NUMBER -> name.is(INTEGER, BOOLEAN, STRING, DATE);
+      case BINARY, JSON, INET, INTERVAL -> name.is(STRING);
       case UNKNOWN, ANY -> true;
       default -> false;
     };

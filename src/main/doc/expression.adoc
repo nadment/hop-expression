@@ -323,18 +323,19 @@ Explicit conversion is supported by using the xref:cast.adoc["CAST",role=fun] fu
 
 When there is no ambiguity about the data type of an expression value, it is implicitly coerced to match the expected data type.
 
-[cols="^5,^1,^1,^1,^1,^1,^1,^1,^1", options="header"]
+[cols="^5,^1,^1,^1,^1,^1,^1,^1,^1,^1", options="header"]
 |===
-|From / To|Binary|Boolean|Date|Integer|Number|String|Json|Inet
-|Function|xref:to_binary.adoc["TO_BINARY",role=fun]|xref:to_boolean.adoc["TO_BOOLEAN",role=fun]|xref:to_date.adoc["TO_DATE",role=fun]||xref:to_number.adoc["TO_NUMBER",role=fun]|xref:to_char.adoc["TO_CHAR",role=fun]|xref:to_json.adoc["TO_JSON",role=fun]|
-|Binary|-|❌|❌|❌|❌|✅|❌|❌
-|Boolean|❌|-|❌|✅|✅|✅|❌|❌
-|Date|❌|❌|-|☑️|☑️|✅|❌|❌
-|Integer|❌|✅|☑️|-|✅|✅|❌|❌
-|Number|❌|✅|☑️|☑️|-|✅|❌|❌
-|String|☑️|☑️|☑️|☑️|☑️|-|☑️|☑️
-|Json|❌|❌|❌|❌|❌|✅|-|❌
-|Inet|❌|❌|❌|❌|❌|✅|❌|-
+|From / To|Binary|Boolean|Date|Integer|Number|String|Json|Inet|Interval
+|Function|xref:to_binary.adoc["TO_BINARY",role=fun]|xref:to_boolean.adoc["TO_BOOLEAN",role=fun]|xref:to_date.adoc["TO_DATE",role=fun]||xref:to_number.adoc["TO_NUMBER",role=fun]|xref:to_char.adoc["TO_CHAR",role=fun]|xref:to_json.adoc["TO_JSON",role=fun]||xref:to_interval.adoc["TO_INTERVAL",role=fun]
+|Binary|-|❌|❌|❌|❌|✅|❌|❌|❌
+|Boolean|❌|-|❌|✅|✅|✅|❌|❌|❌
+|Date|❌|❌|-|☑️|☑️|✅|❌|❌|❌
+|Integer|❌|✅|☑️|-|✅|✅|❌|❌|❌
+|Number|❌|✅|☑️|☑️|-|✅|❌|❌|❌
+|String|☑️|☑️|☑️|☑️|☑️|-|☑️|☑️|☑️
+|Json|❌|❌|❌|❌|❌|✅|-|❌|❌
+|Inet|❌|❌|❌|❌|❌|✅|❌|-|❌
+|Interval|❌|❌|❌|❌|❌|✅|❌|❌|-
 |===
 
 ❌ Non convertible
@@ -343,5 +344,14 @@ When there is no ambiguity about the data type of an expression value, it is imp
 
 * Numeric types can be coerced to a wider numeric type. For example, an INTEGER type can be coerced to a NUMBER.
 
+== Variables
 
+The following variables change the default behavior of expressions.
 
+[cols="<3,^1,<6", options="header"]
+|===
+|Variable|Default|Description
+|EXPRESSION_BINARY_FORMAT|HEX|The default binary format used by xref:to_binary.adoc["TO_BINARY",role=fun] and xref:to_char.adoc["TO_CHAR",role=fun] for conversions between binaries and strings when no format is specified: HEX, BASE64 or UTF-8.
+|EXPRESSION_DATE_FORMAT|YYYY-MM-DD|The default date format used by xref:to_char.adoc["TO_CHAR",role=fun] for the conversion of a date to a string when no format is specified.
+|EXPRESSION_TWO_DIGIT_YEAR_START|1970|Controls the two-digit year format `YY` used by xref:to_date.adoc["TO_DATE",role=fun] and xref:is_date.adoc["IS_DATE",role=fun]. When set to 1980, values of 79 and 80 are parsed as 2079 and 1980 respectively.
+|===

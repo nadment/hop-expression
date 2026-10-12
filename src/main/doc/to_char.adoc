@@ -43,4 +43,4 @@ NOTE: Fill mode modifier; toggles between compact and fill modes.
 
 include::binaryformat.adoc[]
 
-The parameter values are case-insensitive. The default is HEX.
+The parameter values are case-insensitive. The default is HEX, it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.

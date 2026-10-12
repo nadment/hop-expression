@@ -2028,6 +2028,8 @@ public class OperatorTest extends ExpressionTest {
     void testElementAt() throws Exception {
       evalEquals("[1,3,5][1]", 1L).returnType(IntegerType.of(1, false));
       evalEquals("[1,3.5,5][3]", 5D).returnType(NumberType.of(2, 1, false));
+      evalEquals("[100,3.5][2]", 3.5D).returnType(NumberType.of(4, 1, false));
+      evalEquals("[3.5,100][2]", 100D).returnType(NumberType.of(4, 1, false));
       evalEquals("['A','B',FIELD_STRING][3]", "TEST").returnType(StringType.of(1000, true));
 
       // Negative index
@@ -2463,6 +2465,7 @@ public class OperatorTest extends ExpressionTest {
     void castToBinary() throws Exception {
       // String
       evalEquals("CAST('AB' as BINARY)", "AB".getBytes()).returnType(BinaryType.BINARY_NOT_NULL);
+      evalEquals("'A'::BINARY", new byte[] {0x41});
 
       // Null
       evalNull("CAST(NULL_STRING as Binary)").returnType(BinaryType.BINARY);
@@ -2680,6 +2683,10 @@ public class OperatorTest extends ExpressionTest {
 
       // Inet
       evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
+
+      // Interval
+      evalEquals("CAST(INTERVAL 5 YEAR AS String)", "+5-0 0 00:00:00.000000000");
+      evalEquals("INTERVAL '-12:30' HOUR TO MINUTE::String", "-0-0 0 12:30:00.000000000");
 
       // Adjust length for all types of value
       evalEquals("CAST(FIELD_INET AS String(5))", "10.10");

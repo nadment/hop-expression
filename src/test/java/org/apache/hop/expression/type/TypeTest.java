@@ -17,91 +17,37 @@
 
 package org.apache.hop.expression.type;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Random;
-import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.IntervalQualifier;
-import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Test;
 
 public class TypeTest extends ExpressionTest {
 
   @Test
-  void isCoercible() {
-    assertFalse(TypeName.NUMBER.isCoercible(null));
-    assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.INTEGER));
-    assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.NUMBER));
-    assertTrue(TypeName.INTEGER.isCoercible(TypeName.NUMBER));
+  void leastRestrictiveOfIntegerAndNumber() {
+    // In the numeric family, NUMBER is more general than INTEGER whatever the precision
+    Type integer = IntegerType.of(3);
+    Type number = NumberType.of(2, 1);
+    assertEquals(NumberType.of(4, 1), Types.getLeastRestrictive(integer, number));
+    assertEquals(NumberType.of(4, 1), Types.getLeastRestrictive(number, integer));
 
-    assertTrue(TypeName.NUMBER.isCoercible(TypeName.INTEGER));
-    assertTrue(TypeName.NUMBER.isCoercible(TypeName.STRING));
-    assertFalse(TypeName.ARRAY.isCoercible(TypeName.NUMBER));
-  }
-
-  @Test
-  void isCastable() {
-    assertTrue(TypeName.BINARY.isCastable(TypeName.STRING));
-    assertFalse(TypeName.BINARY.isCastable(null));
-    assertFalse(TypeName.BINARY.isCastable(TypeName.DATE));
-    assertFalse(TypeName.BINARY.isCastable(TypeName.INET));
-
-    assertTrue(TypeName.BOOLEAN.isCastable(TypeName.INTEGER));
-    assertTrue(TypeName.BOOLEAN.isCastable(TypeName.NUMBER));
-    assertTrue(TypeName.BOOLEAN.isCastable(TypeName.STRING));
-    assertFalse(TypeName.BOOLEAN.isCastable(null));
-    assertFalse(TypeName.BOOLEAN.isCastable(TypeName.DATE));
-    assertFalse(TypeName.BOOLEAN.isCastable(TypeName.INET));
-
-    assertTrue(TypeName.INTEGER.isCastable(TypeName.BOOLEAN));
-    assertTrue(TypeName.INTEGER.isCastable(TypeName.STRING));
-    assertTrue(TypeName.INTEGER.isCastable(TypeName.DATE));
-    assertFalse(TypeName.INTEGER.isCastable(null));
-    assertFalse(TypeName.INTEGER.isCastable(TypeName.JSON));
-
-    assertTrue(TypeName.NUMBER.isCastable(TypeName.BOOLEAN));
-    assertTrue(TypeName.NUMBER.isCastable(TypeName.STRING));
-    assertTrue(TypeName.NUMBER.isCastable(TypeName.DATE));
-    assertFalse(TypeName.NUMBER.isCastable(null));
-    assertFalse(TypeName.NUMBER.isCastable(TypeName.JSON));
-
-    assertTrue(TypeName.STRING.isCastable(TypeName.BOOLEAN));
-    assertTrue(TypeName.STRING.isCastable(TypeName.INTEGER));
-    assertTrue(TypeName.STRING.isCastable(TypeName.NUMBER));
-    assertTrue(TypeName.STRING.isCastable(TypeName.DATE));
-    assertTrue(TypeName.STRING.isCastable(TypeName.BINARY));
-    assertFalse(TypeName.STRING.isCastable(null));
-
-    assertTrue(TypeName.DATE.isCastable(TypeName.STRING));
-    assertTrue(TypeName.DATE.isCastable(TypeName.INTEGER));
-    assertTrue(TypeName.DATE.isCastable(TypeName.NUMBER));
-    assertFalse(TypeName.DATE.isCastable(null));
-    assertFalse(TypeName.DATE.isCastable(TypeName.BOOLEAN));
-
-    assertTrue(TypeName.INTERVAL.isCastable(TypeName.INTERVAL));
-    assertFalse(TypeName.INTERVAL.isCastable(null));
-    assertFalse(TypeName.INTERVAL.isCastable(TypeName.DATE));
-
-    assertTrue(TypeName.JSON.isCastable(TypeName.STRING));
-    assertFalse(TypeName.JSON.isCastable(null));
-    assertFalse(TypeName.JSON.isCastable(TypeName.DATE));
+    // The NUMBER type is kept when it already holds the values of the INTEGER type
+    assertEquals(number, Types.getLeastRestrictive(IntegerType.of(1), number));
+    assertEquals(NumberType.NUMBER, Types.getLeastRestrictive(NumberType.NUMBER, integer));
   }
 
   @Test
@@ -116,7 +62,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeOf() {
+  void typeOfFailsWhenPrecisionOrScaleOutOfRange() {
     assertThrows(ExpressionException.class, () -> IntegerType.of(20));
     assertThrows(ExpressionException.class, () -> NumberType.of(39));
     assertThrows(ExpressionException.class, () -> StringType.of(16_777_217));
@@ -129,101 +75,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void typeNameOf() {
-    assertEquals(TypeName.ANY, TypeName.of("Any"));
-    assertEquals(TypeName.UNKNOWN, TypeName.of("UNKNOWN"));
-    assertEquals(TypeName.BOOLEAN, TypeName.of("BOOLEAN"));
-    assertEquals(TypeName.BOOLEAN, TypeName.of("Boolean"));
-    assertEquals(TypeName.STRING, TypeName.of("STRING"));
-    assertEquals(TypeName.STRING, TypeName.of("String"));
-    assertEquals(TypeName.DATE, TypeName.of("DATE"));
-    assertEquals(TypeName.NUMBER, TypeName.of("NUMBER"));
-    assertEquals(TypeName.BINARY, TypeName.of("BINARY"));
-    assertEquals(TypeName.JSON, TypeName.of("Json"));
-    assertEquals(TypeName.INTEGER, TypeName.of("INTEGER"));
-    assertEquals(TypeName.INET, TypeName.of("INET"));
-    assertEquals(TypeName.ENUM, TypeName.of("ENUM"));
-    assertNull(TypeName.of("NOP"));
-  }
-
-  @Test
-  void typeNameFromClass() {
-    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(null));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Void.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Float.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromClass(Type.class));
-    assertEquals(TypeName.ENUM, TypeName.fromClass(TimeUnit.class));
-    assertEquals(TypeName.ENUM, TypeName.fromClass(IntervalQualifier.class));
-    assertEquals(TypeName.BOOLEAN, TypeName.fromClass(Boolean.class));
-    assertEquals(TypeName.STRING, TypeName.fromClass(String.class));
-    assertEquals(TypeName.DATE, TypeName.fromClass(ZonedDateTime.class));
-    assertEquals(TypeName.NUMBER, TypeName.fromClass(BigDecimal.class));
-    assertEquals(TypeName.BINARY, TypeName.fromClass(byte[].class));
-    assertEquals(TypeName.JSON, TypeName.fromClass(JsonNode.class));
-    assertEquals(TypeName.INET, TypeName.fromClass(InetAddress.class));
-    assertEquals(TypeName.INTEGER, TypeName.fromClass(Long.class));
-    assertEquals(TypeName.ARRAY, TypeName.fromClass(Array.class));
-  }
-
-  @Test
-  void typeNameFromValue() throws Exception {
-    assertEquals(TypeName.UNKNOWN, TypeName.fromValue(null));
-    assertEquals(TypeName.UNKNOWN, TypeName.fromValue(new Random()));
-    assertEquals(TypeName.BOOLEAN, TypeName.fromValue(true));
-    assertEquals(TypeName.ENUM, TypeName.fromValue(TimeUnit.CENTURY));
-    assertEquals(TypeName.ENUM, TypeName.fromValue(IntervalQualifier.YEAR_TO_MONTH));
-    assertEquals(TypeName.STRING, TypeName.fromValue("test"));
-    assertEquals(TypeName.BINARY, TypeName.fromValue(new byte[] {0xF}));
-    assertEquals(TypeName.INTEGER, TypeName.fromValue(123));
-    assertEquals(TypeName.INTEGER, TypeName.fromValue(123L));
-    assertEquals(TypeName.NUMBER, TypeName.fromValue(123.456D));
-    assertEquals(TypeName.NUMBER, TypeName.fromValue(new BigDecimal("123456789123456789")));
-    assertEquals(TypeName.NUMBER, TypeName.fromValue(BigDecimal.valueOf(123456789, 3)));
-    assertEquals(TypeName.DATE, TypeName.fromValue(ZonedDateTime.now()));
-    assertEquals(TypeName.INTERVAL, TypeName.fromValue(Interval.of(5)));
-    assertEquals(TypeName.INET, TypeName.fromValue(InetAddress.getByName("127.0.0.1")));
-    assertEquals(TypeName.JSON, TypeName.fromValue(JsonConversion.convert("{\"name\":\"Smith\"}")));
-  }
-
-  @Test
-  void isFamily() {
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.ANY));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.BINARY));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.BOOLEAN));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.NUMERIC));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.TEMPORAL));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.STRING));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.INTERVAL));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.JSON));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.NETWORK));
-    assertTrue(TypeName.ANY.isFamily(TypeFamily.ARRAY));
-    assertTrue(TypeName.INTEGER.isFamily(TypeFamily.NUMERIC));
-    assertTrue(TypeName.NUMBER.isFamily(TypeFamily.NUMERIC));
-    assertTrue(TypeName.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
-    assertTrue(TypeName.STRING.isFamily(TypeFamily.STRING));
-    assertTrue(TypeName.DATE.isFamily(TypeFamily.TEMPORAL));
-    assertTrue(TypeName.INTERVAL.isFamily(TypeFamily.INTERVAL));
-    assertTrue(TypeName.BINARY.isFamily(TypeFamily.BINARY));
-    assertTrue(TypeName.INET.isFamily(TypeFamily.NETWORK));
-    assertTrue(TypeName.ENUM.isFamily(TypeFamily.ENUM));
-  }
-
-  @Test
-  void javaClass() {
-    assertEquals(byte[].class, TypeName.BINARY.getJavaClass());
-    assertEquals(Boolean.class, TypeName.BOOLEAN.getJavaClass());
-    assertEquals(Long.class, TypeName.INTEGER.getJavaClass());
-    assertEquals(BigDecimal.class, TypeName.NUMBER.getJavaClass());
-    assertEquals(String.class, TypeName.STRING.getJavaClass());
-    assertEquals(ZonedDateTime.class, TypeName.DATE.getJavaClass());
-    assertEquals(JsonNode.class, TypeName.JSON.getJavaClass());
-    assertEquals(InetAddress.class, TypeName.INET.getJavaClass());
-    assertEquals(Void.class, TypeName.UNKNOWN.getJavaClass());
-    assertEquals(Enum.class, TypeName.ENUM.getJavaClass());
-  }
-
-  @Test
-  void signature() {
+  void typeSignature() {
     assertEquals("BOOLEAN", String.valueOf(BooleanType.BOOLEAN));
     assertEquals("DATE", String.valueOf(DateType.DATE));
     assertEquals("JSON", String.valueOf(JsonType.JSON));
@@ -245,7 +97,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void checkPrecisionScale() {
+  void castFailsWhenPrecisionOrScaleOutOfRange() {
     // Check maximum precision
     evalFails("CAST(1 as INTEGER(20))", ErrorCode.PRECISION_OUT_OF_RANGE);
     evalFails("CAST(1 as NUMBER(39))", ErrorCode.PRECISION_OUT_OF_RANGE);
@@ -301,6 +153,7 @@ public class TypeTest extends ExpressionTest {
     BinaryType type = BinaryType.BINARY;
     assertNull(type.cast(null));
     // assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
+    assertArrayEquals(new byte[] {0x41}, (byte[]) type.cast("A"));
 
     assertThrows(ExpressionException.class, () -> type.cast(true));
     assertThrows(ExpressionException.class, () -> type.cast(1L));
@@ -345,6 +198,8 @@ public class TypeTest extends ExpressionTest {
     assertEquals("-3.123", type.cast(new BigDecimal("-3.123")));
     assertEquals("ABCD��", type.cast("ABCD��".getBytes(StandardCharsets.UTF_8)));
     assertEquals("{\"name\":\"Smith\"}", type.cast(JsonConversion.convert("{\"name\":\"Smith\"}")));
+    assertEquals("+5-0 0 00:00:00.000000000", type.cast(Interval.of(5)));
+    assertEquals("-0-0 0 02:30:00.000000000", type.cast(Interval.of(0, 0, 0, 2, 30).negate()));
   }
 
   @Test
@@ -409,7 +264,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void coercion() throws Exception {
+  void implicitCoercion() throws Exception {
     // Coercion Number
     evalTrue("1::NUMBER = 1::INTEGER");
     evalTrue("0x1F::NUMBER = 0x1F::INTEGER");
@@ -434,7 +289,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToBoolean() {
+  void convertFromBoolean() {
     BooleanType type = BooleanType.BOOLEAN;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
@@ -453,7 +308,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToInteger() {
+  void convertFromInteger() {
     IntegerType type = IntegerType.INTEGER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
@@ -471,7 +326,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToNumber() {
+  void convertFromNumber() {
     NumberType type = NumberType.NUMBER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
@@ -490,7 +345,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToString() {
+  void convertFromString() {
     StringType type = StringType.STRING;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
@@ -508,7 +363,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void convertToDate() {
+  void convertFromDate() {
     DateType type = DateType.DATE;
 
     ZonedDateTime date =

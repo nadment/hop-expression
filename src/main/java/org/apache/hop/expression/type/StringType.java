@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.util.BinaryConversion;
 import org.apache.hop.expression.util.BooleanConversion;
 import org.apache.hop.expression.util.DateTimeConversion;
@@ -161,6 +162,7 @@ public final class StringType extends Type {
       case byte[] bytes -> result = new String(bytes, StandardCharsets.UTF_8);
       case JsonNode json -> result = StringConversion.convert(json);
       case InetAddress inet -> result = StringConversion.convert(inet);
+      case Interval interval -> result = interval.toString();
       default -> {}
     }
 

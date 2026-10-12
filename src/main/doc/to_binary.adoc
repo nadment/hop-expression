@@ -33,6 +33,8 @@ format:: The format of the input string (case-insensitive): HEX, BASE64, UTF-8 o
 
 include::binaryformat.adoc[]
 
+The parameter values are case-insensitive. The default is HEX, it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.
+
 == Returns
 
 Binary
@@ -43,5 +45,6 @@ Binary
 
 == Examples
 ----
+TO_BINARY('41706163686520486f70')
 TO_BINARY('QXBhY2hlIEhvcA==','BASE64')
 ----

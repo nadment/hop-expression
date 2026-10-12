@@ -68,6 +68,9 @@ public final class IntervalType extends Type {
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
     }
+    if (clazz == String.class) {
+      return clazz.cast(value.toString());
+    }
 
     return super.convert(value, clazz);
   }

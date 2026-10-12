@@ -79,6 +79,15 @@ public class Types {
   public static Type getLeastRestrictive(Type type1, Type type2) {
     if (type1 == null) return type2;
     if (type2 == null) return type1;
+
+    // INTEGER and NUMBER -> NUMBER, whatever the precision
+    if (isInteger(type1) && isNumber(type2)) {
+      return widenNumber(type2, type1);
+    }
+    if (isNumber(type1) && isInteger(type2)) {
+      return widenNumber(type1, type2);
+    }
+
     if (type1.getName().ordinal() > type2.getName().ordinal()
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
@@ -92,6 +101,21 @@ public class Types {
     }
 
     return type2;
+  }
+
+  /**
+   * Returns a NUMBER type with enough integer digits to hold the values of an INTEGER type.
+   *
+   * <p>For example, NUMBER(2,1) and INTEGER(3) give NUMBER(4,1).
+   */
+  private static Type widenNumber(Type number, Type integer) {
+    int scale = number.getScale();
+    int integerDigits = Math.max(number.getPrecision() - scale, integer.getPrecision());
+    int precision = Math.min(integerDigits + scale, TypeName.NUMBER.getMaxPrecision());
+    if (precision == number.getPrecision()) {
+      return number;
+    }
+    return NumberType.of(precision, scale, number.isNullable());
   }
 
   /**
