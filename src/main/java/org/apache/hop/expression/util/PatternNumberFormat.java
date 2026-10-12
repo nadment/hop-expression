@@ -59,7 +59,7 @@ import org.apache.hop.expression.ExpressionException;
  * </tr>
  * <tr>
  * <td>B</td>
- * <td>Blanks integer part of a fixed point number less than 1.</td>
+ * <td>Returns blanks when the value is zero.</td>
  * <td>#</td>
  * </tr>
  * <tr>
@@ -144,7 +144,7 @@ final class PatternNumberFormat extends NumberFormat {
   private final String pattern;
   // Fill mode suppress padding blanks and zeroes.
   private boolean fillMode = true;
-  private boolean blank = true;
+  private boolean blank = false;
   // number of digits to the left of the decimal separator
   private int precision = 0;
   // number of digits to the right of the decimal separator
@@ -192,7 +192,7 @@ final class PatternNumberFormat extends NumberFormat {
       length -= 2;
     }
 
-    // Zero blank
+    // Blank mode returns blanks when the value is zero
     if (startsWithIgnoreCase(format, index, "B")) {
       this.blank = true;
       index += 1;
@@ -357,52 +357,7 @@ final class PatternNumberFormat extends NumberFormat {
 
   @Override
   public String toString() {
-
-    StringBuilder builder = new StringBuilder();
-    if (sign == SignMode.S_LEADING) {
-      builder.append('S');
-    } else if (sign == SignMode.MI_LEADING) {
-      builder.append("MI");
-    }
-
-    if (!fillMode) {
-      builder.append("FM");
-    }
-
-    if (blank) {
-      builder.append('B');
-    }
-
-    if (currency == CurrencyMode.DOLLARS) {
-      builder.append('$');
-    } else if (currency == CurrencyMode.LOCAL_LEADING) {
-      builder.append("L");
-    } else if (currency == CurrencyMode.ISO_LEADING) {
-      builder.append("C");
-    }
-
-    builder.append(pattern);
-
-    if (scientific > 0) {
-      builder.append("EEEE");
-    }
-
-    // Currency
-    if (currency == CurrencyMode.TRAILING_LOCAL) {
-      builder.append("L");
-    } else if (currency == CurrencyMode.TRAILING_ISO) {
-      builder.append("C");
-    }
-
-    // Sign
-    if (sign == SignMode.TRAILING_S) {
-      builder.append('S');
-    } else if (sign == SignMode.TRAILING_MI) {
-      builder.append("MI");
-    } else if (sign == SignMode.PR) {
-      builder.append("PR");
-    }
-    return builder.toString();
+    return format;
   }
 
   @Override
@@ -527,7 +482,7 @@ final class PatternNumberFormat extends NumberFormat {
       }
 
       // Hex
-      if (pattern.charAt(0) == 'X') {
+      if (pattern.indexOf('X') >= 0 || pattern.indexOf('x') >= 0) {
         String str = text.substring(start, end);
         BigInteger bigInt = new BigInteger(str, 16);
 
@@ -649,6 +604,10 @@ final class PatternNumberFormat extends NumberFormat {
     // dot = dot - number.scale();
 
     dot = number.precision() - number.scale();
+    // The integer part of zero is empty with a decimal format, "0" => " .00"
+    if (this.fillMode && this.scale > 0 && number.signum() == 0) {
+      dot = 0;
+    }
     int length = 0;
 
     DecimalFormatSymbols symbols = getSymbols();
@@ -672,12 +631,8 @@ final class PatternNumberFormat extends NumberFormat {
           if (j >= 0) {
             char digit = unscaled.charAt(j--);
             output.insert(0, digit);
-          } else if (output.isEmpty() && scale > 0) {
-            // If blank mode ignore zero "0.12" => " .12"
-            if (!this.blank) {
-              output.insert(0, '0');
-            }
           }
+          // The zero of the integer part is ignored "0.12" => " .12"
         } else if (c == ',') {
           // only add the grouping separator if we have more numbers
           if (j >= 0 || (i > 0 && pattern.charAt(i - 1) == '0')) {
@@ -723,10 +678,9 @@ final class PatternNumberFormat extends NumberFormat {
         } else if (c == '9') {
           if (j >= 0 && j < unscaled.length()) {
             output.append(unscaled.charAt(j));
-          } else if (j < 0) {
+          } else if (j < 0 || this.fillMode) {
+            // Trailing zeros are suppressed by the FM modifier
             output.append('0');
-          } else if (this.fillMode) {
-            output.append(' ');
           }
         }
 
@@ -773,6 +727,11 @@ final class PatternNumberFormat extends NumberFormat {
       output.append(Math.abs(power) < 10 ? "0" : "");
       output.append(Math.abs(power));
       length += scientific + 1;
+    }
+
+    // Blank mode returns blanks when the value is zero
+    if (this.blank && number.signum() == 0) {
+      return fillMode ? StringUtils.repeat(' ', length) : "";
     }
 
     // If the format was too small to hold the number

@@ -44,7 +44,7 @@ public final class NumberWords {
 
   private NumberWords() {}
 
-  static String convertOrdinal(int number) {
+  static String convertCardinal(int number) {
     // variable to hold string representation of number
     StringBuilder words = new StringBuilder();
 
@@ -54,23 +54,24 @@ public final class NumberWords {
 
     // check if number is divisible by 1 million
     if ((number / 1000000) > 0) {
-      words.append(convertOrdinal(number / 1000000)).append(" million ");
+      words.append(convertCardinal(number / 1000000)).append(" million ");
       number %= 1000000;
     }
     // check if number is divisible by 1 thousand
     if ((number / 1000) > 0) {
-      words.append(convertOrdinal(number / 1000)).append(" thousand ");
+      words.append(convertCardinal(number / 1000)).append(" thousand ");
       number %= 1000;
     }
     // check if number is divisible by 1 hundred
     if ((number / 100) > 0) {
-      words.append(convertOrdinal(number / 100)).append(" hundred ");
+      words.append(convertCardinal(number / 100)).append(" hundred ");
       number %= 100;
     }
 
     convert(words, number);
 
-    return words.toString();
+    // A round number ends with a separator
+    return words.toString().trim();
   }
 
   static String convertYear(int number) {
@@ -82,7 +83,7 @@ public final class NumberWords {
     }
 
     if (number > 9999) {
-      return convertOrdinal(number);
+      return convertCardinal(number);
     }
 
     // check if number is divisible by 1 hundred

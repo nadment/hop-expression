@@ -191,6 +191,8 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Format Hex
     evalEquals("TO_NUMBER('ABCD','FMXXXX')", 43981D);
+    evalEquals("TO_NUMBER('abcd','xxxx')", 43981D);
+    evalEquals("TO_NUMBER('007B','0XXX')", 123D);
 
     // Format Roman numeral
     evalEquals("TO_NUMBER('DXV','RN')", 515D);
@@ -198,6 +200,9 @@ class ConversionFunctionTest extends ExpressionTest {
 
     evalEquals("TO_NUMBER('MCMXCIX','rn')", 1999D);
     evalEquals("TO_NUMBER('MMMDCCXXIV','rn')", 3724D);
+    evalEquals("TO_NUMBER('xiv','rn')", 14D);
+    evalEquals("TO_NUMBER(TO_CHAR(515, 'RN'),'RN')", 515D);
+    evalFails("TO_NUMBER('ABC','RN')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
 
     // Parse multi format
     evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234D);
@@ -241,21 +246,30 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Format fixed length with decimal
     Locale.setDefault(Locale.ENGLISH);
-    evalEquals("TO_CHAR(0.1,'90.99')", "  0.1 ").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("TO_CHAR(0.1,'90.99')", "  0.10").returnType(StringType.STRING_NOT_NULL);
     evalEquals("TO_CHAR(-0.2,'90.90')", " -0.20");
-    evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
-    evalEquals("TO_CHAR(0,'90D99')", "  0.  ");
-    evalEquals("TO_CHAR(0,'90d99')", "  0.  ");
-    evalEquals("TO_CHAR(0,'99.99')", "  0.  ");
+    evalEquals("TO_CHAR(0,'90.99')", "  0.00");
+    evalEquals("TO_CHAR(0,'90D99')", "  0.00");
+    evalEquals("TO_CHAR(0,'90d99')", "  0.00");
+    evalEquals("TO_CHAR(0,'99.99')", "   .00");
     evalEquals("TO_CHAR(0,'9999')", "    0");
     evalEquals("TO_CHAR(0,'9999999')", "       0");
     evalEquals("TO_CHAR(0,'0999')", " 0000");
-    evalEquals("TO_CHAR(-0.5, '90.99')", " -0.5 ");
+
+    // Blank mode returns blanks when the value is zero
+    evalEquals("TO_CHAR(0,'B9999')", "     ");
+    evalEquals("TO_CHAR(0,'B90.99')", "      ");
+    evalEquals("TO_CHAR(0.5,'B0.99')", " 0.50");
+    evalEquals("TO_CHAR(-0.5,'B0.99')", "-0.50");
+    evalEquals("TO_CHAR(12,'B0999')", " 0012");
+    evalEquals("TO_CHAR(12,'FMB0999')", "0012");
+
+    evalEquals("TO_CHAR(-0.5, '90.99')", " -0.50");
     evalEquals("TO_CHAR(0.003,'0.999')", " 0.003");
     evalEquals("TO_CHAR(12,'99')", " 12");
     evalEquals("TO_CHAR(-7,'99')", " -7");
     evalEquals("TO_CHAR(12923,'99,999.00')", " 12,923.00");
-    evalEquals("TO_CHAR(12,'9990999.9')", "    0012. ");
+    evalEquals("TO_CHAR(12,'9990999.9')", "    0012.0");
     evalEquals("TO_CHAR(0.3,'99.00000')", "   .30000");
     evalEquals("TO_CHAR(0.3,'00.00')", " 00.30");
     evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");
@@ -264,7 +278,7 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Blanks for the integer part of a fixed-point number when the integer part is zero
     evalEquals("TO_CHAR(-0.2,'99.90')", "  -.20");
-    evalEquals("TO_CHAR(-0.2,'99.99')", "  -.2 ");
+    evalEquals("TO_CHAR(-0.2,'99.99')", "  -.20");
 
     // TODO: Quoted text is reproduced in the result
     // evalEquals("TO_CHAR(485.8, '\"Pre:\"999\" Post:\" .999')", "Pre: 485 Post: .800");
@@ -274,19 +288,19 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(555.0, 'FM999.009')", "555.00");
 
     Locale.setDefault(Locale.FRANCE);
-    evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
-    evalEquals("TO_CHAR(0,'90D99')", "  0,  ");
+    evalEquals("TO_CHAR(0,'90.99')", "  0.00");
+    evalEquals("TO_CHAR(0,'90D99')", "  0,00");
     evalEquals("TO_CHAR(0,'90d00')", "  0,00");
 
     // Format fixed length with grouping
     Locale.setDefault(Locale.US);
     evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
-    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3,148.5  ");
+    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3,148.500");
     Locale.setDefault(Locale.FRANCE);
-    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3 148,5  ");
+    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3 148,500");
     evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3 148,500");
     Locale.setDefault(Locale.GERMANY);
-    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5  ");
+    evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,500");
 
     // Sign
     evalEquals("TO_CHAR(12,'S99')", "+12");

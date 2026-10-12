@@ -52,8 +52,13 @@ final class RomanNumberFormat extends NumberFormat {
 
   @Override
   public BigDecimal parse(String str) throws ExpressionException {
-    long value = RomanNumeral.parse(str);
-    return BigDecimal.valueOf(value);
+    try {
+      // The formatted value is padded with blanks
+      long value = RomanNumeral.parse(str.strip());
+      return BigDecimal.valueOf(value);
+    } catch (IllegalArgumentException e) {
+      throw createUnparsableNumber(format, str, 0);
+    }
   }
 
   @Override

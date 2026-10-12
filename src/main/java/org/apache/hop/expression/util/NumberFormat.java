@@ -62,7 +62,7 @@ import org.jspecify.annotations.Nullable;
  * </tr>
  * <tr>
  * <td>B</td>
- * <td>Blanks integer part of a fixed point number less than 1.</td>
+ * <td>Returns blanks when the value is zero.</td>
  * <td>#</td>
  * </tr>
  * <tr>

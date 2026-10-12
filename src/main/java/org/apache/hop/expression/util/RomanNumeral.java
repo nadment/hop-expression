@@ -73,8 +73,13 @@ public final class RomanNumeral {
    * @param start the beginning index, inclusive.
    * @param end the ending index, exclusive.
    * @return The arabic long value
+   * @throws IllegalArgumentException if the string is empty or contains an illegal character
    */
   public static long parse(final String str, final int start, final int end) {
+    if (start >= end) {
+      throw new IllegalArgumentException("Roman numeral is empty");
+    }
+
     long result = 0L;
 
     for (int i = start; i < end; i++) {
@@ -82,7 +87,7 @@ public final class RomanNumeral {
       int s1 = parse(str.charAt(i));
 
       // Getting value of symbol s[i+1]
-      if (i + 1 < str.length()) {
+      if (i + 1 < end) {
         int s2 = parse(str.charAt(i + 1));
         if (s1 >= s2) {
           // Current symbol is greater or equal to the next symbol
@@ -99,9 +104,9 @@ public final class RomanNumeral {
     return result;
   }
 
-  /** This function returns value of a Roman symbol. */
+  /** This function returns value of a Roman symbol, upper or lower case. */
   private static int parse(final char r) {
-    return switch (r) {
+    return switch (Character.toUpperCase(r)) {
       case 'I' -> 1;
       case 'V' -> 5;
       case 'X' -> 10;
@@ -109,7 +114,7 @@ public final class RomanNumeral {
       case 'C' -> 100;
       case 'D' -> 500;
       case 'M' -> 1000;
-      default -> -1;
+      default -> throw new IllegalArgumentException("Illegal roman numeral character " + r);
     };
   }
 }
