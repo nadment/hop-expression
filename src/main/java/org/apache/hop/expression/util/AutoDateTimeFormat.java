@@ -112,7 +112,10 @@ public class AutoDateTimeFormat extends DateTimeFormat {
       parser.year = parser.parseExactInt(4);
       parser.month = parser.parseExactInt(2);
       parser.day = parser.parseExactInt(2);
-      parser.parseChar('T');
+      // Separator T can be omitted
+      if (parser.isChar('T')) {
+        parser.index++;
+      }
       parser.hour = parser.parseInt(2);
       parser.minute = parser.parseInt(2);
       parser.second = parser.parseInt(2);
@@ -125,8 +128,7 @@ public class AutoDateTimeFormat extends DateTimeFormat {
 
     // Time zone hour
     if (parser.isSign()) {
-      parser.isTimeZoneOffset = true;
-      parser.timeZoneHour = parser.parseSignedInt(3);
+      parser.parseTimeZoneHour();
 
       // Time zone offset separator can be omitted
       if (parser.isChar(':')) {

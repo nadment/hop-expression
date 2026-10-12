@@ -31,6 +31,10 @@ class StringConversionTest {
     assertEquals(
         "2024-08-12 10:30:45",
         StringConversion.convert(ZonedDateTime.of(2024, 8, 12, 10, 30, 45, 0, ZoneOffset.UTC)));
+    assertEquals(
+        "2024-08-12 10:30:45.123000000",
+        StringConversion.convert(
+            ZonedDateTime.of(2024, 8, 12, 10, 30, 45, 123000000, ZoneOffset.UTC)));
 
     // Midnight with only a fraction of a second
     assertEquals(

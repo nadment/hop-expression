@@ -616,7 +616,7 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Coercion to String
     evalEquals("Right(FIELD_BOOLEAN_TRUE,1)", "E");
-    evalEquals("Right(FIELD_DATE,8)", "21:44:58");
+    evalEquals("Right(FIELD_TIMESTAMP,8)", "22:11:01");
 
     // Check operands
     evalFails("Right()", ErrorCode.NOT_ENOUGH_ARGUMENT);

@@ -56,7 +56,7 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     if (number == null) {
       return null;
     }
-    long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
+    long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
     Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }

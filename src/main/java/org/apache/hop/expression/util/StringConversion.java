@@ -70,11 +70,11 @@ public final class StringConversion extends Conversion<String> {
   }
 
   public static String convert(final ZonedDateTime value) {
-    if (value.getHour() > 0 || value.getMinute() > 0 || value.getSecond() > 0) {
-      return TIMESTAMP_FORMAT.format(value);
-    }
     if (value.getNano() > 0) {
       return TIMESTAMP_NANO_FORMAT.format(value);
+    }
+    if (value.getHour() > 0 || value.getMinute() > 0 || value.getSecond() > 0) {
+      return TIMESTAMP_FORMAT.format(value);
     }
 
     return DATE_FORMAT.format(value);

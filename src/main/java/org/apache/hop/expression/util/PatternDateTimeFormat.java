@@ -454,7 +454,7 @@ import org.apache.hop.expression.ExpressionException;
       // Last 1 digit of ISO year
       if (startsWithIgnoreCase(pattern, index, "I")) {
         list.add(new IsoYearFormat(fillMode, 1));
-        index += 2;
+        index += 1;
         continue;
       }
 
@@ -657,7 +657,7 @@ import org.apache.hop.expression.ExpressionException;
       // the seventh.
       if (startsWithIgnoreCase(pattern, index, "W")) {
         list.add(new WeekOfMonthFormat());
-        index += 2;
+        index += 1;
         continue;
       }
 
@@ -976,7 +976,7 @@ import org.apache.hop.expression.ExpressionException;
       int index = parser.index;
 
       int len = 0;
-      while (len < 4) {
+      while (len < 4 && index + len < parser.length) {
         char c = Character.toUpperCase(parser.text.charAt(index + len));
         if (c != 'I' && c != 'V' && c != 'X') {
           break;
@@ -985,7 +985,8 @@ import org.apache.hop.expression.ExpressionException;
       }
 
       for (int i = 0; i < ROMAN_MONTHS.length; i++) {
-        if (parser.text.regionMatches(true, index, ROMAN_MONTHS[i], 0, len)) {
+        if (ROMAN_MONTHS[i].length() == len
+            && parser.text.regionMatches(true, index, ROMAN_MONTHS[i], 0, len)) {
           parser.index += len;
           parser.month = i + 1;
           return;
@@ -1041,12 +1042,17 @@ import org.apache.hop.expression.ExpressionException;
       char ch;
       while (i < parser.text.length()) {
         ch = parser.text.charAt(i);
-        if (!(Character.isLetter(ch) || ch == '/')) break;
+        if (!(Character.isLetterOrDigit(ch) || "/_+-".indexOf(ch) >= 0)) break;
         i++;
       }
 
       String zone = parser.text.substring(parser.index, i);
-      parser.zoneId = ZoneId.of(zone);
+      try {
+        parser.zoneId = ZoneId.of(zone);
+      } catch (DateTimeException e) {
+        throw new ExpressionException(
+            ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
+      }
       parser.index = i;
     }
   }
@@ -1089,14 +1095,14 @@ import org.apache.hop.expression.ExpressionException;
         throws DateTimeException {
       ZoneOffset offset = datetime.getOffset();
       int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
-      output.append(hours < 0 ? '-' : '+');
+      // The sign is the one of the offset, the hour of the offset -00:30 is zero
+      output.append(offset.getTotalSeconds() < 0 ? '-' : '+');
       appendDigits(output, FastMath.abs(hours));
     }
 
     @Override
     public void parse(final DateTimeParser parser) {
-      parser.timeZoneHour = parser.parseSignedInt(3);
-      parser.isTimeZoneOffset = true;
+      parser.parseTimeZoneHour();
     }
   }
 
@@ -1418,7 +1424,7 @@ import org.apache.hop.expression.ExpressionException;
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime)
         throws DateTimeException {
-      int dof = (datetime.getDayOfWeek().getValue() + 1) % 7;
+      int dof = datetime.getDayOfWeek().getValue() % 7 + 1;
       output.append((char) (dof + '0'));
     }
   }
@@ -1448,7 +1454,7 @@ import org.apache.hop.expression.ExpressionException;
       if (fillMode) {
         appendDigits(output, week);
       } else {
-        output.append((char) (week + '0'));
+        output.append(week);
       }
     }
   }
@@ -1597,7 +1603,7 @@ import org.apache.hop.expression.ExpressionException;
       if (fillMode) {
         appendDigits(output, week);
       } else {
-        output.append((char) (week + '0'));
+        output.append(week);
       }
     }
   }
@@ -1622,9 +1628,13 @@ import org.apache.hop.expression.ExpressionException;
 
     @Override
     public void parse(final DateTimeParser parser) {
+      parser.skipSpace();
+      int start = parser.index;
       int nano = parser.parseInt(scale);
-      if (scale < 9) {
-        nano *= (int) FastMath.pow(10d, 9 - scale);
+      // Fractional digits are left aligned, '.5' is 500 milliseconds
+      int digits = parser.index - start;
+      if (digits < 9) {
+        nano *= (int) FastMath.pow(10d, 9 - digits);
       }
       parser.nano = nano;
     }
@@ -1728,6 +1738,18 @@ import org.apache.hop.expression.ExpressionException;
     @Override
     public void parse(final DateTimeParser parser) {
 
+      // A 4-digit year can be prefixed by a minus sign for BC years
+      boolean negative = false;
+      if (length == 4) {
+        if (!this.exactMode) {
+          parser.skipSpace();
+        }
+        negative = parser.isChar('-');
+        if (negative) {
+          parser.index++;
+        }
+      }
+
       if (this.exactMode) {
         parser.year = parser.parseExactInt(length);
       } else if (length == 2) {
@@ -1736,6 +1758,10 @@ import org.apache.hop.expression.ExpressionException;
         parser.year = year;
       } else {
         parser.year = parser.parseInt(length);
+      }
+
+      if (negative) {
+        parser.year = -parser.year;
       }
 
       parser.isEpochDay = false;

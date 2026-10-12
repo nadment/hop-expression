@@ -414,6 +414,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("To_Char(DATE '0800-01-01','FMYYYY')", "800"); // Year compact
     evalEquals("To_Char(DATE '2019-01-01','SYYYY')", " 2019");
     evalEquals("To_Char(To_Date('-2000','SYYYY'),'YYYY BC')", "2000 BC");
+    evalEquals("To_Char(To_Date('-2000','YYYY'),'YYYY BC')", "2000 BC");
     evalEquals("To_Char(To_Date('-800','SYYYY'),'SYYYY')", "-0800"); // Negative signed year
     evalEquals("To_Char(To_Date('-800','SYYYY'),'YYYY BC')", "0800 BC");
     evalEquals("To_Char(DATE '0800-07-23','FMSYYYY')", "800"); // Signed year compact
@@ -431,6 +432,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("To_Char(DATE '2019-12-31','IYY')", "020");
     evalEquals("To_Char(DATE '2019-12-31','IY')", "20");
     evalEquals("To_Char(DATE '2019-12-31','I')", "0");
+    evalEquals("To_Char(DATE '2019-12-28','I-MM')", "9-12");
 
     // Quarter
     evalEquals("To_Char(DATE '2019-07-23','Q')", "3");
@@ -495,6 +497,12 @@ class ConversionFunctionTest extends ExpressionTest {
     // Day of week
     evalEquals("To_Char(DATE '2019-07-21','D')", "1");
     evalEquals("To_Char(DATE '2019-07-23','D')", "3");
+    evalEquals("To_Char(DATE '2019-07-27','D')", "7");
+
+    // Week of month, week of year
+    evalEquals("To_Char(DATE '2019-07-23','W/MM')", "4/07");
+    evalEquals("To_Char(DATE '2019-07-23','FMWW')", "30");
+    evalEquals("To_Char(DATE '2019-07-23','FMIW')", "30");
 
     // Day of month
     evalEquals("To_Char(DATE '2019-07-08','DD')", "08");
@@ -537,6 +545,9 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Time Zone Hour:Minute
     evalEquals("To_Char(DATE '2019-07-23','TZH:TZM')", "+00:00");
+    evalEquals(
+        "To_Char(To_Date('2019-02-13 15:34:56 -00:30','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
+        "-00:30");
     evalEquals(
         "To_Char(To_Date('2019-02-13 15:34:56 -06:00','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
         "-06:00");
@@ -658,8 +669,13 @@ class ConversionFunctionTest extends ExpressionTest {
 
     evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/VII/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.JULY, 1));
+    evalEquals("To_Date('2020/XII','YYYY/RM')", LocalDate.of(2020, Month.DECEMBER, 1));
+    evalFails("To_Date('2020/','YYYY/RM')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     evalEquals("To_Date('01/02/-100','DD/MM/SYYYY')", LocalDate.of(-100, 2, 1));
+    evalEquals("To_Date('01/02/-100','DD/MM/YYYY')", LocalDate.of(-100, 2, 1));
+    evalEquals("To_Date('0800 BC','YYYY BC')", LocalDate.of(-800, 1, 1));
+    evalEquals("To_Date('-800 BC','FMSYYYY BC')", LocalDate.of(-800, 1, 1));
 
     evalEquals("To_Date('01/02/10','DD/MM/YY')", LocalDate.of(2010, 2, 1));
     evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
@@ -675,8 +691,7 @@ class ConversionFunctionTest extends ExpressionTest {
     context = createExpressionContext(variables);
     evalEquals(context, "To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1));
 
-    // TO VERIFY
-    evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
+    evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4710, 1, 1));
 
     // Time zone offset
     evalEquals(
@@ -688,6 +703,12 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals(
         "To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(-4)));
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 -05:30','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHoursMinutes(-5, -30)));
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 -00:30','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHoursMinutes(0, -30)));
 
     // Time zone region
     evalEquals(
@@ -696,6 +717,12 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals(
         "To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
+    evalEquals(
+        "To_Date('2019-02-13 15:34:56 America/New_York','YYYY-MM-DD HH24:MI:SS TZR')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("America/New_York")));
+    evalFails(
+        "To_Date('2019-02-13 Unknown/Zone','YYYY-MM-DD TZR')",
+        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
@@ -726,6 +753,9 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals(
         "To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF6')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
+    evalEquals(
+        "To_Date('2019-02-13 19:34:56.5','YYYY-MM-DD HH24:MI:SS.FF3')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 500000000));
     evalEquals(
         "To_Date('2019-02-13 19:34:56.123456789','YYYY-MM-DD HH24:MI:SS.FF9')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456789));
@@ -782,6 +812,7 @@ class ConversionFunctionTest extends ExpressionTest {
     // Number Unix Epoch in seconds with fractional
     evalEquals("TO_DATE(1551052800.000000000)", LocalDate.of(2019, 2, 25));
     evalEquals("TO_DATE(-5364662400.000000000)", LocalDate.of(1800, 1, 1));
+    evalEquals("TO_DATE(-1.5)", LocalDateTime.of(1969, 12, 31, 23, 59, 58, 500000000));
     evalEquals("TO_DATE(1284352323.1)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 100000000));
     evalEquals("TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
     evalEquals("TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
@@ -800,6 +831,14 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals(
         "TO_DATE('2024-12-01 3:05:06.123456789 +02:00','AUTO')",
         LocalDateTime.of(2024, 12, 1, 3, 5, 6, 123456789));
+    evalEquals(
+        "TO_DATE('2024-12-01 3:05:06-05:30','AUTO')",
+        ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 0, ZoneOffset.ofHoursMinutes(-5, -30)));
+    evalEquals(
+        "TO_DATE('2024-12-01 3:05:06-00:30','AUTO')",
+        ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 0, ZoneOffset.ofHoursMinutes(0, -30)));
+    evalEquals("TO_DATE('20241201230506','AUTO')", LocalDateTime.of(2024, 12, 1, 23, 5, 6));
+    evalEquals("TO_DATE('20241201T230506','AUTO')", LocalDateTime.of(2024, 12, 1, 23, 5, 6));
 
     evalEquals("TO_DATE('2024-12-01 23:05','AUTO')", LocalDateTime.of(2024, 12, 1, 23, 5, 0));
 

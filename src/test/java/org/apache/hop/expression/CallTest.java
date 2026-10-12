@@ -118,7 +118,7 @@ class CallTest extends ExpressionTest {
     evalEquals("Upper(FIELD_BOOLEAN_TRUE)", "TRUE").returnType(StringType.STRING);
     evalEquals("Upper(FIELD_INTEGER)", "40").returnType(StringType.STRING);
     evalEquals("Upper(FIELD_NUMBER)", "-5.12").returnType(StringType.STRING);
-    evalEquals("Upper(FIELD_DATE)", "1981-06-23 21:44:58").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_DATE)", "1981-06-23 21:44:58.123000000").returnType(StringType.STRING);
     evalEquals("Upper(FIELD_TIMESTAMP)", "2023-02-28 22:11:01").returnType(StringType.STRING);
     evalEquals("Upper(FIELD_INET)", "10.10.10.1").returnType(StringType.STRING);
     evalEquals("Upper(FIELD_BINARY)", "TEST").returnType(StringType.STRING);

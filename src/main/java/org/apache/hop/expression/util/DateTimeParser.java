@@ -50,6 +50,8 @@ import org.apache.hop.expression.ExpressionException;
   protected boolean isEpochDay = false;
   protected boolean isDayOfYear = false;
   protected boolean isTimeZoneOffset = false;
+  // The sign of the time zone offset is kept apart, the hour of the offset -00:30 is zero
+  protected boolean isTimeZoneNegative = false;
   protected ZoneId zoneId = ZoneOffset.UTC;
 
   public DateTimeParser(final DateTimeFormat format, final String text) {
@@ -94,17 +96,6 @@ import org.apache.hop.expression.ExpressionException;
   protected char parseChar() {
     if (index == length) return 0;
     return text.charAt(index++);
-  }
-
-  protected char parseChar(char expectedChar) throws ExpressionException {
-    if (index == length) return 0;
-    char c = text.charAt(index);
-    if (c != expectedChar) {
-      throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, index);
-    }
-    index++;
-
-    return c;
   }
 
   protected int parseNano() throws ExpressionException {
@@ -239,6 +230,14 @@ import org.apache.hop.expression.ExpressionException;
     return (sign == '-') ? -result : result;
   }
 
+  /** Parse the signed hour of a time zone offset and keep its sign. */
+  protected void parseTimeZoneHour() {
+    skipSpace();
+    isTimeZoneNegative = isChar('-');
+    timeZoneHour = parseSignedInt(3);
+    isTimeZoneOffset = true;
+  }
+
   protected String parseString(String... substrings) {
     for (String substring : substrings) {
       if (text.regionMatches(true, index, substring, 0, substring.length())) {
@@ -257,8 +256,9 @@ import org.apache.hop.expression.ExpressionException;
       if (isEpochDay) {
         date = LocalDate.ofEpochDay(epochDay);
       } else {
-        if (bc) {
-          year = 1 - year;
+        // Same convention as the signed year, 2000 BC is the year -2000
+        if (bc && year > 0) {
+          year = -year;
         }
         if (isDayOfYear) {
           date = LocalDate.ofYearDay(year, dayOfYear);
@@ -276,7 +276,10 @@ import org.apache.hop.expression.ExpressionException;
       LocalTime time = LocalTime.of(hour, minute, second, nano);
       LocalDateTime localDatetime = LocalDateTime.of(date, time);
       if (isTimeZoneOffset) {
-        zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
+        // The hours and minutes of an offset must have the same sign
+        zoneId =
+            ZoneOffset.ofHoursMinutes(
+                timeZoneHour, isTimeZoneNegative ? -timeZoneMinute : timeZoneMinute);
       }
       return ZonedDateTime.of(localDatetime, zoneId);
     } catch (Exception e) {
