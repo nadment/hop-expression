@@ -147,6 +147,7 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("ARRAY_TO_STRING(['Hello','world'],NULL::STRING)");
+    evalNull("ARRAY_TO_STRING(NULL,',')");
 
     // Check operands
     evalFails("ARRAY_TO_STRING([1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENT);

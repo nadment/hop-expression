@@ -47,7 +47,7 @@ public class ArrayToStringFunction extends Function {
 
   @Override
   public @Nullable Object eval(IExpression[] operands) {
-    Array array = (Array) operands[0];
+    Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
     String separator = operands[1].getValue(String.class);
     if (separator == null) return null;

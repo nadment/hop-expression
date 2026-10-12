@@ -41,6 +41,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
 import org.apache.hop.expression.util.Strong;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -49,6 +50,7 @@ import org.jspecify.annotations.Nullable;
  * <p>If any of the arguments are false, the result is false; else if any arguments are null, result
  * is null; else true.
  */
+@NullMarked
 public class BoolAndOperator extends BinaryOperator {
 
   public static final BoolAndOperator INSTANCE = new BoolAndOperator();
