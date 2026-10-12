@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.Nullable;
 
 /* package */ class DateTimeParser {
 
@@ -194,10 +195,9 @@ import org.apache.hop.expression.ExpressionException;
    * Parse an integer at the given position in a string
    *
    * @param len number of digits to parse in the string
-   * @return the signed int
-   * @throws NumberFormatException if the value is not a number
+   * @return the signed int, zero if there is no digit
    */
-  protected int parseSignedInt(int len) throws NumberFormatException {
+  protected int parseSignedInt(int len) {
 
     // start at the first not white space symbol
     for (; index < length; index++) {
@@ -238,7 +238,7 @@ import org.apache.hop.expression.ExpressionException;
     isTimeZoneOffset = true;
   }
 
-  protected String parseString(String... substrings) {
+  protected @Nullable String parseString(String... substrings) {
     for (String substring : substrings) {
       if (text.regionMatches(true, index, substring, 0, substring.length())) {
         index += substring.length();

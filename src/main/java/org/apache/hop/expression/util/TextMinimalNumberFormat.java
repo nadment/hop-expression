@@ -118,6 +118,9 @@ final class TextMinimalNumberFormat extends NumberFormat {
 
       // Text-minimal number
       return new BigDecimal(builder.toString());
+    } catch (ExpressionException exception) {
+      // Keep the position of the error
+      throw exception;
     } catch (Exception exception) {
       throw createUnparsableNumber(format, text, start);
     }

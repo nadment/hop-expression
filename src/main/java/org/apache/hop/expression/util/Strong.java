@@ -51,6 +51,11 @@ public final class Strong {
    *   <li>p1 AND p2 is strong in [p1, p2] (definitely null if either p1 is null or p2 is null)
    *   <li>p1 OR p2 is strong if p1 and p2 are strong
    * </ul>
+   *
+   * <p>Only the comparison operators are detected, AND and OR are not analyzed yet.
+   *
+   * @param expression the expression to check
+   * @return {@code true} if the expression is a comparison
    */
   public static boolean isStrong(IExpression expression) {
     for (Operator o : OPERATORS) {

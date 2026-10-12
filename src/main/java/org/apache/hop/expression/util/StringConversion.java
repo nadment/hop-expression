@@ -36,12 +36,11 @@ public final class StringConversion extends Conversion<String> {
 
   // JsonMapper is thread-safe after its configuration
   private static final JsonMapper JSON_WRITER =
-      JsonMapper.builder().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
-
-  {
-    // StdDateFormat is ISO8601
-    JSON_WRITER.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
-  }
+      JsonMapper.builder()
+          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+          // StdDateFormat is ISO8601
+          .defaultDateFormat(new StdDateFormat().withColonInTimeZone(true))
+          .build();
 
   private static final NumberFormat NUMBER_FORMAT = NumberFormat.of("TM");
   private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.of("YYYY-MM-DD");

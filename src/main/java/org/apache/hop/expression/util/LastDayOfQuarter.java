@@ -14,31 +14,18 @@
  */
 package org.apache.hop.expression.util;
 
-import static java.time.temporal.ChronoField.DAY_OF_MONTH;
-import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
-
-import java.time.Month;
 import java.time.temporal.IsoFields;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjuster;
 import org.jspecify.annotations.NullMarked;
 
+/** Adjusts a temporal to the last day of its quarter. */
 @NullMarked
 public class LastDayOfQuarter implements TemporalAdjuster {
 
   @Override
   public Temporal adjustInto(Temporal temporal) {
-
-    int quarter = temporal.get(IsoFields.QUARTER_OF_YEAR);
-    temporal =
-        switch (quarter) {
-          case 1 -> temporal.with(MONTH_OF_YEAR, Month.MARCH.getValue());
-          case 2 -> temporal.with(MONTH_OF_YEAR, Month.JUNE.getValue());
-          case 3 -> temporal.with(MONTH_OF_YEAR, Month.SEPTEMBER.getValue());
-          case 4 -> temporal.with(MONTH_OF_YEAR, Month.DECEMBER.getValue());
-          default -> throw new IllegalArgumentException("Unexpected quarter value: " + quarter);
-        };
-
-    return temporal.with(DAY_OF_MONTH, temporal.range(DAY_OF_MONTH).getMaximum());
+    return temporal.with(
+        IsoFields.DAY_OF_QUARTER, temporal.range(IsoFields.DAY_OF_QUARTER).getMaximum());
   }
 }

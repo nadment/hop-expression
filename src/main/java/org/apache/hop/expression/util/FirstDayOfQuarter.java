@@ -14,32 +14,17 @@
  */
 package org.apache.hop.expression.util;
 
-import static java.time.temporal.ChronoField.DAY_OF_MONTH;
-import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
-
-import java.time.Month;
 import java.time.temporal.IsoFields;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjuster;
 import org.jspecify.annotations.NullMarked;
 
+/** Adjusts a temporal to the first day of its quarter. */
 @NullMarked
 public class FirstDayOfQuarter implements TemporalAdjuster {
 
   @Override
   public Temporal adjustInto(Temporal temporal) {
-
-    int quarter = temporal.get(IsoFields.QUARTER_OF_YEAR);
-
-    temporal =
-        switch (quarter) {
-          case 1 -> temporal.with(MONTH_OF_YEAR, Month.JANUARY.getValue());
-          case 2 -> temporal.with(MONTH_OF_YEAR, Month.APRIL.getValue());
-          case 3 -> temporal.with(MONTH_OF_YEAR, Month.JULY.getValue());
-          case 4 -> temporal.with(MONTH_OF_YEAR, Month.OCTOBER.getValue());
-          default -> throw new IllegalArgumentException("Unexpected quarter value: " + quarter);
-        };
-
-    return temporal.with(DAY_OF_MONTH, 1);
+    return temporal.with(IsoFields.DAY_OF_QUARTER, 1);
   }
 }

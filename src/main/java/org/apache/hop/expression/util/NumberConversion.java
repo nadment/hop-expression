@@ -58,12 +58,7 @@ public final class NumberConversion extends Conversion<BigDecimal> {
     if (bytes.length > 8)
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
-    long result = 0;
-    for (byte aByte : bytes) {
-      result <<= Byte.SIZE;
-      result |= (aByte & 0xFF);
-    }
-    return new BigDecimal(result);
+    return new BigDecimal(IntegerConversion.convert(bytes));
   }
 
   /**

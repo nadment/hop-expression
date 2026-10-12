@@ -36,7 +36,7 @@ public final class IntegerConversion extends Conversion<Long> {
   /** BigInteger equal to Long.MAX_VALUE. */
   private static final BigInteger LONGMAX = BigInteger.valueOf(Long.MAX_VALUE);
 
-  private static final NumberFormat numberFormat = NumberFormat.of("TM");
+  private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
   private IntegerConversion() {
     // Utility class
@@ -55,7 +55,7 @@ public final class IntegerConversion extends Conversion<Long> {
     if (str == null) return null;
     BigDecimal number;
     try {
-      number = numberFormat.parse(str);
+      number = FORMAT.parse(str);
     } catch (ExpressionException e) {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INTEGER, str);

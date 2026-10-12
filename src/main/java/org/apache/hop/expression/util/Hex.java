@@ -121,7 +121,6 @@ public final class Hex {
    * @param data a byte[] to convert to Hex characters
    * @param toLowerCase {@code true} converts to lowercase, {@code false} to uppercase
    * @return A char[] containing hexadecimal characters in the selected case
-   * @since 1.4
    */
   public static char[] encode(final byte[] data, final boolean toLowerCase) {
     return encode(data, toLowerCase ? DIGITS_LOWER : DIGITS_UPPER);

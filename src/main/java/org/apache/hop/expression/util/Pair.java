@@ -16,45 +16,25 @@ package org.apache.hop.expression.util;
 
 import java.util.Objects;
 
-/** Pair of objects. */
+/**
+ * Pair of objects.
+ *
+ * @param left the left object
+ * @param right the right object
+ */
 public record Pair<T1, T2>(T1 left, T2 right) {
-  /**
-   * Creates a Pair.
-   *
-   * @param left left value
-   * @param right right value
-   */
-  public Pair(final T1 left, final T2 right) {
-    this.left = Objects.requireNonNull(left, "left must not be null");
-    this.right = Objects.requireNonNull(right, "right must not be null");
+  /** Creates a Pair. */
+  public Pair {
+    Objects.requireNonNull(left, "left must not be null");
+    Objects.requireNonNull(right, "right must not be null");
   }
 
   public static <T1, T2> Pair<T1, T2> of(T1 left, T2 right) {
     return new Pair<>(left, right);
   }
 
-  /** Get the left object. */
-  @Override
-  public T1 left() {
-    return left;
-  }
-
-  /** Get the right object. */
-  @Override
-  public T2 right() {
-    return right;
-  }
-
   @Override
   public String toString() {
     return "<" + left + ", " + right + ">";
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    return this == obj
-        || (obj instanceof Pair)
-            && Objects.equals(this.left, ((Pair<?, ?>) obj).left)
-            && Objects.equals(this.right, ((Pair<?, ?>) obj).right);
   }
 }

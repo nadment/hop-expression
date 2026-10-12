@@ -26,6 +26,10 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class BooleanConversion extends Conversion<Boolean> {
 
+  private BooleanConversion() {
+    // Utility class
+  }
+
   public static Boolean convert(Boolean value) {
     return value;
   }

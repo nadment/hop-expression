@@ -267,9 +267,34 @@ public final class Range<T extends Comparable<? super T>> {
       return (this instanceof Below) ? -order : order;
     }
 
-    abstract boolean isLess(T v);
+    boolean isLess(T value) {
+      int compare = Range.compareOrThrow(endpoint, value);
+      return (type == BoundType.INCLUSIVE) ? compare >= 0 : compare > 0;
+    }
 
-    abstract boolean isGreater(T v);
+    boolean isGreater(T value) {
+      int compare = Range.compareOrThrow(endpoint, value);
+      return (type == BoundType.INCLUSIVE) ? compare <= 0 : compare < 0;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+      // A lower bound is never equal to an upper bound
+      if (obj == null || getClass() != obj.getClass()) {
+        return false;
+      }
+      // It might not really be a Bound<T>, but we'll catch a CCE if it's not
+      Bound<T> that = (Bound<T>) obj;
+      try {
+        int compareResult = compareTo(that);
+        return compareResult == 0;
+      } catch (ClassCastException wastNotComparableToOurType) {
+        return false;
+      }
+    }
+
+    @Override
+    public abstract int hashCode();
   }
 
   private static final class BelowAll<T extends Comparable<?>> extends Bound<T> {
@@ -313,33 +338,6 @@ public final class Range<T extends Comparable<? super T>> {
   private static final class Above<T extends Comparable<?>> extends Bound<T> {
     Above(T endpoint, BoundType type) {
       super(endpoint, type);
-    }
-
-    @Override
-    boolean isLess(T value) {
-      int compare = Range.compareOrThrow(endpoint, value);
-      return (type == BoundType.INCLUSIVE) ? compare >= 0 : compare > 0;
-    }
-
-    @Override
-    boolean isGreater(T value) {
-      int compare = Range.compareOrThrow(endpoint, value);
-      return (type == BoundType.INCLUSIVE) ? compare <= 0 : compare < 0;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-      if (obj instanceof Bound) {
-        // It might not really be a Bound<T>, but we'll catch a CCE if it's not
-        Bound<T> that = (Bound<T>) obj;
-        try {
-          int compareResult = compareTo(that);
-          return compareResult == 0;
-        } catch (ClassCastException wastNotComparableToOurType) {
-          return false;
-        }
-      }
-      return false;
     }
 
     @Override
@@ -394,33 +392,6 @@ public final class Range<T extends Comparable<? super T>> {
   private static final class Below<T extends Comparable<?>> extends Bound<T> {
     Below(T endpoint, BoundType type) {
       super(endpoint, type);
-    }
-
-    @Override
-    boolean isLess(T value) {
-      int compare = Range.compareOrThrow(endpoint, value);
-      return (type == BoundType.INCLUSIVE) ? compare >= 0 : compare > 0;
-    }
-
-    @Override
-    boolean isGreater(T value) {
-      int compare = Range.compareOrThrow(endpoint, value);
-      return (type == BoundType.INCLUSIVE) ? compare <= 0 : compare < 0;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-      if (obj instanceof Bound) {
-        // It might not really be a Bound<T>, but we'll catch a CCE if it's not
-        Bound<T> that = (Bound<T>) obj;
-        try {
-          int compareResult = compareTo(that);
-          return compareResult == 0;
-        } catch (ClassCastException wastNotComparableToOurType) {
-          return false;
-        }
-      }
-      return false;
     }
 
     @Override
