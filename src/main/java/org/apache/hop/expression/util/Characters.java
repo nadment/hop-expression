@@ -19,7 +19,7 @@ package org.apache.hop.expression.util;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class Characters {
+public final class Characters {
 
   private static final byte[] FLAGS = new byte[256];
   private static final byte IS_DIGIT = 0x01;

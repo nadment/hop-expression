@@ -22,7 +22,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.Nullable;
 
-public class Regexp {
+public final class Regexp {
   private static final String JAVA_REGEXP_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
   /** Private constructor since this is a utility class. */

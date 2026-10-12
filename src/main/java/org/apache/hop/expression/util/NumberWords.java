@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression.util;
 
-public class NumberWords {
+public final class NumberWords {
 
   private static final String[] UNITS = {
     "zero",
@@ -44,7 +44,7 @@ public class NumberWords {
 
   private NumberWords() {}
 
-  protected static String convertOrdinal(int number) {
+  static String convertOrdinal(int number) {
     // variable to hold string representation of number
     StringBuilder words = new StringBuilder();
 
@@ -73,7 +73,7 @@ public class NumberWords {
     return words.toString();
   }
 
-  protected static String convertYear(int number) {
+  static String convertYear(int number) {
     // variable to hold string representation of number
     StringBuilder words = new StringBuilder();
 

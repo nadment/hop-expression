@@ -41,7 +41,7 @@ public final class Hex {
    * @return An integer
    * @throws IllegalArgumentException Thrown if ch is an illegal hex character
    */
-  protected static int toDigit(final char ch, final int index) {
+  private static int toDigit(final char ch, final int index) {
     final int digit = Character.digit(ch, 16);
     if (digit == -1) {
       throw new IllegalArgumentException(
