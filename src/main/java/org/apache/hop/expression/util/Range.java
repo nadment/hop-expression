@@ -34,7 +34,7 @@ public final class Range<T extends Comparable<? super T>> {
   private Range(final Bound<T> lower, final Bound<T> upper) {
     lowerBound = Objects.requireNonNull(lower, "lower must not be null");
     upperBound = Objects.requireNonNull(upper, "upper must not be null");
-    if (lower.compareTo(upper) > 0 && lower.endpoint != upper.endpoint) {
+    if (lower.compareTo(upper) > 0 && compareOrThrow(lower.endpoint, upper.endpoint) != 0) {
       throw new IllegalArgumentException(
           String.format("lower must be less than or equal to upper %s", this));
     }
@@ -134,13 +134,16 @@ public final class Range<T extends Comparable<? super T>> {
    * (a..a]}.
    */
   public boolean isEmpty() {
-    return lowerBound.endpoint.equals(upperBound.endpoint)
+    // An unbounded range is never empty
+    return lowerBound.endpoint != null
+        && upperBound.endpoint != null
+        && compareOrThrow(lowerBound.endpoint, upperBound.endpoint) == 0
         && (lowerBound.type == BoundType.EXCLUSIVE || upperBound.type == BoundType.EXCLUSIVE);
   }
 
   /** Returns {@code true} if this range is of the form {@code (-∞..+∞)}. */
   public boolean isAll() {
-    return lowerBound == AboveAll.INSTANCE && upperBound == BelowAll.INSTANCE;
+    return lowerBound == BelowAll.INSTANCE && upperBound == AboveAll.INSTANCE;
   }
 
   /** Checks if the {@code value} is within the bounds of this range. */
@@ -255,10 +258,13 @@ public final class Range<T extends Comparable<? super T>> {
       if (result != 0) {
         return result;
       }
-      // same value. below comes before above
-      if (this.type == BoundType.EXCLUSIVE && other.type == BoundType.INCLUSIVE) return 1;
-      if (this.type == BoundType.INCLUSIVE && other.type == BoundType.EXCLUSIVE) return -1;
-      return 0;
+      if (this.type == other.type) {
+        return 0;
+      }
+      // same value. An exclusive lower bound comes after an inclusive one, an exclusive upper bound
+      // comes before an inclusive one
+      int order = (this.type == BoundType.EXCLUSIVE) ? 1 : -1;
+      return (this instanceof Below) ? -order : order;
     }
 
     abstract boolean isLess(T v);

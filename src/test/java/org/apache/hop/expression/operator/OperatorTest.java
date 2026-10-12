@@ -1971,7 +1971,10 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("'Result 100% value' like '%100^%%' escape '^'");
 
       // Double escape char
-      evalFalse("'^100% milles' like '^^100^%%' escape '^'");
+      evalTrue("'^100% milles' like '^^100^%%' escape '^'");
+      evalTrue("'a^b' like 'a^^b' escape '^'");
+      evalTrue("'100$' like '100$$' escape '$'");
+      evalFalse("'100' like '100$$' escape '$'");
 
       // Escape with Regexp special char
       evalTrue("'give me 30% discount' like '%30!%%' escape '!'");

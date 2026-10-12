@@ -17,8 +17,7 @@ package org.apache.hop.expression.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
@@ -45,13 +44,12 @@ public final class DocumentationUtil {
    */
   public static @Nullable String loadDocumentation(
       Class<?> clazz, String id, String documentationUrl) {
-    try (StringWriter writer = new StringWriter()) {
-      InputStream is = clazz.getResourceAsStream(documentationUrl);
-      if (is != null) {
-        InputStreamReader reader = new InputStreamReader(is);
-        IOUtils.copy(reader, writer);
+    try (InputStream is = clazz.getResourceAsStream(documentationUrl)) {
+      if (is == null) {
+        LOG.logError("Missing operator documentation: {0}", id);
+        return null;
       }
-      return writer.toString();
+      return IOUtils.toString(is, StandardCharsets.UTF_8);
     } catch (IOException e) {
       LOG.logError("Missing operator documentation: {0}", id);
       return null;
@@ -74,8 +72,9 @@ public final class DocumentationUtil {
 
     if (beginIndex > 0) {
       int endIndex = documentation.indexOf("</p>", beginIndex);
-
-      return documentation.substring(beginIndex + 3, endIndex);
+      if (endIndex > 0) {
+        return documentation.substring(beginIndex + 3, endIndex);
+      }
     }
 
     return "";

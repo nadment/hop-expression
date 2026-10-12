@@ -53,10 +53,6 @@ public final class Regexp {
     final StringBuilder javaPattern = new StringBuilder(len + len);
     for (i = 0; i < len; i++) {
       char c = pattern.charAt(i);
-      if (JAVA_REGEXP_SPECIALS.indexOf(c) >= 0) {
-        javaPattern.append('\\');
-      }
-
       if (c == escapeChar) {
         if (i == (pattern.length() - 1)) {
           throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
@@ -76,6 +72,9 @@ public final class Regexp {
       } else if (c == '%') {
         javaPattern.append("(?s:.*)");
       } else {
+        if (JAVA_REGEXP_SPECIALS.indexOf(c) >= 0) {
+          javaPattern.append('\\');
+        }
         javaPattern.append(c);
       }
     }

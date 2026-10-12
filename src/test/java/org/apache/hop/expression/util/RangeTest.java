@@ -81,6 +81,9 @@ public class RangeTest {
   @Test
   void all() {
     assertEquals("(-∞..+∞)", Range.all().toString());
+    assertTrue(Range.all().isAll());
+    assertFalse(Range.lessThan(5L).isAll());
+    assertFalse(Range.between(-5L, 5L).isAll());
   }
 
   @Test
@@ -106,6 +109,14 @@ public class RangeTest {
     assertTrue(Range.of(5L, Range.BoundType.EXCLUSIVE, 5L, Range.BoundType.EXCLUSIVE).isEmpty());
     assertFalse(Range.singleton(5L).isEmpty());
     assertFalse(Range.between(-5L, 5L).isEmpty());
+
+    // An unbounded range is never empty
+    assertFalse(Range.all().isEmpty());
+    assertFalse(Range.lessThan(5L).isEmpty());
+
+    // The endpoints are compared by value
+    assertTrue(
+        Range.of(1000L, Range.BoundType.EXCLUSIVE, 1000L, Range.BoundType.INCLUSIVE).isEmpty());
   }
 
   @Test
@@ -126,6 +137,13 @@ public class RangeTest {
     assertEquals("[5..5]", Range.singleton(5L).intersect(Range.between(1L, 7L)).toString());
     assertEquals("[5..5]", Range.singleton(5L).intersect(Range.between(1L, 5L)).toString());
     assertEquals("[5..5]", Range.singleton(5L).intersect(Range.between(5L, 7L)).toString());
+
+    // An exclusive upper bound is less than an inclusive one
+    Range<Long> range3 = Range.of(1L, Range.BoundType.INCLUSIVE, 5L, Range.BoundType.EXCLUSIVE);
+    assertEquals("[1..5)", range3.intersect(range1).toString());
+    assertEquals("[1..5)", range1.intersect(range3).toString());
+    assertEquals("[1..5)", Range.lessThan(5L).intersect(range1).toString());
+    assertEquals("(1..5]", Range.greaterThan(1L).intersect(range1).toString());
 
     // Return a single point range for adjacent ranges
     assertEquals("[5..5]", Range.between(1L, 5L).intersect(Range.between(5L, 9L)).toString());
