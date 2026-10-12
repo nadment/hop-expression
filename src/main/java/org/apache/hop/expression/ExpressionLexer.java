@@ -144,8 +144,7 @@ public class ExpressionLexer {
    *
    * @return The next token, or null if the end of the source.
    */
-  @Nullable
-  protected Token nextToken() throws ExpressionException {
+  protected @Nullable Token nextToken() throws ExpressionException {
 
     while (position < source.length()) {
       char c = source.charAt(position);

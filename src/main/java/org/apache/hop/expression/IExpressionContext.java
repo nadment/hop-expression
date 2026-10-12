@@ -27,10 +27,8 @@ public interface IExpressionContext {
    *
    * @param name The name of the attribute to retrieve.
    * @return The value of the given attribute or <code>null</code>.
-   * @throws IllegalArgumentException if the name is empty.
-   * @throws NullPointerException if the name is null.
    */
-  @Nullable Object getAttribute(@Nullable String name);
+  @Nullable Object getAttribute(String name);
 
   /**
    * Returns a version changed each time the state of the context changes, like when a row or an

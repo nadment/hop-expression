@@ -17,7 +17,10 @@
 package org.apache.hop.expression;
 
 import java.io.Serial;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ExpressionException extends RuntimeException {
   @Serial private static final long serialVersionUID = 1L;
 
@@ -28,7 +31,7 @@ public class ExpressionException extends RuntimeException {
    *
    * @param error an error message
    */
-  public ExpressionException(ErrorCode error, Object... values) {
+  public ExpressionException(ErrorCode error, @Nullable Object... values) {
     super(error.message(values));
     this.error = error;
   }

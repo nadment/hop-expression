@@ -17,7 +17,10 @@
 package org.apache.hop.expression;
 
 import java.io.Serial;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ParseExpressionException extends ExpressionException {
   @Serial private static final long serialVersionUID = 1L;
 
@@ -32,7 +35,7 @@ public class ParseExpressionException extends ExpressionException {
    *
    * @param error an error message
    */
-  public ParseExpressionException(int position, ErrorCode error, Object... values) {
+  public ParseExpressionException(int position, ErrorCode error, @Nullable Object... values) {
     super(error, values);
 
     this.position = position;

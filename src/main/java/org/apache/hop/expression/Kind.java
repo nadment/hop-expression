@@ -14,7 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+
 /** Enumerates the possible types of {@link IExpression}. */
+@NullMarked
 public enum Kind {
   /** An object of a type {@link Literal} */
   LITERAL,

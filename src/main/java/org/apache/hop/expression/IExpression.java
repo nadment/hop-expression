@@ -29,7 +29,8 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public interface IExpression {
 
-  static IExpression of(IExpressionContext context, String source) throws ExpressionException {
+  static IExpression of(IExpressionContext context, @Nullable String source)
+      throws ExpressionException {
 
     // Lexical analysis to tokenize the source
     ExpressionLexer lexer = new ExpressionLexer(source);

@@ -66,7 +66,7 @@ public class ExpressionContext implements IExpressionContext {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   /** The {@code Map} field stores the attributes. */
-  private final Map<String, Object> attributes;
+  private final Map<String, @Nullable Object> attributes;
 
   /** The version changed each time the state of the context changes. */
   private long contextVersion;
@@ -109,7 +109,7 @@ public class ExpressionContext implements IExpressionContext {
   }
 
   @Override
-  public @Nullable Object getAttribute(@Nullable String id) {
+  public @Nullable Object getAttribute(String id) {
     return attributes.get(id);
   }
 

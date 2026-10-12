@@ -75,7 +75,7 @@ public class Field extends Identifier {
 
   @Override
   public @Nullable Object getValue() {
-    Object[] row = context.getRow();
+    @Nullable Object[] row = context.getRow();
 
     if (row == null) {
       throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
@@ -93,7 +93,7 @@ public class Field extends Identifier {
   }
 
   /** Reads the value from the row with the conversion defined by the value meta. */
-  private @Nullable Object convertValue(Object[] row) {
+  private @Nullable Object convertValue(@Nullable Object[] row) {
     try {
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
@@ -136,7 +136,7 @@ public class Field extends Identifier {
 
   @Override
   public @Nullable <T> T getValue(Class<T> clazz) {
-    Object[] row = context.getRow();
+    @Nullable Object[] row = context.getRow();
     if (row == null) {
       throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
     }
@@ -153,7 +153,7 @@ public class Field extends Identifier {
   }
 
   /** Reads the value from the row with the conversion defined by the value meta. */
-  private @Nullable <T> T convertValue(Object[] row, Class<T> clazz) {
+  private @Nullable <T> T convertValue(@Nullable Object[] row, Class<T> clazz) {
     try {
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:

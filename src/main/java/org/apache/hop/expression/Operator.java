@@ -222,10 +222,10 @@ public abstract class Operator {
   /**
    * Returns a constraint on the number of operands expected by this operator.
    *
-   * @return acceptable range
+   * @return acceptable range, or {@code null} if this operator has no operand type checker
    */
-  public IOperandCountRange getOperandCountRange() {
-    return operandTypeChecker.getOperandCountRange();
+  public @Nullable IOperandCountRange getOperandCountRange() {
+    return operandTypeChecker == null ? null : operandTypeChecker.getOperandCountRange();
   }
 
   @Override

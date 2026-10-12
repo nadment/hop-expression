@@ -17,7 +17,9 @@ package org.apache.hop.expression;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ExpressionComparator implements Comparator<IExpression>, Serializable {
   @Serial private static final long serialVersionUID = 1L;
 

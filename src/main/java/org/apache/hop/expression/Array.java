@@ -80,7 +80,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public <T> @Nullable T getValue(final Class<T> clazz) {
+  public @Nullable <T> T getValue(final Class<T> clazz) {
     return type.convert(this, clazz);
   }
 

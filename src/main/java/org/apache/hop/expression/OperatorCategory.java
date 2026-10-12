@@ -17,7 +17,10 @@
 
 package org.apache.hop.expression;
 
+import org.jspecify.annotations.NullMarked;
+
 /** A collection of operator categories. */
+@NullMarked
 public final class OperatorCategory {
   public static final String ARRAY = "i18n::Expression.Operator.Category.Array";
   public static final String STRING = "i18n::Expression.Operator.Category.String";

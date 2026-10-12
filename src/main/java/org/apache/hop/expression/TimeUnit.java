@@ -23,11 +23,14 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Enumeration of time units. <br>
  * A time unit can be used with functions such as {@code EXTRACT}, {@code FIRST_DAY}...
  */
+@NullMarked
 public enum TimeUnit {
   /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 UTC */
   EPOCH {
@@ -609,9 +612,9 @@ public enum TimeUnit {
    * Returns a {@link TimeUnit} with a given name or alias (ignore case).
    *
    * @param name The name of the time unit
-   * @return Time unit, or null if not valid
+   * @return Time unit, or {@code null} if not valid
    */
-  public static TimeUnit of(final String name) {
+  public static @Nullable TimeUnit of(final String name) {
     for (TimeUnit unit : TimeUnit.values()) {
       if (unit.name().equalsIgnoreCase(name)) {
         return unit;

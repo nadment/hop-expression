@@ -15,7 +15,10 @@
 package org.apache.hop.expression;
 
 import java.time.ZonedDateTime;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public enum Attribute {
   //
   CURRENT_TIMEZONE,
@@ -25,12 +28,12 @@ public enum Attribute {
   CURRENT_DATE;
 
   /** Returns the value of the attribute as string in a given context. */
-  public String getString(IExpressionContext context) {
+  public @Nullable String getString(IExpressionContext context) {
     return (String) context.getAttribute(name());
   }
 
   /** Returns the value of the attribute as date in a given context. */
-  public ZonedDateTime getDate(IExpressionContext context) {
+  public @Nullable ZonedDateTime getDate(IExpressionContext context) {
     return (ZonedDateTime) context.getAttribute(name());
   }
 }

@@ -15,8 +15,11 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.i18n.BaseMessages;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Enumeration of the error which can be used in expression exception. */
+@NullMarked
 public enum ErrorCode {
   /** {0} */
   MESSAGE_ERROR,
@@ -162,7 +165,7 @@ public enum ErrorCode {
     return message();
   }
 
-  public String message(Object... objects) {
+  public String message(@Nullable Object... objects) {
     return BaseMessages.getString(ErrorCode.class, "Expression.ErrorCode." + name(), objects);
   }
 }
