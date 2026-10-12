@@ -21,12 +21,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public final class DateTimeConversion extends Conversion<ZonedDateTime> {
+public final class DateTimeConversion {
 
   private static final DateTimeFormat FORMAT = DateTimeFormat.of("FXYYY-MM-DD");
 
@@ -59,15 +58,5 @@ public final class DateTimeConversion extends Conversion<ZonedDateTime> {
     long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
     Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
     return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
-  }
-
-  @Override
-  public Class<ZonedDateTime> getConvertedType() {
-    return ZonedDateTime.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.DATE;
   }
 }

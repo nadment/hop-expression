@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public final class NumberConversion extends Conversion<BigDecimal> {
+public final class NumberConversion {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
@@ -78,15 +78,5 @@ public final class NumberConversion extends Conversion<BigDecimal> {
       result = result.add(fraction).stripTrailingZeros();
     }
     return result;
-  }
-
-  @Override
-  public Class<BigDecimal> getConvertedType() {
-    return BigDecimal.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.NUMBER;
   }
 }

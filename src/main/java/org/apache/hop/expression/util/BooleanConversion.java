@@ -24,7 +24,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public final class BooleanConversion extends Conversion<Boolean> {
+public final class BooleanConversion {
 
   private BooleanConversion() {
     // Utility class
@@ -94,15 +94,5 @@ public final class BooleanConversion extends Conversion<Boolean> {
 
     throw new ExpressionException(
         ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.BOOLEAN, value);
-  }
-
-  @Override
-  public Class<Boolean> getConvertedType() {
-    return Boolean.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.BOOLEAN;
   }
 }

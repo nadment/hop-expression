@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public final class InetConversion extends Conversion<InetAddress> {
+public final class InetConversion {
 
   private InetConversion() {
     // Utility class
@@ -47,15 +47,5 @@ public final class InetConversion extends Conversion<InetAddress> {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INET, str);
     }
-  }
-
-  @Override
-  public Class<InetAddress> getConvertedType() {
-    return InetAddress.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.INET;
   }
 }

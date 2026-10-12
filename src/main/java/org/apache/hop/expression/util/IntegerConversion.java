@@ -28,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public final class IntegerConversion extends Conversion<Long> {
+public final class IntegerConversion {
 
   /** BigInteger equal to Long.MIN_VALUE. */
   private static final BigInteger LONGMIN = BigInteger.valueOf(Long.MIN_VALUE);
@@ -81,15 +81,5 @@ public final class IntegerConversion extends Conversion<Long> {
       throws ExpressionException {
     if (datetime == null) return null;
     return datetime.toEpochSecond();
-  }
-
-  @Override
-  public Class<Long> getConvertedType() {
-    return Long.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.INTEGER;
   }
 }

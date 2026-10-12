@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public final class StringConversion extends Conversion<String> {
+public final class StringConversion {
 
   // JsonMapper is thread-safe after its configuration
   private static final JsonMapper JSON_WRITER =
@@ -97,15 +97,5 @@ public final class StringConversion extends Conversion<String> {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.JSON, TypeName.STRING, json);
     }
-  }
-
-  @Override
-  public Class<String> getConvertedType() {
-    return String.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.STRING;
   }
 }

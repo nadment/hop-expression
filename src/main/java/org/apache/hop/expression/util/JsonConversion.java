@@ -28,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public final class JsonConversion extends Conversion<JsonNode> {
+public final class JsonConversion {
 
   // JsonMapper is thread-safe after its configuration
   private static final JsonMapper JSON_READER =
@@ -53,15 +53,5 @@ public final class JsonConversion extends Conversion<JsonNode> {
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
     }
-  }
-
-  @Override
-  public Class<JsonNode> getConvertedType() {
-    return JsonNode.class;
-  }
-
-  @Override
-  public TypeName getTypeName() {
-    return TypeName.JSON;
   }
 }
