@@ -18,6 +18,7 @@ package org.apache.hop.expression.type;
 
 import java.util.AbstractList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.hop.expression.Call;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -28,7 +29,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
   protected final Composition composition;
   protected final List<IOperandTypeChecker> rules;
-  protected final IOperandCountRange repeatRange;
+  protected final @Nullable IOperandCountRange repeatRange;
 
   CompositeOperandTypeChecker(
       Composition composition,
@@ -97,7 +98,8 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
     switch (composition) {
       case REPEAT:
-        return repeatRange;
+        // The range is always defined for a repeat composition
+        return Objects.requireNonNull(repeatRange, "repeatRange");
       case SEQUENCE:
         return OperandCountRange.of(rules.size());
       case AND, OR:

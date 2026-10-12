@@ -18,8 +18,10 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
+import org.jspecify.annotations.NullMarked;
 
 /** Operand type-checking strategy that checks the operand type. */
+@NullMarked
 public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecker {
   private final UserDefinedFunctionMeta meta;
 

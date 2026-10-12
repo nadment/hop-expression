@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.type;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * TypeComparability is an enumeration of the categories of comparison operators that types may
  * support.
@@ -23,6 +25,7 @@ package org.apache.hop.expression.type;
  * <p>The order of values of this enumeration is* significant (from least inclusive to most
  * inclusive) and should not be changed.
  */
+@NullMarked
 public enum TypeComparability {
   /** No comparisons allowed */
   NONE,

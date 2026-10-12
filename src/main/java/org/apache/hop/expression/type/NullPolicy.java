@@ -17,12 +17,15 @@
 
 package org.apache.hop.expression.type;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Describes when a function/operator will return null.
  *
  * <p>STRICT and ANY are similar. STRICT says f(a0, a1) will NEVER return null if a0 and a1 are not
  * null. This means that we can check whether f returns null just by checking its arguments.
  */
+@NullMarked
 public enum NullPolicy {
   /** Returns null if and only if all the arguments are null. */
   ALL,

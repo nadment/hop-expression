@@ -16,7 +16,10 @@
  */
 package org.apache.hop.expression.type;
 
+import org.jspecify.annotations.NullMarked;
+
 /** Represents a family of related types. */
+@NullMarked
 public enum TypeFamily {
   // -------------------------------------------
   // Primary

@@ -120,6 +120,8 @@ public class ExpressionParserTest extends ExpressionTest {
   void array() throws Exception {
     // Empty array
     optimize("[]");
+    optimize("[[]]");
+    optimize("[[1],[]]", "[[1],[]]");
 
     // Simple array values
     optimize("[1]");

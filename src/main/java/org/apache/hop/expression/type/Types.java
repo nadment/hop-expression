@@ -40,8 +40,11 @@ import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.operator.CastOperator;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-public class Types {
+@NullMarked
+public final class Types {
 
   private Types() {
     // Utility class
@@ -59,26 +62,47 @@ public class Types {
     return result;
   }
 
+  /**
+   * Returns the most general type of an expression, for an array this is the most general type of
+   * its elements.
+   *
+   * @param expression the expression
+   * @return the type, an array without element is of type ANY
+   */
   public static Type getLeastRestrictive(IExpression expression) {
 
     if (expression instanceof Array array) {
-      Type result = null;
-      for (IExpression operand : array) {
-        Type type = operand.getType();
-        if (operand instanceof Array child) {
-          type = getLeastRestrictive(child);
-        }
-        result = getLeastRestrictive(result, type);
-      }
-      return result;
+      Type result = getLeastRestrictiveElement(array);
+      return result == null ? AnyType.ANY : result;
     }
 
     return expression.getType();
   }
 
-  public static Type getLeastRestrictive(Type type1, Type type2) {
+  /** Returns the most general type of the elements of an array, or null if it has no element. */
+  private static @Nullable Type getLeastRestrictiveElement(Array array) {
+    Type result = null;
+    for (IExpression operand : array) {
+      Type type = operand.getType();
+      if (operand instanceof Array child) {
+        type = getLeastRestrictiveElement(child);
+      }
+      if (type != null) {
+        result = getLeastRestrictive(result, type);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns the most general of two types.
+   *
+   * @param type1 the first type, or {@code null} if there is no type yet
+   * @param type2 the second type
+   * @return the most general type
+   */
+  public static Type getLeastRestrictive(@Nullable Type type1, Type type2) {
     if (type1 == null) return type2;
-    if (type2 == null) return type1;
 
     // INTEGER and NUMBER -> NUMBER, whatever the precision
     if (isInteger(type1) && isNumber(type2)) {
@@ -188,8 +212,6 @@ public class Types {
 
   /** Determines a common type for a comparison operator. */
   public static Type getCommonTypeForComparison(Type type1, Type type2) {
-
-    if (type1 == null || type2 == null) return null;
 
     if (type2.isName(TypeName.UNKNOWN)) return type1;
 
@@ -366,48 +388,40 @@ public class Types {
   }
 
   public static boolean isBinary(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.BINARY);
   }
 
   public static boolean isBoolean(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.BOOLEAN);
   }
 
   public static boolean isNumeric(Type type) {
-    if (type == null) return false;
     return type.isFamily(TypeFamily.NUMERIC);
   }
 
   public static boolean isInteger(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.INTEGER);
   }
 
   public static boolean isNumber(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.NUMBER);
   }
 
   public static boolean isString(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.STRING);
   }
 
   public static boolean isDate(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.DATE);
   }
 
   /**
    * Determines whether the given {@code Type} is of type INTERVAL.
    *
-   * @param type the {@code Type} to be checked, which may be null
+   * @param type the {@code Type} to be checked
    * @return {@code true} if the type is INTERVAL; {@code false} otherwise
    */
   public static boolean isInterval(Type type) {
-    if (type == null) return false;
     return type.isName(TypeName.INTERVAL);
   }
 
@@ -418,7 +432,7 @@ public class Types {
    * @return the inferred {@code Type} corresponding to the value. Returns {@code null} if the type
    *     cannot be determined or the value's type is unsupported.
    */
-  public static Type inferTypeFromValue(Object value) {
+  public static @Nullable Type inferTypeFromValue(@Nullable Object value) {
     if (value == null) {
       return StringType.STRING;
     } else if (value instanceof Boolean) {
