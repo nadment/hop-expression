@@ -84,6 +84,10 @@ public class ILikeOperator extends Operator {
       // Multiple consecutive '%' in the string matched by ILIKE should simplify to a single '%'
       String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
       if (!simplifiedPattern.equals(pattern)) {
+        // Keep the ESCAPE clause, the simplified pattern still depends on it
+        if (call.getOperandCount() == 3) {
+          return new Call(INSTANCE, value, Literal.of(simplifiedPattern), call.getOperand(2));
+        }
         return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
       }
 
@@ -117,7 +121,7 @@ public class ILikeOperator extends Operator {
       return null;
     }
 
-    String escape = null;
+    String escape = LikeOperator.DEFAULT_ESCAPE;
     if (operands.length == 3) {
       escape = operands[2].getValue(String.class);
       if (escape == null) {

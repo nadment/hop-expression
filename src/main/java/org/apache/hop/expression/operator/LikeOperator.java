@@ -55,6 +55,9 @@ public class LikeOperator extends Operator {
   static final Pattern contains = Pattern.compile("^%([^_%]+)%$");
   static final Pattern equalTo = Pattern.compile("^[^_%]*$");
 
+  /** The escape character used when the pattern has no ESCAPE clause. */
+  static final String DEFAULT_ESCAPE = "\\";
+
   /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
   private final @Nullable Pattern compiledPattern;
 
@@ -93,7 +96,7 @@ public class LikeOperator extends Operator {
       if (pattern == null) {
         return null;
       }
-      String escape = null;
+      String escape = DEFAULT_ESCAPE;
       if (call.getOperandCount() == 3) {
         if (!call.getOperand(2).isConstant()) {
           return null;
@@ -148,6 +151,10 @@ public class LikeOperator extends Operator {
       // Multiple consecutive '%' in the string matched by LIKE should simplify to a single '%'
       String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
       if (!simplifiedPattern.equals(pattern)) {
+        // Keep the ESCAPE clause, the simplified pattern still depends on it
+        if (call.getOperandCount() == 3) {
+          return new Call(INSTANCE, value, Literal.of(simplifiedPattern), call.getOperand(2));
+        }
         return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
       }
 
@@ -157,6 +164,11 @@ public class LikeOperator extends Operator {
         }
 
         // For now, don't optimize if special escapes char
+        return precompile(call);
+      }
+
+      // A pattern with an escaped character needs the regular expression
+      if (pattern.contains(DEFAULT_ESCAPE)) {
         return precompile(call);
       }
 
@@ -206,7 +218,7 @@ public class LikeOperator extends Operator {
     if (pattern == null) {
       return null;
     }
-    String escape = null;
+    String escape = DEFAULT_ESCAPE;
     if (operands.length == 3) {
       escape = operands[2].getValue(String.class);
       if (escape == null) {

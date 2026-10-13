@@ -39,6 +39,7 @@ Boolean
 == Usage
 
 * The pattern must match the entire string.
+* The escape character can only be followed by `_`, `%` or itself; any other character raises an error.
 * Returns NULL if string or pattern is NULL.
 
 TIP: Use the xref:ilike.adoc["ILIKE",role=op] operator for a case-insensitive comparison.

@@ -1063,6 +1063,18 @@ public class OperatorTest extends ExpressionTest {
 
       // Escape with other char
       evalTrue("'Result 100% value' ilike 'RESULT%100^%%' escape '^'");
+
+      // The escape character is kept when the pattern is simplified
+      evalTrue("'ab_' ILIKE 'A%%#_' ESCAPE '#'");
+      evalFalse("'abc' ILIKE 'A%%#_' ESCAPE '#'");
+
+      // Without ESCAPE clause, the escape character is the backslash
+      evalTrue("'100%' ILIKE '100\\%'");
+      evalFalse("'100x' ILIKE '100\\%'");
+
+      // The escape character must be followed by a wildcard or by itself
+      evalFails("'a\\b' ILIKE 'A\\B'", ErrorCode.INVALID_REGEXP_ESCAPE);
+      evalFails("FIELD_STRING ILIKE 'a\\b'", ErrorCode.INVALID_REGEXP_ESCAPE);
     }
 
     @Test
@@ -1994,6 +2006,24 @@ public class OperatorTest extends ExpressionTest {
       // Escape with Regexp special char
       evalTrue("'give me 30% discount' like '%30!%%' escape '!'");
       evalTrue("'ADD_MONTHS' like '%ADD!_%' escape '!'");
+
+      // The escape character is kept when the pattern is simplified
+      evalTrue("'ab_' LIKE 'a%%#_' ESCAPE '#'");
+      evalFalse("'abc' LIKE 'a%%#_' ESCAPE '#'");
+
+      // Without ESCAPE clause, the escape character is the backslash
+      evalTrue("'100%' LIKE '100\\%'");
+      evalFalse("'100x' LIKE '100\\%'");
+      evalTrue("'a_b' LIKE 'a\\_b'");
+      evalFalse("'axb' LIKE 'a\\_b'");
+      evalTrue("'a\\b' LIKE 'a\\\\b'");
+      evalTrue("FIELD_STRING_INTEGER||'%' LIKE '25\\%'");
+      evalFalse("FIELD_STRING_INTEGER||'x' LIKE '25\\%'");
+
+      // The escape character must be followed by a wildcard or by itself
+      evalFails("'a\\b' LIKE 'a\\b'", ErrorCode.INVALID_REGEXP_ESCAPE);
+      evalFails("FIELD_STRING LIKE 'a\\b'", ErrorCode.INVALID_REGEXP_ESCAPE);
+      evalFails("'a\\' LIKE 'a\\'", ErrorCode.INVALID_REGEXP_ESCAPE);
     }
 
     @Test
@@ -2034,6 +2064,10 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_STRING LIKE 'AB%%%%C'", "FIELD_STRING LIKE 'AB%C'");
       optimize("FIELD_STRING LIKE '%%%AB%%C%%%'", "FIELD_STRING LIKE '%AB%C%'");
       optimize("FIELD_STRING LIKE '\\%%%AB%%C%%\\%'", "FIELD_STRING LIKE '\\%%AB%C%\\%'");
+      optimize("FIELD_STRING LIKE 'A%%#_' ESCAPE '#'", "FIELD_STRING LIKE 'A%#_' ESCAPE '#'");
+
+      // An escaped wildcard is not a wildcard
+      optimize("FIELD_STRING LIKE 'ABC\\%'");
 
       // optimize("FIELD_STRING LIKE '%%'", "FIELD_STRING=FIELD_STRING");
       // optimize("FIELD_STRING LIKE '%%%'", "FIELD_STRING=FIELD_STRING");
