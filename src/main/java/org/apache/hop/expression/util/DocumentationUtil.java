@@ -45,8 +45,9 @@ public final class DocumentationUtil {
   public static @Nullable String loadDocumentation(
       Class<?> clazz, String id, String documentationUrl) {
     try (InputStream is = clazz.getResourceAsStream(documentationUrl)) {
+      // No log here: the documentation is only generated when packaging, and an operator can be
+      // created before the logging of Hop is initialized
       if (is == null) {
-        LOG.logError("Missing operator documentation: {0}", id);
         return null;
       }
       return IOUtils.toString(is, StandardCharsets.UTF_8);

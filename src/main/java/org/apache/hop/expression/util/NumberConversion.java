@@ -19,6 +19,7 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
@@ -58,7 +59,8 @@ public final class NumberConversion {
     if (bytes.length > 8)
       throw new ExpressionException(
           ErrorCode.CONVERSION_ERROR, TypeName.BINARY, TypeName.NUMBER, bytes);
-    return new BigDecimal(IntegerConversion.convert(bytes));
+    // Never null for a non-null binary
+    return new BigDecimal(Objects.requireNonNull(IntegerConversion.convert(bytes)));
   }
 
   /**
