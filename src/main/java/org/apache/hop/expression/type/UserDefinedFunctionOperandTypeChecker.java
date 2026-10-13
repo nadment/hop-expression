@@ -20,20 +20,40 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.jspecify.annotations.NullMarked;
 
-/** Operand type-checking strategy that checks the operand type. */
+/**
+ * Operand type-checking strategy for a user-defined function.
+ *
+ * <p>Only the number of operands is checked here. Their types are checked when the call is
+ * compiled, by validating the source of the function with the operands in place of the arguments.
+ */
 @NullMarked
 public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecker {
   private final UserDefinedFunctionMeta meta;
 
+  /**
+   * Creates a checker for a user-defined function.
+   *
+   * @param meta the metadata of the function
+   */
   public UserDefinedFunctionOperandTypeChecker(UserDefinedFunctionMeta meta) {
     this.meta = meta;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Always succeeds, the types are checked when the call is compiled.
+   */
   @Override
   public boolean checkOperandTypes(Call call) {
     return true;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A user-defined function expects exactly one operand per argument.
+   */
   @Override
   public IOperandCountRange getOperandCountRange() {
     return OperandCountRange.of(meta.getArguments().size());

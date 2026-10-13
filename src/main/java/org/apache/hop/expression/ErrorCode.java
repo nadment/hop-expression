@@ -365,9 +365,9 @@ public enum ErrorCode {
    */
   INVALID_DATA_TYPE,
   /**
-   * The source of a user defined function cannot be compiled.
+   * The source of a user defined function cannot be compiled; wraps the underlying error.
    *
-   * <p>Message: <code>Error compile user defined function “{0}”</code>
+   * <p>Message: <code>Could not compile user defined function “{0}”: {1}</code>
    */
   UDF_COMPILATION_ERROR,
   /**

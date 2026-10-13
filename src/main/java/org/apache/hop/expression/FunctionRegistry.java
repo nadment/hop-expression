@@ -128,8 +128,17 @@ public class FunctionRegistry {
     functions.clear();
   }
 
+  /**
+   * Registers a function under a name or alias (ignore case).
+   *
+   * @param name the name or alias of the function, ignored if null
+   * @param function the function to register
+   */
   public static void register(@Nullable String name, Function function) {
     if (name == null) return;
+
+    // Names are case-insensitive, see getFunction
+    name = name.toUpperCase();
 
     if (functions.containsKey(name)) {
       log.logError("Function ''{0}'' already registered", name);
@@ -143,10 +152,16 @@ public class FunctionRegistry {
     functions.put(name, function);
   }
 
+  /**
+   * Unregisters the function registered under a name or alias (ignore case).
+   *
+   * @param name the name or alias of the function
+   * @return the unregistered function or null if not found
+   */
   public static @Nullable Function unregister(@Nullable String name) {
     if (name == null) return null;
 
-    Function function = functions.remove(name);
+    Function function = functions.remove(name.toUpperCase());
     if (function == null) {
       log.logError("Function ''{0}'' not registered", name);
     }

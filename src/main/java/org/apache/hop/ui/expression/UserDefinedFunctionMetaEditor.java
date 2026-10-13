@@ -42,6 +42,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * Editor of the {@link UserDefinedFunctionMeta} metadata: name, description, arguments and source
+ * expression of a user-defined function.
+ */
 @GuiPlugin(description = "This is the editor for User Defined Function (UDF) metadata")
 public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFunctionMeta> {
   private static final Class<?> PKG = UserDefinedFunctionMetaEditor.class; // For Translator
@@ -138,8 +142,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
         new ColumnInfo[] {
           new ColumnInfo(
               BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] {""},
+              ColumnInfo.COLUMN_TYPE_TEXT,
               false),
           new ColumnInfo(
               BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),

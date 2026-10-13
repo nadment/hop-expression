@@ -36,8 +36,6 @@ public class UdfDeletedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   public void callExtensionPoint(ILogChannel log, IVariables variables, IHopMetadata object)
       throws HopException {
 
-    log.logBasic("MetadataObjectDeleted");
-
     if (object instanceof UserDefinedFunctionMeta meta) {
       log.logBasic("User Defined Function deleted " + meta.getName());
       FunctionRegistry.unregister(meta.getName());

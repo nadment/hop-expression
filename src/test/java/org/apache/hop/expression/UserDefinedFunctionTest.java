@@ -16,6 +16,7 @@ package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.parallel.Execution;
 @Execution(CONCURRENT)
 public class UserDefinedFunctionTest extends ExpressionTest {
 
-  // @Test
+  @Test
   void testString() throws Exception {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("UCASE");
@@ -47,7 +48,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     UserDefinedFunction udf = new UserDefinedFunction(meta);
     FunctionRegistry.register(udf.getName(), udf);
 
-    evalEquals("UCASE('abcd',3)", "ABC").returnType(StringType.STRING);
+    evalEquals("UCASE('abcd',3)", "ABC").returnType(StringType.STRING_NOT_NULL);
     evalEquals("UCASE(NULL_STRING,2)", "*").returnType(StringType.STRING);
     evalFails("UCASE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("UCASE(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
@@ -81,6 +82,25 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     UserDefinedFunction udf = new UserDefinedFunction(meta);
     FunctionRegistry.register(udf.getName(), udf);
 
-    assertThrows(ExpressionException.class, () -> optimize("ERROR_UDF(20230105)"));
+    ExpressionException exception =
+        assertThrows(ExpressionException.class, () -> optimize("ERROR_UDF(20230105)"));
+    assertEquals(ErrorCode.UDF_COMPILATION_ERROR, exception.getErrorCode());
+    // The message gives the cause of the error
+    assertTrue(exception.getMessage().contains(ErrorCode.UNRESOLVED_IDENTIFIER.message("v1")));
+  }
+
+  @Test
+  void testNameIgnoreCase() throws Exception {
+    UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+    meta.setName("add_one");
+    meta.setSource("v0+1");
+    meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
+    FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
+
+    evalEquals("ADD_ONE(1)", 2L);
+    evalEquals("add_one(1)", 2L);
+
+    assertEquals("add_one", FunctionRegistry.unregister("Add_One").getName());
+    evalFails("ADD_ONE(1)", ErrorCode.FUNCTION_DOES_NOT_EXIST);
   }
 }

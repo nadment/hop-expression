@@ -23,7 +23,14 @@ import org.apache.hop.metadata.api.HopMetadataBase;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadata;
 
-/** A user-defined function (UDF) is a function provided by the user */
+/**
+ * Metadata of a user-defined function (UDF): a scalar function provided by the user as an
+ * expression over named arguments.
+ *
+ * <p>The name of the metadata is the name of the function.
+ *
+ * @see UserDefinedFunction
+ */
 @HopMetadata(
     key = "udf",
     name = "i18n::UserDefinedFunction.Name",
@@ -61,18 +68,38 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
     this.description = description;
   }
 
+  /**
+   * Gets the arguments of the user-defined function
+   *
+   * @return the arguments, in declaration order
+   */
   public List<FunctionArgument> getArguments() {
     return arguments;
   }
 
+  /**
+   * Set the arguments of the user-defined function
+   *
+   * @param arguments The arguments to set
+   */
   public void setArguments(List<FunctionArgument> arguments) {
     this.arguments = arguments;
   }
 
+  /**
+   * Gets the source expression of the user-defined function
+   *
+   * @return the expression, which refers to the arguments by their names
+   */
   public String getSource() {
     return source;
   }
 
+  /**
+   * Set the source expression of the user-defined function
+   *
+   * @param source The expression to set
+   */
   public void setSource(String source) {
     this.source = source;
   }

@@ -20,11 +20,23 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * Visitor that replaces, in the source expression of a user-defined function, each argument by the
+ * operand of the call at the same position.
+ *
+ * <p>The source expression must have been validated against the arguments of the function, so that
+ * each identifier knows its position.
+ */
 @NullMarked
 public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpression> {
 
   private final IExpression[] operands;
 
+  /**
+   * Creates a resolver for a call.
+   *
+   * @param operands the operands of the call, in the order of the arguments of the function
+   */
   public UserDefinedFunctionResolver(IExpression[] operands) {
     this.operands = operands;
   }

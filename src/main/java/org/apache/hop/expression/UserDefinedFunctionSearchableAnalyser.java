@@ -26,6 +26,7 @@ import org.apache.hop.core.search.ISearchable;
 import org.apache.hop.core.search.ISearchableAnalyser;
 import org.apache.hop.core.search.SearchableAnalyserPlugin;
 
+/** Searches in the name, the description and the source of the user-defined functions. */
 @SearchableAnalyserPlugin(
     id = "UserDefinedFunctionSearchableAnalyser",
     name = "Search in user defined function metadata")
