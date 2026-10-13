@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.ExpressionException;
 
@@ -137,7 +138,8 @@ import org.apache.hop.expression.ExpressionException;
 final class PatternNumberFormat extends NumberFormat {
 
   // Symbols of the default locale, never modified
-  private static volatile DecimalFormatSymbols cachedSymbols;
+  private static final AtomicReference<DecimalFormatSymbols> CACHED_SYMBOLS =
+      new AtomicReference<>();
 
   // Original format
   private final String format;
@@ -347,10 +349,10 @@ final class PatternNumberFormat extends NumberFormat {
    */
   private static DecimalFormatSymbols getSymbols() {
     Locale locale = Locale.getDefault();
-    DecimalFormatSymbols symbols = cachedSymbols;
+    DecimalFormatSymbols symbols = CACHED_SYMBOLS.get();
     if (symbols == null || !locale.equals(symbols.getLocale())) {
       symbols = DecimalFormatSymbols.getInstance(locale);
-      cachedSymbols = symbols;
+      CACHED_SYMBOLS.set(symbols);
     }
     return symbols;
   }

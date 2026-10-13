@@ -63,7 +63,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       return false;
     }
 
-    // the "first" flag is inherited from the base step implementation
+    // the "first" flag is inherited from the base transform implementation
     // it is used to guard some processing tasks, like figuring out field
     // indexes in the row structure that only need to be done once
     if (first) {
