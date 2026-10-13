@@ -95,18 +95,6 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
 
   /**
-   * Type-inference strategy whereby the result type of the call is the type of the operand #1, or
-   * the type of the operand #2 if the first is unknown, nullable if one of them is nullable.
-   */
-  public static final IReturnTypeInference ARG1_OR_ARG2 =
-      chain(ARG1, ARG2)
-          .andThen(
-              (call, type) ->
-                  type.withNullability(
-                      call.getOperand(1).getType().isNullable()
-                          || call.getOperand(2).getType().isNullable()));
-
-  /**
    * Type-inference strategy whereby the result type of the call is the most general type of the
    * operands with its maximum precision, not nullable as soon as one operand is not nullable.
    *
@@ -351,6 +339,16 @@ public final class ReturnTypes {
 
         return transform.transformType(call, type1).withNullability(nullable);
       };
+
+  /**
+   * Type-inference strategy for NVL2 function: the most general type of the operands #1 and #2,
+   * nullable if one of the three operands is nullable.
+   */
+  public static final IReturnTypeInference NVL2_FUNCTION =
+      cascade(
+          call ->
+              Types.getLeastRestrictive(call.getOperand(1).getType(), call.getOperand(2).getType()),
+          TypeTransforms.TO_NULLABLE);
 
   /**
    * Type-inference strategy for DECODE function: the type of the first result, nullable if one of

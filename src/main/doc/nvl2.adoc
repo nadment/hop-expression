@@ -26,7 +26,7 @@ NVL2( expression, value_if_not_null, value_if_null )
 
 == Returns
 
-The data type of the returned value is the same as the data type of value_if_not_null and value_if_null.
+The data type of the returned value is the most general data type of value_if_not_null and value_if_null.
 
 == Usage
 

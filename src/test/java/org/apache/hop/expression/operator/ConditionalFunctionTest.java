@@ -364,11 +364,22 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("Nvl2(FIELD_BOOLEAN_TRUE,FIELD_STRING,'ex2')", "TEST")
         .returnType(StringType.of(1000));
 
-    // The result is nullable if one of the values is nullable
+    // The result is nullable if one of the three operands is nullable
     optimize("NVL2(FIELD_STRING,ZEROIFNULL(FIELD_INTEGER),FIELD_INTEGER)")
         .returnType(IntegerType.of(12));
     optimize("NVL2(FIELD_STRING,ZEROIFNULL(FIELD_INTEGER),ZEROIFNULL(FIELD_INTEGER))")
+        .returnType(IntegerType.of(12));
+    optimize("NVL2(ZEROIFNULL(FIELD_INTEGER),ZEROIFNULL(FIELD_INTEGER),ZEROIFNULL(FIELD_INTEGER))")
         .returnType(IntegerType.of(12, false));
+
+    // The result is the most general type of the two values
+    optimize("NVL2(FIELD_STRING,'ex1',FIELD_STRING)").returnType(StringType.of(1000));
+    optimize("NVL2(FIELD_STRING,0,FIELD_INTEGER)").returnType(IntegerType.of(12));
+    optimize(
+            "NVL2(FIELD_STRING,FIELD_INTEGER,FIELD_NUMBER)",
+            "NVL2(FIELD_STRING,CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)")
+        .returnType(NumberType.NUMBER);
+    optimize("NVL2(FIELD_STRING,NULL,1)").returnType(IntegerType.of(1));
     evalEquals("Nvl2('test','ex1','ex2')", "ex1");
     evalEquals("Nvl2(NULL_STRING,'ex1','ex2')", "ex2");
 
