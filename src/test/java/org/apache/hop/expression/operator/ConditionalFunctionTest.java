@@ -59,10 +59,10 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("If(false,Date '2023-01-01')");
 
     // Check operands
-    evalFails("If()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("If(true)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("If()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("If(true)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");
@@ -101,9 +101,9 @@ class ConditionalFunctionTest extends ExpressionTest {
         .returnType(DateType.DATE_NOT_NULL);
 
     // Check operands
-    evalFails("IfNull()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IfNull(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IfNull(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("IfNull()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IfNull(1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IfNull(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Simplify IfNull(NULL,x) → x
     optimize("IFNULL(NULL::STRING,FIELD_STRING)", "FIELD_STRING");
@@ -140,9 +140,9 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("NullIf(DATE '2019-01-01',DATE '2018-12-31')", LocalDate.of(2019, Month.JANUARY, 1));
 
     // Check operands
-    evalFails("NullIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("NullIf(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("NullIf()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("NullIf(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimizeNull("NULLIF(NULL, NULL)");
     // TODO: If the second operand is not nullable, return type must be not null
@@ -166,9 +166,9 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
 
     // Check operands
-    evalFails("ZeroIfNull()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ZeroIfNull()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimizeNull("NULLIFZERO(0)");
     optimizeNull("NULLIFZERO(0.00)");
@@ -187,9 +187,9 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("NullIfZero(NULL_NUMBER)");
 
     // Check operands
-    evalFails("NullIfZero()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("NullIfZero(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("NullIfZero('test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("NullIfZero()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("NullIfZero(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("NullIfZero('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("NULLIFZERO(0.1)", "0.1");
     optimizeNull("NULLIFZERO(0.0)");
@@ -237,11 +237,11 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("Greatest(NULL_INTEGER, NULL_NUMBER)");
 
     // Check mixed operands type
-    evalFails("Greatest(123,'str',123)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Greatest(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Greatest(123,'str',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Greatest(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Compare unordered type
-    evalFails("Greatest(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Greatest(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -287,11 +287,11 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("Least(NULL_INTEGER, NULL_NUMBER)");
 
     // Non coercible data type mixed
-    evalFails("Least(123,'str',123)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Least(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Least(123,'str',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Least(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Compare unordered type
-    evalFails("Least(FIELD_STRING, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Least(FIELD_STRING, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -318,7 +318,7 @@ class ConditionalFunctionTest extends ExpressionTest {
         .returnType(DateType.DATE_NOT_NULL);
 
     // Check operands
-    evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     optimize("COALESCE(NULL)", "NULL");
     optimize("COALESCE(NULL::INTEGER)", "NULL");
@@ -359,9 +359,9 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("Nvl2(NULL_STRING,'ex1','ex2')", "ex2");
 
     // Check operands
-    evalFails("Nvl2()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Nvl2(true)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Nvl2(true,2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Nvl2()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Nvl2(true)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Nvl2(true,2)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -385,12 +385,12 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("Decode(1,1,NULL_STRING,9,'9',NULL_INTEGER,'<NULL>')");
 
     // Check operands
-    evalFails("Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Decode(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Decode(1,2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Decode(1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Decode(1,2)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Mixed type
-    evalFails("Decode(FIELD_INTEGER,1,'baby',20,false,true)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Decode(FIELD_INTEGER,1,'baby',20,false,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify unreachable DECODE clauses
     optimize(

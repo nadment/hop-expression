@@ -42,9 +42,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Acos(NULL_NUMBER)");
 
     // Check operands
-    evalFails("Acos()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Acos(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Acos(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Acos()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Acos(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Acos(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Acos(2)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Acos(-2)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
@@ -60,9 +60,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Acosh(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Acosh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Acosh(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Acosh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Acosh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Acosh(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Acosh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -77,9 +77,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Acoth(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Acoth()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Acoth(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Acoth(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Acoth()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Acoth(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Acoth(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Acoth(0.5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Acoth(1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Acoth(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
@@ -94,9 +94,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Asin(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Asin()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Asin(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Asin(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Asin()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Asin(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Asin(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -108,9 +108,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Asinh(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Asinh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Asinh(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Asinh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Asinh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Asinh(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Asinh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -123,9 +123,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Atan(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Atan()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Atan(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Atan(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Atan()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Atan(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Atan(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -138,10 +138,10 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Atan2(1,NULL_INTEGER)");
 
     // Check operands
-    evalFails("Atan2()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Atan2(1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Atan2(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Atan2(FIELD_DATE,1)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Atan2()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Atan2(1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Atan2(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Atan2(FIELD_DATE,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -153,9 +153,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Atanh(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Atanh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Atanh(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Atanh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Atanh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Atanh(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Atanh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -169,9 +169,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Cos(NULL_NUMBER)");
 
     // Check operands
-    evalFails("Cos()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Cos(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Cos(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Cos()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Cos(0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Cos(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -184,9 +184,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Cosh(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Cosh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Cosh(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Cosh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Cosh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Cosh(0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Cosh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -200,9 +200,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Sin(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Sin()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Sin(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Sin(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Sin()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Sin(0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sin(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -215,9 +215,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Sinh(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Sinh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Sinh(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Sinh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Sinh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Sinh(0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sinh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -229,9 +229,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Cot(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Cot()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Cot(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Cot(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Cot()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Cot(1,0)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Cot(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Cot(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -243,9 +243,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Csc(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Csc()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Csc(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Csc(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Csc()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Csc(1,0)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Csc(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Csc(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -260,9 +260,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Csch(NULL_INTEGER)");
 
     // Check operands
-    evalFails("Csch()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Csch(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Csch(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Csch()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Csch(1,0)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Csch(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Csch(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -274,9 +274,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Sec(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Sec()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Sec(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Sec(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Sec()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Sec(1,0)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sec(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Sec(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -289,9 +289,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Sech(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Sech()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Sech(1,0)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Sech(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Sech()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Sech(1,0)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sech(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -305,9 +305,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Tan(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Tan()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Tan(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Tan(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Tan()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Tan(0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Tan(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -321,9 +321,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Tanh(NULL_NUMBER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Tanh()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Tanh(0,1)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Tanh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Tanh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Tanh(0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Tanh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -338,8 +338,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Ln(NULL_NUMBER)");
 
     // Check operands
-    evalFails("Ln()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Ln(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Ln()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Ln(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Ln(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -353,10 +353,10 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Log(NULL_INTEGER,1)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Log()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Log(-2)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Log(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Log(10, 'x')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Log()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Log(-2)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Log(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Log(10, 'x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Log(10,0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -369,9 +369,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalNull("Log10(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Log10()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Log10(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Log10('x')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Log10()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Log10(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Log10('x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Log10(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 }

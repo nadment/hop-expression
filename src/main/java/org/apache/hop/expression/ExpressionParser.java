@@ -1031,7 +1031,7 @@ public class ExpressionParser {
   private IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {
     TimeUnit unit = TimeUnit.of(token.text());
     if (unit == null) {
-      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TIMEUNIT, token.text());
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TIME_UNIT, token.text());
     }
     return Literal.of(unit);
   }
@@ -1088,7 +1088,7 @@ public class ExpressionParser {
 
     TypeName name = TypeName.of(token.text());
     if (name == null) {
-      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TYPE, token.text());
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_DATA_TYPE, token.text());
     }
 
     int precision = Type.PRECISION_NOT_SPECIFIED;
@@ -1137,7 +1137,7 @@ public class ExpressionParser {
           case INTERVAL -> IntervalType.INTERVAL;
           default ->
               throw new ParseExpressionException(
-                  token.start(), ErrorCode.INVALID_TYPE, token.text());
+                  token.start(), ErrorCode.INVALID_DATA_TYPE, token.text());
         };
 
     return Literal.of(type);

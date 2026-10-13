@@ -51,7 +51,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(context, "Current_Date()", today);
 
     // Check operands
-    evalFails("Today(Null)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Today(Null)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -62,7 +62,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(context, "Current_Timestamp()", today);
 
     // Check operands
-    evalFails("Now(Null)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Now(Null)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -73,7 +73,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3, false));
 
     // Check operands
-    evalFails("Current_Timezone(Null)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Current_Timezone(Null)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -85,8 +85,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Year(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Year(12)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Year(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -98,8 +98,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("MonthName(NULL_DATE)");
 
     // Check operands
-    evalFails("MonthName()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MonthName(12)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("MonthName()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MonthName(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -111,8 +111,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("DayName(NULL_DATE)");
 
     // Check operands
-    evalFails("DayName()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("DayName(12)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("DayName()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("DayName(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -126,8 +126,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Month(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Month()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Month(12)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Month()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Month(12)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -166,7 +166,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Date_Diff(YEAR, NULL_DATE, NULL_DATE)");
 
     // Check operands
-    evalFails("Date_Diff(YEAR, DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Date_Diff(YEAR, DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -180,7 +180,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Years_Between(NULL_DATE, NULL_DATE)");
 
     // Check operands
-    evalFails("Years_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Years_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -193,7 +193,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Weeks_Between(NULL_DATE, NULL_DATE)");
 
     // Check operands
-    evalFails("Weeks_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Weeks_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -216,7 +216,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Months_Between(NULL_DATE, NULL_DATE)");
 
     // Check operands
-    evalFails("Months_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Months_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -231,7 +231,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Days_Between(NULL_DATE, NULL_DATE)");
 
     // Check operands
-    evalFails("Days_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Days_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -246,7 +246,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Hours_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Hours_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Hours_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -261,7 +261,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Minutes_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
 
     // Check operands
-    evalFails("Minutes_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Minutes_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -277,7 +277,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Seconds_Between(TIMESTAMP '2019-01-01 15:00:59', NULL_DATE)");
 
     // Check operands
-    evalFails("Seconds_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Seconds_Between(DATE '2007-11-09')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -293,10 +293,10 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Quarter(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Quarter()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Quarter(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Quarter(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Quarter(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Quarter()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Quarter(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Quarter(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Quarter(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -312,9 +312,9 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("DayOfWeek(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("DayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("DayOfWeek(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("DayOfWeek(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("DayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("DayOfWeek(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DayOfWeek(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -330,9 +330,9 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Day(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Day(123)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Day('text')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Day()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Day(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Day('text')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("DAY(DATE '2019-02-15')", "15");
     optimize("DAY(MAKE_DATE(2019,2,15))", "15");
@@ -349,8 +349,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("DayOfYear(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("DayOfYear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("DayOfYear(123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("DayOfYear()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("DayOfYear(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -362,8 +362,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Julian_Day(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("Julian_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Julian_Day(123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Julian_Day()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Julian_Day(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -376,8 +376,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Week(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("Week()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Week(123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Week()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Week(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -388,8 +388,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("IsoDayOfWeek(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("IsoDayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IsoDayOfWeek(123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("IsoDayOfWeek()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IsoDayOfWeek(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -404,8 +404,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("IsoWeek(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("IsoWeek()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IsoWeek(123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("IsoWeek()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IsoWeek(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -420,9 +420,9 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("IsoYear(NULL_DATE)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("IsoYear('ERROR')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("IsoYear()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("IsoYear(123)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("IsoYear('ERROR')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IsoYear()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IsoYear(123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -438,8 +438,8 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Years(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Years()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Add_Years(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Years()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Years(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Years(FIELD_DATE,0)", "FIELD_DATE");
@@ -459,7 +459,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Quarters(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Quarters(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Quarters(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Quarters(FIELD_DATE,0)", "FIELD_DATE");
@@ -479,7 +479,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Months(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Months(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Months(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Months(FIELD_DATE,0)", "FIELD_DATE");
@@ -495,7 +495,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Weeks(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Weeks(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Weeks(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Weeks(FIELD_DATE,0)", "FIELD_DATE");
@@ -514,7 +514,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Days(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Days(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Days(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Days(FIELD_DATE,0)", "FIELD_DATE");
@@ -533,7 +533,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Hours(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Hours(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Hours(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Hours(FIELD_DATE,0)", "FIELD_DATE");
@@ -550,7 +550,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Minutes(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Minutes(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Minutes(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Minutes(FIELD_DATE,0)", "FIELD_DATE");
@@ -568,7 +568,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_Seconds(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_Seconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_Seconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_Seconds(FIELD_DATE,0)", "FIELD_DATE");
@@ -588,7 +588,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Add_NanoSeconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Add_NanoSeconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Simplify
     optimize("Add_NanoSeconds(FIELD_DATE,0)", "FIELD_DATE");
@@ -623,8 +623,8 @@ class DateFunctionTest extends ExpressionTest {
     optimize("DATE_ADD(SECOND,1,FIELD_DATE)", "ADD_SECONDS(FIELD_DATE,1)");
 
     // Check operands
-    evalFails("DATE_ADD(NULL,1,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("DATE_ADD('YEAR',1,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("DATE_ADD(NULL,1,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DATE_ADD('YEAR',1,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -637,7 +637,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Hour(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Hour()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Hour()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -650,7 +650,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Minute(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Minute()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Minute()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -663,7 +663,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Second(NULL_TIMESTAMP)");
 
     // Check operands
-    evalFails("Second()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Second()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -684,12 +684,12 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Date_Trunc(DAY, NULL_TIMESTAMP)");
     evalNull("Date_Trunc(DAY, NULL_DATE)");
 
-    evalFails("Date_Trunc(DAY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Date_Trunc(DATE '2020-05-25')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Date_Trunc(DAY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Date_Trunc(DATE '2020-05-25')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Date_Trunc(ISOWEEK, DATE '2020-05-25')", ErrorCode.INVALID_ARGUMENT);
-    evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Date_Trunc(123, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Date_Trunc(123, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Truncate timestamp
     evalEquals(
@@ -796,15 +796,15 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Extract(DAYOFWEEK from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
     evalFails("Extract(DAYOFYEAR from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
 
-    evalFails("Extract(123 from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
-    evalFails("Extract('TEST' from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
-    evalFails("Extract(NULL from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
-    evalFails("Extract(BIDON from NULL)", ErrorCode.INVALID_TIMEUNIT);
-    evalFails("Extract(BIDON from DATE '2021-01-01')", ErrorCode.INVALID_TIMEUNIT);
+    evalFails("Extract(123 from DATE '2021-01-01')", ErrorCode.INVALID_TIME_UNIT);
+    evalFails("Extract('TEST' from DATE '2021-01-01')", ErrorCode.INVALID_TIME_UNIT);
+    evalFails("Extract(NULL from DATE '2021-01-01')", ErrorCode.INVALID_TIME_UNIT);
+    evalFails("Extract(BIDON from NULL)", ErrorCode.INVALID_TIME_UNIT);
+    evalFails("Extract(BIDON from DATE '2021-01-01')", ErrorCode.INVALID_TIME_UNIT);
 
     // Check operands
-    evalFails("Extract()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Extract(MONTH)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Extract()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Extract(MONTH)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Check syntax
     evalFails("Extract(", ErrorCode.SYNTAX_ERROR_FUNCTION);
@@ -885,10 +885,10 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("MAKE_DATE(2020,-1,NULL_INTEGER)");
 
     // Check operands
-    evalFails("MAKE_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_DATE(2020)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_DATE(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_DATE(2020,1,1,1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("MAKE_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_DATE(2020)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_DATE(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_DATE(2020,1,1,1)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -922,10 +922,10 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("MAKE_TIMESTAMP(2020,-1,NULL_INTEGER,23,15,59)");
 
     // Check operands
-    evalFails("MAKE_TIMESTAMP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_TIMESTAMP(2020)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_TIMESTAMP(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("MAKE_TIMESTAMP()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_TIMESTAMP(2020)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_TIMESTAMP(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -938,10 +938,10 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("MAKE_INTERVAL(20,1,NULL_INTEGER,23,15,59)");
 
     // Check operands
-    evalFails("MAKE_INTERVAL()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_INTERVAL(20)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_INTERVAL(20,15)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("MAKE_INTERVAL()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_INTERVAL(20)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_INTERVAL(20,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -975,10 +975,10 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("First_day(NULL_DATE, YEAR)");
 
     // Check operands
-    evalFails("First_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("First_Day(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("First_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("First_Day()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("First_Day(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("First_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
@@ -1011,11 +1011,11 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Last_Day(NULL_DATE, YEAR)");
 
     // Check operands
-    evalFails("Last_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Last_Day(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Last_Day(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Last_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Last_Day()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Last_Day(FIELD_INTEGER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
@@ -1031,12 +1031,12 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Next_Day(FIELD_DATE, NULL_STRING)");
 
     // Check operands
-    evalFails("Next_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Next_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Next_Day()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Next_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Next_Day(FIELD_DATE, 'bad')", ErrorCode.INVALID_ARGUMENT);
-    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -1049,10 +1049,10 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("Previous_Day(FIELD_DATE, NULL_STRING)");
 
     // Check operands
-    evalFails("Previous_Day()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Previous_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Previous_Day()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Previous_Day(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.INVALID_ARGUMENT);
-    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 }

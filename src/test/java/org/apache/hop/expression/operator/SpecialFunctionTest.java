@@ -40,7 +40,7 @@ import org.junit.jupiter.api.parallel.Execution;
 class SpecialFunctionTest extends ExpressionTest {
   @Test
   void Error() {
-    evalFails("ERROR('Custom error message')", ErrorCode.MESSAGE_ERROR);
+    evalFails("ERROR('Custom error message')", ErrorCode.USER_DEFINED_ERROR);
   }
 
   @Test
@@ -84,7 +84,7 @@ class SpecialFunctionTest extends ExpressionTest {
       evalNull("TRY(CAST('0000-00-01' AS DATE))").returnType(DateType.DATE);
       optimize("TRY(CAST('0000-00-01' AS DATE))", "NULL");
 
-      // @code{ErrorCode.UNPARSABLE_BINARY}
+      // @code{ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT}
       evalNull("TRY(TO_BINARY('0Z','HEX'))").returnType(BinaryType.BINARY);
       optimize("TRY(TO_BINARY('0Z','HEX'))", "NULL");
 
@@ -92,7 +92,7 @@ class SpecialFunctionTest extends ExpressionTest {
       evalNull("TRY(9223372036854775807::INTEGER+1::INTEGER)").returnType(IntegerType.INTEGER);
       optimize("TRY(9223372036854775807::INTEGER+1::INTEGER)", "NULL");
 
-      // @code{ErrorCode.CONVERSION_OVERFLOW}
+      // @code{ErrorCode.INTEGER_CONVERSION_OVERFLOW}
       evalNull("TRY(CAST(9223372036854775808 as INTEGER))").returnType(IntegerType.INTEGER);
       optimize("TRY(CAST(9223372036854775808 as INTEGER))", "NULL");
 
@@ -114,7 +114,7 @@ class SpecialFunctionTest extends ExpressionTest {
     /** Exceptions that should not be suppressed */
     @Test
     void exceptionNotSuppressed() throws Exception {
-      evalFails("TRY(ERROR('test'))", ErrorCode.MESSAGE_ERROR);
+      evalFails("TRY(ERROR('test'))", ErrorCode.USER_DEFINED_ERROR);
       evalFails("TRY(CAST(TRUE as INET))", ErrorCode.UNSUPPORTED_CONVERSION);
     }
   }

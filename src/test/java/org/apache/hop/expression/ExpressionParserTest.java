@@ -354,9 +354,9 @@ public class ExpressionParserTest extends ExpressionTest {
 
     evalFails("Year(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("Year(2024", ErrorCode.MISSING_RIGHT_PARENTHESIS);
-    evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Year()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Year(()", ErrorCode.SYNTAX_ERROR);
-    evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Year+3", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     evalFails("Today())", ErrorCode.UNEXPECTED_CHARACTER);
     evalFails("Year)", ErrorCode.UNEXPECTED_CHARACTER);
@@ -377,7 +377,7 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("Date '2022-05-01' AT TIME", ErrorCode.SYNTAX_ERROR);
     evalFails("Date '2022-05-01' AT TIME ZONE", ErrorCode.SYNTAX_ERROR);
     evalFails("Date '2022-05-01' AT TIME ZONE 'XYZ'", ErrorCode.INVALID_TIMEZONE);
-    evalFails("Year(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Year(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("TRUE AND", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_BOOLEAN_TRUE IS ", ErrorCode.SYNTAX_ERROR);
     evalFails("FIELD_BOOLEAN_TRUE IS MONTH", ErrorCode.SYNTAX_ERROR);

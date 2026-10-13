@@ -191,7 +191,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
     // All elements of an array should be coercible
     for (IExpression expression : this) {
       if (!elementType.isCoercible(expression.getType())) {
-        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, expression);
+        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT_TYPE, expression);
       }
     }
   }

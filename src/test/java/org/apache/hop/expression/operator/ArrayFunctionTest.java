@@ -52,11 +52,11 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_PREPEND(0,[])", "[0]");
 
     // Check operands
-    evalFails("ARRAY_PREPEND()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("ARRAY_PREPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_PREPEND(1,NULL)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_PREPEND([1,2,3],4)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_PREPEND('test',[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_PREPEND()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_PREPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_PREPEND(1,NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_PREPEND([1,2,3],4)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_PREPEND('test',[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -66,11 +66,11 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_APPEND([],0)", "[0]");
 
     // Check operands
-    evalFails("ARRAY_APPEND()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("ARRAY_APPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_APPEND(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_APPEND(0,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_APPEND([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_APPEND()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_APPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_APPEND(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_APPEND(0,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_APPEND([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -81,11 +81,11 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFalse("ARRAY_CONTAINS(['FR','BE','US'],'GB')");
 
     // Check operands
-    evalFails("ARRAY_CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("ARRAY_CONTAINS([1,2,3],0,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("ARRAY_CONTAINS(1,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_CONTAINS(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_CONTAINS([1,2,3], FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_CONTAINS([1,2,3],0,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("ARRAY_CONTAINS(1,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_CONTAINS(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_CONTAINS([1,2,3], FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -111,10 +111,10 @@ class ArrayFunctionTest extends ExpressionTest {
     // 2L).returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("ARRAY_POSITION()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("ARRAY_POSITION('test','test')", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_POSITION(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("ARRAY_POSITION([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("ARRAY_POSITION()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_POSITION('test','test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_POSITION(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_POSITION([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -135,7 +135,7 @@ class ArrayFunctionTest extends ExpressionTest {
     evalNull("ARRAY_SLICE([1,2,3,4,5,6],1,NULL)");
 
     // Check operands
-    evalFails("ARRAY_SLICE([1,2,3,4,5,6],1)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_SLICE([1,2,3,4,5,6],1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -150,6 +150,6 @@ class ArrayFunctionTest extends ExpressionTest {
     evalNull("ARRAY_TO_STRING(NULL,',')");
 
     // Check operands
-    evalFails("ARRAY_TO_STRING([1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ARRAY_TO_STRING([1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 }

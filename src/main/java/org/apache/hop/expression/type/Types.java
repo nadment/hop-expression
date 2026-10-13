@@ -512,7 +512,7 @@ public final class Types {
       case IValueMeta.TYPE_BINARY -> BinaryType.of(meta.getLength());
       default ->
           throw new ExpressionException(
-              ErrorCode.UNSUPPORTED_VALUEMETA, meta.getName(), meta.getTypeDesc());
+              ErrorCode.UNSUPPORTED_FIELD_TYPE, meta.getName(), meta.getTypeDesc());
     };
   }
 }

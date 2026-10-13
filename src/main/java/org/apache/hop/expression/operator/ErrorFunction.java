@@ -44,6 +44,6 @@ public class ErrorFunction extends Function {
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
     String message = operands[0].getValue(String.class);
-    throw new ExpressionException(ErrorCode.MESSAGE_ERROR, message);
+    throw new ExpressionException(ErrorCode.USER_DEFINED_ERROR, message);
   }
 }

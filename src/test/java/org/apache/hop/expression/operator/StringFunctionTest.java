@@ -87,7 +87,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Normalize(NULL_STRING)");
 
     // Check operands
-    evalFails("Normalize()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Normalize()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Normalize('ê','BAD')", ErrorCode.INVALID_ARGUMENT);
   }
 
@@ -117,7 +117,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Unaccent(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Unaccent()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Unaccent()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Function repetition
     optimize("Unaccent(Unaccent(FIELD_STRING))", "UNACCENT(FIELD_STRING)");
@@ -131,7 +131,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Upper(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Upper()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Upper()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Function repetition
     optimize("UPPER(UPPER(FIELD_STRING))", "UPPER(FIELD_STRING)");
@@ -151,7 +151,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("InitCap(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("InitCap()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("InitCap()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Function repetition
     optimize("INITCAP(LOWER(FIELD_STRING))", "INITCAP(FIELD_STRING)");
@@ -191,7 +191,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Instr('CORPORATE FLOOR','OR',3,NULL_INTEGER)");
 
     // Check operands
-    evalFails("Instr()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Instr()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Instr('CORPORATE FLOOR','OR',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
@@ -237,7 +237,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("RPad(BINARY '1A2B3C',NULL_INTEGER,BINARY '4D5E6F')");
 
     // Check operands
-    evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Check padding length exceeds the maximum limit
     evalFails("RPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
@@ -284,7 +284,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("LPad(BINARY '1A2B3C',NULL_INTEGER,BINARY '4D5E6F')");
 
     // Missing arguments
-    evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Check padding length exceeds the maximum limit
     evalFails("LPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
@@ -300,8 +300,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Lower(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Lower()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Lower('Test','Test')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Lower()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Lower('Test','Test')", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Function repetition
     optimize("LOWER(LOWER(FIELD_STRING))", "LOWER(FIELD_STRING)");
@@ -325,8 +325,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("SQUEEZE(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("SQUEEZE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("SQUEEZE('Test','Test')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("SQUEEZE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("SQUEEZE('Test','Test')", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Function repetition
     optimize("SQUEEZE(Squeeze(FIELD_STRING))", "SQUEEZE(FIELD_STRING)");
@@ -381,7 +381,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Split_Part('127.1.2.3','.',NULL_INTEGER)");
 
     // Check operands
-    evalFails("Split_Part('127.1.2.3','.')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Split_Part('127.1.2.3','.')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -418,8 +418,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Strtok('127.1.2.3','.',NULL_INTEGER)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Strtok()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Strtok('127.1.2.3','.',5,5)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Strtok()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Strtok('127.1.2.3','.',5,5)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -432,10 +432,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Space(NULL_INTEGER)");
 
     // Check operands
-    evalFails("Space()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Space('str')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Space()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Space('str')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("SPACE(4)", "'    '");
@@ -454,7 +454,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Trim(' 01ABC012 ',NULL_STRING)");
 
     // Check operands
-    evalFails("Trim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Trim()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     optimize("Trim(' test ')", "'test'");
     optimizeTrue("Trim(' test ')='test'");
@@ -474,7 +474,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("LTrim('01ABC012',NULL_STRING)");
 
     // Check operands
-    evalFails("LTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("LTrim()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Function repetition
     optimize("LTRIM(LTRIM(FIELD_STRING))", "LTRIM(FIELD_STRING)");
@@ -492,7 +492,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("RTrim('01ABC012',NULL_STRING)");
 
     // Check operands
-    evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("RTrim()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Function repetition
     optimize("RTRIM(RTRIM(FIELD_STRING))", "RTRIM(FIELD_STRING)");
@@ -529,8 +529,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Length(Date '2023-01-01')", 10L);
 
     // Check operands
-    evalFails("Length()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Length('test','z')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Length()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Length('test','z')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -558,8 +558,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Left(FIELD_DATE,4)", "1981");
 
     // Check operands
-    evalFails("Left('Test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Left('TEST',10,0)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Left('Test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Left('TEST',10,0)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -587,7 +587,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Insert(NULL_BINARY, 1, 0, BINARY '56')");
 
     // Check operands
-    evalFails("Insert()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Insert()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
@@ -619,7 +619,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Right(FIELD_TIMESTAMP,8)", "22:11:01");
 
     // Check operands
-    evalFails("Right()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Right()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -644,7 +644,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Repeat(FIELD_BINARY,NULL_INTEGER)");
 
     // Check operands
-    evalFails("Repeat()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Repeat()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Result size to large
     evalFails("Repeat('ABC',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
@@ -662,7 +662,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Replace('ABCD','CD',NULL_STRING)");
 
     // Check operands
-    evalFails("Replace()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Replace()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -673,8 +673,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("HEX_ENCODE(NULL_STRING)");
 
     // Check operands
-    evalFails("HEX_ENCODE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("HEX_ENCODE(0x01,0x02)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("HEX_ENCODE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("HEX_ENCODE(0x01,0x02)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -684,8 +684,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("HEX_DECODE(NULL_STRING)");
 
     // Check operands
-    evalFails("HEX_DECODE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("HEX_DECODE('p1','p2')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("HEX_DECODE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("HEX_DECODE('p1','p2')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -720,8 +720,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Overlay(FIELD_STRING,NULL_STRING,3)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Overlay()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Overlay(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Overlay()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Overlay(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -735,8 +735,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Reverse(NULL_BINARY)").returnType(BinaryType.BINARY);
 
     // Check operands
-    evalFails("Reverse()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Reverse('str','bad')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Reverse()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Reverse('str','bad')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -753,8 +753,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Soundex(FIELD_DATE)", "");
 
     // Check operands
-    evalFails("Soundex()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Soundex('str','bad')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Soundex()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Soundex('str','bad')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -768,9 +768,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Difference(NULL_STRING,'Jucy')");
     evalNull("Difference('Juice',NULL_STRING)");
 
-    evalFails("Difference()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Difference('str')", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Difference('str','bad','xx')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Difference()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Difference('str')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Difference('str','bad','xx')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -829,8 +829,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalFalse("Regexp_Like('ABC','')");
 
     // Check operands
-    evalFails("Regexp_Like()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Regexp_Like('A')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Regexp_Like()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Regexp_Like('A')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Regexp_Like('A','[a-z]','z')", ErrorCode.INVALID_ARGUMENT);
   }
 
@@ -865,7 +865,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Regexp_Replace('A', 'A', NULL_STRING)");
 
     // Check operands
-    evalFails("Regexp_Replace()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Regexp_Replace()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -931,9 +931,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalFalse("Equal_Null(DATE '2019-01-01',DATE '2018-01-01')")
         .returnType(BooleanType.BOOLEAN_NOT_NULL);
 
-    evalFails("Equal_Null()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Equal_Null(NULL_INTEGER)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Equal_Null(NULL_INTEGER, NULL_NUMBER, NULL_INTEGER)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Equal_Null()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Equal_Null(NULL_INTEGER)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Equal_Null(NULL_INTEGER, NULL_NUMBER, NULL_INTEGER)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Same operands always true
     optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
@@ -976,7 +976,7 @@ public class StringFunctionTest extends ExpressionTest {
         .returnType(BinaryType.BINARY_NOT_NULL);
     evalNull("Concat(NULL_BINARY,NULL_BINARY)").returnType(BinaryType.BINARY);
 
-    evalFails("Concat()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Concat()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Coercion to string
     evalEquals("4 || 2", "42").returnType(StringType.of(2, false));
@@ -1040,8 +1040,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("CONCAT_WS('a',NULL_STRING)");
     evalNull("CONCAT_WS(BINARY '1F',NULL_STRING,NULL_STRING)").returnType(BinaryType.BINARY);
 
-    evalFails("CONCAT_WS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("CONCAT_WS(',')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CONCAT_WS()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("CONCAT_WS(',')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Mix String and Binary
     // TODO: evalFails("CONCAT_WS(FIELD_STRING,0x2A3B)");
@@ -1060,8 +1060,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Chr(NULL_INTEGER)");
 
     // Check operands
-    evalFails("Chr()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Chr('bad')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Chr()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Chr('bad')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Chr(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Chr(999999999999)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
@@ -1078,8 +1078,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Ascii(NULL_STRING)");
 
     // Check operands
-    evalFails("Ascii()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Ascii('a','b')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Ascii()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Ascii('a','b')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -1093,8 +1093,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Unicode(NULL_STRING)");
 
     // Check operands
-    evalFails("Unicode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Unicode('a','b')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Unicode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Unicode('a','b')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -1109,7 +1109,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("String_To_Array(NULL_STRING,',')");
 
     // Check operands
-    evalFails("String_To_Array()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("String_To_Array()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -1147,8 +1147,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Html_Encode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Html_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Html_Encode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Html_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Html_Encode('x','y')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -1159,8 +1159,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Html_Decode(NULL_STRING)");
 
     // Check operands
-    evalFails("Html_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Html_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Html_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Html_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -1173,8 +1173,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Url_Encode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Url_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Url_Encode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Url_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Url_Encode('x','y')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -1187,8 +1187,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Url_Decode(NULL_STRING)");
 
     // Check operands
-    evalFails("Url_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Url_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Url_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Url_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Url_Decode('a%%2Bb')", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
@@ -1203,7 +1203,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Base64_Encode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Base64_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Base64_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -1217,7 +1217,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Base64_Decode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Base64_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Base64_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -1231,7 +1231,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Base32_Encode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Base32_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Base32_Encode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -1245,7 +1245,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Base32_Decode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("Base32_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Base32_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -1258,7 +1258,7 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("UUID()").returnType(StringType.STRING_NOT_NULL);
 
     // Check operands
-    evalFails("UUID(1)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("UUID(1)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -1288,8 +1288,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Position('abc' IN NULL_STRING)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("Position()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Position('test')", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Position()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Position('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Check syntax
     evalFails("Position( ", ErrorCode.SYNTAX_ERROR_FUNCTION);

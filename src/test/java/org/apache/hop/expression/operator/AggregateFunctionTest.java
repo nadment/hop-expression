@@ -63,9 +63,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Avg() throws Exception {
-    evalFails("AVG()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("AVG(2,4)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("AVG(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("AVG()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("AVG(2,4)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("AVG(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("AVG(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("AVG(FIELD_INTEGER)").returnType(NumberType.NUMBER);
@@ -74,10 +74,10 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Count() throws Exception {
-    evalFails("Count()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Count(ALL )", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Count(DISTINCT )", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Count(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Count()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Count(ALL )", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Count(DISTINCT )", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Count(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Count(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("COUNT(*)").returnType(IntegerType.INTEGER_NOT_NULL);
@@ -89,9 +89,9 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void CountIf() throws Exception {
-    evalFails("CountIf()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("CountIf(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("CountIf()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("CountIf(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("CountIf(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("CountIf(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("COUNTIF(FIELD_INTEGER>=10)").returnType(IntegerType.INTEGER);
@@ -100,16 +100,16 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Sum() throws Exception {
-    evalFails("SUM()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SUM()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("SUM(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
-    evalFails("SUM(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("SUM(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("SUM(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void Max() throws Exception {
-    evalFails("MAX()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MAX()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAX(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("MAX(FIELD_STRING)").returnType(StringType.of(1000));
@@ -121,7 +121,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Min() throws Exception {
-    evalFails("MIN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MIN()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MIN(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("MIN(FIELD_STRING)").returnType(StringType.of(1000));
@@ -133,16 +133,16 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Median() throws Exception {
-    evalFails("MEDIAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MEDIAN()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MEDIAN(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
-    evalFails("MEDIAN(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("MEDIAN(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("MEDIAN(FIELD_INTEGER)").returnType(NumberType.NUMBER);
   }
 
   @Test
   void AnyValue() throws Exception {
-    evalFails("ANY_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("ANY_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ANY_VALUE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("ANY_VALUE(FIELD_DATE)").returnType(DateType.DATE);
@@ -152,8 +152,8 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void FirstValue() throws Exception {
-    evalFails("FIRST_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("FIRST_VALUE(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("FIRST_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("FIRST_VALUE(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("FIRST_VALUE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("FIRST_VALUE(FIELD_DATE) IGNORE", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("FIRST_VALUE(FIELD_DATE) RESPECT", ErrorCode.SYNTAX_ERROR_FUNCTION);
@@ -167,8 +167,8 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void LastValue() throws Exception {
-    evalFails("LAST_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("LAST_VALUE(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("LAST_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("LAST_VALUE(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("LAST_VALUE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("LAST_VALUE(FIELD_DATE) IGNORE", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("LAST_VALUE(FIELD_DATE) RESPECT", ErrorCode.SYNTAX_ERROR_FUNCTION);
@@ -183,8 +183,8 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void NthValue() throws Exception {
-    evalFails("NTH_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("NTH_VALUE(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("NTH_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("NTH_VALUE(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("NTH_VALUE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
     evalFails("NTH_VALUE(FIELD_DATE,1) IGNORE", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("NTH_VALUE(FIELD_DATE,1) RESPECT", ErrorCode.SYNTAX_ERROR_FUNCTION);
@@ -217,7 +217,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void ListAgg() throws Exception {
-    evalFails("LISTAGG()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("LISTAGG()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("LISTAGG(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("LISTAGG(FIELD_STRING,',')", "LISTAGG(ALL FIELD_STRING,',')")
@@ -228,7 +228,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void Percentile() throws Exception {
-    evalFails("PERCENTILE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("PERCENTILE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("PERCENTILE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("PERCENTILE(FIELD_INTEGER,0.75)").returnType(NumberType.NUMBER);
@@ -258,7 +258,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void VarPop() throws Exception {
-    evalFails("VARIANCE_POP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("VARIANCE_POP()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("VARIANCE_POP(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("VARIANCE_POP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
@@ -266,7 +266,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void VarSamp() throws Exception {
-    evalFails("VARIANCE_SAMP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("VARIANCE_SAMP()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("VARIANCE_SAMP(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("VARIANCE_SAMP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
@@ -274,7 +274,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void StdDevPop() throws Exception {
-    evalFails("STDDEV_POP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("STDDEV_POP()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("STDDEV_POP(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("STDDEV_POP(FIELD_INTEGER)").returnType(NumberType.NUMBER);
@@ -282,7 +282,7 @@ class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   void StdDevSamp() throws Exception {
-    evalFails("STDDEV_SAMP()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("STDDEV_SAMP()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("STDDEV_SAMP(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("STDDEV_SAMP(FIELD_INTEGER)").returnType(NumberType.NUMBER);

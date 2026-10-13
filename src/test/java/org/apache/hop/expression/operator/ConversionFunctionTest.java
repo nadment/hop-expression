@@ -67,8 +67,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TO_BINARY(NULL_STRING)");
 
     // Check operands
-    evalFails("TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -96,11 +96,11 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("To_Boolean(NULL_STRING)").returnType(BooleanType.BOOLEAN);
 
     // Check operands
-    evalFails("To_Boolean()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("To_Boolean(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("To_Boolean()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("To_Boolean(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // TODO: Enforce field date conversion
-    // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    // evalFails("To_Boolean(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     evalFails("To_Boolean('falsee')", ErrorCode.CONVERSION_ERROR);
   }
@@ -962,7 +962,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("To_Json(NULL_STRING)").returnType(JsonType.JSON);
 
     // Check operands
-    evalFails("To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.CONVERSION_ERROR);
     evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.CONVERSION_ERROR);
@@ -1017,8 +1017,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("TRY_CAST(DATE '2019-02-25' AS String FORMAT )", ErrorCode.SYNTAX_ERROR_FUNCTION);
 
     // Bad data type
-    evalFails("TRY_CAST('2020-01-021' AS NULL)", ErrorCode.INVALID_TYPE);
-    evalFails("Try_Cast(123 as Nill)", ErrorCode.INVALID_TYPE);
+    evalFails("TRY_CAST('2020-01-021' AS NULL)", ErrorCode.INVALID_DATA_TYPE);
+    evalFails("Try_Cast(123 as Nill)", ErrorCode.INVALID_DATA_TYPE);
 
     // Bad format
     evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
@@ -1047,14 +1047,14 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_BINARY(NULL_STRING)");
 
     // Failed if the format is null
-    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Failed if the format is bad
     evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')", ErrorCode.INVALID_BINARY_FORMAT);
 
     // Check operands
-    evalFails("TRY_TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("TRY_TO_BINARY('te','t','s')", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("TRY_TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("TRY_TO_BINARY('te','t','s')", ErrorCode.TOO_MANY_ARGUMENTS);
 
     optimize("TRY_TO_BINARY(FIELD_STRING)", "TRY(TO_BINARY(FIELD_STRING))");
   }
@@ -1072,8 +1072,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_BOOLEAN(NULL_STRING)").returnType(BooleanType.BOOLEAN);
 
     // Check operands
-    evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("TRY_TO_BOOLEAN('yes',3)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("TRY_TO_BOOLEAN()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("TRY_TO_BOOLEAN('yes',3)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     optimize("TRY_TO_BOOLEAN(FIELD_STRING)", "TRY(TO_BOOLEAN(FIELD_STRING))");
   }
@@ -1089,7 +1089,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_NUMBER(NULL_STRING)");
 
     // Check operands
-    evalFails("TRY_TO_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("TRY_TO_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Failed if the format is bad
     evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')", ErrorCode.INVALID_NUMBER_FORMAT);
@@ -1120,7 +1120,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_DATE(NULL_STRING,'FXDD/MM/YYYY')");
 
     // Check operands
-    evalFails("TRY_TO_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("TRY_TO_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Failed if the format is bad
     evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
@@ -1158,8 +1158,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("Try_To_Json('{\"name\":\"Smith\"; \"age\":29}')");
 
     // Check operands
-    evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Try_To_Json(FIELD_JSON, NULL_JSON)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Try_To_Json(FIELD_JSON, NULL_JSON)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     optimize("TRY_TO_JSON(FIELD_STRING)", "TRY(TO_JSON(FIELD_STRING))");
   }

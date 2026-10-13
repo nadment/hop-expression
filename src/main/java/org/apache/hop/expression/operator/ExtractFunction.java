@@ -84,7 +84,7 @@ public class ExtractFunction extends Function {
       // without a time zone
       TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
       if (unit == null) {
-        throw new ExpressionException(ErrorCode.INVALID_TIMEUNIT, call.getOperand(0));
+        throw new ExpressionException(ErrorCode.INVALID_TIME_UNIT, call.getOperand(0));
       }
       Function function = FunctionRegistry.getFunction(unit.name());
       if (function != null && !(function instanceof UserDefinedFunction)) {

@@ -40,7 +40,7 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("CRC32(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("CRC32()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CRC32()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -56,7 +56,7 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("MD5(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("MD5()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("MD5()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -68,7 +68,7 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("SHA1(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("SHA1()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SHA1()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -80,7 +80,7 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("SHA224(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("SHA224()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SHA224()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -92,7 +92,7 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("SHA256(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("SHA256()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SHA256()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -106,7 +106,7 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("SHA384(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("SHA384()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SHA384()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -120,6 +120,6 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalNull("SHA512(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
-    evalFails("SHA512()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("SHA512()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 }

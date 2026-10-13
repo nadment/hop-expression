@@ -92,7 +92,7 @@ class JsonFunctionTest extends ExpressionTest {
     // Return NULL if the JSON path is null
     evalNull("Json_Value(FIELD_JSON,NULL_STRING)");
 
-    evalFails("Json_Value(FIELD_JSON)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Value(FIELD_JSON)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Json_Value(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
     evalFails("Json_Value(FIELD_JSON,'$.notexist' RETURNING INET)", ErrorCode.UNEXPECTED_DATA_TYPE);
   }
@@ -149,8 +149,8 @@ class JsonFunctionTest extends ExpressionTest {
     evalNull("Json_Query(FIELD_JSON,'$.notexist')").returnType(JsonType.JSON);
 
     // Check operands
-    evalFails("Json_Query()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Json_Query(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Json_Query()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Json_Query(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails(
         "Json_Query(JSON '{\"name\":\"Smith\", \"age\":29}','$$.invalid')",
         ErrorCode.INVALID_JSON_PATH);
@@ -178,7 +178,7 @@ class JsonFunctionTest extends ExpressionTest {
     // Accept optional syntax with missing KEY
     evalEquals("Json_Object('name' VALUE 'Smith')", JsonConversion.convert("{\"name\":\"Smith\"}"));
 
-    evalFails("Json_Object()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("Json_Object()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Json_Object(", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Json_Object(KEY)", ErrorCode.SYNTAX_ERROR_FUNCTION);
     evalFails("Json_Object(KEY 'name' VALUE )", ErrorCode.SYNTAX_ERROR);
@@ -226,8 +226,8 @@ class JsonFunctionTest extends ExpressionTest {
     evalNull("Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$.c')");
 
     // Check operands
-    evalFails("Json_Keys()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Json_Keys(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Json_Keys()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Json_Keys(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails(
         "Json_Keys(JSON '{\"name\":\"Smith\", \"age\":29}','$$.invalid')",
         ErrorCode.INVALID_JSON_PATH);

@@ -90,7 +90,7 @@ public class ArrayElementAtOperator extends Operator {
     if (i < 0) i = array.size() + i + 1;
 
     if (i < 1 || i > array.size()) {
-      throw new ExpressionException(ErrorCode.INVALID_ARRAY_INDEX, index);
+      throw new ExpressionException(ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS, index);
     }
 
     return array.get(i - 1).getValue();

@@ -46,7 +46,7 @@ public final class IntegerConversion {
     if (number == null) return null;
     BigInteger integer = number.setScale(0, RoundingMode.HALF_UP).toBigInteger();
     if (integer.compareTo(LONGMIN) < 0 || integer.compareTo(LONGMAX) > 0)
-      throw new ExpressionException(ErrorCode.CONVERSION_OVERFLOW, number);
+      throw new ExpressionException(ErrorCode.INTEGER_CONVERSION_OVERFLOW, number);
 
     return integer.longValue();
   }

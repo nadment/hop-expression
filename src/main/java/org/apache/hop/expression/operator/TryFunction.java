@@ -50,7 +50,7 @@ public class TryFunction extends Function {
                 ARGUMENT_OUT_OF_RANGE,
                 DIVISION_BY_ZERO,
                 CONVERSION_ERROR,
-                CONVERSION_OVERFLOW,
+                INTEGER_CONVERSION_OVERFLOW,
                 UNPARSABLE_NUMBER_WITH_FORMAT,
                 UNPARSABLE_DATE_WITH_FORMAT,
                 UNPARSABLE_BINARY_WITH_FORMAT ->

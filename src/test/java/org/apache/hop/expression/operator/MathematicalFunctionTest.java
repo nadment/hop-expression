@@ -65,14 +65,14 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Abs(NULL_STRINg::INTERVAL)").returnType(IntervalType.INTERVAL);
 
     // Check operands
-    evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Abs(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Abs(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Abs(FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Abs(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Abs(FIELD_TIMESTAMP)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Abs(FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Abs(FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Abs(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Abs(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Abs(FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Abs(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Abs(FIELD_TIMESTAMP)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Abs(FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Abs(FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Abs(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     optimize("ABS(-FIELD_INTEGER)");
@@ -86,7 +86,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalEquals("Pi()", PI).returnType(NumberType.NUMBER_NOT_NULL);
 
     // Check operands
-    evalFails("Pi(123)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Pi(123)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     optimize("PI()", "3.1415926535897932384626433832795");
   }
@@ -103,9 +103,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
 
-    evalFails("Div0()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Div0(40)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Div0(40,1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Div0()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Div0(40)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Div0(40,1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Normalize
     optimize("DIV0(FIELD_INTEGER,4)");
@@ -138,9 +138,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Exp(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Exp()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Exp(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Exp(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Exp()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Exp(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Exp(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("EXP(1)", "2.7182818284590452353602874713527");
   }
@@ -159,9 +159,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Factorial(NULL_NUMBER)");
 
     // Check operands
-    evalFails("Factorial()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Factorial(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Factorial(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Factorial()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Factorial(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Factorial(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Factorial(-2)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -186,11 +186,11 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Power(NULL_INTEGER,NULL_INTEGER)");
 
     // Check operands
-    evalFails("Power()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Power(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Power(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Power(FIELD_STRING,2)", ErrorCode.ILLEGAL_ARGUMENT);
-    evalFails("Power(2,FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Power()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Power(3)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Power(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Power(FIELD_STRING,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Power(2,FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     // evalFails("Power(-4,0.5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
 
     // Alias
@@ -211,9 +211,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Sign(NULL_NUMBER)").returnType(IntegerType.INTEGER);
 
     // Check operands
-    evalFails("Sign()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Sign(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Sign(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Sign()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Sign(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sign(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify function repetition
     optimize("SIGN(SIGN(FIELD_INTEGER))", "SIGN(FIELD_INTEGER)");
@@ -235,9 +235,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Cbrt(NULL_NUMBER)");
 
     // Check operands
-    evalFails("Cbrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Cbrt(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Cbrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Cbrt()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Cbrt(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Cbrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -248,9 +248,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Sqrt(NULL_INTEGER)");
 
     // Check operands
-    evalFails("Sqrt()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Sqrt(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Sqrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Sqrt()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Sqrt(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sqrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Sqrt(-5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
@@ -264,9 +264,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Square(NULL_INTEGER)");
 
     // Check operands
-    evalFails("Square()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Square(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Square(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Square()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Square(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Square(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -287,9 +287,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Ceil(NULL_BIGNUMBER)");
 
     // Check operands
-    evalFails("Ceil()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Ceil(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Ceil('12x')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Ceil()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Ceil(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Ceil('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Function repetition
     optimize("CEIL(CEIL(FIELD_NUMBER))", "CEIL(FIELD_NUMBER)");
@@ -314,9 +314,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Floor(NULL_BIGNUMBER)");
 
     // Check operands
-    evalFails("Floor()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Floor(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Floor('12x')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Floor()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Floor(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Floor('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Function repetition
     optimize("FLOOR(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
@@ -344,9 +344,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Round(NULL_BIGNUMBER)");
 
     // Check operands
-    evalFails("Round()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Round(1,2,3)", ErrorCode.TOO_MANY_ARGUMENT);
-    evalFails("Round('x')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Round()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Round(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Round('x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Function repetition
     optimize("ROUND(ROUND(FIELD_NUMBER))", "ROUND(FIELD_NUMBER)");
@@ -382,8 +382,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Degrees(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Degrees()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Degrees(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Degrees()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Degrees(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -394,8 +394,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Radians(NULL_INTEGER)").returnType(NumberType.NUMBER);
 
     // Check operands
-    evalFails("Radians()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("Radians(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Radians()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Radians(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -418,9 +418,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     assertTrue(0 <= randomValue && randomValue < 1);
 
     // Check operands
-    evalFails("Random('test')", ErrorCode.ILLEGAL_ARGUMENT);
+    evalFails("Random('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Random(NULL_INTEGER)", ErrorCode.INVALID_NUMBER);
-    evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENT);
+    evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Each call has its own generator, so a seed always gives the same sequence
     evalEquals("Random(180)", new Random(180).nextDouble());

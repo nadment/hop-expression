@@ -743,7 +743,7 @@ import org.apache.hop.expression.ExpressionException;
       }
       return output.toString();
     } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.FORMAT_DATE_WITH_FORMAT, value, pattern);
+      throw new ExpressionException(ErrorCode.DATE_FORMATTING_ERROR, value, pattern);
     }
   }
 

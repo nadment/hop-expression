@@ -60,7 +60,7 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("IS_NUMBER(FIELD_JSON)");
 
     // Check operands
-    evalFails("IS_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IS_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -79,7 +79,7 @@ class ComparisonFunctionTest extends ExpressionTest {
     optimizeFalse("IS_JSON(FIELD_DATE)");
 
     // Check operands
-    evalFails("IS_JSON()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IS_JSON()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -108,7 +108,7 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("IS_DATE(FIELD_JSON,'YYYY-MM-DD')");
 
     // Check operands
-    evalFails("IS_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("IS_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -132,9 +132,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalNull("CONTAINS(NULL_BINARY,BINARY '1A2B3C')").returnType(BooleanType.BOOLEAN);
     evalNull("CONTAINS(BINARY '1A2B3C',NULL_BINARY)");
 
-    evalFails("CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("CONTAINS(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("CONTAINS(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("CONTAINS(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("CONTAINS(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -156,9 +156,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalNull("StartsWith(BINARY 'FAA12345',NULL_BINARY)");
 
     // Check operands
-    evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("StartsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("StartsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("StartsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("StartsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -181,8 +181,8 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("EndsWith(BINARY '1234',BINARY 'FFFF1234')");
 
     // Check operands
-    evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("EndsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENT);
-    evalFails("EndsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+    evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("EndsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("EndsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 }

@@ -200,10 +200,10 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() throws Exception {
       // Unsupported coercion
-      evalFails("FIELD_DATE>5", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_DATE>5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Compare unordered type
-      evalFails("FIELD_JSON > FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_JSON > FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Conversion error
       evalFails("FIELD_STRING>5", ErrorCode.CONVERSION_ERROR);
@@ -291,10 +291,10 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() throws Exception {
       // Compare unordered type
-      evalFails("FIELD_JSON >= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_JSON >= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Unsupported coercion
-      evalFails("FIELD_DATE>=5", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_DATE>=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Conversion error
       evalFails("FIELD_STRING>=5", ErrorCode.CONVERSION_ERROR);
@@ -389,7 +389,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() throws Exception {
       // Compare unordered type
-      evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Conversion error
       evalFails("FIELD_STRING < 5", ErrorCode.CONVERSION_ERROR);
@@ -477,7 +477,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() throws Exception {
       // Compare unordered type
-      evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Conversion error
       evalFails("FIELD_STRING <=5", ErrorCode.CONVERSION_ERROR);
@@ -563,8 +563,8 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_INTEGER in 40", ErrorCode.MISSING_LEFT_PARENTHESIS);
       evalFails("FIELD_INTEGER in (1,2,3", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-      evalFails("FIELD_INTEGER in (1,2,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_DATE in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_INTEGER in (1,2,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -819,7 +819,7 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails(" XOR true", ErrorCode.SYNTAX_ERROR);
       evalFails("XOR false", ErrorCode.SYNTAX_ERROR);
-      evalFails("true XOR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("true XOR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
   }
 
@@ -848,7 +848,7 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("false OR", ErrorCode.SYNTAX_ERROR);
       evalFails("OR false", ErrorCode.SYNTAX_ERROR);
-      evalFails("true OR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("true OR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -965,7 +965,7 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("false AND", ErrorCode.SYNTAX_ERROR);
       evalFails("AND false", ErrorCode.SYNTAX_ERROR);
-      evalFails("true AND Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("true AND Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1132,7 +1132,7 @@ public class OperatorTest extends ExpressionTest {
           "case when FIELD_INTEGER=40 then 10 else 'Error'", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
       // Unknown return type
-      evalFails("case when false then NULL end", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("case when false then NULL end", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1291,13 +1291,13 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("FIELD_BOOLEAN_TRUE IS ", ErrorCode.SYNTAX_ERROR);
       evalFails("IS TRUE", ErrorCode.SYNTAX_ERROR);
-      evalFails("FIELD_STRING_BOOLEAN_TRUE IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_DATE IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_TIMESTAMP IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_BINARY IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_INET IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS TRUE", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_STRING_BOOLEAN_TRUE IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_TIMESTAMP IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_BINARY IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INET IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1327,13 +1327,13 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("FIELD_BOOLEAN IS NOT", ErrorCode.SYNTAX_ERROR);
       evalFails("IS NOT TRUE", ErrorCode.SYNTAX_ERROR);
-      evalFails("FIELD_STRING_BOOLEAN_TRUE IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_DATE IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_TIMESTAMP IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_BINARY IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_INET IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_STRING_BOOLEAN_TRUE IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_TIMESTAMP IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_BINARY IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INET IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS NOT TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1361,13 +1361,13 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("FIELD_BOOLEAN_TRUE FALSE", ErrorCode.UNEXPECTED_CHARACTER);
       evalFails("IS FALSE", ErrorCode.SYNTAX_ERROR);
-      evalFails("FIELD_STRING_BOOLEAN_TRUE IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_DATE IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_TIMESTAMP IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_BINARY IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_INET IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS FALSE", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_STRING_BOOLEAN_TRUE IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_TIMESTAMP IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_BINARY IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INET IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1395,13 +1395,13 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("FIELD_BOOLEAN_TRUE NOT FALSE", ErrorCode.SYNTAX_ERROR);
       evalFails("IS NOT FALSE", ErrorCode.SYNTAX_ERROR);
-      evalFails("FIELD_STRING_BOOLEAN_TRUE IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_DATE IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_TIMESTAMP IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_BINARY IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_INET IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
-      evalFails("FIELD_JSON IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("FIELD_STRING_BOOLEAN_TRUE IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_TIMESTAMP IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_BINARY IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INET IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON IS NOT FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1775,11 +1775,11 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() throws Exception {
       // Syntax error
-      evalFails("Mod()", ErrorCode.NOT_ENOUGH_ARGUMENT);
-      evalFails("Mod(3)", ErrorCode.NOT_ENOUGH_ARGUMENT);
+      evalFails("Mod()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+      evalFails("Mod(3)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
       // Illegal argument
-      evalFails("'TEST'%5", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails("'TEST'%5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Division by 0
       evalFails("Mod(9,0)", ErrorCode.DIVISION_BY_ZERO);
@@ -2042,8 +2042,8 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testError() {
-      evalFails("[1,3,5][0]", ErrorCode.INVALID_ARRAY_INDEX);
-      evalFails("[1,3,5][9]", ErrorCode.INVALID_ARRAY_INDEX);
+      evalFails("[1,3,5][0]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
+      evalFails("[1,3,5][9]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
     }
 
     @Test
@@ -2316,7 +2316,8 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_INTEGER between 10 and", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and 10", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and ", ErrorCode.SYNTAX_ERROR);
-      evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT);
+      evalFails(
+          "FIELD_INTEGER between FIELD_DATE and FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("FIELD_INTEGER BETWEEN 4 AND", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER BETWEEN  AND 7", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER BETWEEN 4 OR 6", ErrorCode.SYNTAX_ERROR);
@@ -2376,11 +2377,11 @@ public class OperatorTest extends ExpressionTest {
       evalFails("CAST(3 as BOOLEAN", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
       // Bad data type
-      evalFails("Cast(123 as Nill)", ErrorCode.INVALID_TYPE);
-      evalFails("Cast(123 as 1)", ErrorCode.INVALID_TYPE);
-      evalFails("Cast(123 as TRUE)", ErrorCode.INVALID_TYPE);
-      evalFails("CAST('2020-01-01' AS NULL)", ErrorCode.INVALID_TYPE);
-      evalFails("Cast(123 as 'Text')", ErrorCode.INVALID_TYPE);
+      evalFails("Cast(123 as Nill)", ErrorCode.INVALID_DATA_TYPE);
+      evalFails("Cast(123 as 1)", ErrorCode.INVALID_DATA_TYPE);
+      evalFails("Cast(123 as TRUE)", ErrorCode.INVALID_DATA_TYPE);
+      evalFails("CAST('2020-01-01' AS NULL)", ErrorCode.INVALID_DATA_TYPE);
+      evalFails("Cast(123 as 'Text')", ErrorCode.INVALID_DATA_TYPE);
     }
 
     @Test
@@ -2533,8 +2534,8 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(IntegerType.INTEGER_NOT_NULL);
 
       // Casting operations that would result in a value overflow throw an error
-      evalFails("CAST(9223372036854775807888 as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
-      evalFails("CAST('9223372036854775807888' as INTEGER)", ErrorCode.CONVERSION_OVERFLOW);
+      evalFails("CAST(9223372036854775807888 as INTEGER)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+      evalFails("CAST('9223372036854775807888' as INTEGER)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
       evalFails("CAST('ABC' as INTEGER)", ErrorCode.CONVERSION_ERROR);
 
       // Unsupported conversion
