@@ -16,7 +16,7 @@ under the License.
 ////
 = TYPEOF
 
-Returns the data type of the input expression.
+Returns the name of the data type of an expression.
 
 == Syntax
 
@@ -26,10 +26,16 @@ TYPEOF( expression )
 
 == Returns
 
-String, for example, `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
+String
+
+== Usage
+
+* The returned value is the name of the data type, for example `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
 
 == Examples
 
 ----
-TYPEOF('str') return 'STRING'
+TYPEOF('str') returns 'STRING'
+TYPEOF(25) returns 'INTEGER'
+TYPEOF(DATE '2023-01-01') returns 'DATE'
 ----

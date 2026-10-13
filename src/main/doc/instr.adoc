@@ -16,23 +16,20 @@ under the License.
 ////
 = INSTR
 
-Returns the position in the string that is the first character of a specified occurrence of the substring.
+Returns the position of the first character of the specified occurrence of a substring in a string.
 
 == Syntax
 
 ----
-INSTR( string, substring [, position [, occurrence] ] )
+INSTR( string, substring [, position [, occurrence ] ] )
 ----
 
 == Arguments
 
-string:: A string representing the value to look for (Required).
-
-substring:: A string representing the value to search (Required).
-
-position:: A number indicating the position from where to start the search. If the start position is negative, the function counts back position number of characters from the end of string and then searches towards the beginning of string (Optional).
-
-occurrence:: is an integer indicating which occurrence of string should search for. The value must be positive (Optional).
+string:: String to search in.
+substring:: String to search for.
+position:: Position where the search starts. If position is negative, the function counts back that number of characters from the end of string and then searches towards the beginning of string. The default is 1.
+occurrence:: Occurrence of substring to search for. The value must be positive. The default is 1.
 
 == Returns
 
@@ -41,7 +38,17 @@ Integer
 == Usage
 
 * The first position in the string is 1.
-* The default values of both `position` and `occurrence` are 1.
-* If `substring` is not found in `string`, then the function will return 0.
+* Returns 0 if substring is not found in string.
+* Returns NULL if one of the arguments is NULL.
 
+== Examples
 
+----
+INSTR('CORPORATE FLOOR','OR') returns 2
+INSTR('CORPORATE FLOOR','OR',3,2) returns 14
+INSTR('CORPORATE FLOOR','OR',-3,2) returns 2
+----
+
+== See also
+
+* xref:position.adoc["POSITION",role=fun]

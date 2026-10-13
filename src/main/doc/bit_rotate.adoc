@@ -16,7 +16,7 @@ under the License.
 ////
 = BIT_ROTATE
 
-Rotates the bits for a numeric by the specified number of bits to the left or to the right.
+Rotates the bits of an integer value by the specified number of bits to the left or to the right.
 
 == Syntax
 
@@ -27,6 +27,7 @@ BIT_ROTATE( value, distance )
 == Arguments
 
 value:: This expression must evaluate to a data type that can be cast to Integer.
+distance:: The number of bits to rotate. A positive distance rotates to the left, a negative distance rotates to the right.
 
 == Returns
 
@@ -34,6 +35,15 @@ Integer
 
 == Usage
 
-* If distance is positive, it will rotate to the left.
-* If distance is negative, it will rotate to the right.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+BIT_ROTATE(1,4) returns 16
+BIT_ROTATE(16,-4) returns 1
+----
+
+== See also
+
+* xref:bit_shift.adoc["BIT_SHIFT",role=fun]

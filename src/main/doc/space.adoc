@@ -16,7 +16,7 @@ under the License.
 ////
 = SPACE
 
-Returns a string consisting of a the specified number of blank spaces.
+Returns a string consisting of the specified number of space characters.
 
 == Syntax
 
@@ -30,4 +30,17 @@ String
 
 == Usage
 
-* Return NULL if the argument is negative
+* Returns NULL if the argument is negative.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SPACE(4) returns '    '
+SPACE(0) returns ''
+SPACE(-3) returns NULL
+----
+
+== See also
+
+* xref:repeat.adoc["REPEAT",role=fun]

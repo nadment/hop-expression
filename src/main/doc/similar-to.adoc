@@ -16,16 +16,17 @@ under the License.
 ////
 = SIMILAR TO
 
-Match a string based on a regular expression pattern.
+Checks whether a string matches a regular expression pattern.
 
 == Syntax
+
 ----
-subject [NOT] SIMILAR TO pattern
+subject [ NOT ] SIMILAR TO pattern
 ----
 
 == Arguments
 
-subject:: The string to be searched for.
+subject:: The string to match against the pattern.
 pattern:: The regular expression pattern.
 
 == Returns
@@ -34,10 +35,12 @@ Boolean
 
 == Usage
 
-* Returns true only if its pattern matches the entire string.
-* Performs a case-sensitive match.
+* Returns TRUE only if pattern matches the entire subject.
+* The match is case-sensitive.
+* Returns FALSE if pattern is an empty string.
+* Returns NULL if one of the arguments is NULL.
 
-Regular expression pattern
+The pattern supports the following operators:
 
 [cols="<1,<1",options="header"]
 |===
@@ -58,5 +61,14 @@ Regular expression pattern
 == Examples
 
 ----
-'xyz' SIMILAR TO '%(y|a)%'
+'xyz' SIMILAR TO '%(y|a)%' returns TRUE
+'abc' SIMILAR TO '_b_' returns TRUE
+'abc' SIMILAR TO 'a' returns FALSE
+'abc' NOT SIMILAR TO 'abc' returns FALSE
 ----
+
+== See also
+
+* xref:like.adoc["LIKE",role=op]
+* xref:ilike.adoc["ILIKE",role=op]
+* xref:regexp_like.adoc["REGEXP_LIKE",role=fun]

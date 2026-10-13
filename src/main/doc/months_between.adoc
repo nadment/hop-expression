@@ -26,8 +26,22 @@ MONTHS_BETWEEN( date1, date2 )
 
 == Returns
 
-Integer
+Number
 
 == Usage
 
-* Returns NULL if either of <date1> or <date2> is NULL
+* The result is the number of days between the two dates divided by 31, so it can have a fractional part.
+* The result is positive if date1 is earlier than date2, and negative if date1 is later than date2.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+MONTHS_BETWEEN(DATE '2005-01-01',DATE '2005-02-02') returns 1.032258064516129
+MONTHS_BETWEEN(DATE '2007-11-09',DATE '2007-12-09') returns 0.967741935483871
+----
+
+== See also
+
+* xref:days_between.adoc["DAYS_BETWEEN",role=fun]
+* xref:years_between.adoc["YEARS_BETWEEN",role=fun]

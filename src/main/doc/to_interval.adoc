@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_INTERVAL
 
-Converts the input text to an interval value.
+Converts a string to an interval value.
 
 == Syntax
 
@@ -30,17 +30,13 @@ Interval
 
 == Usage
 
-* Returns NULL if argument is NULL.
+* The string uses either the verbose syntax, such as `'1 year 6 months 12 hours'`, or the short syntax, such as `'1-6 0 12:00:00'`.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
-The following example illustrates the use of the verbose syntax
 ----
 TO_INTERVAL('1 year 6 months 12 hours')
-----
-
-The following example illustrates the use of the short syntax
-----
 TO_INTERVAL('1-6 0 12:00:00')
 ----
 

@@ -16,7 +16,7 @@ under the License.
 ////
 = BIT_GET
 
-Returns the value of a bit at a specified position.
+Returns TRUE if the bit at the specified position of an integer value is set to 1, FALSE otherwise.
 
 == Syntax
 
@@ -27,6 +27,7 @@ BIT_GET( value, position )
 == Arguments
 
 value:: This expression must evaluate to a data type that can be cast to Integer.
+position:: The position of the bit to read.
 
 == Returns
 
@@ -34,6 +35,19 @@ Boolean
 
 == Usage
 
-* The first position of a bit is 1.
+* The first bit has position 1.
+* Returns FALSE if position is greater than 64.
 * Returns NULL if position is negative or zero.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+BIT_GET(3,1) returns TRUE
+BIT_GET(3,4) returns FALSE
+----
+
+== See also
+
+* xref:bit_set.adoc["BIT_SET",role=fun]
+* xref:bit_clear.adoc["BIT_CLEAR",role=fun]

@@ -30,10 +30,10 @@ The data type of the returned value is the same as the data type of the input va
 
 == Usage
 
-* Input expressions with a NULL value are ignored.
-* Return NULL if all rows in the group contain a NULL value for the expression.
+* NULL values are ignored.
+* Returns NULL if the expression is NULL for all rows in the group.
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
 
 == Examples
 
@@ -41,3 +41,6 @@ NOTE: This is an analytic function that should only be used in the Aggregate tra
 MIN( Age )
 ----
 
+== See also
+
+* xref:max.adoc["MAX",role=fun]

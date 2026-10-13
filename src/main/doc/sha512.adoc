@@ -21,17 +21,25 @@ Calculates the SHA-512 hash of a value.
 == Syntax
 
 ----
-SHA512( {string | binary} )
+SHA512( value )
 ----
 
 == Arguments
 
-string:: A string expression, the message to be hashed.
+value:: The string or binary value to hash.
 
 == Returns
 
-Returns a 128 characters hex-encoded string (512 bits).
+String
 
 == Usage
 
+* The result is a hex-encoded string of 128 characters (512 bits).
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:sha1.adoc["SHA1",role=fun]
+* xref:sha224.adoc["SHA224",role=fun]
+* xref:sha256.adoc["SHA256",role=fun]
+* xref:sha384.adoc["SHA384",role=fun]

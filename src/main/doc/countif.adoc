@@ -16,7 +16,7 @@ under the License.
 ////
 = COUNTIF [aggregate]
 
-Returns the number rows that satisfy the condition over a group of rows.
+Returns the number of rows that satisfy the condition over a group of rows.
 
 == Syntax
 
@@ -30,6 +30,9 @@ Integer
 
 == Usage
 
+* Only the rows for which condition is TRUE are counted.
+
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
 
 == Examples
 
@@ -37,4 +40,6 @@ Integer
 COUNTIF(Amount>=1000)
 ----
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+== See also
+
+* xref:count.adoc["COUNT",role=fun]

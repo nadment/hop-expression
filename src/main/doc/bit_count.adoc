@@ -16,7 +16,7 @@ under the License.
 ////
 = BIT_COUNT
 
-Returns the number of bits that are set
+Returns the number of bits that are set to 1 in an integer value.
 
 == Syntax
 
@@ -35,3 +35,9 @@ Integer
 == Usage
 
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+BIT_COUNT(31) returns 5
+----

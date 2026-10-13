@@ -16,18 +16,28 @@ under the License.
 ////
 = MAKE_INTERVAL
 
-Creates a interval from individual numeric components.
+Creates an interval from individual numeric components.
 
 == Syntax
 
 ----
-MAKE_INTERVAL( year, month, day, hour, minute, second[.fractional] )
+MAKE_INTERVAL( year, month, day, hour, minute, second )
 ----
 
-The literal provides alternative syntax.
+The interval literal provides an alternative syntax.
+
 ----
 INTERVAL '3 years 6 months'
 ----
+
+== Arguments
+
+year:: The number of years.
+month:: The number of months.
+day:: The number of days.
+hour:: The number of hours.
+minute:: The number of minutes.
+second:: The number of seconds, with an optional fractional part (for example `59.123`).
 
 == Returns
 
@@ -35,7 +45,14 @@ Interval
 
 == Usage
 
-You can use interval to add or subtract a period of time to/from a date or timestamp.
+* An interval can be added to or subtracted from a date or timestamp.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+MAKE_INTERVAL(20,1,1,23,15,59.123)
+----
 
 == See also
 

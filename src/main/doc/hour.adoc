@@ -26,8 +26,20 @@ HOUR( timestamp )
 
 == Returns
 
-Integer between 0 and 23.
+Integer between 0 and 23
 
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](HOUR FROM timestamp).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+HOUR(TIMESTAMP '2019-01-01 15:28:59') returns 15
+----
+
+== See also
+
+* xref:minute.adoc["MINUTE",role=fun]
+* xref:second.adoc["SECOND",role=fun]

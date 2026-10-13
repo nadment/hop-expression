@@ -16,23 +16,37 @@ under the License.
 ////
 = SHA256
 
-Calculate the SHA-256 hash of a value.
+Calculates the SHA-256 hash of a value.
 
 == Syntax
 
 ----
-SHA256( {string | binary} )
+SHA256( value )
 ----
 
 == Arguments
 
-{string | binary}:: A string expression, the message to be hashed.
+value:: The string or binary value to hash.
 
 == Returns
 
-Returns a 64 characters hex-encoded string (256 bits).
+String
 
 == Usage
 
+* The result is a hex-encoded string of 64 characters (256 bits).
 * Returns NULL if the argument is NULL.
 
+== Examples
+
+----
+SHA256('Test') returns '532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25'
+----
+
+== See also
+
+* xref:md5.adoc["MD5",role=fun]
+* xref:sha1.adoc["SHA1",role=fun]
+* xref:sha224.adoc["SHA224",role=fun]
+* xref:sha384.adoc["SHA384",role=fun]
+* xref:sha512.adoc["SHA512",role=fun]

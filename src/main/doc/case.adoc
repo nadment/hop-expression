@@ -16,11 +16,12 @@ under the License.
 ////
 = CASE
 
-A CASE expression consists of a set of WHEN/THEN clauses and an optional ELSE clause.
+Returns the result of the first `WHEN` clause that matches, or the result of the optional `ELSE` clause if no clause matches.
 
 == Syntax
 
-Simple CASE expressions
+A simple `CASE` expression compares an expression with values.
+
 ----
 CASE expression
     WHEN value1A [, value1N... ] THEN result1
@@ -30,7 +31,8 @@ CASE expression
 END
 ----
 
-Searched CASE expressions
+A searched `CASE` expression evaluates conditions.
+
 ----
 CASE
     WHEN condition1 THEN result1
@@ -45,10 +47,16 @@ END
 The data type of the returned value is the same as the data type of the result expressions.
 
 == Usage
-=== Simple CASE expressions
-A valued CASE expression tests for the first WHEN expression that is equal to a test expression and returns the value of the matching THEN expression. If no WHEN expression is equal to the test expression, CASE returns the ELSE expression, or, if omitted, NULL.
 
-The simple case allows one value or a list of values in the when clause.
+* A simple `CASE` expression compares expression with the values of each `WHEN` clause, in order, and returns the result of the first clause that contains an equal value.
+* A `WHEN` clause of a simple `CASE` expression accepts one value or a list of values separated by commas.
+* A searched `CASE` expression evaluates the condition of each `WHEN` clause, in order, and returns the result of the first clause whose condition is TRUE.
+* If no `WHEN` clause matches, the result of the `ELSE` clause is returned, or NULL if the `ELSE` clause is omitted.
+
+NOTE: The `WHEN` clauses are evaluated in order. For better performance, list the most likely clauses first and the clauses with expensive expressions (e.g., requiring lots of CPU and memory) last, to minimize the chances that they are evaluated.
+
+== Examples
+
 ----
 CASE expression
   WHEN 0, 1, 2 THEN 'good'
@@ -58,8 +66,7 @@ CASE expression
 END
 ----
 
+== See also
 
-=== Searched CASE expressions
-A searched CASE expression tests for the first WHEN expression that evaluates to TRUE and returns the value of the matching THEN expression. If no WHEN expression evaluates to TRUE, CASE returns the ELSE expression, or, if omitted, NULL.
-
-NOTE: Since WHEN clauses are evaluated in order, you may be able to squeeze some extra efficiency out of your code by listing the most likely WHEN clauses first. In addition, if you have WHEN clauses with “expensive” expressions (e.g., requiring lots of CPU and memory), you may want to list those last in order to minimize the chances that they will be evaluated.
+* xref:decode.adoc["DECODE",role=fun]
+* xref:if.adoc["IF",role=fun]

@@ -21,8 +21,13 @@ Adds or subtracts a specified number of minutes to a date or timestamp.
 == Syntax
 
 ----
-ADD_MINUTES( timestamp, integer )
+ADD_MINUTES( timestamp, minutes )
 ----
+
+== Arguments
+
+timestamp:: The date or timestamp to modify.
+minutes:: The number of minutes to add. A negative number subtracts minutes.
 
 == Returns
 
@@ -30,12 +35,17 @@ Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of minutes, can be a positive or negative integer to either add or subtract minutes, respectively.
+* If minutes has a decimal part, it is truncated before the addition.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-ADD_MINUTES(TIMESTAMP '2024-02-18 22.58.59', 4) return 2024-02-18 23.02.59
+ADD_MINUTES(TIMESTAMP '2024-02-18 22.58.59', 4) returns 2024-02-18 23.02.59
 ----
+
+== See also
+
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:add_seconds.adoc["ADD_SECONDS",role=fun]
+* xref:add_hours.adoc["ADD_HOURS",role=fun]

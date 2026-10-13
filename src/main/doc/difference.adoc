@@ -16,7 +16,7 @@ under the License.
 ////
 = DIFFERENCE
 
-Compares two SOUNDEX values, and return the value of the integer.
+Compares the `SOUNDEX` values of two strings and returns an integer that measures their similarity.
 
 == Syntax
 
@@ -26,8 +26,21 @@ DIFFERENCE( string1, string2 )
 
 == Returns
 
-Integer
+Integer between 0 and 4
 
 == Usage
 
-This value measures the degree that the SOUNDEX values match, on a scale of 0 to 4. A value of 0 indicates a weak or no similarity between the SOUNDEX values; 4 indicates that the SOUNDEX values are extremely similar, or even identical.
+* The result measures the degree to which the `SOUNDEX` values match, on a scale of 0 to 4.
+* A value of 0 indicates a weak or no similarity between the `SOUNDEX` values; a value of 4 indicates that the `SOUNDEX` values are extremely similar, or even identical.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+DIFFERENCE('Juice', 'Jucy') returns 4
+DIFFERENCE('Apple', 'Orange') returns 0
+----
+
+== See also
+
+* xref:soundex.adoc["SOUNDEX",role=fun]

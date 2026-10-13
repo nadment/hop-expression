@@ -27,3 +27,7 @@ CURRENT_TIMEZONE()
 == Returns
 
 String
+
+== See also
+
+* xref:convert_timezone.adoc["CONVERT_TIMEZONE",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = Element at []
 
-Returns the element of an array at index.
+Returns the element of an array at the specified index.
 
 == Syntax
 
@@ -26,15 +26,19 @@ array[index]
 
 == Returns
 
-The result is of the type of the elements of the array
+The data type of the returned value is the data type of the elements of the array.
 
 == Usage
 
-* The array index value must be between 1 and the cardinality of the array.
-* If index is negative the function accesses elements from the last to the first
+* The index of the first element is 1, and index must not be greater than the cardinality of the array.
+* If index is negative, the elements are accessed from the last to the first.
+* Raises an error if index is 0 or out of the bounds of the array.
+* Returns NULL if index is NULL.
 
 == Examples
 
 ----
 PHONE_NUMBERS[1]
+[1,3,5][1] returns 1
+[1,3,5][-1] returns 5
 ----

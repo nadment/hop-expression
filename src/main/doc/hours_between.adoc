@@ -16,7 +16,7 @@ under the License.
 ////
 = HOURS_BETWEEN
 
-Returns the number of hours between two dates.
+Returns the number of complete hours between two timestamps.
 
 == Syntax
 
@@ -30,5 +30,18 @@ Integer
 
 == Usage
 
-* If the first timestamp is earlier than second timestamp, then the result is negative.
-* Returns NULL if either of timestamp1 or timestamp2 is NULL
+* Only complete hours are counted.
+* If timestamp1 is later than timestamp2, the result is negative.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+HOURS_BETWEEN(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59') returns 0
+HOURS_BETWEEN(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59') returns 24
+----
+
+== See also
+
+* xref:days_between.adoc["DAYS_BETWEEN",role=fun]
+* xref:minutes_between.adoc["MINUTES_BETWEEN",role=fun]

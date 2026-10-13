@@ -19,6 +19,7 @@ under the License.
 Returns the first value in an ordered set of values over a group of rows.
 
 == Syntax
+
 ----
 FIRST_VALUE( expression ) [ IGNORE NULLS | RESPECT NULLS ]
 ----
@@ -29,11 +30,10 @@ The data type of the returned value is the same as the data type of the input va
 
 == Usage
 
-* If the first value in the set is null, then the function returns NULL unless you specify `IGNORE NULLS`.
+* If neither `IGNORE NULLS` nor `RESPECT NULLS` is specified, the default is `RESPECT NULLS`.
+* Returns NULL if the first value in the set is NULL, unless `IGNORE NULLS` is specified.
 
-* If `IGNORE NULLS` or `RESPECT NULLS` is not specified, the default is `RESPECT NULLS`
-
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
 
 == Examples
 

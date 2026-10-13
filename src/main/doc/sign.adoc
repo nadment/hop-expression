@@ -16,12 +16,12 @@ under the License.
 ////
 = SIGN
 
-Returns the sign for the numeric expression.
+Returns the sign of a numeric value.
 
 == Syntax
 
 ----
-SIGN(numeric)
+SIGN( numeric )
 ----
 
 == Returns
@@ -30,6 +30,17 @@ Integer
 
 == Usage
 
-* It returns a value of -1 for negative expressions, a value of 0 for zero expressions and a value of +1 for positive expressions.
-* If the expression is NULL then the return value is also NULL.
+* Returns -1 if the argument is negative, 0 if it is zero and 1 if it is positive.
+* Returns NULL if the argument is NULL.
 
+== Examples
+
+----
+SIGN(0.3) returns 1
+SIGN(0) returns 0
+SIGN(-5) returns -1
+----
+
+== See also
+
+* xref:abs.adoc["ABS",role=fun]

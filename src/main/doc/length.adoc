@@ -16,12 +16,18 @@ under the License.
 ////
 = LEN[GTH]
 
-Returns the number of characters of the specified string or the length of binary in bytes.
+Returns the number of characters of a string, or the number of bytes of a binary value.
 
 == Syntax
+
 ----
-LENGTH( {string | binary} )
-LEN( {string | binary} )
+LENGTH( { string | binary } )
+----
+
+The `LEN` function is an alias.
+
+----
+LEN( { string | binary } )
 ----
 
 == Returns
@@ -30,10 +36,10 @@ Integer
 
 == Usage
 
-* Returns NULL if the expression is NULL.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
-LENGTH('ABC') return 3
+LENGTH('ABC') returns 3
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = CBRT
 
-Calculates the cubic root of numeric expression.
+Returns the cube root of a numeric value.
 
 == Syntax
 
@@ -27,3 +27,18 @@ CBRT( numeric )
 == Returns
 
 Number
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+CBRT(64) returns 4
+CBRT(-8) returns -2
+----
+
+== See also
+
+* xref:sqrt.adoc["SQRT",role=fun]

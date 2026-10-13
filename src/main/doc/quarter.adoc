@@ -16,7 +16,7 @@ under the License.
 ////
 = QUARTER
 
-Return the quarter of the year.
+Returns the quarter of the year of the specified date or timestamp.
 
 == Syntax
 
@@ -26,8 +26,23 @@ QUARTER( date )
 
 == Returns
 
-Integer between 1 and 4.
+Integer between 1 and 4
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](QUARTER FROM date).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun]( QUARTER FROM date ).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+QUARTER(DATE '2019-01-01') returns 1
+QUARTER(DATE '2019-04-28') returns 2
+QUARTER(DATE '2019-12-28') returns 4
+----
+
+== See also
+
+* xref:month.adoc["MONTH",role=fun]
+* xref:year.adoc["YEAR",role=fun]
+* xref:extract.adoc["EXTRACT",role=fun]

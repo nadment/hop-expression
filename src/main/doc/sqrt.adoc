@@ -16,7 +16,7 @@ under the License.
 ////
 = SQRT
 
-Calculate the square-root of a non-negative numeric value.
+Calculates the square root of a non-negative numeric value.
 
 == Syntax
 
@@ -30,7 +30,18 @@ Number
 
 == Usage
 
-* If the input expression is negative, an error will be reported.
-* Returns a value in the range of [0, &infin;).
+* Returns a value in the range [0, &infin;).
+* Raises an error if the argument is negative.
 * Returns NULL if the argument is NULL.
 
+== Examples
+
+----
+SQRT(9) returns 3
+----
+
+== See also
+
+* xref:cbrt.adoc["CBRT",role=fun]
+* xref:square.adoc["SQUARE",role=fun]
+* xref:power.adoc["POWER",role=fun]

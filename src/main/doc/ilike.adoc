@@ -16,13 +16,21 @@ under the License.
 ////
 = ILIKE
 
-Case-insensitive matching of strings based on comparison with a pattern.
+Checks whether a string matches a pattern, ignoring case.
 
 == Syntax
 
 ----
-string [NOT] ILIKE pattern [ ESCAPE escape ]
+string [ NOT ] ILIKE pattern [ ESCAPE escape ]
 ----
+
+== Arguments
+
+string:: String to compare.
+pattern:: Pattern to match, which may contain the following SQL wildcards:
+* An underscore `_` matches any single character.
+* A percent sign `%` matches any sequence of zero or more characters.
+escape:: Single character that instructs the operator to treat the wildcard character that follows it as a regular character.
 
 == Returns
 
@@ -30,9 +38,16 @@ Boolean
 
 == Usage
 
-SQL wildcards are supported in pattern:
+* The pattern must match the entire string.
+* Returns NULL if string or pattern is NULL.
 
-*	An underscore `_` matches any single character.
-*	A percent sign `%` matches any sequence of zero or more characters.
+== Examples
 
-The escape character instructs the operator to treat the wildcard characters as the regular characters.
+----
+'test' ILIKE '%T%' returns TRUE
+'Result 100% value' ILIKE 'RESULT%100^%%' ESCAPE '^' returns TRUE
+----
+
+== See also
+
+* xref:like.adoc["LIKE",role=op]

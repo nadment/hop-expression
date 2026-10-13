@@ -16,7 +16,7 @@ under the License.
 ////
 = STDDEV_POP [aggregate]
 
-Returns the population standard deviation (square root of population variance) of non-null values.
+Returns the population standard deviation (square root of the population variance) of the non-null values over a group of rows.
 
 == Syntax
 
@@ -30,10 +30,16 @@ Number
 
 == Usage
 
-This is defined as the square root of VARIANCE_POP
+* The result is the square root of `VARIANCE_POP`:
++
 ----
 STDDEV_POP( expression ) = SQRT( VARIANCE_POP( expression ) )
 ----
+* NULL values are ignored.
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
 
+== See also
+
+* xref:stddev_samp.adoc["STDDEV_SAMP",role=fun]
+* xref:variance_pop.adoc["VARIANCE_POP",role=fun]

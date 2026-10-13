@@ -30,6 +30,18 @@ Number
 
 == Usage
 
-* The argument should be expressed in radians.
-* SEC(x) is equivalent to 1 / COS(x)
+* The argument must be an angle expressed in radians.
+* `SEC( numeric )` is equivalent to `1 / COS( numeric )`.
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SEC(PI()) returns -1
+----
+
+== See also
+
+* xref:cos.adoc["COS",role=fun]
+* xref:csc.adoc["CSC",role=fun]
+* xref:cot.adoc["COT",role=fun]

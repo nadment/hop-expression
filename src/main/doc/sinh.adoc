@@ -16,7 +16,7 @@ under the License.
 ////
 = SINH
 
-Calculates the hyperbolic sine.
+Calculates the hyperbolic sine of a numeric value.
 
 == Syntax
 
@@ -31,3 +31,10 @@ Number
 == Usage
 
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:asinh.adoc["ASINH",role=fun]
+* xref:sin.adoc["SIN",role=fun]
+* xref:cosh.adoc["COSH",role=fun]
+* xref:tanh.adoc["TANH",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = YEAR
 
-Returns the integer that specifies the year of the specified date or timestamp.
+Returns the year of a date or timestamp.
 
 == Syntax
 
@@ -31,3 +31,15 @@ Integer
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](YEAR FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+YEAR(DATE '2019-01-01') returns 2019
+----
+
+== See also
+
+* xref:isoyear.adoc["ISOYEAR",role=fun]
+* xref:extract.adoc["EXTRACT",role=fun]

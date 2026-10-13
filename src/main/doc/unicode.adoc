@@ -16,7 +16,7 @@ under the License.
 ////
 = UNICODE
 
-Returns the Unicode code point for the first Unicode character in a string. If the string is empty, a value of 0 is returned.
+Returns the Unicode code point of the first character of a string.
 
 == Syntax
 
@@ -27,3 +27,21 @@ UNICODE( string )
 == Returns
 
 Integer
+
+== Usage
+
+* Returns 0 if the string is empty.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+UNICODE('é') returns 233
+UNICODE('€') returns 8364
+UNICODE('') returns 0
+----
+
+== See also
+
+* xref:chr.adoc["CHR",role=fun]
+* xref:ascii.adoc["ASCII",role=fun]

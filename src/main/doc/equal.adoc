@@ -16,7 +16,7 @@ under the License.
 ////
 = Equal operator =
 
-First expression is equal than second expression.
+Returns TRUE if the first expression is equal to the second one.
 
 == Syntax
 
@@ -31,9 +31,10 @@ Boolean
 == Usage
 
 * NULL is not equal to anything, not even to another NULL.
-* Timestamp '2022-03-01 8:00:00 -8:00' is equal to Timestamp '2022-03-01 11:00:00 -5:00'
+* `TIMESTAMP '2022-03-01 8:00:00 -8:00'` is equal to `TIMESTAMP '2022-03-01 11:00:00 -5:00'`.
+* Returns NULL if one of the arguments is NULL.
 
 == See also
 
 * xref:equal_null.adoc["EQUAL_NULL",role=fun]
-* xref:is-distinct-from.adoc["IS NOT DISTINCT FORM"",role=op]
+* xref:is-distinct-from.adoc["IS NOT DISTINCT FROM",role=op]

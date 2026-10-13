@@ -16,7 +16,7 @@ under the License.
 ////
 = SQUARE
 
-Calculates the square of a numeric expression.
+Calculates the square of a numeric value.
 
 == Syntax
 
@@ -27,3 +27,19 @@ SQUARE( numeric )
 == Returns
 
 Number
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SQUARE(1) returns 1
+SQUARE(-5) returns 25
+----
+
+== See also
+
+* xref:sqrt.adoc["SQRT",role=fun]
+* xref:power.adoc["POWER",role=fun]

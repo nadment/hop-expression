@@ -16,7 +16,7 @@ under the License.
 ////
 = DECOMPRESS
 
-Decompresses the compressed BINARY input parameter to a string.
+Decompresses a binary value that was compressed using the GZIP algorithm.
 
 == Syntax
 
@@ -26,4 +26,19 @@ DECOMPRESS( binary )
 
 == Returns
 
-String
+Binary
+
+== Usage
+
+* Raises an error if the argument cannot be decompressed.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+DECOMPRESS(COMPRESS('Test'::BINARY))::STRING returns 'Test'
+----
+
+== See also
+
+* xref:compress.adoc["COMPRESS",role=fun]

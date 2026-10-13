@@ -16,7 +16,7 @@ under the License.
 ////
 = ASIN
 
-Calculates the inverse sine (arc sine).
+Calculates the inverse sine (arc sine) of a number.
 
 == Syntax
 
@@ -30,6 +30,11 @@ Number
 
 == Usage
 
-* Argument must be in the interval [-1;1].
-* Returns a value in the range of [-&pi;/2, &pi;/2].
+* The argument must be in the interval [-1, 1].
+* The returned value is in the interval [-&pi;/2, &pi;/2].
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:sin.adoc["SIN",role=fun]
+* xref:asinh.adoc["ASINH",role=fun]

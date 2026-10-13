@@ -19,6 +19,7 @@ under the License.
 Converts a string to upper case.
 
 == Syntax
+
 ----
 UPPER( string )
 ----
@@ -27,6 +28,17 @@ UPPER( string )
 
 String
 
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+UPPER('test') returns 'TEST'
+----
+
 == See also
 
 * xref:lower.adoc["LOWER",role=fun]
+* xref:initcap.adoc["INITCAP",role=fun]

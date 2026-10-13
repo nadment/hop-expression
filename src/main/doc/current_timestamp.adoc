@@ -16,13 +16,16 @@ under the License.
 ////
 = CURRENT_TIMESTAMP, NOW
 
-Returns the current date and time in the context time zone (System time zone by default).
+Returns the current date and time in the context time zone (system time zone by default).
 
 == Syntax
 
 ----
 CURRENT_TIMESTAMP()
 ----
+
+The `NOW` function provides alternative syntax.
+
 ----
 NOW()
 ----
@@ -33,5 +36,10 @@ Date
 
 == Usage
 
-* This function always return the same value within a execution context like running a pipeline.
-* The CURRENT_DATE() function is similar but returns the date only.
+* Always returns the same value within an execution context, such as a running pipeline.
+* The `CURRENT_DATE` function is similar but returns the date only.
+
+== See also
+
+* xref:current_date.adoc["CURRENT_DATE",role=fun]
+* xref:current_timezone.adoc["CURRENT_TIMEZONE",role=fun]

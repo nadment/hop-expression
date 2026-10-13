@@ -19,9 +19,17 @@ under the License.
 Replaces a substring of the specified length, starting at the specified position, with a new string.
 
 == Syntax
+
 ----
-OVERLAY( value, replace, position [, length] )
+OVERLAY( string, replacement, position [, length ] )
 ----
+
+== Arguments
+
+string:: The string in which the substring is replaced.
+replacement:: The string that replaces the substring.
+position:: The position in string of the first character to replace.
+length:: The number of characters of string to replace.
 
 == Returns
 
@@ -30,15 +38,19 @@ String
 == Usage
 
 * The first position in the string is 1.
-* If `position` is beyond the end of string, replacement is placed directly after string.
-* If `length` is 0, `replace` is simply inserted.
-* If `length` is omitted, it defaults to the length of `replace`.
+* If position is beyond the end of string, replacement is placed directly after string.
+* If length is omitted or 0, it defaults to the length of replacement.
+* If length is less than the length of replacement, only the first length characters of replacement are used.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-OVERLAY('Apxxxe','ach',3) return 'Apache'
-OVERLAY('Apxxxe','ache',3,2) return 'Apacxe'
-OVERLAY('Apxxxe','pl',3,3) return 'Apple'
+OVERLAY('Apxxxe','ach',3) returns 'Apache'
+OVERLAY('Apxxxe','ache',3,2) returns 'Apacxe'
+OVERLAY('Apxxxe','pl',3,3) returns 'Apple'
 ----
+
+== See also
+
+* xref:insert.adoc["INSERT",role=fun]

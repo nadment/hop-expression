@@ -16,14 +16,26 @@ under the License.
 ////
 = FACTORIAL
 
-Computes the factorial value of a numeric expression.
+Returns the factorial of an integer value.
 
 == Syntax
 
 ----
-FACTORIAL( numeric )
+FACTORIAL( integer )
 ----
 
 == Returns
 
 Number
+
+== Usage
+
+* Raises an error if the argument is negative.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+FACTORIAL(5) returns 120
+FACTORIAL(0) returns 1
+----

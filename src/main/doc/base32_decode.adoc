@@ -21,13 +21,28 @@ Decodes a Base32-encoded string to a string.
 == Syntax
 
 ----
-BASE32_DECODE( string )
+BASE32_DECODE( input )
 ----
 
 == Arguments
 
-input:: A Base32-encoded string expression.
+input:: A Base32-encoded string or binary expression.
 
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+BASE32_DECODE('IFYGCY3IMUQEQ33Q') returns 'Apache Hop'
+----
+
+== See also
+
+* xref:base32_encode.adoc["BASE32_ENCODE",role=fun]
+* xref:base64_decode.adoc["BASE64_DECODE",role=fun]

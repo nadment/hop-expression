@@ -16,7 +16,7 @@ under the License.
 ////
 = IS_NUMBER
 
-Check if a value is a valid number.
+Checks whether a value is a valid number.
 
 == Syntax
 
@@ -30,10 +30,18 @@ Boolean
 
 == Usage
 
-Return FALSE if a value is NULL.
+* Returns FALSE if the argument is NULL.
 
 == Examples
 
 ----
 IS_NUMBER( ITEM_PRICE )
+IS_NUMBER('-123.45') returns TRUE
+IS_NUMBER('12word') returns FALSE
 ----
+
+== See also
+
+* xref:is_date.adoc["IS_DATE",role=fun]
+* xref:is_json.adoc["IS_JSON",role=fun]
+* xref:to_number.adoc["TO_NUMBER",role=fun]

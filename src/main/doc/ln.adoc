@@ -16,7 +16,7 @@ under the License.
 ////
 = LN
 
-Calculates the natural logarithm of number.
+Returns the natural logarithm of a number.
 
 == Syntax
 
@@ -30,4 +30,17 @@ Number
 
 == Usage
 
-* If the input expression is less than or equal to 0, an error is returned.
+* An error is raised if numeric is less than or equal to 0.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+LN(1) returns 0
+----
+
+== See also
+
+* xref:exp.adoc["EXP",role=fun]
+* xref:log.adoc["LOG",role=fun]
+* xref:log10.adoc["LOG10",role=fun]

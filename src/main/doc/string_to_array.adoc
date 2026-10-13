@@ -16,13 +16,18 @@ under the License.
 ////
 = STRING_TO_ARRAY
 
-Splits a string into an array of strings based on a specified delimiter.
+Splits a string into an array of strings based on the specified delimiter.
 
 == Syntax
 
 ----
-STRING_TO_ARRAY(string, delimiter)
+STRING_TO_ARRAY( string, delimiter )
 ----
+
+== Arguments
+
+string:: The string to split.
+delimiter:: The string that separates the elements.
 
 == Returns
 
@@ -30,12 +35,17 @@ Array
 
 == Usage
 
-* If the `delimiter` is an empty string '', the result is an array containing the entire original input string as a single element.
+* If delimiter is an empty string `''`, the result is an array containing the entire string as a single element.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-STRING_TO_ARRAY('blue|orange|yellow','|') return ['blue','orange','yellow']
-STRING_TO_ARRAY('blue|orange|yellow','') return ['blue|orange|yellow']
+STRING_TO_ARRAY('blue|orange|yellow','|') returns ['blue','orange','yellow']
+STRING_TO_ARRAY('blue|orange|yellow','') returns ['blue|orange|yellow']
 ----
+
+== See also
+
+* xref:array_to_string.adoc["ARRAY_TO_STRING",role=fun]
+* xref:split_part.adoc["SPLIT_PART",role=fun]

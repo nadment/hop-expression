@@ -19,9 +19,25 @@ under the License.
 Returns the specified part of the URL or the value for the specified QUERY key.
 
 == Syntax
+
 ----
-PARSE_URL(url, part [, key])
+PARSE_URL( url, part [, key ] )
 ----
+
+== Arguments
+
+url:: The URL to parse.
+part:: The part of the URL to return, in upper case.
+* `HOST`
+* `PORT`
+* `PATH`
+* `QUERY`
+* `REF`
+* `PROTOCOL`
+* `AUTHORITY`
+* `FILE`
+* `USERINFO`
+key:: The key of the query parameter whose value is returned (case-sensitive). It is only used with the `QUERY` part.
 
 == Returns
 
@@ -29,18 +45,17 @@ String
 
 == Usage
 
-* `part` must be one of HOST, PORT, PATH, QUERY, REF, PROTOCOL, FRAGMENT, AUTHORITY, FILE, USERINFO.
-* Use `key` specifies which query to extract (case-sensitive).
-* If a requested part or key is not found, NULL is returned.
+* If the requested part or key is not found, the function returns NULL.
+* If part is not one of the allowed values, or if url is not a valid URL, the function returns NULL.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-PARSE_URL('https://hop.apache.org:80/path?id=1','HOST') → hop.apache.org
-PARSE_URL('https://hop.apache.org:80/path?id=1','PATH') → /path
-PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','FILE') → /path?id=1&lang=fr
-PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','QUERY') → id=1&lang=fr
-PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','QUERY','id') → 1
-PARSE_URL('https://hop.apache.org:80/path?id=1#fragment','FRAGMENT') → fragment
+PARSE_URL('https://hop.apache.org:80/path?id=1','HOST') returns 'hop.apache.org'
+PARSE_URL('https://hop.apache.org:80/path?id=1','PATH') returns '/path'
+PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','FILE') returns '/path?id=1&lang=fr'
+PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','QUERY') returns 'id=1&lang=fr'
+PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','QUERY','id') returns '1'
+PARSE_URL('https://hop.apache.org:80/path?query=1#fragment','REF') returns 'fragment'
 ----

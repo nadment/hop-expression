@@ -16,7 +16,7 @@ under the License.
 ////
 = COT
 
-Calculates the trigonometric cotangent of the angle in radians.
+Returns the trigonometric cotangent of an angle expressed in radians.
 
 == Syntax
 
@@ -31,4 +31,9 @@ Number
 == Usage
 
 * The argument should be expressed in radians.
+* Raises an error if the argument is 0.
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:tan.adoc["TAN",role=fun]

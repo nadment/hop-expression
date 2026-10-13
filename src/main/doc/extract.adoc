@@ -20,13 +20,14 @@ Extracts the specified time unit from a date, timestamp or interval.
 
 == Syntax
 
-[source,sql]
 ----
-EXTRACT( unit FROM {date | timestamp | interval} )
+EXTRACT( unit FROM { date | timestamp | interval } )
 ----
-[source,sql]
+
+The `DATE_PART` function provides alternative syntax.
+
 ----
-DATE_PART( unit, {date | timestamp | interval} )
+DATE_PART( unit, { date | timestamp | interval } )
 ----
 
 == Returns
@@ -34,6 +35,10 @@ DATE_PART( unit, {date | timestamp | interval} )
 Integer
 
 == Usage
+
+* Returns NULL if the date, timestamp or interval is NULL.
+
+The following table lists the supported time units, their synonyms and the equivalent function.
 
 [cols="^2,^2,<5,2", options="header"]
 |===
@@ -61,5 +66,11 @@ Integer
 |TIMEZONE||The time zone offset in seconds|
 |WEEKOFYEAR|WEEK|The aligned week of year (01-53) where week 1 starts on the first day of the year.|xref:week.adoc["WEEK",role=fun]
 |YEAR|YEARS|The Gregorian year|xref:year.adoc["YEAR",role=fun]
-
 |===
+
+== Examples
+
+----
+EXTRACT(EPOCH FROM TIMESTAMP '1970-01-02 00:00:00') returns 86400
+EXTRACT(SECOND FROM TIMESTAMP '2020-05-25 23:48:59') returns 59
+----

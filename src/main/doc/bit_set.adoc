@@ -16,7 +16,7 @@ under the License.
 ////
 = BIT_SET
 
-Returns the result after setting the specified bit position.
+Returns an integer value with the bit at the specified position set to 1.
 
 == Syntax
 
@@ -27,6 +27,7 @@ BIT_SET( value, position )
 == Arguments
 
 value:: This expression must evaluate to a data type that can be cast to Integer.
+position:: The position of the bit to set.
 
 == Returns
 
@@ -34,6 +35,19 @@ Integer
 
 == Usage
 
-* The first position of a bit is 1.
-* Returns NULL if the position is negative or zero.
+* The first bit has position 1.
+* Returns value unchanged if position is greater than 64.
+* Returns NULL if position is negative or zero.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+BIT_SET(16,1) returns 17
+BIT_SET(1,4) returns 9
+----
+
+== See also
+
+* xref:bit_clear.adoc["BIT_CLEAR",role=fun]
+* xref:bit_get.adoc["BIT_GET",role=fun]

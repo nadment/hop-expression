@@ -16,7 +16,7 @@ under the License.
 ////
 = LEAST
 
-Returns the smallest value of all arguments, ignore null values.
+Returns the smallest value among the arguments, ignoring NULL values.
 
 == Syntax
 
@@ -30,7 +30,15 @@ The data type of the returned value is the same as the data type of the input va
 
 == Usage
 
+* NULL values are ignored.
 * Returns NULL only if all arguments are NULL.
+
+== Examples
+
+----
+LEAST(5,2,9,4) returns 2
+LEAST('B','A','C') returns 'A'
+----
 
 == See also
 

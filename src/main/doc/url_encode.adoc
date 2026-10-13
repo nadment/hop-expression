@@ -16,7 +16,7 @@ under the License.
 ////
 = URL_ENCODE
 
-Encode a string to be used in a query part of a URL.
+Encodes a string to be used in the query part of a URL.
 
 == Syntax
 
@@ -27,3 +27,19 @@ URL_ENCODE( string )
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+URL_ENCODE('a b') returns 'a+b'
+URL_ENCODE('a+b') returns 'a%2Bb'
+URL_ENCODE('âéè') returns '%C3%A2%C3%A9%C3%A8'
+----
+
+== See also
+
+* xref:url_decode.adoc["URL_DECODE",role=fun]

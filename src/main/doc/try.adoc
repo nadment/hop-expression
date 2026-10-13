@@ -16,7 +16,7 @@ under the License.
 ////
 = TRY
 
-Evaluate an expression and handle certain types of errors by returning NULL.
+Evaluates an expression and returns NULL instead of raising an error for certain types of errors.
 
 == Syntax
 
@@ -26,7 +26,7 @@ TRY( expression )
 
 == Arguments
 
-expression:: A string expression
+expression:: The expression to evaluate.
 
 == Returns
 
@@ -34,18 +34,24 @@ The data type of the returned value is the same as the data type of the expressi
 
 == Usage
 
-* Returns NULL if argument is NULL.
-* TRY handles the following errors:
-- Division by zero
-- Invalid cast or function argument
-- Argument value out of range
+* The following errors are handled:
+** Division by zero
+** Arithmetic overflow
+** Invalid cast or function argument
+** Argument value out of range
+* Any other error is raised.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
-The following calls return errors when invoked without the TRY expression. When they are wrapped into as TRY expression, they return NULL:
+The following calls raise an error without `TRY`. Wrapped in `TRY`, they return NULL.
 
 ----
-TRY(5/0) return NULL
-TRY('abc'::INTEGER) return NULL
-TRY(LN(0)) return NULL
+TRY(5/0) returns NULL
+TRY('abc'::INTEGER) returns NULL
+TRY(LN(0)) returns NULL
 ----
+
+== See also
+
+* xref:cast.adoc["TRY_CAST",role=fun]

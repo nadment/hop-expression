@@ -16,7 +16,7 @@ under the License.
 ////
 = COSH
 
-Calculates the hyperbolic cosine.
+Returns the hyperbolic cosine of a numeric value.
 
 == Syntax
 
@@ -32,3 +32,14 @@ Number
 
 * Returns a value in the range of [1, &infin;).
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+COSH(0) returns 1
+----
+
+== See also
+
+* xref:acosh.adoc["ACOSH",role=fun]
+* xref:cos.adoc["COS",role=fun]

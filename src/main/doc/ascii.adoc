@@ -16,12 +16,12 @@ under the License.
 ////
 = ASCII
 
-Returns the numeric value of the first character in a string that is the numeric representation of the ASCII character.
+Returns the numeric code of the first character of a string, which is the ASCII code for an ASCII character.
 
 == Syntax
 
 ----
-ASCII( char )
+ASCII( string )
 ----
 
 == Returns
@@ -30,10 +30,19 @@ Integer
 
 == Usage
 
-* If the string is empty, a value of 0 is returned.
+* Only the first character of the string is used.
+* Returns 0 if the string is empty.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
+ASCII('ABC') returns 65
+ASCII('') returns 0
 ASCII('X')
 ----
+
+== See also
+
+* xref:chr.adoc["CHR",role=fun]
+* xref:unicode.adoc["UNICODE",role=fun]

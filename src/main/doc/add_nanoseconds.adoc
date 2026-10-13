@@ -21,8 +21,13 @@ Adds or subtracts a specified number of nanoseconds to a date or timestamp.
 == Syntax
 
 ----
-ADD_NANOSECONDS( timestamp, integer )
+ADD_NANOSECONDS( timestamp, nanoseconds )
 ----
+
+== Arguments
+
+timestamp:: The date or timestamp to modify.
+nanoseconds:: The number of nanoseconds to add. A negative number subtracts nanoseconds.
 
 == Returns
 
@@ -30,6 +35,10 @@ Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of nanoseconds can be a positive or negative integer to either add or subtract nanoseconds, respectively.
+* If nanoseconds has a decimal part, it is truncated before the addition.
 * Returns NULL if one of the arguments is NULL.
+
+== See also
+
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:add_seconds.adoc["ADD_SECONDS",role=fun]

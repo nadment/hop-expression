@@ -16,30 +16,33 @@ under the License.
 ////
 = DATE_TRUNC
 
-Truncate a date or datetime value to the start of a given unit of duration.
+Truncates a date or timestamp to the start of the specified time unit.
 
 == Syntax
 
 ----
-DATE_TRUNC( unit, {date | timestamp} )
+DATE_TRUNC( unit, date )
 ----
 
-Supported unit of date and time:
+== Arguments
 
-- MILLENNIUM
-- CENTURY
-- DECADE
-- YEAR
-- MONTH
-- QUARTER
-- WEEK
-- DAY
-- HOUR
-- MINUTE
-- SECOND
-- MILLISECOND
-- MICROSECOND
-- NANOSECOND
+unit:: The time unit to truncate to. Supported units:
+* `MILLENNIUM`
+* `CENTURY`
+* `DECADE`
+* `YEAR`
+* `MONTH`
+* `QUARTER`
+* `WEEK`
+* `DAY`
+* `HOUR`
+* `MINUTE`
+* `SECOND`
+* `MILLISECOND`
+* `MICROSECOND`
+* `NANOSECOND`
+
+date:: The date or timestamp to truncate.
 
 == Returns
 
@@ -47,4 +50,16 @@ Date
 
 == Usage
 
+* A week starts on Monday.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+DATE_TRUNC(MONTH, DATE '2020-05-08') returns DATE '2020-05-01'
+DATE_TRUNC(WEEK, DATE '2020-05-28') returns DATE '2020-05-25'
+----
+
+== See also
+
+* xref:first_day.adoc["FIRST_DAY",role=fun]

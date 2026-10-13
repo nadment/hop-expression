@@ -16,7 +16,7 @@ under the License.
 ////
 = WEEK
 
-This function return the aligned week within a year where week 1 starts on the first day of the year.
+Returns the aligned week of the year of a date, where week 1 starts on the first day of the year.
 
 == Syntax
 
@@ -26,8 +26,21 @@ WEEK( date )
 
 == Returns
 
-Integer between 1 and 54.
+Integer between 1 and 53
 
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](WEEK FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+WEEK(DATE '2015-12-31') returns 53
+WEEK(DATE '2015-01-01') returns 1
+----
+
+== See also
+
+* xref:isoweek.adoc["ISOWEEK",role=fun]
+* xref:extract.adoc["EXTRACT",role=fun]

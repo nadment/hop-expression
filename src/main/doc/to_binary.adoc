@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_BINARY, TRY_TO_BINARY
 
-Converts the input string to binary value.
+Converts a string to a binary value.
 
 == Syntax
 
@@ -27,13 +27,8 @@ TRY_TO_BINARY( string [, format ] )
 
 == Arguments
 
-string:: A string expression
-
-format:: The format of the input string (case-insensitive): HEX, BASE64, UTF-8 or UTF8
-
-include::binaryformat.adoc[]
-
-The parameter values are case-insensitive. The default is HEX, it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.
+string:: The string to convert.
+format:: The format of the string: `HEX`, `BASE64`, `UTF-8` or `UTF8`. The value is case-insensitive. The default is `HEX`; it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.
 
 == Returns
 
@@ -41,10 +36,20 @@ Binary
 
 == Usage
 
-* Returns NULL if argument is NULL.
+* If the conversion is not possible, `TO_BINARY` raises an error and `TRY_TO_BINARY` returns NULL.
+* Returns NULL if string is NULL.
+
+include::binaryformat.adoc[]
 
 == Examples
+
 ----
-TO_BINARY('41706163686520486f70')
-TO_BINARY('QXBhY2hlIEhvcA==','BASE64')
+TO_BINARY('41706163686520486f70') returns BINARY '41706163686520486f70'
+TO_BINARY('QXBhY2hlIEhvcA==','BASE64') returns BINARY '41706163686520486f70'
 ----
+
+== See also
+
+* xref:to_char.adoc["TO_CHAR",role=fun]
+* xref:hex_decode.adoc["HEX_DECODE",role=fun]
+* xref:base64_decode.adoc["BASE64_DECODE",role=fun]

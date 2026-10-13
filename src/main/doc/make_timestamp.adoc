@@ -21,13 +21,23 @@ Creates a timestamp from individual numeric components.
 == Syntax
 
 ----
-MAKE_TIMESTAMP( year, month, day, hour, minute, second[.fractional] )
+MAKE_TIMESTAMP( year, month, day, hour, minute, second )
 ----
 
-The literal value with ISO format provides alternative syntax.
+The timestamp literal in ISO format provides alternative syntax.
+
 ----
 TIMESTAMP 'YYYY-MM-DD HH:MM:SS.fffffffff'
 ----
+
+== Arguments
+
+year:: The year, as an integer.
+month:: The month, as an integer, normally between 1 and 12.
+day:: The day of the month, as an integer, normally between 1 and 31.
+hour:: The hour, as an integer, normally between 0 and 23.
+minute:: The minute, as an integer, normally between 0 and 59.
+second:: The second, normally between 0 and 59, with an optional fractional part down to the nanosecond (for example `59.123456789`).
 
 == Returns
 
@@ -35,12 +45,22 @@ Date
 
 == Usage
 
-MAKE_TIMESTAMP is typically used to handle values in normal ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
+* The function is typically used with values in the normal ranges (e.g. months 1-12, days 1-31), but it also handles values outside these ranges.
+* If month is less than 1 or greater than 12, the year is adjusted.
+* If day is less than 1 or greater than 31, the month is adjusted.
+* If hour is less than 0 or greater than 23, the day is adjusted.
+* If minute is less than 0 or greater than 59, the hour is adjusted.
+* If second is less than 0 or greater than 59, the minute is adjusted.
+* Returns NULL if one of the arguments is NULL.
 
-* If day<1 or day>31 then month is adjusted
-* If month<1 or month>12 then year is adjusted
-* If hour<0 or hour>23 then day is adjusted
-* If minute<0 or minute>59 then hour is adjusted
-* If second<0 or second>59 then minute is adjusted
+== Examples
 
-See also xref:make_date.adoc["MAKE_DATE",role=fun]
+----
+MAKE_TIMESTAMP(2019,01,1,23,15,59) returns TIMESTAMP '2019-01-01 23:15:59'
+MAKE_TIMESTAMP(2020,0,1,23,15,59) returns TIMESTAMP '2019-12-01 23:15:59'
+MAKE_TIMESTAMP(2020,6,50,23,15,59) returns TIMESTAMP '2020-07-20 23:15:59'
+----
+
+== See also
+
+* xref:make_date.adoc["MAKE_DATE",role=fun]

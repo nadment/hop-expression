@@ -16,18 +16,31 @@ under the License.
 ////
 = ZEROIFNULL
 
-Returns 0 if its argument is null; otherwise, returns its argument.
+Returns 0 if the argument is NULL; otherwise, returns the argument.
 
 == Syntax
 
 ----
-ZEROIFNULL( expression )
+ZEROIFNULL( numeric )
 ----
 
 == Returns
 
-Integer
+The data type of the returned value is the data type of the argument.
 
 == Usage
 
-The input should be an expression that evaluates to a numeric value (or NULL).
+* The argument must be an expression that evaluates to a numeric value or NULL.
+
+== Examples
+
+----
+ZEROIFNULL(1) returns 1
+ZEROIFNULL(1.1) returns 1.1
+----
+
+== See also
+
+* xref:nullifzero.adoc["NULLIFZERO",role=fun]
+* xref:ifnull.adoc["IFNULL",role=fun]
+* xref:coalesce.adoc["COALESCE",role=fun]

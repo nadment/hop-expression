@@ -15,13 +15,17 @@ specific language governing permissions and limitations
 under the License.
 ////
 = Not equal operator <>, !=
-First expression is not equal than second expression.
+
+Returns TRUE if the first expression is not equal to the second one.
 
 == Syntax
 
 ----
 expression1 <> expression2
 ----
+
+The `!=` operator provides alternative syntax.
+
 ----
 expression1 != expression2
 ----
@@ -29,3 +33,19 @@ expression1 != expression2
 == Returns
 
 Boolean
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+1 <> 2 returns TRUE
+1.12 <> 1.12 returns FALSE
+2 <> 2.000 returns FALSE
+----
+
+== See also
+
+* xref:equal.adoc["=",role=op]

@@ -16,19 +16,24 @@ under the License.
 ////
 = ARRAY_PREPEND
 
-Returns an array concatenating an element to the beginning of an array.
+Returns a new array with an element added at the beginning of an array.
 
 == Syntax
 
 ----
-ARRAY_PREPEND( element, array  )
+ARRAY_PREPEND( element, array )
+----
+
+The xref:concat.adoc["||",role=op] operator provides an alternative syntax.
+
+----
 element || array
 ----
 
 == Arguments
 
-array:: The array to prepend to.
 element:: The element to prepend to the array.
+array:: The array to prepend to.
 
 == Returns
 
@@ -36,10 +41,17 @@ Array
 
 == Usage
 
+* The data type of element must be compatible with the data type of the elements of array.
 * Returns NULL if the array is NULL.
 
 == Examples
 
 ----
-ARRAY_PREPEND(0,[1,2,3]) return [0,1,2,3]
+ARRAY_PREPEND(0,[1,2,3]) returns [0,1,2,3]
+ARRAY_PREPEND('sun',['mon','tue']) returns ['sun','mon','tue']
 ----
+
+== See also
+
+* xref:array_append.adoc["ARRAY_APPEND",role=fun]
+* xref:concat.adoc["CONCAT",role=fun]

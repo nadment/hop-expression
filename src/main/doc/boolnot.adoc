@@ -16,15 +16,30 @@ under the License.
 ////
 = NOT
 
-Does not match the expression.
+Returns TRUE if the boolean expression is FALSE, and FALSE if it is TRUE.
 
 == Syntax
 
 ----
 NOT boolean
-NOT(boolean)
+----
+
+The function form provides an alternative syntax.
+
+----
+NOT( boolean )
 ----
 
 == Returns
 
 Boolean
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:booland.adoc["AND",role=op]
+* xref:boolor.adoc["OR",role=op]
+* xref:boolxor.adoc["XOR",role=op]

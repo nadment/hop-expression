@@ -16,7 +16,7 @@ under the License.
 ////
 = LEVENSHTEIN
 
-Returns the Levenshtein distance between the two strings.
+Returns the Levenshtein distance between two strings.
 
 == Syntax
 
@@ -30,4 +30,16 @@ Integer
 
 == Usage
 
-* Information about Levenshtein distance can be found here: https://en.wikipedia.org/wiki/Levenshtein_distance.
+* Information about the Levenshtein distance can be found here: https://en.wikipedia.org/wiki/Levenshtein_distance.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+LEVENSHTEIN('Superman', 'Superman') returns 0
+LEVENSHTEIN('kitten', 'sitting') returns 3
+----
+
+== See also
+
+* xref:jarowinkler.adoc["JAROWINKLER",role=fun]

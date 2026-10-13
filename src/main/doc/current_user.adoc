@@ -30,4 +30,4 @@ String
 
 == Usage
 
-This function return the system variable "user.name".
+* Returns the value of the system variable `user.name`.

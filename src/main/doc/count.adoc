@@ -21,8 +21,11 @@ Returns the number of input values or rows over a group of rows.
 == Syntax
 
 ----
-COUNT( [ALL | DISTINCT] expression )
+COUNT( [ ALL | DISTINCT ] expression )
 ----
+
+The following syntax counts the rows.
+
 ----
 COUNT( * )
 ----
@@ -33,8 +36,12 @@ Integer
 
 == Usage
 
-* COUNT(`*`) returns the number of items in a group. This includes NULL values and duplicates.
-* COUNT(`ALL` expression) or COUNT(expression) evaluates expression for each row in a group, and returns the number of nonnull values.
-* COUNT(`DISTINCT` expression) evaluates expression for each row in a group, and returns the number of unique, nonnull values.
+* `COUNT( * )` returns the number of rows in a group, including NULL values and duplicates.
+* `COUNT( ALL expression )` or `COUNT( expression )` evaluates expression for each row in a group and returns the number of values that are not NULL.
+* `COUNT( DISTINCT expression )` evaluates expression for each row in a group and returns the number of unique values that are not NULL.
 
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
+
+== See also
+
+* xref:countif.adoc["COUNTIF",role=fun]

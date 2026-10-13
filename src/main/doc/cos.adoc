@@ -16,7 +16,7 @@ under the License.
 ////
 = COS
 
-Calculates the trigonometric cosine of the specified angle in radians.
+Returns the trigonometric cosine of an angle expressed in radians.
 
 == Syntax
 
@@ -33,3 +33,15 @@ Number
 * The argument should be expressed in radians.
 * Returns a value in the range of [-1, 1].
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+COS(0) returns 1
+----
+
+== See also
+
+* xref:acos.adoc["ACOS",role=fun]
+* xref:cosh.adoc["COSH",role=fun]
+* xref:sin.adoc["SIN",role=fun]

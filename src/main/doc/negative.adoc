@@ -26,8 +26,18 @@ Reverses the sign of a numeric expression.
 
 == Returns
 
-Number
+The data type of the returned value is the same as the data type of the expression (Integer, Number or Interval).
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+-(1+2) returns -3
+----
 
 == See also
 
-* xref:plus.adoc["+",role=fun]
+* xref:plus.adoc["+",role=op]

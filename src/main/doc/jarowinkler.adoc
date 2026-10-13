@@ -16,7 +16,7 @@ under the License.
 ////
 = JAROWINKLER
 
-Returns the Jaro Winkler distance between the two strings.
+Returns the Jaro-Winkler distance between two strings.
 
 == Syntax
 
@@ -26,9 +26,21 @@ JAROWINKLER( string1, string2 )
 
 == Returns
 
-Integer
+Integer between 0 and 100
 
 == Usage
 
-* The function returns an integer between 0 and 100, where 0 indicates no similarity and 100 indicates an exact match.
-* Information about Jaro Winkler distance can be found here: https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance..
+* The result 0 indicates no similarity and 100 indicates an exact match.
+* Information about the Jaro-Winkler distance can be found here: https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+JAROWINKLER('Superman', 'Superman') returns 100
+JAROWINKLER('Peter Parker', 'Pete Parker') returns 88
+----
+
+== See also
+
+* xref:levenshtein.adoc["LEVENSHTEIN",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = Division operator /
 
-Divide 2 numeric values.
+Divides the first numeric value by the second one.
 
 == Syntax
 
@@ -30,8 +30,9 @@ Number
 
 == Usage
 
-* If divisor is 0 the operator raises a division-by-zero error.
+* Raises a division-by-zero error if divisor is 0.
+* Returns NULL if one of the arguments is NULL.
 
 == See also
 
- * xref:div0.adoc["DIV0",role=fun]
+* xref:div0.adoc["DIV0",role=fun]

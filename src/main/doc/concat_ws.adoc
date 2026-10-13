@@ -16,12 +16,12 @@ under the License.
 ////
 = CONCAT_WS
 
-Combines multiple strings or binaries into one with separator.
+Concatenates strings or binaries into one, inserting a separator between them.
 
 == Syntax
 
 ----
-CONCAT_WS( separator, string2 [, string3...])
+CONCAT_WS( separator, string1 [, string2... ] )
 ----
 
 == Returns
@@ -30,4 +30,16 @@ String or Binary
 
 == Usage
 
-* If the separator is NULL, then NULL is returned.
+* NULL values in the strings to concatenate are ignored.
+* Returns NULL if separator is NULL.
+
+== Examples
+
+----
+CONCAT_WS(',','ONE','TWO','THREE') returns 'ONE,TWO,THREE'
+CONCAT_WS('--','one') returns 'one'
+----
+
+== See also
+
+* xref:concat.adoc["CONCAT",role=fun]

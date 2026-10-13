@@ -16,7 +16,7 @@ under the License.
 ////
 = RIGHT
 
-Extracts a number of characters from a string or bytes from a binary starting from right.
+Extracts a number of characters from a string, or of bytes from a binary, starting from the right.
 
 == Syntax
 
@@ -24,20 +24,27 @@ Extracts a number of characters from a string or bytes from a binary starting fr
 RIGHT( value, length )
 ----
 
+== Arguments
+
+value:: The string or binary value.
+length:: The number of characters or bytes to extract.
+
 == Returns
 
 String or Binary
 
 == Usage
 
-* If the length argument is larger than the value, the function will return the value.
-* If the length argument is zero or negative, the function returns an empty string or binary.
+* If length is greater than the length of value, the function returns value.
+* If length is zero or negative, the function returns an empty string or binary.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-RIGHT('ABCDEF',3) return 'DEF'
+RIGHT('ABCDEF',3) returns 'DEF'
+RIGHT('TEST',10) returns 'TEST'
+RIGHT('TEST',-1) returns ''
 ----
 
 == See also

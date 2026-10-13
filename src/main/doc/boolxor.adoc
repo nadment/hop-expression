@@ -16,7 +16,7 @@ under the License.
 ////
 = XOR
 
-Returns TRUE if one or the other but not both is TRUE.
+Returns TRUE if one of the two boolean expressions is TRUE, but not both.
 
 == Syntax
 
@@ -27,3 +27,13 @@ boolean1 XOR boolean2
 == Returns
 
 Boolean
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== See also
+
+* xref:booland.adoc["AND",role=op]
+* xref:boolor.adoc["OR",role=op]
+* xref:boolnot.adoc["NOT",role=op]

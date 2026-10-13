@@ -16,7 +16,7 @@ under the License.
 ////
 = TRIM
 
-Returns the string with leading and trailing characters removed.
+Removes the leading and trailing characters from a string.
 
 == Syntax
 
@@ -26,8 +26,8 @@ TRIM( string [, characters ] )
 
 == Arguments
 
-string:: The string expression to be trimmed
-characters::  One or more characters to remove from the both side. If the parameter is omitted, the function will remove space characters. You can specify the characters in any order.
+string:: The string to trim.
+characters:: One or more characters to remove from both sides of the string, specified in any order. If not specified, the whitespace characters are removed.
 
 == Returns
 
@@ -37,7 +37,15 @@ String
 
 * Returns NULL if one of the arguments is NULL.
 
+== Examples
+
+----
+TRIM('  a b  ') returns 'a b'
+TRIM(' 01ABC10 ', ' 012') returns 'ABC'
+----
+
 == See also
 
 * xref:ltrim.adoc["LTRIM",role=fun]
 * xref:rtrim.adoc["RTRIM",role=fun]
+* xref:squeeze.adoc["SQUEEZE",role=fun]

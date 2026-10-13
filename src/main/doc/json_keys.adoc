@@ -16,13 +16,18 @@ under the License.
 ////
 = JSON_KEYS
 
-Extracts unique JSON keys from a JSON expression.
+Extracts the unique keys of a JSON object.
 
 == Syntax
 
 ----
-JSON_KEYS( {string | json} [, path] )
+JSON_KEYS( json [, path ] )
 ----
+
+== Arguments
+
+json:: JSON value or a JSON-formatted string.
+path:: A xref:jsonpath.adoc[JsonPath] expression that identifies the JSON object whose keys are extracted. If path is omitted, the keys of the root object are extracted.
 
 == Returns
 
@@ -31,19 +36,24 @@ Array of String
 == Usage
 
 * The path must begin with a dollar sign `$`, which represents the root.
-* Returns `NULL` if any of the arguments are null, a given path does not locate an object, or if the JSON argument is not an object.
-* If the JSON object has no keys, an empty array is returned.
 * Keys are de-duplicated and returned in alphabetical order.
 * Keys are case-sensitive.
+* If the JSON object has no keys, an empty array is returned.
+* Returns NULL if one of the arguments is NULL, if path does not locate an object, or if the JSON value is not an object.
 
 include::jsonpath.adoc[]
 
 == Examples
 
 ----
-JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}') return ['a','b']
-JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$') return ['a','b']
-JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$.b') return ['c']
-JSON_KEYS(JSON '{"b": 1, "a": 1, "c": 30, "a": 2}') return ['a','b','c']
-JSON_KEYS(JSON '{}') return []
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}') returns ['a','b']
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$') returns ['a','b']
+JSON_KEYS(JSON '{"a": 1, "b": {"c": 30}}','$.b') returns ['c']
+JSON_KEYS(JSON '{"b": 1, "a": 1, "c": 30, "a": 2}') returns ['a','b','c']
+JSON_KEYS(JSON '{}') returns []
 ----
+
+== See also
+
+* xref:json_query.adoc["JSON_QUERY",role=fun]
+* xref:json_value.adoc["JSON_VALUE",role=fun]

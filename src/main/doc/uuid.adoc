@@ -16,7 +16,7 @@ under the License.
 ////
 = UUID
 
-Return a Universal Unique Identifier (UUID version 7) generated according to RFC 9562.
+Returns a Universally Unique Identifier (UUID version 7) generated according to RFC 9562.
 
 == Syntax
 
@@ -30,4 +30,10 @@ String
 
 == Usage
 
-* UUID values are time-sortable
+* UUID values are time-sortable.
+
+== Examples
+
+----
+UUID()
+----

@@ -16,7 +16,7 @@ under the License.
 ////
 = SECOND
 
-Returns the second of the specified timestamp.
+Returns the second component of the specified timestamp.
 
 == Syntax
 
@@ -26,8 +26,21 @@ SECOND( timestamp )
 
 == Returns
 
-Integer between 0 and 59.
+Integer between 0 and 59
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](SECOND FROM timestamp)
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun]( SECOND FROM timestamp ).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SECOND(TIMESTAMP '2019-01-01 15:28:59') returns 59
+----
+
+== See also
+
+* xref:hour.adoc["HOUR",role=fun]
+* xref:minute.adoc["MINUTE",role=fun]
+* xref:extract.adoc["EXTRACT",role=fun]

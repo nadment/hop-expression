@@ -26,15 +26,19 @@ CARDINALITY( array )
 
 == Returns
 
-Integer between 0 and 2^31-1.
+Integer between 0 and 2^31-1
 
 == Usage
 
 * Returns 0 for an empty array.
-* Returns NULL if the `array` is NULL.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
-CARDINALITY( ARRAY[1,4,8] ) result 3
+CARDINALITY([1,2,3] || [4,5]) returns 5
 ----
+
+== See also
+
+* xref:array.adoc["ARRAY",role=fun]

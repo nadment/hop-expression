@@ -21,9 +21,29 @@ Returns the name of the month (in English).
 == Syntax
 
 ----
-MONTHNAME( {date | timestamp} )
+MONTHNAME( date )
 ----
+
+== Arguments
+
+date:: A date or a timestamp.
 
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+MONTHNAME(DATE '2019-01-01') returns 'January'
+MONTHNAME(DATE '2019-12-28') returns 'December'
+----
+
+== See also
+
+* xref:month.adoc["MONTH",role=fun]
+* xref:dayname.adoc["DAYNAME",role=fun]

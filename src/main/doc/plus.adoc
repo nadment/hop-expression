@@ -30,8 +30,9 @@ Number
 
 == Usage
 
-A unary plus can appear before any numeric expression, it performs no operation on the value returned from the expression. Specifically, it doesn't return the positive value of a negative expression. To return positive value of a negative expression, use the ABS function.
+* A unary plus can appear before any numeric expression; it performs no operation on the value of the expression.
+* It does not return the positive value of a negative expression. To get the positive value of a negative expression, use the xref:abs.adoc["ABS",role=fun] function.
 
 == See also
 
-* xref:negative.adoc["-",role=fun]
+* xref:negative.adoc["-",role=op]

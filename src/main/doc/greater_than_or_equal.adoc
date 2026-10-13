@@ -16,7 +16,7 @@ under the License.
 ////
 = Greater than or equal operator >=
 
-First expression is greater than or equal to the second expression.
+Returns TRUE if the first expression is greater than or equal to the second one.
 
 == Syntax
 
@@ -27,3 +27,13 @@ expression1 >= expression2
 == Returns
 
 Boolean
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== See also
+
+* xref:greater_than.adoc[">",role=op]
+* xref:less_than.adoc["<",role=op]
+* xref:less_than_or_equal.adoc["<=",role=op]

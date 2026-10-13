@@ -16,7 +16,7 @@ under the License.
 ////
 = DEGREES
 
-Converts radians to degrees.
+Converts an angle expressed in radians to degrees.
 
 == Syntax
 
@@ -33,5 +33,12 @@ Number
 * The argument should be expressed in radians.
 * Returns NULL if the argument is NULL.
 
+== Examples
 
+----
+DEGREES(PI()) returns 180
+----
 
+== See also
+
+* xref:radians.adoc["RADIANS",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = FLOOR
 
-Returns the values rounded to the nearest equal or smaller integer.
+Returns the largest integer that is less than or equal to the numeric value.
 
 == Syntax
 
@@ -35,7 +35,8 @@ Number
 == Examples
 
 ----
-FLOOR( 28.05 ) = 28
+FLOOR(28.05) returns 28
+FLOOR(-42.8) returns -43
 ----
 
 == See also

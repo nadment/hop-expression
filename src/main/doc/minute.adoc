@@ -26,8 +26,21 @@ MINUTE( timestamp )
 
 == Returns
 
-Integer between 0 and 59.
+Integer between 0 and 59
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](MINUTE FROM timestamp).
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun]( MINUTE FROM timestamp ).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+MINUTE(TIMESTAMP '2019-01-01 15:28:59') returns 28
+----
+
+== See also
+
+* xref:hour.adoc["HOUR",role=fun]
+* xref:second.adoc["SECOND",role=fun]
+* xref:extract.adoc["EXTRACT",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = ISOYEAR
 
-Returns the integer that specifies the year following the ISO-8601 standard.
+Returns the year of a date, following the ISO-8601 standard.
 
 == Syntax
 
@@ -31,3 +31,16 @@ Integer
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](ISOYEAR FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+ISOYEAR(DATE '2016-01-01') returns 2015
+ISOYEAR(DATE '2016-01-04') returns 2016
+----
+
+== See also
+
+* xref:isoweek.adoc["ISOWEEK",role=fun]
+* xref:year.adoc["YEAR",role=fun]

@@ -21,17 +21,30 @@ Calculates the MD5 hash of a value.
 == Syntax
 
 ----
-MD5( {string | binary} )
+MD5( value )
 ----
 
 == Arguments
 
-{string | binary}:: A string expression, the message to be hashed.
+value:: The string or binary value to hash.
 
 == Returns
 
-Returns a 32 characters hex-encoded string (128 bits).
+String
 
 == Usage
 
+* The result is a hex-encoded string of 32 characters (128 bits).
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+MD5('Test') returns '0cbc6611f5540bd0809a388dc95a615b'
+----
+
+== See also
+
+* xref:sha1.adoc["SHA1",role=fun]
+* xref:sha256.adoc["SHA256",role=fun]
+* xref:crc32.adoc["CRC32",role=fun]

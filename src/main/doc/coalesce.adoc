@@ -16,12 +16,12 @@ under the License.
 ////
 = COALESCE
 
-Returns the first of its arguments that is not null.
+Returns the first argument that is not NULL.
 
 == Syntax
 
 ----
-COALESCE( expression [, expression... ] )
+COALESCE( expression1 [, expression2... ] )
 ----
 
 == Returns
@@ -31,4 +31,15 @@ The data type of the returned value is the same as the data type of the input va
 == Usage
 
 * All arguments must have the same data type.
-* Null is returned only if all arguments are null.
+* Returns NULL only if all arguments are NULL.
+
+== Examples
+
+----
+COALESCE(1,2,3) returns 1
+----
+
+== See also
+
+* xref:ifnull.adoc["IFNULL",role=fun]
+* xref:nvl2.adoc["NVL2",role=fun]

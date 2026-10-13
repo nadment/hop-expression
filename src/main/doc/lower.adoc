@@ -28,6 +28,17 @@ LOWER( string )
 
 String
 
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+LOWER('TesT') returns 'test'
+----
+
 == See also
 
 * xref:upper.adoc["UPPER",role=fun]
+* xref:initcap.adoc["INITCAP",role=fun]

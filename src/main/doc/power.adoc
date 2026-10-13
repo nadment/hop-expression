@@ -22,6 +22,11 @@ Calculates a number raised to the specified power.
 
 ----
 POWER( base, exponent )
+----
+
+The `POW` function is an alias and provides alternative syntax.
+
+----
 POW( base, exponent )
 ----
 
@@ -31,4 +36,18 @@ Number
 
 == Usage
 
-* If the value of `exponent` is zero, then 1 will be returned.
+* If exponent is 0, the function returns 1.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+POWER(3,2) returns 9
+POWER(100,0.5) returns 10
+POWER(2,-3) returns 0.125
+----
+
+== See also
+
+* xref:sqrt.adoc["SQRT",role=fun]
+* xref:exp.adoc["EXP",role=fun]

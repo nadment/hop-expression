@@ -16,7 +16,7 @@ under the License.
 ////
 = TAN
 
-Calculates the tangent.
+Calculates the trigonometric tangent of an angle expressed in radians.
 
 == Syntax
 
@@ -30,5 +30,13 @@ Number
 
 == Usage
 
-* The argument should be expressed in radians.
+* The argument is an angle expressed in radians.
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:atan.adoc["ATAN",role=fun]
+* xref:tanh.adoc["TANH",role=fun]
+* xref:cot.adoc["COT",role=fun]
+* xref:sin.adoc["SIN",role=fun]
+* xref:cos.adoc["COS",role=fun]

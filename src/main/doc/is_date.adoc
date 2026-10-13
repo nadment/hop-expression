@@ -16,7 +16,7 @@ under the License.
 ////
 = IS_DATE
 
-Check if a value is a valid date or timestamp.
+Checks whether a value is a valid date or timestamp in the specified format.
 
 == Syntax
 
@@ -24,16 +24,31 @@ Check if a value is a valid date or timestamp.
 IS_DATE( value, format )
 ----
 
+== Arguments
+
+value:: Value to check.
+format:: Date format used to parse a string value, as in xref:to_date.adoc["TO_DATE",role=fun].
+
 == Returns
 
 Boolean
 
 == Usage
 
-Return FALSE if a value is NULL.
+* Returns TRUE if value is a date or a timestamp that is not NULL.
+* Returns FALSE if the data type of value is neither a string nor a date or timestamp.
+* Returns FALSE if value is NULL.
 
 == Examples
 
 ----
 IS_DATE( INVOICE_DATE, 'YYYY-MM-DD' )
+IS_DATE('2023-04-25','YYYY-MM-DD') returns TRUE
+IS_DATE('2023-02-31','YYYY-MM-DD') returns FALSE
 ----
+
+== See also
+
+* xref:is_json.adoc["IS_JSON",role=fun]
+* xref:is_number.adoc["IS_NUMBER",role=fun]
+* xref:to_date.adoc["TO_DATE",role=fun]

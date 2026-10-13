@@ -16,30 +16,34 @@ under the License.
 ////
 = DATE_DIFF
 
-Returns the difference in time unit between two date or timestamp.
+Returns the number of complete time units between two dates or timestamps.
 
 == Syntax
 
 ----
-DATE_DIFF( unit, startDate, endEnd  )
+DATE_DIFF( unit, start_date, end_date )
 ----
 
-Supported unit of date and time:
+== Arguments
 
-- MILLENNIUM
-- CENTURY
-- DECADE
-- YEAR
-- MONTH
-- QUARTER
-- WEEK
-- DAY
-- HOUR
-- MINUTE
-- SECOND
-- MILLISECOND
-- MICROSECOND
-- NANOSECOND
+unit:: The time unit of the result. Supported units:
+* `MILLENNIUM`
+* `CENTURY`
+* `DECADE`
+* `YEAR`
+* `MONTH`
+* `QUARTER`
+* `WEEK`
+* `DAY`
+* `HOUR`
+* `MINUTE`
+* `SECOND`
+* `MILLISECOND`
+* `MICROSECOND`
+* `NANOSECOND`
+
+start_date:: The start date or timestamp.
+end_date:: The end date or timestamp.
 
 == Returns
 
@@ -47,11 +51,20 @@ Integer
 
 == Usage
 
+* The result is negative if end_date is earlier than start_date.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
+
 ----
 DATE_DIFF(DAY, DATE '2023-02-01', CURRENT_DATE())
+DATE_DIFF(DAY, DATE '2021-11-09',DATE '2020-12-28') returns -316
+DATE_DIFF(YEAR, DATE '2022-12-31',DATE '2024-06-01') returns 1
 ----
 
+== See also
 
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:days_between.adoc["DAYS_BETWEEN",role=fun]
+* xref:months_between.adoc["MONTHS_BETWEEN",role=fun]
+* xref:years_between.adoc["YEARS_BETWEEN",role=fun]

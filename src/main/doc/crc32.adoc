@@ -21,19 +21,25 @@ Calculates a cyclic redundancy check (CRC) value using the Castagnoli polynomial
 == Syntax
 
 ----
-CRC32( {string | binary} )
+CRC32( value )
 ----
 
 == Arguments
 
-{string | binary}:: A string or binary expression.
+value:: A string or binary expression.
 
 == Returns
 
-A hexadecimal string
+String
 
 == Usage
 
-* The result will be returned as a 8 characters hex-encoded string.
-* If the argument is NULL, then NULL is returned.
-* This function is based on the CRC-32C polynomial.
+* The checksum is based on the CRC-32C polynomial.
+* The result is returned as a hex-encoded string of up to 8 characters, in lower case.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+CRC32('Apache Hop') returns 'dbb81b5e'
+----

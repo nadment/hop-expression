@@ -16,7 +16,7 @@ under the License.
 ////
 = DAYS_BETWEEN
 
-Returns the number of days between two date values.
+Returns the number of complete days between two dates or timestamps.
 
 == Syntax
 
@@ -29,3 +29,19 @@ DAYS_BETWEEN( date1, date2 )
 Integer
 
 == Usage
+
+* The result is negative if date2 is earlier than date1.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+DAYS_BETWEEN(DATE '2007-11-09',DATE '2007-12-09') returns 30
+DAYS_BETWEEN(DATE '2021-11-09',DATE '2020-12-28') returns -316
+----
+
+== See also
+
+* xref:date_diff.adoc["DATE_DIFF",role=fun]
+* xref:months_between.adoc["MONTHS_BETWEEN",role=fun]
+* xref:years_between.adoc["YEARS_BETWEEN",role=fun]

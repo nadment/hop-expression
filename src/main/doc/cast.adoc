@@ -24,21 +24,17 @@ Converts a value of one data type into another data type.
 CAST( value AS type [ FORMAT format ] )
 TRY_CAST( value AS type [ FORMAT format ] )
 ----
-The xref:concat.adoc["::",role=op] operator provides alternative syntax.
+
+The xref:cast.adoc["::",role=op] operator provides alternative syntax.
+
 ----
 value::type
 ----
 
-== Returns
+== Arguments
 
-The data type of the returned value is the type specified in the AS clause.
-
-== Usage
-
-If the cast is not possible, CAST raises an error and TRY_CAST return a NULL value.
-
-=== Supported data type:
-
+value:: The value to convert.
+type:: The data type to convert the value to. Supported data types:
 * Binary
 * Boolean
 * Date
@@ -49,40 +45,35 @@ If the cast is not possible, CAST raises an error and TRY_CAST return a NULL val
 * String
 * Json
 
+format:: The optional format used for the conversion.
 
-=== Rules
+== Returns
 
-* When converting a number to a boolean, 0 is false and every other value is true.
-* When converting a boolean to a number, false is 0 and true is 1.
+The data type of the returned value is the type specified in the `AS` clause.
+
+== Usage
+
+* If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL.
+* When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
+* When converting a boolean to a number, FALSE is 0 and TRUE is 1.
 * When converting a number to a number of another type, the value is checked for overflow.
-* When converting a string to binary, result is the UTF-8 encoding of the string. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
-* When converting an integer to date, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
-* When converting a number to date, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
-* When converting a date to integer, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
-* When converting a date to number, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
-* When converting an interval to a string, result uses the format `+Y-M D HH:MM:SS.FFFFFFFFF`.
-
-=== Format
-
+* When converting a string to a binary, the result is the UTF-8 encoding of the string. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
+* When converting an integer to a date, the integer is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
+* When converting a number to a date, the number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
+* When converting a date to an integer, the result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
+* When converting a date to a number, the result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
+* When converting an interval to a string, the result uses the format `+Y-M D HH:MM:SS.FFFFFFFFF`.
 
 == Examples
 
 ----
-CAST('yes' AS BOOLEAN) result TRUE
-
-// if the cast is not possible, a NULL value is returned.
-TRY_CAST('-1234.56' AS INTEGER FORMAT '###0'))
-
-'-1234.56'::INTEGER result -1235
-
+CAST('yes' AS BOOLEAN) returns TRUE
+TRY_CAST('-1234.56' AS INTEGER FORMAT '###0')
+'-1234.56'::INTEGER returns -1235
 CAST('-1234.56' AS NUMBER FORMAT '###0.00')
-
-CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss') result date 2020-05-24
-
+CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss') returns DATE '2020-05-24'
 TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')
-
-CAST(INTERVAL 5 YEAR AS STRING) result '+5-0 0 00:00:00.000000000'
-
+CAST(INTERVAL 5 YEAR AS STRING) returns '+5-0 0 00:00:00.000000000'
 ----
 
 == See also

@@ -16,26 +16,26 @@ under the License.
 ////
 = REGEXP_REPLACE
 
-Replace substring in a string by a new substring using a regular expression.
+Replaces the substrings of a string that match a regular expression pattern with a new string.
 
 == Syntax
 
 ----
-REGEXP_REPLACE( source, pattern [, replacement [, position [, occurrence [, parameters ]]]] )
+REGEXP_REPLACE( source, pattern [, replacement [, position [, occurrence [, parameters ] ] ] ] )
 ----
 
 == Arguments
 
-source:: The string to be searched for.
+source:: The string to search.
 pattern:: The regular expression pattern.
-replacement:: The string that replaces the matched pattern. This argument is optional. Default value is ''.
-position:: The position in the source string where the search starts. This argument is also optional. Default value is 1.
-occurrence:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
-parameters:: One or more string literals that indicate how the function matches the pattern.
+replacement:: The string that replaces the matched pattern. The default value is `''`, which removes the matched substrings.
+position:: The position in source where the search starts. The default value is 1.
+occurrence:: The occurrence of the pattern to replace. If 0 is specified, all occurrences are replaced. The default value is 0 (all occurrences).
+parameters:: A string of one or more letters that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character.
+* `n` Allows the period (`.`), which is the match-any-character character, to match the newline character.
 
 == Returns
 
@@ -43,10 +43,24 @@ String
 
 == Usage
 
-* If no matches are found, returns the original subject.
-* The replacement string can contain backreferences to capture groups. A capture group is a regular expression that is enclosed within parentheses (( )).
-* The <pattern> is defined according to Java language regular expression rules.
+* The pattern is defined according to the Java language regular expression rules.
+* The replacement can contain backreferences to capture groups, written as a backslash followed by the number of the group. A capture group is a regular expression enclosed within parentheses.
+* If no match is found, the function returns source unchanged.
+* An empty pattern matches nothing.
+* Returns NULL if source, pattern or replacement is NULL.
 
+== Examples
 
+----
+REGEXP_REPLACE('A1.2.3.4','[^0-9]') returns '1234'
+REGEXP_REPLACE('ABC, ABC, ABC','ABC', 'EFG', 1, 2) returns 'ABC, EFG, ABC'
+REGEXP_REPLACE('abc', '(a)(b)', '\2\1') returns 'bac'
+----
 
+== See also
 
+* xref:regexp_count.adoc["REGEXP_COUNT",role=fun]
+* xref:regexp_instr.adoc["REGEXP_INSTR",role=fun]
+* xref:regexp_like.adoc["REGEXP_LIKE",role=fun]
+* xref:regexp_substr.adoc["REGEXP_SUBSTR",role=fun]
+* xref:replace.adoc["REPLACE",role=fun]

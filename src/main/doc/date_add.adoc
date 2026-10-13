@@ -16,24 +16,29 @@ under the License.
 ////
 = DATE_ADD
 
-Adds or subtracts a specified number of time unit to a date or timestamp.
+Adds a number of time units to a date or timestamp, or subtracts them if the number is negative.
 
 == Syntax
 
 ----
-DATE_ADD( unit, value, {date | timestamp} )
+DATE_ADD( unit, value, date )
 ----
 
-Supported unit of date and time:
+== Arguments
 
-- YEAR
-- MONTH
-- WEEK
-- DAY
-- HOUR
-- MINUTE
-- SECOND
-- NANOSECOND
+unit:: The time unit of value. Supported units:
+* `YEAR`
+* `QUARTER`
+* `MONTH`
+* `WEEK`
+* `DAY`
+* `HOUR`
+* `MINUTE`
+* `SECOND`
+* `NANOSECOND`
+
+value:: The integer number of units to add. A negative value subtracts the units.
+date:: The date or timestamp to modify.
 
 == Returns
 
@@ -44,6 +49,15 @@ Date
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
+
 ----
 DATE_ADD(DAY, 5, DATE '2023-02-01')
+DATE_ADD(MONTH,3,DATE '2019-11-15') returns DATE '2020-02-15'
+DATE_ADD(WEEK,-3,DATE '2019-01-15') returns DATE '2018-12-25'
 ----
+
+== See also
+
+* xref:add_days.adoc["ADD_DAYS",role=fun]
+* xref:add_months.adoc["ADD_MONTHS",role=fun]
+* xref:date_diff.adoc["DATE_DIFF",role=fun]

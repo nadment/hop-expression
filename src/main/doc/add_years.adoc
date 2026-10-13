@@ -21,8 +21,13 @@ Adds or subtracts a specified number of years to a date or timestamp.
 == Syntax
 
 ----
-ADD_YEARS( date, integer )
+ADD_YEARS( date, years )
 ----
+
+== Arguments
+
+date:: The date or timestamp to modify.
+years:: The number of years to add. A negative number subtracts years.
 
 == Returns
 
@@ -30,6 +35,18 @@ Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of years can be a positive or negative integer to either add or subtract years, respectively.
+* If years has a decimal part, it is truncated before the addition.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+ADD_YEARS(DATE '2019-01-15', 1) returns DATE '2020-01-15'
+ADD_YEARS(DATE '2020-02-29', 1) returns DATE '2021-02-28'
+----
+
+== See also
+
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:add_months.adoc["ADD_MONTHS",role=fun]
+* xref:add_quarters.adoc["ADD_QUARTERS",role=fun]

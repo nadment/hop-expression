@@ -16,13 +16,12 @@ under the License.
 ////
 = IN
 
-The IN operator is a shorthand for multiple OR conditions.
+Checks whether an expression is equal to one of the values of a list. It is a shorthand for multiple `OR` conditions.
 
 == Syntax
 
-[source,sql]
 ----
-field [NOT] IN (expression1 [,expressionN ,...])
+expression [ NOT ] IN ( value1 [, valueN... ] )
 ----
 
 == Returns
@@ -31,7 +30,11 @@ Boolean
 
 == Usage
 
-When using the IN operator, the following semantics apply:
+* Returns NULL if expression is NULL, even if the list contains a NULL value: `NULL IN (NULL)` returns NULL.
 
-* IN with a NULL left side expression is always NULL
-* NULL IN (NULL) returns NULL
+== Examples
+
+----
+2.5 IN (1,2.5,3) returns TRUE
+1 NOT IN (2,3) returns TRUE
+----

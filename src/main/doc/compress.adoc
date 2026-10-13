@@ -16,14 +16,22 @@ under the License.
 ////
 = COMPRESS
 
-Compresses the input data using the GZIP algorithm and returns a value of type BINARY.
+Compresses a binary value using the GZIP algorithm.
 
 == Syntax
 
 ----
-COMPRESS( string )
+COMPRESS( binary )
 ----
 
 == Returns
 
 Binary
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:decompress.adoc["DECOMPRESS",role=fun]

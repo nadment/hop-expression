@@ -16,20 +16,23 @@ under the License.
 ////
 = REGEXP_LIKE
 
-Match a string based on a regular expression pattern.
+Checks whether a string matches a regular expression pattern.
 
 == Syntax
 
 ----
 REGEXP_LIKE( subject, pattern [, parameters ] )
 ----
-subject:: The string to be searched for.
+
+== Arguments
+
+subject:: The string to search.
 pattern:: The regular expression pattern.
-parameters:: One or more string literals that indicate how the function matches the pattern.
+parameters:: A string of one or more letters that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character.
+* `n` Allows the period (`.`), which is the match-any-character character, to match the newline character.
 
 == Returns
 
@@ -37,7 +40,24 @@ Boolean
 
 == Usage
 
-* The function implicitly anchors a pattern at both ends.
-* The <pattern> is defined according to Java language regular expression rules.
+* The pattern is defined according to the Java language regular expression rules.
+* The pattern is not implicitly anchored: the function returns TRUE if the pattern matches any part of subject.
+* An empty pattern matches nothing.
+* Returns NULL if subject or pattern is NULL.
 
+== Examples
 
+----
+REGEXP_LIKE('aaa','a{2,4}') returns TRUE
+REGEXP_LIKE('A','[a-z]','i') returns TRUE
+REGEXP_LIKE('A','[a-z]','c') returns FALSE
+----
+
+== See also
+
+* xref:regexp_count.adoc["REGEXP_COUNT",role=fun]
+* xref:regexp_instr.adoc["REGEXP_INSTR",role=fun]
+* xref:regexp_replace.adoc["REGEXP_REPLACE",role=fun]
+* xref:regexp_substr.adoc["REGEXP_SUBSTR",role=fun]
+* xref:like.adoc["LIKE",role=op]
+* xref:similar-to.adoc["SIMILAR TO",role=op]

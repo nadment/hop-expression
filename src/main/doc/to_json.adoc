@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_JSON, TRY_TO_JSON
 
-Converts a string into a Json.
+Converts a string to a Json value.
 
 == Syntax
 
@@ -31,4 +31,10 @@ Json
 
 == Usage
 
-If the conversion is not possible, TO_JSON raises an error and TRY_TO_JSON returns a NULL value.
+* If the conversion is not possible, `TO_JSON` raises an error and `TRY_TO_JSON` returns NULL.
+* Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:is_json.adoc["IS_JSON",role=fun]
+* xref:json_value.adoc["JSON_VALUE",role=fun]

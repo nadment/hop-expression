@@ -24,10 +24,17 @@ Creates a date from individual numeric components.
 MAKE_DATE( year, month, day )
 ----
 
-The literal value with ISO format provides alternative syntax.
+The date literal in ISO format provides an alternative syntax.
+
 ----
 DATE 'YYYY-MM-DD'
 ----
+
+== Arguments
+
+year:: The year.
+month:: The month, normally between 1 and 12.
+day:: The day of the month, normally between 1 and 31.
 
 == Returns
 
@@ -35,10 +42,18 @@ Date
 
 == Usage
 
-MAKE_DATE is typically used to handle values in normal ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
+* The function is typically used with values in the normal ranges (months 1-12, days 1-31), but it also handles values outside these ranges.
+* If day is less than 1 or greater than 31, the month is adjusted.
+* If month is less than 1 or greater than 12, the year is adjusted.
+* Returns NULL if one of the arguments is NULL.
 
-* If day<1 or day>31 then date month is adjusted: MAKE_DATE(2020, 6, 50) >> 2020 JUNE 21
-* If month<1 or month>12 then date year is adjusted: MAKE_DATE(2020,19,1) >> 2021 JUNE 01
+== Examples
+
+----
+MAKE_DATE(2020,02,27) returns 2020-02-27
+MAKE_DATE(2020, 6, 50) returns 2020-07-20
+MAKE_DATE(2020,19,1) returns 2021-07-01
+----
 
 == See also
 

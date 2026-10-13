@@ -16,15 +16,23 @@ under the License.
 ////
 = IS TRUE
 
-Check if the value is true.
+Checks whether a boolean expression is TRUE.
 
 == Syntax
 
-[source,sql]
 ----
-expression IS [NOT] TRUE
+expression IS [ NOT ] TRUE
 ----
 
 == Returns
 
 Boolean
+
+== Usage
+
+* Never returns NULL: if expression is NULL, `IS TRUE` returns FALSE and `IS NOT TRUE` returns TRUE.
+
+== See also
+
+* xref:is-false.adoc["IS FALSE",role=op]
+* xref:is-null.adoc["IS NULL",role=op]

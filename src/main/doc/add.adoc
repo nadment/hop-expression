@@ -16,7 +16,7 @@ under the License.
 ////
 = Addition operator +
 
-Sum of 2 numeric values.
+Returns the sum of two numeric values.
 
 == Syntax
 
@@ -27,3 +27,11 @@ numeric1 + numeric2
 == Returns
 
 Number
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== See also
+
+* xref:subtract.adoc["Subtraction operator -",role=op]

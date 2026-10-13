@@ -16,12 +16,12 @@ under the License.
 ////
 = DAYOFWEEK
 
-Returns the day of week of the specified date or timestamp.
+Returns the day of the week of a date or timestamp, where Sunday is the first day.
 
 == Syntax
 
 ----
-DAYOFWEEK( {date | timestamp} )
+DAYOFWEEK( { date | timestamp } )
 ----
 
 == Returns
@@ -31,3 +31,16 @@ Integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday,
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAYOFWEEK FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+DAYOFWEEK(DATE '2019-07-28') returns 1
+DAYOFWEEK(DATE '2019-07-27') returns 7
+----
+
+== See also
+
+* xref:isodayofweek.adoc["ISODAYOFWEEK",role=fun]
+* xref:dayname.adoc["DAYNAME",role=fun]

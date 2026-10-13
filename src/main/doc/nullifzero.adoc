@@ -16,18 +16,32 @@ under the License.
 ////
 = NULLIFZERO
 
-Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
+Returns NULL if the argument evaluates to 0, otherwise returns the argument.
 
 == Syntax
 
 ----
-NULLIFZERO( expression )
+NULLIFZERO( numeric )
 ----
 
 == Returns
 
-The data type of the returned value is the same as the data type of the input value (`INTEGER` or `NUMBER`).
+The data type of the returned value is the same as the data type of the argument (Integer or Number).
 
 == Usage
 
-The input should be an expression that evaluates to a numeric value (or NULL).
+* The argument must be an expression that evaluates to a numeric value.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+NULLIFZERO(0) returns NULL
+NULLIFZERO(1) returns 1
+NULLIFZERO(0.1) returns 0.1
+----
+
+== See also
+
+* xref:zeroifnull.adoc["ZEROIFNULL",role=fun]
+* xref:nullif.adoc["NULLIF",role=fun]

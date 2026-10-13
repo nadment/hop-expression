@@ -19,25 +19,36 @@ under the License.
 Right-pads a string with characters from another string, or right-pads a binary value with bytes from another binary value.
 
 == Syntax
+
 ----
 RPAD( value, length [, pad ] )
 ----
 
+== Arguments
+
+value:: The string or binary value to pad.
+length:: The length of the result, in characters for a string or in bytes for a binary.
+pad:: The string or binary value used for padding.
+
 == Returns
 
-The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
+The data type of the returned value is the same as the data type of value (String or Binary).
 
 == Usage
 
 * Both value and pad must be of the same string or binary type.
-* If the length argument is smaller than the value, the function will truncate the string to the size of length.
-* If the padding argument is omitted, the function will pad spaces for string or 0x00 for binary.
-* Returns NULL if one of the arguments is NULL.
+* If pad is omitted, the function pads with spaces for a string or with `0x00` for a binary.
+* If length is smaller than the length of value, the function truncates value to length.
+* If length is negative, the function returns an empty string or binary.
+* Fails if length is greater than 8192.
+* Returns NULL if value or length is NULL.
 
 == Examples
 
 ----
-RPAD('123',5,'*') = '123**'
+RPAD('123',5,'*') returns '123**'
+RPAD('test',8,'ABC') returns 'testABCA'
+RPAD('test',3,'*') returns 'tes'
 ----
 
 == See also

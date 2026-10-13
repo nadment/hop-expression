@@ -16,7 +16,7 @@ under the License.
 ////
 = SOUNDEX
 
-Returns a string that contains a phonetic representation of the input string.
+Returns a string that contains a phonetic representation of a string.
 
 == Syntax
 
@@ -30,4 +30,16 @@ String
 
 == Usage
 
-The returned value starts with a letter that represents the first letter in the string followed by 3 digits (e.g. s400, c130).
+* The returned value starts with the first letter of the string, in upper case, followed by 3 digits (for example `S400` or `C130`).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SOUNDEX('Wikipedia') returns 'W213'
+SOUNDEX('I LOVE ROCKS.') returns 'I416'
+----
+
+== See also
+
+* xref:difference.adoc["DIFFERENCE",role=fun]

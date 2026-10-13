@@ -16,7 +16,7 @@ under the License.
 ////
 = TANH
 
-Calculates the hyperbolic tangent.
+Calculates the hyperbolic tangent of a numeric value.
 
 == Syntax
 
@@ -30,6 +30,12 @@ Number
 
 == Usage
 
-* Returns a value in the range of (-1, 1).
+* Returns a value in the range (-1, 1).
 * Returns NULL if the argument is NULL.
 
+== See also
+
+* xref:atanh.adoc["ATANH",role=fun]
+* xref:tan.adoc["TAN",role=fun]
+* xref:sinh.adoc["SINH",role=fun]
+* xref:cosh.adoc["COSH",role=fun]

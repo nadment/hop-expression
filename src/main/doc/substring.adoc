@@ -16,14 +16,25 @@ under the License.
 ////
 = SUBSTRING, SUBSTR
 
-Returns the portion of the string from string, starting from the character/byte specified by start, with optionally limited	length.
+Returns the portion of a string that starts at the specified position, optionally limited to a number of characters.
 
 == Syntax
 
 ----
 SUBSTRING( string, start [, length ] )
-SUBSTR( String, start [, length ] )
 ----
+
+The `SUBSTR` function is an alias.
+
+----
+SUBSTR( string, start [, length ] )
+----
+
+== Arguments
+
+string:: The string from which the portion is extracted.
+start:: The position of the first character to return.
+length:: The number of characters to return.
 
 == Returns
 
@@ -31,6 +42,21 @@ String
 
 == Usage
 
-* If length is not specified, all of the characters to the end of the string are used.
-* The first character of a string has position 1. If position is negative, counting begins at the end of the string.
+* The first character of a string has position 1.
+* If start is negative, counting begins at the end of the string.
+* If length is not specified, all the characters to the end of the string are returned.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+SUBSTRING('TEST FROM',6) returns 'FROM'
+SUBSTRING('TEST FROM',6,2) returns 'FR'
+SUBSTRING('TEST FROM',1,4) returns 'TEST'
+SUBSTRING('TEST FROM',-4) returns 'FROM'
+----
+
+== See also
+
+* xref:left.adoc["LEFT",role=fun]
+* xref:right.adoc["RIGHT",role=fun]

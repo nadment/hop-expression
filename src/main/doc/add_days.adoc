@@ -21,8 +21,19 @@ Adds or subtracts a specified number of days to a date or timestamp.
 == Syntax
 
 ----
-ADD_DAYS( date, integer )
+ADD_DAYS( date, days )
 ----
+
+The `+` and `-` operators provide an alternative syntax to add or subtract days.
+
+----
+date { + | - } days
+----
+
+== Arguments
+
+date:: The date or timestamp to modify.
+days:: The number of days to add. A negative number subtracts days.
 
 == Returns
 
@@ -30,13 +41,20 @@ Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of days, can be a positive or negative integer to either add or subtract days, respectively.
+* If days has a decimal part, it is truncated before the addition.
 * Returns NULL if one of the arguments is NULL.
-* Expression also supports the addition and subtraction of days to DATE values, in the form of { + | - } <integer>.
 
 == Examples
+
 ----
+ADD_DAYS(DATE '2019-01-15', 1) returns DATE '2019-01-16'
+ADD_DAYS(DATE '2019-01-15', -20) returns DATE '2018-12-26'
 ADD_DAYS( Date '2022-05-24', -4 )
 Date '2022-05-24' - 4
 ----
+
+== See also
+
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:add_weeks.adoc["ADD_WEEKS",role=fun]
+* xref:add_months.adoc["ADD_MONTHS",role=fun]

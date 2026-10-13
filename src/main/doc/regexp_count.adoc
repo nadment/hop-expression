@@ -16,24 +16,24 @@ under the License.
 ////
 = REGEXP_COUNT
 
-Searches a string for a regular expression pattern and returns an integer that indicates the number of times the pattern occurs in the string.
+Returns the number of times a regular expression pattern occurs in a string.
 
 == Syntax
 
 ----
-REGEXP_COUNT( source, pattern [, position [, parameters ]] )
+REGEXP_COUNT( source, pattern [, position [, parameters ] ] )
 ----
 
 == Arguments
 
-source:: The string to be searched for.
+source:: The string to search.
 pattern:: The regular expression pattern.
-position:: The position in the source string where the search starts. This argument is also optional. Default value is 1.
-parameters:: One or more string literals that indicate how the function matches the pattern.
+position:: The position in source where the search starts. The default value is 1.
+parameters:: A string of one or more letters that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character.
+* `n` Allows the period (`.`), which is the match-any-character character, to match the newline character.
 
 == Returns
 
@@ -41,9 +41,22 @@ Integer
 
 == Usage
 
-* If no matches are found, then the function returns 0.
+* The pattern is defined according to the Java language regular expression rules.
+* If no match is found, the function returns 0.
+* An empty pattern matches nothing.
+* Returns NULL if source is NULL.
 
+== Examples
 
+----
+REGEXP_COUNT('An apple costs 50 cents, a banana costs 10 cents.', '\d+') returns 2
+REGEXP_COUNT('An apple costs 50 cents, a banana costs 10 cents.', '\d+', 20) returns 1
+REGEXP_COUNT('An apple costs 50 cents, a banana costs 10 cents.', 'CENTS', 1, 'i') returns 2
+----
 
+== See also
 
-
+* xref:regexp_instr.adoc["REGEXP_INSTR",role=fun]
+* xref:regexp_like.adoc["REGEXP_LIKE",role=fun]
+* xref:regexp_replace.adoc["REGEXP_REPLACE",role=fun]
+* xref:regexp_substr.adoc["REGEXP_SUBSTR",role=fun]

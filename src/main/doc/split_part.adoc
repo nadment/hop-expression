@@ -24,22 +24,33 @@ Splits a string on the specified string delimiter and returns the part at the sp
 SPLIT_PART( string, delimiter, part )
 ----
 
+== Arguments
+
+string:: The string to split.
+delimiter:: The string that separates the parts. It is used as a whole, not as a list of characters.
+part:: The position of the part to return, starting at 1.
+
 == Returns
 
 String
 
 == Usage
 
+* If part is negative, the parts are counted backward from the end of the string.
 * If the requested part does not exist, the returned value is an empty string.
-* If any parameter is NULL, then NULL is returned.
-* If the part number is negative, the parts are counted backward from the end of the string.
+* Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-SPLIT_PART('127.0.0.1', '.', 1) return '127'
-SPLIT_PART('AAA-@-BBB-BBB-@-CCC','-@-',2) return 'BBB-BBB'
-SPLIT_PART('user@hop.apache.org', '.', -2) return 'apache'
-SPLIT_PART('127.0.0.1', '', 1) return  '127.0.0.1'
-SPLIT_PART('127.0.0.1', NULL, -1) return NULL
+SPLIT_PART('127.0.0.1', '.', 1) returns '127'
+SPLIT_PART('AAA-@-BBB-BBB-@-CCC','-@-',2) returns 'BBB-BBB'
+SPLIT_PART('user@hop.apache.org', '.', -2) returns 'apache'
+SPLIT_PART('127.0.0.1', '', 1) returns '127.0.0.1'
+SPLIT_PART('127.0.0.1', NULL, -1) returns NULL
 ----
+
+== See also
+
+* xref:strtok.adoc["STRTOK",role=fun]
+* xref:string_to_array.adoc["STRING_TO_ARRAY",role=fun]

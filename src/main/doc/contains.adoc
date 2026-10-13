@@ -16,12 +16,12 @@ under the License.
 ////
 = CONTAINS
 
-Returns true if expr1 contains expr2. Both expressions must be string or binary expressions.
+Checks whether a string or binary value contains another one.
 
 == Syntax
 
 ----
-CONTAINS( expr1, expr2 )
+CONTAINS( value, search )
 ----
 
 == Returns
@@ -30,5 +30,18 @@ Boolean
 
 == Usage
 
-* Returns the value True if substring is found inside string.
-* Returns NULL if either input expression is NULL. Otherwise, returns False.
+* Both arguments must be string or binary expressions.
+* Returns TRUE if search is found inside value, FALSE otherwise.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '2B3C') returns TRUE
+CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B') returns FALSE
+----
+
+== See also
+
+* xref:startswith.adoc["STARTSWITH",role=fun]
+* xref:endswith.adoc["ENDSWITH",role=fun]

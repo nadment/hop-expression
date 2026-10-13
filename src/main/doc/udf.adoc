@@ -16,19 +16,12 @@ under the License.
 ////
 = User defined function (UDF)
 
-A user-defined function is a scalar function written by the user as an expression: it takes arguments and returns one output value. It encapsulates a complex or frequently used expression into a reusable function.
-
-A user-defined function is a metadata element of the project, defined by:
-
-* a name, used to call the function (the name is not case-sensitive);
-* an optional description;
-* a list of arguments, each with a name and a data type;
-* a source expression that refers to the arguments by their names.
+Calls a scalar function written by the user as an expression, which takes arguments and returns one output value. It encapsulates a complex or frequently used expression into a reusable function.
 
 == Syntax
 
 ----
-function_name( [ argument1 [, argument2 ...] ] )
+function_name( [ argument1 [, argument2 ... ] ] )
 ----
 
 == Returns
@@ -37,6 +30,11 @@ The data type of the returned value is defined by the user-defined function impl
 
 == Usage
 
+* A user-defined function is a metadata element of the project, defined by:
+** a name, used to call the function (the name is not case-sensitive);
+** an optional description;
+** a list of arguments, each with a name and a data type;
+** a source expression that refers to the arguments by their names.
 * A call must provide exactly one value for each argument of the function.
 * The source expression can only refer to the arguments of the function, not to the fields of the row.
 * The function is expanded where it is called: its arguments are replaced by the values of the call, and the resulting expression is checked and optimized like any other expression.

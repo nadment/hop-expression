@@ -16,17 +16,22 @@ under the License.
 ////
 = IS DISTINCT FROM
 
-Compares whether two expressions are equal or not equal. The operator is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator xref:equal.adoc["=",role=op], which treats NULLs as unknown values.
+Checks whether two expressions are different, treating NULL as a known value for the comparison.
 
 == Syntax
 
 ----
-expression1 IS [NOT] DISTINCT FROM expression2
+expression1 IS [ NOT ] DISTINCT FROM expression2
 ----
 
 == Returns
 
 Boolean
+
+== Usage
+
+* The operator is NULL-safe: it treats NULL as a known value when comparing, so it never returns NULL.
+* This is different from the comparison operator xref:equal.adoc["=",role=op], which treats NULL as an unknown value.
 
 == See also
 

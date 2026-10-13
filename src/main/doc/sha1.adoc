@@ -21,18 +21,32 @@ Calculates the SHA1 hash of a value.
 == Syntax
 
 ----
-SHA1( {string | binary} )
+SHA1( value )
 ----
 
 == Arguments
 
-{string | binary}:: A string or binary expression.
+value:: The string or binary value to hash.
 
 == Returns
 
-Returns a 40 characters hex-encoded string (160 bits).
+String
 
 == Usage
 
+* The result is a hex-encoded string of 40 characters (160 bits).
 * Returns NULL if the argument is NULL.
 
+== Examples
+
+----
+SHA1('Test') returns '640ab2bae07bedc4c163f679a746f7ab7fb5d1fa'
+----
+
+== See also
+
+* xref:md5.adoc["MD5",role=fun]
+* xref:sha224.adoc["SHA224",role=fun]
+* xref:sha256.adoc["SHA256",role=fun]
+* xref:sha384.adoc["SHA384",role=fun]
+* xref:sha512.adoc["SHA512",role=fun]

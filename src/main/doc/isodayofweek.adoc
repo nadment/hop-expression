@@ -16,18 +16,30 @@ under the License.
 ////
 = ISODAYOFWEEK
 
-Returns the day of week following the ISO-8601 standard.
+Returns the day of the week of a date, following the ISO-8601 standard.
 
 == Syntax
 
 ----
-ISODAYOFWEEK( {date | timestamp} )
+ISODAYOFWEEK( { date | timestamp } )
 ----
 
 == Returns
 
-Integer between 1 and 7 (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)
+Integer between 1 and 7
 
 == Usage
 
+* The days are numbered 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday.
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](ISODAYOFWEEK FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+ISODAYOFWEEK(DATE '2003-12-28') returns 7
+----
+
+== See also
+
+* xref:dayofweek.adoc["DAYOFWEEK",role=fun]

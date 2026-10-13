@@ -16,17 +16,37 @@ under the License.
 ////
 = IFNULL, NVL
 
-Returns the second value if first value is null. This function replace the null with value.
+Returns the first expression if it is not NULL, otherwise the second expression.
 
 == Syntax
 
 ----
-IFNULL( expr1, expr2 )
+IFNULL( expression1, expression2 )
 ----
+
+The `NVL` function is an alias.
+
 ----
-NVL( expr1, expr2 )
+NVL( expression1, expression2 )
 ----
 
 == Returns
 
-The data type of the returned value is the data type of expr1.
+The data type of the returned value is the common data type of expression1 and expression2.
+
+== Usage
+
+* Returns NULL only if all arguments are NULL.
+
+== Examples
+
+----
+IFNULL('A','B') returns 'A'
+----
+
+== See also
+
+* xref:coalesce.adoc["COALESCE",role=fun]
+* xref:nvl2.adoc["NVL2",role=fun]
+* xref:nullif.adoc["NULLIF",role=fun]
+* xref:zeroifnull.adoc["ZEROIFNULL",role=fun]

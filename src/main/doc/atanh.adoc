@@ -16,7 +16,7 @@ under the License.
 ////
 = ATANH
 
-Calculates the inverse (arc) hyperbolic tangent.
+Calculates the inverse hyperbolic tangent (arc hyperbolic tangent) of a number.
 
 == Syntax
 
@@ -31,3 +31,8 @@ Number
 == Usage
 
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:tanh.adoc["TANH",role=fun]
+* xref:atan.adoc["ATAN",role=fun]

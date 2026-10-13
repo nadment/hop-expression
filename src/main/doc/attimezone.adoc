@@ -16,13 +16,18 @@ under the License.
 ////
 = AT TIME ZONE
 
-Specifies which time zone to use with a TIMESTAMP.
+Assigns a time zone to a timestamp, keeping its local date and time unchanged.
 
 == Syntax
 
 ----
-timestamp A TIME ZONE timezone
+timestamp AT TIME ZONE timezone
 ----
+
+== Arguments
+
+timestamp:: The date or timestamp to which the time zone is assigned.
+timezone:: The name of the time zone.
 
 == Returns
 
@@ -30,10 +35,17 @@ Date
 
 == Usage
 
-Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
+* Time zone names are case-sensitive and must be enclosed in single quotes (e.g. `'UTC'`).
+* An unknown time zone name raises an error.
+* Returns NULL if the timestamp is NULL.
 
 == Examples
 
 ----
 TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'
 ----
+
+== See also
+
+* xref:convert_timezone.adoc["CONVERT_TIMEZONE",role=fun]
+* xref:current_timezone.adoc["CURRENT_TIMEZONE",role=fun]

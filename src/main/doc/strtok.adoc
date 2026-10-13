@@ -26,9 +26,9 @@ STRTOK( string [, delimiters ] [, part ] )
 
 == Arguments
 
-string:: A string expression to be tokenized.
-delimiters:: Each character in the string is considered a delimiter character. If not specified, the default is a space character.
-part:: The ordinal token to return. If not specified, the default value is 1. The maximum limit of any token returned is 256.
+string:: The string to split into tokens.
+delimiters:: A string in which each character is a delimiter. If not specified, the default is a space character.
+part:: The position of the token to return, starting at 1. If not specified, the default is 1.
 
 == Returns
 
@@ -36,8 +36,26 @@ String
 
 == Usage
 
-* If the string starts or is terminated with the delimiter, the function considers empty space before or after the delimiter, respectively, as a valid token.
+* The string is split into at most 256 tokens.
+* If string starts or ends with a delimiter, the empty string before or after that delimiter is a valid token.
 * Adjacent delimiters are treated as delimiters for empty tokens.
-* If any parameter is NULL, then NULL is returned.
+* If part is negative, the tokens are counted backward from the end of the string.
+* Returns NULL if the requested token does not exist.
+* Returns NULL if one of the arguments is NULL.
 
-TIP: Use SQUEEZE function to remove start, end or adjacent delimiters.
+TIP: Use the `SQUEEZE` function to remove the leading, trailing and adjacent space delimiters.
+
+== Examples
+
+----
+STRTOK('AAA BBB CCC DDD') returns 'AAA'
+STRTOK('AAA BBB CCC DDD',3) returns 'CCC'
+STRTOK('AAA.BBB:CCC-DDD','.-:',2) returns 'BBB'
+STRTOK('127.1-2-3','.-:',-1) returns '3'
+STRTOK('127.1.2.3','.',5) returns NULL
+----
+
+== See also
+
+* xref:split_part.adoc["SPLIT_PART",role=fun]
+* xref:squeeze.adoc["SQUEEZE",role=fun]

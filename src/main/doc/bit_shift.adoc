@@ -16,7 +16,7 @@ under the License.
 ////
 = BIT_SHIFT
 
-Shifts the bits for a numeric by the specified number of bits to the left or to the right.
+Shifts the bits of an integer value by the specified number of bits to the left or to the right.
 
 == Syntax
 
@@ -27,9 +27,7 @@ BIT_SHIFT( value, distance )
 == Arguments
 
 value:: This expression must evaluate to a data type that can be cast to Integer.
-distance::
-If distance is positive, it will shift to the left.
-If distance is negative, it will shift to the right.
+distance:: The number of bits to shift. A positive distance shifts to the left, a negative distance shifts to the right.
 
 == Returns
 
@@ -37,5 +35,17 @@ Integer
 
 == Usage
 
-* If the absolute value of distance is larger than 64, there will be no error but will result in overflow/underflow.
+* If the absolute value of distance is 64 or more, no error is raised and the result is 0.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+BIT_SHIFT(1,4) returns 16
+BIT_SHIFT(16,-4) returns 1
+BIT_SHIFT(1,64) returns 0
+----
+
+== See also
+
+* xref:bit_rotate.adoc["BIT_ROTATE",role=fun]

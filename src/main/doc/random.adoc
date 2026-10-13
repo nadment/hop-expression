@@ -16,14 +16,23 @@ under the License.
 ////
 = RANDOM, RAND
 
-Return a random number between 0 (inclusive) and 1 (exclusive).
+Returns a random number between 0 (inclusive) and 1 (exclusive).
 
 == Syntax
 
 ----
 RANDOM( [ seed ] )
+----
+
+The `RAND` function is an alias and provides alternative syntax.
+
+----
 RAND( [ seed ] )
 ----
+
+== Arguments
+
+seed:: An integer used to initialize the random number generator.
 
 == Returns
 
@@ -31,5 +40,12 @@ Number
 
 == Usage
 
-* If seed is specified, it returns a repeatable sequence of random numbers.
-* If no seed is specified, it returns a completely random number.
+* If seed is specified, the function returns a repeatable sequence of random numbers.
+* If seed is omitted, the function returns a completely random number.
+* Fails if seed is NULL.
+
+== Examples
+
+----
+RANDOM()
+----

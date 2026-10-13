@@ -35,5 +35,6 @@ String or Binary
 == Examples
 
 ----
-REVERSE('ABC') return 'CBA'
+REVERSE('ABC') returns 'CBA'
+REVERSE('Hello, world!') returns '!dlrow ,olleH'
 ----

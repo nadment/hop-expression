@@ -16,7 +16,7 @@ under the License.
 ////
 = BASE64_ENCODE
 
-Encodes the input (string or binary) using Base64 encoding.
+Encodes a string or a binary value using Base64 encoding.
 
 == Syntax
 
@@ -31,3 +31,18 @@ input:: A string or binary expression to be encoded.
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+BASE64_ENCODE('Apache Hop') returns 'QXBhY2hlIEhvcA=='
+----
+
+== See also
+
+* xref:base64_decode.adoc["BASE64_DECODE",role=fun]
+* xref:base32_encode.adoc["BASE32_ENCODE",role=fun]

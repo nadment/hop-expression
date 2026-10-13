@@ -16,13 +16,18 @@ under the License.
 ////
 = ROUND
 
-Returns the values rounded to the nearest integer or decimal.
+Returns the value rounded to the nearest integer or to the specified number of decimal places.
 
 == Syntax
 
 ----
-ROUND( numeric [, scale] )
+ROUND( numeric [, scale ] )
 ----
+
+== Arguments
+
+numeric:: The value to round.
+scale:: The number of decimal places to keep. The default value is 0. A negative scale rounds to the left of the decimal point.
 
 == Returns
 
@@ -30,17 +35,21 @@ Number
 
 == Usage
 
+* A value halfway between two candidates is rounded away from zero.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-ROUND( 28.05) return 28
-ROUND( 28.05, 1 ) return 28.1
-ROUND( 28.05, -1 ) return 30
+ROUND(28.05) returns 28
+ROUND(28.05, 1) returns 28.1
+ROUND(28.05, -1) returns 30
+ROUND(2.5) returns 3
+ROUND(-2.5) returns -3
 ----
 
 == See also
 
 * xref:ceil.adoc["CEIL",role=fun]
 * xref:floor.adoc["FLOOR",role=fun]
+* xref:truncate.adoc["TRUNCATE",role=fun]

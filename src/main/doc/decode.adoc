@@ -14,21 +14,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-:language: en_US
 = DECODE
 
-Compares the select expression to each search expression in order. As soon as a search expression matches the selection expression, the corresponding result expression is returned.
+Compares an expression to each search value in order and returns the result associated with the first search value that matches.
 
 == Syntax
 
 ----
-DECODE( expr, search1, result1 [, search2, result2... ] [, default ] )
+DECODE( expression, search1, result1 [, search2, result2... ] [, default ] )
 ----
 
 == Arguments
 
-expr::	This is the select expression.
-searchN:: The search expressions indicate the values to compare to the select expression.
+expression:: The expression to compare to the search values.
+searchN:: The search values to compare to expression.
+resultN:: The value returned if expression matches the search value searchN.
+default:: The optional value returned if no search value matches expression.
 
 == Returns
 
@@ -36,14 +37,14 @@ The data type of the returned value is the data type of result1.
 
 == Usage
 
-If an optional default is specified, and if none of the search expressions match the select expression, then DECODE returns this default value.
+* If no search value matches expression, default is returned, or NULL if default is omitted.
 
-
-TIP: Contrary to `CASE`, a NULL value in the select expression matches a NULL value in the search expressions.
+TIP: Contrary to `CASE`, a NULL expression matches a NULL search value.
 
 == Examples
+
 ----
-DECODE(EXTRACT(dayofweek FROM CURRENT_DATE()),
+DECODE(EXTRACT(ISODAYOFWEEK FROM CURRENT_DATE()),
 1, 'Monday',
 2, 'Tuesday',
 3, 'Wednesday',
@@ -52,3 +53,8 @@ DECODE(EXTRACT(dayofweek FROM CURRENT_DATE()),
 6, 'Saturday',
 7, 'Sunday')
 ----
+
+== See also
+
+* xref:case.adoc["CASE",role=op]
+* xref:if.adoc["IF",role=fun]

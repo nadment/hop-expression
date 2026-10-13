@@ -16,13 +16,19 @@ under the License.
 ////
 = IF
 
-Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
+Returns one value if a condition is TRUE and another value otherwise. Similar to `CASE`, but with a single condition.
 
 == Syntax
 
 ----
-IF( condition, true_value [, false_value] )
+IF( condition, true_value [, false_value ] )
 ----
+
+== Arguments
+
+condition:: Boolean expression to evaluate.
+true_value:: Value returned if condition is TRUE.
+false_value:: Value returned if condition is FALSE or NULL.
 
 == Returns
 
@@ -30,11 +36,11 @@ The data type of the returned value is the same as the data type of true_value a
 
 == Usage
 
-If the false_value is omitted, return NULL.
+* If false_value is omitted, NULL is returned when condition is not TRUE.
 
 == Examples
 
-The following IF and CASE expressions are equivalent:
+The following `IF` and `CASE` expressions are equivalent:
 
 ----
 IF(totalprice >= 150000, 'High Value', 'Low Value')
@@ -46,3 +52,9 @@ CASE
     ELSE 'Low Value'
 END
 ----
+
+== See also
+
+* xref:case.adoc["CASE",role=fun]
+* xref:ifnull.adoc["IFNULL",role=fun]
+* xref:nvl2.adoc["NVL2",role=fun]

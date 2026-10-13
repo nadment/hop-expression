@@ -16,7 +16,7 @@ under the License.
 ////
 = BIT_CLEAR
 
-Returns the result after clearing the specified bit position.
+Returns an integer value with the bit at the specified position cleared (set to 0).
 
 == Syntax
 
@@ -27,6 +27,7 @@ BIT_CLEAR( value, position )
 == Arguments
 
 value:: This expression must evaluate to a data type that can be cast to Integer.
+position:: The position of the bit to clear.
 
 == Returns
 
@@ -34,6 +35,19 @@ Integer
 
 == Usage
 
-* The first position of a bit has position 1.
-* Returns NULL if the position is negative or zero.
+* The first bit has position 1.
+* Returns value unchanged if position is greater than 64.
+* Returns NULL if position is negative or zero.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+BIT_CLEAR(3,1) returns 2
+BIT_CLEAR(3,4) returns 3
+----
+
+== See also
+
+* xref:bit_set.adoc["BIT_SET",role=fun]
+* xref:bit_get.adoc["BIT_GET",role=fun]

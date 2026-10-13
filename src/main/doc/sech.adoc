@@ -30,5 +30,17 @@ Number
 
 == Usage
 
-* The argument should be expressed in radians.
-* SECH(x) is equivalent to 1 / COSH(x)
+* The argument must be expressed in radians.
+* `SECH( numeric )` is equivalent to `1 / COSH( numeric )`.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SECH(0) returns 1
+----
+
+== See also
+
+* xref:cosh.adoc["COSH",role=fun]
+* xref:csch.adoc["CSCH",role=fun]

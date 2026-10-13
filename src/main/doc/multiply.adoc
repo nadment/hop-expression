@@ -26,4 +26,15 @@ numeric1 * numeric2
 
 == Returns
 
-Number
+Integer or Number
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+4*10 returns 40
+2.5*4 returns 10
+----

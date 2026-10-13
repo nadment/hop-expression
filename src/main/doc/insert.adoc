@@ -21,9 +21,27 @@ Replaces a substring of the specified length, starting at the specified position
 == Syntax
 
 ----
-INSERT( source_string_or_binary, position, length, replacement )
+INSERT( value, position, length, replacement )
 ----
+
+== Arguments
+
+value:: String or binary value to modify.
+position:: Position of the first character or byte to replace. The first position is 1.
+length:: Number of characters or bytes to replace.
+replacement:: String or binary value to insert.
 
 == Returns
 
 String or Binary
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+INSERT('abcd', 2, 1, 'QW') returns 'aQWcd'
+INSERT('abcd', 5, 0, 'QW') returns 'abcdQW'
+----

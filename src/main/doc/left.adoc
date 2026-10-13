@@ -16,7 +16,7 @@ under the License.
 ////
 = LEFT
 
-Extracts a number of characters from a string or bytes from binary starting from left.
+Extracts a number of characters from a string, or of bytes from a binary value, starting from the left.
 
 == Syntax
 
@@ -30,14 +30,14 @@ String or Binary
 
 == Usage
 
-* If the length argument is larger than the value, the function will return the value.
-* If the length argument is zero or negative, the function returns an empty string or binary.
+* If length is greater than the length of value, the function returns the whole value.
+* If length is zero or negative, the function returns an empty string or binary.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-LEFT('ABCDEF',3) return 'ABC'
+LEFT('ABCDEF',3) returns 'ABC'
 ----
 
 == See also

@@ -16,7 +16,7 @@ under the License.
 ////
 = CHR
 
-Converts a Unicode code point (including 7-bit ASCII) into the character that matches the input Unicode.
+Converts a Unicode code point (including 7-bit ASCII) into the matching character.
 
 == Syntax
 
@@ -27,3 +27,20 @@ CHR( integer )
 == Returns
 
 String
+
+== Usage
+
+* Raises an error if integer is not a valid Unicode code point.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+CHR(83) returns 'S'
+CHR(8364) returns '€'
+----
+
+== See also
+
+* xref:ascii.adoc["ASCII",role=fun]
+* xref:unicode.adoc["UNICODE",role=fun]

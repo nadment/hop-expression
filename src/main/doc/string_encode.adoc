@@ -16,8 +16,7 @@ under the License.
 ////
 = STRING_ENCODE
 
-Encode special characters in a string using the Java string literal encoding format.
-Special characters are \b, \t, \n, \f, \r, \", \\, \\u(unicode).
+Encodes the special characters of a string with the Java string literal format.
 
 == Syntax
 
@@ -28,3 +27,18 @@ STRING_ENCODE( string )
 == Returns
 
 String
+
+== Usage
+
+* The escape sequences are `+\b+`, `+\t+`, `+\n+`, `+\f+`, `+\r+`, `+\"+`, `+\\+` and `+\u+` followed by the hexadecimal code of a Unicode character.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+STRING_ENCODE('€') returns '\u20AC'
+----
+
+== See also
+
+* xref:string_decode.adoc["STRING_DECODE",role=fun]

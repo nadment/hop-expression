@@ -16,12 +16,17 @@ under the License.
 ////
 = ARRAY_APPEND
 
-Returns an array concatenating an element at the end of an array.
+Returns a new array with an element added at the end of an array.
 
 == Syntax
 
 ----
 ARRAY_APPEND( array, element )
+----
+
+The xref:concat.adoc["||",role=op] operator provides an alternative syntax.
+
+----
 array || element
 ----
 
@@ -36,10 +41,17 @@ Array
 
 == Usage
 
+* The data type of element must be compatible with the data type of the elements of array.
 * Returns NULL if the array is NULL.
 
 == Examples
 
 ----
-ARRAY_APPEND([1,2,3],4) return [1,2,3,4]
+ARRAY_APPEND([1,2,3],4) returns [1,2,3,4]
+ARRAY_APPEND(['sun','mon'],'tue') returns ['sun','mon','tue']
 ----
+
+== See also
+
+* xref:array_prepend.adoc["ARRAY_PREPEND",role=fun]
+* xref:concat.adoc["CONCAT",role=fun]

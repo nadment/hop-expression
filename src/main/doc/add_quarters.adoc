@@ -16,13 +16,18 @@ under the License.
 ////
 = ADD_QUARTERS
 
-Adds or subtracts a specified number of months to a date or timestamp.
+Adds or subtracts a specified number of quarters to a date or timestamp.
 
 == Syntax
 
 ----
-ADD_QUARTERS( date, integer )
+ADD_QUARTERS( date, quarters )
 ----
+
+== Arguments
+
+date:: The date or timestamp to modify.
+quarters:: The number of quarters to add. A negative number subtracts quarters.
 
 == Returns
 
@@ -30,7 +35,20 @@ Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of quarters can be a positive or negative integer to either add or subtract quarters, respectively.
-* If the resulting quarter has fewer days than the day component of date, then the result is the last day of the resulting quarter. Otherwise, the result has the same day component as a date.
+* If quarters has a decimal part, it is truncated before the addition.
+* A quarter is 3 months.
+* If the resulting month has fewer days than the day component of date, the result is the last day of the resulting month. Otherwise, the result has the same day component as date.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+ADD_QUARTERS(DATE '2019-01-15', 1) returns DATE '2019-04-15'
+ADD_QUARTERS(DATE '2019-01-31', 1) returns DATE '2019-04-30'
+----
+
+== See also
+
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:add_months.adoc["ADD_MONTHS",role=fun]
+* xref:add_years.adoc["ADD_YEARS",role=fun]

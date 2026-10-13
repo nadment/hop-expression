@@ -24,10 +24,29 @@ Removes all occurrences of a specified substring, and optionally replaces them w
 REPLACE( source, pattern [, replacement ] )
 ----
 
+== Arguments
+
+source:: The string to search.
+pattern:: The substring to search for. It is a plain string, not a regular expression.
+replacement:: The string that replaces each occurrence of pattern.
+
 == Returns
 
 String
 
 == Usage
 
+* If replacement is omitted, all occurrences of pattern are removed.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+REPLACE('ABCD','CD') returns 'AB'
+REPLACE('ABCDEFCD','CD','EF') returns 'ABEFEFEF'
+----
+
+== See also
+
+* xref:regexp_replace.adoc["REGEXP_REPLACE",role=fun]
+* xref:translate.adoc["TRANSLATE",role=fun]

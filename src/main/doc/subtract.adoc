@@ -16,7 +16,7 @@ under the License.
 ////
 = Subtraction operator -
 
-Subtracts two numeric values.
+Subtracts the second numeric value from the first one.
 
 == Syntax
 
@@ -27,3 +27,17 @@ numeric1 - numeric2
 == Returns
 
 Number
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+10-0.5 returns 9.5
+----
+
+== See also
+
+* xref:add.adoc["+",role=op]

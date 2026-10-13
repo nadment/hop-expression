@@ -16,18 +16,18 @@ under the License.
 ////
 = REPEAT
 
-Returns a string or binary repeated some number of times.
+Returns a string or binary value repeated the specified number of times.
 
 == Syntax
 
 ----
-REPEAT( {string | binary}, n )
+REPEAT( value, n )
 ----
 
 == Arguments
 
-{string | binary}:: The input value to repeat.
-n:: The number of times the input value should be repeated. The minimum valid number is 0 (which results in an empty string).
+value:: The string or binary value to repeat.
+n:: The number of times value is repeated. The minimum valid number is 0, which results in an empty string or binary.
 
 == Returns
 
@@ -36,3 +36,10 @@ String or Binary
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+REPEAT('ABC',2) returns 'ABCABC'
+REPEAT('ABC',0) returns ''
+----

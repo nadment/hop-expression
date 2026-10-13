@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_NUMBER, TRY_TO_NUMBER
 
-Converts a string into a number or a timestamp to Unix Epoch in seconds.
+Converts a string to a number, or a timestamp to the number of seconds since the Unix epoch.
 
 == Syntax
 
@@ -27,21 +27,33 @@ TRY_TO_NUMBER( string [, format ] )
 TRY_TO_NUMBER( timestamp )
 ----
 
+== Arguments
+
+string:: The string to convert.
+format:: The number format model used to interpret string. The format elements are described below.
+timestamp:: The timestamp to convert to Unix epoch in seconds.
+
 == Returns
 
 Number
 
-If the conversion is not possible, TO_NUMBER raises an error and TRY_TO_NUMBER returns a NULL value.
-
 == Usage
+
+* When parsing a string, multiple alternative formats can be specified by separating the format strings with the `|` character.
+* If the conversion is not possible, `TO_NUMBER` raises an error and `TRY_TO_NUMBER` returns NULL.
+* Returns NULL if the value to convert is NULL.
 
 include::numberformat.adoc[]
 
-=== Alternate formats
+== Examples
 
-When parsing strings, it is possible to specify multiple alternative formats by separating format strings with the | character.
 ----
-TO_NUMBER('1234', 'S9999|9999S') result 1234
-TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03') result 1284352323
-TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03.123456789') result 1284352323.123456789
+TO_NUMBER('1234', 'S9999|9999S') returns 1234
+TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03') returns 1284352323
+TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03.123456789') returns 1284352323.123456789
 ----
+
+== See also
+
+* xref:to_char.adoc["TO_CHAR",role=fun]
+* xref:to_date.adoc["TO_DATE",role=fun]

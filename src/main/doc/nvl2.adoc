@@ -16,7 +16,7 @@ under the License.
 ////
 = NVL2
 
-Substitutes a value when a null value is encountered as well as when a non-null value is encountered.
+Returns one value if the expression is not NULL, and another value if it is NULL.
 
 == Syntax
 
@@ -24,10 +24,28 @@ Substitutes a value when a null value is encountered as well as when a non-null 
 NVL2( expression, value_if_not_null, value_if_null )
 ----
 
+== Arguments
+
+expression:: The expression to test.
+value_if_not_null:: The value returned if expression is not NULL.
+value_if_null:: The value returned if expression is NULL.
+
 == Returns
 
 The data type of the returned value is the most general data type of value_if_not_null and value_if_null.
 
 == Usage
 
-* All three expressions should have the same (or compatible) data type.
+* value_if_not_null and value_if_null must have the same (or compatible) data type; expression can be of any data type.
+
+== Examples
+
+----
+NVL2('test','ex1','ex2') returns 'ex1'
+----
+
+== See also
+
+* xref:ifnull.adoc["IFNULL",role=fun]
+* xref:coalesce.adoc["COALESCE",role=fun]
+* xref:nullif.adoc["NULLIF",role=fun]

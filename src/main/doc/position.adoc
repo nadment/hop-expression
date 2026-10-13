@@ -16,7 +16,7 @@ under the License.
 ////
 = POSITION
 
-Returns the position in the string that is the first character of a specified occurrence of the substring.
+Returns the position of the first character of the first occurrence of a substring in a string.
 
 == Syntax
 
@@ -31,5 +31,17 @@ Integer
 == Usage
 
 * The first position in the string is 1.
-* If substring is not found in string, then the function will return 0.
-* Equivalent to xref:instr.adoc["INSTR",role=fun]( <string>, <substring> ).
+* If substring is not found in string, the function returns 0.
+* Equivalent to xref:instr.adoc["INSTR",role=fun]( string, substring ).
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+POSITION('def' IN 'abcdefgh') returns 4
+POSITION('XYZ' IN 'abcdefgh') returns 0
+----
+
+== See also
+
+* xref:instr.adoc["INSTR",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = UNACCENT
 
-The function removes accents (diacritic marks) from a given string.
+Removes the accents (diacritic marks) from a string.
 
 == Syntax
 
@@ -30,4 +30,12 @@ String
 
 == Usage
 
-* Note that ligatures will be left as is.
+* Ligatures are left as is.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+UNACCENT('ÇĆČçćč') returns 'CCCccc'
+UNACCENT('ÆæØøµß¢©') returns 'ÆæØøµß¢©'
+----

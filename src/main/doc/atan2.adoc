@@ -24,14 +24,23 @@ Calculates the inverse tangent (arc tangent) of the ratio of its two arguments.
 ATAN2( y, x )
 ----
 
+== Arguments
+
+y:: The y coordinate.
+x:: The x coordinate.
+
 == Returns
 
 Number
 
-NOTE: The first parameter is the <y> coordinate, not the <x> coordinate.
-
 == Usage
 
 * The returned value is in radians, not degrees.
-* The returned value is a number in the interval [-&pi;, &pi;].
+* The returned value is in the interval [-&pi;, &pi;].
+* Returns NULL if one of the arguments is NULL.
 
+NOTE: The first argument is the y coordinate, not the x coordinate.
+
+== See also
+
+* xref:atan.adoc["ATAN",role=fun]

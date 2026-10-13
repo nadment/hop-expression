@@ -30,4 +30,5 @@ Number
 
 == Usage
 
+* The absolute value of the argument must be greater than 1, otherwise an error is raised.
 * Returns NULL if the argument is NULL.

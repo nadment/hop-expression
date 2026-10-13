@@ -16,19 +16,33 @@ under the License.
 ////
 = ISOWEEK
 
-This function return the week of the year based on the ISO-8601 standard.
+Returns the week of the year of a date, following the ISO-8601 standard.
 
 == Syntax
 
 ----
-ISOWEEK( {date | timestamp} )
+ISOWEEK( { date | timestamp } )
 ----
 
 == Returns
 
-Integer between 1 and 52 or 53 full weeks.
+Integer between 1 and 53
 
 == Usage
 
+* An ISO year has 52 or 53 full weeks.
 * The first week of the ISO year is the week that contains January 4.
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](ISOWEEK FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+ISOWEEK(DATE '2015-12-31') returns 53
+ISOWEEK(DATE '2016-01-04') returns 1
+----
+
+== See also
+
+* xref:isoyear.adoc["ISOYEAR",role=fun]
+* xref:week.adoc["WEEK",role=fun]

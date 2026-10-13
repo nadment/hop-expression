@@ -16,16 +16,18 @@ under the License.
 ////
 = ARRAY
 
-Returns an array with the argument values.
+Returns an array containing the values of the arguments.
 
 == Syntax
+
 ----
-ARRAY( [ expression1 ] [, expression2 [, ... ] ] )
+ARRAY( [ expression1 [, expression2 [, ... ] ] ] )
 ----
 
-The `[]` provides alternative syntax.
+The square brackets `[ ]` provide an alternative syntax.
+
 ----
-[expression1, expression2]
+[ expression1 [, expression2 [, ... ] ] ]
 ----
 
 == Returns
@@ -34,10 +36,16 @@ Array
 
 == Usage
 
-* If the array is empty or all elements are NULL the result type is an array of type null.
+* If the array is empty or all its elements are NULL, the result type is an array of type null.
 
 == Examples
 
 ----
-ARRAY(1,2,3) return [1,2,3]
+ARRAY(1,2,3) returns [1,2,3]
+ARRAY() returns []
 ----
+
+== See also
+
+* xref:cardinality.adoc["CARDINALITY",role=fun]
+* xref:string_to_array.adoc["STRING_TO_ARRAY",role=fun]

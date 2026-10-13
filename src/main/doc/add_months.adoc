@@ -21,8 +21,13 @@ Adds or subtracts a specified number of months to a date or timestamp.
 == Syntax
 
 ----
-ADD_MONTHS( date, integer )
+ADD_MONTHS( date, months )
 ----
+
+== Arguments
+
+date:: The date or timestamp to modify.
+months:: The number of months to add. A negative number subtracts months.
 
 == Returns
 
@@ -30,7 +35,19 @@ Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of months can be a positive or negative integer to either add or subtract months, respectively.
-* If the resulting month has fewer days than the day component of date, then the result is the last day of the resulting month. Otherwise, the result has the same day component as a date.
+* If months has a decimal part, it is truncated before the addition.
+* If the resulting month has fewer days than the day component of date, the result is the last day of the resulting month. Otherwise, the result has the same day component as date.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+ADD_MONTHS(DATE '2019-01-15', 1) returns DATE '2019-02-15'
+ADD_MONTHS(DATE '2019-01-31', 1) returns DATE '2019-02-28'
+----
+
+== See also
+
+* xref:date_add.adoc["DATE_ADD",role=fun]
+* xref:add_quarters.adoc["ADD_QUARTERS",role=fun]
+* xref:add_years.adoc["ADD_YEARS",role=fun]

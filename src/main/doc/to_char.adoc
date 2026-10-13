@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_CHAR
 
-Converts the input (number, date, binary or boolean) to a string.
+Converts a numeric, date, binary or boolean value to a string.
 
 == Syntax
 
@@ -27,20 +27,39 @@ TO_CHAR( binary [, format ] )
 TO_CHAR( boolean )
 ----
 
+== Arguments
+
+numeric | date | binary | boolean:: The value to convert.
+format:: The format of the returned string. The supported formats depend on the type of the value to convert and are described below.
+
 == Returns
 
 String
 
 == Usage
 
-include::dateformat.adoc[]
+* For a date, the default format is defined by the variable `EXPRESSION_DATE_FORMAT`.
+* For a binary value, format is `HEX`, `BASE64`, `UTF-8` or `UTF8` (case-insensitive). The default is `HEX`; it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.
+* Returns NULL if the value to convert is NULL.
 
+include::dateformat.adoc[]
 
 include::numberformat.adoc[]
 
-
-NOTE: Fill mode modifier; toggles between compact and fill modes.
+NOTE: The `FM` fill mode modifier toggles between compact and fill modes.
 
 include::binaryformat.adoc[]
 
-The parameter values are case-insensitive. The default is HEX, it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.
+== Examples
+
+----
+TO_CHAR(0.45) returns '0.45'
+TO_CHAR(12923,'99,999.00') returns ' 12,923.00'
+TO_CHAR(12,'FMB0999') returns '0012'
+----
+
+== See also
+
+* xref:to_number.adoc["TO_NUMBER",role=fun]
+* xref:to_date.adoc["TO_DATE",role=fun]
+* xref:to_binary.adoc["TO_BINARY",role=fun]

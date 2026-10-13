@@ -16,7 +16,7 @@ under the License.
 ////
 = ARRAY_CONTAINS
 
-Returns a boolean indicating whether the array contains the specified element.
+Checks whether an array contains the specified element.
 
 == Syntax
 
@@ -26,7 +26,7 @@ ARRAY_CONTAINS( array, element )
 
 == Arguments
 
-array:: The array.
+array:: The array to search.
 element:: The element to search for within the array.
 
 == Returns
@@ -35,10 +35,16 @@ Boolean
 
 == Usage
 
+* The data type of element must be compatible with the data type of the elements of array.
 * Returns NULL if the array is NULL.
 
 == Examples
 
 ----
-ARRAY_CONTAINS([1,2,3],2) return TRUE
+ARRAY_CONTAINS([1,2,3],2) returns TRUE
+ARRAY_CONTAINS([1,2,3],0) returns FALSE
 ----
+
+== See also
+
+* xref:array_position.adoc["ARRAY_POSITION",role=fun]

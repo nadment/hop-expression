@@ -16,13 +16,24 @@ under the License.
 ////
 = TRUNC[ATE]
 
-Returns the values to the previous integer or decimal.
+Truncates a numeric value to an integer or to the specified number of decimal places.
 
 == Syntax
+
 ----
-TRUNCATE( numeric [, scale] )
-TRUNC( numeric [, scale] )
+TRUNCATE( numeric [, scale ] )
 ----
+
+The `TRUNC` function is an alias.
+
+----
+TRUNC( numeric [, scale ] )
+----
+
+== Arguments
+
+numeric:: The numeric value to truncate.
+scale:: The number of digits to keep after the decimal point. If not specified, the default is 0. A negative scale truncates the digits to the left of the decimal point.
 
 == Returns
 
@@ -30,12 +41,19 @@ Number
 
 == Usage
 
-* Truncation is performed towards 0, not towards the smaller number. For example, TRUNCATE(-9.6) results in -9, not -10.
+* Truncation is performed towards 0, not towards the smaller number. For example, `TRUNCATE(-9.6)` returns -9, not -10.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
+
 ----
-TRUNCATE( 28.52) return 28
-TRUNCATE( 28.52, 1 ) return 28.5
-TRUNCATE( 28.52, -1 ) return 20
+TRUNCATE(28.52) returns 28
+TRUNCATE(28.52, 1) returns 28.5
+TRUNCATE(28.52, -1) returns 20
 ----
+
+== See also
+
+* xref:round.adoc["ROUND",role=fun]
+* xref:floor.adoc["FLOOR",role=fun]
+* xref:ceil.adoc["CEIL",role=fun]

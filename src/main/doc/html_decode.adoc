@@ -14,9 +14,9 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= URL_DECODE
+= HTML_DECODE
 
-Decode special HTML entities.
+Decodes the HTML entities of a string into the corresponding characters.
 
 == Syntax
 
@@ -27,3 +27,17 @@ HTML_DECODE( string )
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+HTML_DECODE('18&euro; &amp; &lt;test&gt; &#8482;') returns '18€ & <test> ™'
+----
+
+== See also
+
+* xref:html_encode.adoc["HTML_ENCODE",role=fun]

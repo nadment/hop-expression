@@ -31,3 +31,16 @@ Integer
 == Usage
 
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+BIT_NOT(1) returns -2
+BIT_NOT(0) returns -1
+----
+
+== See also
+
+* xref:bit_and.adoc["BIT_AND",role=fun]
+* xref:bit_or.adoc["BIT_OR",role=fun]
+* xref:bit_xor.adoc["BIT_XOR",role=fun]

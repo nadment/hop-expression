@@ -21,25 +21,30 @@ Returns a string as a normalized string, allowing for easier sorting and searchi
 == Syntax
 
 ----
-NORMALIZE( string [, form] )
+NORMALIZE( string [, form ] )
 ----
 
-Specifies the encoding format to use for the result. The default format is NFC.
+== Arguments
 
-[options="header"]
-|===
-|Form|Description
-|NFD|Canonical decomposition
-|NFC|Canonical decomposition, followed by canonical composition
-|NFKD|Compatibility decomposition
-|NFKC|Compatibility decomposition, followed by canonical composition
-|===
+string:: The string to normalize.
+form:: The Unicode normalization form to use for the result. The default form is `NFC`.
+* `NFD` Canonical decomposition.
+* `NFC` Canonical decomposition, followed by canonical composition.
+* `NFKD` Compatibility decomposition.
+* `NFKC` Compatibility decomposition, followed by canonical composition.
 
 == Returns
 
-STRING
+String
 
 == Usage
 
-* Normalization is often used in situations in which two strings render the same on the screen but have different Unicode code points.
+* Normalization is often used when two strings render the same on the screen but have different Unicode code points.
+* Fails if form is not one of the supported forms.
+* Returns NULL if string is NULL.
 
+== Examples
+
+----
+NORMALIZE('i⁹', 'NFKC') returns 'i9'
+----

@@ -16,7 +16,7 @@ under the License.
 ////
 = EXP
 
-Computes the exponential value of a numeric expression.
+Returns the exponential of a numeric value, that is the number e raised to the power of this value.
 
 == Syntax
 
@@ -32,3 +32,8 @@ Number
 
 * Returns a value in the range of [0, &infin;).
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:ln.adoc["LN",role=fun]
+* xref:power.adoc["POWER",role=fun]

@@ -21,8 +21,14 @@ Converts a timestamp to another time zone.
 == Syntax
 
 ----
-CONVERT_TIMEZONE ( [source_timezone,] target_timezone, timestamp)
+CONVERT_TIMEZONE( [ source_timezone, ] target_timezone, timestamp )
 ----
+
+== Arguments
+
+source_timezone:: The time zone in which timestamp is interpreted. If omitted, the time zone of timestamp is used.
+target_timezone:: The time zone to which timestamp is converted.
+timestamp:: The timestamp to convert.
 
 == Returns
 
@@ -30,7 +36,9 @@ Date
 
 == Usage
 
-Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
+* Time zone names are case-sensitive and must be enclosed in single quotes (e.g. `'UTC'`).
+* Raises an error if a time zone is not valid.
+* Returns NULL if timestamp is NULL.
 
 == Examples
 
@@ -38,3 +46,7 @@ Time zone names are case-sensitive and must be enclosed in single quotes (e.g. '
 CONVERT_TIMEZONE('Europe/Paris',Timestamp '2020-05-25 20:48:00')
 CONVERT_TIMEZONE('Europe/Paris','Asia/Tokyo',Timestamp '2020-05-25 20:48:00')
 ----
+
+== See also
+
+* xref:current_timezone.adoc["CURRENT_TIMEZONE",role=fun]

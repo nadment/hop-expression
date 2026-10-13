@@ -16,7 +16,7 @@ under the License.
 ////
 = ENDSWITH
 
-Returns TRUE if the first expression ends with second expression. Both values must be of the same string or binary type.
+Checks whether a string or binary value ends with the specified suffix.
 
 == Syntax
 
@@ -27,3 +27,21 @@ ENDSWITH( value, suffix )
 == Returns
 
 Boolean
+
+== Usage
+
+* Both arguments must be of the same string or binary type.
+* Returns TRUE if value ends with suffix, FALSE otherwise.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+ENDSWITH('TEST FROM','ROM') returns TRUE
+ENDSWITH('TEST FROM','ROMA') returns FALSE
+----
+
+== See also
+
+* xref:startswith.adoc["STARTSWITH",role=fun]
+* xref:contains.adoc["CONTAINS",role=fun]

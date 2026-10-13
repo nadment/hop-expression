@@ -16,14 +16,28 @@ under the License.
 ////
 = DAYNAME
 
-Returns the name of the day of week (in English).
+Returns the English name of the day of the week of a date or timestamp.
 
 == Syntax
 
 ----
-DAYNAME( {date | timestamp} )
+DAYNAME( { date | timestamp } )
 ----
 
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+DAYNAME(DATE '2019-01-01') returns 'Tuesday'
+----
+
+== See also
+
+* xref:dayofweek.adoc["DAYOFWEEK",role=fun]

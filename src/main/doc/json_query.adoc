@@ -16,19 +16,18 @@ under the License.
 ////
 = JSON_QUERY
 
-Extracts a JSON fragment from a JSON object by using JsonPath query language.
+Extracts a JSON fragment from a JSON value by using the JsonPath query language.
 
 == Syntax
 
 ----
-JSON_QUERY( json [, path] )
+JSON_QUERY( json [, path ] )
 ----
 
 == Arguments
 
-json:: JSON value or a JSON-formatted string
-
-path:: A xref:jsonpath.adoc[JsonPath] expression that identifies the data that you want to get
+json:: JSON value or a JSON-formatted string.
+path:: A xref:jsonpath.adoc[JsonPath] expression that identifies the data that you want to get. If path is omitted, the whole JSON value is returned.
 
 == Returns
 
@@ -37,12 +36,18 @@ Json
 == Usage
 
 * The path must begin with a dollar sign `$`, which represents the root.
-* If the path does not match a value, `NULL` is returned.
+* If the path does not match a value, NULL is returned.
+* Returns NULL if one of the arguments is NULL.
 
 include::jsonpath.adoc[]
 
 == Examples
 
 ----
-JSON_QUERY('{"language":["English", "French"]}','$.language') return [English, French]
+JSON_QUERY('{"language":["English", "French"]}','$.language') returns [English, French]
 ----
+
+== See also
+
+* xref:json_keys.adoc["JSON_KEYS",role=fun]
+* xref:json_value.adoc["JSON_VALUE",role=fun]

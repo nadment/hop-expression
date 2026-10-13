@@ -16,27 +16,26 @@ under the License.
 ////
 = REGEXP_INSTR
 
-Searches a string using a regular expression pattern and returns an integer that indicates the beginning
-position or ending position of the matched substring.
+Searches a string for a regular expression pattern and returns the position of the beginning or of the end of the matched substring.
 
 == Syntax
 
 ----
-REGEXP_INSTR( subject, pattern [, position [, occurrence [, return_options [, parameters ]]]] )
+REGEXP_INSTR( subject, pattern [, position [, occurrence [, return_options [, parameters ] ] ] ] )
 ----
 
 == Arguments
 
-subject:: The string to be searched for.
+subject:: The string to search.
 pattern:: The regular expression pattern.
-position:: The position in the subject string where the search starts. This argument is also optional. Default value is 1.
-occurrence:: Specifies which occurrence of the pattern to search for. This argument is also optional. Default value is 1 (the first occurrence).
+position:: The position in subject where the search starts. The default value is 1.
+occurrence:: The occurrence of the pattern to search for. The default value is 1 (the first occurrence).
 return_options:: Specifies what the function returns relative to the match. `0` (default) returns the position of the first character of the match; a nonzero value returns the position of the first character following the match.
-parameters:: One or more string literals that indicate how the function matches the pattern.
+parameters:: A string of one or more letters that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-* `n` allows the period (.) which is the match-any-character character, to match the newline character.
+* `n` Allows the period (`.`), which is the match-any-character character, to match the newline character.
 
 == Returns
 
@@ -44,5 +43,22 @@ Integer
 
 == Usage
 
-* If no match is found, then the function returns 0.
-* The <pattern> is defined according to Java language regular expression rules.
+* The pattern is defined according to the Java language regular expression rules.
+* If no match is found, the function returns 0.
+* An empty pattern matches nothing.
+* Returns NULL if subject or pattern is NULL.
+
+== Examples
+
+----
+REGEXP_INSTR('email@apache.org', '@[^.]*') returns 6
+REGEXP_INSTR('hello to YOU', '(.o).', 1, 3, 1,'i') returns 13
+----
+
+== See also
+
+* xref:regexp_count.adoc["REGEXP_COUNT",role=fun]
+* xref:regexp_like.adoc["REGEXP_LIKE",role=fun]
+* xref:regexp_replace.adoc["REGEXP_REPLACE",role=fun]
+* xref:regexp_substr.adoc["REGEXP_SUBSTR",role=fun]
+* xref:instr.adoc["INSTR",role=fun]

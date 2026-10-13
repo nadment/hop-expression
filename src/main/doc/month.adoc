@@ -26,8 +26,23 @@ MONTH( date )
 
 == Returns
 
-Integer between 1 and 12.
+Integer between 1 and 12
 
 == Usage
 
-* Equivalent to xref:extract.adoc["EXTRACT",role=fun](MONTH FROM date)
+* Equivalent to xref:extract.adoc["EXTRACT",role=fun]( MONTH FROM date ).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+MONTH(DATE '2019-01-01') returns 1
+MONTH(DATE '2019-12-28') returns 12
+----
+
+== See also
+
+* xref:monthname.adoc["MONTHNAME",role=fun]
+* xref:quarter.adoc["QUARTER",role=fun]
+* xref:year.adoc["YEAR",role=fun]
+* xref:extract.adoc["EXTRACT",role=fun]

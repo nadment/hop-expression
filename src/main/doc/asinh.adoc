@@ -16,7 +16,7 @@ under the License.
 ////
 = ASINH
 
-Calculates the inverse (arc) hyperbolic sine.
+Calculates the inverse hyperbolic sine (arc hyperbolic sine) of a number.
 
 == Syntax
 
@@ -31,3 +31,8 @@ Number
 == Usage
 
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:sinh.adoc["SINH",role=fun]
+* xref:asin.adoc["ASIN",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = NULLIF
 
-Returns a null value if the two specified expressions are equal, or <expression1> otherwise.
+Returns NULL if the two expressions are equal, otherwise returns the first expression.
 
 == Syntax
 
@@ -26,6 +26,23 @@ NULLIF( expression1, expression2 )
 
 == Returns
 
-Expression value
+The data type of the returned value is the same as the data type of expression1.
 
 == Usage
+
+* Both expressions must have the same (or compatible) data type.
+* Returns NULL if expression1 is NULL.
+
+== Examples
+
+----
+NULLIF(1,1) returns NULL
+NULLIF(1,2) returns 1
+NULLIF('TEST','XXX') returns 'TEST'
+----
+
+== See also
+
+* xref:nullifzero.adoc["NULLIFZERO",role=fun]
+* xref:ifnull.adoc["IFNULL",role=fun]
+* xref:coalesce.adoc["COALESCE",role=fun]

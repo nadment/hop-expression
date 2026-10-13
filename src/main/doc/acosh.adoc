@@ -16,7 +16,7 @@ under the License.
 ////
 = ACOSH
 
-Calculates the inverse hyperbolic cosine (arc hyperbolic cosine).
+Calculates the inverse hyperbolic cosine (arc hyperbolic cosine) of a number.
 
 == Syntax
 
@@ -30,5 +30,10 @@ Number
 
 == Usage
 
-* Returns a value in the range of [0, &infin;).
+* The returned value is in the interval [0, &infin;).
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:cosh.adoc["COSH",role=fun]
+* xref:acos.adoc["ACOS",role=fun]

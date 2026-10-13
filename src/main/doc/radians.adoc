@@ -30,6 +30,9 @@ Number
 
 == Usage
 
-* The argument should be expressed in degrees.
-* Returns a value in the range of (-π, π)
+* The argument must be an angle expressed in degrees.
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:degrees.adoc["DEGREES",role=fun]

@@ -16,13 +16,19 @@ under the License.
 ////
 = TRANSLATE
 
-Translates string from the characters in <findChars> to the characters in <replaceChars>.
+Replaces each character of a string found in a list of characters with the character at the same position in a second list.
 
 == Syntax
 
 ----
-TRANSLATE( string, findChars, replaceChars )
+TRANSLATE( string, find_chars, replace_chars )
 ----
+
+== Arguments
+
+string:: The string to translate.
+find_chars:: The characters to replace.
+replace_chars:: The replacement characters. Each character of find_chars is replaced by the character at the same position in replace_chars.
 
 == Returns
 
@@ -30,3 +36,18 @@ String
 
 == Usage
 
+* If replace_chars is shorter than find_chars, the characters of find_chars that have no corresponding character in replace_chars are removed from the string.
+* If replace_chars is NULL, all the characters of find_chars are removed from the string.
+* Returns NULL if string or find_chars is NULL.
+
+== Examples
+
+----
+TRANSLATE('Hello, world!','eo','EO') returns 'HEllO, wOrld!'
+TRANSLATE('Hello, wOrld!','eol', 'E') returns 'HE, wOrd!'
+TRANSLATE('Hello, world!','oel,! ', '') returns 'Hwrd'
+----
+
+== See also
+
+* xref:replace.adoc["REPLACE",role=fun]

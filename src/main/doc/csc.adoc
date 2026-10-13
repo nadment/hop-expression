@@ -16,7 +16,7 @@ under the License.
 ////
 = CSC
 
-Calculates the trigonometric cosecant of the angle in radians.
+Returns the trigonometric cosecant of an angle expressed in radians.
 
 == Syntax
 
@@ -31,5 +31,10 @@ Number
 == Usage
 
 * The argument should be expressed in radians.
-* CSC(x) is equivalent to 1 / SIN(x).
+* `CSC(x)` is equivalent to `1 / SIN(x)`.
+* Raises an error if the argument is 0.
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:sin.adoc["SIN",role=fun]

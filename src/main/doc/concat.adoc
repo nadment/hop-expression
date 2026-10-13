@@ -16,15 +16,16 @@ under the License.
 ////
 = CONCAT, ||
 
-Combines multiple strings or binaries into one.
+Concatenates two or more strings, binaries or arrays into one.
 
 == Syntax
 
 ----
-CONCAT( string1, string2 [, string3...])
+CONCAT( string1, string2 [, string3... ] )
 ----
 
 The xref:concat.adoc["||",role=op] operator provides alternative syntax.
+
 ----
 string1 || string2 [ || ... ]
 ----
@@ -35,12 +36,17 @@ String, Binary or Array
 
 == Usage
 
-* All arguments must be of the same string or binary type.
-* Null arguments are ignored.
+* All arguments must be of the same string, binary or array type.
+* NULL values are ignored.
+* Returns NULL only if all arguments are NULL.
 
 == Examples
 
 ----
-CONCAT('AB','CD','12') return 'ABCD12'
-'AB' || 'CD' return 'ABCD'
+CONCAT('AB','CD','12') returns 'ABCD12'
+'AB' || 'CD' returns 'ABCD'
 ----
+
+== See also
+
+* xref:concat_ws.adoc["CONCAT_WS",role=fun]

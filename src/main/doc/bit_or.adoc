@@ -30,5 +30,19 @@ Integer or Binary
 
 == Usage
 
+* Both arguments must be integers, or both must be binary values.
+* Binary values must be of equal length, otherwise an error is raised.
 * Returns NULL if one of the arguments is NULL.
-* Binary values must be of equal length.
+
+== Examples
+
+----
+BIT_OR(100,2) returns 102
+BIT_OR(3,2) returns 3
+----
+
+== See also
+
+* xref:bit_and.adoc["BIT_AND",role=fun]
+* xref:bit_xor.adoc["BIT_XOR",role=fun]
+* xref:bit_not.adoc["BIT_NOT",role=fun]

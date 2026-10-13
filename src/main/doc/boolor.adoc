@@ -16,7 +16,7 @@ under the License.
 ////
 = OR
 
-Matches either expression.
+Returns TRUE if at least one of the two boolean expressions is TRUE.
 
 == Syntax
 
@@ -27,3 +27,14 @@ boolean1 OR boolean2
 == Returns
 
 Boolean
+
+== Usage
+
+* Returns TRUE if one of the arguments is TRUE, even if the other one is NULL.
+* Returns NULL if one of the arguments is NULL and the other one is FALSE or NULL.
+
+== See also
+
+* xref:booland.adoc["AND",role=op]
+* xref:boolnot.adoc["NOT",role=op]
+* xref:boolxor.adoc["XOR",role=op]

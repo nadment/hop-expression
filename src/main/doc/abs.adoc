@@ -16,7 +16,7 @@ under the License.
 ////
 = ABS
 
-Returns the absolute (positive) value of the number or interval.
+Returns the absolute (positive) value of a number or an interval.
 
 == Syntax
 
@@ -26,15 +26,15 @@ ABS( value )
 
 == Returns
 
-The data type of the returned value is the same as the data type of the input value (`INTEGER`, `NUMBER`  or `INTERVAL`).
+The data type of the returned value is the same as the data type of the argument (Integer, Number or Interval).
 
 == Usage
 
-* Returns NULL if the value is NULL.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
-ABS(-123) return 123
-ABS(INTERVAL -5 YEARS) return INTERVAL 5 YEARS
+ABS(-123) returns 123
+ABS(INTERVAL -5 YEARS) returns INTERVAL 5 YEARS
 ----

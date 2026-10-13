@@ -16,13 +16,14 @@ under the License.
 ////
 = CEIL
 
-Returns the value rounded to the nearest equal or larger integer.
+Returns the smallest integer that is greater than or equal to the numeric value.
 
 == Syntax
 
 ----
 CEIL( numeric )
 ----
+
 == Returns
 
 Number
@@ -34,7 +35,8 @@ Number
 == Examples
 
 ----
-CEIL( 28.05 ) return 29
+CEIL(28.05) returns 29
+CEIL(-42.8) returns -42
 ----
 
 == See also

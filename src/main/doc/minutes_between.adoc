@@ -30,4 +30,18 @@ Integer
 
 == Usage
 
-* If the first timestamp is earlier than second timestamp, then the result is negative.
+* The result is positive if timestamp1 is earlier than timestamp2, and negative if timestamp1 is later than timestamp2.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+MINUTES_BETWEEN(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59') returns 28
+MINUTES_BETWEEN(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59') returns 1440
+----
+
+== See also
+
+* xref:seconds_between.adoc["SECONDS_BETWEEN",role=fun]
+* xref:hours_between.adoc["HOURS_BETWEEN",role=fun]
+* xref:days_between.adoc["DAYS_BETWEEN",role=fun]

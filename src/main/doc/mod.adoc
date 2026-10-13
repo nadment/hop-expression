@@ -16,14 +16,16 @@ under the License.
 ////
 = MOD, %
 
-Returns the remainder of the division.
+Returns the remainder of the division of the dividend by the divisor.
 
 == Syntax
 
 ----
 MOD( dividend, divisor )
 ----
+
 The xref:mod.adoc["%",role=op] operator provides alternative syntax.
+
 ----
 dividend % divisor
 ----
@@ -32,9 +34,16 @@ dividend % divisor
 
 Number
 
+== Usage
+
+* The result has the same sign as dividend.
+* Fails with a division by zero error if divisor is 0.
+* Returns NULL if one of the arguments is NULL.
+
 == Examples
 
 ----
-MOD(16,5) return 1
+MOD(16,5) returns 1
+MOD(11,4) returns 3
+MOD(-11,4) returns -3
 ----
-

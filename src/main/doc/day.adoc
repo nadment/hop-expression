@@ -16,19 +16,30 @@ under the License.
 ////
 = DAY
 
-Returns the day of month of the specified date or timestamp.
+Returns the day of the month of a date or timestamp.
 
 == Syntax
 
-[source,sql]
 ----
-DAY( {date | timestamp} )
+DAY( { date | timestamp } )
 ----
 
 == Returns
 
-Integer between 1 and 31.
+Integer between 1 and 31
 
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAY FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+DAY(DATE '2019-02-28') returns 28
+----
+
+== See also
+
+* xref:dayofweek.adoc["DAYOFWEEK",role=fun]
+* xref:dayofyear.adoc["DAYOFYEAR",role=fun]

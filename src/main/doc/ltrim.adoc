@@ -26,8 +26,8 @@ LTRIM( string [, characters ] )
 
 == Arguments
 
-string:: The string expression to be trimmed
-characters::  One or more characters to remove from the left side. If the parameter is omitted, the function will remove space characters. You can specify the characters in any order.
+string:: The string expression to be trimmed.
+characters:: One or more characters to remove from the left side. You can specify the characters in any order. If characters is omitted, the function removes space characters.
 
 == Returns
 
@@ -36,6 +36,13 @@ String
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+LTRIM(' a ') returns 'a '
+LTRIM('01ABC012', '012') returns 'ABC012'
+----
 
 == See also
 

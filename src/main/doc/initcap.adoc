@@ -27,3 +27,18 @@ INITCAP( string )
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+INITCAP('hello the wORLD') returns 'Hello The World'
+----
+
+== See also
+
+* xref:lower.adoc["LOWER",role=fun]
+* xref:upper.adoc["UPPER",role=fun]

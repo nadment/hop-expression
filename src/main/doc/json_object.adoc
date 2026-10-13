@@ -16,24 +16,31 @@ under the License.
 ////
 = JSON_OBJECT
 
-Generates a JSON object by using the specified key:value pairs.
+Generates a JSON object from the specified key-value pairs.
 
 == Syntax
+
 ----
-JSON_OBJECT([KEY] key1 VALUE value2 [, [KEY] key2 VALUE value2, ...])
+JSON_OBJECT( [ KEY ] key1 VALUE value1 [, [ KEY ] key2 VALUE value2... ] )
 ----
 
 == Returns
 
-JSON object containing all the key-value pairs.
+Json
 
 == Usage
 
-* `KEY` is optional and is provided for semantic clarity.
-* If there are duplicate key-value pairs in the parameters, the last key-value pairs are retained in the final returned object.
+* The returned JSON object contains all the key-value pairs.
+* The keyword `KEY` is optional and is provided for semantic clarity.
+* If several pairs have the same key, the last one is retained in the returned object.
 
 == Examples
 
 ----
-VALUES JSON_OBJECT(KEY 'first' VALUE 'John', KEY 'last' VALUE 'Doe')
+JSON_OBJECT(KEY 'first' VALUE 'John', KEY 'last' VALUE 'Doe')
+JSON_OBJECT(KEY 'name' VALUE 'Smith') returns {"name":"Smith"}
 ----
+
+== See also
+
+* xref:to_json.adoc["TO_JSON",role=fun]

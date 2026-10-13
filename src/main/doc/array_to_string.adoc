@@ -16,7 +16,7 @@ under the License.
 ////
 = ARRAY_TO_STRING
 
-Returns array converted to a string by casting all values to strings and concatenating them using the string to separate the elements.
+Converts an array to a string by casting each element to a string and concatenating them with a separator.
 
 == Syntax
 
@@ -35,11 +35,16 @@ String
 
 == Usage
 
+* A NULL element of the array is converted to an empty string in the result.
 * Returns NULL if one of the arguments is NULL.
-* NULL in an array is converted to an empty string in the result.
 
 == Examples
 
 ----
-ARRAY_TO_STRING(['Hello','world'],' ') return 'Hello world'
+ARRAY_TO_STRING(['Hello','world'],' ') returns 'Hello world'
+ARRAY_TO_STRING([1.2,4,8+2],',') returns '1.2,4,10'
 ----
+
+== See also
+
+* xref:string_to_array.adoc["STRING_TO_ARRAY",role=fun]

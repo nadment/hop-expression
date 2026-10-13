@@ -19,9 +19,15 @@ under the License.
 Returns the nth value in an ordered set of values over a group of rows.
 
 == Syntax
+
 ----
 NTH_VALUE( expression, offset ) [ IGNORE NULLS | RESPECT NULLS ]
 ----
+
+== Arguments
+
+expression:: The expression to evaluate for each row of the group.
+offset:: The position of the value to return in the group, starting at 1.
 
 == Returns
 
@@ -29,11 +35,12 @@ The data type of the returned value is the same as the data type of the input va
 
 == Usage
 
-* If the first value in the set is null, then the function returns NULL unless you specify `IGNORE NULLS`.
+* If neither `IGNORE NULLS` nor `RESPECT NULLS` is specified, the default is `RESPECT NULLS`.
+* With `RESPECT NULLS`, the function returns NULL if the nth value is NULL.
+* With `IGNORE NULLS`, NULL values are skipped and the function returns the nth non-NULL value.
+* Returns NULL if the group contains fewer than offset values.
 
-* If `IGNORE NULLS` or `RESPECT NULLS` is not specified, the default is `RESPECT NULLS`
-
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
 
 == Examples
 

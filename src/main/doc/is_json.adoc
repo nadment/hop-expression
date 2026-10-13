@@ -16,7 +16,7 @@ under the License.
 ////
 = IS_JSON
 
-Check if a value is a valid JSON.
+Checks whether a value is a valid JSON.
 
 == Syntax
 
@@ -30,10 +30,17 @@ Boolean
 
 == Usage
 
-Return FALSE if a value is NULL.
+* Returns FALSE if the argument is NULL.
 
 == Examples
 
 ----
-IS_JSON('{name:"Smith", age:29}')
+IS_JSON('{name:"Smith", age:29}') returns TRUE
+IS_JSON('name:"Smith", age:29}') returns FALSE
 ----
+
+== See also
+
+* xref:is_date.adoc["IS_DATE",role=fun]
+* xref:is_number.adoc["IS_NUMBER",role=fun]
+* xref:to_json.adoc["TO_JSON",role=fun]

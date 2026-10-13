@@ -16,7 +16,7 @@ under the License.
 ////
 = URL_DECODE
 
-Decode a string used in a query part of a URL.
+Decodes a string used in the query part of a URL.
 
 == Syntax
 
@@ -27,3 +27,19 @@ URL_DECODE( string )
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+URL_DECODE('a+b') returns 'a b'
+URL_DECODE('a%2Bb') returns 'a+b'
+URL_DECODE('%C3%A2%C3%A9%C3%A8') returns 'âéè'
+----
+
+== See also
+
+* xref:url_encode.adoc["URL_ENCODE",role=fun]

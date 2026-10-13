@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_DATE, TRY_TO_DATE
 
-Converts a string into a date or the epoch time value to a timestamp with UTC time zone.
+Converts a string to a date, or an epoch time value to a timestamp in the UTC time zone.
 
 == Syntax
 
@@ -27,21 +27,26 @@ TO_DATE( numeric )
 TRY_TO_DATE( numeric )
 ----
 
+== Arguments
+
+string:: The string to convert.
+format:: The date format model used to interpret string. The format elements are described below.
+numeric:: The number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970). The fractional part gives the nanoseconds.
+
 == Returns
 
 Date
 
 == Usage
 
-If the conversion is not possible, TO_DATE raises an error and TRY_TO_DATE returns a NULL value.
+* An element in the date format model can only appear once. However, elements such as separators and padding characters can appear more than once.
+* If no format is specified, the standard format `YYYY-MM-DD` is used to interpret string.
+* Time zones are case-sensitive: `Europe/London` is not the same as `europe/london`.
+* If single elements are omitted, their minimum values are assumed (for example, `TO_DATE('1999-12', 'YYYY-MM')` is interpreted as December 1st, 1999).
+* If a match fails between a format element and the corresponding characters in string, the alternative format elements below are tried.
+* If the conversion is not possible, `TO_DATE` raises an error and `TRY_TO_DATE` returns NULL.
+* Returns NULL if the value to convert is NULL.
 
-include::dateformat.adoc[]
-
-* An element in the date format model can only appear once. However, elements such as separators, padding characters can appear more than once.
-* If no format is specified, the standard format YYYY-MM-DD is used to interpret string.
-* Timezones are case-sensitive, Europe/London is not the same as europe/london.
-* If single elements are omitted, then their minimum values are assumed (for example, TO_DATE('1999-12', 'YYYY-MM') is interpreted as December 1st, 1999).
-* If a match fails between a format element and the corresponding characters in the string, then expression attempts alternative format.
 [cols="<2,<5", options="header"]
 |===
 |Original format|Try alternative format elements
@@ -50,17 +55,18 @@ include::dateformat.adoc[]
 |MONTH|MON
 |===
 
-If used with numeric value, the value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
+include::dateformat.adoc[]
 
 == Examples
 
 ----
-TO_DATE('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')
-TO_DATE(1284352323.123) return 2010-09-13 04:32:03.123
-TO_DATE(1284352323.000000123) return 2010-09-13 04:32:03.000000123
+TO_DATE('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM') returns 2019-02-13 15:34:56 +08:00
+TO_DATE(1284352323.123) returns 2010-09-13 04:32:03.123
+TO_DATE(1284352323.000000123) returns 2010-09-13 04:32:03.000000123
 ----
 
 == See also
 
+* xref:to_char.adoc["TO_CHAR",role=fun]
 * xref:make_date.adoc["MAKE_DATE",role=fun]
 * xref:make_timestamp.adoc["MAKE_TIMESTAMP",role=fun]

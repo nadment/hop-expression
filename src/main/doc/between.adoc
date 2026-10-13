@@ -16,12 +16,12 @@ under the License.
 ////
 = BETWEEN
 
-Determines whether the value of one expression is in an interval defined by two other expressions.
+Checks whether the value of an expression is in the interval defined by two other expressions.
 
 == Syntax
 
 ----
-expression [NOT] BETWEEN [ASYMMETRIC|SYMMETRIC] lower_bound AND upper_bound
+expression [ NOT ] BETWEEN [ ASYMMETRIC | SYMMETRIC ] lower_bound AND upper_bound
 ----
 
 == Returns
@@ -30,12 +30,15 @@ Boolean
 
 == Usage
 
-The ASYMMETRIC keyword is just a verbose way of expressing the default behaviour that upper boundary must be greater than the lower boundary,
-SYMMETRIC has the useful property of indicating that the order is irrelevant
+* The bounds are inclusive.
+* `ASYMMETRIC` is just a verbose way of expressing the default behaviour: lower_bound must not be greater than upper_bound, otherwise the result is FALSE.
+* `SYMMETRIC` indicates that the order of the two bounds is irrelevant.
+* Returns NULL if one of the arguments is NULL.
 
 == Examples
 
-The following statements are all equivalent:
+The following expressions are all equivalent:
+
 ----
 A BETWEEN SYMMETRIC B AND C
 (A BETWEEN B AND C) OR (A BETWEEN C AND B)

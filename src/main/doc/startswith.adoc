@@ -16,7 +16,7 @@ under the License.
 ////
 = STARTSWITH
 
-Returns TRUE if the first expression starts with second expression. Both values must be of the same string or binary type.
+Checks whether a string or binary value starts with the specified prefix.
 
 == Syntax
 
@@ -24,6 +24,30 @@ Returns TRUE if the first expression starts with second expression. Both values 
 STARTSWITH( value, prefix )
 ----
 
+== Arguments
+
+value:: The string or binary value to check.
+prefix:: The string or binary value to search for at the beginning of value.
+
 == Returns
 
 Boolean
+
+== Usage
+
+* Both arguments must be of the same type, either string or binary.
+* The comparison of strings is case-sensitive.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+STARTSWITH('TEST FROM','TES') returns TRUE
+STARTSWITH('XXXTEST FROM','TES') returns FALSE
+STARTSWITH(BINARY 'FAA12345',BINARY 'EE') returns FALSE
+----
+
+== See also
+
+* xref:endswith.adoc["ENDSWITH",role=fun]
+* xref:contains.adoc["CONTAINS",role=fun]

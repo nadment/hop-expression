@@ -21,13 +21,28 @@ Decodes a Base64-encoded string to a string.
 == Syntax
 
 ----
-BASE64_DECODE( string )
+BASE64_DECODE( input )
 ----
 
 == Arguments
 
-input:: A Base64-encoded string expression.
+input:: A Base64-encoded string or binary expression.
 
 == Returns
 
 String
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+BASE64_DECODE('QXBhY2hlIEhvcA==') returns 'Apache Hop'
+----
+
+== See also
+
+* xref:base64_encode.adoc["BASE64_ENCODE",role=fun]
+* xref:base32_decode.adoc["BASE32_DECODE",role=fun]

@@ -16,7 +16,7 @@ under the License.
 ////
 = SIN
 
-Calculates the trigonometric sine of the angle in radians.
+Calculates the trigonometric sine of an angle expressed in radians.
 
 == Syntax
 
@@ -30,6 +30,20 @@ Number
 
 == Usage
 
-* The argument should be expressed in radians.
-* Returns a value in the range of [-1, 1].
+* The argument is an angle expressed in radians.
+* Returns a value in the range [-1, 1].
 * Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+SIN(0) returns 0
+SIN(PI()/2) returns 1
+----
+
+== See also
+
+* xref:asin.adoc["ASIN",role=fun]
+* xref:sinh.adoc["SINH",role=fun]
+* xref:cos.adoc["COS",role=fun]
+* xref:tan.adoc["TAN",role=fun]

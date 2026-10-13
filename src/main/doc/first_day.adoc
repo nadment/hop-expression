@@ -16,7 +16,7 @@ under the License.
 ////
 = FIRST_DAY
 
-Returns the first day of the specified time unit.
+Returns the first day of the time unit (month by default) that contains the date.
 
 == Syntax
 
@@ -24,19 +24,32 @@ Returns the first day of the specified time unit.
 FIRST_DAY( date [, unit ] )
 ----
 
+== Arguments
+
+date:: The date or timestamp.
+unit:: The optional time unit, `MONTH` by default. Supported units:
+* `YEAR`
+* `QUARTER`
+* `MONTH`
+* `WEEK`
+
 == Returns
 
 Date
 
 == Usage
 
-* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH).
+* A week starts on Monday.
+* Raises an error if unit is not supported.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
 FIRST_DAY(Date '2021-06-15', QUARTER)
+FIRST_DAY(DATE '2020-02-27') returns DATE '2020-02-01'
+FIRST_DAY(DATE '2020-05-27', QUARTER) returns DATE '2020-04-01'
+FIRST_DAY(DATE '2020-02-27', WEEK) returns DATE '2020-02-24'
 ----
 
 == See also

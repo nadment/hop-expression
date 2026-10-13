@@ -16,7 +16,7 @@ under the License.
 ////
 = LPAD
 
-Left-pads a string with characters from another string, or right-pads a binary value with bytes from another binary value.
+Left-pads a string with characters from another string, or left-pads a binary value with bytes from another binary value.
 
 == Syntax
 
@@ -24,21 +24,27 @@ Left-pads a string with characters from another string, or right-pads a binary v
 LPAD( value, length [, pad ] )
 ----
 
+== Arguments
+
+value:: String or binary value to pad.
+length:: Length of the result, in characters for a string or in bytes for a binary value.
+pad:: String or binary value used for padding. If pad is omitted, the function pads with spaces for a string or with 0x00 for a binary value.
+
 == Returns
 
-The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
+String or Binary
 
 == Usage
 
 * Both value and pad must be of the same string or binary type.
-* If the length argument is smaller than the value, the function will truncate the string to the size of length.
-* If the padding argument is omitted, the function will pad spaces for string or 0x00 for binary.
+* The data type of the returned value is the same as the data type of value.
+* If length is smaller than the length of value, the function truncates value to length.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
 
 ----
-LPAD('123',5,'*') return '**123'
+LPAD('123',5,'*') returns '**123'
 ----
 
 == See also

@@ -16,21 +16,33 @@ under the License.
 ////
 = EQUAL_NULL
 
-Compares whether two expressions are equal. The function is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator xref:equal.adoc["=",role=op], which treats NULLs as unknown values.
+Checks whether two expressions are equal. The comparison is NULL-safe, meaning that NULL is treated as a known value.
 
 == Syntax
 
 ----
-EQUAL_NULL( expression, expression )
+EQUAL_NULL( expression1, expression2 )
 ----
 
 == Returns
 
 Boolean
 
-TIP: Note that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown values.
+== Usage
+
+* Returns TRUE if both arguments are NULL.
+* Returns FALSE if only one of the arguments is NULL.
+
+TIP: This is different from the equal comparison operator xref:equal.adoc["=",role=op], which treats NULL as an unknown value.
+
+== Examples
+
+----
+EQUAL_NULL(DATE '2019-01-01',DATE '2019-01-01') returns TRUE
+EQUAL_NULL(DATE '2019-01-01',DATE '2018-01-01') returns FALSE
+----
 
 == See also
 
 * xref:equal.adoc["=",role=op]
-* xref:is-distinct-from.adoc["IS NOT DISTINCT FORM"",role=op]
+* xref:is-distinct-from.adoc["IS NOT DISTINCT FROM",role=op]

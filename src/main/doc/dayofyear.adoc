@@ -16,18 +16,30 @@ under the License.
 ////
 = DAYOFYEAR
 
-Returns the day of year of the date or timestamp.
+Returns the day of the year of a date or timestamp.
 
 == Syntax
 
 ----
-DAYOFYEAR( {date | timestamp} )
+DAYOFYEAR( { date | timestamp } )
 ----
 
 == Returns
 
-Integer between 1 and 366.
+Integer between 1 and 366
 
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](DAYOFYEAR FROM date).
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+DAYOFYEAR(DATE '2019-12-31') returns 365
+----
+
+== See also
+
+* xref:day.adoc["DAY",role=fun]
+* xref:dayofweek.adoc["DAYOFWEEK",role=fun]

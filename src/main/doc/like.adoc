@@ -16,14 +16,21 @@ under the License.
 ////
 = LIKE
 
-Case-sensitive matching of strings based on comparison with a pattern.
+Checks whether a string matches a pattern, with a case-sensitive comparison.
 
 == Syntax
 
-[source,sql]
 ----
-string [NOT] LIKE pattern [ ESCAPE escape ]
+string [ NOT ] LIKE pattern [ ESCAPE escape ]
 ----
+
+== Arguments
+
+string:: String to compare.
+pattern:: Pattern to match, which may contain the following SQL wildcards:
+* An underscore `_` matches any single character.
+* A percent sign `%` matches any sequence of zero or more characters.
+escape:: Single character that instructs the operator to treat the wildcard character that follows it as a regular character. The default escape character is backslash `\`.
 
 == Returns
 
@@ -31,19 +38,22 @@ Boolean
 
 == Usage
 
-Wildcards are supported in pattern
+* The pattern must match the entire string.
+* Returns NULL if string or pattern is NULL.
 
-*	An underscore `_` matches any single character.
-*	A percent sign `%` matches any sequence of zero or more characters.
-
-The escape character instructs the operator to treat the wildcard characters as the regular characters.
-The default escape character is backslash `\`.
-
-TIP: See ILIKE insensitive case operator
+TIP: Use the xref:ilike.adoc["ILIKE",role=op] operator for a case-insensitive comparison.
 
 == Examples
 
 ----
 customer_name LIKE 'APA%'
-customer_name LIKE '%A#_B%' ESCAPE  ESCAPE '#'
+customer_name LIKE '%A#_B%' ESCAPE '#'
+'Tuesday' LIKE '%es%' returns TRUE
+'ADD_MONTHS' LIKE '%ADD!_%' ESCAPE '!' returns TRUE
 ----
+
+== See also
+
+* xref:ilike.adoc["ILIKE",role=op]
+* xref:similar-to.adoc["SIMILAR TO",role=op]
+* xref:regexp_like.adoc["REGEXP_LIKE",role=fun]

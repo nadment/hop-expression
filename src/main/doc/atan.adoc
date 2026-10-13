@@ -16,7 +16,7 @@ under the License.
 ////
 = ATAN
 
-Calculates the inverse tangent (arc tangent).
+Calculates the inverse tangent (arc tangent) of a number.
 
 == Syntax
 
@@ -30,5 +30,11 @@ Number
 
 == Usage
 
-* Returns a value in the range of [-&pi;/2, &pi;/2].
+* The returned value is in the interval [-&pi;/2, &pi;/2].
 * Returns NULL if the argument is NULL.
+
+== See also
+
+* xref:tan.adoc["TAN",role=fun]
+* xref:atan2.adoc["ATAN2",role=fun]
+* xref:atanh.adoc["ATANH",role=fun]

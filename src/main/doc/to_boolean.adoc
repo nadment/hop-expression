@@ -16,13 +16,13 @@ under the License.
 ////
 = TO_BOOLEAN, TRY_TO_BOOLEAN
 
-Converts the input text or numeric expression to a Boolean value.
+Converts a string or a numeric value to a Boolean value.
 
 == Syntax
 
 ----
-TO_BOOLEAN( {string | numeric} )
-TRY_TO_BOOLEAN( {string | numeric} )
+TO_BOOLEAN( { string | numeric } )
+TRY_TO_BOOLEAN( { string | numeric } )
 ----
 
 == Returns
@@ -31,25 +31,21 @@ Boolean
 
 == Usage
 
-If the conversion is not possible, TO_BOOLEAN raises an error and TRY_TO_BOOLEAN returns a NULL value.
-
-=== For a text expression, string must be
-
-* 'true', 't', 'yes', 'y', 'on', '1' return TRUE
-* 'false', 'f', 'no', 'n', 'off', '0' return FALSE
-* TO_BOOLEAN returns an error for all other strings
-* TRY_TO_BOOLEAN returns NULL for all other strings
-
-Strings are case-insensitive.
-
-=== For a numeric expression
-* 0 returns FALSE.
-* All non-zero values return TRUE.
+* The strings `'true'`, `'t'`, `'yes'`, `'y'`, `'on'` and `'1'` are converted to TRUE.
+* The strings `'false'`, `'f'`, `'no'`, `'n'`, `'off'` and `'0'` are converted to FALSE.
+* The conversion of a string is case-insensitive.
+* The numeric value 0 is converted to FALSE.
+* All non-zero numeric values are converted to TRUE.
+* If the conversion is not possible, which is the case for all other strings, `TO_BOOLEAN` raises an error and `TRY_TO_BOOLEAN` returns NULL.
+* Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
-TO_BOOLEAN('no') return FALSE
-TO_BOOLEAN(2) return TRUE
+TO_BOOLEAN('no') returns FALSE
+TO_BOOLEAN(2) returns TRUE
 ----
 
+== See also
+
+* xref:cast.adoc["CAST",role=fun]

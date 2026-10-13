@@ -16,7 +16,7 @@ under the License.
 ////
 = LOG
 
-Calculates the logarithm of number with base.
+Returns the logarithm of a number in the specified base.
 
 == Syntax
 
@@ -30,4 +30,17 @@ Number
 
 == Usage
 
-* Arguments must be a positive numeric values.
+* Both arguments must be positive numeric values.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+LOG(10,100) returns 2
+LOG(10,1000) returns 3
+----
+
+== See also
+
+* xref:ln.adoc["LN",role=fun]
+* xref:log10.adoc["LOG10",role=fun]
