@@ -15,115 +15,162 @@ specific language governing permissions and limitations
 under the License.
 ////
 = Hop Expression Plugin
+:url-repo: https://github.com/nadment/hop-expression
+:url-doc: {url-repo}/blob/main/src/main/doc
+:url-icons: https://raw.githubusercontent.com/nadment/hop-expression/main/src/main/resources
+:url-ci: {url-repo}/actions/workflows/maven.yml
 :url-sonarcloud: https://sonarcloud.io/dashboard?id=hop-expression
 
-image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=alert_status[Sonarcloud,link={url-sonarcloud}]
-image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=coverage[Sonarcloud,link={url-sonarcloud}]
+image:{url-ci}/badge.svg[Java CI build,link={url-ci}]
+image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=alert_status[Quality gate,link={url-sonarcloud}]
+image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=coverage[Coverage,link={url-sonarcloud}]
 
-== Overview
+A plugin for https://hop.apache.org[Apache Hop] that brings a SQL-like expression language to pipelines and workflows.
 
-This plugin provides 4 transformations and 2 actions that use the power of an expression language.
+== Features
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/expression.svg[Expression,24,24,role=text-center]
-`Expression` transformation calculate fields with expression.
+The plugin provides 4 transforms and 2 actions that use the power of the expression language.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/route.svg[Route,24,24,role=left]
-`Route` transformation switches rows according to an expression condition.
+[cols="1,3,10"]
+|===
+| |Name |Description
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/where.svg[Where,24,24,role=left]
-`Where` transformation filter rows with expression condition.
+|image:{url-icons}/expression.svg[Expression,24,24]
+|`Expression` transform
+|Calculates fields with expressions.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/aggregate.svg[Aggregate,24,24,role=left]
-`Aggregate` transformation uses aggregation functions to calculate values on groups of rows.
+|image:{url-icons}/route.svg[Route,24,24]
+|`Route` transform
+|Routes rows to target transforms according to expression conditions.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/set-variable.svg[Set variable,24,24,role=left]
-`Set variable` action provide the possibility to set variables or modify existing variables using expressions.
+|image:{url-icons}/where.svg[Where,24,24]
+|`Where` transform
+|Filters rows and keeps only those where the expression is true.
 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/src/main/resources/loop.svg[Loop,24,24,role=left]
-`Loop (experimental)` action provide the possibility to execute a workflow in a loop while a condition expression is true.
+|image:{url-icons}/aggregate.svg[Aggregate,24,24]
+|`Aggregate` transform
+|Calculates values on groups of rows with aggregate functions; the input does not need to be sorted.
 
+|image:{url-icons}/set-variable.svg[Set variable,24,24]
+|`Set variables expression` action
+|Sets or modifies variables with expressions.
+
+|image:{url-icons}/loop.svg[Loop,24,24]
+|`Loop` action (experimental)
+|Executes a workflow in a loop while a condition expression is true.
+|===
 
 == Expression language
 
 An expression is a combination of one or more literal values, resolvable identifiers, operators and functions that evaluate to a value.
 
 ----
-/** 
+/**
  * Multi line comment
  */
 
-case 
+case
   when REGION_ID<0 then Upper(Left(LABEL,5))
-  when REGION_ID between 0 and 100 then InitCap(Substr("LABEL FR",8,50)) 
+  when REGION_ID between 0 and 100 then InitCap(Substr("LABEL FR",8,50))
   else To_Char([YEAR]+1,'FM9999') || ' XXX '
 end
 ----
-* Supports 8 data types: `Boolean` `Integer` `Number` `String` `Date` `Binary` `Json` `Inet` 
-* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `DATE` '2022-04-25', `TIMESTAMP` '2022-04-25 05:28:59', `BINARY` 'FA6CB', `JSON` '{"name":"John"}', `INTERVAL` 3 `YEAR`
-* Array `[1,4,8]` and element at `<array>[1]`
+
+=== Data types and literals
+
+* 9 data types: `Boolean` `Integer` `Number` `String` `Date` `Interval` `Binary` `Json` `Inet`
+* Literal values: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `DATE` '2022-04-25', `TIMESTAMP` '2022-04-25 05:28:59', `BINARY` 'FA6CB', `JSON` '{"name":"John"}', `INTERVAL` 3 `YEAR`
+* Arrays `[1,4,8]` and access to an element with `<array>[1]`
+
+=== Operators
+
 * Logical operators `NOT` `AND` `OR` `XOR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `BETWEEN` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM`
-* Concatenate operator `||`
-* Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
+* Concatenation operator `||`
+* Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST`
 * Pattern matching operators `LIKE` `ILIKE` `SIMILAR TO`
-* Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
-* User Defined Function (UDF) support has metadata
-* Use of comments to facilitate reading
-* Are not case-sensitive, excepted for identifier
-* Can be parenthesized to control the precedence order
-* Optimized immediately after parsing, so the `5+XYZ+4*2+5` is optimized to `XYZ+18` and has no impact on performance
+* Cast operator `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 
+=== Functions
 
-https://github.com/nadment/hop-expression/blob/master/src/main/doc/expression.adoc[Documentation] are work in progress.
+* Over 200 scalar and aggregate {url-doc}/functions.adoc[functions]: conditional, mathematical, trigonometry, conversion, bitwise, string, date, JSON, array...
+* {url-doc}/udf.adoc[User-defined functions] (UDF), stored as metadata of the project and written as expressions
 
+=== Good to know
 
-== Extends with plugins
+* Keywords and function names are not case-sensitive, identifiers are
+* Comments are supported to make expressions easier to read
+* Parentheses control the order of evaluation
+* An expression is optimized right after parsing: `5+XYZ+4*2+5` becomes `XYZ+18`, so readability has no cost at runtime
 
-Use @FunctionPlugin annotation to create custom function in your plugin.
+The {url-doc}/expression.adoc[documentation] is a work in progress.
+
+== Getting started
+
+=== System requirements
+
+* https://hop.apache.org[Apache Hop] 2.19 or above
+* Hop Web is not supported, because the expression editor uses JFace
+
+=== Installation
+
+. Download the plugin archive from the {url-repo}/releases[releases] page
+. Unzip the archive so that the plugin ends up in the `plugins/misc/expression` directory of your Hop installation
+. Restart Hop
+
+=== Samples
+
+Sample pipelines are provided in the {url-repo}/tree/main/src/main/resources/demo[demo] directory:
+`demo_expression.hpl`, `demo_expression_json.hpl`, `demo_route.hpl` and `demo_aggregate.hpl`.
+
+== Building from source
+
+The build requires a JDK 21 or above and Maven.
 
 ----
-/** 
- * The function compute Levenshtein distance.
- */
-@FunctionPlugin
-public class Levenshtein extends Function {
+mvn clean package
+----
 
-  public Levenshtein() {
-    super("LEVENSHTEIN", true, ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING, "/docs/levenshtein.html");
+The plugin archive is created in `target/hop-expression-<version>.zip`.
+
+NOTE: `mvn install` also unzips the archive into the `custom` directory of the Hop installation designated by the `hop.home` property.
+
+== Extending with plugins
+
+Use the `@FunctionPlugin` annotation to add your own function from another plugin.
+
+[source,java]
+----
+/** The function computes the Levenshtein distance between two strings. */
+@FunctionPlugin
+public class LevenshteinFunction extends Function {
+
+  public LevenshteinFunction() {
+    super(
+        "LEVENSHTEIN",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.STRING_STRING,
+        OperatorCategory.STRING,
+        "/docs/levenshtein.html");
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public @Nullable Object eval(final IExpression[] operands) {
     String str1 = operands[0].getValue(String.class);
-    if (str1 == null)
-      return null;
+    if (str1 == null) return null;
     String str2 = operands[1].getValue(String.class);
-    if (str2 == null)
-      return null;
+    if (str2 == null) return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
+    return Long.valueOf(LevenshteinDistance.getDefaultInstance().apply(str1, str2));
   }
 }
 ----
 
-== How to install
-
-=== System Requirements
-
-https://hop.apache.org[Apache Hop] 2.7 or above.
-Web Hop is not supported because expression editor use JFace.
-
-=== Manual Install
-
-1. Unzip the plugin archive into the hop\plugins\misc directory
-2. Restart Hop
-
-=== Support
+== Support
 
 This plugin is provided as is, without any warranties, expressed or implied. This software is not covered by any Support Agreement.
 
-=== License
+== License
 
 Licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License, Version 2.0].
