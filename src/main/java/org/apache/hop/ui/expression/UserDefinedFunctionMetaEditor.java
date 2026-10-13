@@ -50,6 +50,11 @@ import org.eclipse.swt.widgets.Text;
 public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFunctionMeta> {
   private static final Class<?> PKG = UserDefinedFunctionMetaEditor.class; // For Translator
 
+  /** The data types allowed for an argument, limited to those with an equivalent Hop value type. */
+  private static final String[] ARGUMENT_TYPES = {
+    "Binary", "Boolean", "Date", "Inet", "Integer", "Json", "Number", "String"
+  };
+
   private Text wName;
   private Text wDescription;
   private TableView wArguments;
@@ -147,7 +152,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
           new ColumnInfo(
               BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
               ColumnInfo.COLUMN_TYPE_CCOMBO,
-              TypeName.ALL_NAMES.toArray(new String[0]),
+              ARGUMENT_TYPES,
               false)
         };
 

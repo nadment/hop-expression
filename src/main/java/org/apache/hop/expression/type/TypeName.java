@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
-import java.util.Set;
 import lombok.Getter;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Interval;
@@ -141,10 +140,6 @@ public enum TypeName {
   ARRAY(TypeFamily.ARRAY, TypeComparability.NONE, false, false, false, -1, -1, 0, 0, Array.class),
 
   ENUM(TypeFamily.ENUM, TypeComparability.NONE, false, false, false, -1, -1, -1, -1, Enum.class);
-
-  public static final Set<String> ALL_NAMES =
-      Set.of(
-          "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
 
   /** Whether a value of this type is atomic (DATE, NUMERIC, STRING, BOOLEAN, BINARY, INET, ...). */
   @Getter private final boolean atomic;
