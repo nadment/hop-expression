@@ -67,8 +67,9 @@ public class ArrayToStringFunction extends Function {
       Object value = expression.getValue();
       if (value instanceof Array children) {
         join(builder, children, separator);
-      } else {
-        builder.append(value);
+      } else if (value != null) {
+        // A null element is an empty string, any other element is cast to a string
+        builder.append(expression.getType().convert(value, String.class));
       }
     }
   }

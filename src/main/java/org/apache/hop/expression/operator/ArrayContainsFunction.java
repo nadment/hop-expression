@@ -38,7 +38,7 @@ public class ArrayContainsFunction extends Function {
   public ArrayContainsFunction() {
     super(
         "ARRAY_CONTAINS",
-        ReturnTypes.ARRAY,
+        ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.ARRAY_ANY,
         OperatorCategory.ARRAY,
         "/docs/array_contains.html");
@@ -60,8 +60,20 @@ public class ArrayContainsFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    Array array = (Array) operands[0];
-    IExpression element = operands[1];
-    return array.contains(element);
+    Array array = operands[0].getValue(Array.class);
+    if (array == null) return null;
+    Object value = operands[1].getValue();
+    if (value == null) return null;
+
+    Type type = operands[1].getType();
+    for (IExpression expression : array) {
+      // A null element never matches
+      Object element = expression.getValue();
+      if (element != null && type.compare(element, value) == 0) {
+        return Boolean.TRUE;
+      }
+    }
+
+    return Boolean.FALSE;
   }
 }

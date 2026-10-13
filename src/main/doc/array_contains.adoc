@@ -36,7 +36,8 @@ Boolean
 == Usage
 
 * The data type of element must be compatible with the data type of the elements of array.
-* Returns NULL if the array is NULL.
+* A NULL element of the array never matches.
+* Returns NULL if one of the arguments is NULL.
 
 == Examples
 

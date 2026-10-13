@@ -33,7 +33,7 @@ The data type of the returned value is the data type of the elements of the arra
 * The index of the first element is 1, and index must not be greater than the cardinality of the array.
 * If index is negative, the elements are accessed from the last to the first.
 * Raises an error if index is 0 or out of the bounds of the array.
-* Returns NULL if index is NULL.
+* Returns NULL if one of the arguments is NULL.
 
 == Examples
 

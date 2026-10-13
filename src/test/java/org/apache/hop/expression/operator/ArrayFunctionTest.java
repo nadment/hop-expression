@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,10 @@ class ArrayFunctionTest extends ExpressionTest {
   @Test
   void Cardinality() throws Exception {
     evalEquals("Cardinality([1,FIELD_INTEGER,8+2])", 3L).returnType(IntegerType.INTEGER);
+
+    // Array computed at evaluation
+    evalEquals("CARDINALITY(STRING_TO_ARRAY(FIELD_STRING_DATE,'-'))", 3L);
+    evalNull("CARDINALITY(STRING_TO_ARRAY(NULL_STRING,','))");
   }
 
   @Test
@@ -79,6 +84,18 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFalse("ARRAY_CONTAINS([1,2,3],0)");
     evalTrue("ARRAY_CONTAINS(['FR','BE','US'],'BE')");
     evalFalse("ARRAY_CONTAINS(['FR','BE','US'],'GB')");
+    optimize("ARRAY_CONTAINS([FIELD_INTEGER,2],FIELD_INTEGER)").returnType(BooleanType.BOOLEAN);
+
+    // Elements are compared by value
+    evalTrue("ARRAY_CONTAINS([40,2],FIELD_INTEGER)");
+    evalTrue("ARRAY_CONTAINS([FIELD_INTEGER,2],40)");
+    evalFalse("ARRAY_CONTAINS([FIELD_INTEGER,2],3)");
+    evalTrue("ARRAY_CONTAINS(STRING_TO_ARRAY(FIELD_STRING,','),'TEST')");
+
+    // A null element never matches
+    evalTrue("ARRAY_CONTAINS(['A',NULL_STRING],'A')");
+    evalFalse("ARRAY_CONTAINS(['A',NULL_STRING],'B')");
+    evalNull("ARRAY_CONTAINS(['A','B'],NULL_STRING)");
 
     // Check operands
     evalFails("ARRAY_CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -144,6 +161,17 @@ class ArrayFunctionTest extends ExpressionTest {
         .returnType(StringType.STRING);
     evalEquals("ARRAY_TO_STRING([1.2,4,8+2],',')", "1.2,4,10").returnType(StringType.STRING);
     evalEquals("ARRAY_TO_STRING(['A',[4,8+2],'B'],'')", "A410B");
+
+    // A null element is an empty string
+    evalEquals("ARRAY_TO_STRING(['A',NULL_STRING,'B'],',')", "A,,B");
+    evalEquals("ARRAY_TO_STRING([NULL_STRING,'B'],',')", ",B");
+
+    // An element is cast to a string
+    evalEquals(
+        "ARRAY_TO_STRING([DATE '2024-01-02',TIMESTAMP '2024-01-02 10:20:30'],',')",
+        "2024-01-02,2024-01-02 10:20:30");
+    evalEquals("ARRAY_TO_STRING([FIELD_BOOLEAN_TRUE,FALSE],',')", "TRUE,FALSE");
+    evalEquals("ARRAY_TO_STRING([FIELD_INTEGER,FIELD_NUMBER],';')", "40;-5.12");
 
     // Null handling
     evalNull("ARRAY_TO_STRING(['Hello','world'],NULL::STRING)");

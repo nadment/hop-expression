@@ -2084,6 +2084,12 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("[3.5,100][2]", 100D).returnType(NumberType.of(4, 1, false));
       evalEquals("['A','B',FIELD_STRING][3]", "TEST").returnType(StringType.of(1000, true));
 
+      // Array computed at evaluation
+      evalEquals("STRING_TO_ARRAY(FIELD_STRING_DATE,'-')[2]", "11");
+      evalEquals("STRING_TO_ARRAY(FIELD_STRING_DATE,'-')[-1]", "23");
+      evalNull("STRING_TO_ARRAY(NULL_STRING,',')[1]");
+      evalFails("STRING_TO_ARRAY(FIELD_STRING_DATE,'-')[4]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
+
       // Negative index
       evalEquals("[1,3,5][-1]", 5L);
       evalEquals("[1,3,5][-3]", 1L);

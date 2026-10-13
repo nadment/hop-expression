@@ -57,7 +57,10 @@ public class ArrayElementAtOperator extends Operator {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    Array array = (Array) call.getOperand(0);
+    // Only the elements of an array constructor can be coerced
+    if (!(call.getOperand(0) instanceof Array array)) {
+      return false;
+    }
     Type type = Types.getLeastRestrictive(array);
 
     // Coerce values
@@ -81,7 +84,8 @@ public class ArrayElementAtOperator extends Operator {
 
   @Override
   public @Nullable Object eval(IExpression[] operands) {
-    Array array = (Array) operands[0];
+    Array array = operands[0].getValue(Array.class);
+    if (array == null) return null;
     Long index = operands[1].getValue(Long.class);
     if (index == null) return null;
 

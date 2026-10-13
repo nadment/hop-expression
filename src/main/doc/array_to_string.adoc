@@ -35,6 +35,7 @@ String
 
 == Usage
 
+* Each element is converted to a string as the xref:cast.adoc["CAST",role=fun] function does.
 * A NULL element of the array is converted to an empty string in the result.
 * Returns NULL if one of the arguments is NULL.
 

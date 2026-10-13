@@ -42,7 +42,8 @@ public class CardinalityFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    Array array = (Array) operands[0];
+    Array array = operands[0].getValue(Array.class);
+    if (array == null) return null;
     return Long.valueOf(array.size());
   }
 }
