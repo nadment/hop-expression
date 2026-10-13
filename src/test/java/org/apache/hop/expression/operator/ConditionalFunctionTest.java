@@ -41,16 +41,24 @@ class ConditionalFunctionTest extends ExpressionTest {
 
   @Test
   void If() throws Exception {
-    evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True").returnType(StringType.STRING);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
-    evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(IntegerType.INTEGER);
-    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", new BigDecimal("2")).returnType(NumberType.NUMBER);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", new BigDecimal("2"))
+        .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals(
             "If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1))
         .returnType(DateType.DATE_NOT_NULL);
 
     // If condition is NULL then return false value
-    evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(StringType.STRING);
+    evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(StringType.STRING_NOT_NULL);
+
+    // The result is nullable if one of the values is nullable
+    optimize("IF(FIELD_BOOLEAN_TRUE,FIELD_INTEGER IS NULL,FIELD_STRING IS NULL)")
+        .returnType(BooleanType.BOOLEAN_NOT_NULL);
+    optimize("IF(FIELD_BOOLEAN_TRUE,FIELD_INTEGER IS NULL,NULL_BOOLEAN)")
+        .returnType(BooleanType.BOOLEAN);
 
     // Syntax with only 2 operands
     evalEquals("If(true,'Test')", "Test");
@@ -355,6 +363,12 @@ class ConditionalFunctionTest extends ExpressionTest {
   void Nvl2() throws Exception {
     evalEquals("Nvl2(FIELD_BOOLEAN_TRUE,FIELD_STRING,'ex2')", "TEST")
         .returnType(StringType.of(1000));
+
+    // The result is nullable if one of the values is nullable
+    optimize("NVL2(FIELD_STRING,ZEROIFNULL(FIELD_INTEGER),FIELD_INTEGER)")
+        .returnType(IntegerType.of(12));
+    optimize("NVL2(FIELD_STRING,ZEROIFNULL(FIELD_INTEGER),ZEROIFNULL(FIELD_INTEGER))")
+        .returnType(IntegerType.of(12, false));
     evalEquals("Nvl2('test','ex1','ex2')", "ex1");
     evalEquals("Nvl2(NULL_STRING,'ex1','ex2')", "ex2");
 
@@ -368,6 +382,13 @@ class ConditionalFunctionTest extends ExpressionTest {
   void Decode() throws Exception {
     evalEquals("Decode(1,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "one")
         .returnType(StringType.of(3, false));
+
+    // The result is nullable without default value or if one of the results is nullable
+    optimize("DECODE(FIELD_INTEGER,1,ZEROIFNULL(FIELD_INTEGER),0)")
+        .returnType(IntegerType.of(12, false));
+    optimize("DECODE(FIELD_INTEGER,1,ZEROIFNULL(FIELD_INTEGER))").returnType(IntegerType.of(12));
+    optimize("DECODE(FIELD_INTEGER,1,ZEROIFNULL(FIELD_INTEGER),FIELD_INTEGER)")
+        .returnType(IntegerType.of(12));
     evalEquals("Decode(2,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "two");
     evalEquals("Decode(NULL_INTEGER,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "<NULL>");
     evalEquals("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>','other')", "other");

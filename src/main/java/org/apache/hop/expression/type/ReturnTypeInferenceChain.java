@@ -19,6 +19,10 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * Strategy to infer the type of operator call by applying a sequence of {@link
+ * IReturnTypeInference} rules until one returns a type that is not {@link UnknownType#UNKNOWN}.
+ */
 @NullMarked
 public class ReturnTypeInferenceChain implements IReturnTypeInference {
   private final IReturnTypeInference[] rules;

@@ -26,12 +26,17 @@ public interface IReturnTypeInference {
   /**
    * Infers the return data type of call to an {@link Operator}.
    *
-   * @param call
-   * @return type
+   * @param call the call whose return type is inferred
+   * @return the inferred type, or {@link UnknownType#UNKNOWN} if it cannot be inferred
    */
   Type inferReturnType(Call call);
 
-  /** Returns a return-type inference that applies this rule then a transform. */
+  /**
+   * Returns a return-type inference that applies this rule then a sequence of transforms.
+   *
+   * @param transforms the transforms to apply to the inferred type, in order
+   * @return the combined rule
+   */
   default IReturnTypeInference andThen(ITypeTransform... transforms) {
     return ReturnTypes.cascade(this, transforms);
   }

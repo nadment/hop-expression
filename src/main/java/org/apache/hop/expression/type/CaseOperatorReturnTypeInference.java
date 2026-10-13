@@ -16,10 +16,15 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 
-/** Least restrictive <code>then</code> expression or <code>else</code> expression */
+/**
+ * Type-inference strategy for the CASE operator: the least restrictive type of the <code>then
+ * </code> expressions and of the <code>else</code> expression, nullable if one of them is nullable.
+ */
 @NullMarked
 public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
@@ -29,7 +34,21 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public Type inferReturnType(Call call) {
-    Type returnType = Types.getLeastRestrictive(call.getOperand(2));
-    return Types.getLeastRestrictive(returnType, call.getOperand(3).getType());
+    IExpression thenTerm = call.getOperand(2);
+    Type elseType = call.getOperand(3).getType();
+
+    Type returnType = Types.getLeastRestrictive(Types.getLeastRestrictive(thenTerm), elseType);
+
+    // The result is null as soon as the selected expression is null
+    boolean nullable = elseType.isNullable();
+    if (thenTerm instanceof Array array) {
+      for (IExpression expression : array) {
+        nullable |= expression.getType().isNullable();
+      }
+    } else {
+      nullable |= thenTerm.getType().isNullable();
+    }
+
+    return returnType.withNullability(nullable);
   }
 }

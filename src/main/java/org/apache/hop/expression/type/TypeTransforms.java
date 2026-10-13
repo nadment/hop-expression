@@ -87,6 +87,13 @@ public final class TypeTransforms {
         return typeToTransform.withNullability(nullable);
       };
 
+  /**
+   * Type transform strategy where a STRING, BINARY, INTEGER or NUMBER type is transformed into the
+   * same type with its maximum precision; any other type is unchanged.
+   *
+   * <p>The transformed type is nullable, so the transform must be followed by a nullability
+   * transform when the nullability matters.
+   */
   public static final ITypeTransform TO_MAX_PRECISION =
       (call, typeToTransform) ->
           switch (requireNonNull(typeToTransform).getName()) {

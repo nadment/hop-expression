@@ -1117,8 +1117,13 @@ public class OperatorTest extends ExpressionTest {
           "case when FIELD_INTEGER IS NULL then null when FIELD_INTEGER=20+20 then 2*5 else 50 end",
           10L);
 
-      evalNull("case when NULL_INTEGER is NULL then NULL else 1 end")
-          .returnType(IntegerType.of(1, false));
+      evalNull("case when NULL_INTEGER is NULL then NULL else 1 end").returnType(IntegerType.of(1));
+
+      // The result is nullable if one of the THEN or ELSE expressions is nullable
+      optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN FIELD_INTEGER ELSE ZEROIFNULL(FIELD_INTEGER) END")
+          .returnType(IntegerType.of(12));
+      optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN ZEROIFNULL(FIELD_INTEGER) ELSE 0 END")
+          .returnType(IntegerType.of(12, false));
     }
 
     @Test
@@ -1194,11 +1199,12 @@ public class OperatorTest extends ExpressionTest {
       // If the operand is null, the else clause applies
       evalFalse("CASE NULL_INTEGER WHEN 1 THEN TRUE ELSE FALSE END")
           .returnType(BooleanType.BOOLEAN_NOT_NULL);
-      evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L).returnType(IntegerType.INTEGER);
+      evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L)
+          .returnType(IntegerType.INTEGER_NOT_NULL);
       evalEquals("CASE NULL_NUMBER WHEN 0 THEN 1.023 ELSE 1 END", BigDecimal.ONE)
-          .returnType(NumberType.NUMBER);
+          .returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B")
-          .returnType(StringType.STRING);
+          .returnType(StringType.STRING_NOT_NULL);
 
       // Check null data type returned
       evalNull("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE NULL END").returnType(StringType.STRING);
@@ -1574,7 +1580,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testAddNumericToNumeric() throws Exception {
       // Addition of numeric
-      evalEquals("10+(-0.5)", 9.5).returnType(NumberType.of(4, 1));
+      evalEquals("10+(-0.5)", 9.5).returnType(NumberType.of(4, 1, false));
 
       evalEquals("0b00011::INTEGER+0", 3L);
       evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505D);
@@ -1582,8 +1588,13 @@ public class OperatorTest extends ExpressionTest {
           .returnType(NumberType.NUMBER);
       evalEquals("FIELD_BIGNUMBER+FIELD_NUMBER+FIELD_INTEGER", 123491.669D);
       evalEquals("FIELD_BIGNUMBER+1", 123457.789D).returnType(NumberType.NUMBER);
-      evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4D).returnType(NumberType.of(38, 10));
-      evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4D).returnType(NumberType.of(15, 2));
+      evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4D).returnType(NumberType.of(38, 10, false));
+      evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4D).returnType(NumberType.of(15, 2, false));
+
+      // The result is nullable if one of the operands is nullable
+      optimize("FIELD_INTEGER+ZEROIFNULL(FIELD_INTEGER)").returnType(IntegerType.of(13));
+      optimize("ZEROIFNULL(FIELD_INTEGER)+ZEROIFNULL(FIELD_INTEGER)")
+          .returnType(IntegerType.of(13, false));
 
       // Implicit coercion from BOOLEAN
       evalEquals("1+FALSE", 1L);
@@ -1689,14 +1700,14 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testSubtractNumericFromNumeric() throws Exception {
       // Subtract of numeric
-      evalEquals("10-0.5", 9.5D).returnType(NumberType.of(4, 1));
+      evalEquals("10-0.5", 9.5D).returnType(NumberType.of(4, 1, false));
       evalEquals("FIELD_INTEGER-0.5", 39.5D);
       evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
       evalEquals("FIELD_INTEGER-FIELD_NUMBER-FIELD_BIGNUMBER", -123411.669D);
       evalEquals("FIELD_BIGNUMBER-FIELD_NUMBER-FIELD_INTEGER", 123421.909D);
 
       // Implicit coercion from BOOLEAN
-      evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2));
+      evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2, false));
       evalEquals("FALSE-TRUE", -1L);
       evalEquals("1-FIELD_BOOLEAN_FALSE", 1L).returnType(IntegerType.of(2));
       evalEquals("FIELD_BOOLEAN_TRUE-2", -1L);
@@ -1762,8 +1773,12 @@ public class OperatorTest extends ExpressionTest {
   class Mod {
     @Test
     void testArithmetic() throws Exception {
-      evalEquals("11%4", 3D).returnType(NumberType.NUMBER_NOT_NULL);
-      evalEquals("Mod(11,4)", 3D);
+      evalEquals("11%4", 3D).returnType(NumberType.of(1, 0, false));
+      evalEquals("Mod(11,4)", 3D).returnType(NumberType.of(1, 0, false));
+
+      // The operator and the function infer the same type
+      optimize("FIELD_INTEGER%FIELD_INTEGER").returnType(NumberType.of(12));
+      optimize("FIELD_INTEGER%4").returnType(NumberType.of(1));
       evalEquals("Mod(11,-4)", 3D);
       evalEquals("Mod(-11,4)", -3D);
       evalEquals("Mod(-11,-4)", -3D);
@@ -1986,7 +2001,7 @@ public class OperatorTest extends ExpressionTest {
       // NULL does not match NULL
       evalNull("NULL_STRING like NULL_STRING").returnType(BooleanType.BOOLEAN);
       evalNull("NULL_STRING like 'NULL'").returnType(BooleanType.BOOLEAN);
-      evalNull("NULL_STRING LIKE '%'").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalNull("NULL_STRING LIKE '%'").returnType(BooleanType.BOOLEAN);
       evalNull("'test' LIKE NULL_STRING").returnType(BooleanType.BOOLEAN);
     }
 
@@ -2351,7 +2366,8 @@ public class OperatorTest extends ExpressionTest {
   class Cast {
     @Test
     void cast() throws Exception {
-      evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(IntegerType.INTEGER);
+      evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L)
+          .returnType(IntegerType.INTEGER_NOT_NULL);
 
       // Accept data type quoted like a String
       evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(IntegerType.INTEGER_NOT_NULL);

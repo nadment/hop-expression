@@ -45,7 +45,12 @@ public class DecodeFunction extends Function {
   public static final IOperandTypeChecker OTC = new DecodeFunctionOperandTypeChecker();
 
   public DecodeFunction() {
-    super("DECODE", ReturnTypes.ARG2, OTC, OperatorCategory.CONDITIONAL, "/docs/decode.html");
+    super(
+        "DECODE",
+        ReturnTypes.DECODE_FUNCTION,
+        OTC,
+        OperatorCategory.CONDITIONAL,
+        "/docs/decode.html");
   }
 
   @Override

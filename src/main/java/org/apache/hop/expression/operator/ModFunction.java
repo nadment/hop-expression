@@ -58,7 +58,7 @@ public class ModFunction extends Function {
         name,
         60,
         Associativity.LEFT,
-        ReturnTypes.NUMBER_NULLABLE,
+        ReturnTypes.MOD_OPERATOR,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
         "/docs/mod.html");

@@ -19,12 +19,17 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.jspecify.annotations.NullMarked;
 
-/** Inference rule that returns an explicit data type. */
+/** Type-inference strategy that always returns the same explicit data type, whatever the call. */
 @NullMarked
 public class ExplicitReturnTypeInference implements IReturnTypeInference {
 
   private final Type type;
 
+  /**
+   * Creates a rule that returns an explicit type.
+   *
+   * @param type the type to return
+   */
   public ExplicitReturnTypeInference(Type type) {
     this.type = type;
   }

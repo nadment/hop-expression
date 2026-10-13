@@ -19,11 +19,17 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.jspecify.annotations.NullMarked;
 
+/** Type-inference strategy whereby the result type of the call is the type of a given operand. */
 @NullMarked
 public class OrdinalReturnTypeInference implements IReturnTypeInference {
 
   private final int ordinal;
 
+  /**
+   * Creates a rule that returns the type of an operand.
+   *
+   * @param ordinal the position of the operand, starting from 0
+   */
   public OrdinalReturnTypeInference(int ordinal) {
     this.ordinal = ordinal;
   }

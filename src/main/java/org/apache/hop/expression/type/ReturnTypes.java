@@ -21,17 +21,23 @@ import java.util.List;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 
-/** A collection of strategies for return type inference. */
+/**
+ * A collection of reusable strategies to infer the return type of an operator call.
+ *
+ * <p>The {@code *_NULLABLE} strategies return a type that is nullable if at least one operand of
+ * the call is nullable, the {@code *_NOT_NULL} strategies a type that is never nullable.
+ */
 @NullMarked
 public final class ReturnTypes {
 
+  /** Type-inference strategy whereby the result type of the call is not known in advance. */
   public static final IReturnTypeInference ANY = explicit(AnyType.ANY);
 
-  /** Type-inference strategy whereby the result type of call is BOOLEAN. */
+  /** Type-inference strategy whereby the result type of the call is BOOLEAN. */
   public static final IReturnTypeInference BOOLEAN_NULLABLE =
       explicit(BooleanType.BOOLEAN).andThen(TypeTransforms.TO_NULLABLE);
 
-  /** Type-inference strategy whereby the result type of call is BOOLEAN NOT NULL. */
+  /** Type-inference strategy whereby the result type of the call is BOOLEAN NOT NULL. */
   public static final IReturnTypeInference BOOLEAN_NOT_NULL =
       explicit(BooleanType.BOOLEAN_NOT_NULL);
 
@@ -71,7 +77,7 @@ public final class ReturnTypes {
   /** Type-inference strategy whereby the result type of the call is DATE NOT NULL. */
   public static final IReturnTypeInference DATE_NOT_NULL = explicit(DateType.DATE_NOT_NULL);
 
-  /** Type-inference strategy whereby the result type of the call is DATE. */
+  /** Type-inference strategy whereby the result type of the call is JSON. */
   public static final IReturnTypeInference JSON_NULLABLE =
       explicit(JsonType.JSON).andThen(TypeTransforms.TO_NULLABLE);
 
@@ -88,13 +94,30 @@ public final class ReturnTypes {
   /** Type-inference strategy whereby the result type of the call is the type of the operand #2. */
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
 
+  /**
+   * Type-inference strategy whereby the result type of the call is the type of the operand #1, or
+   * the type of the operand #2 if the first is unknown, nullable if one of them is nullable.
+   */
   public static final IReturnTypeInference ARG1_OR_ARG2 =
-      chain(new OrdinalReturnTypeInference(1), new OrdinalReturnTypeInference(2));
+      chain(ARG1, ARG2)
+          .andThen(
+              (call, type) ->
+                  type.withNullability(
+                      call.getOperand(1).getType().isNullable()
+                          || call.getOperand(2).getType().isNullable()));
+
+  /**
+   * Type-inference strategy whereby the result type of the call is the most general type of the
+   * operands with its maximum precision, not nullable as soon as one operand is not nullable.
+   *
+   * <p>This rule is used for functions that return the first non-null operand, like COALESCE.
+   */
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
       new LeastRestrictiveReturnTypeInference()
           .andThen(TypeTransforms.TO_MAX_PRECISION)
           .andThen(TypeTransforms.LEAST_NULLABLE);
 
+  /** Type-inference strategy whereby the result type of the call is an array of STRING. */
   public static final IReturnTypeInference ARRAY_OF_STRING =
       explicit(ArrayType.of(StringType.STRING));
 
@@ -110,6 +133,10 @@ public final class ReturnTypes {
         return UnknownType.UNKNOWN;
       };
 
+  /**
+   * Type-inference strategy whereby the result type of the call is an array of the most general
+   * type of the operands.
+   */
   public static final IReturnTypeInference ARRAY =
       call -> {
         List<Type> types = new ArrayList<>();
@@ -122,8 +149,8 @@ public final class ReturnTypes {
       };
 
   /**
-   * Type-inference strategy whereby the result type of the call is a number with scale 0 with
-   * precision-scale and nullity than ARG0.
+   * Type-inference strategy whereby the result type of the call is a number with scale 0, with the
+   * number of whole digits and the nullability of the operand #0.
    *
    * <p>This rule is used for CEILING, FLOOR.
    */
@@ -142,7 +169,10 @@ public final class ReturnTypes {
         return NumberType.of(precision, 0, type.isNullable());
       };
 
-  /** Type-inference strategy for ABS function. */
+  /**
+   * Type-inference strategy for ABS function: INTEGER and INTERVAL are preserved, BOOLEAN gives
+   * INTEGER and any other type NUMBER, with the nullability of the operand #0.
+   */
   public static final IReturnTypeInference ABS_FUNCTION =
       call -> {
         Type type = call.getOperand(0).getType();
@@ -210,7 +240,11 @@ public final class ReturnTypes {
         return StringType.of(precision, nullable);
       };
 
-  /** Type-inference strategy for concatenation with separator. */
+  /**
+   * Type-inference strategy for concatenation with separator, where the operand #0 is the
+   * separator. The precision is the sum of the precisions of the values and of the separators
+   * between them.
+   */
   public static final IReturnTypeInference CONCATWS_FUNCTION =
       call -> {
         Type separatorType = call.getOperand(0).getType();
@@ -252,12 +286,13 @@ public final class ReturnTypes {
         return StringType.of(precision, nullable);
       };
 
+  // -------------------------------------------------------------
+  //                   OPERATORS
+  // -------------------------------------------------------------
+
+  /** Type-inference strategy for the add and subtract operators. */
   public static final IReturnTypeInference ADDITIVE_OPERATOR =
       call -> deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());
-
-  // -------------------------------------------------------------
-  //                   FUNCTIONS
-  // -------------------------------------------------------------
 
   /** Type-inference strategy for the multiply operator. */
   public static final IReturnTypeInference MULTIPLY_OPERATOR =
@@ -271,9 +306,13 @@ public final class ReturnTypes {
   public static final IReturnTypeInference MOD_OPERATOR =
       call -> deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
 
+  /** Type-inference strategy for the CASE operator. */
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
 
-  /** Type-inference strategy for CAST operator. */
+  /**
+   * Type-inference strategy for CAST operator: the target type given by the operand #1, with the
+   * nullability of the operand #0.
+   */
   public static final IReturnTypeInference CAST_OPERATOR =
       call -> {
         try {
@@ -285,7 +324,14 @@ public final class ReturnTypes {
         }
       };
 
-  /** Type-inference strategy for IF function. */
+  // -------------------------------------------------------------
+  //                   FUNCTIONS
+  // -------------------------------------------------------------
+
+  /**
+   * Type-inference strategy for IF function: the most general type of the operands #1 and #2 with
+   * its maximum precision, nullable if one of them is nullable or if the operand #2 is omitted.
+   */
   public static final IReturnTypeInference IF_FUNCTION =
       call -> {
         if (call.getOperandCount() < 2) return UnknownType.UNKNOWN;
@@ -294,17 +340,45 @@ public final class ReturnTypes {
 
         Type type1 = call.getOperand(1).getType();
         if (call.getOperandCount() == 2) {
-          return transform.transformType(call, type1);
+          // Without else value, the function returns NULL when the condition is false
+          return transform.transformType(call, type1).withNullability(true);
         }
         Type type2 = call.getOperand(2).getType();
+        boolean nullable = type1.isNullable() || type2.isNullable();
         if (type1.getName().ordinal() < type2.getName().ordinal()) {
-          return transform.transformType(call, type2);
+          return transform.transformType(call, type2).withNullability(nullable);
         }
 
-        return transform.transformType(call, type1);
+        return transform.transformType(call, type1).withNullability(nullable);
       };
 
-  /** Type-inference strategy for JSON_VALUE function. */
+  /**
+   * Type-inference strategy for DECODE function: the type of the first result, nullable if one of
+   * the results or the default value is nullable, or if there is no default value.
+   *
+   * <p>The operands are the value, pairs of search value and result, then an optional default.
+   */
+  public static final IReturnTypeInference DECODE_FUNCTION =
+      ARG2.andThen(
+          (call, type) -> {
+            int count = call.getOperandCount();
+
+            // Without default value, the function returns NULL when no search value matches
+            boolean nullable = count % 2 != 0;
+            for (int i = 2; i < count; i += 2) {
+              nullable |= call.getOperand(i).getType().isNullable();
+            }
+            if (count % 2 == 0) {
+              nullable |= call.getOperand(count - 1).getType().isNullable();
+            }
+
+            return type.withNullability(nullable);
+          });
+
+  /**
+   * Type-inference strategy for JSON_VALUE function: the type given by the operand #2, STRING by
+   * default.
+   */
   public static final IReturnTypeInference JSON_VALUE =
       call -> {
         try {
@@ -325,22 +399,33 @@ public final class ReturnTypes {
   }
 
   /**
-   * Creates a return-type inference rule which returns a type with no precision or scale, such as
-   * {@code DATE}.
+   * Creates a return-type inference rule which always returns the given type, whatever the call.
+   *
+   * @param type the type to return
+   * @return the rule
    */
   public static ExplicitReturnTypeInference explicit(Type type) {
     return new ExplicitReturnTypeInference(type);
   }
 
   /**
-   * Creates a return-type inference that applies a rule then a sequence of rules, returning the
-   * first non-null result.
+   * Creates a return-type inference that applies a sequence of rules, returning the first result
+   * that is not {@link UnknownType#UNKNOWN}.
+   *
+   * @param rules the rules to apply, in order
+   * @return the rule
    */
   public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);
   }
 
-  /** Creates a return-type inference that applies a rule then a sequence of transforms. */
+  /**
+   * Creates a return-type inference that applies a rule then a sequence of transforms.
+   *
+   * @param rule the rule that infers the type
+   * @param transforms the transforms to apply to the inferred type, in order
+   * @return the rule
+   */
   public static ReturnTypeTransformCascade cascade(
       IReturnTypeInference rule, ITypeTransform... transforms) {
     return new ReturnTypeTransformCascade(rule, transforms);
@@ -353,7 +438,6 @@ public final class ReturnTypes {
    *   <li>Let p1, s1 be the precision and scale of the first operand
    *   <li>Let p2, s2 be the precision and scale of the second operand
    *   <li>Let p, s be the precision and scale of the result
-   *   <li>Let d be the number of whole digits in the result
    *   <li>Then the result type is a decimal with:
    *       <ul>
    *         <li>s = max(s1, s2)
@@ -361,20 +445,27 @@ public final class ReturnTypes {
    *       </ul>
    *   <li>p and s are capped at their maximum values
    * </ul>
+   *
+   * <p>A date with an interval gives a date, two intervals an interval, two integers an integer.
+   *
+   * @param type1 the type of the first operand
+   * @param type2 the type of the second operand
+   * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveAdditiveType(final Type type1, final Type type2) {
+    boolean nullable = type1.isNullable() || type2.isNullable();
 
     if (type1.isName(TypeName.DATE) && type2.isName(TypeName.INTERVAL)) {
-      return type1;
+      return type1.withNullability(nullable);
     }
     if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.DATE)) {
-      return type2;
+      return type2.withNullability(nullable);
     }
     if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.INTERVAL)) {
-      return type1;
+      return type1.withNullability(nullable);
     }
     if (type1.isName(TypeName.STRING) || type2.isName(TypeName.STRING)) {
-      return NumberType.NUMBER;
+      return NumberType.NUMBER.withNullability(nullable);
     }
 
     int p1 = type1.getPrecision();
@@ -384,7 +475,7 @@ public final class ReturnTypes {
     if ((type1.isName(TypeName.INTEGER) || type1.isName(TypeName.BOOLEAN))
         && (type2.isName(TypeName.INTEGER) || type2.isName(TypeName.BOOLEAN))) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), Math.max(p1, p2) + 1);
-      return IntegerType.of(p);
+      return IntegerType.of(p, nullable);
     }
 
     int s1 = type1.getScale();
@@ -398,7 +489,7 @@ public final class ReturnTypes {
     int p = Math.max(p1 - s1, p2 - s2) + s + 1;
     p = Math.min(p, TypeName.NUMBER.getMaxPrecision());
 
-    return NumberType.of(p, s);
+    return NumberType.of(p, s, nullable);
   }
 
   /**
@@ -408,7 +499,6 @@ public final class ReturnTypes {
    *   <li>Let p1, s1 be the precision and scale of the first operand
    *   <li>Let p2, s2 be the precision and scale of the second operand
    *   <li>Let p, s be the precision and scale of the result
-   *   <li>Let d be the number of whole digits in the result
    *   <li>Then the result type is a decimal with:
    *       <ul>
    *         <li>p = p1 + p2
@@ -416,6 +506,12 @@ public final class ReturnTypes {
    *       </ul>
    *   <li>p and s are capped at their maximum values
    * </ul>
+   *
+   * <p>Two integers give an integer.
+   *
+   * @param type1 the type of the first operand
+   * @param type2 the type of the second operand
+   * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveMultiplyType(final Type type1, final Type type2) {
     boolean nullable = type1.isNullable() || type2.isNullable();
@@ -460,6 +556,10 @@ public final class ReturnTypes {
    *       </ul>
    *   <li>p and s are capped at their maximum values
    * </ul>
+   *
+   * @param type1 the type of the first operand
+   * @param type2 the type of the second operand
+   * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveDivideType(final Type type1, final Type type2) {
     boolean nullable = type1.isNullable() || type2.isNullable();
@@ -492,7 +592,6 @@ public final class ReturnTypes {
    *   <li>Let p1, s1 be the precision and scale of the first operand
    *   <li>Let p2, s2 be the precision and scale of the second operand
    *   <li>Let p, s be the precision and scale of the result
-   *   <li>Let d be the number of whole digits in the result
    *   <li>Then the result type is a decimal with:
    *       <ul>
    *         <li>s = max(s1, s2)
@@ -500,6 +599,10 @@ public final class ReturnTypes {
    *       </ul>
    *   <li>p and s are capped at their maximum values
    * </ul>
+   *
+   * @param type1 the type of the first operand
+   * @param type2 the type of the second operand
+   * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveModType(final Type type1, final Type type2) {
 

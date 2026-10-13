@@ -20,6 +20,10 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * Type-inference strategy whereby the result type of the call is the most general type of its
+ * operands.
+ */
 @NullMarked
 public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference {
 
