@@ -30,7 +30,7 @@ String
 
 == Usage
 
-* White space is defined as any sequence of blanks, null characters, newlines (line feeds), carriage returns, horizontal tabs and form feeds (vertical tabs).
+* White space is defined as any sequence of spaces, horizontal tabs, newlines (line feeds), carriage returns, no-break spaces (U+00A0) and narrow no-break spaces (U+202F).
 * Returns NULL if the argument is NULL.
 
 == Examples

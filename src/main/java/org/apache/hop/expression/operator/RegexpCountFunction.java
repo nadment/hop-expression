@@ -84,7 +84,7 @@ public class RegexpCountFunction extends Function {
 
     String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
-      return count;
+      return null;
     }
 
     // An empty pattern matches nothing

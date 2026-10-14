@@ -42,9 +42,11 @@ String
 
 == Usage
 
-* The pattern is defined according to the Java language regular expression rules.
+* The pattern is defined according to the Java language regular expression rules. The POSIX bracket expressions like `[:alnum:]` are not supported, use the Java classes like `\p{Alnum}`.
 * If no match is found, the function returns NULL.
 * An empty pattern matches nothing.
+* Raises an error if position is less than 1.
+* A NULL position, occurrence or parameters argument is treated as its default value.
 * Returns NULL if source or pattern is NULL.
 
 == Examples

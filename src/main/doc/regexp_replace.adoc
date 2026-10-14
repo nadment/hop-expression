@@ -43,10 +43,12 @@ String
 
 == Usage
 
-* The pattern is defined according to the Java language regular expression rules.
+* The pattern is defined according to the Java language regular expression rules. The POSIX bracket expressions like `[:alnum:]` are not supported, use the Java classes like `\p{Alnum}`.
 * The replacement can contain backreferences to capture groups, written as a backslash followed by the number of the group. A capture group is a regular expression enclosed within parentheses.
 * If no match is found, the function returns source unchanged.
 * An empty pattern matches nothing.
+* Raises an error if position is less than 1.
+* A NULL position, occurrence or parameters argument is treated as its default value.
 * Returns NULL if source, pattern or replacement is NULL.
 
 == Examples

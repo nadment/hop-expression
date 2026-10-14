@@ -31,6 +31,7 @@ Integer
 == Usage
 
 * Only the first character of the string is used.
+* Returns the code of the first UTF-16 unit, so a character outside the Basic Multilingual Plane, such as an emoji, returns its high surrogate. Use xref:unicode.adoc["UNICODE",role=fun] to get its code point.
 * Returns 0 if the string is empty.
 * Returns NULL if the argument is NULL.
 
@@ -39,7 +40,7 @@ Integer
 ----
 ASCII('ABC') returns 65
 ASCII('') returns 0
-ASCII('X')
+ASCII('X') returns 88
 ----
 
 == See also

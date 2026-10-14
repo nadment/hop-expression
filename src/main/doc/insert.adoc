@@ -37,6 +37,8 @@ String or Binary
 
 == Usage
 
+* Raises an error if position is not between 1 and one more than the length of value.
+* Raises an error if length is negative or exceeds the number of characters or bytes from position to the end of value.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

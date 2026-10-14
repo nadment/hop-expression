@@ -36,7 +36,8 @@ String, Binary or Array
 
 == Usage
 
-* All arguments must be of the same string, binary or array type.
+* The arguments of another data type, such as a number or a boolean, are converted to string.
+* If an argument is an array, the other arguments are added as elements to the array.
 * NULL values are ignored.
 * Returns NULL only if all arguments are NULL.
 

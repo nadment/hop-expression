@@ -1025,6 +1025,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Count('aaa', 'a', 5)", 0L);
     evalFails("Regexp_Count('aaa', 'a', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Regexp_Count('aaa', 'a', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
+    // Null handling
+    evalNull("Regexp_Count(NULL_STRING, 'a')").returnType(IntegerType.INTEGER);
+    evalNull("Regexp_Count('abc', NULL_STRING)").returnType(IntegerType.INTEGER);
   }
 
   @Test

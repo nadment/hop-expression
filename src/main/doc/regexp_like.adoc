@@ -40,9 +40,10 @@ Boolean
 
 == Usage
 
-* The pattern is defined according to the Java language regular expression rules.
+* The pattern is defined according to the Java language regular expression rules. The POSIX bracket expressions like `[:alnum:]` are not supported, use the Java classes like `\p{Alnum}`.
 * The pattern is not implicitly anchored: the function returns TRUE if the pattern matches any part of subject.
 * An empty pattern matches nothing.
+* A NULL parameters argument is treated as its default value.
 * Returns NULL if subject or pattern is NULL.
 
 == Examples

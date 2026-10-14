@@ -38,7 +38,8 @@ Integer
 == Usage
 
 * The first position in the string is 1.
-* Returns 0 if substring is not found in string.
+* Returns 0 if substring is not found in string, or if position is beyond the start or the end of string.
+* Raises an error if position is 0 or if occurrence is less than 1.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
