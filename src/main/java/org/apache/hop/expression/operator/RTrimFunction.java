@@ -70,6 +70,11 @@ public class RTrimFunction extends Function {
     if (call.getOperandCount() == 1) {
       IExpression operand = call.getOperand(0);
 
+      // Only when the inner function also trims white spaces, not specified characters
+      if (!(operand instanceof Call inner) || inner.getOperandCount() != 1) {
+        return call;
+      }
+
       // Repetitions of the same function
       if (operand.isOperator(this)) {
         return operand;

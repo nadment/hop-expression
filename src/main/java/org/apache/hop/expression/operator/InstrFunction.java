@@ -58,6 +58,7 @@ public class InstrFunction extends Function {
     }
 
     int start = 0;
+    boolean forward = true;
     int occurrence = 1;
     int result = 0;
 
@@ -73,7 +74,10 @@ public class InstrFunction extends Function {
         throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
       }
 
-      start -= 1;
+      // Convert the 1-based position to a 0-based index, a negative position counts back from
+      // the end (-1 is the last character) and searches towards the beginning
+      forward = start > 0;
+      start = forward ? start - 1 : str.length() + start;
 
       // The occurrence to find, must be positive
       if (operands.length == 4) {
@@ -88,14 +92,13 @@ public class InstrFunction extends Function {
       }
     }
 
-    if (start >= 0) {
-      while ((result = str.indexOf(substr, start)) > 0) {
+    if (forward) {
+      while ((result = str.indexOf(substr, start)) >= 0) {
         if (--occurrence <= 0) break;
         start = result + substr.length();
       }
-    } else if (start < 0) {
-      start = str.length() + start;
-      while ((result = str.lastIndexOf(substr, start)) > 0) {
+    } else {
+      while ((result = str.lastIndexOf(substr, start)) >= 0) {
         if (--occurrence <= 0) break;
         start = result - substr.length();
       }

@@ -112,6 +112,13 @@ public class RegexpReplaceFunction extends Function {
         position = v3.intValue();
       }
     }
+    if (position < 1) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, position);
+    }
+    // A search starting after the end of the string replaces nothing
+    if (position - 1 > input.length()) {
+      return input;
+    }
 
     // Default occurrence 0
     int occurrence = 0;
@@ -147,22 +154,25 @@ public class RegexpReplaceFunction extends Function {
       }
 
       Pattern p = (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, flags);
-      Matcher matcher = p.matcher(input).region(position - 1, input.length());
-      if (occurrence == 0) {
-        return matcher.replaceAll(replacement);
-      } else {
-        StringBuilder buffer = new StringBuilder();
-        int index = 1;
-        while (matcher.find()) {
-          if (index == occurrence) {
-            matcher.appendReplacement(buffer, replacement);
+      Matcher matcher = p.matcher(input);
+      StringBuilder buffer = new StringBuilder();
+
+      // The position is 1-based, the matcher start index is 0-based.
+      // Do not use replaceAll(), it resets the matcher and would search from the beginning.
+      boolean found = matcher.find(position - 1);
+      int index = 1;
+      while (found) {
+        if (occurrence == 0 || index == occurrence) {
+          matcher.appendReplacement(buffer, replacement);
+          if (occurrence != 0) {
             break;
           }
-          index++;
         }
-        matcher.appendTail(buffer);
-        return buffer.toString();
+        index++;
+        found = matcher.find();
       }
+      matcher.appendTail(buffer);
+      return buffer.toString();
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);
     }

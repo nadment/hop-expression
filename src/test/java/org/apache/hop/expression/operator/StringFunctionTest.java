@@ -173,8 +173,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Instr('CORPORATE FLOOR','OR',3, 3)", 0L);
 
     evalEquals("Instr('CORPORATE FLOOR','O',-1)", 14L);
-    evalEquals("Instr('CORPORATE FLOOR','O',-2)", 13L);
-    evalEquals("Instr('CORPORATE FLOOR','O',-3)", 5L);
+    evalEquals("Instr('CORPORATE FLOOR','O',-2)", 14L);
+    evalEquals("Instr('CORPORATE FLOOR','O',-3)", 13L);
     evalEquals("Instr('CORPORATE FLOOR','O',-4)", 5L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-1)", 14L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-3)", 5L);
@@ -182,6 +182,19 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Instr('CORPORATE FLOOR','OR',-3, 1)", 5L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-3, 2)", 2L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-3, 3)", 0L);
+
+    // Match at the first character, with several occurrences
+    evalEquals("Instr('ABAB','AB')", 1L);
+    evalEquals("Instr('ABAB','AB',1,2)", 3L);
+    evalEquals("Instr('ABAB','AB',1,3)", 0L);
+    evalEquals("Instr('ABAB','AB',-1,2)", 1L);
+    evalEquals("Instr('ABAB','AB',-1,3)", 0L);
+    // Position at the bounds of the string, -1 is the last character
+    evalEquals("Instr('ABC','C',-1)", 3L);
+    evalEquals("Instr('ABC','A',-3)", 1L);
+    evalEquals("Instr('ABC','A',-4)", 0L);
+    evalEquals("Instr('ABC','C',3)", 3L);
+    evalEquals("Instr('ABC','A',4)", 0L);
 
     // Null handling
     evalNull("Instr(NULL_STRING,'test')");
@@ -463,6 +476,11 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("TRIM(TRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
     optimize("TRIM(LTRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
     optimize("TRIM(RTRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    // Not simplified when the inner function trims specified characters
+    optimize("TRIM(TRIM(FIELD_STRING,'T'))", "TRIM(TRIM(FIELD_STRING,'T'))");
+    optimize("TRIM(LTRIM(FIELD_STRING,'T'))", "TRIM(LTRIM(FIELD_STRING,'T'))");
+    optimize("TRIM(RTRIM(FIELD_STRING,'T'))", "TRIM(RTRIM(FIELD_STRING,'T'))");
+    evalEquals("TRIM(TRIM(FIELD_STRING,'T'))", "ES");
   }
 
   @Test
@@ -479,6 +497,12 @@ public class StringFunctionTest extends ExpressionTest {
     // Function repetition
     optimize("LTRIM(LTRIM(FIELD_STRING))", "LTRIM(FIELD_STRING)");
     optimize("LTRIM(TRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("LTRIM(RTRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    // Not simplified when the inner function trims specified characters
+    optimize("LTRIM(LTRIM(FIELD_STRING,'T'))", "LTRIM(LTRIM(FIELD_STRING,'T'))");
+    optimize("LTRIM(TRIM(FIELD_STRING,'T'))", "LTRIM(TRIM(FIELD_STRING,'T'))");
+    optimize("LTRIM(RTRIM(FIELD_STRING,'T'))", "LTRIM(RTRIM(FIELD_STRING,'T'))");
+    evalEquals("LTRIM(RTRIM(FIELD_STRING,'T'))", "TES");
   }
 
   @Test
@@ -497,6 +521,12 @@ public class StringFunctionTest extends ExpressionTest {
     // Function repetition
     optimize("RTRIM(RTRIM(FIELD_STRING))", "RTRIM(FIELD_STRING)");
     optimize("RTRIM(TRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("RTRIM(LTRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    // Not simplified when the inner function trims specified characters
+    optimize("RTRIM(RTRIM(FIELD_STRING,'T'))", "RTRIM(RTRIM(FIELD_STRING,'T'))");
+    optimize("RTRIM(TRIM(FIELD_STRING,'T'))", "RTRIM(TRIM(FIELD_STRING,'T'))");
+    optimize("RTRIM(LTRIM(FIELD_STRING,'T'))", "RTRIM(LTRIM(FIELD_STRING,'T'))");
+    evalEquals("RTRIM(LTRIM(FIELD_STRING,'T'))", "EST");
   }
 
   @Test
@@ -850,6 +880,19 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Replace('abc', '(b|c)', 'X')", "aXX");
     evalEquals("Regexp_Replace('abc', '(.*)c', '\\1e')", "abe");
     evalEquals("Regexp_Replace('abc', '(a)(b)', '\\2\\1')", "bac");
+
+    // The search starts at the position, the characters before are kept
+    evalEquals("Regexp_Replace('aaa','a','b',1)", "bbb");
+    evalEquals("Regexp_Replace('aaa','a','b',2)", "abb");
+    evalEquals("Regexp_Replace('aaa','a','b',3)", "aab");
+    evalEquals("Regexp_Replace('aaa','a','b',2,1)", "aba");
+    evalEquals("Regexp_Replace('aaa','a','b',2,2)", "aab");
+    evalEquals("Regexp_Replace('aaa','a','b',4)", "aaa");
+    evalEquals("Regexp_Replace('aaa','a','b',5)", "aaa");
+    evalFails("Regexp_Replace('aaa','a','b',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Replace('aaa','a','b',-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // An occurrence greater than the number of matches replaces nothing
+    evalEquals("Regexp_Replace('aaa','a','b',1,4)", "aaa");
 
     // An empty pattern matches nothing
     evalEquals("Regexp_Replace('ABCDEEEEEEFG', '','E')", "ABCDEEEEEEFG");
