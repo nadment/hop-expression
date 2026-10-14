@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import java.util.HexFormat;
-import java.util.zip.CRC32C;
+import java.util.zip.CRC32;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -32,8 +32,8 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The function calculates the CRC-32C checksum of a data value. The checksum is returned as a
- * hex-encoded string of 8 characters.
+ * The function calculates the standard CRC-32 checksum of a data value, like zlib or MySQL. The
+ * checksum is returned as a hex-encoded string of 8 characters.
  */
 @FunctionPlugin
 @NullMarked
@@ -63,7 +63,7 @@ public class Crc32Function extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
-    CRC32C crc = new CRC32C();
+    CRC32 crc = new CRC32();
     crc.update(bytes, 0, bytes.length);
 
     // Always 8 characters, the leading zeros of the 32 bits are kept

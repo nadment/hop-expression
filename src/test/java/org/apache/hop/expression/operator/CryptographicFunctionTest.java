@@ -32,9 +32,11 @@ class CryptographicFunctionTest extends ExpressionTest {
 
   @Test
   void Crc32() throws Exception {
-    evalEquals("CRC32('Apache Hop')", "dbb81b5e").returnType(StringType.STRING_NOT_NULL);
-    evalEquals("CRC32(BINARY '123456789ABCDEF')", "2f720f20")
+    evalEquals("CRC32('Apache Hop')", "1de03178").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("CRC32(BINARY '123456789ABCDEF')", "28c7d1ae")
         .returnType(StringType.STRING_NOT_NULL);
+    // The check value of the standard CRC-32, not the CRC-32C e3069283
+    evalEquals("CRC32('123456789')", "cbf43926");
 
     // Null handling
     evalNull("CRC32(NULL_STRING)").returnType(StringType.STRING);
@@ -45,12 +47,12 @@ class CryptographicFunctionTest extends ExpressionTest {
 
     // Binary value and characters encoded in UTF-8
     evalTrue("CRC32('Test') = CRC32(BINARY '54657374')");
+    evalTrue("CRC32('é') = CRC32(BINARY 'C3A9')");
+    evalNull("CRC32(NULL_BINARY)").returnType(StringType.STRING);
 
     // Always 8 characters, with the leading zeros
     evalEquals("CRC32('')", "00000000");
-    evalEquals("CRC32('v3')", "04444822");
-    evalTrue("CRC32('é') = CRC32(BINARY 'C3A9')");
-    evalNull("CRC32(NULL_BINARY)").returnType(StringType.STRING);
+    evalEquals("CRC32('v31')", "0a88a8fa");
 
     // A value which is not a string or a binary is hashed as its text
     evalTrue("CRC32(123) = CRC32('123')");
