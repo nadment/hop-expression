@@ -38,6 +38,7 @@ Integer
 == Usage
 
 * The first position in the string is 1.
+* The overlapping occurrences are counted, so `INSTR('AAA','AA',1,2)` returns 2.
 * Returns 0 if substring is not found in string, or if position is beyond the start or the end of string.
 * Raises an error if position is 0 or if occurrence is less than 1.
 * Returns NULL if one of the arguments is NULL.

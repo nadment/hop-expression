@@ -200,6 +200,13 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Instr('ABAB','AB',1,3)", 0L);
     evalEquals("Instr('ABAB','AB',-1,2)", 1L);
     evalEquals("Instr('ABAB','AB',-1,3)", 0L);
+    // Overlapping occurrences are counted
+    evalEquals("Instr('AAA','AA',1,2)", 2L);
+    evalEquals("Instr('AAA','AA',1,3)", 0L);
+    evalEquals("Instr('ABABA','ABA',1,2)", 3L);
+    evalEquals("Instr('AAA','AA',-1,1)", 2L);
+    evalEquals("Instr('AAA','AA',-1,2)", 1L);
+    evalEquals("Instr('ABABA','ABA',-1,2)", 1L);
     // Position at the bounds of the string, -1 is the last character
     evalEquals("Instr('ABC','C',-1)", 3L);
     evalEquals("Instr('ABC','A',-3)", 1L);

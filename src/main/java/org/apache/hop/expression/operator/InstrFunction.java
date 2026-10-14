@@ -92,15 +92,17 @@ public class InstrFunction extends Function {
       }
     }
 
+    // The next search starts one character after the previous match, so the overlapping
+    // occurrences are counted, like INSTR('AAA','AA',1,2) returns 2
     if (forward) {
       while ((result = str.indexOf(substr, start)) >= 0) {
         if (--occurrence <= 0) break;
-        start = result + substr.length();
+        start = result + 1;
       }
     } else {
       while ((result = str.lastIndexOf(substr, start)) >= 0) {
         if (--occurrence <= 0) break;
-        start = result - substr.length();
+        start = result - 1;
       }
     }
 
