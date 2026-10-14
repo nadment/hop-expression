@@ -56,16 +56,14 @@ public class CompressFunction extends Function {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
 
-    try {
-      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
-      GZIPOutputStream compression = new GZIPOutputStream(output);
+    ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
+    // Closing the stream writes the GZIP trailer, so read the output only after the close
+    try (GZIPOutputStream compression = new GZIPOutputStream(output)) {
       compression.write(bytes);
-      compression.flush();
-      compression.close();
-
-      return output.toByteArray();
     } catch (IOException e) {
       throw new ExpressionException(ErrorCode.COMPRESSION_ERROR);
     }
+
+    return output.toByteArray();
   }
 }

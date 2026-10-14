@@ -1522,9 +1522,16 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void Decompress() throws Exception {
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+    evalEquals("Decompress(Compress(BINARY ''))", new byte[0]);
+    // A value larger than the decompression buffer
+    evalEquals("Length(Decompress(Compress(Repeat('Test',5000)::BINARY)))", 20000L);
 
     // Null handling
     evalNull("Decompress(NULL_BINARY)").returnType(BinaryType.BINARY);
+
+    // Not a GZIP value or a truncated one
+    evalFails("Decompress(BINARY '2A3B4C')", ErrorCode.DECOMPRESSION_ERROR);
+    evalFails("Decompress(Left(Compress('Test'::BINARY),12))", ErrorCode.DECOMPRESSION_ERROR);
   }
 
   @Test

@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import org.apache.hop.expression.ErrorCode;
@@ -52,16 +51,8 @@ public class DecompressFunction extends Function {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
 
-    try {
-      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);
-      GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));
-
-      final byte[] buffer = new byte[8024];
-      int n;
-      while ((n = cis.read(buffer)) != -1) {
-        output.write(buffer, 0, n);
-      }
-      return output.toByteArray();
+    try (GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
+      return cis.readAllBytes();
     } catch (IOException e) {
       throw new ExpressionException(ErrorCode.DECOMPRESSION_ERROR);
     }
