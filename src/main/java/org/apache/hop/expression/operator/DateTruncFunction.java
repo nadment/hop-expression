@@ -65,8 +65,8 @@ public class DateTruncFunction extends Function {
           // First day of the month
           datetime.withDayOfMonth(1);
       case QUARTER -> {
-        // First day of the quarter
-        int month = (datetime.getMonthValue() / 3) * 3 + 1;
+        // First day of the quarter (month value is 1-based, so shift to 0-based before dividing)
+        int month = ((datetime.getMonthValue() - 1) / 3) * 3 + 1;
         yield datetime.withMonth(month).withDayOfMonth(1);
       }
       case WEEK ->

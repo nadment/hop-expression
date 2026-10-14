@@ -676,6 +676,15 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Date_Trunc(DAY, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(DAYOFMONTH, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(QUARTER, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
+    // First and last month of each quarter
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-01-15')", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-03-31')", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-04-01')", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-06-30')", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-07-01')", LocalDate.of(2020, Month.JULY, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-09-30')", LocalDate.of(2020, Month.JULY, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-10-01')", LocalDate.of(2020, Month.OCTOBER, 1));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-12-31')", LocalDate.of(2020, Month.OCTOBER, 1));
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(WEEK, DATE '2021-01-01')", LocalDate.of(2020, Month.DECEMBER, 28));
     evalEquals("Date_Trunc(WEEKOFYEAR, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
