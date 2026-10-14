@@ -154,8 +154,8 @@ public class RPadFunction extends Function {
         throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
       }
 
-      // nothing to pad
-      if (pad.length == 0) {
+      // nothing to pad, but a value longer than the length must still be truncated
+      if (pad.length == 0 && value.length <= length) {
         return value;
       }
 

@@ -19,6 +19,8 @@ package org.apache.hop.expression.operator;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Decoder;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -29,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The function encode the input (string or binary) using Base64 encoding.
+ * The function decodes the input (string or binary) using Base64 encoding.
  *
  * @see Base64EncodeFunction
  */
@@ -52,6 +54,34 @@ public class Base64DecodeFunction extends Function {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) return null;
 
-    return new String(DECODER.decode(value), StandardCharsets.UTF_8);
+    int padding = -1;
+    for (int i = 0; i < value.length; i++) {
+      if (value[i] == '=') {
+        if (padding < 0) padding = i;
+      } else if (padding >= 0 || !isBase64(value[i])) {
+        // The padding is only allowed at the end, so report it rather than the next character
+        int index = (padding >= 0) ? padding : i;
+        // The previous bytes are ASCII, so the byte index is also the index of the character
+        String symbol =
+            Character.toString(new String(value, StandardCharsets.UTF_8).codePointAt(index));
+        throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, symbol, "base64");
+      }
+    }
+
+    try {
+      return new String(DECODER.decode(value), StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      // The symbols are valid, so the last ones do not form whole bytes
+      throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base64");
+    }
+  }
+
+  /** Returns whether the byte is a symbol of the base64 alphabet. */
+  private static boolean isBase64(byte b) {
+    return (b >= 'A' && b <= 'Z')
+        || (b >= 'a' && b <= 'z')
+        || (b >= '0' && b <= '9')
+        || b == '+'
+        || b == '/';
   }
 }

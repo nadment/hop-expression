@@ -341,6 +341,20 @@ public enum ErrorCode {
    */
   INVALID_BINARY_FORMAT,
   /**
+   * A value to decode contains a symbol outside the alphabet of its encoding, such as base32 or
+   * base64.
+   *
+   * <p>Message: <code>Invalid symbol '{0}' found while decoding the {1} sequence</code>
+   */
+  INVALID_DECODING_SYMBOL,
+  /**
+   * A value to decode, such as base32 or base64, is truncated: its last symbols do not form whole
+   * bytes.
+   *
+   * <p>Message: <code>Truncated {0} sequence, the last symbols do not form whole bytes</code>
+   */
+  TRUNCATED_DECODING_SEQUENCE,
+  /**
    * A JSON path is malformed.
    *
    * <p>Message: <code>Invalid json path “{0}”</code>

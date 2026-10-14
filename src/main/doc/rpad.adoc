@@ -37,8 +37,9 @@ The data type of the returned value is the same as the data type of value (Strin
 == Usage
 
 * Both value and pad must be of the same string or binary type.
-* If pad is omitted, the function pads with spaces for a string or with `0x00` for a binary.
+* If pad is omitted or NULL, the function pads with spaces for a string or with `0x00` for a binary.
 * If length is smaller than the length of value, the function truncates value to length.
+* If pad is empty, value is not padded but is still truncated.
 * If length is negative, the function returns an empty string or binary.
 * Fails if length is greater than 8192.
 * Returns NULL if value or length is NULL.

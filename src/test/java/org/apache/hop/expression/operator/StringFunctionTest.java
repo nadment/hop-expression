@@ -17,13 +17,17 @@
 package org.apache.hop.expression.operator;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
@@ -240,6 +244,9 @@ public class StringFunctionTest extends ExpressionTest {
     // Empty padding
     evalEquals("RPad('test',5,'')", "test");
     evalEquals("RPad(BINARY '2A3B4C',5,BINARY '')", new byte[] {0x2A, 0x3B, 0x4C});
+    // Truncated even with an empty pad
+    evalEquals("RPad('test',3,'')", "tes");
+    evalEquals("RPad(BINARY '2A3B4C',2,BINARY '')", new byte[] {0x2A, 0x3B});
 
     // If length is a negative number, the result of the function is an empty string or binary.
     evalEquals("RPad('test',-8)", "");
@@ -288,6 +295,9 @@ public class StringFunctionTest extends ExpressionTest {
     // Empty padding
     evalEquals("LPad('test',5,'')", "test");
     evalEquals("LPad(BINARY '2A3B4C',5,BINARY '')", new byte[] {0x2A, 0x3B, 0x4C});
+    // Truncated even with an empty pad
+    evalEquals("LPad('test',3,'')", "tes");
+    evalEquals("LPad(BINARY '2A3B4C',2,BINARY '')", new byte[] {0x2A, 0x3B});
 
     // If length is a negative number, the result of the function is an empty string or binary.
     evalEquals("LPad('test',-8)", "");
@@ -1362,6 +1372,20 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Base64_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+
+    // Invalid symbol
+    evalFails("Base64_Decode('QXBh Y2hlIEhvcA==')", ErrorCode.INVALID_DECODING_SYMBOL);
+    assertDecodingSymbolMessage("Base64_Decode('QXBh&Y2hlIEhvcA==')", "&", "base64");
+    assertDecodingSymbolMessage("Base64_Decode('QXBh€Y2hlIEhvcA==')", "€", "base64");
+
+    // The padding is only allowed at the end
+    assertDecodingSymbolMessage("Base64_Decode('QQ=A')", "=", "base64");
+    assertDecodingSymbolMessage("Base64_Decode('QQ==QQ==')", "=", "base64");
+
+    // Truncated value
+    evalFails("Base64_Decode('QXBhY2hlIEhvcA=')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    assertDecodingMessage(
+        "Base64_Decode('QXBhY')", ErrorCode.TRUNCATED_DECODING_SEQUENCE.message("base64"));
   }
 
   @Test
@@ -1384,12 +1408,44 @@ public class StringFunctionTest extends ExpressionTest {
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q'::Binary)", "Apache Hop")
         .returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Base32_Decode('ifygcy3imuqeq33q')", "Apache Hop");
+    evalEquals("Base32_Decode('MY======')", "f");
+    evalEquals("Base32_Decode('')", "");
+    evalEquals("Base32_Decode(Base32_Encode('Apache Hop €'))", "Apache Hop €");
 
     // Null handling
     evalNull("Base32_Decode(NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
     evalFails("Base32_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+
+    // Invalid symbol
+    evalFails("Base32_Decode('IFYG CY3IMUQEQ33Q')", ErrorCode.INVALID_DECODING_SYMBOL);
+    evalFails("Base32_Decode('IFYGCY3I!MUQEQ33Q')", ErrorCode.INVALID_DECODING_SYMBOL);
+    evalFails("Base32_Decode('IFYGCY3I1MUQEQ33Q')", ErrorCode.INVALID_DECODING_SYMBOL);
+    assertDecodingSymbolMessage("Base32_Decode('IFYGCY3IéMUQEQ33Q')", "é", "base32");
+    // The padding is only allowed at the end
+    assertDecodingSymbolMessage("Base32_Decode('=MY')", "=", "base32");
+    assertDecodingSymbolMessage("Base32_Decode('MY======MY======')", "=", "base32");
+
+    // Truncated value
+    evalFails("Base32_Decode('IFYGCY3IMUQEQ33')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    evalFails("Base32_Decode('IFY')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    assertDecodingMessage(
+        "Base32_Decode('I')", ErrorCode.TRUNCATED_DECODING_SEQUENCE.message("base32"));
+  }
+
+  /** Check that the expression fails with the invalid symbol and the encoding in the message. */
+  private void assertDecodingSymbolMessage(String source, String symbol, String encoding)
+      throws Exception {
+    assertDecodingMessage(source, ErrorCode.INVALID_DECODING_SYMBOL.message(symbol, encoding));
+  }
+
+  /** Check that the expression fails with the expected decoding error message. */
+  private void assertDecodingMessage(String source, String message) throws Exception {
+    IExpression expression = IExpression.of(createExpressionContext(), source);
+    ExpressionException exception = assertThrows(ExpressionException.class, expression::getValue);
+    assertTrue(exception.getMessage().contains(message), exception.getMessage());
   }
 
   @Test

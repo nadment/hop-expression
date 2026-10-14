@@ -34,6 +34,9 @@ String
 
 == Usage
 
+* Raises an error naming the invalid symbol if the argument contains a character that is not in the Base64 alphabet.
+* Raises an error naming the padding symbol `=` if it is followed by other characters.
+* Raises an error if the argument is truncated, that is its last symbols do not form whole bytes.
 * Returns NULL if the argument is NULL.
 
 == Examples
