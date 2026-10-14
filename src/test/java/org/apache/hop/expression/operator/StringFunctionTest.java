@@ -956,6 +956,22 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Regexp_Like()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Regexp_Like('A')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Regexp_Like('A','[a-z]','z')", ErrorCode.INVALID_ARGUMENT);
+
+    // Parameters, the last of the 'c' and 'i' letters wins
+    evalTrue("Regexp_Like('A','a','ci')");
+    evalFalse("Regexp_Like('A','a','ic')");
+    evalFalse("Regexp_Like('A','a','c')");
+    evalFalse("Regexp_Like('A','a')");
+    // Multi-line mode
+    evalTrue("Regexp_Like('a'||Chr(10)||'b','^b$','m')");
+    evalFalse("Regexp_Like('a'||Chr(10)||'b','^b$')");
+    // The period matches the newline
+    evalTrue("Regexp_Like('a'||Chr(10)||'b','a.b','n')");
+    evalFalse("Regexp_Like('a'||Chr(10)||'b','a.b')");
+
+    // Invalid pattern, constant or not
+    evalFails("Regexp_Like('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
+    evalFails("Regexp_Like('abc','('||FIELD_STRING)", ErrorCode.INVALID_REGEXP_PATTERN);
   }
 
   @Test
@@ -1003,6 +1019,18 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Regexp_Replace()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+
+    // Parameters
+    evalEquals("Regexp_Replace('Aa','a','x',1,0,'i')", "xx");
+    evalEquals("Regexp_Replace('Aa','a','x',1,0,'c')", "Ax");
+    evalEquals("Regexp_Replace('a'||Chr(10)||'a','^a','x',1,0,'m')", "x\nx");
+    evalEquals("Regexp_Replace('a'||Chr(10)||'a','^a','x',1,0)", "x\na");
+    evalEquals("Regexp_Replace('a'||Chr(10)||'b','a.b','x',1,0,'n')", "x");
+    evalFails("Regexp_Replace('Aa','a','x',1,0,'z')", ErrorCode.INVALID_ARGUMENT);
+
+    // Invalid pattern, constant or not
+    evalFails("Regexp_Replace('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
+    evalFails("Regexp_Replace('abc','('||FIELD_STRING)", ErrorCode.INVALID_REGEXP_PATTERN);
   }
 
   @Test
@@ -1029,6 +1057,18 @@ public class StringFunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Regexp_Count(NULL_STRING, 'a')").returnType(IntegerType.INTEGER);
     evalNull("Regexp_Count('abc', NULL_STRING)").returnType(IntegerType.INTEGER);
+
+    // Parameters
+    evalEquals("Regexp_Count('Aa','a',1,'i')", 2L);
+    evalEquals("Regexp_Count('Aa','a',1,'c')", 1L);
+    evalEquals("Regexp_Count('a'||Chr(10)||'a','^a$',1,'m')", 2L);
+    evalEquals("Regexp_Count('a'||Chr(10)||'a','^a$',1)", 0L);
+    evalEquals("Regexp_Count('a'||Chr(10)||'b','a.b',1,'n')", 1L);
+    evalFails("Regexp_Count('Aa','a',1,'z')", ErrorCode.INVALID_ARGUMENT);
+
+    // Invalid pattern, constant or not
+    evalFails("Regexp_Count('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
+    evalFails("Regexp_Count('abc','('||FIELD_STRING)", ErrorCode.INVALID_REGEXP_PATTERN);
   }
 
   @Test
@@ -1053,6 +1093,18 @@ public class StringFunctionTest extends ExpressionTest {
 
     // An empty pattern matches nothing
     evalEquals("Regexp_Instr('email@apache.org', '')", 0L);
+
+    // Parameters
+    evalEquals("Regexp_Instr('Aa','a',1,1,0,'i')", 1L);
+    evalEquals("Regexp_Instr('Aa','a',1,1,0,'c')", 2L);
+    evalEquals("Regexp_Instr('a'||Chr(10)||'b','^b',1,1,0,'m')", 3L);
+    evalEquals("Regexp_Instr('a'||Chr(10)||'b','^b',1,1,0)", 0L);
+    evalEquals("Regexp_Instr('a'||Chr(10)||'b','a.b',1,1,0,'n')", 1L);
+    evalFails("Regexp_Instr('Aa','a',1,1,0,'z')", ErrorCode.INVALID_ARGUMENT);
+
+    // Invalid pattern, constant or not
+    evalFails("Regexp_Instr('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
+    evalFails("Regexp_Instr('abc','('||FIELD_STRING)", ErrorCode.INVALID_REGEXP_PATTERN);
   }
 
   @Test
@@ -1089,6 +1141,18 @@ public class StringFunctionTest extends ExpressionTest {
 
     evalNull("regexp_substr(NULL_STRING,  '@[^.]*')");
     evalNull("regexp_substr('email@apache.org', NULL_STRING)");
+
+    // Parameters
+    evalEquals("Regexp_Substr('ABC','b',1,1,'i')", "B");
+    evalNull("Regexp_Substr('ABC','b',1,1,'c')");
+    evalEquals("Regexp_Substr('a'||Chr(10)||'b','^b',1,1,'m')", "b");
+    evalNull("Regexp_Substr('a'||Chr(10)||'b','^b',1,1)");
+    evalEquals("Regexp_Substr('a'||Chr(10)||'b','a.b',1,1,'n')", "a\nb");
+    evalFails("Regexp_Substr('ABC','b',1,1,'z')", ErrorCode.INVALID_ARGUMENT);
+
+    // Invalid pattern, constant or not
+    evalFails("Regexp_Substr('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
+    evalFails("Regexp_Substr('abc','('||FIELD_STRING)", ErrorCode.INVALID_REGEXP_PATTERN);
   }
 
   @Test
