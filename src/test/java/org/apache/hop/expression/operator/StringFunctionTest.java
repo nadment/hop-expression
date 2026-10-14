@@ -644,7 +644,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Insert('abcd', 2, 2, 'QW')", "aQWd");
     evalEquals("Insert('abcd', 5, 0, 'QW')", "abcdQW");
 
-    // evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
+    // Replace the whole string
+    evalEquals("Insert('abcdefg', 1, 7, 'zy')", "zy");
+    // The length must not exceed the end of the string
+    evalFails("Insert('abcdefg', 1, 9, 'zy')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
 
     // Null handling
     evalNull("Insert(NULL_STRING, 2, 1, 'qw')");
@@ -931,10 +934,13 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void Regexp_Like() throws Exception {
     evalTrue("Regexp_Like('aaa','a{2,4}')").returnType(BooleanType.BOOLEAN_NOT_NULL);
-    evalTrue("Regexp_Like('Erdbeere','Erd[a[:SPACE:]b]eere')");
-    evalTrue("Regexp_Like('12345TEST','123[:alnum:]*')");
-    evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
-    evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
+    // Character classes use the Java syntax, the POSIX syntax like [:alnum:] is not supported
+    evalTrue("Regexp_Like('Erd beere','Erd[a\\p{Space}b]beere')");
+    evalFalse("Regexp_Like('Erdcbeere','Erd[a\\p{Space}b]beere')");
+    evalTrue("Regexp_Like('12345TEST','^123\\p{Alnum}*$')");
+    evalFalse("Regexp_Like('12345 TEST','^123\\p{Alnum}*$')");
+    evalTrue("Regexp_Like('ABcdf987','^\\p{XDigit}*$')");
+    evalFalse("Regexp_Like('ABcdfg987','^\\p{XDigit}*$')");
     evalTrue("Regexp_Like('A','[a-z]','i')");
     evalFalse("Regexp_Like('A','[a-z]','c')");
 
@@ -1070,8 +1076,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("regexp_substr('abc', '.', 5)");
     evalFails("regexp_substr('abc', '.', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("regexp_substr('abc', '.', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
-    // evalEquals("regexp_substr('abc', '([a-z])(b)', 1)", "a");
-    // evalEquals("regexp_substr('abc', '([a-z])(b)', 2)", "b");
+    // The groups do not change the result, the third argument is the position not a group
+    evalEquals("regexp_substr('abc', '([a-z])(b)')", "ab");
+    evalEquals("regexp_substr('abc', '([a-z])(c)', 2)", "bc");
 
     // An empty pattern matches nothing
     evalNull("regexp_substr('email@apache.org', '')");
@@ -1313,7 +1320,8 @@ public class StringFunctionTest extends ExpressionTest {
     // Decode 16 bits unicode
     evalEquals("String_Decode('\\u20AC')", "€");
     // Decode octal
-    evalEquals("String_Decode('\366\344\374')", "öäü");
+    // Octal escapes, escaped in the Java source to reach the function
+    evalEquals("String_Decode('\\366\\344\\374')", "öäü");
 
     // Null handling
     evalNull("String_Decode(NULL_STRING)").returnType(StringType.STRING);
