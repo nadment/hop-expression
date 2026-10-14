@@ -1006,6 +1006,12 @@ public class StringFunctionTest extends ExpressionTest {
     // An occurrence greater than the number of matches replaces nothing
     evalEquals("Regexp_Replace('aaa','a','b',1,4)", "aaa");
 
+    // The occurrence 0 replaces all, a negative occurrence is rejected
+    evalEquals("Regexp_Replace('aaa','a','b',1,0)", "bbb");
+    evalEquals("Regexp_Replace('aaa','a','b',1,4294967298)", "aaa");
+    evalFails("Regexp_Replace('aaa','a','b',1,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Replace('aaa','a','b',1,-4294967295)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
     // An empty pattern matches nothing
     evalEquals("Regexp_Replace('ABCDEEEEEEFG', '','E')", "ABCDEEEEEEFG");
 
@@ -1093,6 +1099,13 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Regexp_Instr('abc', '.', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Regexp_Instr('abc', '.', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
 
+    // The occurrence must be positive, NULL is the first occurrence
+    evalEquals("Regexp_Instr('abab', 'b', 1, NULL_INTEGER)", 2L);
+    evalEquals("Regexp_Instr('abab', 'b', 1, 2)", 4L);
+    evalEquals("Regexp_Instr('abab', 'b', 1, 4294967298)", 0L);
+    evalFails("Regexp_Instr('abab', 'b', 1, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Instr('abab', 'b', 1, -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
     // An empty pattern matches nothing
     evalEquals("Regexp_Instr('email@apache.org', '')", 0L);
 
@@ -1134,6 +1147,13 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("regexp_substr('abc', '.', 5)");
     evalFails("regexp_substr('abc', '.', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("regexp_substr('abc', '.', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
+    // The occurrence must be positive, NULL is the first occurrence
+    evalEquals("regexp_substr('a1b2', '[a-z]', 1, NULL_INTEGER)", "a");
+    evalEquals("regexp_substr('a1b2', '[a-z]', 1, 2)", "b");
+    evalNull("regexp_substr('a1b2', '[a-z]', 1, 4294967298)");
+    evalFails("regexp_substr('a1b2', '[a-z]', 1, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("regexp_substr('a1b2', '[a-z]', 1, -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     // The groups do not change the result, the third argument is the position not a group
     evalEquals("regexp_substr('abc', '([a-z])(b)')", "ab");
     evalEquals("regexp_substr('abc', '([a-z])(c)', 2)", "bc");

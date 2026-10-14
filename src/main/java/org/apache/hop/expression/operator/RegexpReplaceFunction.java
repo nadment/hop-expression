@@ -125,7 +125,12 @@ public class RegexpReplaceFunction extends Function {
     if (operands.length >= 5) {
       Long v4 = operands[4].getValue(Long.class);
       if (v4 != null) {
-        occurrence = v4.intValue();
+        // The occurrence 0 replaces all the occurrences
+        if (v4 < 0) {
+          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 5, v4);
+        }
+        // Clamp to the int range, the conversion would wrap a larger occurrence
+        occurrence = Math.clamp(v4, 0, Integer.MAX_VALUE);
       }
     }
 

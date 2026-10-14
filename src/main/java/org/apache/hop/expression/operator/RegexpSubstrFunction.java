@@ -103,11 +103,15 @@ public class RegexpSubstrFunction extends Function {
     }
 
     // Default occurrence
-    int occurrence = 0;
+    int occurrence = 1;
     if (operands.length >= 4) {
       Long v3 = operands[3].getValue(Long.class);
       if (v3 != null) {
-        occurrence = v3.intValue();
+        if (v3 < 1) {
+          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, v3);
+        }
+        // Clamp to the int range, the conversion would wrap a larger occurrence
+        occurrence = Math.clamp(v3, 1, Integer.MAX_VALUE);
       }
     }
 
