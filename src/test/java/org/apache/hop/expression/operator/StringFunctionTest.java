@@ -268,6 +268,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("RPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
     evalFails(
         "RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+
+    // A length out of the int range must not wrap
+    evalFails("RPad('test',4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("RPad(FIELD_BINARY,4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalEquals("RPad('test',-4294967295)", "");
+    evalEquals("RPad(FIELD_BINARY,-4294967295)", new byte[0]);
   }
 
   @Test
@@ -318,6 +324,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("LPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
     evalFails(
         "LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+
+    // A length out of the int range must not wrap
+    evalFails("LPad('test',4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("LPad(FIELD_BINARY,4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalEquals("LPad('test',-4294967295)", "");
+    evalEquals("LPad(FIELD_BINARY,-4294967295)", new byte[0]);
   }
 
   @Test
@@ -815,6 +827,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Overlay('Apxxxe','ach',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Overlay('Apxxxe','ach',-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Overlay('Apxxxe','ach',3,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // A position or a length out of the int range must not wrap
+    evalEquals("Overlay('Apxxxe','ach',4294967297)", "Apxxxeach");
+    evalEquals("Overlay('Apxxxe','ach',3,4294967297)", "Apach");
+    evalEquals("Overlay('Apxxxe','ach',3,2147483647)", "Apach");
+    evalFails("Overlay('Apxxxe','ach',3,-4294967295)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test

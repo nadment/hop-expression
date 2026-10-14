@@ -55,22 +55,21 @@ public class OverlayFunction extends Function {
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
     }
-    int start = position.intValue() - 1;
     int len = str.length();
     // If position is beyond the end of string, replacement is placed directly after string.
-    if (start > len) {
-      start = len;
-    }
+    // Compare the long value, the conversion to int would wrap a value out of the int range
+    int start = (int) Math.min(position - 1, len);
 
     // If count is omitted, it defaults to the length of replace.
     int count = replace.length();
     if (operands.length == 4) {
       Long arg3 = operands[3].getValue(Long.class);
       if (arg3 == null) return null;
-      count = arg3.intValue();
-      if (count < 0) {
-        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, count);
+      if (arg3 < 0) {
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, arg3);
       }
+      // Clamp to the int range, a count beyond the end of string replaces up to the end
+      count = Math.clamp(arg3, 0, Integer.MAX_VALUE);
       if (count == 0) {
         count = replace.length();
       } else if (count < replace.length()) {
@@ -78,13 +77,14 @@ public class OverlayFunction extends Function {
       }
     }
 
-    int end = start + count;
+    // A long sum, a huge count would overflow the int range
+    long end = (long) start + count;
 
     StringBuilder builder = new StringBuilder();
     builder.append(str, 0, start);
     builder.append(replace);
     if (end < len) {
-      builder.append(str.substring(end));
+      builder.append(str.substring((int) end));
     }
 
     return builder.toString();

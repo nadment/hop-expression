@@ -80,7 +80,8 @@ public class LPadFunction extends Function {
       Long v1 = operands[1].getValue(Long.class);
       if (v1 == null) return null;
 
-      int length = v1.intValue();
+      // Clamp to the int range, a negative length or one above the limit keeps its effect
+      int length = Math.clamp(v1, -1, PAD_LIMIT + 1);
 
       // If this parameter is omitted, the function will pad spaces
       String pad = null;
@@ -136,7 +137,8 @@ public class LPadFunction extends Function {
       Long v1 = operands[1].getValue(Long.class);
       if (v1 == null) return null;
 
-      int length = v1.intValue();
+      // Clamp to the int range, a negative length or one above the limit keeps its effect
+      int length = Math.clamp(v1, -1, PAD_LIMIT + 1);
 
       // If this parameter is omitted, the function will pad 0x00
       byte[] pad = null;
