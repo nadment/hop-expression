@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** Calculates the hyperbolic cosecant of the specified angle in radians. */
+/** Calculates the hyperbolic cosecant of a numeric value. */
 @FunctionPlugin
 @NullMarked
 public class CschFunction extends Function {

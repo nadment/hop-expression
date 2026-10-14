@@ -29,9 +29,7 @@ import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Calculates the trigonometric cosine of the specified angle in radians in the specified number.
- */
+/** Calculates the hyperbolic cosine of a numeric value. */
 @FunctionPlugin
 @NullMarked
 public class CoshFunction extends Function {

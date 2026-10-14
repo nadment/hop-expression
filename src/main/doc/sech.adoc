@@ -16,7 +16,7 @@ under the License.
 ////
 = SECH
 
-Calculates the hyperbolic secant of the angle in radians.
+Calculates the hyperbolic secant of a numeric value.
 
 == Syntax
 
@@ -30,8 +30,8 @@ Number
 
 == Usage
 
-* The argument must be expressed in radians.
 * `SECH( numeric )` is equivalent to `1 / COSH( numeric )`.
+* Returns a value in the range of (0, 1].
 * Returns NULL if the argument is NULL.
 
 == Examples

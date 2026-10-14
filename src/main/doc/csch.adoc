@@ -16,7 +16,7 @@ under the License.
 ////
 = CSCH
 
-Returns the hyperbolic cosecant of an angle expressed in radians.
+Returns the hyperbolic cosecant of a numeric value.
 
 == Syntax
 
@@ -30,7 +30,6 @@ Number
 
 == Usage
 
-* The argument should be expressed in radians.
 * `CSCH(x)` is equivalent to `1 / SINH(x)`.
 * Raises an error if the argument is 0.
 * Returns NULL if the argument is NULL.
