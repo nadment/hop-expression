@@ -324,6 +324,19 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3, false));
     evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4, false));
 
+    // Exponent beyond the range of an integer
+    evalEquals("1E19", new BigDecimal("1E19")).returnType(NumberType.of(20, 0, false));
+    evalEquals("1E30", new BigDecimal("1E30")).returnType(NumberType.of(31, 0, false));
+    evalEquals("1.5E30", new BigDecimal("1.5E30")).returnType(NumberType.of(31, 0, false));
+    evalEquals("-1E30", new BigDecimal("-1E30"));
+    evalEquals("1E30 + 1", new BigDecimal("1000000000000000000000000000001"));
+    // Beyond the limits of the number type, the type is the widest
+    evalEquals("1E50", new BigDecimal("1E50")).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("1E-50", new BigDecimal("1E-50")).returnType(NumberType.of(38, 37, false));
+    evalEquals(
+        "123456789012345678901234567890123456789012",
+        new BigDecimal("123456789012345678901234567890123456789012"));
+
     // Integer hexadecimal
     evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9, false));
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);

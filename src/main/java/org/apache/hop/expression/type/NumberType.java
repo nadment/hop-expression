@@ -47,8 +47,18 @@ public final class NumberType extends Type {
     int precision = number.precision();
     int scale = number.scale();
 
+    // A negative scale, like 1E30, counts the zeros of the integer part as digits
+    if (scale < 0) {
+      precision -= scale;
+      scale = 0;
+    }
+
     if (precision == scale) precision = scale + 1;
     else if (precision < scale) precision += scale;
+
+    // A value can exceed the limits of the type, like 1E50 or 1E-50, the type is then the widest
+    precision = Math.min(precision, TypeName.NUMBER.getMaxPrecision());
+    scale = Math.min(scale, TypeName.NUMBER.getMaxScale());
 
     return new NumberType(precision, scale, false);
   }
