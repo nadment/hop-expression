@@ -21,7 +21,7 @@ Encodes a string to a hexadecimal string.
 == Syntax
 
 ----
-HEX_ENCODE( string )
+HEX_ENCODE( value )
 ----
 
 == Returns
@@ -30,12 +30,15 @@ String
 
 == Usage
 
+* A binary value is encoded as is, any other value is encoded as a string in UTF-8.
+* The hexadecimal digits are in lower case.
 * Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
 HEX_ENCODE('Apache Hop') returns '41706163686520486f70'
+HEX_ENCODE(BINARY '00FF') returns '00ff'
 ----
 
 == See also

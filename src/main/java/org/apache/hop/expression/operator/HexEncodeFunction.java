@@ -16,12 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.Hex;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -35,17 +37,26 @@ public class HexEncodeFunction extends Function {
     super(
         "HEX_ENCODE",
         ReturnTypes.STRING_NULLABLE,
-        OperandTypes.INTEGER.or(OperandTypes.BINARY),
+        OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
         "/docs/hex_encode.html");
   }
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
+    // A binary is encoded as is, any other value is encoded as a string in UTF-8
+    if (operands[0].getType().isName(TypeName.BINARY)) {
+      byte[] value = operands[0].getValue(byte[].class);
+      if (value == null) {
+        return null;
+      }
+      return Hex.encodeToString(value);
+    }
+
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;
     }
-    return Hex.encodeToString(value.getBytes());
+    return Hex.encodeToString(value.getBytes(StandardCharsets.UTF_8));
   }
 }

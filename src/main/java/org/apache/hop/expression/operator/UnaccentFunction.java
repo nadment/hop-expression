@@ -38,8 +38,9 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class UnaccentFunction extends Function {
 
-  private static final Pattern DIACRITICS =
-      Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
+  // Only the combining marks left by the decomposition of the accented letters, not the modifier
+  // letters (Lm) and symbols (Sk) which are characters on their own, like ^ or the Japanese ー
+  private static final Pattern DIACRITICS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
   public UnaccentFunction() {
     super(

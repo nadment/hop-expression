@@ -128,7 +128,8 @@ public class InsertFunction extends Function {
 
       int position = pos.intValue() - 1;
       int start = Math.min(position, value.length);
-      int length = Math.min(len.intValue(), insert.length);
+      // The number of bytes of value to replace, already checked to fit in value
+      int length = len.intValue();
 
       byte[] result = new byte[value.length - length + insert.length];
       System.arraycopy(value, 0, result, 0, start);

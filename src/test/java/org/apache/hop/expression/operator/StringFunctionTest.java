@@ -113,6 +113,11 @@ public class StringFunctionTest extends ExpressionTest {
     // Keep ligature and special char
     evalEquals("Unaccent('ÆæØøµß¢©')", "ÆæØøµß¢©");
 
+    // Keep modifier letters and symbols, they are not accents of a letter
+    evalEquals("Unaccent('2^3 `x` ¨ ˜')", "2^3 `x` ¨ ˜");
+    evalEquals("Unaccent('ラーメン')", "ラーメン");
+    evalEquals("Unaccent('Café ラーメン')", "Cafe ラーメン");
+
     // Null handling
     evalNull("Unaccent(NULL_STRING)").returnType(StringType.STRING);
 
@@ -627,6 +632,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Insert(BINARY '1234', 2, 0, BINARY '56')", new byte[] {0x12, 0x56, 0x34});
     evalEquals("Insert(BINARY '1234', 3, 0, BINARY '56')", new byte[] {0x12, 0x34, 0x56});
     evalEquals("Insert(BINARY '1234', 1, 1, BINARY '56')", new byte[] {0x56, 0x34});
+    // The length of bytes replaced does not depend on the length of the inserted value
+    evalEquals("Insert(BINARY '123456', 1, 2, BINARY '78')", new byte[] {0x78, 0x56});
+    evalEquals("Insert(BINARY '123456', 2, 2, BINARY '78')", new byte[] {0x12, 0x78});
+    evalEquals("Insert(BINARY '123456', 1, 3, BINARY '78')", new byte[] {0x78});
+    evalEquals(
+        "Insert(BINARY '123456', 1, 1, BINARY '789A')", new byte[] {0x78, (byte) 0x9A, 0x34, 0x56});
     evalNull("Insert(NULL_BINARY, 1, 0, BINARY '56')");
 
     // Check operands
@@ -715,6 +726,17 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void HexEncode() throws Exception {
     evalEquals("HEX_ENCODE('Apache Hop')", "41706163686520486f70");
+    evalEquals("HEX_ENCODE('')", "");
+    // String encoded in UTF-8
+    evalEquals("HEX_ENCODE('€')", "e282ac");
+    // Binary encoded as is
+    evalEquals("HEX_ENCODE(BINARY 'FF')", "ff");
+    evalEquals("HEX_ENCODE(BINARY '00FF7A')", "00ff7a");
+    evalEquals("HEX_ENCODE(FIELD_BINARY)", "54455354");
+    // Other values are encoded as string
+    evalEquals("HEX_ENCODE(255)", "323535");
+    // Round trip
+    evalEquals("HEX_DECODE(HEX_ENCODE('Apache Hop €'))", "Apache Hop €");
 
     // Null handling
     evalNull("HEX_ENCODE(NULL_STRING)");
