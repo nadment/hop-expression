@@ -758,6 +758,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Replace('ABCD','CD')", "AB").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Replace('ABCDEFCD','CD','EF')", "ABEFEFEF");
 
+    // An empty search string matches nothing
+    evalEquals("Replace('AB','','X')", "AB");
+    evalEquals("Replace('AB','')", "AB");
+    evalEquals("Replace('','','X')", "");
+
     // Null handling
     evalNull("Replace(NULL_STRING,'CD','EF')");
     evalNull("Replace('ABCD',NULL_STRING,'EF')");

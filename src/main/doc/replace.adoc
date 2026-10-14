@@ -37,6 +37,7 @@ String
 == Usage
 
 * If replacement is omitted, all occurrences of pattern are removed.
+* If pattern is an empty string, the string is returned unchanged.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

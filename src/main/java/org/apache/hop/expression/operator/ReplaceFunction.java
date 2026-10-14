@@ -53,6 +53,8 @@ public class ReplaceFunction extends Function {
     if (operands.length == 3) {
       String replacement = operands[2].getValue(String.class);
       if (replacement == null) return null;
+      // An empty search string matches nothing, instead of the gaps between the characters
+      if (search.isEmpty()) return string;
       return string.replace(search, replacement);
     }
 
