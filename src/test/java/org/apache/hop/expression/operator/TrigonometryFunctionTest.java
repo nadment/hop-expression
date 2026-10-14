@@ -63,6 +63,10 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Acosh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Acosh(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Acosh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // The value must be greater or equal than 1
+    evalFails("Acosh(0.5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Acosh(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Acosh(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -89,6 +93,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
   void Asin() throws Exception {
     evalEquals("Asin(0)", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Asin(sin(0.5))", 0.5D);
+    // Bounds of the interval [-1, 1]
+    evalEquals("Asin(1)", new BigDecimal("1.5707963267948966192313216916398"));
+    evalEquals("Asin(-1)", new BigDecimal("-1.5707963267948966192313216916398"));
 
     // Null handling
     evalNull("Asin(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -97,6 +104,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Asin()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Asin(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Asin(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Asin(2)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Asin(-1.5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -132,6 +141,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
   void Atan2() throws Exception {
     evalEquals("Atan2(0,3)", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Atan2(0,-3)", PI);
+    evalEquals("Atan2(1,0)", new BigDecimal("1.5707963267948966192313216916398"));
+    evalEquals("Atan2(-1,0)", new BigDecimal("-1.5707963267948966192313216916398"));
+    evalEquals("Atan2(1,1)", new BigDecimal("0.78539816339744830961566084581988"));
 
     // Null handling
     evalNull("Atan2(NULL_INTEGER,0)").returnType(NumberType.NUMBER);
@@ -142,12 +154,16 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Atan2(1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Atan2(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Atan2(FIELD_DATE,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // The angle of the origin point is undefined, it returns 0
+    evalEquals("Atan2(0,0)", BigDecimal.ZERO);
+    evalEquals("Atan2(0.0,-0.0)", BigDecimal.ZERO);
   }
 
   @Test
   void Atanh() throws Exception {
     evalEquals("Atanh(0.2)", new BigDecimal("0.20273255405408219098900655773217"))
         .returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Atanh(-0.2)", new BigDecimal("-0.20273255405408219098900655773217"));
 
     // Null handling
     evalNull("Atanh(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -156,6 +172,10 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Atanh()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Atanh(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Atanh(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // The absolute value must be less than 1
+    evalFails("Atanh(1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Atanh(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Atanh(2)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -360,6 +380,12 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Log(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Log(10, 'x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Log(10,0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Log(10,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // The base must be positive and different from 1
+    evalFails("Log(1,10)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Log(1.000,10)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Log(0,10)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Log(-2,8)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test

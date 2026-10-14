@@ -30,6 +30,7 @@ Number
 
 == Usage
 
+* The argument must be greater than or equal to 1, otherwise an error is raised.
 * The returned value is in the interval [0, &infin;).
 * Returns NULL if the argument is NULL.
 

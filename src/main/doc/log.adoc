@@ -30,7 +30,7 @@ Number
 
 == Usage
 
-* Both arguments must be positive numeric values.
+* Both arguments must be positive numeric values, and base must be different from 1, otherwise an error is raised.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

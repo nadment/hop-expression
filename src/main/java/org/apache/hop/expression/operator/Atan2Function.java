@@ -55,6 +55,11 @@ public class Atan2Function extends Function {
     BigDecimal value1 = operands[1].getValue(BigDecimal.class);
     if (value1 == null) return null;
 
+    // The angle of the origin point (0,0) is undefined, return 0 like Java and most databases
+    if (value0.signum() == 0 && value1.signum() == 0) {
+      return BigDecimal.ZERO;
+    }
+
     return BigDecimalMath.atan2(value0, value1, MATH_CONTEXT);
   }
 }

@@ -48,6 +48,11 @@ public class LogFunction extends Function {
     BigDecimal base = operands[0].getValue(BigDecimal.class);
     if (base == null) return null;
 
+    // The base must be positive and different from 1, whose logarithm is 0
+    if (base.signum() <= 0 || base.compareTo(BigDecimal.ONE) == 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, base.stripTrailingZeros());
+    }
+
     BigDecimal value = operands[1].getValue(BigDecimal.class);
     if (value == null) return null;
 

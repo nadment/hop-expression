@@ -19,6 +19,8 @@ package org.apache.hop.expression.operator;
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -52,6 +54,11 @@ public class AtanhFunction extends Function {
   public @Nullable Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
+
+    // The absolute value must be less than 1
+    if (BigDecimal.ONE.compareTo(value.abs()) <= 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
+    }
 
     return BigDecimalMath.atanh(value, MATH_CONTEXT);
   }

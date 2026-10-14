@@ -37,6 +37,7 @@ Number
 
 * The returned value is in radians, not degrees.
 * The returned value is in the interval [-&pi;, &pi;].
+* Returns 0 if both arguments are 0, the angle of the origin point being undefined.
 * Returns NULL if one of the arguments is NULL.
 
 NOTE: The first argument is the y coordinate, not the x coordinate.

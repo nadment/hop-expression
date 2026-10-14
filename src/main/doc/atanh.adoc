@@ -30,6 +30,7 @@ Number
 
 == Usage
 
+* The argument must be in the interval (-1, 1), otherwise an error is raised.
 * Returns NULL if the argument is NULL.
 
 == See also
