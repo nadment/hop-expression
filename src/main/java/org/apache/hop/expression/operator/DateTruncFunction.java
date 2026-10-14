@@ -54,25 +54,28 @@ public class DateTruncFunction extends Function {
     ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
     if (datetime == null) return null;
 
+    // Units of a day or more start at midnight
+    ZonedDateTime day = datetime.truncatedTo(ChronoUnit.DAYS);
+
     return switch (unit) {
-      case MILLENNIUM -> datetime.withDayOfYear(1).minusYears(datetime.getYear() % 1000);
-      case CENTURY -> datetime.withDayOfYear(1).minusYears(datetime.getYear() % 100);
-      case DECADE -> datetime.withDayOfYear(1).minusYears(datetime.getYear() % 10);
+      case MILLENNIUM -> day.withDayOfYear(1).minusYears(day.getYear() % 1000);
+      case CENTURY -> day.withDayOfYear(1).minusYears(day.getYear() % 100);
+      case DECADE -> day.withDayOfYear(1).minusYears(day.getYear() % 10);
       case YEAR ->
           // First day of the year
-          datetime.withDayOfYear(1);
+          day.withDayOfYear(1);
       case MONTH ->
           // First day of the month
-          datetime.withDayOfMonth(1);
+          day.withDayOfMonth(1);
       case QUARTER -> {
         // First day of the quarter (month value is 1-based, so shift to 0-based before dividing)
-        int month = ((datetime.getMonthValue() - 1) / 3) * 3 + 1;
-        yield datetime.withMonth(month).withDayOfMonth(1);
+        int month = ((day.getMonthValue() - 1) / 3) * 3 + 1;
+        yield day.withMonth(month).withDayOfMonth(1);
       }
       case WEEK ->
           // First day of the week (the week starts on Monday)
-          datetime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-      case DAY -> datetime.truncatedTo(ChronoUnit.DAYS);
+          day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+      case DAY -> day;
       case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
       case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
       case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);

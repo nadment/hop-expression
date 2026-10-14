@@ -703,6 +703,31 @@ class DateFunctionTest extends ExpressionTest {
     // Truncate timestamp
     evalEquals(
         "Date_Trunc(DAY, TIMESTAMP '2020-05-25 23:59:59')", LocalDate.of(2020, Month.MAY, 25));
+    // Units of a day or more reset the time to midnight
+    evalEquals(
+        "Date_Trunc(MILLENNIUM, TIMESTAMP '2020-05-28 23:59:59')",
+        LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(CENTURY, TIMESTAMP '2020-05-28 23:59:59')",
+        LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(DECADE, TIMESTAMP '2021-05-28 23:59:59')",
+        LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(YEAR, TIMESTAMP '2020-05-28 23:59:59')",
+        LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(QUARTER, TIMESTAMP '2020-05-28 23:59:59')",
+        LocalDateTime.of(2020, Month.APRIL, 1, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(MONTH, TIMESTAMP '2020-05-28 23:59:59')",
+        LocalDateTime.of(2020, Month.MAY, 1, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(WEEK, TIMESTAMP '2020-05-28 23:59:59')",
+        LocalDateTime.of(2020, Month.MAY, 25, 0, 0, 0, 0));
+    evalEquals(
+        "Date_Trunc(DAY, TIMESTAMP '2020-05-28 23:59:59.123456789')",
+        LocalDateTime.of(2020, Month.MAY, 28, 0, 0, 0, 0));
     evalEquals(
         "Date_Trunc(HOUR, TIMESTAMP '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
