@@ -27,7 +27,7 @@ REPEAT( value, n )
 == Arguments
 
 value:: The string or binary value to repeat.
-n:: The number of times value is repeated. The minimum valid number is 0, which results in an empty string or binary.
+n:: The number of times value is repeated. A number of 0 or less results in an empty string or binary.
 
 == Returns
 

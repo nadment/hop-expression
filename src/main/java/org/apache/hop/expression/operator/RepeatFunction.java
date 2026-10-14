@@ -69,6 +69,8 @@ public class RepeatFunction extends Function {
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
       if (repeat == null) return null;
+      // Nothing to repeat if the number of repetitions is zero or negative
+      if (repeat <= 0) return "";
 
       final int len = value.length();
       final long longSize = len * repeat;
@@ -98,6 +100,8 @@ public class RepeatFunction extends Function {
       if (value == null) return null;
       Long repeat = operands[1].getValue(Long.class);
       if (repeat == null) return null;
+      // Nothing to repeat if the number of repetitions is zero or negative
+      if (repeat <= 0) return new byte[0];
 
       final int len = value.length;
       final long longSize = len * repeat;

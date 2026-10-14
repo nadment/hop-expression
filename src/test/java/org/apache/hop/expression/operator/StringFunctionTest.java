@@ -370,6 +370,11 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Alias
     evalEquals("Substr('TEST',5)", "");
+
+    // Start out of the string
+    evalEquals("Substring('TEST',6)", "");
+    evalEquals("Substring('TEST',-4)", "TEST");
+    evalEquals("Substring('TEST',-10)", "TEST");
   }
 
   @Test
@@ -679,6 +684,10 @@ public class StringFunctionTest extends ExpressionTest {
     // Result size to large
     evalFails("Repeat('ABC',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
     evalFails("Repeat(BINARY '1234',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+
+    // Negative number of repetitions, same as 0
+    evalEquals("Repeat('ABC',-1)", "");
+    evalEquals("Repeat(BINARY '1234',-1)", new byte[] {});
   }
 
   @Test
@@ -752,6 +761,12 @@ public class StringFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Overlay()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Overlay(FIELD_DATE)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+
+    // Position and length out of range
+    evalEquals("Overlay('Apxxxe','ach',1)", "achxxe");
+    evalFails("Overlay('Apxxxe','ach',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Overlay('Apxxxe','ach',-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Overlay('Apxxxe','ach',3,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
@@ -774,7 +789,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Soundex('Wikipedia')", "W213").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Soundex('I LOVE ROCKS.')", "I416");
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
+    // Empty string or without any letter
     evalEquals("Soundex('123456')", "");
+    evalEquals("Soundex('')", "");
+    evalEquals("Soundex(' ')", "");
 
     // Null handling
     evalNull("Soundex(NULL_STRING)").returnType(StringType.STRING);
@@ -792,6 +810,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Difference('Perfect', 'Perfect')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Difference('Juice', 'Jucy')", 4L);
     evalEquals("Difference('Apple', 'Orange')", 0L);
+
+    // No similarity when a string has no letter, its SOUNDEX is empty
+    evalEquals("Difference('123', 'abc')", 0L);
+    evalEquals("Difference('abc', '123')", 0L);
+    evalEquals("Difference('', '')", 0L);
 
     // Null handling
     evalNull("Difference(NULL_STRING,NULL_STRING)");
@@ -923,6 +946,14 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals(
         "Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', NULL_INTEGER)",
         2L);
+
+    // Position at the bounds of the string
+    evalEquals("Regexp_Count('aaa', 'a', 1)", 3L);
+    evalEquals("Regexp_Count('aaa', 'a', 3)", 1L);
+    evalEquals("Regexp_Count('aaa', 'a', 4)", 0L);
+    evalEquals("Regexp_Count('aaa', 'a', 5)", 0L);
+    evalFails("Regexp_Count('aaa', 'a', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Count('aaa', 'a', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test

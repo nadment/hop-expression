@@ -32,6 +32,7 @@ Integer between 0 and 4
 
 * The result measures the degree to which the `SOUNDEX` values match, on a scale of 0 to 4.
 * A value of 0 indicates a weak or no similarity between the `SOUNDEX` values; a value of 4 indicates that the `SOUNDEX` values are extremely similar, or even identical.
+* Returns 0 if one of the strings has no letter, as its `SOUNDEX` value is empty.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

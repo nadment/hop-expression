@@ -62,7 +62,12 @@ public class SubstringFunction extends Function {
 
     // Only 2 operands
     if (operands.length == 2) {
-      return string.substring(start - 1);
+      // A start after the end of the string returns nothing, a start before the beginning
+      // returns the whole string
+      if (start > length) {
+        return "";
+      }
+      return string.substring(Math.max(start, 1) - 1);
     }
 
     Long count = operands[2].getValue(Long.class);

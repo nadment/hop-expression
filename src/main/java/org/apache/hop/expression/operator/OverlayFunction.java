@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -50,6 +52,9 @@ public class OverlayFunction extends Function {
     Long position = operands[2].getValue(Long.class);
     if (position == null) return null;
 
+    if (position < 1) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
+    }
     int start = position.intValue() - 1;
     int len = str.length();
     // If position is beyond the end of string, replacement is placed directly after string.
@@ -63,6 +68,9 @@ public class OverlayFunction extends Function {
       Long arg3 = operands[3].getValue(Long.class);
       if (arg3 == null) return null;
       count = arg3.intValue();
+      if (count < 0) {
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, count);
+      }
       if (count == 0) {
         count = replace.length();
       } else if (count < replace.length()) {

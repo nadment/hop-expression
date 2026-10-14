@@ -45,6 +45,7 @@ String
 * The first character of a string has position 1.
 * If start is negative, counting begins at the end of the string.
 * If length is not specified, all the characters to the end of the string are returned.
+* If length is not specified and start is beyond the end of the string, an empty string is returned.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

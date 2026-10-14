@@ -45,6 +45,10 @@ public class DifferenceFunction extends Function {
   private static int difference(final String str0, final String str1) {
     String soundex0 = SOUNDEX.soundex(str0);
     String soundex1 = SOUNDEX.soundex(str1);
+    // The SOUNDEX of a string without any letter is empty, there is no similarity
+    if (soundex0.isEmpty() || soundex1.isEmpty()) {
+      return 0;
+    }
     for (int i = 0; i < SOUNDEX_LENGTH; i++) {
       if (soundex0.charAt(i) != soundex1.charAt(i)) {
         return i;

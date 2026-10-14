@@ -105,13 +105,23 @@ public class RegexpCountFunction extends Function {
         parameters = Regexp.parseFlags(v3);
       }
     }
+    if (start < 1) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
+    }
+    // A search starting after the end of the string finds nothing
+    if (start - 1 > source.length()) {
+      return count;
+    }
 
     try {
       Pattern p =
           (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, parameters);
-      Matcher matcher = p.matcher(source).region(start - 1, source.length());
-      while (matcher.find()) {
+      Matcher matcher = p.matcher(source);
+      // The position is 1-based, the matcher start index is 0-based
+      boolean found = matcher.find(start - 1);
+      while (found) {
         count++;
+        found = matcher.find();
       }
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);

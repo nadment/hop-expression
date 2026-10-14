@@ -38,6 +38,7 @@ String
 == Usage
 
 * The first position in the string is 1.
+* Raises an error if position is less than 1 or if length is negative.
 * If position is beyond the end of string, replacement is placed directly after string.
 * If length is omitted or 0, it defaults to the length of replacement.
 * If length is less than the length of replacement, only the first length characters of replacement are used.

@@ -43,6 +43,7 @@ Integer
 
 * The pattern is defined according to the Java language regular expression rules.
 * If no match is found, the function returns 0.
+* Raises an error if position is less than 1, returns 0 if position is beyond the end of source.
 * An empty pattern matches nothing.
 * Returns NULL if source is NULL.
 
