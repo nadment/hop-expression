@@ -51,9 +51,10 @@ public class BitGetFunction extends Function {
     Long v1 = operands[1].getValue(Long.class);
     if (v1 == null) return null;
 
+    // Check the long value, the conversion to int would wrap a value out of the int range
+    if (v1 <= 0) return null;
+    if (v1 > 64) return Boolean.FALSE;
     int distance = v1.intValue();
-    if (distance <= 0) return null;
-    if (distance > 64) return Boolean.FALSE;
 
     return (value & (1L << distance - 1)) != 0;
   }

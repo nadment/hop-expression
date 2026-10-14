@@ -51,9 +51,10 @@ public class BitSetFunction extends Function {
     Long v1 = operands[1].getValue(Long.class);
     if (v1 == null) return null;
 
+    // Check the long value, the conversion to int would wrap a value out of the int range
+    if (v1 <= 0) return null;
+    if (v1 > 64) return value;
     int position = v1.intValue();
-    if (position <= 0) return null;
-    if (position > 64) return value;
     return value | (1L << position - 1);
   }
 }

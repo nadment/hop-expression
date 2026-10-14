@@ -39,6 +39,9 @@ class BitwiseFunctionTest extends ExpressionTest {
 
     // Overflow has no impact on the result
     evalEquals("Bit_Clear(32,66)", 32L);
+    // A position out of the int range must not wrap
+    evalEquals("Bit_Clear(3,4294967297)", 3L);
+    evalNull("Bit_Clear(3,-4294967295)");
 
     // Null handling
     evalNull("Bit_Clear(123,0)").returnType(IntegerType.INTEGER);
@@ -65,6 +68,9 @@ class BitwiseFunctionTest extends ExpressionTest {
     // Overflow
     evalEquals("Bit_Shift(1,64)", 0L);
     evalEquals("Bit_Shift(1,-64)", 0L);
+    // A distance out of the int range must not wrap
+    evalEquals("Bit_Shift(1,4294967297)", 0L);
+    evalEquals("Bit_Shift(16,-4294967297)", 0L);
 
     // Underflow
     evalEquals("Bit_Shift(1,-1)", 0L);
@@ -97,6 +103,9 @@ class BitwiseFunctionTest extends ExpressionTest {
     evalEquals("Bit_Rotate(123456,128)", 123456L);
     evalEquals("Bit_Rotate(123456,-64)", 123456L);
     evalEquals("Bit_Rotate(123456,-128)", 123456L);
+    // A distance out of the int range keeps its value modulo 64
+    evalEquals("Bit_Rotate(1,4294967300)", 16L);
+    evalEquals("Bit_Rotate(16,-4294967300)", 1L);
 
     // Null handling
     evalNull("Bit_Rotate(NULL_INTEGER,3)").returnType(IntegerType.INTEGER);
@@ -115,6 +124,9 @@ class BitwiseFunctionTest extends ExpressionTest {
 
     // Overflow is always false
     evalFalse("Bit_Get(3,255)");
+    // A position out of the int range must not wrap
+    evalFalse("Bit_Get(3,4294967297)");
+    evalNull("Bit_Get(3,-4294967295)");
 
     // Null handling
     evalNull("Bit_Get(123,0)");
@@ -150,6 +162,9 @@ class BitwiseFunctionTest extends ExpressionTest {
 
     // Overflow has no impact on the result
     evalEquals("Bit_Set(32,66)", 32L);
+    // A position out of the int range must not wrap
+    evalEquals("Bit_Set(32,4294967297)", 32L);
+    evalNull("Bit_Set(32,-4294967295)");
 
     // Null handling
     evalNull("Bit_Set(123,0)").returnType(IntegerType.INTEGER);

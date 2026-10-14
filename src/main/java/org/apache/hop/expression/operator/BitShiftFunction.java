@@ -46,9 +46,10 @@ public class BitShiftFunction extends Function {
     Long v1 = operands[1].getValue(Long.class);
     if (v1 == null) return null;
 
+    // Check the long value, the conversion to int would wrap a value out of the int range
+    if (v1 >= 64 || v1 <= -64) return 0L;
     int distance = v1.intValue();
 
-    if (distance >= 64 || distance <= -64) return 0L;
     if (distance < 0) {
       return value >>> (-distance);
     }
