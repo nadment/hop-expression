@@ -94,6 +94,13 @@ public class RegexpSubstrFunction extends Function {
         position = v2.intValue();
       }
     }
+    if (position < 1) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
+    }
+    // A search starting after the end of the string finds nothing
+    if (position - 1 > input.length()) {
+      return null;
+    }
 
     // Default occurrence
     int occurrence = 0;
@@ -114,7 +121,8 @@ public class RegexpSubstrFunction extends Function {
       Pattern p = (compiledPattern != null) ? compiledPattern : Pattern.compile(regexp, flags);
       Matcher matcher = p.matcher(input);
 
-      boolean found = matcher.find(position);
+      // The position is 1-based, the matcher start index is 0-based
+      boolean found = matcher.find(position - 1);
       for (int index = 1; index < occurrence && found; index++) {
         found = matcher.find();
       }

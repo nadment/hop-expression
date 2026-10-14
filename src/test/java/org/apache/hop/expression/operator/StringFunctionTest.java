@@ -891,6 +891,17 @@ public class StringFunctionTest extends ExpressionTest {
         "Regexp_Instr('REGEXP_INSTR is an advanced extension of the INSTR function','[:a-z]{3,8}', 3, 2, 1)",
         37L);
 
+    // The position is 1-based
+    evalEquals("Regexp_Instr('abc', 'a')", 1L);
+    evalEquals("Regexp_Instr('abc', 'a', 1)", 1L);
+    evalEquals("Regexp_Instr('abc', 'a', 2)", 0L);
+    evalEquals("Regexp_Instr('abc', 'b', 2)", 2L);
+    evalEquals("Regexp_Instr('abc', 'c', 3, 1, 1)", 4L);
+    evalEquals("Regexp_Instr('abc', '.', 4)", 0L);
+    evalEquals("Regexp_Instr('abc', '.', 5)", 0L);
+    evalFails("Regexp_Instr('abc', '.', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Instr('abc', '.', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
     // An empty pattern matches nothing
     evalEquals("Regexp_Instr('email@apache.org', '')", 0L);
   }
@@ -910,8 +921,16 @@ public class StringFunctionTest extends ExpressionTest {
         "the worst");
 
     evalNull("regexp_substr('abc', 'z')");
-    evalEquals("regexp_substr('abc', '.b.', 0)", "abc");
-    evalNull("regexp_substr('abc', '.b.', 1)");
+    // The position is 1-based
+    evalEquals("regexp_substr('abc', 'a')", "a");
+    evalEquals("regexp_substr('abc', '.b.', 1)", "abc");
+    evalNull("regexp_substr('abc', '.b.', 2)");
+    evalEquals("regexp_substr('abc', 'b', 2)", "b");
+    evalEquals("regexp_substr('abc', '.', 3)", "c");
+    evalNull("regexp_substr('abc', '.', 4)");
+    evalNull("regexp_substr('abc', '.', 5)");
+    evalFails("regexp_substr('abc', '.', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("regexp_substr('abc', '.', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     // evalEquals("regexp_substr('abc', '([a-z])(b)', 1)", "a");
     // evalEquals("regexp_substr('abc', '([a-z])(b)', 2)", "b");
 
