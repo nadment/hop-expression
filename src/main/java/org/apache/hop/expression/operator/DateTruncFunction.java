@@ -54,7 +54,19 @@ public class DateTruncFunction extends Function {
     ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
     if (datetime == null) return null;
 
-    // Units of a day or more start at midnight
+    return switch (unit) {
+      case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
+      case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
+      case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);
+      case MILLISECOND -> datetime.truncatedTo(ChronoUnit.MILLIS);
+      case MICROSECOND -> datetime.truncatedTo(ChronoUnit.MICROS);
+      case NANOSECOND -> datetime.truncatedTo(ChronoUnit.NANOS);
+      default -> truncateToDayOrMore(unit, datetime);
+    };
+  }
+
+  /** Truncates to a unit of a day or more, so the time is always reset to midnight. */
+  private static ZonedDateTime truncateToDayOrMore(TimeUnit unit, ZonedDateTime datetime) {
     ZonedDateTime day = datetime.truncatedTo(ChronoUnit.DAYS);
 
     return switch (unit) {
@@ -76,12 +88,6 @@ public class DateTruncFunction extends Function {
           // First day of the week (the week starts on Monday)
           day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
       case DAY -> day;
-      case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
-      case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
-      case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);
-      case MILLISECOND -> datetime.truncatedTo(ChronoUnit.MILLIS);
-      case MICROSECOND -> datetime.truncatedTo(ChronoUnit.MICROS);
-      case NANOSECOND -> datetime.truncatedTo(ChronoUnit.NANOS);
       default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
     };
   }
