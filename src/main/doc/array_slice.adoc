@@ -38,6 +38,7 @@ Array
 
 * A negative position is interpreted as an index from the back of the array.
 * If both from and to are beyond the upper or lower end of the array, the result is an empty array.
+* If only one of from and to is beyond the end of the array, the result keeps the elements inside the array.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

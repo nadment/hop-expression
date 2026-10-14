@@ -53,18 +53,23 @@ public class ArraySliceFunction extends Function {
 
     int size = array.size();
 
-    int from = fromLong.intValue();
+    long from = fromLong;
     if (from < 0) {
       from = size + from;
     }
 
-    int to = toLong.intValue();
+    long to = toLong;
     if (to < 0) {
       to = size + to;
     }
 
-    if (to < 0 || to <= from || to > size) return Array.EMPTY;
+    // Clamp to the bounds of the array on long values, the conversion to int would wrap a value
+    // out of the int range, so a slice partially out of the array keeps its elements inside
+    from = Math.clamp(from, 0, size);
+    to = Math.clamp(to, 0, size);
 
-    return array.slice(from, to);
+    if (to <= from) return Array.EMPTY;
+
+    return array.slice((int) from, (int) to);
   }
 }

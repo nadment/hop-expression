@@ -119,6 +119,14 @@ class ArrayFunctionTest extends ExpressionTest {
     evalEquals("ARRAY_POSITION([],4)", 0L);
     evalEquals("ARRAY_POSITION([1,2,3],2,10)", 0L);
 
+    // Start position, the first position in the array is 1
+    evalEquals("ARRAY_POSITION([1,2,1],1,2)", 3L);
+    evalEquals("ARRAY_POSITION([1,2,3],3,3)", 3L);
+    evalEquals("ARRAY_POSITION([1,2,3],2,4294967297)", 0L);
+    evalEquals("ARRAY_POSITION([1,2,3],2,2147483648)", 0L);
+    evalFails("ARRAY_POSITION([1,2,3],2,0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("ARRAY_POSITION([1,2,3],2,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
     // Function cannot be used to find the position of a NULL element.
     evalNull("ARRAY_POSITION([1,2,NULL_INTEGER,3],NULL_INTEGER)");
     evalNull("ARRAY_POSITION([1,2,3],2,NULL_INTEGER)");
@@ -145,6 +153,16 @@ class ArrayFunctionTest extends ExpressionTest {
 
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], 10, 12)", "[]");
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -10, -12)", "[]");
+
+    // A slice partially out of the array keeps the elements inside
+    optimize("ARRAY_SLICE([1,2,3], 1, 10)", "[2,3]");
+    optimize("ARRAY_SLICE([1,2,3], -10, 2)", "[1,2]");
+    optimize("ARRAY_SLICE([1,2,3], -10, 10)", "[1,2,3]");
+
+    // A position out of the int range must not wrap
+    optimize("ARRAY_SLICE([1,2,3], 4294967296, 4294967298)", "[]");
+    optimize("ARRAY_SLICE([1,2,3], 0, 4294967298)", "[1,2,3]");
+    optimize("ARRAY_SLICE([1,2,3], -4294967296, 2)", "[1,2]");
 
     // Null handling
     evalNull("ARRAY_SLICE(NULL, 2, 3)");

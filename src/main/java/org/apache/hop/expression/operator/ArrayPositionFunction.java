@@ -18,6 +18,8 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -85,7 +87,12 @@ public class ArrayPositionFunction extends Function {
     if (operands.length == 3) {
       Long v2 = operands[2].getValue(Long.class);
       if (v2 == null) return null;
-      start = v2.intValue() - 1;
+      // The first position in the array is 1
+      if (v2 < 1) {
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, v2);
+      }
+      // Compare the long value, the conversion to int would wrap a value out of the int range
+      start = (int) Math.min(v2 - 1, array.size());
     }
 
     int size = array.size();
