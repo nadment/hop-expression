@@ -33,12 +33,13 @@ class TrigonometryFunctionTest extends ExpressionTest {
 
   @Test
   void Acos() throws Exception {
-    evalEquals("Acos(0)", new BigDecimal("1.5707963267948966"))
+    evalEquals("Acos(0)", new BigDecimal("1.5707963267948966192313216916398"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Acos(1)", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
-    // Computed with a double precision, unlike the other functions
-    evalEquals("Acos(-1)", new BigDecimal("3.141592653589793"));
-    evalEquals("Acos(0.5)", new BigDecimal("1.0471975511965979"));
+    evalEquals("Acos(-1)", PI);
+    evalEquals("Acos(0.5)", new BigDecimal("1.0471975511965977461542144610932"));
+    // Close to 1, where a double precision loses digits
+    evalEquals("Acos(0.9999)", new BigDecimal("0.014142253477512877596240225817656"));
 
     // Null handling
     evalNull("Acos(NULL_INTEGER)");
@@ -407,6 +408,11 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Log(10,100)", 2D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Log(10,1000)", 3D);
     evalEquals("Log(10,1)", 0D);
+    // An exact result without an error of the last digit
+    evalEquals("Log(2,8)", 3D);
+    evalEquals("Log(3,81)", 4D);
+    // A base between 0 and 1
+    evalEquals("Log(0.5,4)", -2D);
 
     // Null handling
     evalNull("Log(10,NULL_INTEGER)").returnType(NumberType.NUMBER);

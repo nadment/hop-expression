@@ -16,8 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -63,8 +63,8 @@ public class AcosFunction extends Function {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
     }
 
-    // FIXME: Use BigDecimalMath when bug are fixed
-    // https://github.com/eobermuhlner/big-math/issues/66
-    return BigDecimal.valueOf(FastMath.acos(value.doubleValue()));
+    // The bug https://github.com/eobermuhlner/big-math/issues/66 that required a double precision
+    // computation is fixed
+    return BigDecimalMath.acos(value, MATH_CONTEXT);
   }
 }

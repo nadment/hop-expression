@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -33,6 +34,13 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class LogFunction extends Function {
+
+  /**
+   * Extra digits for the logarithms and their division, rounded at the end, so that an exact result
+   * like LOG(2,8) does not end with an error of the last digit.
+   */
+  private static final MathContext EXTENDED_CONTEXT =
+      new MathContext(MATH_CONTEXT.getPrecision() + 10, MATH_CONTEXT.getRoundingMode());
 
   public LogFunction() {
     super(
@@ -60,7 +68,8 @@ public class LogFunction extends Function {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, value.stripTrailingZeros());
     }
 
-    return BigDecimalMath.log(value, MATH_CONTEXT)
-        .divide(BigDecimalMath.log(base, MATH_CONTEXT), MATH_CONTEXT);
+    return BigDecimalMath.log(value, EXTENDED_CONTEXT)
+        .divide(BigDecimalMath.log(base, EXTENDED_CONTEXT), EXTENDED_CONTEXT)
+        .round(MATH_CONTEXT);
   }
 }
