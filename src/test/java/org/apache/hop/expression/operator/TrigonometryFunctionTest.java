@@ -269,6 +269,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
   @Test
   void Sec() throws Exception {
     evalEquals("Sec(Pi())", -1D).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Sec(0)", BigDecimal.ONE).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Sec(1)", new BigDecimal("1.8508157176809256179117532413986"));
+    evalEquals("Sec(-1)", new BigDecimal("1.8508157176809256179117532413986"));
 
     // Null handling
     evalNull("Sec(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -277,7 +280,6 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Sec()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Sec(1,0)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Sec(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("Sec(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test

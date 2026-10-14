@@ -37,6 +37,7 @@ Number
 == Examples
 
 ----
+SEC(0) returns 1
 SEC(PI()) returns -1
 ----
 
