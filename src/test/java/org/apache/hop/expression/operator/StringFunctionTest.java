@@ -598,12 +598,16 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Left('',1)", "");
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
+    // A length out of the int range must not wrap
+    evalEquals("Left('ABC',4294967296)", "ABC");
+    evalEquals("Left('ABC',-4294967295)", "");
 
     // Binary
     evalEquals("Left(BINARY '12345678', 4)", new byte[] {0x12, 0x34, 0x56, 0x78})
         .returnType(BinaryType.BINARY_NOT_NULL);
     evalEquals("Left(BINARY '12345678', 2)", new byte[] {0x12, 0x34});
     evalEquals("Left(BINARY '12345678', -2)", new byte[] {});
+    evalEquals("Left(BINARY '12345678', 4294967296)", new byte[] {0x12, 0x34, 0x56, 0x78});
 
     // Null handling
     evalNull("Left(NULL_STRING,4)");
@@ -663,6 +667,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Right('',1)", "");
     evalEquals("Right('TEST',10)", "TEST");
     evalEquals("Right('TEST',-1)", "");
+    // A length out of the int range must not wrap
+    evalEquals("Right('ABC',4294967296)", "ABC");
+    evalEquals("Right('ABC',-4294967295)", "");
 
     // Null handling
     evalNull("Right(NULL_STRING,4)");
@@ -673,6 +680,7 @@ public class StringFunctionTest extends ExpressionTest {
         .returnType(BinaryType.BINARY_NOT_NULL);
     evalEquals("Right(BINARY '12345678', 4)", new byte[] {0x12, 0x34, 0x56, 0x78});
     evalEquals("Right(BINARY '12345678', -2)", new byte[] {});
+    evalEquals("Right(BINARY '12345678', 4294967296)", new byte[] {0x12, 0x34, 0x56, 0x78});
 
     evalNull("Right(NULL_BINARY,4)");
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
@@ -1206,6 +1214,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Chr('bad')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Chr(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Chr(999999999999)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // A code point out of the int range must not wrap to a valid one
+    evalFails("Chr(4294967361)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test

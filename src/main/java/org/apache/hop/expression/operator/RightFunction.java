@@ -74,10 +74,8 @@ public class RightFunction extends Function {
 
       Long v1 = operands[1].getValue(Long.class);
       if (v1 == null) return null;
-      int length = v1.intValue();
-      if (length < 0) {
-        length = 0;
-      }
+      // Clamp to the int range, a length greater than the value returns the whole value
+      int length = Math.clamp(v1, 0, Integer.MAX_VALUE);
 
       if (str.length() <= length) {
         return str;
@@ -97,10 +95,8 @@ public class RightFunction extends Function {
 
       Long v1 = operands[1].getValue(Long.class);
       if (v1 == null) return null;
-      int length = v1.intValue();
-      if (length < 0) {
-        length = 0;
-      }
+      // Clamp to the int range, a length greater than the value returns the whole value
+      int length = Math.clamp(v1, 0, Integer.MAX_VALUE);
 
       if (bytes.length <= length) {
         return bytes;

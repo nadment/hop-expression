@@ -50,11 +50,10 @@ public class ChrFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
-    int codePoint = value.intValue();
-
-    if (!Character.isValidCodePoint(codePoint)) {
-      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, codePoint);
+    // Check the long value, the conversion to int would wrap a value out of the int range
+    if (value < Character.MIN_CODE_POINT || value > Character.MAX_CODE_POINT) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value);
     }
-    return String.valueOf(Character.toChars(codePoint));
+    return String.valueOf(Character.toChars(value.intValue()));
   }
 }
