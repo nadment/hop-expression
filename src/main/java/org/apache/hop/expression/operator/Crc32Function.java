@@ -16,17 +16,25 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.HexFormat;
 import java.util.zip.CRC32C;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** */
+/**
+ * The function calculates the CRC-32C checksum of a data value. The checksum is returned as a
+ * hex-encoded string of 8 characters.
+ */
 @FunctionPlugin
 @NullMarked
 public class Crc32Function extends Function {
@@ -41,12 +49,24 @@ public class Crc32Function extends Function {
   }
 
   @Override
+  public boolean coerceOperandsType(Call call) {
+    // A value which is not a string or a binary, like a number or a date, is hashed as its text
+    Type type = call.getOperand(0).getType();
+    if (Types.isBinary(type) || Types.isString(type)) {
+      return false;
+    }
+    call.setOperand(0, Types.cast(call.getOperand(0), StringType.STRING));
+    return true;
+  }
+
+  @Override
   public @Nullable Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
     CRC32C crc = new CRC32C();
     crc.update(bytes, 0, bytes.length);
 
-    return Long.toHexString(crc.getValue());
+    // Always 8 characters, the leading zeros of the 32 bits are kept
+    return HexFormat.of().toHexDigits((int) crc.getValue());
   }
 }

@@ -35,7 +35,8 @@ String
 == Usage
 
 * The checksum is based on the CRC-32C polynomial.
-* The result is returned as a hex-encoded string of up to 8 characters, in lower case.
+* The result is returned as a hex-encoded string of 8 characters, in lower case, with the leading zeros.
+* A string is hashed in UTF-8, and a value of another data type, such as a number or a date, is hashed as its text.
 * Returns NULL if the argument is NULL.
 
 == Examples

@@ -41,6 +41,22 @@ class CryptographicFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("CRC32()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("CRC32('a','b')", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    // Binary value and characters encoded in UTF-8
+    evalTrue("CRC32('Test') = CRC32(BINARY '54657374')");
+
+    // Always 8 characters, with the leading zeros
+    evalEquals("CRC32('')", "00000000");
+    evalEquals("CRC32('v3')", "04444822");
+    evalTrue("CRC32('é') = CRC32(BINARY 'C3A9')");
+    evalNull("CRC32(NULL_BINARY)").returnType(StringType.STRING);
+
+    // A value which is not a string or a binary is hashed as its text
+    evalTrue("CRC32(123) = CRC32('123')");
+    evalTrue("CRC32(FIELD_INTEGER) = CRC32('40')");
+    evalTrue("CRC32(TRUE) = CRC32('TRUE')");
+    evalTrue("CRC32(FIELD_DATE) = CRC32(CAST(FIELD_DATE AS STRING))");
   }
 
   @Test
