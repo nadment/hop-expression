@@ -31,6 +31,8 @@ String or Binary
 == Usage
 
 * NULL values in the strings to concatenate are ignored.
+* Empty strings are concatenated like the other values, with a separator.
+* Returns NULL if all the strings to concatenate are NULL.
 * Returns NULL if separator is NULL.
 
 == Examples

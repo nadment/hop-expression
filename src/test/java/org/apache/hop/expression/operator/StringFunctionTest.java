@@ -389,6 +389,14 @@ public class StringFunctionTest extends ExpressionTest {
 
     // No split if delimiter is empty
     evalEquals("Split_Part('127.1.2.3','',1)", "127.1.2.3");
+    evalEquals("Split_Part('hello world','',1)", "hello world");
+
+    // Empty parts between delimiters are kept
+    evalEquals("Split_Part('a..b','.',2)", "");
+    evalEquals("Split_Part('a..b','.',3)", "b");
+    evalEquals("Split_Part('.a.b','.',1)", "");
+    evalEquals("Split_Part('.a.b','.',2)", "a");
+    evalEquals("Split_Part('a.b.','.',-1)", "");
 
     // If the part index is out of range, the returned value is an empty string.
     evalEquals("Split_Part('127.1.2.3','.',5)", "");
@@ -1119,11 +1127,20 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("CONCAT_WS('--','one')", "one");
     evalEquals("CONCAT_WS(',','a',NULL_STRING,'b')", "a,b");
 
+    // Empty strings are values, separated like the others
+    evalEquals("CONCAT_WS(',','','a')", ",a");
+    evalEquals("CONCAT_WS(',','a','','b')", "a,,b");
+    evalEquals("CONCAT_WS(',','','')", ",");
+    evalEquals("CONCAT_WS(',','')", "");
+    evalEquals("CONCAT_WS(',',NULL_STRING,'')", "");
+
     // Binary
     evalEquals(
             "CONCAT_WS(BINARY '1F',BINARY '2A3B',BINARY '4D',BINARY '5E')",
             new byte[] {0x2A, 0x3B, 0x1F, 0x4D, 0x1F, 0x5E})
         .returnType(BinaryType.of(6, false));
+    evalEquals("CONCAT_WS(BINARY '1F',BINARY '',BINARY '2A')", new byte[] {0x1F, 0x2A});
+    evalEquals("CONCAT_WS(BINARY '1F',BINARY '')", new byte[] {});
 
     // Number
     evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(3, false));
@@ -1196,6 +1213,18 @@ public class StringFunctionTest extends ExpressionTest {
         "String_To_Array('Green|Yellow|Blue','|')",
         new Array(Literal.of("Green"), Literal.of("Yellow"), Literal.of("Blue")));
     evalEquals("String_To_Array('AB|CD','')", new Array(Literal.of("AB|CD")));
+
+    // No split on white spaces if delimiter is empty
+    evalEquals("String_To_Array('AB CD','')", new Array(Literal.of("AB CD")));
+
+    // Empty elements between delimiters are kept
+    evalEquals(
+        "String_To_Array('a||b','|')", new Array(Literal.of("a"), Literal.of(""), Literal.of("b")));
+    evalEquals(
+        "String_To_Array('|a|','|')", new Array(Literal.of(""), Literal.of("a"), Literal.of("")));
+
+    // Multiple characters delimiter
+    evalEquals("String_To_Array('a--b-c','--')", new Array(Literal.of("a"), Literal.of("b-c")));
 
     // Null handling
     evalNull("String_To_Array('Green|Yellow|Blue',NULL_STRING)");

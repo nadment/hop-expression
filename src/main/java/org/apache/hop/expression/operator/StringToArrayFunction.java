@@ -58,7 +58,11 @@ public class StringToArrayFunction extends Function {
     String delimiter = operands[1].getValue(String.class);
     if (delimiter == null) return null;
 
-    String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
+    // An empty delimiter does not split, the empty elements between delimiters are kept
+    String[] parts =
+        delimiter.isEmpty()
+            ? new String[] {str}
+            : StringUtils.splitByWholeSeparatorPreserveAllTokens(str, delimiter, -1);
 
     List<IExpression> list = new ArrayList<>();
     for (String s : parts) {

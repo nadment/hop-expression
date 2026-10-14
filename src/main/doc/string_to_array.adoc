@@ -36,6 +36,7 @@ Array
 == Usage
 
 * If delimiter is an empty string `''`, the result is an array containing the entire string as a single element.
+* Empty elements between two delimiters, or at the beginning or end of the string, are kept.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
@@ -43,6 +44,7 @@ Array
 ----
 STRING_TO_ARRAY('blue|orange|yellow','|') returns ['blue','orange','yellow']
 STRING_TO_ARRAY('blue|orange|yellow','') returns ['blue|orange|yellow']
+STRING_TO_ARRAY('a||b','|') returns ['a','','b']
 ----
 
 == See also

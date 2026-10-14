@@ -56,7 +56,11 @@ public class SplitPartFunction extends Function {
 
     int index = v2.intValue();
 
-    String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
+    // An empty delimiter does not split, the empty parts between delimiters are kept
+    String[] parts =
+        delimiter.isEmpty()
+            ? new String[] {str}
+            : StringUtils.splitByWholeSeparatorPreserveAllTokens(str, delimiter, -1);
 
     // If the part number is negative, the parts are counted backward from the end of the string.
     if (index < 0) index += parts.length + 1;

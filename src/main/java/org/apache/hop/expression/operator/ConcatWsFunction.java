@@ -66,18 +66,23 @@ public class ConcatWsFunction extends Function {
       String separator = operands[0].getValue(String.class);
       if (separator == null) return null;
 
+      boolean notFirstValue = false;
+
       StringBuilder builder = new StringBuilder();
       for (int i = 1; i < operands.length; i++) {
         String value = operands[i].getValue(String.class);
         if (value != null) {
-          if (!builder.isEmpty()) {
+          // Test the values rather than the builder, an empty string value also needs a separator
+          if (notFirstValue) {
             builder.append(separator);
           }
+          notFirstValue = true;
           builder.append(value);
         }
       }
 
-      if (builder.isEmpty()) return null;
+      // All values are NULL
+      if (!notFirstValue) return null;
 
       return builder.toString();
     }
@@ -109,7 +114,8 @@ public class ConcatWsFunction extends Function {
           }
         }
 
-        if (output.size() == 0) return null;
+        // All values are NULL
+        if (!notFirstValue) return null;
 
         return output.toByteArray();
       } catch (IOException e) {

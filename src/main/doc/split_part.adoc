@@ -37,6 +37,7 @@ String
 == Usage
 
 * If part is negative, the parts are counted backward from the end of the string.
+* Empty parts between two delimiters, or at the beginning or end of the string, are counted.
 * If the requested part does not exist, the returned value is an empty string.
 * Returns NULL if one of the arguments is NULL.
 
