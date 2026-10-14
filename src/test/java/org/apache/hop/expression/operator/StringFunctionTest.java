@@ -1152,6 +1152,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("4 || '2'", "42").returnType(StringType.of(2, false));
     evalEquals("Concat(FIELD_STRING, FIELD_INTEGER)", "TEST40");
     evalEquals("Concat(FIELD_INET, FIELD_STRING)", "10.10.10.1TEST");
+    // Date, a type without precision
+    evalEquals("Concat('A', DATE '2024-01-02')", "A2024-01-02")
+        .returnType(StringType.STRING_NOT_NULL);
+    evalEquals("DATE '2024-01-02' || 'A'", "2024-01-02A").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Concat('A', TIMESTAMP '2024-01-02 10:11:12')", "A2024-01-02 10:11:12");
 
     // TODO:Mix String and Binary
 
@@ -1212,6 +1217,12 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Number
     evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(3, false));
+
+    // Date, a type without precision
+    evalEquals("CONCAT_WS(',',DATE '2024-01-02')", "2024-01-02")
+        .returnType(StringType.STRING_NOT_NULL);
+    evalEquals("CONCAT_WS(',','A',DATE '2024-01-02')", "A,2024-01-02")
+        .returnType(StringType.STRING_NOT_NULL);
 
     // Null handling
     evalNull("CONCAT_WS(NULL_STRING,'FIRST')").returnType(StringType.of(5));

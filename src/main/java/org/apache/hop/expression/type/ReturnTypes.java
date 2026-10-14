@@ -190,7 +190,12 @@ public final class ReturnTypes {
 
         for (IExpression operand : call.getOperands()) {
           Type type = operand.getType();
-          precision += type.getPrecision();
+          // A type without precision, like a date, has an unknown length once converted
+          if (type.getPrecision() == Type.PRECISION_NOT_SPECIFIED) {
+            precision = Integer.MAX_VALUE;
+          } else if (precision != Integer.MAX_VALUE) {
+            precision += type.getPrecision();
+          }
           if (type.isName(TypeName.ARRAY)) {
             name = TypeName.ARRAY;
             // } else if (type.isName(TypeName.BINARY) && name != TypeName.ARRAY) {
@@ -243,6 +248,11 @@ public final class ReturnTypes {
         if (separatorType.getPrecision() != -1) {
           for (int i = 1; i < call.getOperandCount(); i++) {
             Type type = call.getOperand(i).getType();
+
+            // A type without precision, like a date, has an unknown length once converted
+            if (type.getPrecision() == Type.PRECISION_NOT_SPECIFIED) {
+              precision = typeName.getMaxPrecision();
+            }
 
             // Add separator's precision except when encountering null value or for the last
             // argument
