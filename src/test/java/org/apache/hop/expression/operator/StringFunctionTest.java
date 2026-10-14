@@ -382,11 +382,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Substring('TEST FROM',-4)", "FROM");
     evalEquals("Substring('ABCDEFG',1,1)", "A");
 
-    // TODO: is this really useful ?
-    // System.setProperty(Const.HOP_EMPTY_STRING_DIFFERS_FROM_NULL, "Y");
-    // evalEquals("Substring('TEST',1,0)","").returnType(StringType.STRING);
-    // System.setProperty(Const.HOP_EMPTY_STRING_DIFFERS_FROM_NULL, "N");
-    evalNull("Substring('TEST',1,0)").returnType(StringType.STRING);
+    // A zero or negative length returns an empty string
+    evalEquals("Substring('TEST',1,0)", "").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Substring('TEST',2,-1)", "");
 
     // Null handling
     evalNull("Substring(NULL_STRING,1,1)").returnType(StringType.STRING);
@@ -404,6 +402,17 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Substring('TEST',6)", "");
     evalEquals("Substring('TEST',-4)", "TEST");
     evalEquals("Substring('TEST',-10)", "TEST");
+    // Out of the string with a length, an empty string like without length
+    evalEquals("Substring('TEST',6,2)", "");
+    evalEquals("Substring('TEST',5,1)", "");
+    evalEquals("Substring('TEST',-10,2)", "");
+    evalEquals("Substring('TEST',-10,8)", "TE");
+
+    // A position or a length out of the int range must not wrap
+    evalEquals("Substring('TEST',4294967297)", "");
+    evalEquals("Substring('TEST',4294967297,2)", "");
+    evalEquals("Substring('TEST',2,4294967296)", "EST");
+    evalEquals("Substring('TEST',2,2147483647)", "EST");
   }
 
   @Test

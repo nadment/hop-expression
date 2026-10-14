@@ -51,7 +51,8 @@ public class SubstringFunction extends Function {
     Long position = operands[1].getValue(Long.class);
     if (position == null) return null;
 
-    int start = position.intValue();
+    // Compute on long values, the conversion to int would wrap a value out of the int range
+    long start = position;
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -67,21 +68,22 @@ public class SubstringFunction extends Function {
       if (start > length) {
         return "";
       }
-      return string.substring(Math.max(start, 1) - 1);
+      return string.substring((int) Math.max(start, 1) - 1);
     }
 
     Long count = operands[2].getValue(Long.class);
     if (count == null) return null;
 
-    int end = start + count.intValue();
+    long end = start + count;
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);
     end = Math.min(end, length + 1);
+    // Out of the string, return an empty string like with only 2 operands
     if (start > length || end <= start) {
-      return null;
+      return "";
     }
 
-    return string.substring(start - 1, end - 1);
+    return string.substring((int) start - 1, (int) end - 1);
   }
 }
