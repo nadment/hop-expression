@@ -213,6 +213,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Instr('ABC','A',-4)", 0L);
     evalEquals("Instr('ABC','C',3)", 3L);
     evalEquals("Instr('ABC','A',4)", 0L);
+    // A position or an occurrence out of the int range must not wrap
+    evalEquals("Instr('ABC','A',4294967297)", 0L);
+    evalEquals("Instr('ABC','C',-4294967295)", 0L);
+    evalEquals("Instr('ABAB','AB',1,4294967297)", 0L);
+    evalFails("Instr('ABAB','AB',1,-4294967295)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
 
     // Null handling
     evalNull("Instr(NULL_STRING,'test')");
@@ -691,6 +696,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Insert()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
+    // A position or a length out of the int range must not wrap
+    evalFails("Insert('abcd', 4294967297, 0, 'x')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Insert('abcd', 1, 4294967297, 'x')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Insert(BINARY '1234', 4294967297, 0, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Insert(BINARY '1234', 1, 4294967297, BINARY '56')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test

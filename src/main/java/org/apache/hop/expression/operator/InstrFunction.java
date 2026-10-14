@@ -68,11 +68,14 @@ public class InstrFunction extends Function {
       if (position == null) {
         return null;
       }
-      start = position.intValue();
-
-      if (start == 0) {
-        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
+      if (position == 0) {
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
       }
+
+      // Clamp to just outside the string, the conversion to int would wrap a value out of the
+      // int range, and a position beyond the string finds nothing either way
+      long bound = str.length() + 1L;
+      start = (int) Math.clamp(position, -bound, bound);
 
       // Convert the 1-based position to a 0-based index, a negative position counts back from
       // the end (-1 is the last character) and searches towards the beginning
@@ -85,10 +88,11 @@ public class InstrFunction extends Function {
         if (nth == null) {
           return null;
         }
-        occurrence = nth.intValue();
-        if (occurrence < 1) {
-          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, occurrence);
+        if (nth < 1) {
+          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, nth);
         }
+        // Clamp to the int range, the conversion would wrap a larger occurrence
+        occurrence = Math.clamp(nth, 1, Integer.MAX_VALUE);
       }
     }
 
