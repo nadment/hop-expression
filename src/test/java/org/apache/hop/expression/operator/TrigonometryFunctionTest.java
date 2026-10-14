@@ -36,6 +36,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Acos(0)", new BigDecimal("1.5707963267948966"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Acos(1)", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
+    // Computed with a double precision, unlike the other functions
+    evalEquals("Acos(-1)", new BigDecimal("3.141592653589793"));
+    evalEquals("Acos(0.5)", new BigDecimal("1.0471975511965979"));
 
     // Null handling
     evalNull("Acos(NULL_INTEGER)");
@@ -75,6 +78,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Acoth(3)", new BigDecimal("0.34657359027997265470861606072909"))
         .returnType(NumberType.NUMBER_NOT_NULL);
+    // Odd function
+    evalEquals("Acoth(-2)", new BigDecimal("-0.54930614433405484569762261846126"));
 
     // Null handling
     evalNull("Acoth(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -112,6 +117,10 @@ class TrigonometryFunctionTest extends ExpressionTest {
   void Asinh() throws Exception {
     evalEquals("Asinh(asin(0.5))", new BigDecimal("0.50221898503461160828703900193479"))
         .returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Asinh(0)", BigDecimal.ZERO);
+    // Odd function
+    evalEquals("Asinh(1)", new BigDecimal("0.88137358701954302523260932497979"));
+    evalEquals("Asinh(-1)", new BigDecimal("-0.88137358701954302523260932497979"));
 
     // Null handling
     evalNull("Asinh(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -127,6 +136,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Atan(0.5)", new BigDecimal("0.46364760900080611621425623146121"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Atan(Tan(0.5))", 0.5);
+    // Odd function
+    evalEquals("Atan(1)", new BigDecimal("0.78539816339744830961566084581988"));
+    evalEquals("Atan(-1)", new BigDecimal("-0.78539816339744830961566084581988"));
 
     // Null handling
     evalNull("Atan(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -184,6 +196,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Cos(1)", new BigDecimal("0.54030230586813971740093660744298"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Cos(Pi())", -1D);
+    // Even function
+    evalEquals("Cos(-1)", new BigDecimal("0.54030230586813971740093660744298"));
 
     // Null handling
     evalNull("Cos(NULL_NUMBER)");
@@ -199,6 +213,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Cosh(1.234)", new BigDecimal("1.8630338016984225890736437502561"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Cosh(0)", BigDecimal.ONE);
+    // Even function
+    evalEquals("Cosh(-1.234)", new BigDecimal("1.8630338016984225890736437502561"));
 
     // Null handling
     evalNull("Cosh(NULL_NUMBER)").returnType(NumberType.NUMBER);
@@ -215,6 +231,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Sin(1)", new BigDecimal("0.84147098480789650665250232163030"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Sin(Pi()/2)", BigDecimal.ONE);
+    // Odd function
+    evalEquals("Sin(-1)", new BigDecimal("-0.84147098480789650665250232163030"));
 
     // Null handling
     evalNull("Sin(NULL_NUMBER)").returnType(NumberType.NUMBER);
@@ -230,6 +248,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Sinh(84.4)", new BigDecimal("2.2564425307670914188455367832027E+36"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Sinh(0)", BigDecimal.ZERO);
+    // Odd function
+    evalEquals("Sinh(-1)", new BigDecimal("-1.1752011936438014568823818505956"));
 
     // Null handling
     evalNull("Sinh(NULL_NUMBER)").returnType(NumberType.NUMBER);
@@ -244,6 +264,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
   void Cot() throws Exception {
     evalEquals("Cot(1)", new BigDecimal("0.64209261593433070300641998659427"))
         .returnType(NumberType.NUMBER_NOT_NULL);
+    // Odd function
+    evalEquals("Cot(-1)", new BigDecimal("-0.64209261593433070300641998659427"));
 
     // Null handling
     evalNull("Cot(NULL_NUMBER)").returnType(NumberType.NUMBER);
@@ -258,6 +280,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
   @Test
   void Csc() throws Exception {
     evalEquals("Csc(Pi()/2)", BigDecimal.ONE).returnType(NumberType.NUMBER_NOT_NULL);
+    // Odd function
+    evalEquals("Csc(-Pi()/2)", -1D);
 
     // Null handling
     evalNull("Csc(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -275,6 +299,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Csch(Pi())", new BigDecimal("0.08658953753004694182845976975218431"))
         .returnType(NumberType.NUMBER_NOT_NULL);
+    // Odd function
+    evalEquals("Csch(-1.5)", new BigDecimal("-0.4696424405952245847295644318870206"));
 
     // Null handling
     evalNull("Csch(NULL_INTEGER)");
@@ -306,6 +332,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
   void Sech() throws Exception {
     evalEquals("Sech(0)", BigDecimal.ONE).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Sech(1)", new BigDecimal("0.6480542736638853995749773532261342"));
+    // Even function
+    evalEquals("Sech(-1)", new BigDecimal("0.6480542736638853995749773532261342"));
 
     // Null handling
     evalNull("Sech(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -321,6 +349,9 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Tan(84.4)", new BigDecimal("-0.45017764606195051960412881423455"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Tan(0)", BigDecimal.ZERO).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Tan(Pi()/4)", BigDecimal.ONE);
+    // Odd function
+    evalEquals("Tan(-0.5)", new BigDecimal("-0.54630248984379051325517946578029"));
 
     // Null handling
     evalNull("Tan(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -337,6 +368,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Tanh(1.234)", new BigDecimal("0.84373566258933019391702000004355"))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Tanh(0)", BigDecimal.ZERO);
+    // Odd function
+    evalEquals("Tanh(-1.234)", new BigDecimal("-0.84373566258933019391702000004355"));
 
     // Null handling
     evalNull("Tanh(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -354,6 +387,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalEquals("Ln(Exp(2.4))", 2.4D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Ln(10)", new BigDecimal("2.3025850929940456840179914546844"))
         .returnType(NumberType.NUMBER_NOT_NULL);
+    // A value between 0 and 1 has a negative logarithm
+    evalEquals("Ln(0.5)", new BigDecimal("-0.69314718055994530941723212145818"));
 
     // Null handling
     evalNull("Ln(NULL_INTEGER)");
@@ -362,13 +397,16 @@ class TrigonometryFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Ln()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Ln(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Ln(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Ln(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Ln(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 
   @Test
   void Log() throws Exception {
     evalEquals("Log(10,100)", 2D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Log(10,1000)", 3D);
+    evalEquals("Log(10,1)", 0D);
 
     // Null handling
     evalNull("Log(10,NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -392,6 +430,8 @@ class TrigonometryFunctionTest extends ExpressionTest {
   void Log10() throws Exception {
     evalEquals("Log10(10)", 1D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Log10(1000)", 3D).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Log10(1)", 0D);
+    evalEquals("Log10(0.001)", -3D);
 
     // Null handling
     evalNull("Log10(NULL_INTEGER)").returnType(NumberType.NUMBER);
@@ -400,6 +440,7 @@ class TrigonometryFunctionTest extends ExpressionTest {
     evalFails("Log10()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Log10(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Log10('x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Log10(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Log10(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
 }
