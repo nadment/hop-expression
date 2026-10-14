@@ -57,6 +57,7 @@ public class NormalizeFunction extends Function {
 
     if (operands.length == 2) {
       String name = operands[1].getValue(String.class);
+      if (name == null) return null;
       try {
         form = Form.valueOf(name);
       } catch (Exception e) {

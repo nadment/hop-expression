@@ -41,7 +41,7 @@ String
 
 * Normalization is often used when two strings render the same on the screen but have different Unicode code points.
 * Fails if form is not one of the supported forms.
-* Returns NULL if string is NULL.
+* Returns NULL if string or form is NULL.
 
 == Examples
 

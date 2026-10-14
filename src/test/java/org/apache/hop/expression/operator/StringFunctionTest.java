@@ -89,6 +89,8 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Normalize(NULL_STRING)");
+    evalNull("Normalize(NULL_STRING, 'NFKC')");
+    evalNull("Normalize('ê', NULL_STRING)").returnType(StringType.STRING);
 
     // Check operands
     evalFails("Normalize()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
