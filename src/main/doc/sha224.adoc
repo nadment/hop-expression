@@ -35,12 +35,13 @@ String
 == Usage
 
 * The result is a hex-encoded string of 56 characters (224 bits).
+* A string is hashed in UTF-8, and a value of another data type, such as a number or a date, is hashed as its text.
 * Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
-SHA224('Test') returns 'c696f08d2858549cfe0929bb7b098cfa9b64d51bec94aa68471688e4'
+SHA224('Test') returns '3606346815fd4d491a92649905a40da025d8cf15f095136b19f37923'
 ----
 
 == See also

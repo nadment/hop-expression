@@ -35,6 +35,7 @@ String
 == Usage
 
 * The result is a hex-encoded string of 32 characters (128 bits).
+* A string is hashed in UTF-8, and a value of another data type, such as a number or a date, is hashed as its text.
 * Returns NULL if the argument is NULL.
 
 == Examples

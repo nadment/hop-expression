@@ -16,13 +16,19 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -50,11 +56,24 @@ public class Sha224Function extends Function {
   }
 
   @Override
+  public boolean coerceOperandsType(Call call) {
+    // A value which is not a string or a binary, like a number or a date, is hashed as its text
+    Type type = call.getOperand(0).getType();
+    if (Types.isBinary(type) || Types.isString(type)) {
+      return false;
+    }
+    call.setOperand(0, Types.cast(call.getOperand(0), StringType.STRING));
+    return true;
+  }
+
+  @Override
   public @Nullable Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) {
       return null;
     }
-    return DigestUtils.sha512_224Hex(value);
+    // SHA-224, not SHA-512/224 which is a different algorithm with the same length
+    return Hex.encodeHexString(
+        DigestUtils.getDigest(MessageDigestAlgorithms.SHA_224).digest(value));
   }
 }
