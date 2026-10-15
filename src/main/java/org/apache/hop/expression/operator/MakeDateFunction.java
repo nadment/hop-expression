@@ -52,25 +52,9 @@ public class MakeDateFunction extends Function {
     Long v2 = operands[2].getValue(Long.class);
     if (v2 == null) return null;
 
-    int year = v0.intValue();
-    int month = v1.intValue();
-    int day = v2.intValue();
-
-    int monthsToAdd = 0;
-    if (month < 1 || month > 12) {
-      monthsToAdd = month - 1;
-      month = 1;
-    }
-
-    int daysToAdd = 0;
-    if (day < 1 || day > 31) {
-      daysToAdd = day - 1;
-      day = 1;
-    }
-
-    LocalDate date = LocalDate.of(year, month, day);
-    if (monthsToAdd != 0) date = date.plusMonths(monthsToAdd);
-    if (daysToAdd != 0) date = date.plusDays(daysToAdd);
+    // Add the months and the days to the first day of the year, so that values out of the
+    // normal ranges overflow to the next or previous months and years, e.g. February 30
+    LocalDate date = LocalDate.of(v0.intValue(), 1, 1).plusMonths(v1 - 1).plusDays(v2 - 1);
 
     return date.atStartOfDay().atZone(ZoneOffset.UTC);
   }

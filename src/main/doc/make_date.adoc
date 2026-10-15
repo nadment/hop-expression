@@ -43,7 +43,7 @@ Date
 == Usage
 
 * The function is typically used with values in the normal ranges (months 1-12, days 1-31), but it also handles values outside these ranges.
-* If day is less than 1 or greater than 31, the month is adjusted.
+* If day is less than 1 or greater than the number of days in the month, the month is adjusted.
 * If month is less than 1 or greater than 12, the year is adjusted.
 * Returns NULL if one of the arguments is NULL.
 
@@ -53,6 +53,7 @@ Date
 MAKE_DATE(2020,02,27) returns 2020-02-27
 MAKE_DATE(2020, 6, 50) returns 2020-07-20
 MAKE_DATE(2020,19,1) returns 2021-07-01
+MAKE_DATE(2020,2,30) returns 2020-03-01
 ----
 
 == See also

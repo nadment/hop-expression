@@ -1030,6 +1030,11 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("MAKE_DATE(2020,13,1)", LocalDate.of(2021, Month.JANUARY, 1));
     evalEquals("MAKE_DATE(2020,12,32)", LocalDate.of(2021, Month.JANUARY, 1));
     evalEquals("MAKE_DATE(2020,13,0)", LocalDate.of(2020, Month.DECEMBER, 31));
+    // A day beyond the end of the month overflows to the next month
+    evalEquals("MAKE_DATE(2020,2,30)", LocalDate.of(2020, Month.MARCH, 1));
+    evalEquals("MAKE_DATE(2019,2,29)", LocalDate.of(2019, Month.MARCH, 1));
+    evalEquals("MAKE_DATE(2020,4,31)", LocalDate.of(2020, Month.MAY, 1));
+    evalEquals("MAKE_DATE(2020,14,31)", LocalDate.of(2021, Month.MARCH, 3));
     evalEquals("MAKE_DATE(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1))
         .returnType(DateType.DATE_NOT_NULL);
     evalEquals("MAKE_DATE(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
