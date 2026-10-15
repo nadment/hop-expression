@@ -40,6 +40,7 @@ Date
 == Usage
 
 * The last day of a week is Sunday.
+* The time of a timestamp is kept.
 * Returns NULL if date is NULL. The unit cannot be NULL.
 
 == Examples

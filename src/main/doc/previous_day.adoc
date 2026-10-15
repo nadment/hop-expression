@@ -36,6 +36,7 @@ Date
 == Usage
 
 * Fails if weekday is not the name of a day of the week.
+* The time of a timestamp is kept.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

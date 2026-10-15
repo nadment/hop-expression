@@ -41,6 +41,7 @@ Date
 
 * A week starts on Monday.
 * Raises an error if unit is not supported.
+* The time of a timestamp is kept.
 * Returns NULL if date is NULL. The unit cannot be NULL.
 
 == Examples

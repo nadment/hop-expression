@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.EnumSet;
@@ -99,7 +98,7 @@ public class LastDayFunction extends Function {
           };
     }
 
-    // Remove time and adjust
-    return value.truncatedTo(ChronoUnit.DAYS).with(adjuster);
+    // Adjust the date, the time is kept
+    return value.with(adjuster);
   }
 }

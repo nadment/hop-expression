@@ -1165,11 +1165,13 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("First_Day(FIELD_DATE, YEAR)", LocalDate.of(1981, Month.JANUARY, 1));
     evalEquals("First_Day(FIELD_TIMESTAMP, YEAR)", LocalDate.of(2023, Month.JANUARY, 1));
 
-    // Remove time
+    // The time of a timestamp is kept
     evalEquals(
-        "First_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.JANUARY, 1));
+        "First_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)",
+        LocalDateTime.of(2020, Month.JANUARY, 1, 23, 59, 12));
     evalEquals(
-        "First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
+        "First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)",
+        LocalDateTime.of(2020, Month.FEBRUARY, 1, 23, 59, 12));
 
     // Null handling
     evalNull("First_Day(NULL_DATE)").returnType(DateType.DATE);
@@ -1203,10 +1205,13 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Last_Day(FIELD_DATE, YEAR)", LocalDate.of(1981, Month.DECEMBER, 31));
     evalEquals("Last_Day(FIELD_TIMESTAMP, YEAR)", LocalDate.of(2023, Month.DECEMBER, 31));
 
-    // Remove time
-    evalEquals("Last_Day(TIMESTAMP '2020-02-27 23:59:12')", LocalDate.of(2020, Month.FEBRUARY, 29));
+    // The time of a timestamp is kept
     evalEquals(
-        "Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.DECEMBER, 31));
+        "Last_Day(TIMESTAMP '2020-02-27 23:59:12')",
+        LocalDateTime.of(2020, Month.FEBRUARY, 29, 23, 59, 12));
+    evalEquals(
+        "Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)",
+        LocalDateTime.of(2020, Month.DECEMBER, 31, 23, 59, 12));
 
     // Null handling
     evalNull("Last_Day(NULL_DATE)").returnType(DateType.DATE);
@@ -1234,6 +1239,10 @@ class DateFunctionTest extends ExpressionTest {
         .returnType(DateType.DATE_NOT_NULL);
     evalEquals("Next_Day(FIELD_DATE,'monday')", LocalDate.of(1981, Month.JUNE, 29));
     evalEquals("Next_Day(FIELD_TIMESTAMP,'monday')", LocalDate.of(2023, Month.MARCH, 6));
+    // The time of a timestamp is kept
+    evalEquals(
+        "Next_Day(TIMESTAMP '2023-02-28 22:11:01','monday')",
+        LocalDateTime.of(2023, Month.MARCH, 6, 22, 11, 1));
 
     // Null handling
     evalNull("Next_Day(NULL_DATE, 'monday')").returnType(DateType.DATE);
@@ -1255,6 +1264,10 @@ class DateFunctionTest extends ExpressionTest {
     // The previous day is strictly before the date
     evalEquals("Previous_Day(DATE '2020-02-24', 'monday')", LocalDate.of(2020, Month.FEBRUARY, 17));
     evalFails("Previous_Day(FIELD_STRING, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // The time of a timestamp is kept
+    evalEquals(
+        "Previous_Day(TIMESTAMP '2023-02-28 22:11:01','monday')",
+        LocalDateTime.of(2023, Month.FEBRUARY, 27, 22, 11, 1));
     evalEquals("Previous_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24))
         .returnType(DateType.DATE_NOT_NULL);
 
