@@ -344,6 +344,15 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Round() throws Exception {
+    // The scale must not wrap
+    evalEquals("ROUND(1.55, 4294967297)", 1.55D);
+    evalEquals("ROUND(123.456, 2147483648)", 123.456D);
+    evalEquals("ROUND(123.456, -4294967295)", 0D);
+    evalEquals("ROUND(-123.456, -4294967295)", 0D);
+    evalEquals("ROUND(0.00123, -4294967295)", 0D);
+    // A scale just before the first integer digit can still round up
+    evalEquals("ROUND(500, -3)", 1000D);
+    evalEquals("ROUND(500, -4)", 0D);
     // Documentation examples, half up at any scale
     evalEquals("ROUND(28.05)", 28D);
     evalEquals("ROUND(28.05, 1)", 28.1D);
@@ -378,6 +387,13 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Truncate() throws Exception {
+    // The scale must not wrap
+    evalEquals("TRUNCATE(1.55, 4294967297)", 1.55D);
+    evalEquals("TRUNCATE(123.456, 2147483648)", 123.456D);
+    evalEquals("TRUNCATE(123.456, -4294967295)", 0D);
+    evalEquals("TRUNCATE(-123.456, -4294967295)", 0D);
+    evalEquals("TRUNCATE(1999.9, -3)", 1000D);
+    evalEquals("TRUNCATE(1999.9, -4)", 0D);
     // Documentation examples
     evalEquals("TRUNCATE(28.52)", 28D);
     evalEquals("TRUNCATE(28.52, 1)", 28.5D);

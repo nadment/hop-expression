@@ -65,7 +65,11 @@ public class RoundFunction extends Function {
     if (operands.length == 2) {
       Long l = operands[1].getValue(Long.class);
       if (l == null) return null;
-      scale = l.intValue();
+      // Clamp the scale, the conversion to int would wrap a scale out of the int range. A scale
+      // before the first integer digit returns 0, like any smaller scale, and a scale beyond the
+      // decimal digits returns the value, like any greater scale.
+      long lower = -Math.max(value.precision() - value.scale(), 0) - 1L;
+      scale = (int) Math.clamp(l, lower, Integer.MAX_VALUE);
     }
 
     if (scale > value.scale()) {
