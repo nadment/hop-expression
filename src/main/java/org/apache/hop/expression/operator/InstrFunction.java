@@ -82,7 +82,7 @@ public class InstrFunction extends Function {
       // the end (-1 is the last character) and searches towards the beginning
       // The position is in characters, a surrogate pair is a single character
       forward = start > 0;
-      long index = forward ? start - 1L : Characters.length(str) + start;
+      long index = forward ? start - 1L : (long) Characters.length(str) + start;
       start = (index < 0) ? -1 : Characters.offset(str, index);
 
       // The occurrence to find, must be positive

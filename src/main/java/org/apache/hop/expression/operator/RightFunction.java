@@ -83,7 +83,7 @@ public class RightFunction extends Function {
       if (count <= length) {
         return str;
       }
-      return str.substring(Characters.offset(str, count - length));
+      return str.substring(Characters.offset(str, (long) count - length));
     }
   }
 
