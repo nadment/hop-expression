@@ -1300,8 +1300,7 @@ import org.jspecify.annotations.Nullable;
       parser.hour = parser.parseInt(2);
       // The hour in AM/PM must be between 1 and 12
       if (parser.hour < 1 || parser.hour > 12) {
-        throw new ExpressionException(
-            ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
+        throw new ExpressionException(ErrorCode.INVALID_HOUR_12, parser.hour);
       }
       parser.isHourFormat12 = true;
     }

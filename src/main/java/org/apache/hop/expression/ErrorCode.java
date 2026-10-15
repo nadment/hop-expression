@@ -305,6 +305,14 @@ public enum ErrorCode {
    */
   INVALID_DATE_FORMAT,
   /**
+   * The hour parsed with the {@code HH} or {@code HH12} date format element is not between 1 and
+   * 12.
+   *
+   * <p>Message: <code>Hour “{0}” is invalid for a 12-hour clock, use HH24 for a 24-hour clock
+   * </code>
+   */
+  INVALID_HOUR_12,
+  /**
    * The text of a {@code TIMESTAMP} literal is not a valid timestamp.
    *
    * <p>Message: <code>Timestamp “{0}” is not recognized</code>

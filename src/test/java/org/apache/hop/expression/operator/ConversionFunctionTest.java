@@ -764,15 +764,9 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals(
         "To_Date('2019-02-13 12:34:56 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 12, 34, 56));
-    evalFails(
-        "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')",
-        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
-    evalFails(
-        "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')",
-        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
-    evalFails(
-        "To_Date('2019-02-13 00:34:56','YYYY-MM-DD HH12:MI:SS')",
-        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')", ErrorCode.INVALID_HOUR_12);
+    evalFails("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')", ErrorCode.INVALID_HOUR_12);
+    evalFails("To_Date('2019-02-13 00:34:56','YYYY-MM-DD HH12:MI:SS')", ErrorCode.INVALID_HOUR_12);
     evalNull("TRY_TO_DATE('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')");
     evalEquals(
         "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",

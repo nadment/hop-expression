@@ -53,6 +53,7 @@ public class TryFunction extends Function {
                 INTEGER_CONVERSION_OVERFLOW,
                 UNPARSABLE_NUMBER_WITH_FORMAT,
                 UNPARSABLE_DATE_WITH_FORMAT,
+                INVALID_HOUR_12,
                 UNPARSABLE_BINARY_WITH_FORMAT ->
             null;
         default -> throw exception;
