@@ -271,6 +271,7 @@ http://www.apache.org/licenses/LICENSE-2.0
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.yml</exclude>
                         <exclude>**/*.md</exclude>
+                        <exclude>.gitattributes</exclude>
                     </excludes>
                 </configuration>
                 <executions>
