@@ -27,7 +27,7 @@ LTRIM( string [, characters ] )
 == Arguments
 
 string:: The string expression to be trimmed.
-characters:: One or more characters to remove from the left side. You can specify the characters in any order. If characters is omitted, the function removes space characters.
+characters:: One or more characters to remove from the left side. You can specify the characters in any order. If characters is omitted, the function removes whitespace characters.
 
 == Returns
 

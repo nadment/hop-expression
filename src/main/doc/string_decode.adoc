@@ -30,7 +30,7 @@ String
 
 == Usage
 
-* The escape sequences are `+\b+`, `+\t+`, `+\n+`, `+\f+`, `+\r+`, `+\"+`, `+\\+` and `+\u+` followed by the hexadecimal code of a Unicode character.
+* The escape sequences are `+\b+`, `+\t+`, `+\n+`, `+\f+`, `+\r+`, `+\"+`, `+\\+`, `+\u+` followed by the hexadecimal code of a Unicode character, and `+\+` followed by the octal code of a character, such as `+\366+` for 'ö'.
 * Returns NULL if the argument is NULL.
 
 == Examples

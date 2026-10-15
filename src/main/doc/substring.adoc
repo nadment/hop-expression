@@ -42,8 +42,8 @@ String
 
 == Usage
 
-* The first character of a string has position 1.
-* If start is negative, counting begins at the end of the string.
+* The first character of a string has position 1. A start of 0 is treated as 1.
+* If start is negative, counting begins at the end of the string. If it is before the beginning of the string, only the characters of the range that are in the string are returned, for example `SUBSTRING('TEST',-10,8)` returns 'TE'.
 * If length is not specified, all the characters to the end of the string are returned.
 * If start is beyond the end of the string, or if length is zero or negative, an empty string is returned.
 * Returns NULL if one of the arguments is NULL.

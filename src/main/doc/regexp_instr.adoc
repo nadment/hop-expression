@@ -48,6 +48,7 @@ Integer
 * An empty pattern matches nothing.
 * Raises an error if position or occurrence is less than 1.
 * A NULL position, occurrence, return_options or parameters argument is treated as its default value.
+* An unknown letter in parameters raises an error. If both `c` and `i` are specified, the last one is used.
 * Returns NULL if subject or pattern is NULL.
 
 == Examples

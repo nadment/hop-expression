@@ -36,6 +36,7 @@ Array
 == Usage
 
 * If delimiter is an empty string `''`, the result is an array containing the entire string as a single element.
+* A delimiter of several characters is matched as a whole: `STRING_TO_ARRAY('a--b-c','--')` returns ['a','b-c'].
 * Empty elements between two delimiters, or at the beginning or end of the string, are kept.
 * Returns NULL if one of the arguments is NULL.
 

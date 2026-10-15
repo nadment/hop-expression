@@ -30,6 +30,7 @@ String
 
 == Usage
 
+* Raises an error if the string has an odd number of characters or a character that is not a hexadecimal digit.
 * Returns NULL if the argument is NULL.
 
 == Examples

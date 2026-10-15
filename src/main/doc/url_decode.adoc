@@ -30,6 +30,7 @@ String
 
 == Usage
 
+* Raises an error if the string contains a malformed escape sequence, such as `%%2B`.
 * Returns NULL if the argument is NULL.
 
 == Examples

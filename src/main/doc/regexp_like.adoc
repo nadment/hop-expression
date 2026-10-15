@@ -44,6 +44,7 @@ Boolean
 * The pattern is not implicitly anchored: the function returns TRUE if the pattern matches any part of subject.
 * An empty pattern matches nothing.
 * A NULL parameters argument is treated as its default value.
+* An unknown letter in parameters raises an error. If both `c` and `i` are specified, the last one is used.
 * Returns NULL if subject or pattern is NULL.
 
 == Examples

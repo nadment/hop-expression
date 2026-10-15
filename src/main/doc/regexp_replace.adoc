@@ -49,6 +49,7 @@ String
 * An empty pattern matches nothing.
 * Raises an error if position is less than 1 or if occurrence is negative.
 * A NULL position, occurrence or parameters argument is treated as its default value.
+* An unknown letter in parameters raises an error. If both `c` and `i` are specified, the last one is used.
 * Returns NULL if source, pattern or replacement is NULL.
 
 == Examples

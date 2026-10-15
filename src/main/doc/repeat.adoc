@@ -35,6 +35,7 @@ String or Binary
 
 == Usage
 
+* Raises an error if the result is too large.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

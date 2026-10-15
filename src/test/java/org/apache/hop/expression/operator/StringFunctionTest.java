@@ -43,6 +43,16 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void ParseUrl() throws Exception {
+    // Documentation example
+    evalEquals(
+        "PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','FILE')", "/path?id=1&lang=fr");
+    // An invalid or lower case part, or an invalid URL, returns NULL
+    evalNull("PARSE_URL('https://hop.apache.org/path','XXX')");
+    evalNull("PARSE_URL('https://hop.apache.org/path','host')");
+    evalNull("PARSE_URL('https://hop apache.org/path','HOST')");
+    // The key is case-sensitive and only used with the QUERY part
+    evalNull("PARSE_URL('https://hop.apache.org/path?id=1','QUERY','ID')");
+    evalNull("PARSE_URL('https://hop.apache.org/path?id=1','HOST','id')");
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','PROTOCOL')", "https")
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','HOST')", "hop.apache.org");
@@ -80,6 +90,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Normalize() throws Exception {
+    evalEquals("LENGTH(NORMALIZE(CHR(234),'NFD'))", 2L);
+    evalEquals("NORMALIZE(CHR(64257),'NFKD')", "fi");
     evalEquals("Normalize('\u00ea')", "ê").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Normalize('\u0065\u0302')", "ê");
     evalEquals("Normalize('Jane\u2004Doe', 'NFKC')", "Jane Doe");
@@ -234,6 +246,13 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void RPad() throws Exception {
+    // Documentation example
+    evalEquals("RPAD('123',5,'*')", "123**");
+    // A NULL pad is the default pad
+    evalEquals("RPAD('test',6,NULL_STRING)", "test  ");
+    // The maximum length is 8192
+    evalEquals("LENGTH(RPAD('a',8192))", 8192L);
+    evalFails("RPAD('a',8193)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
     evalEquals("RPad('test',7)", "test   ").returnType(StringType.STRING_NOT_NULL);
     evalEquals("RPad('test',7,'*')", "test***");
     evalEquals("RPad('test',4,'*')", "test");
@@ -292,6 +311,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void LPad() throws Exception {
+    // Documentation example
+    evalEquals("LPAD('123',5,'*')", "**123");
+    // A NULL pad is the default pad
+    evalEquals("LPAD('test',6,NULL_STRING)", "  test");
     evalEquals("LPad('test',6)", "  test").returnType(StringType.STRING_NOT_NULL);
     evalEquals("LPad('test',7,'*')", "***test");
     evalEquals("LPad('test',3,'*')", "tes");
@@ -429,6 +452,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Split_part() throws Exception {
+    // Documentation example
+    evalEquals("SPLIT_PART('127.0.0.1','.',1)", "127");
+    // Part 0 returns an empty string
+    evalEquals("SPLIT_PART('a.b','.',0)", "");
     evalEquals("Split_Part('127.1.2.3','.',1)", "127").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Split_Part('127.1.2.3','.',2)", "1");
     evalEquals("Split_Part('127.1.2.3','.',4)", "3");
@@ -519,6 +546,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Trim() throws Exception {
+    // All the whitespace characters are removed by default
+    evalEquals("TRIM(CHR(9)||' a '||CHR(10))", "a");
     evalEquals("Trim('a')", "a").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Trim(' a ')", "a");
     evalEquals("Trim('  a b  ')", "a b");
@@ -548,6 +577,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void LTrim() throws Exception {
+    // All the whitespace characters are removed by default
+    evalEquals("LTRIM(CHR(9)||'a')", "a");
     evalEquals("LTrim('a')", "a").returnType(StringType.STRING_NOT_NULL);
     evalEquals("LTrim(' a ')", "a ");
     evalEquals("LTrim('01ABC012', '012')", "ABC012");
@@ -570,6 +601,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void RTrim() throws Exception {
+    // All the whitespace characters are removed by default
+    evalEquals("RTRIM('a'||CHR(13)||CHR(10))", "a");
     evalEquals("RTrim('a')", "a").returnType(StringType.STRING_NOT_NULL);
     evalEquals("RTrim(' a ')", " a");
     evalEquals("RTrim('012ABC10', '012')", "012ABC");
@@ -661,6 +694,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Insert() throws Exception {
+    // A negative length or a position out of the string raises an error
+    evalFails("INSERT('abcd',2,-1,'QW')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("INSERT('abcd',0,0,'QW')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("INSERT('abcd',6,0,'QW')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     // String
     evalEquals("Insert('abcd', 1, 0, 'QW')", "QWabcd").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Insert('abcd', 2, 1, 'QW')", "aQWcd");
@@ -706,6 +743,9 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Right() throws Exception {
+    // Documentation example
+    evalEquals("RIGHT('ABCDEF',3)", "DEF");
+    evalEquals("Right('TEST',0)", "");
     // String
     evalEquals("Right('TEST FROM',4)", "FROM").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Right('',1)", "");
@@ -727,7 +767,6 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Right(BINARY '12345678', 4294967296)", new byte[] {0x12, 0x34, 0x56, 0x78});
 
     evalNull("Right(NULL_BINARY,4)");
-    evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
 
     // Coercion to String
@@ -815,6 +854,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void HexDecode() throws Exception {
+    // An odd number of characters or a non hexadecimal character raises an error
+    evalFails("HEX_DECODE('ABC')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("HEX_DECODE('zz')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalEquals("HEX_DECODE('')", "");
     evalEquals("HEX_DECODE('41706163686520486f70')", "Apache Hop");
 
     evalNull("HEX_DECODE(NULL_STRING)");
@@ -826,6 +869,12 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Overlay() throws Exception {
+    // Documentation example, only the first length characters of replacement are used
+    evalEquals("OVERLAY('Apxxxe','ache',3,2)", "Apacxe");
+    // A length of 0 defaults to the length of replacement
+    evalEquals("OVERLAY('Apxxxe','ach',3,0)", "Apache");
+    // A position beyond the end places replacement after string
+    evalEquals("OVERLAY('Apxxxe','ach',7)", "Apxxxeach");
     evalEquals("Overlay('Apxxxe','ach',3)", "Apache").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Overlay('Apxxxe','ache Hop',3)", "Apache Hop");
     evalEquals("Overlay('Apxxxe','ach',5)", "Apxxach");
@@ -888,6 +937,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Soundex() throws Exception {
+    // Documentation example
+    evalEquals("SOUNDEX('  ')", "");
+    evalEquals("Soundex('robert')", "R163");
+    evalEquals("Soundex('1abc')", "A120");
     evalEquals("Soundex('Wikipedia')", "W213").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Soundex('I LOVE ROCKS.')", "I416");
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
@@ -967,6 +1020,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Like() throws Exception {
+    // A NULL parameters argument is treated as its default value
+    evalFalse("Regexp_Like('A','a',NULL_STRING)");
     evalTrue("Regexp_Like('aaa','a{2,4}')").returnType(BooleanType.BOOLEAN_NOT_NULL);
     // Character classes use the Java syntax, the POSIX syntax like [:alnum:] is not supported
     evalTrue("Regexp_Like('Erd beere','Erd[a\\p{Space}b]beere')");
@@ -1010,6 +1065,9 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Replace() throws Exception {
+    // A NULL position or parameters argument is treated as its default value
+    evalEquals("Regexp_Replace('aaa','a','b',NULL_INTEGER)", "bbb");
+    evalEquals("Regexp_Replace('Aa','a','x',1,0,NULL_STRING)", "Ax");
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234")
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
@@ -1075,6 +1133,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Count() throws Exception {
+    // A NULL parameters argument is treated as its default value
+    evalEquals("Regexp_Count('Aa','a',1,NULL_STRING)", 1L);
+    // An empty pattern matches nothing
+    evalEquals("Regexp_Count('abc','')", 0L);
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+')", 2L)
         .returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', 20)", 1L);
@@ -1113,6 +1175,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Instr() throws Exception {
+    // A nonzero return option returns the position following the match
+    evalEquals("Regexp_Instr('abc','b',1,1,2)", 3L);
+    // A NULL position argument is treated as its default value
+    evalEquals("Regexp_Instr('abab','b',NULL_INTEGER)", 2L);
     evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6L)
         .returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Regexp_Instr('hello to YOU', '(.o).', 1, 3, 1,'i')", 13L);
@@ -1156,6 +1222,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Substr() throws Exception {
+    // A NULL position argument is treated as its default value
+    evalEquals("Regexp_Substr('abc','b',NULL_INTEGER)", "b");
     evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache")
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals(
@@ -1239,6 +1307,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Concat() throws Exception {
+    // Documentation example
+    evalEquals("CONCAT('AB','CD','12')", "ABCD12");
     // String
     evalEquals("CONCAT('TES','T')", "TEST").returnType(StringType.of(4, false));
     evalEquals("FIELD_STRING||'t'", "TESTt").returnType(StringType.of(1001, false));
@@ -1356,6 +1426,9 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Chr() throws Exception {
+    // The last valid code point
+    evalEquals("UNICODE(CHR(1114111))", 1114111L);
+    evalFails("CHR(1114112)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalEquals("Chr(83)", "S").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Chr(115)", "s");
     evalEquals("Chr(233)", "é");
@@ -1377,6 +1450,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Ascii() throws Exception {
+    // Documentation example
+    evalEquals("ASCII('X')", 88L);
     evalEquals("Ascii('ABC')", 65L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Ascii('é')", 233L);
     evalEquals("Ascii('€')", 8364L);
@@ -1501,6 +1576,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Url_Decode() throws Exception {
+    // A malformed escape sequence raises an error
+    evalFails("Url_Decode('a%%2Bb')", ErrorCode.CALL_FUNCTION_ERROR);
     evalEquals("Url_Decode('a+b')", "a b").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Url_Decode('a%2Bb')", "a+b");
     evalEquals("Url_Decode('%C3%A2%C3%A9%C3%A8')", "âéè");
@@ -1530,6 +1607,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Base64_Decode() throws Exception {
+    // The decoded bytes are interpreted as UTF-8, '4oKs' is the euro sign
+    evalEquals("BASE64_DECODE('4oKs')", "€");
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop")
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop")
@@ -1631,6 +1710,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Compress() throws Exception {
+    // The result is in the GZIP format
+    evalEquals("Left(Compress('Test'::BINARY),2)", new byte[] {0x1F, (byte) 0x8B});
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
 
     // Null handling
@@ -1654,6 +1735,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Position() throws Exception {
+    // Equivalent to INSTR, an empty substring is found at position 1
+    evalEquals("POSITION('def' IN 'abcdefgh')", 4L);
+    evalTrue("POSITION('def' IN 'abcdefgh') = INSTR('abcdefgh','def')");
+    evalEquals("POSITION('' IN 'abc')", 1L);
     evalEquals("Position('abc' IN 'abcdefgh')", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Position('XYZ' IN 'abcdefgh')", 0L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Position('def' IN 'abcdefgh')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);

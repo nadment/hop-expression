@@ -30,7 +30,7 @@ String
 
 == Usage
 
-* UUID values are time-sortable.
+* UUID values are sortable by time, to the millisecond: two values generated in the same millisecond are not ordered.
 
 == Examples
 

@@ -30,6 +30,7 @@ String or Binary
 
 == Usage
 
+* Values of other data types, such as numbers or dates, are converted to strings.
 * NULL values in the strings to concatenate are ignored.
 * Empty strings are concatenated like the other values, with a separator.
 * Returns NULL if all the strings to concatenate are NULL.
