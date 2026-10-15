@@ -54,7 +54,9 @@ public class SplitPartFunction extends Function {
     Long v2 = operands[2].getValue(Long.class);
     if (v2 == null) return null;
 
-    int index = v2.intValue();
+    // Clamp to the int range, the conversion would wrap a part number out of the int range, and
+    // a part number out of the range of the parts returns an empty string either way
+    int index = Math.clamp(v2, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
     // An empty delimiter does not split, the empty parts between delimiters are kept
     String[] parts =

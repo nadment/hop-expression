@@ -31,6 +31,7 @@ String
 == Usage
 
 * Returns NULL if the argument is negative.
+* Fails if length is greater than 32672.
 * Returns NULL if the argument is NULL.
 
 == Examples

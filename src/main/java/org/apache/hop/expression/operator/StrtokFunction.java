@@ -59,7 +59,8 @@ public class StrtokFunction extends Function {
       if (v1 == null) return null;
 
       if (v1 instanceof Number number) {
-        index = number.intValue();
+        // Clamp to the int range, the conversion would wrap a part number out of the int range
+        index = Math.clamp(number.longValue(), Integer.MIN_VALUE, Integer.MAX_VALUE);
       } else {
         delimiter = (String) v1;
       }
@@ -69,7 +70,7 @@ public class StrtokFunction extends Function {
 
       Long v2 = operands[2].getValue(Long.class);
       if (v2 == null) return null;
-      index = v2.intValue();
+      index = Math.clamp(v2, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     String[] parts = StringUtils.splitPreserveAllTokens(str, delimiter, 256);

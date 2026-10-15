@@ -42,9 +42,6 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class RPadFunction extends Function {
 
-  /** The maximum size to which the padding can expand. */
-  protected static final int PAD_LIMIT = 8192;
-
   public RPadFunction() {
     super(
         "RPAD",
@@ -82,7 +79,7 @@ public class RPadFunction extends Function {
       if (v1 == null) return null;
 
       // Clamp to the int range, a negative length or one above the limit keeps its effect
-      int length = Math.clamp(v1, -1, PAD_LIMIT + 1);
+      int length = Math.clamp(v1, -1, MAX_STRING_RESULT_SIZE + 1);
 
       // If this parameter is omitted, the function will pad spaces
       String pad = null;
@@ -97,8 +94,8 @@ public class RPadFunction extends Function {
       if (length < 0) {
         return "";
       }
-      if (length > PAD_LIMIT) {
-        throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
+      if (length > MAX_STRING_RESULT_SIZE) {
+        throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, v1, MAX_STRING_RESULT_SIZE);
       }
 
       // The lengths are in characters, a surrogate pair is a single character
@@ -125,7 +122,7 @@ public class RPadFunction extends Function {
       if (v1 == null) return null;
 
       // Clamp to the int range, a negative length or one above the limit keeps its effect
-      int length = Math.clamp(v1, -1, PAD_LIMIT + 1);
+      int length = Math.clamp(v1, -1, MAX_BINARY_RESULT_SIZE + 1);
 
       // If this parameter is omitted, the function will pad 0x00
       byte[] pad = null;
@@ -138,8 +135,8 @@ public class RPadFunction extends Function {
       // If the length is a negative number, the result is an empty array.
       if (length < 0) {
         return new byte[0];
-      } else if (length > PAD_LIMIT) {
-        throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
+      } else if (length > MAX_BINARY_RESULT_SIZE) {
+        throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, v1, MAX_BINARY_RESULT_SIZE);
       }
 
       // nothing to pad, but a value longer than the length must still be truncated

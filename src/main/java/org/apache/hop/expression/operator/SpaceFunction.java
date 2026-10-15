@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -44,8 +46,12 @@ public class SpaceFunction extends Function {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
 
+    if (value < 0) return null;
+    // The same maximum size of the result as LPAD, RPAD and REPEAT
+    if (value > MAX_STRING_RESULT_SIZE) {
+      throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, value, MAX_STRING_RESULT_SIZE);
+    }
     int length = value.intValue();
-    if (length < 0) return null;
 
     char[] chars = new char[length];
     for (int i = length - 1; i >= 0; i--) {

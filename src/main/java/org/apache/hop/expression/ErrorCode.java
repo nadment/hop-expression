@@ -237,12 +237,6 @@ public enum ErrorCode {
    */
   ARGUMENT_OUT_OF_RANGE,
   /**
-   * The length requested for a padding function exceeds the maximum allowed.
-   *
-   * <p>Message: <code>Padding length exceeds maximum limit {0}</code>
-   */
-  PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT,
-  /**
    * A precision is specified for a data type that does not have one.
    *
    * <p>Message: <code>Precision is not supported for {0} data type</code>
@@ -444,7 +438,7 @@ public enum ErrorCode {
   /**
    * The result of a function would exceed the maximum allowed size.
    *
-   * <p>Message: <code>Result size too large: {0}</code>
+   * <p>Message: <code>Result size {0} exceeds the maximum size {1}</code>
    */
   RESULT_SIZE_TOO_LARGE,
   /**

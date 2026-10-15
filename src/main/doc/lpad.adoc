@@ -42,7 +42,7 @@ String or Binary
 * If length is smaller than the length of value, the function truncates value to length.
 * If pad is empty, value is not padded but is still truncated.
 * If length is negative, the function returns an empty string or binary.
-* Fails if length is greater than 8192.
+* Fails if length is greater than 32672 for a string, or 16777216 (16 MB) for a binary.
 * Returns NULL if value or length is NULL.
 
 == Examples

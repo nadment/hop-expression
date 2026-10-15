@@ -24,6 +24,18 @@ import org.jspecify.annotations.NullMarked;
 public abstract class Function extends Operator {
 
   /**
+   * The maximum number of characters of a string built with a given length by a function, like
+   * LPAD, RPAD, SPACE or REPEAT.
+   */
+  protected static final int MAX_STRING_RESULT_SIZE = 32_672;
+
+  /**
+   * The maximum number of bytes of a binary built with a given length by a function, like LPAD,
+   * RPAD or REPEAT: 16 MB.
+   */
+  protected static final int MAX_BINARY_RESULT_SIZE = 16 * 1024 * 1024;
+
+  /**
    * Creates a function.
    *
    * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.

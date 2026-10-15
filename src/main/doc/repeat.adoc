@@ -35,7 +35,7 @@ String or Binary
 
 == Usage
 
-* Raises an error if the result is too large.
+* Fails if the result is longer than 32672 characters for a string, or 16777216 bytes (16 MB) for a binary.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

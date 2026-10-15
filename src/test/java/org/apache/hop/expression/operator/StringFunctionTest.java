@@ -250,9 +250,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("RPAD('123',5,'*')", "123**");
     // A NULL pad is the default pad
     evalEquals("RPAD('test',6,NULL_STRING)", "test  ");
-    // The maximum length is 8192
-    evalEquals("LENGTH(RPAD('a',8192))", 8192L);
-    evalFails("RPAD('a',8193)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    // The maximum length is 32672
+    evalEquals("LENGTH(RPAD('a',32672))", 32672L);
+    evalEquals("LENGTH(LPAD('a',32672))", 32672L);
+    evalFails("LPAD('a',32673)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    evalFails("RPAD('a',32673)", ErrorCode.RESULT_SIZE_TOO_LARGE);
     evalEquals("RPad('test',7)", "test   ").returnType(StringType.STRING_NOT_NULL);
     evalEquals("RPad('test',7,'*')", "test***");
     evalEquals("RPad('test',4,'*')", "test");
@@ -298,13 +300,14 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Check padding length exceeds the maximum limit
-    evalFails("RPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
-    evalFails(
-        "RPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("RPad('test',40000,'t')", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    // The maximum size of a binary is 16 MB
+    evalEquals("LENGTH(RPad(FIELD_BINARY,16777216))", 16777216L);
+    evalFails("RPad(FIELD_BINARY,16777217, FIELD_BINARY)", ErrorCode.RESULT_SIZE_TOO_LARGE);
 
     // A length out of the int range must not wrap
-    evalFails("RPad('test',4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
-    evalFails("RPad(FIELD_BINARY,4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("RPad('test',4294967298)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    evalFails("RPad(FIELD_BINARY,4294967298)", ErrorCode.RESULT_SIZE_TOO_LARGE);
     evalEquals("RPad('test',-4294967295)", "");
     evalEquals("RPad(FIELD_BINARY,-4294967295)", new byte[0]);
   }
@@ -358,13 +361,14 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Check padding length exceeds the maximum limit
-    evalFails("LPad('test',10000,'t')", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
-    evalFails(
-        "LPad(FIELD_BINARY,10000, FIELD_BINARY)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("LPad('test',40000,'t')", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    // The maximum size of a binary is 16 MB
+    evalEquals("LENGTH(LPad(FIELD_BINARY,16777216))", 16777216L);
+    evalFails("LPad(FIELD_BINARY,16777217, FIELD_BINARY)", ErrorCode.RESULT_SIZE_TOO_LARGE);
 
     // A length out of the int range must not wrap
-    evalFails("LPad('test',4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
-    evalFails("LPad(FIELD_BINARY,4294967298)", ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT);
+    evalFails("LPad('test',4294967298)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    evalFails("LPad(FIELD_BINARY,4294967298)", ErrorCode.RESULT_SIZE_TOO_LARGE);
     evalEquals("LPad('test',-4294967295)", "");
     evalEquals("LPad(FIELD_BINARY,-4294967295)", new byte[0]);
   }
@@ -452,6 +456,9 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Split_part() throws Exception {
+    // The part number must not wrap
+    evalEquals("SPLIT_PART('a.b','.',4294967297)", "");
+    evalEquals("SPLIT_PART('a.b','.',-4294967295)", "");
     // Documentation example
     evalEquals("SPLIT_PART('127.0.0.1','.',1)", "127");
     // Part 0 returns an empty string
@@ -489,6 +496,10 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Strtok() throws Exception {
+    // The part number must not wrap
+    evalNull("STRTOK('a b',4294967297)");
+    evalNull("STRTOK('a.b','.',4294967297)");
+    evalNull("STRTOK('a.b','.',-4294967295)");
     evalEquals("Strtok('127.1-2-3','.-:',1)", "127").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Strtok('127.1-2-3','.-:',2)", "1");
     evalEquals("Strtok('127.1-2-3','.-:',4)", "3");
@@ -527,6 +538,11 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Space() throws Exception {
+    // The maximum length is 32672, like the padding of LPAD and RPAD
+    evalEquals("LENGTH(SPACE(32672))", 32672L);
+    evalFails("SPACE(32673)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    // The length must not wrap
+    evalFails("SPACE(4294967297)", ErrorCode.RESULT_SIZE_TOO_LARGE);
     evalEquals("Space(4)", "    ").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Space(0)", "");
 
@@ -807,6 +823,17 @@ public class StringFunctionTest extends ExpressionTest {
     // Result size to large
     evalFails("Repeat('ABC',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
     evalFails("Repeat(BINARY '1234',9999999999999)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+
+    // The maximum length is 32672, like the padding of LPAD and RPAD
+    evalEquals("LENGTH(Repeat('a',32672))", 32672L);
+    evalEquals("LENGTH(Repeat('😀',32672))", 32672L);
+    evalFails("Repeat('a',32673)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    evalFails("Repeat('ab',16337)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    // The maximum size of a binary is 16 MB
+    evalEquals("LENGTH(Repeat(BINARY '1234',8388608))", 16777216L);
+    evalFails("Repeat(BINARY '1234',8388609)", ErrorCode.RESULT_SIZE_TOO_LARGE);
+    // An empty value can be repeated any number of times
+    evalEquals("Repeat('',100000)", "");
 
     // Negative number of repetitions, same as 0
     evalEquals("Repeat('ABC',-1)", "");

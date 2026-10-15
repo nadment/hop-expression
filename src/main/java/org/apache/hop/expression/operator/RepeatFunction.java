@@ -29,6 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -73,13 +74,12 @@ public class RepeatFunction extends Function {
       if (repeat <= 0) return "";
 
       final int len = value.length();
-      final long longSize = len * repeat;
-      final int size = (int) longSize;
-      if (size != longSize) {
-        throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, longSize);
-      }
       // Nothing to repeat
-      if (size == 0) return "";
+      if (len == 0) return "";
+
+      // The maximum size of the result, in characters
+      checkSize(Characters.length(value), repeat, MAX_STRING_RESULT_SIZE);
+      final int size = (int) (len * repeat);
 
       final char[] array = new char[size];
       value.getChars(0, len, array, 0);
@@ -104,17 +104,34 @@ public class RepeatFunction extends Function {
       if (repeat <= 0) return new byte[0];
 
       final int len = value.length;
-      final long longSize = len * repeat;
-      final int size = (int) longSize;
-      if (size != longSize) {
-        throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, longSize);
-      }
+      // Nothing to repeat
+      if (len == 0) return new byte[0];
+
+      // The maximum size of the result, in bytes
+      checkSize(len, repeat, MAX_BINARY_RESULT_SIZE);
+      final int size = (int) (len * repeat);
 
       final byte[] array = new byte[size];
       for (int n = 0; n < size; n += len) {
         System.arraycopy(value, 0, array, n, len);
       }
       return array;
+    }
+  }
+
+  /**
+   * Checks that the size of the result is not greater than the maximum size of a result.
+   *
+   * @param length the length of the value to repeat, greater than 0
+   * @param repeat the number of repetitions, greater than 0
+   * @param maxSize the maximum size of the result
+   * @throws ExpressionException if the result is too large
+   */
+  private static void checkSize(final int length, final long repeat, final int maxSize) {
+    // A saturated product, a huge number of repetitions would overflow the long range
+    long size = (repeat > Long.MAX_VALUE / length) ? Long.MAX_VALUE : length * repeat;
+    if (size > maxSize) {
+      throw new ExpressionException(ErrorCode.RESULT_SIZE_TOO_LARGE, size, maxSize);
     }
   }
 }
