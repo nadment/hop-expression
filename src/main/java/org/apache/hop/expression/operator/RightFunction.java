@@ -28,6 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -77,10 +78,12 @@ public class RightFunction extends Function {
       // Clamp to the int range, a length greater than the value returns the whole value
       int length = Math.clamp(v1, 0, Integer.MAX_VALUE);
 
-      if (str.length() <= length) {
+      // The length is in characters, a surrogate pair is a single character
+      int count = Characters.length(str);
+      if (count <= length) {
         return str;
       }
-      return str.substring(str.length() - length);
+      return str.substring(Characters.offset(str, count - length));
     }
   }
 

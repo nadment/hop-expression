@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -55,13 +56,14 @@ public class OverlayFunction extends Function {
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
     }
-    int len = str.length();
+    // The positions are in characters, a surrogate pair is a single character
+    int len = Characters.length(str);
     // If position is beyond the end of string, replacement is placed directly after string.
     // Compare the long value, the conversion to int would wrap a value out of the int range
     int start = (int) Math.min(position - 1, len);
 
     // If count is omitted, it defaults to the length of replace.
-    int count = replace.length();
+    int count = Characters.length(replace);
     if (operands.length == 4) {
       Long arg3 = operands[3].getValue(Long.class);
       if (arg3 == null) return null;
@@ -71,9 +73,9 @@ public class OverlayFunction extends Function {
       // Clamp to the int range, a count beyond the end of string replaces up to the end
       count = Math.clamp(arg3, 0, Integer.MAX_VALUE);
       if (count == 0) {
-        count = replace.length();
-      } else if (count < replace.length()) {
-        replace = replace.substring(0, count);
+        count = Characters.length(replace);
+      } else if (count < Characters.length(replace)) {
+        replace = replace.substring(0, Characters.offset(replace, count));
       }
     }
 
@@ -81,10 +83,10 @@ public class OverlayFunction extends Function {
     long end = (long) start + count;
 
     StringBuilder builder = new StringBuilder();
-    builder.append(str, 0, start);
+    builder.append(str, 0, Characters.offset(str, start));
     builder.append(replace);
     if (end < len) {
-      builder.append(str.substring((int) end));
+      builder.append(str.substring(Characters.offset(str, end)));
     }
 
     return builder.toString();

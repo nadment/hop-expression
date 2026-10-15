@@ -31,6 +31,7 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.Regexp;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -105,18 +106,18 @@ public class RegexpReplaceFunction extends Function {
     }
 
     // Default position 1
-    int position = 1;
+    long position = 1;
     if (operands.length >= 4) {
       Long v3 = operands[3].getValue(Long.class);
       if (v3 != null) {
-        position = v3.intValue();
+        position = v3;
       }
     }
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, position);
     }
     // A search starting after the end of the string replaces nothing
-    if (position - 1 > input.length()) {
+    if (position - 1 > Characters.length(input)) {
       return input;
     }
 
@@ -164,7 +165,8 @@ public class RegexpReplaceFunction extends Function {
 
       // The position is 1-based, the matcher start index is 0-based.
       // Do not use replaceAll(), it resets the matcher and would search from the beginning.
-      boolean found = matcher.find(position - 1);
+      // The position is in characters, a surrogate pair is a single character
+      boolean found = matcher.find(Characters.offset(input, position - 1));
       int index = 1;
       while (found) {
         if (occurrence == 0 || index == occurrence) {

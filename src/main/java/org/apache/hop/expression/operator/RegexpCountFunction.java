@@ -27,6 +27,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.Regexp;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -92,12 +93,12 @@ public class RegexpCountFunction extends Function {
       return count;
     }
 
-    int start = 1;
+    long start = 1;
     int parameters = Pattern.UNICODE_CASE;
     if (operands.length >= 3) {
       Long v2 = operands[2].getValue(Long.class);
       if (v2 != null) {
-        start = v2.intValue();
+        start = v2;
       }
 
       if (operands.length == 4) {
@@ -109,7 +110,7 @@ public class RegexpCountFunction extends Function {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
     }
     // A search starting after the end of the string finds nothing
-    if (start - 1 > source.length()) {
+    if (start - 1 > Characters.length(source)) {
       return count;
     }
 
@@ -118,7 +119,8 @@ public class RegexpCountFunction extends Function {
           (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, parameters);
       Matcher matcher = p.matcher(source);
       // The position is 1-based, the matcher start index is 0-based
-      boolean found = matcher.find(start - 1);
+      // The position is in characters, a surrogate pair is a single character
+      boolean found = matcher.find(Characters.offset(source, start - 1));
       while (found) {
         count++;
         found = matcher.find();

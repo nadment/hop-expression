@@ -36,6 +36,7 @@ Integer
 
 == Usage
 
+* A character outside the Basic Multilingual Plane, such as an emoji, counts as one character.
 * Returns NULL if the argument is NULL.
 
 == Examples

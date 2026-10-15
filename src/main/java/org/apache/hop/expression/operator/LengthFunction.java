@@ -28,6 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -71,7 +72,9 @@ public class LengthFunction extends Function {
     public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
-      return Long.valueOf(value.length());
+      // A character outside the Basic Multilingual Plane is a single character, even though it
+      // is stored as a surrogate pair
+      return Long.valueOf(Characters.length(value));
     }
   }
 

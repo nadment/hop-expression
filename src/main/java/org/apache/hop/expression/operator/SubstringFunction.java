@@ -22,6 +22,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -47,7 +48,8 @@ public class SubstringFunction extends Function {
     String string = operands[0].getValue(String.class);
     if (string == null) return null;
 
-    int length = string.length();
+    // The positions are in characters, a surrogate pair is a single character
+    int length = Characters.length(string);
     Long position = operands[1].getValue(Long.class);
     if (position == null) return null;
 
@@ -68,7 +70,7 @@ public class SubstringFunction extends Function {
       if (start > length) {
         return "";
       }
-      return string.substring((int) Math.max(start, 1) - 1);
+      return string.substring(Characters.offset(string, Math.max(start, 1) - 1));
     }
 
     Long count = operands[2].getValue(Long.class);
@@ -84,6 +86,7 @@ public class SubstringFunction extends Function {
       return "";
     }
 
-    return string.substring((int) start - 1, (int) end - 1);
+    return string.substring(
+        Characters.offset(string, start - 1), Characters.offset(string, end - 1));
   }
 }

@@ -630,6 +630,9 @@ public class StringFunctionTest extends ExpressionTest {
     // String
     evalEquals("Length('TEST')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Len('TEST')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
+    // A character outside the Basic Multilingual Plane counts as one character
+    evalEquals("Length(CHR(1114111))", 1L);
+    evalEquals("Length('a'||CHR(128512)||'b')", 3L);
 
     // Binary
     evalEquals("Length(BINARY 'F0FA')", 2L).returnType(IntegerType.INTEGER_NOT_NULL);
@@ -1065,6 +1068,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Replace() throws Exception {
+    // The position must not wrap
+    evalEquals("Regexp_Replace('aaa','a','b',4294967297)", "aaa");
     // A NULL position or parameters argument is treated as its default value
     evalEquals("Regexp_Replace('aaa','a','b',NULL_INTEGER)", "bbb");
     evalEquals("Regexp_Replace('Aa','a','x',1,0,NULL_STRING)", "Ax");
@@ -1133,6 +1138,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Count() throws Exception {
+    // The position must not wrap
+    evalEquals("Regexp_Count('aaa','a',4294967296)", 0L);
     // A NULL parameters argument is treated as its default value
     evalEquals("Regexp_Count('Aa','a',1,NULL_STRING)", 1L);
     // An empty pattern matches nothing
@@ -1175,6 +1182,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Instr() throws Exception {
+    // The position must not wrap
+    evalEquals("Regexp_Instr('abc','a',4294967297)", 0L);
     // A nonzero return option returns the position following the match
     evalEquals("Regexp_Instr('abc','b',1,1,2)", 3L);
     // A NULL position argument is treated as its default value
@@ -1222,6 +1231,8 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Regexp_Substr() throws Exception {
+    // The position must not wrap
+    evalNull("Regexp_Substr('abc','a',4294967297)");
     // A NULL position argument is treated as its default value
     evalEquals("Regexp_Substr('abc','b',NULL_INTEGER)", "b");
     evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache")
@@ -1759,5 +1770,43 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Position( IN 'fsd'", ErrorCode.SYNTAX_ERROR);
 
     optimize("POSITION('abc' IN FIELD_STRING)");
+  }
+
+  /**
+   * A character outside the Basic Multilingual Plane, like the emoji 😀, is stored as a surrogate
+   * pair of two chars, but the positions and lengths of the string functions count it as one
+   * character.
+   */
+  @Test
+  void SurrogatePair() throws Exception {
+    evalEquals("Length('a😀b')", 3L);
+    evalEquals("Left('😀ab',1)", "😀");
+    evalEquals("Left('a😀b',2)", "a😀");
+    evalEquals("Right('ab😀',1)", "😀");
+    evalEquals("Right('😀ab',3)", "😀ab");
+    evalEquals("Substring('a😀b',2,1)", "😀");
+    evalEquals("Substring('a😀b',3)", "b");
+    evalEquals("Substring('a😀b',-2)", "😀b");
+    evalEquals("Position('b' IN 'a😀b')", 3L);
+    evalEquals("Instr('a😀b','b')", 3L);
+    evalEquals("Instr('a😀b😀','😀',1,2)", 4L);
+    evalEquals("Instr('😀a😀a','a',-1)", 4L);
+    evalEquals("Instr('😀a😀a','a',-2)", 2L);
+    evalEquals("Insert('a😀b',3,1,'X')", "a😀X");
+    evalEquals("Insert('a😀b',2,1,'X')", "aXb");
+    evalEquals("Overlay('a😀b','X',2)", "aXb");
+    evalEquals("Overlay('abc','😀😀',2,1)", "a😀c");
+    evalEquals("LPad('a',3,'😀')", "😀😀a");
+    evalEquals("RPad('a',3,'😀')", "a😀😀");
+    evalEquals("LPad('😀😀😀',2)", "😀😀");
+    evalEquals("RPad('😀😀😀',2)", "😀😀");
+    evalEquals("Translate('a😀b','😀','X')", "aXb");
+    evalEquals("Translate('abc','b','😀')", "a😀c");
+    evalEquals("Reverse('a😀b')", "b😀a");
+    evalEquals("Regexp_Instr('a😀b','b')", 3L);
+    evalEquals("Regexp_Instr('a😀b','😀',1,1,1)", 3L);
+    evalEquals("Regexp_Substr('😀ab','.',2)", "a");
+    evalEquals("Regexp_Count('😀a😀a','a',3)", 1L);
+    evalEquals("Regexp_Replace('😀aa','a','X',3)", "😀aX");
   }
 }

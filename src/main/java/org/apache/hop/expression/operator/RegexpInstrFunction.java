@@ -29,6 +29,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.Regexp;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -88,18 +89,18 @@ public class RegexpInstrFunction extends Function {
     }
 
     // Default position 1
-    int position = 1;
+    long position = 1;
     if (operands.length >= 3) {
       Long v2 = operands[2].getValue(Long.class);
       if (v2 != null) {
-        position = v2.intValue();
+        position = v2;
       }
     }
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
     }
     // A search starting after the end of the string finds nothing
-    if (position - 1 > input.length()) {
+    if (position - 1 > Characters.length(input)) {
       return 0L;
     }
 
@@ -137,13 +138,15 @@ public class RegexpInstrFunction extends Function {
       Matcher matcher = p.matcher(input);
 
       // The position is 1-based, the matcher start index is 0-based
-      boolean found = matcher.find(position - 1);
+      // The position is in characters, a surrogate pair is a single character
+      boolean found = matcher.find(Characters.offset(input, position - 1));
       for (int index = 1; index < occurrence && found; index++) {
         found = matcher.find();
       }
 
       if (found) {
-        return Long.valueOf(1L + ((returnOption == 0) ? matcher.start() : matcher.end()));
+        int index = (returnOption == 0) ? matcher.start() : matcher.end();
+        return Long.valueOf(1L + Characters.position(input, index));
       }
 
       return 0L;

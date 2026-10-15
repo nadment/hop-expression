@@ -51,19 +51,28 @@ public class TranslateFunction extends Function {
     if (replaceChars == null) replaceChars = "";
     StringBuilder buffer = new StringBuilder(string.length());
 
-    int replaceSize = replaceChars.length();
+    // The characters are code points, a surrogate pair is a single character
+    int[] find = findChars.codePoints().toArray();
+    int[] replace = replaceChars.codePoints().toArray();
 
-    for (int i = 0, size = string.length(); i < size; i++) {
-      char ch = string.charAt(i);
-      int index = findChars.indexOf(ch);
-      if (index >= 0) {
-        if (index < replaceSize) {
-          buffer.append(replaceChars.charAt(index));
-        }
-      } else {
-        buffer.append(ch);
-      }
-    }
+    string
+        .codePoints()
+        .forEach(
+            ch -> {
+              int index = indexOf(find, ch);
+              if (index < 0) {
+                buffer.appendCodePoint(ch);
+              } else if (index < replace.length) {
+                buffer.appendCodePoint(replace[index]);
+              }
+            });
     return buffer.toString();
+  }
+
+  private static int indexOf(final int[] chars, final int ch) {
+    for (int i = 0; i < chars.length; i++) {
+      if (chars[i] == ch) return i;
+    }
+    return -1;
   }
 }

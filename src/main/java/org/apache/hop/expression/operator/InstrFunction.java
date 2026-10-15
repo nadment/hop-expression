@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -74,13 +75,15 @@ public class InstrFunction extends Function {
 
       // Clamp to just outside the string, the conversion to int would wrap a value out of the
       // int range, and a position beyond the string finds nothing either way
-      long bound = str.length() + 1L;
+      long bound = Characters.length(str) + 1L;
       start = (int) Math.clamp(position, -bound, bound);
 
       // Convert the 1-based position to a 0-based index, a negative position counts back from
       // the end (-1 is the last character) and searches towards the beginning
+      // The position is in characters, a surrogate pair is a single character
       forward = start > 0;
-      start = forward ? start - 1 : str.length() + start;
+      long index = forward ? start - 1L : Characters.length(str) + start;
+      start = (index < 0) ? -1 : Characters.offset(str, index);
 
       // The occurrence to find, must be positive
       if (operands.length == 4) {
@@ -110,6 +113,6 @@ public class InstrFunction extends Function {
       }
     }
 
-    return Long.valueOf(result + 1L);
+    return Long.valueOf((result < 0) ? 0L : Characters.position(str, result) + 1L);
   }
 }

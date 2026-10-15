@@ -155,4 +155,69 @@ public final class Characters {
   public static boolean isExponent(char ch) {
     return ch == 'e' || ch == 'E';
   }
+
+  /**
+   * Returns the number of characters of a string, a character outside the Basic Multilingual Plane
+   * counting as one character although it is stored as a surrogate pair.
+   *
+   * @param str the string
+   * @return the number of code points
+   */
+  public static int length(final String str) {
+    return str.codePointCount(0, str.length());
+  }
+
+  /**
+   * Returns the index in a string of the character at a 0-based character position, a character
+   * outside the Basic Multilingual Plane counting as one character. A position beyond the end
+   * returns the length of the string.
+   *
+   * <p>Example: {@code offset("😀ab", 1)} returns 2, the index of {@code 'a'}.
+   *
+   * @param str the string
+   * @param position the 0-based position, in characters
+   * @return the 0-based index in the string, between 0 and the length of the string
+   */
+  public static int offset(final String str, final long position) {
+    int length = str.length();
+    int index = 0;
+    for (long i = 0; i < position && index < length; i++) {
+      index += Character.charCount(str.codePointAt(index));
+    }
+    return index;
+  }
+
+  /**
+   * Returns the 0-based character position of an index in a string, a character outside the Basic
+   * Multilingual Plane counting as one character.
+   *
+   * @param str the string
+   * @param index the 0-based index in the string
+   * @return the 0-based position, in characters
+   */
+  public static int position(final String str, final int index) {
+    return str.codePointCount(0, index);
+  }
+
+  /**
+   * Returns a string of a number of characters, made of the characters of a pad repeated as many
+   * times as necessary. A character outside the Basic Multilingual Plane counts as one character.
+   *
+   * <p>Example: {@code fill("ab", 5)} returns {@code "ababa"}.
+   *
+   * @param pad the characters to repeat
+   * @param length the number of characters of the result
+   * @return the padding, or an empty string if pad is empty
+   */
+  public static String fill(final String pad, final int length) {
+    int[] chars = pad.codePoints().toArray();
+    if (chars.length == 0) {
+      return "";
+    }
+    StringBuilder builder = new StringBuilder(length);
+    for (int i = 0; i < length; i++) {
+      builder.appendCodePoint(chars[i % chars.length]);
+    }
+    return builder.toString();
+  }
 }

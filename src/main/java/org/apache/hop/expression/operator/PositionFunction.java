@@ -23,6 +23,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -52,7 +53,9 @@ public class PositionFunction extends Function {
       return null;
     }
 
-    return Long.valueOf(str.indexOf(substr) + 1L);
+    // The position is in characters, a surrogate pair is a single character
+    int index = str.indexOf(substr);
+    return Long.valueOf((index < 0) ? 0L : Characters.position(str, index) + 1L);
   }
 
   @Override

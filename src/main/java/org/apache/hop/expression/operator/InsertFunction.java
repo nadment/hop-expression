@@ -29,6 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -83,19 +84,22 @@ public class InsertFunction extends Function {
       String insert = operands[3].getValue(String.class);
       if (insert == null) return null;
 
+      // The positions are in characters, a surrogate pair is a single character
+      int count = Characters.length(original);
+
       // Valid values are between 1 and one more than the length of the string (inclusive).
-      if (pos <= 0 || pos > original.length() + 1)
+      if (pos <= 0 || pos > count + 1)
         throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, pos);
 
       // Valid values range from 0 to the number of characters between pos and the end of the
       // string.
-      if (len < 0 || len > original.length() - pos + 1)
+      if (len < 0 || len > count - pos + 1)
         throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, len);
 
-      int start = Math.min(Math.max(0, pos.intValue() - 1), original.length());
-      int length = Math.min(len.intValue(), original.length());
+      int start = Characters.offset(original, pos - 1);
+      int end = Characters.offset(original, pos - 1 + len);
 
-      return original.substring(0, start) + insert + original.substring(start + length);
+      return original.substring(0, start) + insert + original.substring(end);
     }
   }
 

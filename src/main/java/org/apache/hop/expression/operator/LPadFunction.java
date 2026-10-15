@@ -29,6 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -98,27 +99,12 @@ public class LPadFunction extends Function {
         throw new ExpressionException(ErrorCode.PADDING_LENGTH_EXCEEDS_MAXIMUM_LIMIT, PAD_LIMIT);
       }
 
-      final int size = pad.length();
-      final int index = length - value.length();
-
+      // The lengths are in characters, a surrogate pair is a single character
+      final int index = length - Characters.length(value);
       if (index <= 0) {
-        value = value.substring(0, length);
-      } else if (size == 0) {
-        // nothing to do
-      } else if (index == size) {
-        value = pad.concat(value);
-      } else if (index < size) {
-        value = pad.substring(0, index).concat(value);
-      } else {
-        final char[] padding = new char[index];
-        final char[] padChars = pad.toCharArray();
-        for (int i = 0; i < index; i++) {
-          padding[i] = padChars[i % size];
-        }
-        value = new String(padding).concat(value);
+        return value.substring(0, Characters.offset(value, length));
       }
-
-      return value;
+      return Characters.fill(pad, index).concat(value);
     }
   }
 
