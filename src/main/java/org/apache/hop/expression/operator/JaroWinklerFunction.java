@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.core.util.HopJaroWinklerDistance;
+import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -30,6 +30,9 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class JaroWinklerFunction extends Function {
+
+  // The standard Jaro-Winkler similarity, stateless and thread-safe
+  private static final JaroWinklerSimilarity JARO_WINKLER = new JaroWinklerSimilarity();
 
   public JaroWinklerFunction() {
     super(
@@ -47,8 +50,7 @@ public class JaroWinklerFunction extends Function {
     String v1 = operands[1].getValue(String.class);
     if (v1 == null) return null;
 
-    HopJaroWinklerDistance jaro = new HopJaroWinklerDistance();
-    jaro.apply(v0, v1);
-    return Long.valueOf(Math.round(100 * jaro.getJaroDistance()));
+    // The Jaro similarity with the Winkler boost of the common prefix, on a scale of 0 to 100
+    return Long.valueOf(Math.round(100 * JARO_WINKLER.apply(v0, v1)));
   }
 }

@@ -1025,10 +1025,18 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void JaroWinkler() throws Exception {
     evalEquals("JaroWinkler('Superman', 'Superman')", 100L);
-    evalEquals("JaroWinkler('Peter Parker', 'Pete Parker')", 88L);
+    evalEquals("JaroWinkler('Peter Parker', 'Pete Parker')", 92L);
     evalEquals("JaroWinkler('elephant', 'hippo')", 44L);
     evalEquals("JaroWinkler('święta', 'swieta')", 78L);
-    evalEquals("JaroWinkler('Ich weiß nicht', 'Ich weiss nicht')", 93L);
+    evalEquals("JaroWinkler('Ich weiß nicht', 'Ich weiss nicht')", 96L);
+
+    // Reference values of the Jaro-Winkler similarity, the common prefix raises the Jaro similarity
+    evalEquals("JaroWinkler('MARTHA', 'MARHTA')", 96L);
+    evalEquals("JaroWinkler('DIXON', 'DICKSONX')", 81L);
+    evalEquals("JaroWinkler('DWAYNE', 'DUANE')", 84L);
+    // Two empty strings are identical
+    evalEquals("JaroWinkler('', '')", 100L);
+    evalEquals("JaroWinkler('a', '')", 0L);
 
     // Null handling
     evalNull("JaroWinkler(NULL_STRING,NULL_STRING)");

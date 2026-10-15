@@ -16,7 +16,7 @@ under the License.
 ////
 = JAROWINKLER
 
-Returns the Jaro-Winkler distance between two strings.
+Returns the Jaro-Winkler similarity between two strings.
 
 == Syntax
 
@@ -31,6 +31,7 @@ Integer between 0 and 100
 == Usage
 
 * The result 0 indicates no similarity and 100 indicates an exact match.
+* The Jaro similarity is raised for the strings that share a common prefix, of up to 4 characters.
 * Information about the Jaro-Winkler distance can be found here: https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance.
 * Returns NULL if one of the arguments is NULL.
 
@@ -38,7 +39,8 @@ Integer between 0 and 100
 
 ----
 JAROWINKLER('Superman', 'Superman') returns 100
-JAROWINKLER('Peter Parker', 'Pete Parker') returns 88
+JAROWINKLER('Peter Parker', 'Pete Parker') returns 92
+JAROWINKLER('MARTHA', 'MARHTA') returns 96
 ----
 
 == See also
