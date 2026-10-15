@@ -31,14 +31,16 @@ under the License.
 |S|||
 |X|&#10003;|&#10003;|Hexadecimal digit.
 |FM|||Fill mode modifier; toggles between compact and fill modes for any elements following the modifier in the model.
-|; (semi-colon)|||Always preserved as-is.
-|: (colon)|||Always preserved as-is.
-|- (minus sign)|||Always preserved as-is.
-|= (equals)|||Always preserved as-is.
-|/ (forward slash)|||Always preserved as-is.
-|( (left parenthesis)|||Always preserved as-is.
-|( (right parenthesis)|||Always preserved as-is.
+|; (semi-colon)|&#10003;||Always preserved as-is.
+|: (colon)|&#10003;||Always preserved as-is.
+|- (minus sign)|&#10003;||Always preserved as-is.
+|= (equals)|&#10003;||Always preserved as-is.
+|/ (forward slash)|&#10003;||Always preserved as-is.
+|( (left parenthesis)|&#10003;||Always preserved as-is.
+|) (right parenthesis)|&#10003;||Always preserved as-is.
 |===
+
+The characters that are always preserved as-is can appear anywhere among the digits, for example `TO_CHAR(1234,'99/99')` returns `' 12/34'`. In fill mode, the unused leading digits before a preserved character are replaced by spaces, so that the character stays at its position: `TO_CHAR(12,'(999)')` returns `' ( 12)'`. When parsing a string, the preserved characters must be present at their position.
 
 === Text-minimal numeric formats
 [cols="<1,^1,^1,<5", options="header"]
@@ -57,22 +59,28 @@ under the License.
 |.|||Decimal separator +
 *Restriction:* You can specify only one period in a number format model.
 |,|&#10003;||Digit group separator
-|$|||Leading dollar sign
+|$|||Dollar sign
 |0|&#10003;||Leading or trailing zeroes
 |9|&#10003;||Digit
 |B|||Blanks integer part of a fixed point number less than 1
 |C|||ISO currency symbol (EUR, USD...)
 |D|||Local decimal separator. +
 *Restriction:* You can specify only one decimal separator character in a number format model.
-|EEEE||&#10003;|Returns a value in scientific notation
+|EEEE|||Returns a value in scientific notation
 |FM|||Returns values with no leading or trailing spaces
 |G|&#10003;||Local grouping separator
 |L|||Local currency symbol (€, £, $...)
-|MI|||Negative values get trailing minus sign, positive get trailingspace
-|PR|||Negative values get enclosing angle brackets, positive get spaces
-|RN||&#10003;|Returns values in Roman numerals. Allowed value is an integer between 1 and 3999.
+|MI|||Negative values get a minus sign, positive get a space, in the first or last position
+|PR|||Negative values get enclosing angle brackets, positive get spaces. +
+*Restriction:* The PR format element can appear only in the last position of a number format model.
+|RN||&#10003;|Returns values in Roman numerals. Allowed value is between 1 and 3999; a value with a fractional part is rounded.
 |S|||Returns values with leading/trailing +/- signs. +
 *Restriction:* The S format element can appear only in the first or last position of a number format model.
 |TM|||Returns smallest number of characters possible
 |X|&#10003;|&#10003;|Hexadecimal digit. If the specified number is not an integer, it will round to an integer.
 |===
+
+* The case sensitive elements only apply to output: the case of the element sets the case of the text, for example `RN` returns `XIV` and `rn` returns `xiv`. Input is matched regardless of case.
+* Any other character, including a space, raises an error.
+* If the value has more digits than the format, `TO_CHAR` returns `#` characters.
+* A value out of the range of `RN` raises an error.

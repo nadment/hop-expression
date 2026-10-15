@@ -31,13 +31,15 @@ Interval
 == Usage
 
 * The string uses either the verbose syntax, such as `'1 year 6 months 12 hours'`, or the short syntax, such as `'1-6 0 12:00:00'`.
+* The string can start with a `+` or `-` sign; `-` negates the interval.
+* Raises an error if the string is not a valid interval.
 * Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
-TO_INTERVAL('1 year 6 months 12 hours')
-TO_INTERVAL('1-6 0 12:00:00')
+TO_INTERVAL('1 year 6 months 12 hours') returns INTERVAL '1-6 0 12:00:00'
+TO_INTERVAL('1-6 0 12:00:00') returns INTERVAL '1-6 0 12:00:00'
 ----
 
 == See also

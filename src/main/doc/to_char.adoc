@@ -25,11 +25,12 @@ TO_CHAR( numeric [, format ] )
 TO_CHAR( date [, format ] )
 TO_CHAR( binary [, format ] )
 TO_CHAR( boolean )
+TO_CHAR( string )
 ----
 
 == Arguments
 
-numeric | date | binary | boolean:: The value to convert.
+numeric | date | binary | boolean | string:: The value to convert.
 format:: The format of the returned string. The supported formats depend on the type of the value to convert and are described below.
 
 == Returns
@@ -38,8 +39,11 @@ String
 
 == Usage
 
+* For a numeric value, the default format is `TM`.
 * For a date, the default format is defined by the variable `EXPRESSION_DATE_FORMAT`.
 * For a binary value, format is `HEX`, `BASE64`, `UTF-8` or `UTF8` (case-insensitive). The default is `HEX`; it can be changed with the variable `EXPRESSION_BINARY_FORMAT`.
+* A boolean is converted to `TRUE` or `FALSE`.
+* A string is returned unchanged.
 * Returns NULL if the value to convert is NULL.
 
 include::dateformat.adoc[]

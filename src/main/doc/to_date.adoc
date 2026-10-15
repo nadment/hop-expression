@@ -40,11 +40,13 @@ Date
 == Usage
 
 * An element in the date format model can only appear once. However, elements such as separators and padding characters can appear more than once.
-* If no format is specified, the standard format `YYYY-MM-DD` is used to interpret string.
+* If no format is specified, string is interpreted with the ISO-8601 formats, for example `2019-02-13`, `20190213`, `2019-02-13 15:34:56` or `2019-02-13T15:34:56+02:00`. This is the same as the format `AUTO`.
+* Multiple alternative formats can be specified by separating the format strings with the `|` character.
 * Time zones are case-sensitive: `Europe/London` is not the same as `europe/london`.
-* If single elements are omitted, their minimum values are assumed (for example, `TO_DATE('1999-12', 'YYYY-MM')` is interpreted as December 1st, 1999).
+* If single elements are omitted, their minimum values are assumed, and the year is 1970 (for example, `TO_DATE('1999-12', 'YYYY-MM')` is interpreted as December 1st, 1999 and `TO_DATE('12-02', 'MM-DD')` as December 2nd, 1970).
 * If a match fails between a format element and the corresponding characters in string, the alternative format elements below are tried.
-* If the conversion is not possible, `TO_DATE` raises an error and `TRY_TO_DATE` returns NULL.
+* If the conversion is not possible, `TO_DATE` raises an error and `TRY_TO_DATE` returns NULL. An invalid format raises an error in both cases.
+* Two-digit years `YY` are interpreted with the variable `EXPRESSION_TWO_DIGIT_YEAR_START`.
 * Returns NULL if the value to convert is NULL.
 
 [cols="<2,<5", options="header"]

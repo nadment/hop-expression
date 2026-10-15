@@ -36,7 +36,7 @@ Binary
 
 == Usage
 
-* If the conversion is not possible, `TO_BINARY` raises an error and `TRY_TO_BINARY` returns NULL.
+* If the conversion is not possible, `TO_BINARY` raises an error and `TRY_TO_BINARY` returns NULL. An unknown format raises an error in both cases.
 * Returns NULL if string is NULL.
 
 include::binaryformat.adoc[]

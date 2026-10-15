@@ -40,7 +40,8 @@ Number
 == Usage
 
 * When parsing a string, multiple alternative formats can be specified by separating the format strings with the `|` character.
-* If the conversion is not possible, `TO_NUMBER` raises an error and `TRY_TO_NUMBER` returns NULL.
+* If no format is specified, string can use the scientific notation, such as `1.2E3`, and the `_` digit separator, such as `1_000`.
+* If the conversion is not possible, `TO_NUMBER` raises an error and `TRY_TO_NUMBER` returns NULL. An invalid format raises an error in both cases.
 * Returns NULL if the value to convert is NULL.
 
 include::numberformat.adoc[]

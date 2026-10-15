@@ -63,12 +63,18 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
     evalEquals("TO_BINARY('Apache Hop','UtF8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
 
+    // Default format is HEX and format is case-insensitive
+    evalEquals("TO_BINARY('41706163686520486f70')", "Apache Hop".getBytes());
+    evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','base64')", "Apache Hop".getBytes());
+
     // Null handling
     evalNull("TO_BINARY(NULL_STRING)");
 
     // Check operands
     evalFails("TO_BINARY()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    evalFails("TO_BINARY('Z4','HEX')", ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT);
   }
 
   @Test
@@ -76,8 +82,10 @@ class ConversionFunctionTest extends ExpressionTest {
     evalTrue("To_Boolean('True')").returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalTrue("To_Boolean('t')");
     evalTrue("To_Boolean('yes')");
+    evalTrue("To_Boolean('y')");
     evalTrue("To_Boolean('on')");
     evalTrue("To_Boolean('1')");
+    evalTrue("To_Boolean(2)");
     evalTrue("To_Boolean(5)");
     evalTrue("To_Boolean(-1)");
     evalTrue("To_Boolean(2.3)");
@@ -230,6 +238,24 @@ class ConversionFunctionTest extends ExpressionTest {
     // format model.
     evalFails("TO_NUMBER('-0.2','999.999G99')", ErrorCode.INVALID_NUMBER_FORMAT);
     evalFails("TO_NUMBER('-0.2','999.999,99')", ErrorCode.INVALID_NUMBER_FORMAT);
+
+    evalEquals("TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03')", new BigDecimal("1284352323"));
+    evalEquals("TO_NUMBER('12','B99')", 12D);
+    evalEquals("TO_NUMBER('12.5','TM')", 12.5D);
+    evalEquals("TO_NUMBER('12.5','FM99.99')", 12.5D);
+    evalEquals("TO_NUMBER('xiv','RN')", 14D);
+    evalFails("TO_NUMBER('12a')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
+
+    // Literals are always preserved as-is at their position and must be present
+    evalEquals("TO_NUMBER('(12)','(99)')", 12D);
+    evalEquals("TO_NUMBER(' ( 12)','(999)')", 12D);
+    evalEquals("TO_NUMBER('-(12)','(99)')", -12D);
+    evalEquals("TO_NUMBER('12/34','99/99')", 1234D);
+    evalEquals("TO_NUMBER('1-234','999-999')", 1234D);
+    evalEquals("TO_NUMBER('=12;','=99;')", 12D);
+    evalEquals("TO_NUMBER('12.3:4','99.9:9')", 12.34D);
+    evalFails("TO_NUMBER('1234','99/99')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
+    evalFails("TO_NUMBER('1 2','99')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
   }
 
   @Test
@@ -640,16 +666,61 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Boolean
     evalEquals("TO_CHAR(FIELD_BOOLEAN_TRUE)", "TRUE");
+    evalEquals("TO_CHAR(FALSE)", "FALSE");
     optimize("TO_CHAR(TRUE)", "'TRUE'");
 
     // Binary
+    evalEquals("TO_CHAR(BINARY '41706163686520486f70')", "41706163686520486f70");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','HEX')", "41706163686520486f70");
+    evalEquals("TO_CHAR(BINARY '41706163686520486f70','base64')", "QXBhY2hlIEhvcA==");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','BASE64')", "QXBhY2hlIEhvcA==");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','UTF8')", "Apache Hop");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','UTF-8')", "Apache Hop");
 
     // String
     evalEquals("TO_CHAR('Apache Hop')", "Apache Hop");
+
+    // Default date format
+    evalEquals("TO_CHAR(DATE '2019-07-23')", "2019-07-23");
+
+    // Date
+    evalEquals("To_Char(DATE '2019-07-23','RRRR')", "2019");
+    evalEquals("To_Char(DATE '2019-07-23','RR')", "19");
+    evalEquals("To_Char(TIMESTAMP '2019-02-13 00:34:56','HH12')", "12");
+
+    // Date format examples
+    String timestamp = "TIMESTAMP '2021-12-21 16:01:07.123456' AT TIME ZONE 'Europe/Paris'";
+    evalEquals(
+        "To_Char(" + timestamp + ",'Dy, DD Mon YYYY HH12:MI:SS AM')",
+        "Tue, 21 Dec 2021 04:01:07 PM");
+    evalEquals(
+        "To_Char(" + timestamp + ",'DY, DD MON YYYY HH12:MI:SS AM')",
+        "TUE, 21 DEC 2021 04:01:07 PM");
+    evalEquals(
+        "To_Char(" + timestamp + ",'YYYY-MM-DD\"T\"HH24:MI:SS.FF6TZH:TZM')",
+        "2021-12-21T16:01:07.123456+01:00");
+    evalEquals(
+        "To_Char(" + timestamp + ",'DD/MM/YYYY HH24:MI TZR')", "21/12/2021 16:01 Europe/Paris");
+
+    // Number
+    evalEquals("TO_CHAR(3999,'FMRN')", "MMMCMXCIX");
+    evalEquals("TO_CHAR(14,'FMrn')", "xiv");
+    evalEquals("TO_CHAR(123.5,'XX')", " 7C");
+    evalEquals("TO_CHAR(255,'xx')", " ff");
+    evalEquals("TO_CHAR(123.456,'9.9eeee')", "  1.2E+02");
+    evalFails("TO_CHAR(1,'9.9.9')", ErrorCode.INVALID_NUMBER_FORMAT);
+
+    // Literals are always preserved as-is at their position
+    evalEquals("TO_CHAR(12,'(99)')", " (12)");
+    evalEquals("TO_CHAR(-12,'(99)')", "-(12)");
+    evalEquals("TO_CHAR(12,'(999)')", " ( 12)");
+    evalEquals("TO_CHAR(12,'FM(999)')", "(12)");
+    evalEquals("TO_CHAR(1234,'99/99')", " 12/34");
+    evalEquals("TO_CHAR(1234,'999-999')", "   1-234");
+    evalEquals("TO_CHAR(12,'000-000')", " 000-012");
+    evalEquals("TO_CHAR(12,'=99;')", " =12;");
+    evalEquals("TO_CHAR(12.34,'99.9:9')", " 12.3:4");
+    evalEquals("TO_CHAR(123456,'99/99')", "######");
   }
 
   @Test
@@ -934,6 +1005,31 @@ class ConversionFunctionTest extends ExpressionTest {
         OffsetDateTime.of(2024, 2, 5, 13, 5, 10, 123456789, ZoneOffset.ofHours(-2)));
 
     evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
+    evalNull("TO_DATE(NULL_NUMBER)");
+
+    // Documentation examples
+    evalEquals("TO_DATE('1999-12', 'YYYY-MM')", LocalDate.of(1999, 12, 1));
+    evalEquals("TO_DATE(1284352323.000000123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123));
+
+    // Time zones are case-sensitive
+    evalFails(
+        "TO_DATE('2019-02-13 15:34:56 europe/london','YYYY-MM-DD HH24:MI:SS TZR')",
+        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+
+    // Era, meridian indicator, RR year and ; separator
+    evalEquals("TO_DATE('0800 B.C.','YYYY B.C.')", LocalDate.of(-800, 1, 1));
+    evalEquals(
+        "TO_DATE('2009-12-24 11:00:00 A.M.','YYYY-MM-DD HH:MI:SS A.M.')",
+        LocalDateTime.of(2009, 12, 24, 11, 0, 0));
+    evalEquals("TO_DATE('01/02/52','DD/MM/RR')", LocalDate.of(1952, 2, 1));
+    evalEquals("TO_DATE('2019;07;23','YYYY;MM;DD')", LocalDate.of(2019, 7, 23));
+
+    // Alternative formats
+    evalEquals("TO_DATE('23/07/2019','YYYY-MM-DD|DD/MM/YYYY')", LocalDate.of(2019, 7, 23));
+
+    // Output only elements
+    evalFails("TO_DATE('2019 3','YYYY Q')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("TO_DATE('2019 TUE','YYYY DY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
   }
 
   @Test
@@ -945,6 +1041,12 @@ class ConversionFunctionTest extends ExpressionTest {
         "TO_INTERVAL('45 days 22 hours 30 minutes 58 seconds')", Interval.of(0, 0, 45, 22, 30, 58));
     evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", Interval.of(0, 0, 45, 22, 30, 58).negate());
     evalNull("TO_INTERVAL(NULL_STRING)");
+
+    // Documentation examples
+    evalEquals("TO_INTERVAL('1 year 6 months 12 hours')", Interval.of(1, 6, 0, 12, 0, 0));
+    evalEquals("TO_INTERVAL('1-6 0 12:00:00')", Interval.of(1, 6, 0, 12, 0, 0));
+
+    evalFails("TO_INTERVAL('abc')", ErrorCode.INVALID_INTERVAL);
 
     optimize("TO_INTERVAL('-0-0 45 22:30:58')", "INTERVAL '-45 22:30:58' DAY TO SECOND");
   }
@@ -1024,6 +1126,14 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Bad format
     evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
+
+    // Documentation examples
+    evalEquals("TRY_CAST('-1234.56' AS INTEGER FORMAT '###0')", -1235L);
+    evalEquals("TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')", "2020-2");
+    evalEquals(
+        "CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH24:MI:SS')",
+        LocalDate.of(2020, 5, 24));
+    evalFalse("TRY_CAST(0 AS BOOLEAN)");
 
     optimize("TRY_CAST(FIELD_STRING AS BINARY)", "TRY(CAST(FIELD_STRING AS BINARY))");
     optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)", "TRY(CAST(FIELD_INTEGER AS NUMBER))");
@@ -1158,6 +1268,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("Try_To_Json(NULL_STRING)");
     evalNull("Try_To_Json('BAD JSON ;')");
     evalNull("Try_To_Json('{\"name\":\"Smith\"; \"age\":29}')");
+    evalNull("Try_To_Json('')");
+    evalNull("Try_To_Json('   ')");
 
     // Check operands
     evalFails("Try_To_Json()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

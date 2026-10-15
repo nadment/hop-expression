@@ -137,6 +137,9 @@ import org.apache.hop.expression.ExpressionException;
  */
 final class PatternNumberFormat extends NumberFormat {
 
+  // Characters always preserved as-is at their position in the format
+  private static final String LITERALS = ";:-=/()";
+
   // Symbols of the default locale, never modified
   private static final AtomicReference<DecimalFormatSymbols> CACHED_SYMBOLS =
       new AtomicReference<>();
@@ -245,6 +248,8 @@ final class PatternNumberFormat extends NumberFormat {
         // 0 behave the same as a 0, e.g. "09999.99" -> "00000.99"
         builder.append((leadZero) ? '0' : c);
         this.precision++;
+      } else if (isLiteral(c)) {
+        builder.append(c);
       } else if (c == 'X' || c == 'x') {
         boolean upper = (c == 'X');
         for (; index < length; index++) {
@@ -282,15 +287,20 @@ final class PatternNumberFormat extends NumberFormat {
       for (int i = index; i < length; i++) {
         c = format.charAt(i);
         if (c == '0') zero = i;
-        else if (c != '9') break;
+        else if (c != '9' && !isLiteral(c)) break;
       }
 
-      for (; index < length; index++, this.scale++) {
+      for (; index < length; index++) {
         c = format.charAt(index);
+        if (isLiteral(c)) {
+          builder.append(c);
+          continue;
+        }
         if (c == '9') {
           if (index < zero) c = '0';
         } else if (c != '0') break;
         builder.append(c);
+        this.scale++;
       }
 
       // for (index++; index < length; index++, this.scale++) {
@@ -500,17 +510,24 @@ final class PatternNumberFormat extends NumberFormat {
 
       // integer part
       int pos = (dot < 0 ? end : dot);
-      int j = this.pattern.length() - this.scale;
-      if (this.scale > 0) j--;
+      int j = this.separator;
+      // Leading digit positions left blank, as output in fill mode
+      boolean leadingBlank = false;
       for (int i = pos - 1; i >= start; i--) {
         char c = text.charAt(i);
         if (j > 0) j--;
         char p = pattern.charAt(j);
         if (p == '0' || p == '9') {
-          if (Characters.isDigit(c)) {
+          if (!leadingBlank && Characters.isDigit(c)) {
             digits.insert(0, c);
             continue;
           }
+          if (p == '9' && c == ' ') {
+            leadingBlank = true;
+            continue;
+          }
+        } else if (isLiteral(p)) {
+          if (c == p) continue;
         } else if (p == ',') {
           if (c == ',') continue;
         } else if (p == 'G') {
@@ -528,8 +545,14 @@ final class PatternNumberFormat extends NumberFormat {
       // fraction part
       int fraction = 0;
       if (dot != -1) {
+        int k = this.separator + 1;
         for (int i = dot + 1; i < end; i++) {
           char c = text.charAt(i);
+          char p = (k < pattern.length()) ? pattern.charAt(k++) : '9';
+          if (isLiteral(p)) {
+            if (c == p) continue;
+            throw createUnparsableNumber(format, text, i);
+          }
           if (Characters.isDigit(c)) {
             digits.append(c);
             fraction++;
@@ -617,6 +640,15 @@ final class PatternNumberFormat extends NumberFormat {
 
     DecimalFormatSymbols symbols = getSymbols();
 
+    // Position of the first literal in the integer part, if any
+    int firstLiteral = -1;
+    for (int i = 0; i < this.separator; i++) {
+      if (isLiteral(this.pattern.charAt(i))) {
+        firstLiteral = i;
+        break;
+      }
+    }
+
     StringBuilder output = new StringBuilder();
     if (this.precision > 0) {
       int j = dot - 1;
@@ -636,8 +668,13 @@ final class PatternNumberFormat extends NumberFormat {
           if (j >= 0) {
             char digit = unscaled.charAt(j--);
             output.insert(0, digit);
+          } else if (this.fillMode && i > firstLiteral && firstLiteral >= 0) {
+            // Blank the digit in place to keep the literals at their position
+            output.insert(0, ' ');
           }
           // The zero of the integer part is ignored "0.12" => " .12"
+        } else if (isLiteral(c)) {
+          output.insert(0, c);
         } else if (c == ',') {
           // only add the grouping separator if we have more numbers
           if (j >= 0 || (i > 0 && pattern.charAt(i - 1) == '0')) {
@@ -673,6 +710,14 @@ final class PatternNumberFormat extends NumberFormat {
       // Add decimal digits
       for (int j = dot; i < this.pattern.length(); i++, j++) {
         c = this.pattern.charAt(i);
+
+        if (isLiteral(c)) {
+          output.append(c);
+          length++;
+          // A literal does not consume a digit
+          j--;
+          continue;
+        }
 
         if (c == '0') {
           if (j >= 0 && j < unscaled.length()) {
@@ -752,6 +797,10 @@ final class PatternNumberFormat extends NumberFormat {
     }
 
     return output.toString();
+  }
+
+  private static boolean isLiteral(final char c) {
+    return LITERALS.indexOf(c) >= 0;
   }
 
   private int addSign(StringBuilder output, int signum) {
