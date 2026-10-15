@@ -618,6 +618,13 @@ import org.apache.hop.expression.ExpressionException;
         continue;
       }
 
+      // 4-digit year with a comma
+      if (startsWithIgnoreCase(pattern, index, "Y,YYY")) {
+        list.add(new CommaYearFormat());
+        index += 5;
+        continue;
+      }
+
       // 4-digit year
       if (startsWithIgnoreCase(pattern, index, "YYYY")) {
         list.add(new YearFormat(fillMode, exactMode, 4));
@@ -1499,6 +1506,34 @@ import org.apache.hop.expression.ExpressionException;
     @Override
     public void parse(final DateTimeParser parser) {
       parser.year = parser.parseSignedInt(5);
+      parser.isEpochDay = false;
+    }
+  }
+
+  /** 4-digit year with a comma separating the thousands, for example 2,019. */
+  private static class CommaYearFormat extends Format {
+    public CommaYearFormat() {
+      super(true, true);
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
+      int value = FastMath.abs(datetime.getYear());
+      output.append(value / 1000);
+      output.append(',');
+      appendZeroPadded(output, value % 1000, 3);
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      int thousands = parser.parseInt(1);
+      if (!parser.isChar(',')) {
+        throw new ExpressionException(
+            ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
+      }
+      parser.index++;
+      parser.year = thousands * 1000 + parser.parseExactInt(3);
       parser.isEpochDay = false;
     }
   }

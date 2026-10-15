@@ -706,6 +706,9 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Date
     evalEquals("To_Char(DATE '2019-07-23','RRRR')", "2019");
+    evalEquals("To_Char(DATE '2019-07-23','Y,YYY')", "2,019");
+    evalEquals("To_Char(DATE '0800-07-23','Y,YYY')", "0,800");
+    evalEquals("To_Char(DATE '2019-07-23','DD/MM/Y,YYY')", "23/07/2,019");
     evalEquals("To_Char(DATE '2019-07-23','RR')", "19");
     evalEquals("To_Char(TIMESTAMP '2019-02-13 00:34:56','HH12')", "12");
 
@@ -1043,6 +1046,8 @@ class ConversionFunctionTest extends ExpressionTest {
         "TO_DATE('2009-12-24 11:00:00 A.M.','YYYY-MM-DD HH:MI:SS A.M.')",
         LocalDateTime.of(2009, 12, 24, 11, 0, 0));
     evalEquals("TO_DATE('01/02/52','DD/MM/RR')", LocalDate.of(1952, 2, 1));
+    evalEquals("TO_DATE('2,019-07-23','Y,YYY-MM-DD')", LocalDate.of(2019, 7, 23));
+    evalFails("TO_DATE('2019-07-23','Y,YYY-MM-DD')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
     evalEquals("TO_DATE('2019;07;23','YYYY;MM;DD')", LocalDate.of(2019, 7, 23));
 
     // Alternative formats
