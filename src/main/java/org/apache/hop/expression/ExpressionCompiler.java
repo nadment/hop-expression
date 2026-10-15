@@ -19,7 +19,6 @@ package org.apache.hop.expression;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
@@ -107,11 +106,6 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
           }
 
           Type type = call.getType();
-
-          // For CAST operator, it's important to return type
-          if (call.isOperator(CastOperator.INSTANCE)) {
-            value = type.cast(value);
-          }
 
           hasChanged = true;
 

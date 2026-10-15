@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.IntegerConversion;
+import org.apache.hop.expression.util.NumberFormat;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -113,7 +114,10 @@ public final class IntegerType extends Type {
       case Long integer -> integer;
       case BigDecimal number -> IntegerConversion.convert(number);
       case Boolean bool -> (bool) ? 1L : 0L;
-      case String str -> IntegerConversion.convert(str);
+      case String str ->
+          (pattern == null)
+              ? IntegerConversion.convert(str)
+              : IntegerConversion.convert(NumberFormat.of(pattern).parse(str));
       case ZonedDateTime datetime -> IntegerConversion.convert(datetime);
       default ->
           throw new ExpressionException(

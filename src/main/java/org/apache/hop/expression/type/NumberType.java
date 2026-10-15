@@ -24,6 +24,7 @@ import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.NumberConversion;
+import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.StringConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -155,7 +156,10 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(l);
     }
     if (value instanceof String str) {
-      return NumberConversion.convert(str);
+      // A string keeps its decimals, it is parsed with the format if any
+      return (pattern == null)
+          ? NumberConversion.convert(str)
+          : NumberFormat.of(pattern).parse(str);
     }
     if (value instanceof ZonedDateTime dt) {
       return NumberConversion.convert(dt);

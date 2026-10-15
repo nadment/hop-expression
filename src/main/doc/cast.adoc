@@ -57,6 +57,8 @@ The data type of the returned value is the type specified in the `AS` clause.
 * When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
 * When converting a boolean to a number, FALSE is 0 and TRUE is 1.
 * When converting a number to a number of another type, the value is checked for overflow.
+* When converting a string to a number or an integer, the optional format is a number format model, as in xref:to_number.adoc["TO_NUMBER",role=fun], and the result keeps all the decimals of the string.
+* When converting a number to a number, the value is truncated to the scale of the type. `NUMBER` without precision and scale has a scale of 0, for example `1.23456::NUMBER` returns 1.
 * When converting a string to a binary, the result is the UTF-8 encoding of the string. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
 * When converting an integer to a date, the integer is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
 * When converting a number to a date, the number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
@@ -68,9 +70,9 @@ The data type of the returned value is the type specified in the `AS` clause.
 
 ----
 CAST('yes' AS BOOLEAN) returns TRUE
-TRY_CAST('-1234.56' AS INTEGER FORMAT '###0') returns -1235
+TRY_CAST('-1234.56' AS INTEGER FORMAT '9999.99') returns -1235
 '-1234.56'::INTEGER returns -1235
-CAST('-1234.56' AS NUMBER FORMAT '###0.00')
+CAST('1,234.56' AS NUMBER FORMAT '9,999.99') returns 1234.56
 CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH24:MI:SS') returns DATE '2020-05-24'
 TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q') returns '2020-2'
 CAST(INTERVAL 5 YEAR AS STRING) returns '+5-0 0 00:00:00.000000000'

@@ -1178,7 +1178,21 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Documentation examples
-    evalEquals("TRY_CAST('-1234.56' AS INTEGER FORMAT '###0')", -1235L);
+    evalEquals("TRY_CAST('-1234.56' AS INTEGER FORMAT '9999.99')", -1235L);
+    evalEquals("CAST('1,234.56' AS NUMBER FORMAT '9,999.99')", 1234.56D);
+
+    // A string converted to a number keeps its decimals, with or without format
+    evalEquals("CAST('-1234.56' AS NUMBER)", -1234.56D);
+    evalEquals("CAST('-1234.56' AS NUMBER FORMAT '9999.99')", -1234.56D);
+    evalEquals("'-1234.56'::NUMBER", -1234.56D);
+    evalEquals("CAST(FIELD_STRING_NUMBER AS NUMBER FORMAT '99.99')", -12.56D);
+    evalEquals("CAST('1,234' AS INTEGER FORMAT '9,999')", 1234L);
+    evalFails(
+        "CAST('1,234.56' AS NUMBER FORMAT '9999.99')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
+    evalFails("CAST('1234' AS NUMBER FORMAT '###0')", ErrorCode.INVALID_NUMBER_FORMAT);
+
+    // A number converted to a number is truncated to the scale of the type
+    evalEquals("1.23456::NUMBER", 1D);
     evalEquals("TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')", "2020-2");
     evalEquals(
         "CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH24:MI:SS')",
