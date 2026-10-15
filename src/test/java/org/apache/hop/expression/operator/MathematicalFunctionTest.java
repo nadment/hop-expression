@@ -43,6 +43,8 @@ import org.junit.jupiter.api.parallel.Execution;
 class MathematicalFunctionTest extends ExpressionTest {
   @Test
   void Abs() throws Exception {
+    // Documentation example
+    evalEquals("ABS(-123)", 123L);
     evalEquals("Abs(0)", 0L).returnType(IntegerType.of(1, false));
     evalEquals("Abs(1)", 1L).returnType(IntegerType.of(1, false));
     evalEquals("Abs(-1)", 1L).returnType(IntegerType.of(1, false));
@@ -93,6 +95,8 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Div0() throws Exception {
+    // Documentation example
+    evalEquals("DIV0(6,0)", 0L);
     evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6, false));
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
     evalEquals("Div0(FIELD_INTEGER,0)", 0D);
@@ -130,6 +134,8 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Exp() throws Exception {
+    evalEquals("EXP(0)", 1D);
+    evalEquals("EXP(-1)", new BigDecimal("0.36787944117144232159552377016146"));
     evalEquals("Exp(1)", BigDecimalMath.exp(BigDecimal.ONE, Operator.MATH_CONTEXT))
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Exp(2)", new BigDecimal("7.3890560989306502272304274605750"));
@@ -147,6 +153,11 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Factorial() throws Exception {
+    // The last factorial computed with an integer and the first one with a number
+    evalEquals("FACTORIAL(20)", new BigDecimal("2432902008176640000"));
+    evalEquals("FACTORIAL(21)", new BigDecimal("51090942171709440000"));
+    // The decimal part of a number is truncated
+    evalEquals("FACTORIAL(5.7)", 120D);
     evalEquals("Factorial(0)", BigDecimal.ONE);
     evalEquals("Factorial(1)", BigDecimal.ONE);
     evalEquals("Factorial(5)", new BigDecimal("120"));
@@ -191,7 +202,11 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Power(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Power(FIELD_STRING,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Power(2,FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // evalFails("Power(-4,0.5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // A negative base can only have an integer exponent
+    evalEquals("Power(-2,3)", -8D);
+    evalFails("Power(-4,0.5)", ErrorCode.CALL_FUNCTION_ERROR);
+    // A zero base with a negative exponent is a division by zero
+    evalFails("Power(0,-1)", ErrorCode.CALL_FUNCTION_ERROR);
 
     // Alias
     evalEquals("Pow(3,2)", 9D);
@@ -227,7 +242,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalEquals("Cbrt(64)", BigDecimal.valueOf(4L));
     evalEquals("Cbrt(343)", BigDecimal.valueOf(7L));
 
-    // Support negative value CBRT(-64)=-4
+    // Support negative value
     evalEquals("Cbrt(-8)", BigDecimal.valueOf(-2L));
 
     // Null handling
@@ -271,6 +286,8 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Ceil() throws Exception {
+    // Documentation example
+    evalEquals("CEIL(28.05)", 29D);
     evalEquals("Ceil(1)", 1D).returnType(NumberType.of(1).withNullability(false));
     evalEquals("Ceil(125.9)", 126D).returnType(NumberType.of(3).withNullability(false));
     evalEquals("Ceil(0.4873)", 1D).returnType(NumberType.of(1).withNullability(false));
@@ -288,7 +305,7 @@ class MathematicalFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Ceil()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
-    evalFails("Ceil(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Ceil(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Ceil('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Function repetition
@@ -298,6 +315,8 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Floor() throws Exception {
+    // Documentation example
+    evalEquals("FLOOR(28.05)", 28D);
     evalEquals("Floor(1)", 1D).returnType(NumberType.of(1).withNullability(false));
     evalEquals("Floor(125.9)", 125D).returnType(NumberType.of(3).withNullability(false));
     evalEquals("Floor(0.4873)", 0D).returnType(NumberType.of(1).withNullability(false));
@@ -315,7 +334,7 @@ class MathematicalFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Floor()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
-    evalFails("Floor(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Floor(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Floor('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Function repetition
@@ -325,6 +344,11 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Round() throws Exception {
+    // Documentation examples, half up at any scale
+    evalEquals("ROUND(28.05)", 28D);
+    evalEquals("ROUND(28.05, 1)", 28.1D);
+    evalEquals("ROUND(28.05, -1)", 30D);
+    evalNull("ROUND(1.5, NULL_INTEGER)");
     evalEquals("Round(1)", 1D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Round(2.5)", 3D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Round(-2.5)", -3D).returnType(NumberType.NUMBER_NOT_NULL);
@@ -354,6 +378,11 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Truncate() throws Exception {
+    // Documentation examples
+    evalEquals("TRUNCATE(28.52)", 28D);
+    evalEquals("TRUNCATE(28.52, 1)", 28.5D);
+    evalEquals("TRUNCATE(28.52, -1)", 20D);
+    evalEquals("TRUNCATE(-9.6)", -9D);
     evalEquals("Truncate(-975.975)", -975D); // TODO: .returnType(NumberType.of(3));
     evalEquals("Truncate(-975.975,-1)", -970D);
     evalEquals("Truncate(-975.975, 0)", -975D);
@@ -367,8 +396,14 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalNull("Truncate(-975.975, NULL_INTEGER)");
     evalNull("Truncate(NULL_NUMBER, 2)");
 
+    // Check operands
+    evalFails("Truncate()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Truncate(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Truncate('x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
     // Alias
     evalEquals("Trunc(123.456, -2)", 100D);
+    evalEquals("Trunc(28.52)", 28D);
 
     optimize("TRUNC(TRUNCATE(FIELD_NUMBER))", "TRUNCATE(FIELD_NUMBER)");
   }
@@ -400,6 +435,8 @@ class MathematicalFunctionTest extends ExpressionTest {
 
   @Test
   void Random() throws Exception {
+    // A seed with the alias gives the same value
+    evalEquals("Rand(180)", new Random(180).nextDouble());
     Assertions.assertFalse(FunctionRegistry.getFunction("RANDOM").isDeterministic());
 
     evalTrue("Random() between 0 and 1");

@@ -37,6 +37,8 @@ Number
 == Usage
 
 * If exponent is 0, the function returns 1.
+* A negative base can only have an integer exponent: `POWER(-2,3)` returns -8, but `POWER(-4,0.5)` raises an error.
+* Raises an error if base is 0 and exponent is negative, which is a division by zero.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

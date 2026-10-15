@@ -31,6 +31,7 @@ Number
 == Usage
 
 * Raises an error if the argument is negative.
+* The decimal part of a number is truncated: `FACTORIAL(5.7)` returns 120.
 * Returns NULL if the argument is NULL.
 
 == Examples

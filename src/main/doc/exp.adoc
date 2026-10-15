@@ -30,7 +30,7 @@ Number
 
 == Usage
 
-* Returns a value in the range of [0, &infin;).
+* Returns a value in the range of (0, &infin;), the result is never 0.
 * Returns NULL if the argument is NULL.
 
 == See also
