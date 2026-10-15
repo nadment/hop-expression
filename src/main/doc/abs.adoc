@@ -30,6 +30,7 @@ The data type of the returned value is the same as the data type of the argument
 
 == Usage
 
+* Raises an error if the result is out of the integer range: the absolute value of -9223372036854775808 is greater than the largest integer. Cast the argument to NUMBER to avoid it.
 * Returns NULL if the argument is NULL.
 
 == Examples

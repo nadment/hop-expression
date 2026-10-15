@@ -43,6 +43,12 @@ import org.junit.jupiter.api.parallel.Execution;
 class MathematicalFunctionTest extends ExpressionTest {
   @Test
   void Abs() throws Exception {
+    // The absolute value of the smallest integer is out of the integer range
+    evalFails("ABS(-9223372036854775807-1)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalNull("TRY(ABS(-9223372036854775807-1))");
+    evalEquals("ABS(-9223372036854775807)", 9223372036854775807L);
+    evalEquals(
+        "ABS(CAST(-9223372036854775807-1 AS NUMBER))", new BigDecimal("9223372036854775808"));
     // Documentation example
     evalEquals("ABS(-123)", 123L);
     evalEquals("Abs(0)", 0L).returnType(IntegerType.of(1, false));

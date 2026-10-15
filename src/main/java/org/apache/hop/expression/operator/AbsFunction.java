@@ -17,8 +17,8 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -82,7 +82,12 @@ public class AbsFunction extends Function {
       Long value = operands[0].getValue(Long.class);
       if (value == null) return null;
 
-      return FastMath.abs(value);
+      // The absolute value of the smallest integer is out of the integer range, like its negation
+      try {
+        return Math.absExact(value);
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
+      }
     }
   }
 
