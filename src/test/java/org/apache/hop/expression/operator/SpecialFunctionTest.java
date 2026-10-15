@@ -39,8 +39,18 @@ import org.junit.jupiter.api.parallel.Execution;
 @Execution(CONCURRENT)
 class SpecialFunctionTest extends ExpressionTest {
   @Test
-  void Error() {
+  void Error() throws Exception {
     evalFails("ERROR('Custom error message')", ErrorCode.USER_DEFINED_ERROR);
+    evalFails("ERROR(NULL)", ErrorCode.USER_DEFINED_ERROR);
+
+    // Usage within DECODE, as documented
+    evalEquals("DECODE(1,1,'Flag 1',2,'Flag 2',ERROR('Unsupported value'))", "Flag 1");
+    evalFails(
+        "DECODE(3,1,'Flag 1',2,'Flag 2',ERROR('Unsupported value'))", ErrorCode.USER_DEFINED_ERROR);
+
+    // Check operands
+    evalFails("ERROR()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ERROR('a','b')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -51,12 +61,26 @@ class SpecialFunctionTest extends ExpressionTest {
     evalEquals("TypeOf(FIELD_NUMBER)", "NUMBER").returnType(StringType.STRING_NOT_NULL);
     evalEquals("TypeOf(DATE '2023-01-01')", "DATE").returnType(StringType.STRING_NOT_NULL);
     evalEquals("TypeOf(INTERVAL '3 years')", "INTERVAL").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("TypeOf(BINARY 'FF')", "BINARY").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("TypeOf(FIELD_JSON)", "JSON").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("TypeOf(FIELD_INET)", "INET").returnType(StringType.STRING_NOT_NULL);
+
+    // Null handling
+    evalEquals("TypeOf(NULL_STRING)", "STRING").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("TypeOf(NULL)", "UNKNOWN").returnType(StringType.STRING_NOT_NULL);
+
+    // Check operands
+    evalFails("TypeOf()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("TypeOf(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
   void Current_User() throws Exception {
     evalEquals("Current_User()", System.getProperty("user.name"))
         .returnType(StringType.of(System.getProperty("user.name").length(), false));
+
+    // Check operands
+    evalFails("Current_User(1)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -65,6 +89,9 @@ class SpecialFunctionTest extends ExpressionTest {
     String version = versionProvider.getVersion()[0];
 
     evalEquals("Current_Version()", version).returnType(StringType.of(version.length(), false));
+
+    // Check operands
+    evalFails("Current_Version(1)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Nested
@@ -116,6 +143,17 @@ class SpecialFunctionTest extends ExpressionTest {
     void exceptionNotSuppressed() throws Exception {
       evalFails("TRY(ERROR('test'))", ErrorCode.USER_DEFINED_ERROR);
       evalFails("TRY(CAST(TRUE as INET))", ErrorCode.UNSUPPORTED_CONVERSION);
+    }
+
+    @Test
+    void nullHandling() throws Exception {
+      evalNull("TRY(NULL_INTEGER)").returnType(IntegerType.INTEGER);
+    }
+
+    @Test
+    void checkOperands() throws Exception {
+      evalFails("TRY()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+      evalFails("TRY(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     }
   }
 }

@@ -24,6 +24,10 @@ Raises an error with the given message and aborts the execution of the pipeline 
 ERROR( message )
 ----
 
+== Arguments
+
+message:: The error message. A value of another data type is converted to a string. A NULL message raises an error with an empty message.
+
 == Returns
 
 This function never returns a value; it always raises an error.

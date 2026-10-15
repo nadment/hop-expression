@@ -31,6 +31,8 @@ String
 == Usage
 
 * The returned value is the name of the data type, for example `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
+* A timestamp has the `DATE` data type, so `TYPEOF` returns `DATE` for both dates and timestamps.
+* The data type is returned even if the value is NULL. The `NULL` literal has no data type and returns `UNKNOWN`.
 
 == Examples
 
@@ -38,4 +40,6 @@ String
 TYPEOF('str') returns 'STRING'
 TYPEOF(25) returns 'INTEGER'
 TYPEOF(DATE '2023-01-01') returns 'DATE'
+TYPEOF(TIMESTAMP '2023-01-01 10:00:00') returns 'DATE'
+TYPEOF(NULL) returns 'UNKNOWN'
 ----
