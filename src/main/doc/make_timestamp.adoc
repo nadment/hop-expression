@@ -47,7 +47,7 @@ Date
 
 * The function is typically used with values in the normal ranges (e.g. months 1-12, days 1-31), but it also handles values outside these ranges.
 * If month is less than 1 or greater than 12, the year is adjusted.
-* If day is less than 1 or greater than 31, the month is adjusted.
+* If day is less than 1 or greater than the number of days in the month, the month is adjusted.
 * If hour is less than 0 or greater than 23, the day is adjusted.
 * If minute is less than 0 or greater than 59, the hour is adjusted.
 * If second is less than 0 or greater than 59, the minute is adjusted.
@@ -59,6 +59,7 @@ Date
 MAKE_TIMESTAMP(2019,01,1,23,15,59) returns TIMESTAMP '2019-01-01 23:15:59'
 MAKE_TIMESTAMP(2020,0,1,23,15,59) returns TIMESTAMP '2019-12-01 23:15:59'
 MAKE_TIMESTAMP(2020,6,50,23,15,59) returns TIMESTAMP '2020-07-20 23:15:59'
+MAKE_TIMESTAMP(2020,2,30,0,0,-0.5) returns TIMESTAMP '2020-02-29 23:59:59.5'
 ----
 
 == See also

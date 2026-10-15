@@ -64,51 +64,20 @@ public class MakeTimestampFunction extends Function {
     BigDecimal v5 = operands[5].getValue(BigDecimal.class);
     if (v5 == null) return null;
 
-    int year = v0.intValue();
-    int month = v1.intValue();
-    int day = v2.intValue();
-    int hour = v3.intValue();
-    int minute = v4.intValue();
-    int second = v5.intValue();
-    int nano = v5.remainder(BigDecimal.ONE).movePointRight(9).intValue();
+    // The fractional part of the seconds, with the sign of the seconds
+    long seconds = v5.longValue();
+    long nanos = v5.remainder(BigDecimal.ONE).movePointRight(9).longValue();
 
-    int monthsToAdd = 0;
-    if (month < 1 || month > 12) {
-      monthsToAdd = month - 1;
-      month = 1;
-    }
-
-    int daysToAdd = 0;
-    if (day < 1 || day > 31) {
-      daysToAdd = day - 1;
-      day = 1;
-    }
-
-    int hoursToAdd = 0;
-    if (hour < 0 || hour > 23) {
-      hoursToAdd = hour;
-      hour = 0;
-    }
-
-    int minutesToAdd = 0;
-    if (minute < 0 || minute > 59) {
-      minutesToAdd = minute;
-      minute = 0;
-    }
-
-    int secondsToAdd = 0;
-    if (second < 0 || second > 59) {
-      secondsToAdd = second;
-      second = 0;
-    }
-
-    LocalDateTime datetime = LocalDateTime.of(year, month, day, hour, minute, second, nano);
-
-    if (monthsToAdd != 0) datetime = datetime.plusMonths(monthsToAdd);
-    if (daysToAdd != 0) datetime = datetime.plusDays(daysToAdd);
-    if (hoursToAdd != 0) datetime = datetime.plusHours(hoursToAdd);
-    if (minutesToAdd != 0) datetime = datetime.plusMinutes(minutesToAdd);
-    if (secondsToAdd != 0) datetime = datetime.plusSeconds(secondsToAdd);
+    // Add each component to the start of the year, so that values out of the normal ranges
+    // overflow to the next or previous units, e.g. February 30 or -0.5 second
+    LocalDateTime datetime =
+        LocalDateTime.of(v0.intValue(), 1, 1, 0, 0)
+            .plusMonths(v1 - 1)
+            .plusDays(v2 - 1)
+            .plusHours(v3)
+            .plusMinutes(v4)
+            .plusSeconds(seconds)
+            .plusNanos(nanos);
 
     return datetime.atZone(ZoneOffset.UTC);
   }

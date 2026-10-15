@@ -1076,6 +1076,20 @@ class DateFunctionTest extends ExpressionTest {
         "MAKE_TIMESTAMP(2020,3,0,0,0,0)", LocalDateTime.of(2020, Month.FEBRUARY, 29, 0, 0, 0));
     evalEquals(
         "MAKE_TIMESTAMP(2020,13,1,0,0,0)", LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0, 0));
+    // A day beyond the end of the month overflows to the next month
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,2,30,10,0,0)", LocalDateTime.of(2020, Month.MARCH, 1, 10, 0, 0));
+    evalEquals("MAKE_TIMESTAMP(2020,4,31,10,0,0)", LocalDateTime.of(2020, Month.MAY, 1, 10, 0, 0));
+    // A negative fractional second is subtracted
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,0,0,-0.5)",
+        LocalDateTime.of(2019, Month.DECEMBER, 31, 23, 59, 59, 500000000));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,0,0,-1.25)",
+        LocalDateTime.of(2019, Month.DECEMBER, 31, 23, 59, 58, 750000000));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,2,30,0,0,-0.5)",
+        LocalDateTime.of(2020, Month.FEBRUARY, 29, 23, 59, 59, 500000000));
     evalNull("MAKE_TIMESTAMP(2020,1,1,NULL_INTEGER,15,59)");
     evalEquals(
             "MAKE_TIMESTAMP(2019,01,1,23,15,59)",
