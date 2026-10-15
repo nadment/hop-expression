@@ -61,6 +61,7 @@ class ComparisonFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("IS_NUMBER()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IS_NUMBER(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -71,15 +72,23 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalTrue("IS_JSON('{id:1,coordinates:[10,20]}')");
     evalTrue("IS_JSON('[1,2]')");
     evalFalse("IS_JSON('name:\"Smith\", age:29}')");
+    evalFalse("IS_JSON('')");
+    evalFalse("IS_JSON('   ')");
     evalFalse("IS_JSON(NULL_STRING)");
 
-    // evalFalse("IS_JSON(TRUE)");
-
+    // Json
+    evalTrue("IS_JSON(FIELD_JSON)").returnType(BooleanType.BOOLEAN_NOT_NULL);
+    evalFalse("IS_JSON(NULL_JSON)");
     optimize("IS_JSON(FIELD_JSON)", "FIELD_JSON IS NOT NULL");
+
+    // Other data type
+    evalFalse("IS_JSON(TRUE)");
+    evalFalse("IS_JSON(NULL)");
     optimizeFalse("IS_JSON(FIELD_DATE)");
 
     // Check operands
     evalFails("IS_JSON()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IS_JSON(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -92,6 +101,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("IS_DATE('2023-02-31','YYYY-MM-DD')");
     evalFalse("IS_DATE('2023-02-31','YYYY.MM.DD')");
     evalFalse("IS_DATE(NULL_STRING,'YYYY.MM.DD')");
+    evalFalse("IS_DATE(NULL,'YYYY')");
+    evalFalse("IS_DATE('2023',NULL_STRING)");
+    evalFails("IS_DATE('2023','XYZ')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Date or Timestamp
     evalTrue("IS_DATE(FIELD_DATE,'YYYY-MM-DD')").returnType(BooleanType.BOOLEAN_NOT_NULL);
@@ -109,6 +121,8 @@ class ComparisonFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("IS_DATE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IS_DATE('2023')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("IS_DATE('2023','YYYY',1)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -116,6 +130,8 @@ class ComparisonFunctionTest extends ExpressionTest {
     // String
     evalTrue("CONTAINS(FIELD_STRING,'ES')").returnType(BooleanType.BOOLEAN);
     evalFalse("CONTAINS(FIELD_STRING,'YZ')");
+    evalFalse("CONTAINS('TEST','es')");
+    evalTrue("CONTAINS('TEST','')");
 
     // Binary
     evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '1A2B')")
@@ -124,17 +140,25 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '5E6F')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '6F6F')");
-    evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '')");
+    evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '')");
+    evalTrue("CONTAINS(BINARY '',BINARY '')");
+
+    // Mixed data type
+    evalTrue("CONTAINS('abc',BINARY '62')");
+    evalTrue("CONTAINS(BINARY '616263','b')");
 
     // Null handling
     evalNull("CONTAINS(NULL_STRING,'ES')").returnType(BooleanType.BOOLEAN);
     evalNull("CONTAINS(FIELD_STRING,NULL_STRING)");
     evalNull("CONTAINS(NULL_BINARY,BINARY '1A2B3C')").returnType(BooleanType.BOOLEAN);
     evalNull("CONTAINS(BINARY '1A2B3C',NULL_BINARY)");
+    evalNull("CONTAINS(NULL,'ES')");
 
+    // Check operands
     evalFails("CONTAINS()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("CONTAINS(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("CONTAINS(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("CONTAINS('a','b','c')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -143,11 +167,18 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalTrue("StartsWith('TEST FROM','TES')").returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalFalse("StartsWith('XXXTEST FROM','TES')");
     evalFalse("StartsWith('TEST','TESTXXX')");
+    evalFalse("StartsWith('TEST','tes')");
+    evalTrue("StartsWith('TEST','')");
 
     // Binary
     evalTrue("StartsWith(BINARY 'FAA12345',BINARY 'fA')").returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalFalse("StartsWith(BINARY 'FAA12345',BINARY 'EE')");
     evalFalse("StartsWith(BINARY '1234',BINARY '123456')");
+    evalTrue("StartsWith(BINARY 'FA',BINARY '')");
+
+    // Mixed data type
+    evalTrue("StartsWith('abc',BINARY '61')");
+    evalTrue("StartsWith(BINARY '616263','a')");
 
     // Null handling
     evalNull("StartsWith(NULL_STRING,'TEST')").returnType(BooleanType.BOOLEAN);
@@ -159,6 +190,7 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFails("StartsWith()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("StartsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("StartsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("StartsWith('a','b','c')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 
   @Test
@@ -168,6 +200,8 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("EndsWith('TEST FROM','ROMA')");
     evalFalse("EndsWith('TEST','TESTXX')");
     evalFalse("EndsWith('TEST','XXTEST')");
+    evalFalse("EndsWith('TEST','est')");
+    evalTrue("EndsWith('TEST','')");
 
     // Null handling
     evalNull("EndsWith(NULL_STRING,'TEST')").returnType(BooleanType.BOOLEAN);
@@ -179,10 +213,16 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalTrue("EndsWith(BINARY 'FAA12345',BINARY '2345')").returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalFalse("EndsWith(BINARY 'FAA12345',BINARY '88')");
     evalFalse("EndsWith(BINARY '1234',BINARY 'FFFF1234')");
+    evalTrue("EndsWith(BINARY 'FA',BINARY '')");
+
+    // Mixed data type
+    evalTrue("EndsWith('abc',BINARY '63')");
+    evalTrue("EndsWith(BINARY '616263','c')");
 
     // Check operands
     evalFails("EndsWith()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("EndsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("EndsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("EndsWith('a','b','c')", ErrorCode.TOO_MANY_ARGUMENTS);
   }
 }

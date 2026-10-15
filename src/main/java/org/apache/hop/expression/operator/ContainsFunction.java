@@ -85,10 +85,6 @@ public class ContainsFunction extends Function {
       byte[] search = operands[1].getValue(byte[].class);
       if (search == null) return null;
 
-      if (search.length == 0) {
-        return Boolean.FALSE;
-      }
-
       if (search.length > value.length) {
         return Boolean.FALSE;
       }

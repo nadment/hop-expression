@@ -32,6 +32,7 @@ Json
 == Usage
 
 * If the conversion is not possible, `TO_JSON` raises an error and `TRY_TO_JSON` returns NULL.
+* An empty or blank string is not a valid JSON.
 * Returns NULL if the argument is NULL.
 
 == See also

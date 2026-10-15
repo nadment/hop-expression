@@ -966,6 +966,8 @@ class ConversionFunctionTest extends ExpressionTest {
 
     evalFails("To_Json(FIELD_BOOLEAN_TRUE)", ErrorCode.CONVERSION_ERROR);
     evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.CONVERSION_ERROR);
+    evalFails("To_Json('')", ErrorCode.CONVERSION_ERROR);
+    evalFails("To_Json('   ')", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test

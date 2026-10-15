@@ -37,7 +37,8 @@ Boolean
 
 * Returns TRUE if value is a date or a timestamp that is not NULL.
 * Returns FALSE if the data type of value is neither a string nor a date or timestamp.
-* Returns FALSE if value is NULL.
+* Returns FALSE if value or format is NULL.
+* Raises an error if format is not a valid date format.
 
 == Examples
 

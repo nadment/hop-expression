@@ -31,6 +31,7 @@ Boolean
 == Usage
 
 * Returns FALSE if the argument is NULL.
+* Returns FALSE if the argument is an empty or blank string.
 
 == Examples
 

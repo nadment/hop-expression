@@ -48,10 +48,12 @@ public final class JsonConversion {
   public static @Nullable JsonNode convert(final @Nullable String str) throws ExpressionException {
     if (str == null) return null;
     try {
-      return JSON_READER.readTree(str);
+      JsonNode node = JSON_READER.readTree(str);
+      // An empty or blank string has no content and is read as a missing node, not as JSON
+      if (!node.isMissingNode()) return node;
     } catch (JsonProcessingException e) {
-      throw new ExpressionException(
-          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
+      // Fall through to the conversion error
     }
+    throw new ExpressionException(ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
   }
 }

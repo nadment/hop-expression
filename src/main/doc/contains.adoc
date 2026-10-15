@@ -30,7 +30,9 @@ Boolean
 
 == Usage
 
-* Both arguments must be string or binary expressions.
+* If value is binary, search is converted to binary; otherwise both arguments are compared as strings.
+* The comparison of strings is case-sensitive.
+* Returns TRUE if search is empty.
 * Returns TRUE if search is found inside value, FALSE otherwise.
 * Returns NULL if one of the arguments is NULL.
 

@@ -35,8 +35,9 @@ Boolean
 
 == Usage
 
-* Both arguments must be of the same type, either string or binary.
+* If value is binary, prefix is converted to binary; otherwise both arguments are compared as strings.
 * The comparison of strings is case-sensitive.
+* Returns TRUE if prefix is empty.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
