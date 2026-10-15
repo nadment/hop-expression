@@ -154,6 +154,17 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER('-0.2','S99.99')", -0.2D);
     evalEquals("TO_NUMBER('0.3-','99.99S')", -0.3D);
     evalEquals("TO_NUMBER('0.3-','99.99s')", -0.3D);
+    evalEquals("TO_NUMBER('+0.2','S99.99')", 0.2D);
+    evalEquals("TO_NUMBER('0.3+','99.99S')", 0.3D);
+
+    // A missing sign is a positive value
+    evalEquals("TO_NUMBER('0.2','S99.99')", 0.2D);
+    evalEquals("TO_NUMBER('0.3','99.99S')", 0.3D);
+
+    // Alternative formats
+    evalEquals("TO_NUMBER('1234','S9999|9999S')", 1234D);
+    evalEquals("TO_NUMBER('-1234','S9999|9999S')", -1234D);
+    evalEquals("TO_NUMBER('1234-','S9999|9999S')", -1234D);
 
     // Sign MI_ and _MI
     evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4D);
@@ -1025,6 +1036,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_DATE('2019;07;23','YYYY;MM;DD')", LocalDate.of(2019, 7, 23));
 
     // Alternative formats
+    evalEquals("TO_DATE('2019-07-23','YYYY-MM-DD|DD/MM/YYYY')", LocalDate.of(2019, 7, 23));
     evalEquals("TO_DATE('23/07/2019','YYYY-MM-DD|DD/MM/YYYY')", LocalDate.of(2019, 7, 23));
 
     // Output only elements

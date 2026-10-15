@@ -74,7 +74,7 @@ The characters that are always preserved as-is can appear anywhere among the dig
 |PR|||Negative values get enclosing angle brackets, positive get spaces. +
 *Restriction:* The PR format element can appear only in the last position of a number format model.
 |RN||&#10003;|Returns values in Roman numerals. Allowed value is between 1 and 3999; a value with a fractional part is rounded.
-|S|||Returns values with leading/trailing +/- signs. +
+|S|||Returns values with leading/trailing +/- signs. When parsing a string, a missing sign is a positive value. +
 *Restriction:* The S format element can appear only in the first or last position of a number format model.
 |TM|||Returns smallest number of characters possible
 |X|&#10003;|&#10003;|Hexadecimal digit. If the specified number is not an integer, it will round to an integer.

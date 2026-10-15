@@ -435,24 +435,22 @@ final class PatternNumberFormat extends NumberFormat {
           while (start < end && Characters.isSpace(text.charAt(start))) start++;
         }
       } else if (this.sign == SignMode.TRAILING_S) {
+        // A missing sign is a positive value
         char c = text.charAt(end - 1);
         if (c == '-') {
           end--;
           isNegative = true;
         } else if (c == '+') {
           end--;
-        } else {
-          throw createUnparsableNumber(format, text, start);
         }
       } else if (this.sign == SignMode.S_LEADING) {
+        // A missing sign is a positive value
         char c = text.charAt(start);
         if (c == '-') {
           start++;
           isNegative = true;
         } else if (c == '+') {
           start++;
-        } else {
-          throw createUnparsableNumber(format, text, start);
         }
       } else if (this.sign == SignMode.DEFAULT) {
         char c = text.charAt(start);

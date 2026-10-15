@@ -39,7 +39,7 @@ Number
 
 == Usage
 
-* When parsing a string, multiple alternative formats can be specified by separating the format strings with the `|` character.
+* When parsing a string, multiple alternative formats can be specified by separating the format strings with the `|` character. The formats are tried in order, and the first one that matches is used.
 * If no format is specified, string can use the scientific notation, such as `1.2E3`, and the `_` digit separator, such as `1_000`.
 * If the conversion is not possible, `TO_NUMBER` raises an error and `TRY_TO_NUMBER` returns NULL. An invalid format raises an error in both cases.
 * Returns NULL if the value to convert is NULL.
@@ -49,7 +49,9 @@ include::numberformat.adoc[]
 == Examples
 
 ----
-TO_NUMBER('1234', 'S9999|9999S') returns 1234
+TO_NUMBER('1234', 'S9999') returns 1234
+TO_NUMBER('-1234', 'S9999|9999S') returns -1234
+TO_NUMBER('1234-', 'S9999|9999S') returns -1234
 TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03') returns 1284352323
 TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03.123456789') returns 1284352323.123456789
 ----

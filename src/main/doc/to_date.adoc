@@ -41,7 +41,7 @@ Date
 
 * An element in the date format model can only appear once. However, elements such as separators and padding characters can appear more than once.
 * If no format is specified, string is interpreted with the ISO-8601 formats, for example `2019-02-13`, `20190213`, `2019-02-13 15:34:56` or `2019-02-13T15:34:56+02:00`. This is the same as the format `AUTO`.
-* Multiple alternative formats can be specified by separating the format strings with the `|` character.
+* Multiple alternative formats can be specified by separating the format strings with the `|` character. The formats are tried in order, and the first one that matches is used.
 * Time zones are case-sensitive: `Europe/London` is not the same as `europe/london`.
 * If single elements are omitted, their minimum values are assumed, and the year is 1970 (for example, `TO_DATE('1999-12', 'YYYY-MM')` is interpreted as December 1st, 1999 and `TO_DATE('12-02', 'MM-DD')` as December 2nd, 1970).
 * If a match fails between a format element and the corresponding characters in string, the alternative format elements below are tried.
@@ -62,6 +62,8 @@ include::dateformat.adoc[]
 == Examples
 
 ----
+TO_DATE('2019-07-23','YYYY-MM-DD|YYYY/MM/DD') returns DATE '2019-07-23'
+TO_DATE('2019/07/23','YYYY-MM-DD|YYYY/MM/DD') returns DATE '2019-07-23'
 TO_DATE('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM') returns 2019-02-13 15:34:56 +08:00
 TO_DATE(1284352323.123) returns 2010-09-13 04:32:03.123
 TO_DATE(1284352323.000000123) returns 2010-09-13 04:32:03.000000123
