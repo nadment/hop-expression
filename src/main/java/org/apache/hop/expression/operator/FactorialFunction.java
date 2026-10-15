@@ -37,6 +37,9 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class FactorialFunction extends Function {
 
+  /** The largest argument, its factorial of 37 digits fits in the maximum precision of a number. */
+  private static final int MAX_ARGUMENT = 33;
+
   public FactorialFunction() {
     super(
         "FACTORIAL",
@@ -56,9 +59,11 @@ public class FactorialFunction extends Function {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
 
+    // Check the long value, the conversion to int would wrap a value out of the int range
+    if (value < 0 || value > MAX_ARGUMENT) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value);
+    }
     int n = value.intValue();
-
-    if (n < 0) throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value);
 
     if (n > 20) {
       BigInteger result = BigInteger.ONE;

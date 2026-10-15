@@ -30,7 +30,7 @@ Number
 
 == Usage
 
-* Raises an error if the argument is negative.
+* Raises an error if the argument is negative or greater than 33. The factorial of 33 has 37 digits, the largest factorial that fits in the maximum precision of a number.
 * The decimal part of a number is truncated: `FACTORIAL(5.7)` returns 120.
 * Returns NULL if the argument is NULL.
 

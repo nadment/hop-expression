@@ -169,7 +169,14 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalEquals("Factorial(5)", new BigDecimal("120"));
     evalEquals("Factorial(10)", new BigDecimal("3628800"));
     evalEquals("Factorial(33)", new BigDecimal("8683317618811886495518194401280000000"));
-    evalEquals("Factorial(40)", new BigDecimal("815915283247897734345611269596115894272000000000"));
+    // The largest argument is 33, its factorial of 37 digits fits in the precision of a number
+    evalFails("Factorial(34)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Factorial(40)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // The argument must not wrap
+    evalFails("Factorial(4294967296)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Factorial(4294967301)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Factorial(-4294967295)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalNull("TRY(Factorial(34))");
 
     // Null handling
     evalNull("Factorial(NULL_INTEGER)");
