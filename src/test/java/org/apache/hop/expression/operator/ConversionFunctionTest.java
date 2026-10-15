@@ -1068,6 +1068,15 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_DATE('2019-07-23','YYYY-MM-DD|DD/MM/YYYY')", LocalDate.of(2019, 7, 23));
     evalEquals("TO_DATE('23/07/2019','YYYY-MM-DD|DD/MM/YYYY')", LocalDate.of(2019, 7, 23));
 
+    // An element can only appear once, but separators can be repeated
+    evalFails("TO_DATE('2020-2021','YYYY-YYYY')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("TO_DATE('2020 20','YYYY RR')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("TO_DATE('02 FEB','MM MON')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("TO_DATE('10:10','HH24:HH')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("TRY_TO_DATE('2020-2021','YYYY-YYYY')", ErrorCode.INVALID_DATE_FORMAT);
+    evalEquals("TO_DATE('2019--07--23','YYYY--MM--DD')", LocalDate.of(2019, 7, 23));
+    evalEquals("To_Char(DATE '2019-07-23','YYYY YYYY')", "2019 2019");
+
     // Output only elements
     evalFails("TO_DATE('2019 3','YYYY Q')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
     evalFails("TO_DATE('2019 TUE','YYYY DY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);

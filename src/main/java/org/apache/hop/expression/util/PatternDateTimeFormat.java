@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
@@ -281,6 +282,12 @@ import org.apache.hop.expression.ExpressionException;
   /** The parsed formats. */
   private final Format[] formats;
 
+  /**
+   * Position in the pattern of an element that sets the same date field as a previous element, or
+   * -1. Such a pattern can format but not parse a date.
+   */
+  private int repeatedIndex = -1;
+
   public PatternDateTimeFormat(final String pattern) {
     this.pattern = pattern;
     this.formats = formats();
@@ -315,13 +322,20 @@ import org.apache.hop.expression.ExpressionException;
 
   private Format[] formats() {
     final List<Format> list = new ArrayList<>();
+    // Position in the pattern of each format in the list
+    final List<Integer> positions = new ArrayList<>();
     int length = pattern.length();
     int index = 0;
+    int elementStart = 0;
     boolean fillMode = true;
     boolean exactMode = false;
     Capitalization cap;
 
     while (index < length) {
+
+      // Keep the position of the formats added by the previous element
+      while (positions.size() < list.size()) positions.add(elementStart);
+      elementStart = index;
 
       // Fill mode modifier; toggles between compact and fill modes for any elements
       // following the modifier in the model
@@ -712,6 +726,18 @@ import org.apache.hop.expression.ExpressionException;
 
       throw new ExpressionException(ErrorCode.INVALID_DATE_FORMAT, pattern, index);
     }
+    while (positions.size() < list.size()) positions.add(elementStart);
+
+    // An element can only appear once to parse a date
+    final List<String> fields = new ArrayList<>();
+    for (int i = 0; i < list.size() && repeatedIndex < 0; i++) {
+      String field = parsedField(list.get(i));
+      if (field == null) continue;
+      if (fields.contains(field)) {
+        repeatedIndex = positions.get(i);
+      }
+      fields.add(field);
+    }
 
     if (!exactMode) {
       list.add(new SpaceFormat());
@@ -720,7 +746,39 @@ import org.apache.hop.expression.ExpressionException;
     return list.toArray(new Format[0]);
   }
 
+  /**
+   * Returns the date field set by a format when parsing, or null if it sets none.
+   *
+   * @param format the format
+   * @return the name of the date field, or null
+   */
+  private static @Nullable String parsedField(final Format format) {
+    if (format instanceof YearFormat
+        || format instanceof SignedYearFormat
+        || format instanceof CommaYearFormat
+        || format instanceof RoundYearFormat) return "YEAR";
+    if (format instanceof MonthFormat || format instanceof RomanMonthFormat) return "MONTH";
+    if (format instanceof DayOfMonthFormat) return "DAY";
+    if (format instanceof DayOfYearFormat) return "DAY_OF_YEAR";
+    if (format instanceof JulianDayFormat) return "JULIAN_DAY";
+    if (format instanceof AdBcFormat) return "ERA";
+    if (format instanceof MeridianFormat) return "MERIDIAN";
+    if (format instanceof Hour12Format || format instanceof Hour24Format) return "HOUR";
+    if (format instanceof MinuteFormat) return "MINUTE";
+    if (format instanceof SecondOfMinuteFormat) return "SECOND";
+    if (format instanceof NanoFormat) return "NANO";
+    if (format instanceof ZoneRegionFormat || format instanceof ZoneAbbreviatedRegionFormat)
+      return "TIME_ZONE";
+    if (format instanceof ZoneHourFormat) return "TIME_ZONE_HOUR";
+    if (format instanceof ZoneMinuteFormat) return "TIME_ZONE_MINUTE";
+    return null;
+  }
+
   public ZonedDateTime parse(final String text) throws ExpressionException {
+
+    if (repeatedIndex >= 0) {
+      throw new ExpressionException(ErrorCode.INVALID_DATE_FORMAT, pattern, repeatedIndex);
+    }
 
     DateTimeParser parser = new DateTimeParser(this, text);
     for (Format format : formats) {
