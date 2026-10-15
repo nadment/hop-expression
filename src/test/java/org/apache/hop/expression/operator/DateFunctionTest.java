@@ -160,6 +160,9 @@ class DateFunctionTest extends ExpressionTest {
         "Date_Diff(NANOSECOND, TIMESTAMP '2019-01-01 15:00:00.000000000',TIMESTAMP '2019-01-01 15:00:00.123456789')",
         123456789L);
 
+    // With leap year
+    evalEquals("Date_Diff(DAY,DATE '2015-12-15',DATE '2019-04-23')", 1225L);
+
     // Null handling
     evalNull("Date_Diff(YEAR, NULL_DATE, DATE '2007-11-09')").returnType(IntegerType.INTEGER);
     evalNull("Date_Diff(YEAR, DATE '2007-11-09',NULL_DATE)");
@@ -224,6 +227,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Days_Between(DATE '2021-01-01',DATE '2021-01-01')", 0L);
     evalEquals("Days_Between(DATE '2021-11-09',DATE '2020-12-28')", -316L);
     evalEquals("Days_Between(DATE '2007-11-09',DATE '2007-12-09')", 30L);
+    evalEquals("Days_Between(DATE '2015-12-15',DATE '2019-04-23')", 1225L);
 
     // Null handling
     evalNull("Days_Between(DATE '2007-11-09',NULL_DATE)");
