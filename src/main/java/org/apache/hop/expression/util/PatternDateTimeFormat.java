@@ -101,17 +101,7 @@ import org.jspecify.annotations.Nullable;
  * <td>MM/dd/yyyy</td>
  * </tr>
  * <tr>
- * <td>E</td>
- * <td>Abbreviated era name (Japanese, Chinese, Thai)</td>
- * <td>None.</td>
- * </tr>
- * <tr>
- * <td>EE</td>
- * <td>Full era name (Japanese, Chinese, Thai)</td>
- * <td>None.</td>
- * </tr>
- * <tr>
- * <td>FF[1-9]</td>
+ * <td>FF[0-9]</td>
  * <td>Fractional seconds.</td>
  * <td>S</td>
  * </tr>
@@ -403,7 +393,7 @@ import org.jspecify.annotations.Nullable;
 
       // Fractional seconds
       if (startsWithIgnoreCase(
-          pattern, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9")) {
+          pattern, index, "FF0", "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9")) {
         int digit = pattern.charAt(index + 2) - '0';
         list.add(new NanoFormat(digit));
         index += 3;
@@ -1716,6 +1706,8 @@ import org.jspecify.annotations.Nullable;
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime)
         throws DateTimeException {
+      // FF0 has no fractional digit
+      if (scale == 0) return;
       int nano = datetime.getNano();
       if (scale < 9) {
         nano /= (int) FastMath.pow(10d, 9 - scale);
@@ -1725,6 +1717,11 @@ import org.jspecify.annotations.Nullable;
 
     @Override
     public void parse(final DateTimeParser parser) {
+      // FF0 has no fractional digit, the nanoseconds are zero
+      if (scale == 0) {
+        parser.nano = 0;
+        return;
+      }
       parser.skipSpace();
       int start = parser.index;
       int nano = parser.parseInt(scale);
