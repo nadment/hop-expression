@@ -227,6 +227,8 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Days_Between(DATE '2021-01-01',DATE '2021-01-01')", 0L);
     evalEquals("Days_Between(DATE '2021-11-09',DATE '2020-12-28')", -316L);
     evalEquals("Days_Between(DATE '2007-11-09',DATE '2007-12-09')", 30L);
+
+    // With leap year
     evalEquals("Days_Between(DATE '2015-12-15',DATE '2019-04-23')", 1225L);
 
     // Null handling
