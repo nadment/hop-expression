@@ -763,8 +763,15 @@ class DateFunctionTest extends ExpressionTest {
     // A week starts on Monday
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-31')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Date_Trunc(MILLENNIUM, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
-    evalEquals("Date_Trunc(CENTURY, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(MILLENNIUM, DATE '2020-05-08')", LocalDate.of(2001, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, DATE '2020-05-08')", LocalDate.of(2001, Month.JANUARY, 1));
+    // As with EXTRACT, the 21st century and the 3rd millennium start in 2001
+    evalEquals("Date_Trunc(CENTURY, DATE '2000-12-31')", LocalDate.of(1901, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, DATE '2001-01-01')", LocalDate.of(2001, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, DATE '2100-06-01')", LocalDate.of(2001, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(MILLENNIUM, DATE '2000-12-31')", LocalDate.of(1001, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(MILLENNIUM, DATE '2001-01-01')", LocalDate.of(2001, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, DATE '0001-06-01')", LocalDate.of(1, Month.JANUARY, 1));
     evalEquals("Date_Trunc(DECADE, DATE '2021-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
     evalEquals("Date_Trunc(YEAR, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
     evalEquals("Date_Trunc(MONTH, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));
@@ -801,10 +808,10 @@ class DateFunctionTest extends ExpressionTest {
     // Units of a day or more reset the time to midnight
     evalEquals(
         "Date_Trunc(MILLENNIUM, TIMESTAMP '2020-05-28 23:59:59')",
-        LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0, 0, 0));
+        LocalDateTime.of(2001, Month.JANUARY, 1, 0, 0, 0, 0));
     evalEquals(
         "Date_Trunc(CENTURY, TIMESTAMP '2020-05-28 23:59:59')",
-        LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0, 0, 0));
+        LocalDateTime.of(2001, Month.JANUARY, 1, 0, 0, 0, 0));
     evalEquals(
         "Date_Trunc(DECADE, TIMESTAMP '2021-05-28 23:59:59')",
         LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 0, 0));

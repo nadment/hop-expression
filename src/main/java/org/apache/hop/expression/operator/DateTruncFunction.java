@@ -70,8 +70,8 @@ public class DateTruncFunction extends Function {
     ZonedDateTime day = datetime.truncatedTo(ChronoUnit.DAYS);
 
     return switch (unit) {
-      case MILLENNIUM -> day.withDayOfYear(1).minusYears(day.getYear() % 1000);
-      case CENTURY -> day.withDayOfYear(1).minusYears(day.getYear() % 100);
+      case MILLENNIUM -> day.withDayOfYear(1).withYear(firstYear(day.getYear(), 1000));
+      case CENTURY -> day.withDayOfYear(1).withYear(firstYear(day.getYear(), 100));
       case DECADE -> day.withDayOfYear(1).minusYears(day.getYear() % 10);
       case YEAR ->
           // First day of the year
@@ -90,5 +90,17 @@ public class DateTruncFunction extends Function {
       case DAY -> day;
       default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
     };
+  }
+
+  /**
+   * Returns the first year of the century or millennium that contains a year. As with EXTRACT, the
+   * first century and millennium start in year 1, so the 21st century starts in 2001.
+   *
+   * @param year the year
+   * @param size the number of years, 100 for a century or 1000 for a millennium
+   * @return the first year
+   */
+  private static int firstYear(int year, int size) {
+    return (year > 0) ? (year - 1) / size * size + 1 : year - year % size;
   }
 }

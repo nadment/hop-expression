@@ -51,6 +51,7 @@ Date
 == Usage
 
 * A week starts on Monday.
+* As with xref:extract.adoc["EXTRACT",role=fun], a century or a millennium starts in a year ending with 1: `DATE_TRUNC(CENTURY, DATE '2020-05-08')` returns `DATE '2001-01-01'`.
 * The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples
