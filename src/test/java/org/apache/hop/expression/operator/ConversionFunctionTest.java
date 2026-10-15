@@ -754,12 +754,26 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
     evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, Month.MARCH, 1));
     evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, Month.FEBRUARY, 25));
+    // The hour in AM/PM must be between 1 and 12
     evalEquals(
+        "To_Date('2019-02-13 03:34:56','YYYY-MM-DD HH:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
+    evalEquals(
+        "To_Date('2019-02-13 12:34:56 AM','YYYY-MM-DD HH12:MI:SS AM')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 34, 56));
+    evalEquals(
+        "To_Date('2019-02-13 12:34:56 PM','YYYY-MM-DD HH12:MI:SS AM')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 12, 34, 56));
+    evalFails(
         "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')",
-        LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
-    evalEquals(
+        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails(
         "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')",
-        LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
+        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails(
+        "To_Date('2019-02-13 00:34:56','YYYY-MM-DD HH12:MI:SS')",
+        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalNull("TRY_TO_DATE('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')");
     evalEquals(
         "To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));

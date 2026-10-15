@@ -1240,6 +1240,11 @@ import org.apache.hop.expression.ExpressionException;
     @Override
     public void parse(final DateTimeParser parser) {
       parser.hour = parser.parseInt(2);
+      // The hour in AM/PM must be between 1 and 12
+      if (parser.hour < 1 || parser.hour > 12) {
+        throw new ExpressionException(
+            ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, parser.text, parser.format);
+      }
       parser.isHourFormat12 = true;
     }
   }
