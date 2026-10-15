@@ -66,7 +66,7 @@ The characters that are always preserved as-is can appear anywhere among the dig
 |C|||ISO currency symbol (EUR, USD...)
 |D|||Local decimal separator. +
 *Restriction:* You can specify only one decimal separator character in a number format model.
-|EEEE|||Returns a value in scientific notation
+|EEEE|||Returns a value in scientific notation. When parsing a string, the exponent is required, for example `TO_NUMBER('1.2E+03','9.9EEEE')` returns 1200.
 |FM|||Returns values with no leading or trailing spaces
 |G|&#10003;||Local grouping separator
 |L|||Local currency symbol (€, £, $...)

@@ -491,6 +491,18 @@ final class PatternNumberFormat extends NumberFormat {
           break;
       }
 
+      // Scientific notation, the exponent follows the last E
+      int exponent = 0;
+      if (this.scientific > 0) {
+        int e = end - 1;
+        while (e > start && Character.toUpperCase(text.charAt(e)) != 'E') e--;
+        if (e <= start) {
+          throw createUnparsableNumber(format, text, start);
+        }
+        exponent = Integer.parseInt(text.substring(e + 1, end));
+        end = e;
+      }
+
       // Hex
       if (pattern.indexOf('X') >= 0 || pattern.indexOf('x') >= 0) {
         String str = text.substring(start, end);
@@ -565,7 +577,7 @@ final class PatternNumberFormat extends NumberFormat {
       }
       String str = digits.toString();
 
-      return new BigDecimal(new BigInteger(str), fraction);
+      return new BigDecimal(new BigInteger(str), fraction).scaleByPowerOfTen(exponent);
     } catch (ExpressionException exception) {
       // Keep the position of the error
       throw exception;

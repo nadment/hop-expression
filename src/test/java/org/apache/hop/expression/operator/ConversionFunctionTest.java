@@ -161,6 +161,16 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER('0.2','S99.99')", 0.2D);
     evalEquals("TO_NUMBER('0.3','99.99S')", 0.3D);
 
+    // Scientific notation
+    evalEquals("TO_NUMBER('1.2E+03','9.9EEEE')", 1200D);
+    evalEquals("TO_NUMBER('1.2e-03','9.9eeee')", 0.0012D);
+    evalEquals("TO_NUMBER('-1.2E+03','9.9EEEE')", -1200D);
+    evalEquals("TO_NUMBER('  1.2E+02','9.9EEEE')", 120D);
+    evalEquals("TO_NUMBER('12E2','99EEEE')", 1200D);
+    evalEquals("TO_NUMBER(TO_CHAR(123.456,'9.99EEEE'),'9.99EEEE')", 123D);
+    evalFails("TO_NUMBER('1.2','9.9EEEE')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
+    evalFails("TO_NUMBER('1.2E+','9.9EEEE')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
+
     // Alternative formats
     evalEquals("TO_NUMBER('1234','S9999|9999S')", 1234D);
     evalEquals("TO_NUMBER('-1234','S9999|9999S')", -1234D);
