@@ -43,8 +43,8 @@ Date
 == Examples
 
 ----
-CONVERT_TIMEZONE('Europe/Paris',Timestamp '2020-05-25 20:48:00')
-CONVERT_TIMEZONE('Europe/Paris','Asia/Tokyo',Timestamp '2020-05-25 20:48:00')
+CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00') returns TIMESTAMP '2020-05-25 22:48:00' AT TIME ZONE 'Europe/Paris'
+CONVERT_TIMEZONE('Europe/Paris','Asia/Tokyo',TIMESTAMP '2020-05-25 20:48:00') returns TIMESTAMP '2020-05-26 03:48:00' AT TIME ZONE 'Asia/Tokyo'
 ----
 
 == See also

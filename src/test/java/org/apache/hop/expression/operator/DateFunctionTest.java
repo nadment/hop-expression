@@ -91,6 +91,7 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void MonthName() throws Exception {
+    evalEquals("MonthName(TIMESTAMP '2019-12-28 10:00:00')", "December");
     evalEquals("MonthName(DATE '2019-01-01')", "January").returnType(StringType.STRING_NOT_NULL);
     evalEquals("MonthName(DATE '2019-12-28')", "December");
 
@@ -104,6 +105,7 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void DayName() throws Exception {
+    evalEquals("DayName(TIMESTAMP '2019-01-01 15:28:59')", "Tuesday");
     evalEquals("DayName(DATE '2019-01-01')", "Tuesday").returnType(StringType.STRING_NOT_NULL);
     evalEquals("DayName(DATE '2019-12-28')", "Saturday");
 
@@ -174,6 +176,9 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Years_Between() throws Exception {
+    // Only complete years are counted
+    evalEquals("Years_Between(DATE '2000-01-01', DATE '2001-01-01')", 1L);
+    evalEquals("Years_Between(DATE '2022-12-31', DATE '2024-06-01')", 1L);
     evalEquals(
         "Years_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')", -1L);
 
@@ -188,6 +193,9 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Weeks_Between() throws Exception {
+    // Only complete weeks are counted
+    evalEquals("Weeks_Between(DATE '2019-01-01', DATE '2019-01-14')", 1L);
+    evalEquals("Weeks_Between(DATE '2019-01-01', DATE '2019-01-15')", 2L);
     evalEquals(
             "Weeks_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')", -52L)
         .returnType(IntegerType.INTEGER_NOT_NULL);
@@ -224,6 +232,11 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Days_Between() throws Exception {
+    // Only complete days are counted
+    evalEquals(
+        "Days_Between(TIMESTAMP '2019-01-01 15:00:00', TIMESTAMP '2019-01-02 14:59:59')", 0L);
+    evalEquals(
+        "Days_Between(TIMESTAMP '2019-01-01 15:00:00', TIMESTAMP '2019-01-02 15:00:00')", 1L);
     evalEquals("Days_Between(DATE '2021-01-01',DATE '2021-01-01')", 0L);
     evalEquals("Days_Between(DATE '2021-11-09',DATE '2020-12-28')", -316L);
     evalEquals("Days_Between(DATE '2007-11-09',DATE '2007-12-09')", 30L);
@@ -243,6 +256,8 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Hours_Between() throws Exception {
     evalEquals(
+        "Hours_Between(TIMESTAMP '2019-01-02 15:00:59', TIMESTAMP '2019-01-01 15:00:59')", -24L);
+    evalEquals(
         "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 0L);
     evalEquals(
         "Hours_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 24L);
@@ -257,6 +272,11 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Minutes_Between() throws Exception {
+    // Only complete minutes are counted
+    evalEquals(
+        "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59', TIMESTAMP '2019-01-01 15:28:58')", 27L);
+    evalEquals(
+        "Minutes_Between(TIMESTAMP '2019-01-01 15:28:59', TIMESTAMP '2019-01-01 15:00:59')", -28L);
     evalEquals(
         "Minutes_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')", 28L);
     evalEquals(
@@ -272,6 +292,9 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Seconds_Between() throws Exception {
+    evalEquals(
+        "Seconds_Between(TIMESTAMP '2019-01-02 15:00:59', TIMESTAMP '2019-01-01 15:00:59')",
+        -86400L);
     evalEquals(
         "Seconds_Between(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:59')",
         28L * 60L);
@@ -388,6 +411,8 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void IsoDayOfWeek() throws Exception {
+    evalEquals("IsoDayOfWeek(DATE '2003-12-29')", 1L);
+    evalEquals("IsoDayOfWeek(TIMESTAMP '2003-12-28 10:00:00')", 7L);
     evalEquals("IsoDayOfWeek(DATE '2003-12-28')", 7L).returnType(IntegerType.INTEGER_NOT_NULL);
 
     // Null handling
@@ -400,6 +425,7 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void IsoWeek() throws Exception {
+    evalEquals("IsoWeek(TIMESTAMP '2016-01-04 10:00:00')", 1L);
     evalEquals("IsoWeek(DATE '2015-12-31')", 53L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("IsoWeek(DATE '2016-01-01')", 53L);
     evalEquals("IsoWeek(DATE '2016-01-02')", 53L);
@@ -433,6 +459,12 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Years() throws Exception {
+    // The decimal part is truncated
+    evalEquals("Add_Years(DATE '2019-01-15', 1.9)", LocalDate.of(2020, Month.JANUARY, 15));
+    evalEquals("Add_Years(DATE '2019-01-15', -1.9)", LocalDate.of(2018, Month.JANUARY, 15));
+    evalEquals(
+        "Add_Years(TIMESTAMP '2019-01-15 10:20:30', 1)",
+        LocalDateTime.of(2020, Month.JANUARY, 15, 10, 20, 30));
     evalEquals("Add_Years(DATE '2019-01-15',1)", LocalDate.of(2020, Month.JANUARY, 15));
     evalEquals("Add_Years(DATE '2019-01-15',-2)", LocalDate.of(2017, Month.JANUARY, 15));
     evalEquals("Add_Years(DATE '2019-11-15',3)", LocalDate.of(2022, Month.NOVEMBER, 15));
@@ -453,6 +485,8 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Quarters() throws Exception {
+    evalEquals("Add_Quarters(DATE '2019-01-15', 1.7)", LocalDate.of(2019, Month.APRIL, 15));
+    evalEquals("Add_Quarters(DATE '2019-11-30', 1)", LocalDate.of(2020, Month.FEBRUARY, 29));
     evalEquals("Add_Quarters(DATE '2019-01-15',1)", LocalDate.of(2019, Month.APRIL, 15));
     evalEquals("Add_Quarters(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.JULY, 15));
     evalEquals("Add_Quarters(DATE '2019-11-15',3)", LocalDate.of(2020, Month.AUGUST, 15));
@@ -473,6 +507,10 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Months() throws Exception {
+    evalEquals("Add_Months(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.FEBRUARY, 15));
+    evalEquals("Add_Months(DATE '2020-01-31', 1)", LocalDate.of(2020, Month.FEBRUARY, 29));
+    // Otherwise the day of month is kept
+    evalEquals("Add_Months(DATE '2019-02-28', 1)", LocalDate.of(2019, Month.MARCH, 28));
     evalEquals("Add_Months(DATE '2019-01-15',1)", LocalDate.of(2019, Month.FEBRUARY, 15));
     evalEquals("Add_Months(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.NOVEMBER, 15));
     evalEquals("Add_Months(DATE '2019-11-15',3)", LocalDate.of(2020, Month.FEBRUARY, 15));
@@ -493,6 +531,7 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Weeks() throws Exception {
+    evalEquals("Add_Weeks(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
 
@@ -509,6 +548,10 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Days() throws Exception {
+    evalEquals("Add_Days(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.JANUARY, 16));
+    evalEquals("Add_Days(DATE '2019-01-15', -1.9)", LocalDate.of(2019, Month.JANUARY, 14));
+    evalEquals("Add_Days(DATE '2022-05-24', -4)", LocalDate.of(2022, Month.MAY, 20));
+    evalEquals("DATE '2022-05-24' - 4", LocalDate.of(2022, Month.MAY, 20));
     evalEquals("Add_Days(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(DATE '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
     evalEquals(
@@ -529,6 +572,14 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Add_Hours() throws Exception {
     evalEquals(
+        "Add_Hours(TIMESTAMP '2024-02-18 22:58:59', 4)",
+        LocalDateTime.of(2024, Month.FEBRUARY, 19, 2, 58, 59));
+    evalEquals(
+        "Add_Hours(TIMESTAMP '2024-02-19 02:58:59', -4)",
+        LocalDateTime.of(2024, Month.FEBRUARY, 18, 22, 58, 59));
+    evalEquals(
+        "Add_Hours(DATE '2019-01-15', 1.9)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0));
+    evalEquals(
         "Add_Hours(DATE '2019-01-15',1)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
     evalEquals(
         "Add_Hours(TIMESTAMP '2021-01-01 15:28:59+02:00',2)",
@@ -548,6 +599,15 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Add_Minutes() throws Exception {
     evalEquals(
+        "Add_Minutes(TIMESTAMP '2024-02-18 22:58:59', 4)",
+        LocalDateTime.of(2024, Month.FEBRUARY, 18, 23, 2, 59));
+    evalEquals(
+        "Add_Minutes(DATE '2019-01-15', -20)",
+        LocalDateTime.of(2019, Month.JANUARY, 14, 23, 40, 0));
+    evalEquals(
+        "Add_Minutes(DATE '2019-01-15', 20.9)",
+        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0));
+    evalEquals(
         "Add_Minutes(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
 
@@ -564,6 +624,12 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Seconds() throws Exception {
+    evalEquals(
+        "Add_Seconds(DATE '2019-01-15', -20)",
+        LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 40));
+    evalEquals(
+        "Add_Seconds(DATE '2019-01-15', 20.9)",
+        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
     evalEquals(
         "Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
     evalEquals(
@@ -582,6 +648,12 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Nanoseconds() throws Exception {
+    evalEquals(
+        "Add_Nanoseconds(DATE '2019-01-15', -1)",
+        LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 59, 999999999));
+    evalEquals(
+        "Add_Nanoseconds(DATE '2019-01-15', 20.9)",
+        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
     evalEquals(
         "Add_NanoSeconds(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
@@ -602,6 +674,14 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Date_Add() throws Exception {
+    evalEquals("DATE_ADD(DAY, 5, DATE '2023-02-01')", LocalDate.of(2023, Month.FEBRUARY, 6));
+    evalEquals(
+        "DATE_ADD(HOUR, 4, TIMESTAMP '2024-02-18 22:58:59')",
+        LocalDateTime.of(2024, Month.FEBRUARY, 19, 2, 58, 59));
+    evalNull("DATE_ADD(DAY, NULL_INTEGER, DATE '2019-01-15')");
+    evalNull("DATE_ADD(DAY, 1, NULL_DATE)");
+    // Any other unit raises an error
+    evalFails("DATE_ADD(MILLISECOND, 1, DATE '2019-01-15')", ErrorCode.INVALID_ARGUMENT);
     evalEquals("DATE_ADD(YEAR,1,DATE '2020-02-29')", LocalDate.of(2021, Month.FEBRUARY, 28));
     evalEquals("DATE_ADD(QUARTER,1,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
     evalEquals("DATE_ADD(MONTH,3,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
@@ -635,6 +715,8 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Hour() throws Exception {
+    // A date without time returns 0
+    evalEquals("Hour(DATE '2019-01-01')", 0L);
     evalEquals("Hour(TIMESTAMP '2019-01-01 15:28:59')", 15L);
     evalEquals("HOUR(FIELD_TIMESTAMP)", 22L);
 
@@ -648,6 +730,8 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Minute() throws Exception {
+    // A date without time returns 0
+    evalEquals("Minute(DATE '2019-01-01')", 0L);
     evalEquals("Minute(TIMESTAMP '2019-01-01 15:28:59')", 28L);
     evalEquals("MINUTE(FIELD_TIMESTAMP)", 11L);
 
@@ -661,8 +745,10 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Second() throws Exception {
+    // A date without time returns 0
+    evalEquals("Second(DATE '2019-01-01')", 0L);
     evalEquals("Second(TIMESTAMP '2019-01-01 15:28:59')", 59L);
-    evalEquals("MINUTE(FIELD_TIMESTAMP)", 11L);
+    evalEquals("SECOND(FIELD_TIMESTAMP)", 1L);
 
     // Null handling
     evalNull("Second(NULL_DATE)");
@@ -674,6 +760,9 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Date_Trunc() throws Exception {
+    // A week starts on Monday
+    evalEquals("Date_Trunc(WEEK, DATE '2020-05-31')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(WEEK, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(MILLENNIUM, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
     evalEquals("Date_Trunc(CENTURY, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
     evalEquals("Date_Trunc(DECADE, DATE '2021-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
@@ -756,6 +845,22 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Extract() throws Exception {
+    // Synonyms
+    evalEquals("Extract(DAYOFMONTH FROM DATE '2020-05-25')", 25L);
+    evalEquals("Extract(DAYS FROM DATE '2020-05-25')", 25L);
+    evalEquals("Extract(WEEKS FROM DATE '2020-05-25')", 21L);
+    evalEquals("Extract(WEEKOFYEAR FROM DATE '2020-05-25')", 21L);
+    evalEquals("Extract(ISOWEEKOFYEAR FROM DATE '2016-01-03')", 53L);
+    evalEquals("Extract(MILLENNIUMS FROM DATE '2020-05-25')", 3L);
+    evalEquals("Extract(YEARS FROM DATE '2020-05-25')", 2020L);
+    evalEquals("Extract(DAYOFYEAR FROM DATE '2020-12-31')", 366L);
+    evalEquals("Extract(WEEKOFMONTH FROM DATE '2020-05-31')", 5L);
+    evalEquals("Extract(NANOSECOND FROM TIMESTAMP '2020-05-25 00:00:01.123456789')", 123456789L);
+    // The fractional seconds are not returned
+    evalEquals("Extract(SECOND FROM TIMESTAMP '2020-05-25 00:00:01.5')", 1L);
+    evalEquals("Extract(TIMEZONE_MINUTE FROM TIMESTAMP '2021-01-01 15:28:59 -04:30')", -30L);
+    evalEquals("Date_Part(YEAR, INTERVAL 10 YEAR)", 10L);
+    evalNull("Extract(YEAR FROM NULL_TIMESTAMP)");
     // Extract part from temporal
     evalEquals("Extract(MILLENNIUM from TIMESTAMP '2020-05-25 23:48:59')", 3L)
         .returnType(IntegerType.INTEGER_NOT_NULL);
@@ -872,6 +977,20 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void ConvertTimeZone() throws Exception {
+    // Documentation examples
+    evalEquals(
+        "CONVERT_TIMEZONE('Europe/Paris', TIMESTAMP '2020-05-25 20:48:00')",
+        LocalDateTime.of(2020, Month.MAY, 25, 22, 48, 0));
+    evalEquals(
+        "CONVERT_TIMEZONE('Europe/Paris', 'Asia/Tokyo', TIMESTAMP '2020-05-25 20:48:00')",
+        LocalDateTime.of(2020, Month.MAY, 26, 3, 48, 0));
+    // Time zone names are case-sensitive
+    evalFails(
+        "CONVERT_TIMEZONE('europe/paris', TIMESTAMP '2020-05-25 20:48:00')",
+        ErrorCode.INVALID_TIMEZONE);
+    evalFails(
+        "CONVERT_TIMEZONE('Europe/Pariss', TIMESTAMP '2020-05-25 20:48:00')",
+        ErrorCode.INVALID_TIMEZONE);
     evalEquals(
             "CONVERT_TIMEZONE('America/Los_Angeles', 'America/New_York', TIMESTAMP '2023-01-01 14:00:00')",
             LocalDateTime.of(2023, Month.JANUARY, 1, 17, 0, 0))
@@ -907,6 +1026,10 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void MakeDate() throws Exception {
+    // Values out of the normal ranges
+    evalEquals("MAKE_DATE(2020,13,1)", LocalDate.of(2021, Month.JANUARY, 1));
+    evalEquals("MAKE_DATE(2020,12,32)", LocalDate.of(2021, Month.JANUARY, 1));
+    evalEquals("MAKE_DATE(2020,13,0)", LocalDate.of(2020, Month.DECEMBER, 31));
     evalEquals("MAKE_DATE(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1))
         .returnType(DateType.DATE_NOT_NULL);
     evalEquals("MAKE_DATE(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
@@ -933,6 +1056,22 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void MakeTimestamp() throws Exception {
+    // Values out of the normal ranges
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,24,0,0)", LocalDateTime.of(2020, Month.JANUARY, 2, 0, 0, 0));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,-1,0,0)", LocalDateTime.of(2019, Month.DECEMBER, 31, 23, 0, 0));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,23,60,0)", LocalDateTime.of(2020, Month.JANUARY, 2, 0, 0, 0));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,23,59,60)", LocalDateTime.of(2020, Month.JANUARY, 2, 0, 0, 0));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,1,1,0,0,-1)", LocalDateTime.of(2019, Month.DECEMBER, 31, 23, 59, 59));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,3,0,0,0,0)", LocalDateTime.of(2020, Month.FEBRUARY, 29, 0, 0, 0));
+    evalEquals(
+        "MAKE_TIMESTAMP(2020,13,1,0,0,0)", LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0, 0));
+    evalNull("MAKE_TIMESTAMP(2020,1,1,NULL_INTEGER,15,59)");
     evalEquals(
             "MAKE_TIMESTAMP(2019,01,1,23,15,59)",
             LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59))
@@ -970,6 +1109,11 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void MakeInterval() throws Exception {
+    // An interval can be added to a date
+    evalEquals(
+        "DATE '2020-01-01' + MAKE_INTERVAL(1,2,3,4,5,6)",
+        LocalDateTime.of(2021, Month.MARCH, 4, 4, 5, 6));
+    evalNull("MAKE_INTERVAL(NULL_INTEGER,1,1,23,15,59)");
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59)", Interval.of(20, 1, 1, 23, 15, 59))
         .returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("MAKE_INTERVAL(20,1,1,23,15,59.123)", Interval.of(20, 1, 1, 23, 15, 59, 123000000));
@@ -986,6 +1130,7 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void First_Day() throws Exception {
+    evalEquals("First_Day(DATE '2021-06-15', QUARTER)", LocalDate.of(2021, Month.APRIL, 1));
     evalEquals("First_Day(DATE '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1))
         .returnType(DateType.DATE_NOT_NULL);
     evalEquals("First_Day(DATE '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 1));
@@ -1024,6 +1169,7 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Last_Day() throws Exception {
+    evalEquals("Last_Day(DATE '2021-06-15', QUARTER)", LocalDate.of(2021, Month.JUNE, 30));
     evalEquals("Last_Day(DATE '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 31))
         .returnType(DateType.DATE_NOT_NULL);
     evalEquals("Last_Day(DATE '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 29));
@@ -1061,6 +1207,10 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Next_Day() throws Exception {
+    evalEquals("Next_Day(DATE '2021-06-15', 'Friday')", LocalDate.of(2021, Month.JUNE, 18));
+    evalEquals("Next_Day(DATE '2020-02-28', 'MONDAY')", LocalDate.of(2020, Month.MARCH, 2));
+    // The next day is strictly after the date
+    evalEquals("Next_Day(DATE '2020-03-02', 'monday')", LocalDate.of(2020, Month.MARCH, 9));
     evalEquals("Next_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2))
         .returnType(DateType.DATE_NOT_NULL);
     evalEquals("Next_Day(FIELD_DATE,'monday')", LocalDate.of(1981, Month.JUNE, 29));
@@ -1081,6 +1231,11 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Previous_Day() throws Exception {
+    evalEquals("Previous_Day(DATE '2021-06-15', 'Friday')", LocalDate.of(2021, Month.JUNE, 11));
+    evalEquals("Previous_Day(DATE '2020-02-28', 'MONDAY')", LocalDate.of(2020, Month.FEBRUARY, 24));
+    // The previous day is strictly before the date
+    evalEquals("Previous_Day(DATE '2020-02-24', 'monday')", LocalDate.of(2020, Month.FEBRUARY, 17));
+    evalFails("Previous_Day(FIELD_STRING, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals("Previous_Day(DATE '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24))
         .returnType(DateType.DATE_NOT_NULL);
 

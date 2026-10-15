@@ -41,12 +41,12 @@ Date
 
 * A week starts on Monday.
 * Raises an error if unit is not supported.
-* Returns NULL if one of the arguments is NULL.
+* Returns NULL if date is NULL. The unit cannot be NULL.
 
 == Examples
 
 ----
-FIRST_DAY(Date '2021-06-15', QUARTER)
+FIRST_DAY(DATE '2021-06-15', QUARTER) returns DATE '2021-04-01'
 FIRST_DAY(DATE '2020-02-27') returns DATE '2020-02-01'
 FIRST_DAY(DATE '2020-05-27', QUARTER) returns DATE '2020-04-01'
 FIRST_DAY(DATE '2020-02-27', WEEK) returns DATE '2020-02-24'

@@ -52,7 +52,7 @@ Integer
 == Usage
 
 * The result is negative if end_date is earlier than start_date.
-* Returns NULL if one of the arguments is NULL.
+* The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples
 

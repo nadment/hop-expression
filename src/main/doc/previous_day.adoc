@@ -41,7 +41,7 @@ Date
 == Examples
 
 ----
-PREVIOUS_DAY(DATE '2021-06-15', 'Friday')
+PREVIOUS_DAY(DATE '2021-06-15', 'Friday') returns DATE '2021-06-11'
 PREVIOUS_DAY(DATE '2020-02-28','monday') returns DATE '2020-02-24'
 ----
 

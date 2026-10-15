@@ -16,7 +16,7 @@ under the License.
 ////
 = CURRENT_DATE, TODAY
 
-Returns the current date in the context time zone (system time zone by default).
+Returns the current date in the system time zone.
 
 == Syntax
 

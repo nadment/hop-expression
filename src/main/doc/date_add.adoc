@@ -46,12 +46,13 @@ Date
 
 == Usage
 
-* Returns NULL if one of the arguments is NULL.
+* Any other unit raises an error.
+* The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples
 
 ----
-DATE_ADD(DAY, 5, DATE '2023-02-01')
+DATE_ADD(DAY, 5, DATE '2023-02-01') returns DATE '2023-02-06'
 DATE_ADD(MONTH,3,DATE '2019-11-15') returns DATE '2020-02-15'
 DATE_ADD(WEEK,-3,DATE '2019-01-15') returns DATE '2018-12-25'
 ----

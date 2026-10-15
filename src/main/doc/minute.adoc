@@ -21,7 +21,7 @@ Returns the minute component of the specified timestamp.
 == Syntax
 
 ----
-MINUTE( timestamp )
+MINUTE( { date | timestamp } )
 ----
 
 == Returns
@@ -31,6 +31,7 @@ Integer between 0 and 59
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun]( MINUTE FROM timestamp ).
+* A date without time returns 0.
 * Returns NULL if the argument is NULL.
 
 == Examples

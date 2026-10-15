@@ -51,7 +51,7 @@ Interval
 == Examples
 
 ----
-MAKE_INTERVAL(20,1,1,23,15,59.123)
+MAKE_INTERVAL(20,1,1,23,15,59.123) returns INTERVAL '+20-1 1 23:15:59.123'
 ----
 
 == See also

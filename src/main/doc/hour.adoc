@@ -21,7 +21,7 @@ Returns the hour of the specified timestamp.
 == Syntax
 
 ----
-HOUR( timestamp )
+HOUR( { date | timestamp } )
 ----
 
 == Returns
@@ -31,6 +31,7 @@ Integer between 0 and 23
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](HOUR FROM timestamp).
+* A date without time returns 0.
 * Returns NULL if the argument is NULL.
 
 == Examples

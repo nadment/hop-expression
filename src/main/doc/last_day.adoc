@@ -40,12 +40,12 @@ Date
 == Usage
 
 * The last day of a week is Sunday.
-* Returns NULL if one of the arguments is NULL.
+* Returns NULL if date is NULL. The unit cannot be NULL.
 
 == Examples
 
 ----
-LAST_DAY(DATE '2021-06-15', QUARTER)
+LAST_DAY(DATE '2021-06-15', QUARTER) returns DATE '2021-06-30'
 LAST_DAY(DATE '2020-02-27') returns 2020-02-29
 LAST_DAY(DATE '2020-04-27', QUARTER) returns 2020-06-30
 LAST_DAY(DATE '2020-12-31', WEEK) returns 2021-01-03
