@@ -39,6 +39,7 @@ The data type of the returned value is the same as the data type of expression1.
 NULLIF(1,1) returns NULL
 NULLIF(1,2) returns 1
 NULLIF('TEST','XXX') returns 'TEST'
+NULLIF(1,NULL) returns 1
 ----
 
 == See also

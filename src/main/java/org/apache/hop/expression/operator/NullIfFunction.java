@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -40,7 +41,8 @@ public class NullIfFunction extends Function {
   public NullIfFunction() {
     super(
         "NULLIF",
-        ReturnTypes.ARG0,
+        // The result is NULL when the two expressions are equal
+        ReturnTypes.ARG0.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.SAME_SAME,
         OperatorCategory.CONDITIONAL,
         "/docs/nullif.html");
@@ -62,9 +64,13 @@ public class NullIfFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Simplify NullIf(NULL,x) → NULL
-    // Simplify NullIf(x,NULL) → NULL
-    if (call.getOperand(0).isNull() || call.getOperand(1).isNull()) {
+    if (call.getOperand(0).isNull()) {
       return new Literal(null, call.getType());
+    }
+
+    // Simplify NullIf(x,NULL) → x, because x is never equal to NULL
+    if (call.getOperand(1).isNull()) {
+      return call.getOperand(0);
     }
 
     return call;

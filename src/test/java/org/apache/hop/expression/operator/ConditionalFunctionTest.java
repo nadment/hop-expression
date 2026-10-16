@@ -137,7 +137,10 @@ class ConditionalFunctionTest extends ExpressionTest {
 
   @Test
   void NullIf() throws Exception {
-    evalEquals("NullIf(1,NULL_INTEGER)", 1L).returnType(IntegerType.of(1, false));
+    // The result is always nullable
+    evalEquals("NullIf(1,NULL_INTEGER)", 1L).returnType(IntegerType.of(1));
+    // An expression is never equal to NULL
+    evalEquals("NullIf(1,NULL)", 1L);
     evalNull("NullIf(1,1)").returnType(IntegerType.of(1));
     evalNull("NULLIF(0.1,0.1)").returnType(NumberType.of(2, 1));
     evalNull("NullIf('TEST','TEST')").returnType(StringType.of(4));
@@ -153,15 +156,16 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimizeNull("NULLIF(NULL, NULL)");
-    // TODO: If the second operand is not nullable, return type must be not null
     optimizeNull("NULLIF(true, true)").returnType(BooleanType.BOOLEAN);
     optimizeTrue("NULLIF(true, false)");
     optimizeNull("NULLIF(NULL, false)");
-    optimizeNull("NULLIF(true, NULL)");
+    // Simplify NULLIF(x, NULL) → x
+    optimizeTrue("NULLIF(true, NULL)");
+    optimize("NULLIF(FIELD_STRING, NULL)", "FIELD_STRING");
     optimizeNull("NULLIF(NULL, FIELD_STRING)");
     optimizeNull("NULLIF('a', 'a')");
     optimizeNull("NULLIF(NULL, 'b')");
-    optimizeNull("NULLIF('a', NULL)");
+    optimize("NULLIF('a', NULL)", "'a'");
     optimizeNull("NULLIF(1, 1)");
     optimize("NULLIF('a', 'b')", "'a'");
     optimize("NULLIF(1, 2)", "1");
