@@ -36,6 +36,8 @@ class BitwiseFunctionTest extends ExpressionTest {
   void BitClear() throws Exception {
     evalEquals("Bit_Clear(3,1)", 2L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Bit_Clear(3,4)", 3L);
+    // The last position is the sign bit
+    evalEquals("Bit_Clear(-1,64)", Long.MAX_VALUE);
 
     // Overflow has no impact on the result
     evalEquals("Bit_Clear(32,66)", 32L);
@@ -128,6 +130,9 @@ class BitwiseFunctionTest extends ExpressionTest {
     evalTrue("Bit_Get(3,1)").returnType(BooleanType.BOOLEAN_NOT_NULL);
     evalTrue("Bit_Get(3,2)");
     evalFalse("Bit_Get(3,4)");
+    // The last position is the sign bit
+    evalTrue("Bit_Get(-1,64)");
+    evalFalse("Bit_Get(1,64)");
 
     // Overflow is always false
     evalFalse("Bit_Get(3,255)");
@@ -166,6 +171,8 @@ class BitwiseFunctionTest extends ExpressionTest {
     evalEquals("Bit_Set(1,4)", 9L);
     evalEquals("Bit_Set(16,4)", 24L);
     evalEquals("Bit_Set(32,4)", 40L);
+    // The last position is the sign bit
+    evalEquals("Bit_Set(0,64)", Long.MIN_VALUE);
 
     // Overflow has no impact on the result
     evalEquals("Bit_Set(32,66)", 32L);
