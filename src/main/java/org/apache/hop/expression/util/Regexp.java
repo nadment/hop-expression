@@ -155,8 +155,19 @@ public final class Regexp {
       throws ExpressionException {
     final int len = pattern.length();
     final StringBuilder javaPattern = new StringBuilder(len + len);
+    boolean inBracket = false;
     for (int i = 0; i < len; i++) {
       char c = pattern.charAt(i);
+
+      // Characters of a bracket expression are copied literally, like PostgreSQL
+      if (inBracket) {
+        javaPattern.append(c);
+        if (c == ']') {
+          inBracket = false;
+        }
+        continue;
+      }
+
       if (c == escapeChar) {
         if (i == (pattern.length() - 1)) {
           throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
@@ -224,7 +235,13 @@ public final class Regexp {
           }
 
           i = end;
-        } else javaPattern.append(c);
+        } else {
+          javaPattern.append(c);
+          inBracket = true;
+        }
+      } else if (c == '.' || c == '^' || c == '$') {
+        // Not a SIMILAR TO metacharacter, matches itself like PostgreSQL
+        javaPattern.append('\\').append(c);
       } else {
         javaPattern.append(c);
       }

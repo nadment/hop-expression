@@ -59,6 +59,8 @@ The pattern supports the following operators:
 |[...]|A bracket expression specifies a character class, just as in POSIX regular expressions.
 |===
 
+Any other character matches itself. Unlike POSIX regular expressions, `.`, `^` and `$` are not metacharacters. The characters of a bracket expression are taken literally, `_` and `%` are not wildcards inside brackets.
+
 == Examples
 
 ----

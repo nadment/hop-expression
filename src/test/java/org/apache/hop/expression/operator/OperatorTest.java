@@ -2363,7 +2363,21 @@ public class OperatorTest extends ExpressionTest {
       evalFails("'TEST' SIMILAR TO '[:UNKNOWN:]*'", ErrorCode.INVALID_REGEXP_PATTERN);
 
       evalFalse("'abc' SIMILAR TO 'a'");
-      evalTrue("'abc' SIMILAR TO '.*(b|d).*'");
+      evalTrue("'abc' SIMILAR TO '%(b|d)%'");
+
+      // The characters '.', '^' and '$' are not metacharacters, they match themselves
+      evalFalse("'abc' SIMILAR TO '.*(b|d).*'");
+      evalFalse("'abc' SIMILAR TO 'a.c'");
+      evalTrue("'a.c' SIMILAR TO 'a.c'");
+      evalTrue("'^a$' SIMILAR TO '^a$'");
+      evalFalse("'a' SIMILAR TO '^a$'");
+
+      // Bracket expression is copied literally, '_' and '%' are not wildcards
+      evalTrue("'abc' SIMILAR TO '[^x]bc'");
+      evalFalse("'xbc' SIMILAR TO '[^x]bc'");
+      evalTrue("'a_c' SIMILAR TO 'a[_%]c'");
+      evalFalse("'abc' SIMILAR TO 'a[_%]c'");
+      evalTrue("'a.c' SIMILAR TO 'a[.]c'");
       evalFalse("'abc' SIMILAR TO '(b|c).*'");
       evalFalse("'abc' NOT SIMILAR TO 'abc'");
       evalTrue("'xyz' SIMILAR TO '%(y|a)%'");
