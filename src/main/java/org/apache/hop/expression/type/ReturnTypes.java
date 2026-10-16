@@ -120,6 +120,9 @@ public final class ReturnTypes {
           // The element is null if the array or the index is null, an array constructor is never
           // null
           Type elementType = arrayType.getElementType();
+          if (elementType == null) {
+            return UnknownType.UNKNOWN;
+          }
           boolean nullable =
               elementType.isNullable()
                   || (type.isNullable() && !(call.getOperand(0) instanceof Array))
