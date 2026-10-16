@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -49,7 +50,7 @@ public class IsNotDistinctFromOperator extends BinaryOperator {
         100,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NOT_NULL,
-        OperandTypes.ANY_ANY,
+        OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,
         "/docs/is-distinct-from.html");
   }
@@ -67,6 +68,16 @@ public class IsNotDistinctFromOperator extends BinaryOperator {
   @Override
   public boolean isSymmetrical() {
     return true;
+  }
+
+  @Override
+  public boolean checkOperandTypes(Call call) {
+    // An untyped NULL is comparable to any data type
+    if (call.getOperand(0).getType().isName(TypeName.UNKNOWN)
+        || call.getOperand(1).getType().isName(TypeName.UNKNOWN)) {
+      return true;
+    }
+    return super.checkOperandTypes(call);
   }
 
   @Override

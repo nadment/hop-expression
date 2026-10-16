@@ -32,6 +32,7 @@ Boolean
 
 * The operator is NULL-safe: it treats NULL as a known value when comparing, so it never returns NULL.
 * This is different from the comparison operator xref:equal.adoc["=",role=op], which treats NULL as an unknown value.
+* The data types are converted as for the comparison operator xref:equal.adoc["=",role=op], and an error is raised if they cannot be compared, for example a date and a number.
 
 == See also
 

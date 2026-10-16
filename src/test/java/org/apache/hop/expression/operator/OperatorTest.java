@@ -1539,6 +1539,9 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       evalFails("FIELD_STRING IS DISTINCT 'TEST' ", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_STRING DISTINCT FROM 'TEST' ", ErrorCode.UNEXPECTED_CHARACTER);
+      // Same data types as comparison operator
+      evalFails("FIELD_DATE IS DISTINCT FROM 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER IS DISTINCT FROM FIELD_DATE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1583,6 +1586,9 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_STRING IS NOT DISTINCT FROM ", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_STRING IS NOT DISTINCT 'TEST' ", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_STRING DISTINCT FROM 'TEST' ", ErrorCode.UNEXPECTED_CHARACTER);
+      // Same data types as comparison operator
+      evalFails("FIELD_DATE IS NOT DISTINCT FROM 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER IS NOT DISTINCT FROM FIELD_DATE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -2675,7 +2681,7 @@ public class OperatorTest extends ExpressionTest {
               "CAST(12345678901234567890123456789012345678 as Number(38,0))",
               new BigDecimal("12345678901234567890123456789012345678"))
           .returnType(NumberType.of(38).withNullability(false));
-        // Overflow if the integer part exceeds the precision minus the scale
+      // Overflow if the integer part exceeds the precision minus the scale
       evalEquals("CAST(99.99 AS NUMBER(3,1))", 99.9D);
       evalEquals("CAST(-99.99 AS NUMBER(3,1))", -99.9D);
       evalEquals("CAST(0.5 AS NUMBER(1,1))", 0.5D);
