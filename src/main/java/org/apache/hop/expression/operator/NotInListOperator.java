@@ -33,6 +33,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -73,7 +74,8 @@ public class NotInListOperator extends Operator {
     Type type = call.getOperand(0).getType();
     Array array = (Array) call.getOperand(1);
     for (IExpression operand : array) {
-      if (!type.isCoercible(operand.getType())) {
+      // An untyped NULL value is accepted in the list
+      if (!type.isCoercible(operand.getType()) && !operand.getType().isName(TypeName.UNKNOWN)) {
         return false;
       }
     }
@@ -180,15 +182,17 @@ public class NotInListOperator extends Operator {
     Type type = operands[0].getType();
 
     // c1 NOT IN (c2, c3, NULL) is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
-    Boolean result = Boolean.TRUE;
+    // so it returns FALSE if c1 is found, otherwise NULL if the list contains a NULL value
+    boolean hasNull = false;
     for (IExpression expression : array) {
       Object value = expression.getValue();
-      if (value == null) return null;
-      if (type.compareEqual(left, value)) {
-        result = Boolean.FALSE;
+      if (value == null) {
+        hasNull = true;
+      } else if (type.compareEqual(left, value)) {
+        return Boolean.FALSE;
       }
     }
-    return result;
+    return hasNull ? null : Boolean.TRUE;
   }
 
   @Override

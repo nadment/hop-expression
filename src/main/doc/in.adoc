@@ -31,10 +31,15 @@ Boolean
 == Usage
 
 * Returns NULL if expression is NULL, even if the list contains a NULL value: `NULL IN (NULL)` returns NULL.
+* If the list contains a NULL value, `IN` returns NULL instead of FALSE when expression is not found, and `NOT IN` returns NULL instead of TRUE.
 
 == Examples
 
 ----
 2.5 IN (1,2.5,3) returns TRUE
 1 NOT IN (2,3) returns TRUE
+2 IN (1,NULL,2) returns TRUE
+3 IN (1,NULL,2) returns NULL
+2 NOT IN (1,NULL,2) returns FALSE
+3 NOT IN (1,NULL,2) returns NULL
 ----

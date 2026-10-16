@@ -527,18 +527,26 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("BINARY '0123456789' in (BINARY '9876',BINARY '0123456789',BINARY '3698')");
       evalFalse("2 in (1,2.5,3)");
 
-      evalFalse("2 in (NULL_INTEGER,NULL_NUMBER)");
       evalTrue("1 not in (2,3)");
       evalFalse("FIELD_INTEGER not in (40,2,3)");
-
-      // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
-      // As a result, when the value of c1 is NULL, the expression c1 IN (c2, c3, NULL) always
-      // evaluates to FALSE.
-      evalFalse("FIELD_STRING in ('A','B',NULL_STRING)").returnType(BooleanType.BOOLEAN);
     }
 
     @Test
     void testNullHandling() throws Exception {
+      // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
+      // As a result, when c1 is not found, the expression c1 IN (c2, c3, NULL) evaluates to NULL.
+      evalNull("FIELD_STRING in ('A','B',NULL_STRING)").returnType(BooleanType.BOOLEAN);
+      evalNull("2 in (NULL_INTEGER,NULL_NUMBER)");
+      evalTrue("FIELD_STRING in ('A',NULL_STRING,'TEST')");
+      evalNull("NOT (FIELD_STRING in ('A','B',NULL_STRING))");
+      // c1 NOT IN (c2, c3, NULL) evaluates to FALSE if c1 is found
+      evalFalse("FIELD_STRING not in ('A',NULL_STRING,'TEST')");
+      evalFalse("1 not in (1,NULL_INTEGER)");
+      evalTrue("2 IN (1,NULL,2)");
+      evalNull("3 IN (1,NULL,2)");
+      evalFalse("2 NOT IN (1,NULL,2)");
+      evalNull("3 NOT IN (1,NULL,2)");
+
       // c1 NOT IN (c2, c3, NULL) evaluates to NULL
       // It is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
       evalNull("FIELD_STRING not in ('A','B',NULL_STRING)").returnType(BooleanType.BOOLEAN);
