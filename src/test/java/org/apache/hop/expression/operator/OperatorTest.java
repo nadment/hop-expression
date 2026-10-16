@@ -1775,6 +1775,11 @@ public class OperatorTest extends ExpressionTest {
       optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1' YEAR TO MONTH");
       optimize("INTERVAL 4 HOUR+INTERVAL 1 HOUR", "INTERVAL 5 HOUR");
       optimize("INTERVAL 4 MONTHS+INTERVAL 0 MONTH", "INTERVAL 4 MONTH");
+
+      // The sign of the intervals is taken into account
+      optimize("INTERVAL -3 DAYS+INTERVAL 1 DAY", "INTERVAL -2 DAY");
+      optimize("INTERVAL 1 DAY+-INTERVAL 3 DAYS", "INTERVAL -2 DAY");
+      evalFails("INTERVAL 1 MONTH+INTERVAL -1 DAY", ErrorCode.INTERVAL_MIXED_SIGN);
     }
   }
 
@@ -1844,12 +1849,24 @@ public class OperatorTest extends ExpressionTest {
       // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
     }
 
-    // @Test
+    @Test
     void testSubtractIntervalFromInterval() throws Exception {
       // Subtraction of an interval to an interval
       evalEquals("INTERVAL 5 HOUR - INTERVAL 1 HOUR", Interval.of(0, 0, 0, 4));
+      evalEquals("INTERVAL 1 HOUR - INTERVAL 5 HOUR", Interval.of(0, 0, 0, 4).negate());
+      evalEquals("INTERVAL 1 DAY - -INTERVAL 2 DAYS", Interval.of(0, 0, 3));
+      evalEquals("INTERVAL 2 YEARS - INTERVAL 3 MONTHS", Interval.of(1, 9));
+      evalEquals(
+          "INTERVAL 2 SECONDS - INTERVAL '00:00:01.5' HOUR TO SECOND",
+          Interval.of(0, 0, 0, 0, 0, 0, 500_000_000));
+      evalNull("INTERVAL 5 HOUR - TO_INTERVAL(NULL_STRING)");
 
-      optimize("INTERVAL 5 HOUR - INTERVAL 1 HOUR", "INTERVAL 4 HOURS");
+      optimize("INTERVAL 5 HOUR - INTERVAL 1 HOUR", "INTERVAL 4 HOUR");
+      optimize("TO_INTERVAL(FIELD_STRING) - INTERVAL 0 DAY", "TO_INTERVAL(FIELD_STRING)");
+
+      // A year-month part and a day-time part of opposite signs is not supported
+      evalFails("INTERVAL 1 MONTH - INTERVAL 1 DAY", ErrorCode.INTERVAL_MIXED_SIGN);
+      evalFails("INTERVAL 5 HOUR - 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
   }
 

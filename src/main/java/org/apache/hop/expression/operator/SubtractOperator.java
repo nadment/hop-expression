@@ -49,7 +49,10 @@ public class SubtractOperator extends BinaryOperator {
         70,
         Associativity.LEFT,
         ReturnTypes.ADDITIVE_OPERATOR,
-        OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.DATE_INTERVAL).or(OperandTypes.DATE_INTEGER),
+        OperandTypes.NUMERIC_NUMERIC
+            .or(OperandTypes.DATE_INTERVAL)
+            .or(OperandTypes.DATE_INTEGER)
+            .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
         "/docs/subtract.html");
   }
@@ -68,6 +71,11 @@ public class SubtractOperator extends BinaryOperator {
             new Call(call.getPosition(), NegativeOperator.INSTANCE, right));
       }
       return new Call(IntervalFromTemporalSubtractOperator.INSTANCE, call.getOperands());
+    }
+
+    if (Types.isInterval(left.getType())) {
+      return new Call(
+          call.getPosition(), IntervalFromIntervalSubtractOperator.INSTANCE, call.getOperands());
     }
 
     // Simplify arithmetic A-0 → A
@@ -154,6 +162,38 @@ public class SubtractOperator extends BinaryOperator {
       if (interval == null) return null;
 
       return interval.subtractFrom(datetime);
+    }
+  }
+
+  /** Subtracts an interval from an interval */
+  public static final class IntervalFromIntervalSubtractOperator extends SubtractOperator {
+    private static final IntervalFromIntervalSubtractOperator INSTANCE =
+        new IntervalFromIntervalSubtractOperator();
+
+    @Override
+    public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+      // Simplify arithmetic INTERVAL A-INTERVAL 0 → INTERVAL A
+      IExpression operand = call.getOperand(1);
+      if (operand.isConstant() && !operand.isNull()) {
+        Interval interval = operand.getValue(Interval.class);
+        if (interval != null && interval.isZero()) {
+          return call.getOperand(0);
+        }
+      }
+
+      return call;
+    }
+
+    @Override
+    public @Nullable Object eval(final IExpression[] operands) {
+      Interval interval0 = operands[0].getValue(Interval.class);
+      if (interval0 == null) return null;
+
+      Interval interval1 = operands[1].getValue(Interval.class);
+      if (interval1 == null) return null;
+
+      return interval0.subtract(interval1);
     }
   }
 }

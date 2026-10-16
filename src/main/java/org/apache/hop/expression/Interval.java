@@ -917,17 +917,53 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
-   * Subtracts this interval to the specified interval.
+   * Subtracts the specified interval from this interval, taking into account the sign of both
+   * intervals.
    *
-   * @param interval the interval object to adjust, not null
+   * @param interval the interval to subtract, not null
+   * @return the difference of the intervals
+   * @throws ExpressionException if the year-month part and the day-time part of the result have
+   *     opposite signs, an interval has only one sign
    */
-  //  public Interval subtract(final Interval interval) {
-  //    return new Interval(
-  //        this.months - interval.months,
-  //        this.seconds - interval.seconds,
-  //        this.nanos - interval.nanos,
-  //        this.negative ^ interval.negative);
-  //  }
+  public Interval subtract(final Interval interval) {
+    return sum(interval, -1);
+  }
+
+  /**
+   * Returns this interval plus or minus the specified interval with signed arithmetic, the
+   * nanoseconds are carried to the seconds and take the sign of the seconds.
+   *
+   * @param interval the other interval
+   * @param sign 1 to add the other interval, -1 to subtract it
+   */
+  private Interval sum(final Interval interval, int sign) {
+    long sign1 = getSign();
+    long sign2 = (long) interval.getSign() * sign;
+
+    long resultMonths = sign1 * months + sign2 * interval.months;
+    long resultSeconds = sign1 * seconds + sign2 * interval.seconds;
+    long resultNanos = sign1 * nanos + sign2 * interval.nanos;
+
+    // Carry the nanoseconds to the seconds, then give them the sign of the seconds
+    resultSeconds += Math.floorDiv(resultNanos, NANOS_PER_SECOND);
+    resultNanos = Math.floorMod(resultNanos, NANOS_PER_SECOND);
+    if (resultSeconds < 0 && resultNanos > 0) {
+      resultSeconds++;
+      resultNanos -= NANOS_PER_SECOND;
+    }
+
+    long signMonths = Long.signum(resultMonths);
+    long signDayTime = (resultSeconds != 0) ? Long.signum(resultSeconds) : Long.signum(resultNanos);
+    if (signMonths != 0 && signDayTime != 0 && signMonths != signDayTime) {
+      throw new ExpressionException(ErrorCode.INTERVAL_MIXED_SIGN);
+    }
+
+    return new Interval(
+        Math.abs(resultMonths),
+        Math.abs(resultSeconds),
+        (int) Math.abs(resultNanos),
+        signMonths < 0 || signDayTime < 0);
+  }
 
   /**
    * Adds this interval to the specified temporal object.
@@ -961,16 +997,15 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
-   * Adds this interval to the specified interval.
+   * Adds the specified interval to this interval, taking into account the sign of both intervals.
    *
-   * @param interval the interval object to adjust, not null
+   * @param interval the interval to add, not null
+   * @return the sum of the intervals
+   * @throws ExpressionException if the year-month part and the day-time part of the result have
+   *     opposite signs, an interval has only one sign
    */
   public Interval add(final Interval interval) {
-    return new Interval(
-        this.months + interval.months,
-        this.seconds + interval.seconds,
-        this.nanos + interval.nanos,
-        false);
+    return sum(interval, 1);
   }
 
   /**

@@ -331,6 +331,14 @@ public enum ErrorCode {
    */
   INVALID_INTERVAL,
   /**
+   * The result of an interval arithmetic has a year-month part and a day-time part of opposite
+   * signs, which an interval cannot represent.
+   *
+   * <p>Message: <code>Interval with a year-month part and a day-time part of opposite signs is not
+   * supported</code>
+   */
+  INTERVAL_MIXED_SIGN,
+  /**
    * The text is not a valid number.
    *
    * <p>Message: <code>Number value “{0}” is not recognized</code>

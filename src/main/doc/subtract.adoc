@@ -22,6 +22,7 @@ Subtracts the second numeric value from the first one.
 
 ----
 numeric1 - numeric2
+interval1 - interval2
 ----
 
 == Returns
@@ -31,11 +32,14 @@ Number
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+* The difference of two intervals is an interval. An error is raised if its year-month part and its day-time part have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY`.
 
 == Examples
 
 ----
 10-0.5 returns 9.5
+INTERVAL 5 HOURS - INTERVAL 1 HOUR returns INTERVAL 4 HOURS
+INTERVAL 2 YEARS - INTERVAL 3 MONTHS returns INTERVAL '+1-9' YEAR TO MONTH
 ----
 
 == See also
