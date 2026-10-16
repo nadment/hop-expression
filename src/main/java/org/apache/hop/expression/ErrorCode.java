@@ -231,6 +231,12 @@ public enum ErrorCode {
    */
   INTEGER_CONVERSION_OVERFLOW,
   /**
+   * A number exceeds the precision of the {@code NUMBER} data type it is converted to.
+   *
+   * <p>Message: <code>Number conversion overflow with value '{0}' to {1}</code>
+   */
+  NUMBER_CONVERSION_OVERFLOW,
+  /**
    * The value of the argument at the given position is outside the range accepted by the function.
    *
    * <p>Message: <code>Argument {0} is out of range with value “{1}”</code>

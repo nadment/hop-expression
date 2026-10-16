@@ -147,7 +147,7 @@ public final class NumberType extends Type {
       if (this.scale != SCALE_NOT_SPECIFIED) {
         number = number.setScale(scale, RoundingMode.DOWN);
       }
-      return number;
+      return checkOverflow(number);
     }
     if (value instanceof Boolean bool) {
       return (bool) ? BigDecimal.ONE : BigDecimal.ZERO;
@@ -167,6 +167,16 @@ public final class NumberType extends Type {
 
     throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  }
+
+  /** Raises an error if the integer part of the number exceeds the precision minus the scale. */
+  private BigDecimal checkOverflow(BigDecimal number) throws ExpressionException {
+    if (precision != PRECISION_NOT_SPECIFIED
+        && precision < TypeName.NUMBER.getMaxPrecision()
+        && number.precision() - number.scale() > precision - Math.max(scale, 0)) {
+      throw new ExpressionException(ErrorCode.NUMBER_CONVERSION_OVERFLOW, number, this);
+    }
+    return number;
   }
 
   @Override

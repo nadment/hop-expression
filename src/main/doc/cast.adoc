@@ -56,7 +56,7 @@ The data type of the returned value is the type specified in the `AS` clause.
 * If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format raises an error in both cases.
 * When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
 * When converting a boolean to a number, FALSE is 0 and TRUE is 1.
-* When converting a number to a number of another type, the value is checked for overflow.
+* When converting a number to a number of another type, the value is checked for overflow: an error is raised if its integer part has more digits than the precision minus the scale, for example `CAST(12345.6 AS NUMBER(3,1))`.
 * When converting a string to a number or an integer, the optional format is a number format model, as in xref:to_number.adoc["TO_NUMBER",role=fun], and the result keeps all the decimals of the string.
 * When converting a number to a number, the value is truncated to the scale of the type. `NUMBER` without precision and scale has a scale of 0, for example `1.23456::NUMBER` returns 1.
 * When converting a string to a binary, the result is the UTF-8 encoding of the string. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].

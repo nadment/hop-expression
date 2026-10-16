@@ -2675,6 +2675,14 @@ public class OperatorTest extends ExpressionTest {
               "CAST(12345678901234567890123456789012345678 as Number(38,0))",
               new BigDecimal("12345678901234567890123456789012345678"))
           .returnType(NumberType.of(38).withNullability(false));
+        // Overflow if the integer part exceeds the precision minus the scale
+      evalEquals("CAST(99.99 AS NUMBER(3,1))", 99.9D);
+      evalEquals("CAST(-99.99 AS NUMBER(3,1))", -99.9D);
+      evalEquals("CAST(0.5 AS NUMBER(1,1))", 0.5D);
+      evalFails("CAST(12345.6 AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("CAST(-100.1 AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("1.5::NUMBER(1,1)", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalNull("TRY_CAST(12345.6 AS NUMBER(3,1))");
 
       // String
       evalEquals("FIELD_STRING_NUMBER::NUMBER", new BigDecimal("-12.56"))

@@ -51,6 +51,7 @@ public class TryFunction extends Function {
                 DIVISION_BY_ZERO,
                 CONVERSION_ERROR,
                 INTEGER_CONVERSION_OVERFLOW,
+                NUMBER_CONVERSION_OVERFLOW,
                 UNPARSABLE_NUMBER_WITH_FORMAT,
                 UNPARSABLE_DATE_WITH_FORMAT,
                 INVALID_HOUR_12,
