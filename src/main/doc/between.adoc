@@ -33,7 +33,9 @@ Boolean
 * The bounds are inclusive.
 * `ASYMMETRIC` is just a verbose way of expressing the default behaviour: lower_bound must not be greater than upper_bound, otherwise the result is FALSE.
 * `SYMMETRIC` indicates that the order of the two bounds is irrelevant.
-* Returns NULL if one of the arguments is NULL.
+* Returns NULL if the expression is NULL.
+* `A BETWEEN B AND C` is equivalent to `A >= B AND A <= C`, so with a NULL bound it returns FALSE if the comparison with the other bound is FALSE, otherwise NULL. For example, if `C` is NULL, `1 BETWEEN 3 AND C` returns FALSE and `1 BETWEEN C AND 3` returns NULL.
+* With `SYMMETRIC`, returns NULL if one of the bounds is NULL.
 
 == Examples
 

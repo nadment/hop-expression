@@ -56,12 +56,23 @@ public class BetweenAsymmetricOperator extends Operator {
     Object start = operands[1].getValue();
     Object end = operands[2].getValue();
 
-    if (value == null || start == null || end == null) {
+    if (value == null) {
       return null;
     }
 
+    // Equivalent to (value >= start AND value <= end), so returns FALSE if one comparison is
+    // FALSE, even if the other bound is NULL
     Type type = operands[0].getType();
-    return type.compare(value, start) >= 0 && type.compare(value, end) <= 0;
+    if (start != null && type.compare(value, start) < 0) {
+      return Boolean.FALSE;
+    }
+    if (end != null && type.compare(value, end) > 0) {
+      return Boolean.FALSE;
+    }
+    if (start == null || end == null) {
+      return null;
+    }
+    return Boolean.TRUE;
   }
 
   @Override

@@ -2441,6 +2441,13 @@ public class OperatorTest extends ExpressionTest {
       evalNull("1 between symmetric NULL_INTEGER and 20");
       evalNull("1 between -10 and NULL_INTEGER");
       evalNull("1 between symmetric -10 and NULL_INTEGER");
+      // Equivalent to (x >= start AND x <= end), FALSE if one comparison is FALSE
+      evalFalse("1 between 3 and NULL_INTEGER");
+      evalFalse("5 between NULL_INTEGER and 3");
+      evalTrue("1 not between 3 and NULL_INTEGER");
+      evalNull("1 not between NULL_INTEGER and 20");
+      // With SYMMETRIC, a NULL bound always returns NULL
+      evalNull("1 between symmetric 3 and NULL_INTEGER");
     }
 
     @Test

@@ -22,6 +22,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -59,7 +60,10 @@ public class BetweenSymmetricOperator extends Operator {
       Object lowerBound = call.getOperand(1).getValue();
       Object upperBound = call.getOperand(2).getValue();
       // With a null bound the result is always null, whatever the order
-      if (lowerBound == null || upperBound == null || type.compare(lowerBound, upperBound) < 0) {
+      if (lowerBound == null || upperBound == null) {
+        return Literal.NULL_BOOLEAN;
+      }
+      if (type.compare(lowerBound, upperBound) < 0) {
         return new Call(BetweenAsymmetricOperator.INSTANCE, call.getOperands());
       }
 
