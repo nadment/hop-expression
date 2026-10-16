@@ -492,7 +492,7 @@ End
         <type>Integer</type>
       </field>
       <field>
-        <expression>DECODE(FIELD_INTEGER,4,'Flag 1',8,'Flag 2',ERROR('Error generated with ABORT'))</expression>
+        <expression>CASE FIELD_INTEGER WHEN 4 THEN 'Flag 1' WHEN 8 THEN 'Flag 2' ELSE ERROR('Error generated with ABORT') END</expression>
         <length>-1</length>
         <name>ABORT</name>
         <precision>-1</precision>

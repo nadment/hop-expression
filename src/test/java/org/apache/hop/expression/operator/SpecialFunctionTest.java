@@ -43,10 +43,13 @@ class SpecialFunctionTest extends ExpressionTest {
     evalFails("ERROR('Custom error message')", ErrorCode.USER_DEFINED_ERROR);
     evalFails("ERROR(NULL)", ErrorCode.USER_DEFINED_ERROR);
 
-    // Usage within DECODE, as documented
-    evalEquals("DECODE(1,1,'Flag 1',2,'Flag 2',ERROR('Unsupported value'))", "Flag 1");
+    // Usage within CASE, as documented
+    evalEquals(
+        "CASE 1 WHEN 1 THEN 'Flag 1' WHEN 2 THEN 'Flag 2' ELSE ERROR('Unsupported value') END",
+        "Flag 1");
     evalFails(
-        "DECODE(3,1,'Flag 1',2,'Flag 2',ERROR('Unsupported value'))", ErrorCode.USER_DEFINED_ERROR);
+        "CASE 3 WHEN 1 THEN 'Flag 1' WHEN 2 THEN 'Flag 2' ELSE ERROR('Unsupported value') END",
+        ErrorCode.USER_DEFINED_ERROR);
 
     // Check operands
     evalFails("ERROR()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

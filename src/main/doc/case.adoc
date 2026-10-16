@@ -68,5 +68,4 @@ END
 
 == See also
 
-* xref:decode.adoc["DECODE",role=fun]
 * xref:if.adoc["IF",role=fun]

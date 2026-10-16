@@ -34,15 +34,14 @@ This function never returns a value; it always raises an error.
 
 == Usage
 
-* Use `ERROR` within a `CASE` expression or a `DECODE` function to set rules for aborting a pipeline.
+* Use `ERROR` within a `CASE` expression to set rules for aborting a pipeline.
 
 == Examples
 
 ----
-DECODE(value,1,'Flag 1',2,'Flag 2',ERROR('Unsupported value'))
+CASE value WHEN 1 THEN 'Flag 1' WHEN 2 THEN 'Flag 2' ELSE ERROR('Unsupported value') END
 ----
 
 == See also
 
 * xref:case.adoc["CASE",role=op]
-* xref:decode.adoc["DECODE",role=fun]

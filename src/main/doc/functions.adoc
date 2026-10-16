@@ -97,7 +97,6 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:dayofweek.adoc["DAYOFWEEK",role=fun]
 * xref:dayofyear.adoc["DAYOFYEAR",role=fun]
 * xref:days_between.adoc["DAYS_BETWEEN",role=fun]
-* xref:decode.adoc["DECODE",role=fun]
 * xref:decompress.adoc["DECOMPRESS",role=fun]
 * xref:degrees.adoc["DEGREES",role=fun]
 * xref:difference.adoc["DIFFERENCE",role=fun]

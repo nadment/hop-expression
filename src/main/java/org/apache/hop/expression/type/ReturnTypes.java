@@ -361,40 +361,6 @@ public final class ReturnTypes {
           TypeTransforms.TO_NULLABLE);
 
   /**
-   * Type-inference strategy for DECODE function: the type of the first result, nullable if one of
-   * the results or the default value is nullable, or if there is no default value. If the first
-   * result is numeric, the type is the numeric type with the highest precedence among the results
-   * and the default value.
-   *
-   * <p>The operands are the value, pairs of search value and result, then an optional default.
-   */
-  public static final IReturnTypeInference DECODE_FUNCTION =
-      call -> {
-        int count = call.getOperandCount();
-        Type type = call.getOperand(2).getType();
-        boolean isNumeric = Types.isNumeric(type);
-
-        // Without default value, the function returns NULL when no search value matches
-        boolean nullable = count % 2 != 0;
-        for (int i = 2; i < count; i += 2) {
-          Type result = call.getOperand(i).getType();
-          nullable |= result.isNullable();
-          if (isNumeric && Types.isNumeric(result)) {
-            type = Types.getLeastRestrictive(type, result);
-          }
-        }
-        if (count % 2 == 0) {
-          Type result = call.getOperand(count - 1).getType();
-          nullable |= result.isNullable();
-          if (isNumeric && Types.isNumeric(result)) {
-            type = Types.getLeastRestrictive(type, result);
-          }
-        }
-
-        return type.withNullability(nullable);
-      };
-
-  /**
    * Type-inference strategy for JSON_VALUE function: the type given by the operand #2, STRING by
    * default.
    */
