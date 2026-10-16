@@ -44,14 +44,21 @@ END
 
 == Returns
 
-The data type of the returned value is the same as the data type of the result expressions.
+The common data type of the `THEN` and `ELSE` result expressions, for example Number if one result is an Integer and another one a Number.
+
+The result is nullable if one of the result expressions is nullable or if the `ELSE` clause is omitted.
 
 == Usage
 
 * A simple `CASE` expression compares expression with the values of each `WHEN` clause, in order, and returns the result of the first clause that contains an equal value.
 * A `WHEN` clause of a simple `CASE` expression accepts one value or a list of values separated by commas.
+* The values of a simple `CASE` expression must be comparable with the expression, like with the xref:equal.adoc["=",role=op] operator, for example a number can't be compared with a string.
 * A searched `CASE` expression evaluates the condition of each `WHEN` clause, in order, and returns the result of the first clause whose condition is TRUE.
 * If no `WHEN` clause matches, the result of the `ELSE` clause is returned, or NULL if the `ELSE` clause is omitted.
+* A NULL never matches: in a simple `CASE` expression, a NULL expression or a NULL value of a `WHEN` clause never matches, and in a searched `CASE` expression, a NULL condition is not TRUE.
+* The conditions of a searched `CASE` expression must be booleans or numbers, a number condition is TRUE if it is not 0, like with the xref:is-true.adoc["IS TRUE",role=op] operator.
+* The result expressions must be of the same data type family, like with the xref:if.adoc["IF",role=fun] function, for example a number and a string or a number and a boolean are incompatible. An error is raised if the result expressions are of incompatible types, or if they are all NULL because the data type can't be determined; use an explicit cast like `CAST(NULL AS STRING)` if needed.
+* Only the result expression of the matching clause is evaluated, and the `WHEN` clauses that follow a matching clause are not evaluated, so `CASE WHEN TRUE THEN 1 ELSE 1/0 END` returns 1 without error.
 
 NOTE: The `WHEN` clauses are evaluated in order. For better performance, list the most likely clauses first and the clauses with expensive expressions (e.g., requiring lots of CPU and memory) last, to minimize the chances that they are evaluated.
 
@@ -64,6 +71,13 @@ CASE expression
   WHEN 9 THEN 'unknown'
   ELSE 'error'
 END
+----
+
+----
+CASE WHEN FIELD > 100 THEN 'high' WHEN FIELD > 10 THEN 'medium' ELSE 'low' END
+CASE 2 WHEN 1 THEN 'one' WHEN 2, 3 THEN 'two or three' END returns 'two or three'
+CASE CAST(NULL AS INTEGER) WHEN 1 THEN 'one' ELSE 'other' END returns 'other'
+CASE WHEN TRUE THEN 1 ELSE 2.5 END returns 1 as a Number
 ----
 
 == See also

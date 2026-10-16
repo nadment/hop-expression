@@ -1188,6 +1188,23 @@ public class OperatorTest extends ExpressionTest {
           .returnType(IntegerType.of(12));
       optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN ZEROIFNULL(FIELD_INTEGER) ELSE 0 END")
           .returnType(IntegerType.of(12, false));
+
+      // The return type is the common type of the THEN and ELSE expressions
+      evalEquals("CASE WHEN TRUE THEN 1 ELSE 2.5 END", BigDecimal.ONE)
+          .returnType(NumberType.of(2, 1, false));
+
+      // A NULL condition is not TRUE
+      evalEquals("CASE WHEN NULL_BOOLEAN THEN 1 ELSE 2 END", 2L);
+
+      // A number condition is TRUE if it is not 0
+      evalEquals("CASE WHEN 3 THEN 1 ELSE 2 END", 1L);
+      evalEquals("CASE WHEN FIELD_INTEGER_ZERO THEN 1 ELSE 2 END", 2L);
+
+      // Only the matching clause is evaluated
+      evalEquals("CASE WHEN FIELD_BOOLEAN_TRUE THEN 1 ELSE 1/0 END", 1D);
+      evalEquals("CASE WHEN FIELD_BOOLEAN_TRUE THEN 2 WHEN 1/0=1 THEN 3 END", 2L);
+      evalEquals("CASE 2 WHEN 1 THEN 'one' WHEN 2, 3 THEN 'two or three' END", "two or three");
+      evalEquals("CASE CAST(NULL AS INTEGER) WHEN 1 THEN 'one' ELSE 'other' END", "other");
     }
 
     @Test
@@ -1196,9 +1213,20 @@ public class OperatorTest extends ExpressionTest {
       evalFails(
           "case when FIELD_INTEGER=40 then 10 else 50", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
-      // Incompatible return type
+      // All the result expressions are NULL
       evalFails(
-          "case when FIELD_INTEGER=40 then 10 else 'Error'", ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
+          "CASE WHEN FIELD_BOOLEAN_TRUE THEN DATE '2020-01-01' ELSE 1 END",
+          ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Incompatible return type, like the IF function
+      evalFails(
+          "case when FIELD_INTEGER=40 then 10 else 'Error' end", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CASE WHEN TRUE THEN 'A' ELSE 1 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CASE WHEN TRUE THEN 1 ELSE TRUE END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // A condition must be a boolean or a number
+      evalFails("CASE WHEN 'A' THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CASE WHEN FIELD_DATE THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Unknown return type
       evalFails("case when false then NULL end", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -1323,10 +1351,17 @@ public class OperatorTest extends ExpressionTest {
           "case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5",
           ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
-      // TODO: Incompatible return type
+      // WHEN values must be comparable with the value, like the equal operator
       evalFails(
           "case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end",
-          ErrorCode.CONVERSION_ERROR);
+          ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CASE FIELD_INTEGER WHEN 'A' THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CASE FIELD_STRING WHEN 40 THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails(
+          "CASE FIELD_INTEGER WHEN 10, 'A' THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Incompatible return type
+      evalFails("CASE FIELD_INTEGER WHEN 40 THEN 1 ELSE 'A' END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Missing 'END'
       evalFails(

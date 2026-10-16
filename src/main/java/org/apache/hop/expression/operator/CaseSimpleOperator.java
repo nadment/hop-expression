@@ -31,7 +31,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -146,39 +146,26 @@ public class CaseSimpleOperator extends Operator {
   @Override
   public boolean checkOperandTypes(Call call) {
 
-    Array whenTerm = (Array) call.getOperand(1);
-    Array thenTerm = (Array) call.getOperand(2);
-    IExpression elseTerm = call.getOperand(3);
+    IExpression valueOperand = call.getOperand(0);
+    Type valueType = valueOperand.getType();
 
-    Type valueType = call.getOperand(0).getType();
-
-    // Check WHEN operands
-    for (IExpression operand : whenTerm) {
-      if (operand.is(Kind.ARRAY)) {
-        // Mutli-values simple form
-        for (IExpression value : (Array) operand) {
-          if (!valueType.getName().isCoercible(value.getType().getName())) {
-            return false;
+    // Check WHEN operands are comparable with the value, like the equal operator
+    if (!valueOperand.isNull()) {
+      for (IExpression operand : (Array) call.getOperand(1)) {
+        if (operand.is(Kind.ARRAY)) {
+          // Mutli-values simple form
+          for (IExpression value : (Array) operand) {
+            if (!(value.isNull() || Types.isComparable(valueType, value.getType()))) {
+              return false;
+            }
           }
+        } else if (!(operand.isNull() || Types.isComparable(valueType, operand.getType()))) {
+          return false;
         }
-      } else if (!valueType.isCoercible(operand.getType())) {
-        return false;
       }
     }
 
-    // Determine common return type
-    Type returnType = getLeastRestrictive(getLeastRestrictive(thenTerm), elseTerm.getType());
-    if (returnType.isName(TypeName.UNKNOWN)) return false;
-
-    // Check then operands
-    for (IExpression thenOperand : thenTerm) {
-      if (!(returnType.isCoercible(thenOperand.getType()) || thenOperand.isNull())) {
-        return false;
-      }
-    }
-
-    // Check else operand
-    return elseTerm.isNull() || returnType.isCoercible(elseTerm.getType());
+    return CaseSearchOperator.checkResultTypes(call);
   }
 
   /**

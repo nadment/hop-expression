@@ -28,14 +28,14 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -183,40 +183,46 @@ public class CaseSearchOperator extends Operator {
   @Override
   public boolean checkOperandTypes(Call call) {
 
-    Array whenTerm = (Array) call.getOperand(1);
-    Array thenTerm = (Array) call.getOperand(2);
-    IExpression elseTerm = call.getOperand(3);
-
-    // Search case should be a predicate
-    Type valueType = BooleanType.BOOLEAN;
-
-    // Check WHEN operands
-    for (IExpression operand : whenTerm) {
-      if (operand.is(Kind.ARRAY)) {
-        // Mutli-values simple form
-        for (IExpression value : (Array) operand) {
-          if (!valueType.getName().isCoercible(value.getType().getName())) {
-            return false;
-          }
-        }
-      } else if (!valueType.isCoercible(operand.getType())) {
+    // Search case should be a predicate, a number is coerced to a boolean
+    for (IExpression operand : (Array) call.getOperand(1)) {
+      if (operand.isNull()) continue;
+      Type type = operand.getType();
+      if (!(Types.isBoolean(type) || Types.isNumeric(type) || type.isFamily(TypeFamily.ANY))) {
         return false;
       }
     }
+
+    return checkResultTypes(call);
+  }
+
+  /**
+   * Checks that the THEN and ELSE operands of a CASE call are in the same type family, like the IF
+   * and COALESCE functions. A NULL operand is ignored.
+   *
+   * @param call the call of a CASE operator
+   * @return true if the result types are compatible
+   */
+  static boolean checkResultTypes(Call call) {
+    Array thenTerm = (Array) call.getOperand(2);
+    IExpression elseTerm = call.getOperand(3);
 
     // Determine common return type
     Type returnType = getLeastRestrictive(getLeastRestrictive(thenTerm), elseTerm.getType());
     if (returnType.isName(TypeName.UNKNOWN)) return false;
 
-    // Check then operands
-    for (IExpression thenOperand : thenTerm) {
-      if (!(returnType.isCoercible(thenOperand.getType()) || thenOperand.isNull())) {
+    @Nullable TypeFamily family = null;
+    List<IExpression> results = new ArrayList<>();
+    thenTerm.forEach(results::add);
+    results.add(elseTerm);
+    for (IExpression result : results) {
+      if (result.isNull()) continue;
+      if (family == null) {
+        family = result.getType().getFamily();
+      } else if (!result.getType().isFamily(family)) {
         return false;
       }
     }
-
-    // Check else operand
-    return elseTerm.isNull() || returnType.isCoercible(elseTerm.getType());
+    return true;
   }
 
   /**
