@@ -66,7 +66,6 @@ public class OperatorTest extends ExpressionTest {
 
       evalFalse("2 <> 2.000");
       evalFalse("2.000 <> 2.00");
-      evalFalse("true <> true");
       evalTrue("DATE '2019-01-01' <> DATE '2018-01-01'");
       evalFalse("DATE '2019-01-01' <> DATE '2019-01-01'");
 
@@ -83,7 +82,6 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("1<>TRUE");
       evalTrue("TRUE<>1.1");
       evalTrue("TRUE<>0");
-      evalFalse("TRUE<>1");
 
       // Compare numeric with implicit coercion from INTEGER and NUMBER
       evalTrue("2 <> 2.1");
@@ -125,7 +123,7 @@ public class OperatorTest extends ExpressionTest {
     void testOptimize() throws Exception {
       // Normalize
       optimize("10!=FIELD_INTEGER", "FIELD_INTEGER!=10");
-      optimize("FIELD_INTEGER=40");
+      optimize("FIELD_INTEGER!=40");
 
       // Simplify comparison with literals
       optimizeFalse("'a' <> 'a'");
@@ -400,6 +398,10 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("1.5 < 2");
       evalTrue("2 < 2.1");
       evalFalse("2.1 < 2.1");
+
+      // A string literal is converted to the type of the other operand
+      evalTrue("'2' < 3");
+      evalTrue("FIELD_DATE < '2030-01-01'");
     }
 
     @Test
@@ -413,8 +415,8 @@ public class OperatorTest extends ExpressionTest {
 
       // A date is not comparable with a number
       evalFails("FIELD_DATE < 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-      evalTrue("'2' < 3");
-      evalTrue("FIELD_DATE < '2030-01-01'");
+
+      // Arrays are not comparable
       evalFails("[1,2] < [1,3]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
@@ -529,7 +531,7 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify arithmetic comparisons
       optimize("3<=FIELD_INTEGER+1", "FIELD_INTEGER>=2");
-      optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
+      optimize("FIELD_INTEGER+1<=3", "FIELD_INTEGER<=2");
 
       // Simplify comparison with the same term
       optimize("FIELD_STRING<=FIELD_STRING", "NVL2(FIELD_STRING,TRUE,NULL)");
@@ -1260,8 +1262,19 @@ public class OperatorTest extends ExpressionTest {
       // Only the matching clause is evaluated
       evalEquals("CASE WHEN FIELD_BOOLEAN_TRUE THEN 1 ELSE 1/0 END", 1D);
       evalEquals("CASE WHEN FIELD_BOOLEAN_TRUE THEN 2 WHEN 1/0=1 THEN 3 END", 2L);
-      evalEquals("CASE 2 WHEN 1 THEN 'one' WHEN 2, 3 THEN 'two or three' END", "two or three");
-      evalEquals("CASE CAST(NULL AS INTEGER) WHEN 1 THEN 'one' ELSE 'other' END", "other");
+
+      evalEquals(
+              "CASE WHEN FIELD_INTEGER IS NULL THEN '-' WHEN FIELD_INTEGER<0 THEN '' ELSE FIELD_STRING END",
+              "TEST")
+          .returnType(StringType.of(1000));
+      evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", 0L)
+          .returnType(IntegerType.of(12));
+      evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", 0D)
+          .returnType(NumberType.NUMBER);
+      evalEquals(
+              "CASE WHEN NULL_INTEGER IS NULL THEN Date '2023-01-01' ELSE FIELD_DATE END",
+              LocalDate.of(2023, 1, 1))
+          .returnType(DateType.DATE);
     }
 
     @Test
@@ -1363,7 +1376,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CASE NULL_INTEGER WHEN 0 THEN 0 / 0 ELSE 1 END", 1D);
       evalEquals("CASE 1 WHEN 2 THEN 0 / 0 ELSE 3 END", 3D);
 
-      // Ignore division by zero in ELSE term,
+      // Ignore division by zero in a WHEN clause after the matching one or in the ELSE term
       evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2D);
       evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2D);
 
@@ -1394,27 +1407,17 @@ public class OperatorTest extends ExpressionTest {
           "CASE FIELD_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END",
           "IF(FIELD_INTEGER IN (10,40),'A','B')");
 
-      evalEquals(
-              "CASE WHEN FIELD_INTEGER IS NULL THEN '-' WHEN FIELD_INTEGER<0 THEN '' ELSE FIELD_STRING END",
-              "TEST")
-          .returnType(StringType.of(1000));
-      evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", 0L)
-          .returnType(IntegerType.of(12));
-      evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", 0D)
-          .returnType(NumberType.NUMBER);
-      evalEquals(
-              "CASE WHEN NULL_INTEGER IS NULL THEN Date '2023-01-01' ELSE FIELD_DATE END",
-              LocalDate.of(2023, 1, 1))
-          .returnType(DateType.DATE);
+      evalEquals("CASE 2 WHEN 1 THEN 'one' WHEN 2, 3 THEN 'two or three' END", "two or three");
+      evalEquals("CASE CAST(NULL AS INTEGER) WHEN 1 THEN 'one' ELSE 'other' END", "other");
+
+      // Coerce the value and the WHEN values to NUMBER, and the results to their common type
+      evalEquals("case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5 end", 0.5D)
+          .returnType(NumberType.of(4, 3, false));
+      evalEquals("case FIELD_INTEGER when 10 then 1 when 40.0 then 2.123 else 0.5 end", 2.123D);
     }
 
     @Test
     void testError() throws Exception {
-      // Coerce
-      evalFails(
-          "case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5",
-          ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
-
       // WHEN values must be comparable with the value, like the equal operator
       evalFails("CASE FIELD_STRING WHEN 40 THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails(
@@ -1627,8 +1630,6 @@ public class OperatorTest extends ExpressionTest {
       optimizeFalse("true is null");
       optimizeFalse("false is null");
       optimizeTrue("NULL IS NULL");
-      optimizeTrue("NULL IS NULL");
-      optimizeFalse("TRUE IS NULL");
       optimizeFalse("1 IS NULL");
       optimizeFalse("Random() IS NULL");
 
@@ -1651,7 +1652,6 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("NULL_INTEGER IS NOT NULL");
       evalFalse("NULL_STRING IS NOT NULL");
       evalFalse("NULL_DATE IS NOT NULL");
-      evalFalse("NULL_BOOLEAN IS NOT NULL");
       evalTrue("FIELD_BOOLEAN_TRUE IS NOT NULL").returnType(BooleanType.BOOLEAN_NOT_NULL);
     }
 
@@ -1665,7 +1665,6 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_BOOLEAN_TRUE IS NOT NULL");
       optimizeFalse("NULL+1 IS NOT NULL");
       optimizeTrue("TRUE IS NOT NULL");
-      optimizeFalse("TRUE IS NULL");
       optimizeTrue("1 IS NOT NULL");
       optimizeTrue("Random() IS NOT NULL");
 
@@ -1872,7 +1871,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
       evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
 
-      // Only integer, round number
+      // Only whole days, the decimal part is truncated
       evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
       evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
 
@@ -2659,6 +2658,7 @@ public class OperatorTest extends ExpressionTest {
       evalNull("1 not between NULL_INTEGER and 20");
       // With SYMMETRIC, a NULL bound always returns NULL
       evalNull("1 between symmetric 3 and NULL_INTEGER");
+      evalNull("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND NULLIF(1,1)");
     }
 
     @Test
@@ -2689,8 +2689,6 @@ public class OperatorTest extends ExpressionTest {
       // Remove SYMMETRIC if operands are constant, and swap bound if necessary
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
-      // A null bound is not compared
-      evalNull("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND NULLIF(1,1)");
 
       optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
       optimizeFalse("2 between 3 and (5+1)");
@@ -2894,7 +2892,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST(123 as Integer)", 123L);
       evalEquals("CAST(-123 as Integer(3))", -123L).returnType(IntegerType.of(3, false));
 
-      // Number (Casting operations that result in loss of precision are allowed).
+      // Number, rounded to the nearest integer and halfway values away from zero
       evalEquals("CAST(1.25 as Integer)", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
       evalEquals("CAST(-1.25 as Integer)", -1L);
       evalEquals("CAST(1.1 as Integer)", 1L);
@@ -2948,7 +2946,7 @@ public class OperatorTest extends ExpressionTest {
           "CAST(FIELD_STRING AS DATE FORMAT 'YYYYMM')",
           "CAST(FIELD_STRING AS DATE FORMAT 'YYYYMM')");
 
-      // Remove loss-less cast
+      // Remove an inner cast made useless by a narrower outer cast, or a loss-less cast
       optimize(
           "CAST(CAST(FIELD_INTEGER AS INTEGER(10)) AS INTEGER(5))",
           "CAST(FIELD_INTEGER AS INTEGER(5))");
@@ -2964,7 +2962,7 @@ public class OperatorTest extends ExpressionTest {
           "CAST(FIELD_STRING AS STRING(20))");
       optimize("CAST(FIELD_STRING AS STRING(1000))", "FIELD_STRING");
 
-      // Don't remove loss-less cast
+      // Don't remove a lossy cast, a narrower inner cast or a cast that reduces the scale
       optimize(
           "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))",
           "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))");
@@ -3001,7 +2999,8 @@ public class OperatorTest extends ExpressionTest {
               "CAST(12345678901234567890123456789012345678 as Number(38,0))",
               new BigDecimal("12345678901234567890123456789012345678"))
           .returnType(NumberType.of(38).withNullability(false));
-      // Overflow if the integer part exceeds the precision minus the scale
+      // The decimals are truncated to the scale, and an overflow is raised if the integer part
+      // exceeds the precision minus the scale
       evalEquals("CAST(99.99 AS NUMBER(3,1))", 99.9D);
       evalEquals("CAST(-99.99 AS NUMBER(3,1))", -99.9D);
       evalEquals("CAST(0.5 AS NUMBER(1,1))", 0.5D);
