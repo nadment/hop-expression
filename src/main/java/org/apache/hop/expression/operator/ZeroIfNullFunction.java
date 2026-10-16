@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -23,6 +24,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeTransforms;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 
 /** Returns 0 if its argument is null; otherwise, returns its argument. */
@@ -43,7 +45,8 @@ public class ZeroIfNullFunction extends Function {
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
 
-    if (value == null) return 0L;
+    // Zero must have the data type of the argument
+    if (value == null) return Types.isNumber(operands[0].getType()) ? BigDecimal.ZERO : 0L;
 
     return value;
   }

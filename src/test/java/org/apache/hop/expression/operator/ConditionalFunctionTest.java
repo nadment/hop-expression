@@ -177,13 +177,18 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("ZeroIfNull(1.1)", 1.1D);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
 
+    // The result has the data type of the argument and is never null
+    evalEquals("ZeroIfNull(FIELD_INTEGER)", 40L).returnType(IntegerType.of(12, false));
+    evalEquals("ZeroIfNull(NULL_NUMBER)", 0D).returnType(NumberType.NUMBER_NOT_NULL);
+
     // Check operands
     evalFails("ZeroIfNull()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-    optimizeNull("NULLIFZERO(0)");
-    optimizeNull("NULLIFZERO(0.00)");
+    optimize("ZEROIFNULL(FIELD_INTEGER)");
+    optimize("ZEROIFNULL(NULL::INTEGER)", "0");
+    optimize("ZEROIFNULL(1.5)", "1.5");
   }
 
   @Test
@@ -204,6 +209,7 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("NullIfZero('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("NULLIFZERO(0.1)", "0.1");
+    optimizeNull("NULLIFZERO(0)");
     optimizeNull("NULLIFZERO(0.0)");
     optimizeNull("NULLIFZERO(-0.000)");
   }
