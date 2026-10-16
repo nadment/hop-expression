@@ -40,7 +40,7 @@ interval1 - interval2
 * The difference of two integers raises an arithmetic overflow error if it exceeds the integer range; use an explicit cast to NUMBER if needed.
 * Subtracting a number of days from a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun] with a negative number, the decimal part of the number of days is truncated.
 * Subtracting months or years from a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2020-03-31' - INTERVAL 1 MONTH` returns `DATE '2020-02-29'`.
-* The difference of two intervals is an interval. An error is raised if its year-month part and its day-time part have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY`.
+* The difference of two intervals is an interval, the months, the days and the time are subtracted separately and can have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY` returns `INTERVAL '+0-1 -1 00:00:00'`.
 * The difference of two dates is not supported, use xref:date_diff.adoc["DATE_DIFF",role=fun] or a function like xref:days_between.adoc["DAYS_BETWEEN",role=fun].
 * A date can't be subtracted from a number or an interval.
 * A boolean or a string is not implicitly converted to a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) + 1`.

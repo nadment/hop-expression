@@ -170,8 +170,12 @@ public class LiteralTest extends ExpressionTest {
     optimize("INTERVAL 58.123456789 SECONDS", "INTERVAL 58.123456789 SECOND");
     optimize("INTERVAL '-15-3' YEAR TO MONTH", "INTERVAL '-15-3' YEAR TO MONTH");
     optimize("INTERVAL '5 23' DAY TO HOUR", "INTERVAL '+5 23' DAY TO HOUR");
-    optimize("INTERVAL 30 HOUR", "INTERVAL '+1 06' DAY TO HOUR");
-    optimize("INTERVAL -30 HOUR", "INTERVAL '-1 06' DAY TO HOUR");
+    // Hours are not converted to days, like PostgreSQL
+    optimize("INTERVAL 30 HOUR", "INTERVAL 30 HOUR");
+    optimize("INTERVAL -30 HOUR", "INTERVAL -30 HOUR");
+    // Parts of opposite signs
+    optimize("INTERVAL '+1-0 -1 00:00:00'", "INTERVAL '+1-0 -1 00:00:00.000000000'");
+    optimize("INTERVAL '1 month -1 day'", "INTERVAL '+0-1 -1 00:00:00.000000000'");
     optimize("INTERVAL '5 23:30:58' DAY TO SECOND", "INTERVAL '+5 23:30:58' DAY TO SECOND");
     optimize("INTERVAL '5 23:03:58' DAY TO SECOND", "INTERVAL '+5 23:03:58' DAY TO SECOND");
     optimize("INTERVAL '5 23:03:08' DAY TO SECOND", "INTERVAL '+5 23:03:08' DAY TO SECOND");

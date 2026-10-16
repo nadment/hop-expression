@@ -46,8 +46,8 @@ Interval
 == Usage
 
 * An interval can be added to or subtracted from a date or timestamp.
-* Each value can be negative, the years and months are summed into a year-month part, and the days, hours, minutes and seconds into a day-time part, for example `MAKE_INTERVAL(0,0,1,-1,0,0)` returns 23 hours.
-* An error is raised if the year-month part and the day-time part have opposite signs, for example `MAKE_INTERVAL(1,0,-1,0,0,0)`, or if a part is out of the supported range.
+* Each value can be negative. The years and months give the months part, the days give the days part, and the hours, minutes and seconds give the time part. The parts can have opposite signs, for example `MAKE_INTERVAL(1,0,-1,0,0,0)` returns `INTERVAL '+1-0 -1 00:00:00'`.
+* An error is raised if a part is out of the supported range.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

@@ -92,13 +92,18 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(123456789, interval.getNanoseconds());
     assertEquals(7, Interval.yearToMonth("7-3").getYears());
     assertEquals(3, Interval.yearToMonth("7-3").getMonths());
-    assertEquals(5, Interval.dayToSecond("-5 14:38:56.987654321").getDays());
-    assertEquals(14, Interval.dayToSecond("-5 14:38:56.987654321").getHours());
-    assertEquals(38, Interval.dayToSecond("-5 14:38:56.987654321").getMinutes());
-    assertEquals(56, Interval.dayToSecond("-5 14:38:56.987654321").getSeconds());
-    assertEquals(987, Interval.dayToSecond("-5 14:38:56.987654321").getMilliseconds());
-    assertEquals(987654, Interval.dayToSecond("-5 14:38:56.987654321").getMicroseconds());
-    assertEquals(987654321, Interval.dayToSecond("-5 14:38:56.987654321").getNanoseconds());
+    // The fields of a negative interval are negative
+    assertEquals(-5, Interval.dayToSecond("-5 14:38:56.987654321").getDays());
+    assertEquals(-14, Interval.dayToSecond("-5 14:38:56.987654321").getHours());
+    assertEquals(-38, Interval.dayToSecond("-5 14:38:56.987654321").getMinutes());
+    assertEquals(-56, Interval.dayToSecond("-5 14:38:56.987654321").getSeconds());
+    assertEquals(-987, Interval.dayToSecond("-5 14:38:56.987654321").getMilliseconds());
+    assertEquals(-987654, Interval.dayToSecond("-5 14:38:56.987654321").getMicroseconds());
+    assertEquals(-987654321, Interval.dayToSecond("-5 14:38:56.987654321").getNanoseconds());
+
+    // Hours are not converted to days, like PostgreSQL
+    assertEquals(0, Interval.hour("30").getDays());
+    assertEquals(30, Interval.hour("30").getHours());
   }
 
   @Test
@@ -159,6 +164,53 @@ public class IntervalTest extends ExpressionTest {
   void intervalFormat() {
     assertEquals(
         "+7-1 44 22:30:58.123456789", Interval.of(5, 25, 44, 22, 30, 58, 123456789).toString());
+    assertEquals(
+        "-7-1 44 22:30:58.123456789",
+        Interval.of(5, 25, 44, 22, 30, 58, 123456789).negate().toString());
+
+    // Hours are not converted to days
+    assertEquals("+0-0 0 30:00:00.000000000", Interval.hour("30").toString());
+
+    // The days and the time have their own sign if it is different from the leading sign
+    assertEquals("+1-0 -1 00:00:00.000000000", Interval.ofSigned(12, -1, 0, 0).toString());
+    assertEquals("-0-1 +2 03:00:00.000000000", Interval.ofSigned(-1, 2, -10800, 0).toString());
+    assertEquals("-0-0 1 +01:00:00.000000000", Interval.ofSigned(0, -1, 3600, 0).toString());
+    assertEquals("-0-0 0 00:00:01.500000000", Interval.ofSigned(0, 0, -1, -500000000).toString());
+  }
+
+  @Test
+  void intervalMixedSign() {
+    Interval interval = Interval.ofSigned(1, -1, 3600, 0);
+    assertTrue(interval.isMixedSign());
+    assertFalse(Interval.of(1, 2, 3).isMixedSign());
+    assertFalse(Interval.of(1, 2, 3).negate().isMixedSign());
+
+    // The format of toString() can be parsed back
+    assertEquals(interval, Interval.of(interval.toString()));
+    assertEquals("+0-1 -1 01:00:00.000000000", Interval.of(interval.toString()).toString());
+    assertEquals(
+        "-0-1 +2 03:00:00.000000000", Interval.of("-0-1 +2 -03:00:00.000000000").toString());
+    assertEquals(Interval.ofSigned(0, -1, 3600, 0), Interval.of("-0-0 1 +01:00:00"));
+
+    // Verbose format with signed quantities
+    assertEquals(Interval.ofSigned(1, -1, 0, 0), Interval.of("1 month -1 day"));
+    assertEquals(Interval.ofSigned(0, 0, -5400, 0), Interval.of("-1 hour -30 minutes"));
+  }
+
+  @Test
+  void intervalNormalizedEquality() {
+    // Like PostgreSQL, a month is 30 days and a day is 24 hours
+    assertEquals(Interval.of(0, 1), Interval.of(0, 0, 30));
+    assertEquals(Interval.of(0, 0, 1), Interval.of(0, 0, 0, 24));
+    assertEquals(Interval.of(1), Interval.of(0, 0, 360));
+    assertEquals(Interval.of(0, 1).hashCode(), Interval.of(0, 0, 30).hashCode());
+    assertTrue(Interval.of(1).compareTo(Interval.of(0, 0, 365)) < 0);
+    assertTrue(Interval.ofSigned(1, -1, 0, 0).compareTo(Interval.of(0, 0, 29)) == 0);
+
+    // Sign and absolute value of the total length
+    assertEquals(-1, Interval.ofSigned(1, -31, 0, 0).getSign());
+    assertEquals(1, Interval.ofSigned(1, -29, 0, 0).getSign());
+    assertEquals(Interval.ofSigned(-1, 31, 0, 0), Interval.ofSigned(1, -31, 0, 0).abs());
   }
 
   @Test

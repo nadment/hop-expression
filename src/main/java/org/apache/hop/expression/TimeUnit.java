@@ -81,7 +81,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getYears() / 1000;
+      return interval.getYears() / 1000;
     }
   },
 
@@ -109,7 +109,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getYears() / 100;
+      return interval.getYears() / 100;
     }
   },
 
@@ -137,7 +137,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getYears() / 10;
+      return interval.getYears() / 10;
     }
   },
 
@@ -165,7 +165,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getYears();
+      return interval.getYears();
     }
   },
 
@@ -216,7 +216,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getMonths();
+      return interval.getMonths();
     }
   },
 
@@ -244,7 +244,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getDays();
+      return interval.getDays();
     }
   },
 
@@ -437,7 +437,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getHours();
+      return interval.getHours();
     }
   },
 
@@ -460,7 +460,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getMinutes();
+      return interval.getMinutes();
     }
   },
 
@@ -483,7 +483,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getSeconds();
+      return interval.getSeconds();
     }
   },
 
@@ -506,7 +506,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getMilliseconds();
+      return interval.getMilliseconds();
     }
   },
 
@@ -529,7 +529,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getMicroseconds();
+      return interval.getMicroseconds();
     }
   },
 
@@ -552,7 +552,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final Interval interval) {
-      return interval.getSign() * interval.getNanoseconds();
+      return interval.getNanoseconds();
     }
   },
 

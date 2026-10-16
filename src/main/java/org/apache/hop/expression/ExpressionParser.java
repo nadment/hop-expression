@@ -1055,6 +1055,11 @@ public class ExpressionParser {
       token = lexer.nextOrThrows(ErrorCode.INVALID_INTERVAL, "");
     }
 
+    // Verbose format at the end of the expression, like INTERVAL '1 month -1 day'
+    if (token.is(Id.LITERAL_STRING) && !lexer.hasNext()) {
+      return Literal.of(Interval.of(token.text()));
+    }
+
     Token start = lexer.nextOrThrows(ErrorCode.INVALID_INTERVAL, "");
     TimeUnit startUnit = TimeUnit.of(start.text());
 

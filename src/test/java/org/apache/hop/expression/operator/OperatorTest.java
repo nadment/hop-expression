@@ -1861,6 +1861,20 @@ public class OperatorTest extends ExpressionTest {
 
       evalEquals("DATE '0010-01-01'+INTERVAL 178956970 YEARS", LocalDate.of(178956980, 1, 1));
 
+      // A day is a calendar day across a daylight saving time change, 24 hours is a duration
+      evalEquals(
+          "TIMESTAMP '2023-03-25 12:00:00' AT TIME ZONE 'Europe/Paris' + INTERVAL 1 DAY",
+          ZonedDateTime.of(2023, 3, 26, 12, 0, 0, 0, ZoneId.of("Europe/Paris")));
+      evalEquals(
+          "TIMESTAMP '2023-03-25 12:00:00' AT TIME ZONE 'Europe/Paris' + INTERVAL 24 HOURS",
+          ZonedDateTime.of(2023, 3, 26, 13, 0, 0, 0, ZoneId.of("Europe/Paris")));
+      evalEquals(
+          "TIMESTAMP '2023-03-26 12:00:00' AT TIME ZONE 'Europe/Paris' - INTERVAL 1 DAY",
+          ZonedDateTime.of(2023, 3, 25, 12, 0, 0, 0, ZoneId.of("Europe/Paris")));
+
+      // The months are added before the days
+      evalEquals("DATE '2020-01-31' + INTERVAL '1 month 1 day'", LocalDate.of(2020, 3, 1));
+
       // A result out of the supported range raises an error
       evalFails("FIELD_DATE+INTERVAL 2000000000 YEARS", ErrorCode.DATE_OVERFLOW);
       evalFails("FIELD_DATE-INTERVAL 2000000000 YEARS", ErrorCode.DATE_OVERFLOW);
@@ -1902,7 +1916,10 @@ public class OperatorTest extends ExpressionTest {
       // The sign of the intervals is taken into account
       optimize("INTERVAL -3 DAYS+INTERVAL 1 DAY", "INTERVAL -2 DAY");
       optimize("INTERVAL 1 DAY+-INTERVAL 3 DAYS", "INTERVAL -2 DAY");
-      evalFails("INTERVAL 1 MONTH+INTERVAL -1 DAY", ErrorCode.INTERVAL_MIXED_SIGN);
+
+      // The parts can have opposite signs, like PostgreSQL
+      evalEquals("INTERVAL 1 MONTH+INTERVAL -1 DAY", Interval.ofSigned(1, -1, 0, 0));
+      optimize("INTERVAL 1 MONTH+INTERVAL -1 DAY", "INTERVAL '+0-1 -1 00:00:00.000000000'");
     }
   }
 
@@ -1995,8 +2012,10 @@ public class OperatorTest extends ExpressionTest {
       optimize("INTERVAL 5 HOUR - INTERVAL 1 HOUR", "INTERVAL 4 HOUR");
       optimize("TO_INTERVAL(FIELD_STRING) - INTERVAL 0 DAY", "TO_INTERVAL(FIELD_STRING)");
 
-      // A year-month part and a day-time part of opposite signs is not supported
-      evalFails("INTERVAL 1 MONTH - INTERVAL 1 DAY", ErrorCode.INTERVAL_MIXED_SIGN);
+      // The parts can have opposite signs, like PostgreSQL
+      evalEquals("INTERVAL 1 MONTH - INTERVAL 1 DAY", Interval.ofSigned(1, -1, 0, 0));
+      evalEquals(
+          "DATE '2020-01-31' + (INTERVAL 1 MONTH - INTERVAL 1 DAY)", LocalDate.of(2020, 2, 28));
       evalFails("INTERVAL 5 HOUR - 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
   }

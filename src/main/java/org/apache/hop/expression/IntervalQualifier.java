@@ -94,6 +94,11 @@ public enum IntervalQualifier {
   }
 
   public static @Nullable IntervalQualifier of(final Interval interval) {
+    // A qualifier has a single sign
+    if (interval.isMixedSign()) {
+      return null;
+    }
+
     TimeUnit start = null;
     TimeUnit end = null;
 

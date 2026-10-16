@@ -18,9 +18,9 @@ package org.apache.hop.expression;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -28,13 +28,26 @@ import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** An interval represents a duration of time which can be used in date/time arithmetic. */
+/**
+ * An interval represents a duration of time which can be used in date/time arithmetic.
+ *
+ * <p>Like PostgreSQL, an interval has three independent signed parts: a number of months, a number
+ * of days and a time (seconds and nanoseconds). The parts can have different signs, for example
+ * {@code 1 month -1 day}. A day is a calendar day, so adding one day to a timestamp keeps its local
+ * time across a daylight saving time change, while adding 24 hours adds an exact duration.
+ *
+ * <p>For comparison, a month is 30 days and a day is 24 hours, so {@code 1 month} is equal to
+ * {@code 30 days}.
+ */
 @NullMarked
 public class Interval implements Serializable, Comparable<Interval> {
-  @Serial private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 2L;
 
   /** The number of months per year. */
   static final long MONTHS_PER_YEAR = 12;
+
+  /** The number of days per month, used to compare intervals. */
+  static final long DAYS_PER_MONTH = 30;
 
   /** The number of seconds per minute. */
   static final long SECONDS_PER_MINUTE = 60;
@@ -45,20 +58,8 @@ public class Interval implements Serializable, Comparable<Interval> {
   /** The number of seconds per day. */
   static final long SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
 
-  /** The number of milliseconds per day. */
-  static final long MILLIS_PER_DAY = 1000 * SECONDS_PER_DAY;
-
-  /** The number of nanoseconds per day. */
-  static final long NANOS_PER_DAY = MILLIS_PER_DAY * 1_000_000;
-
   /** The number of nanoseconds per second. */
   static final long NANOS_PER_SECOND = 1_000_000_000L;
-
-  /** The number of nanoseconds per minute. */
-  static final long NANOS_PER_MINUTE = 60 * NANOS_PER_SECOND;
-
-  /** The number of nanoseconds per hour. */
-  static final long NANOS_PER_HOUR = 60 * NANOS_PER_MINUTE;
 
   private static final EnumSet<TimeUnit> UNITS =
       EnumSet.of(
@@ -70,8 +71,15 @@ public class Interval implements Serializable, Comparable<Interval> {
           TimeUnit.HOUR,
           TimeUnit.MINUTE,
           TimeUnit.SECOND);
+
+  /**
+   * The format of {@link #toString()}, the days and the time can have their own sign, otherwise
+   * they take the leading sign.
+   */
   private static final Pattern PATTERN_YTS =
-      Pattern.compile("^([+-])?(\\d+)-(\\d+) (?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+      Pattern.compile(
+          "^([+-])?(\\d+)-(\\d+) (?:([+-])?(\\d+) )?([+-])?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+
   private static final Pattern PATTERN_YTM = Pattern.compile("^([+-])?(\\d+)-(\\d+)$");
   private static final Pattern PATTERN_DTS =
       Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
@@ -83,47 +91,87 @@ public class Interval implements Serializable, Comparable<Interval> {
   private static final Pattern PATTERN_MTS =
       Pattern.compile("^([+-])?(\\d+):(\\d+)(?:\\.(\\d+))?$");
 
-  /** {@code false} for zero or positive intervals, {@code true} for negative intervals. */
-  private final boolean negative;
-
+  /** The signed number of months. */
   private final long months;
+
+  /** The signed number of days. */
+  private final long days;
+
+  /** The signed number of seconds of the time part. */
   private final long seconds;
+
+  /** The signed number of nanoseconds of the time part, with the same sign as the seconds. */
   private final int nanos;
 
   /** Create a new zero interval. */
   public Interval() {
-    this(0, 0, 0, 0, 0, 0, 0, false);
+    this(0, 0, 0, 0);
   }
 
-  /** Create a new year-second interval. */
-  Interval(int years, int months, int days, int hours, int minutes, int seconds, int nanos) {
-    this(years, months, days, hours, minutes, seconds, 0, false);
-  }
-
-  Interval(
-      int years,
-      int months,
-      int days,
-      int hours,
-      int minutes,
-      int seconds,
-      int nanos,
-      boolean negative) {
-
-    // All part must be positive
-
-    this.months = years * MONTHS_PER_YEAR + months;
-    this.seconds =
-        days * SECONDS_PER_DAY + hours * SECONDS_PER_HOUR + minutes * SECONDS_PER_MINUTE + seconds;
-    this.nanos = nanos;
-    this.negative = negative;
-  }
-
-  Interval(long months, long seconds, int nanos, boolean negative) {
+  /** Create an interval from normalized parts, the nanoseconds have the sign of the seconds. */
+  private Interval(long months, long days, long seconds, int nanos) {
     this.months = months;
+    this.days = days;
     this.seconds = seconds;
-    this.negative = negative;
     this.nanos = nanos;
+  }
+
+  /**
+   * Create an interval from its fields, all with the same sign.
+   *
+   * @param negative {@code true} to create a negative interval
+   */
+  private static Interval of(
+      long years,
+      long months,
+      long days,
+      long hours,
+      long minutes,
+      long seconds,
+      long nanos,
+      boolean negative) {
+    Interval interval = of(years, months, days, hours, minutes, seconds, nanos);
+    return negative ? interval.negate() : interval;
+  }
+
+  /**
+   * Create an interval from signed fields. The years and months give the month part, the hours,
+   * minutes, seconds and nanoseconds give the time part.
+   *
+   * @throws ArithmeticException if a part overflows
+   */
+  private static Interval of(
+      long years, long months, long days, long hours, long minutes, long seconds, long nanos) {
+    long totalMonths = Math.addExact(Math.multiplyExact(years, MONTHS_PER_YEAR), months);
+    long totalSeconds =
+        Math.addExact(
+            Math.addExact(
+                Math.multiplyExact(hours, SECONDS_PER_HOUR),
+                Math.multiplyExact(minutes, SECONDS_PER_MINUTE)),
+            seconds);
+    return ofSigned(totalMonths, days, totalSeconds, nanos);
+  }
+
+  /**
+   * Creates an interval from signed months, days, seconds and nanoseconds. The parts can have
+   * different signs, the nanoseconds are carried to the seconds and take the sign of the seconds.
+   *
+   * @param months the signed number of months
+   * @param days the signed number of days
+   * @param seconds the signed number of seconds
+   * @param nanos the signed number of nanoseconds
+   * @return the interval
+   * @throws ArithmeticException if the seconds overflow
+   */
+  public static Interval ofSigned(long months, long days, long seconds, long nanos) {
+    // Carry the nanoseconds to the seconds, then give them the sign of the seconds
+    seconds = Math.addExact(seconds, Math.floorDiv(nanos, NANOS_PER_SECOND));
+    nanos = Math.floorMod(nanos, NANOS_PER_SECOND);
+    if (seconds < 0 && nanos > 0) {
+      seconds++;
+      nanos -= NANOS_PER_SECOND;
+    }
+    return new Interval(months, days, seconds, (int) nanos);
   }
 
   /**
@@ -135,7 +183,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static @Nullable Interval year(@Nullable String string) {
     try {
-      return string == null ? null : new Interval(Integer.parseInt(string), 0, 0, 0, 0, 0, 0);
+      return string == null ? null : of(Integer.parseInt(string), 0, 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -156,7 +204,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         boolean negative = "-".equals(matcher.group(1));
         int years = parseField(matcher.group(2));
         int months = parseField(matcher.group(3));
-        return new Interval(years, months, 0, 0, 0, 0, 0, negative);
+        return of(years, months, 0, 0, 0, 0, 0, negative);
       }
     }
 
@@ -173,7 +221,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   public static @Nullable Interval quarter(@Nullable String string) {
     try {
 
-      return string == null ? null : new Interval(0, 3 * Integer.parseInt(string), 0, 0, 0, 0, 0);
+      return string == null ? null : of(0, 3L * Integer.parseInt(string), 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -188,7 +236,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static @Nullable Interval month(@Nullable String string) {
     try {
-      return string == null ? null : new Interval(0, Integer.parseInt(string), 0, 0, 0, 0, 0);
+      return string == null ? null : of(0, Integer.parseInt(string), 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -204,7 +252,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   public static @Nullable Interval week(@Nullable String string) {
     try {
 
-      return string == null ? null : new Interval(0, 0, 7 * Integer.parseInt(string), 0, 0, 0, 0);
+      return string == null ? null : of(0, 0, 7L * Integer.parseInt(string), 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -219,7 +267,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static @Nullable Interval day(@Nullable String string) {
     try {
-      return string == null ? null : new Interval(0, 0, Integer.parseInt(string), 0, 0, 0, 0);
+      return string == null ? null : of(0, 0, Integer.parseInt(string), 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -241,7 +289,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int days = parseField(matcher.group(2));
         int hours = parseField(matcher.group(3));
 
-        return new Interval(0, 0, days, hours, 0, 0, 0, negative);
+        return of(0, 0, days, hours, 0, 0, 0, negative);
       }
     }
 
@@ -265,7 +313,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int hours = parseField(matcher.group(3));
         int minutes = parseField(matcher.group(4));
 
-        return new Interval(0, 0, days, hours, minutes, 0, 0, negative);
+        return of(0, 0, days, hours, minutes, 0, 0, negative);
       }
     }
 
@@ -292,7 +340,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int seconds = parseField(matcher.group(5));
         int nanos = parseField(StringUtils.rightPad(matcher.group(6), 9, "0"));
 
-        return new Interval(0, 0, days, hours, minutes, seconds, nanos, negative);
+        return of(0, 0, days, hours, minutes, seconds, nanos, negative);
       }
     }
 
@@ -308,7 +356,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static @Nullable Interval hour(@Nullable String string) {
     try {
-      return string == null ? null : new Interval(0, 0, 0, Integer.parseInt(string), 0, 0, 0);
+      return string == null ? null : of(0, 0, 0, Integer.parseInt(string), 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -331,7 +379,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int hours = parseField(matcher.group(2));
         int minutes = parseField(matcher.group(3));
 
-        return new Interval(0, 0, 0, hours, minutes, 0, 0, negative);
+        return of(0, 0, 0, hours, minutes, 0, 0, negative);
       }
     }
 
@@ -357,7 +405,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int seconds = parseField(matcher.group(4));
         int nanos = parseField(StringUtils.rightPad(matcher.group(5), 9, "0"));
 
-        return new Interval(0, 0, 0, hours, minutes, seconds, nanos, negative);
+        return of(0, 0, 0, hours, minutes, seconds, nanos, negative);
       }
     }
 
@@ -373,7 +421,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static @Nullable Interval minute(@Nullable String string) {
     try {
-      return string == null ? null : new Interval(0, 0, 0, 0, Integer.parseInt(string), 0, 0);
+      return string == null ? null : of(0, 0, 0, 0, Integer.parseInt(string), 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -397,7 +445,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         int seconds = parseField(matcher.group(3));
         int nanos = parseField(StringUtils.rightPad(matcher.group(4), 9, "0"));
 
-        return new Interval(0, 0, 0, 0, minutes, seconds, nanos, negative);
+        return of(0, 0, 0, 0, minutes, seconds, nanos, negative);
       }
     }
 
@@ -421,7 +469,7 @@ public class Interval implements Serializable, Comparable<Interval> {
       long seconds = (long) abs;
       int nanos = (int) ((abs - seconds) * NANOS_PER_SECOND);
 
-      return new Interval(0, seconds, nanos, value < 0);
+      return of(0, 0, 0, 0, 0, seconds, nanos, value < 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -429,70 +477,47 @@ public class Interval implements Serializable, Comparable<Interval> {
 
   /** Create a new year interval. */
   public static Interval of(int years) {
-    return new Interval(years, 0, 0, 0, 0, 0, 0, false);
+    return of(years, 0, 0, 0, 0, 0, 0);
   }
 
   /** Create a new year-month interval. */
   public static Interval of(int years, int months) {
-    return new Interval(years, months, 0, 0, 0, 0, 0, false);
+    return of(years, months, 0, 0, 0, 0, 0);
   }
 
   /** Create a new year-day interval. */
   public static Interval of(int years, int months, int days) {
-    return new Interval(years, months, days, 0, 0, 0, 0, false);
+    return of(years, months, days, 0, 0, 0, 0);
   }
 
   /** Create a new year-hour interval. */
   public static Interval of(int years, int months, int days, int hours) {
-    return new Interval(years, months, days, hours, 0, 0, 0, false);
+    return of(years, months, days, hours, 0, 0, 0);
   }
 
   /** Create a new year-minute interval. */
   public static Interval of(int years, int months, int days, int hours, int minutes) {
-    return new Interval(years, months, days, hours, minutes, 0, 0, false);
+    return of(years, months, days, hours, minutes, 0, 0);
   }
 
   /** Create a new year-second interval. */
   public static Interval of(int years, int months, int days, int hours, int minutes, int seconds) {
-    return new Interval(years, months, days, hours, minutes, seconds, 0, false);
+    return of(years, months, days, hours, minutes, seconds, 0);
   }
 
   /** Create a new year-second with nanoseconds interval. */
   public static Interval of(
       int years, int months, int days, int hours, int minutes, int seconds, int nanos) {
-    return new Interval(years, months, days, hours, minutes, seconds, nanos, false);
+    return of((long) years, months, days, hours, minutes, seconds, nanos);
   }
-
-  // public static Interval of(BigDecimal value) {
-  //
-  // BigDecimal abs = value.abs();
-  // long decimal = abs.longValue();
-  //
-  // int decimals = 10;
-  //
-  // BigInteger INTEGER = abs.toBigInteger();
-  // BigInteger DECIMAL = ((value.subtract(new BigDecimal(INTEGER))).multiply(new
-  // BigDecimal(14).pow(decimals))).toBigInteger();
-  //
-  //
-  // double fractional = abs.doubleValue()-decimal;
-  //
-  // long seconds = INTEGER.longValue() * SECONDS_PER_DAY;
-  //
-  // long nanos = 0L;
-  //
-  // //long seconds = abs.longValue() * SECONDS_PER_DAY;
-  //
-  //
-  // return new Interval(0L, seconds, nanos, value.signum()<0);
-  // }
 
   /**
    * Parse a string representation of a <code>INTERVAL YEAR TO SECOND</code>
    *
    * @param string A string representation of the form <code>
-   *               [+|-][years]-[months] [+|-][days] [hours]:[minutes]:[seconds].[fractional seconds]
-   *     </code>
+   *               [+|-][years]-[months] [+|-][days] [+|-][hours]:[minutes]:[seconds].[fractional seconds]
+   *     </code>, the days and the time take the leading sign if they have no sign, or a verbose
+   *     form like <code>1 year -2 days</code>
    * @return The parsed <code>YEAR TO SECOND</code> object
    * @throws ExpressionException if the string could not be parsed.
    */
@@ -501,16 +526,26 @@ public class Interval implements Serializable, Comparable<Interval> {
 
       Matcher matcher = PATTERN_YTS.matcher(string);
       if (matcher.find()) {
-        boolean negative = "-".equals(matcher.group(1));
+        String sign = matcher.group(1);
+        long signMonths = "-".equals(sign) ? -1 : 1;
+        long signDays = "-".equals(matcher.group(4) == null ? sign : matcher.group(4)) ? -1 : 1;
+        long signTime = "-".equals(matcher.group(6) == null ? sign : matcher.group(6)) ? -1 : 1;
         int years = parseField(matcher.group(2));
         int months = parseField(matcher.group(3));
-        int days = parseField(matcher.group(4));
-        int hours = parseField(matcher.group(5));
-        int minutes = parseField(matcher.group(6));
-        int seconds = parseField(matcher.group(7));
-        int nanos = parseField(StringUtils.rightPad(matcher.group(8), 9, "0"));
+        int days = parseField(matcher.group(5));
+        int hours = parseField(matcher.group(7));
+        int minutes = parseField(matcher.group(8));
+        int seconds = parseField(matcher.group(9));
+        int nanos = parseField(StringUtils.rightPad(matcher.group(10), 9, "0"));
 
-        return new Interval(years, months, days, hours, minutes, seconds, nanos, negative);
+        return of(
+            signMonths * years,
+            signMonths * months,
+            signDays * days,
+            signTime * hours,
+            signTime * minutes,
+            signTime * seconds,
+            signTime * nanos);
       } else {
         return parse(string);
       }
@@ -528,14 +563,15 @@ public class Interval implements Serializable, Comparable<Interval> {
     return Integer.parseInt(str);
   }
 
+  /** Parse a verbose format like {@code 1 year 2 months -3 days}, each quantity can be signed. */
   protected static Interval parse(final String text) {
-    int years = 0;
-    int months = 0;
-    int days = 0;
-    int hours = 0;
-    int minutes = 0;
-    int seconds = 0;
-    int nanos = 0;
+    long years = 0;
+    long months = 0;
+    long days = 0;
+    long hours = 0;
+    long minutes = 0;
+    long seconds = 0;
+    long nanos = 0;
 
     int length = text.length();
     int index = 0;
@@ -547,7 +583,15 @@ public class Interval implements Serializable, Comparable<Interval> {
         continue;
       }
 
-      int quantity = 0;
+      // Optional sign of the quantity
+      int sign = 1;
+      char first = text.charAt(index);
+      if (first == '-' || first == '+') {
+        if (first == '-') sign = -1;
+        index++;
+      }
+
+      long quantity = 0;
       int start = index;
       while (index < length) {
         char ch = text.charAt(index);
@@ -563,6 +607,7 @@ public class Interval implements Serializable, Comparable<Interval> {
       if (index == start) {
         throw new ExpressionException(ErrorCode.INVALID_INTERVAL, text);
       }
+      quantity *= sign;
 
       // Skip space
       while (index < length && Characters.isSpace(text.charAt(index))) {
@@ -619,76 +664,64 @@ public class Interval implements Serializable, Comparable<Interval> {
       }
     }
 
-    return new Interval(years, months, days, hours, minutes, seconds, nanos, false);
+    return of(years, months, days, hours, minutes, seconds, nanos);
   }
 
-  /** Negate the interval (change its sign) */
+  /** Negate the interval (change the sign of each part) */
   public final Interval negate() {
-    return new Interval(months, seconds, nanos, !negative);
+    return new Interval(-months, -days, -seconds, -nanos);
   }
 
-  /** Abs the interval */
+  /** Abs the interval, negate it if it is less than zero */
   public final Interval abs() {
-    return new Interval(months, seconds, nanos, false);
+    return (signum() < 0) ? negate() : this;
   }
 
-  /** Get the absolute years part of the interval. */
+  /** Get the signed years part of the interval. */
   public final long getYears() {
     return months / MONTHS_PER_YEAR;
   }
 
-  /** Get the absolute months part of the interval. */
+  /** Get the signed months part of the interval, without the years. */
   public final long getMonths() {
     return months % MONTHS_PER_YEAR;
   }
 
-  /** Get the absolute days part of the interval. */
+  /** Get the signed days part of the interval. */
   public final long getDays() {
-    return seconds / SECONDS_PER_DAY;
+    return days;
   }
 
-  /** Get the absolute hours part of the interval. */
+  /** Get the signed hours of the time part of the interval, it can exceed 24 hours. */
   public final long getHours() {
-    return (seconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR;
+    return seconds / SECONDS_PER_HOUR;
   }
 
-  /** Get the absolute minutes part of the interval. */
+  /** Get the signed minutes of the time part of the interval, without the hours. */
   public final long getMinutes() {
     return (seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE;
   }
 
-  /** Get the absolute seconds part of the interval. */
+  /** Get the signed seconds of the time part of the interval, without the minutes. */
   public final long getSeconds() {
     return seconds % SECONDS_PER_MINUTE;
   }
 
-  /** Get the absolute milliseconds part within seconds of the interval. */
+  /** Get the signed milliseconds part within seconds of the interval. */
   public final long getMilliseconds() {
     return nanos / 1000000;
   }
 
-  /** Get the absolute microseconds part within seconds of the interval. */
+  /** Get the signed microseconds part within seconds of the interval. */
   public final long getMicroseconds() {
     return nanos / 1000;
   }
-
-  // public final long toMonths() {
-  // return months;
-  // }
-  //
-  // public final long toSeconds() {
-  // return seconds;
-  // }
-  //
-  // public final long toNanos() {
-  // return nanos;
-  // }
 
   // -------------------------------------------------------------------------
   // Number API
   // -------------------------------------------------------------------------
 
-  /** Get the absolute nanoseconds part within seconds of the interval. */
+  /** Get the signed nanoseconds part within seconds of the interval. */
   public final long getNanoseconds() {
     return nanos;
   }
@@ -698,40 +731,61 @@ public class Interval implements Serializable, Comparable<Interval> {
   // -------------------------------------------------------------------------
 
   /**
-   * The sign of the interval.
+   * The sign of the interval, a month is 30 days and a day is 24 hours.
    *
    * @return <code>1</code> for positive or zero, <code>-1</code> for negative
    */
   public final int getSign() {
-    return negative ? -1 : 1;
+    return signum() < 0 ? -1 : 1;
   }
 
+  /** Returns the signum of the total length of the interval. */
+  private int signum() {
+    return toTotalNanos().signum();
+  }
+
+  /**
+   * Returns the total length of the interval in nanoseconds, a month is 30 days and a day is 24
+   * hours, like PostgreSQL.
+   */
+  private BigInteger toTotalNanos() {
+    BigInteger totalDays =
+        BigInteger.valueOf(months)
+            .multiply(BigInteger.valueOf(DAYS_PER_MONTH))
+            .add(BigInteger.valueOf(days));
+    BigInteger totalSeconds =
+        totalDays.multiply(BigInteger.valueOf(SECONDS_PER_DAY)).add(BigInteger.valueOf(seconds));
+    return totalSeconds
+        .multiply(BigInteger.valueOf(NANOS_PER_SECOND))
+        .add(BigInteger.valueOf(nanos));
+  }
+
+  /** Returns the total length of the interval in seconds, a month is 30 days. */
   public final double doubleValue() {
-    return ((getYears() * 365.25 + getMonths() * 30) * SECONDS_PER_DAY + seconds) * getSign();
+    return toTotalNanos().doubleValue() / NANOS_PER_SECOND;
   }
 
   @Override
   public final int compareTo(Interval that) {
-    return Double.compare(doubleValue(), that.doubleValue());
+    return toTotalNanos().compareTo(that.toTotalNanos());
   }
 
   @Override
   public final int hashCode() {
-    return Objects.hash(months, seconds, nanos, negative);
+    return toTotalNanos().hashCode();
   }
 
+  /**
+   * Two intervals are equal if they have the same total length, a month is 30 days and a day is 24
+   * hours, like PostgreSQL.
+   */
   @Override
   public final boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() == obj.getClass()) {
-      Interval other = (Interval) obj;
-      if (months != other.months) return false;
-      if (seconds != other.seconds) return false;
-      if (nanos != other.nanos) return false;
-
-      return negative == other.negative || isZero();
-    } else return false;
+    if (obj instanceof Interval other) {
+      return compareTo(other) == 0;
+    }
+    return false;
   }
 
   /**
@@ -740,79 +794,110 @@ public class Interval implements Serializable, Comparable<Interval> {
    * <p>A {@code Interval} represents a directed distance between two points on the time-line and
    * can therefore be positive, zero or negative. This method checks whether the length is zero.
    *
-   * @return true if this interval has a total length equal to zero
+   * @return true if this interval has all its parts equal to zero
    */
   public boolean isZero() {
-    return months == 0L && seconds == 0L && nanos == 0L;
+    return months == 0L && days == 0L && seconds == 0L && nanos == 0L;
   }
 
+  /**
+   * Checks if the parts of this interval have different signs, like {@code 1 month -1 day}.
+   *
+   * @return true if two non zero parts have opposite signs
+   */
+  public boolean isMixedSign() {
+    int sign = 0;
+    for (long part : new long[] {months, days, seconds != 0 ? seconds : nanos}) {
+      int partSign = Long.signum(part);
+      if (partSign != 0) {
+        if (sign != 0 && partSign != sign) return true;
+        sign = partSign;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns the format <code>[+|-]Y-M [+|-]D [+|-]HH:MM:SS.FFFFFFFFF</code>. The leading sign is
+   * the sign of the first non zero part, the days and the time have their own sign only if it is
+   * different.
+   */
   @Override
   public final String toString() {
+    long timeSign = Long.signum(seconds != 0 ? seconds : nanos);
+    long leadSign = Long.signum(months);
+    if (leadSign == 0) leadSign = Long.signum(days);
+    if (leadSign == 0) leadSign = timeSign;
+    boolean negative = leadSign < 0;
+
     StringBuilder sb = new StringBuilder();
     sb.append(negative ? '-' : '+');
-    sb.append(getYears());
+    sb.append(Math.abs(getYears()));
     sb.append('-');
-    sb.append(getMonths());
+    sb.append(Math.abs(getMonths()));
     sb.append(' ');
-    sb.append(getDays());
+    if (days != 0 && (days < 0) != negative) {
+      sb.append(days < 0 ? '-' : '+');
+    }
+    sb.append(Math.abs(days));
     sb.append(' ');
-    long h = getHours();
-    if (h < 10) {
-      sb.append('0');
+    if (timeSign != 0 && (timeSign < 0) != negative) {
+      sb.append(timeSign < 0 ? '-' : '+');
     }
-    sb.append(h);
+    toStringHour(sb);
     sb.append(':');
-    long m = getMinutes();
-    if (m < 10) {
-      sb.append('0');
-    }
-    sb.append(m);
+    toStringMinute(sb);
     sb.append(':');
-    long s = getSeconds();
+    long s = Math.abs(getSeconds());
     if (s < 10) {
       sb.append('0');
     }
     sb.append(s);
     sb.append('.');
-    sb.append(StringUtils.leftPad("" + nanos, 9, "0"));
+    sb.append(StringUtils.leftPad("" + Math.abs(nanos), 9, "0"));
 
     return sb.toString();
   }
 
+  /**
+   * Returns the format of a qualifier, with a single sign. The interval must not have parts with
+   * different signs.
+   */
   public final String toString(final IntervalQualifier qualifier) {
     StringBuilder sb = new StringBuilder();
+    boolean negative = getSign() < 0;
 
     switch (qualifier) {
       case YEAR:
         if (negative) sb.append('-');
-        sb.append(getYears());
+        sb.append(Math.abs(getYears()));
         break;
 
       case YEAR_TO_MONTH:
         sb.append(negative ? '-' : '+');
-        sb.append(getYears());
+        sb.append(Math.abs(getYears()));
         sb.append('-');
-        sb.append(getMonths());
+        sb.append(Math.abs(getMonths()));
         break;
 
       case MONTH:
         if (negative) sb.append('-');
-        sb.append(getMonths());
+        sb.append(Math.abs(getMonths()));
         break;
 
       case DAY:
         if (negative) sb.append('-');
-        sb.append(getDays());
+        sb.append(Math.abs(getDays()));
         break;
 
       case HOUR:
         if (negative) sb.append('-');
-        sb.append(getHours());
+        sb.append(Math.abs(getHours()));
         break;
 
       case MINUTE:
         if (negative) sb.append('-');
-        sb.append(getMinutes());
+        sb.append(Math.abs(getMinutes()));
         break;
 
       case HOUR_TO_MINUTE:
@@ -824,14 +909,14 @@ public class Interval implements Serializable, Comparable<Interval> {
 
       case DAY_TO_HOUR:
         sb.append(negative ? '-' : '+');
-        sb.append(getDays());
+        sb.append(Math.abs(getDays()));
         sb.append(' ');
         toStringHour(sb);
         break;
 
       case DAY_TO_SECOND:
         sb.append(negative ? '-' : '+');
-        sb.append(getDays());
+        sb.append(Math.abs(getDays()));
         sb.append(' ');
         toStringHour(sb);
         sb.append(':');
@@ -869,7 +954,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   private void toStringHour(final StringBuilder sb) {
-    long h = getHours();
+    long h = Math.abs(getHours());
     if (h < 10) {
       sb.append('0');
     }
@@ -877,7 +962,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   private void toStringMinute(final StringBuilder sb) {
-    long m = getMinutes();
+    long m = Math.abs(getMinutes());
     if (m < 10) {
       sb.append('0');
     }
@@ -885,7 +970,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   private void toStringSecond(final StringBuilder sb) {
-    long s = getSeconds();
+    long s = Math.abs(getSeconds());
     if (s < 10) {
       sb.append('0');
     }
@@ -894,162 +979,64 @@ public class Interval implements Serializable, Comparable<Interval> {
     // TODO: Use precision for nanoseconds
     if (nanos != 0) {
       sb.append('.');
-      sb.append(StringUtils.leftPad("" + nanos, 9, "0"));
+      sb.append(StringUtils.leftPad("" + Math.abs(nanos), 9, "0"));
     }
-  }
-
-  public Interval minus(Interval other) {
-    if (other.negative) {
-      return new Interval(
-          months + other.months, seconds + other.seconds, nanos + other.nanos, negative);
-    }
-    return new Interval(
-        months - other.months, seconds - other.seconds, nanos - other.nanos, negative);
-  }
-
-  public Interval plus(Interval other) {
-    if (other.negative) {
-      return new Interval(
-          months - other.months, seconds - other.seconds, nanos - other.nanos, negative);
-    }
-    return new Interval(
-        months + other.months, seconds + other.seconds, nanos + other.nanos, negative);
   }
 
   /**
-   * Subtracts the specified interval from this interval, taking into account the sign of both
-   * intervals.
+   * Subtracts the specified interval from this interval, part by part like PostgreSQL.
    *
    * @param interval the interval to subtract, not null
    * @return the difference of the intervals
-   * @throws ExpressionException if the year-month part and the day-time part of the result have
-   *     opposite signs, an interval has only one sign
+   * @throws ArithmeticException if a part overflows
    */
   public Interval subtract(final Interval interval) {
-    return sum(interval, -1);
+    return add(interval.negate());
   }
 
   /**
-   * Returns this interval plus or minus the specified interval with signed arithmetic, the
-   * nanoseconds are carried to the seconds and take the sign of the seconds.
+   * Adds the specified interval to this interval, part by part like PostgreSQL.
    *
-   * @param interval the other interval
-   * @param sign 1 to add the other interval, -1 to subtract it
+   * @param interval the interval to add, not null
+   * @return the sum of the intervals
+   * @throws ArithmeticException if a part overflows
    */
-  private Interval sum(final Interval interval, int sign) {
-    long sign1 = getSign();
-    long sign2 = (long) interval.getSign() * sign;
-
-    long resultMonths = sign1 * months + sign2 * interval.months;
-    long resultSeconds = sign1 * seconds + sign2 * interval.seconds;
-    long resultNanos = sign1 * nanos + sign2 * interval.nanos;
-
-    return ofSigned(resultMonths, resultSeconds, resultNanos);
+  public Interval add(final Interval interval) {
+    return ofSigned(
+        Math.addExact(months, interval.months),
+        Math.addExact(days, interval.days),
+        Math.addExact(seconds, interval.seconds),
+        (long) nanos + interval.nanos);
   }
 
   /**
-   * Creates an interval from signed months, seconds and nanoseconds. The nanoseconds are carried to
-   * the seconds and take the sign of the seconds.
-   *
-   * @param months the signed number of months
-   * @param seconds the signed number of seconds
-   * @param nanos the signed number of nanoseconds
-   * @return the interval
-   * @throws ExpressionException if the months and the day-time part have opposite signs
-   */
-  public static Interval ofSigned(long months, long seconds, long nanos) {
-    // Carry the nanoseconds to the seconds, then give them the sign of the seconds
-    seconds = Math.addExact(seconds, Math.floorDiv(nanos, NANOS_PER_SECOND));
-    nanos = Math.floorMod(nanos, NANOS_PER_SECOND);
-    if (seconds < 0 && nanos > 0) {
-      seconds++;
-      nanos -= NANOS_PER_SECOND;
-    }
-
-    long signMonths = Long.signum(months);
-    long signDayTime = (seconds != 0) ? Long.signum(seconds) : Long.signum(nanos);
-    if (signMonths != 0 && signDayTime != 0 && signMonths != signDayTime) {
-      throw new ExpressionException(ErrorCode.INTERVAL_MIXED_SIGN);
-    }
-
-    return new Interval(
-        Math.abs(months),
-        Math.abs(seconds),
-        (int) Math.abs(nanos),
-        signMonths < 0 || signDayTime < 0);
-  }
-
-  /**
-   * Adds this interval to the specified temporal object.
+   * Adds this interval to the specified temporal object. The months are added first, then the
+   * calendar days, which keep the local time across a daylight saving time change, then the time.
    *
    * @param temporal the temporal object to adjust, not null
    */
   public ZonedDateTime addTo(ZonedDateTime temporal) {
-
-    if (negative) {
-      if (months != 0) {
-        temporal = temporal.minusMonths(months);
-      }
-      if (seconds != 0) {
-        temporal = temporal.minusSeconds(seconds);
-      }
-      if (nanos != 0) {
-        temporal = temporal.minusNanos(nanos);
-      }
-    } else {
-      if (months != 0) {
-        temporal = temporal.plusMonths(months);
-      }
-      if (seconds != 0) {
-        temporal = temporal.plusSeconds(seconds);
-      }
-      if (nanos != 0) {
-        temporal = temporal.plusNanos(nanos);
-      }
+    if (months != 0) {
+      temporal = temporal.plusMonths(months);
+    }
+    if (days != 0) {
+      temporal = temporal.plusDays(days);
+    }
+    if (seconds != 0) {
+      temporal = temporal.plusSeconds(seconds);
+    }
+    if (nanos != 0) {
+      temporal = temporal.plusNanos(nanos);
     }
     return temporal;
   }
 
   /**
-   * Adds the specified interval to this interval, taking into account the sign of both intervals.
-   *
-   * @param interval the interval to add, not null
-   * @return the sum of the intervals
-   * @throws ExpressionException if the year-month part and the day-time part of the result have
-   *     opposite signs, an interval has only one sign
-   */
-  public Interval add(final Interval interval) {
-    return sum(interval, 1);
-  }
-
-  /**
-   * Subtracts this interval from the specified temporal object.
+   * Subtracts this interval from the specified temporal object, like adding the negated interval.
    *
    * @param temporal the temporal object to adjust, not null
    */
   public ZonedDateTime subtractFrom(ZonedDateTime temporal) {
-
-    if (negative) {
-      if (months != 0) {
-        temporal = temporal.plusMonths(months);
-      }
-      if (seconds != 0) {
-        temporal = temporal.plusSeconds(seconds);
-      }
-      if (nanos != 0) {
-        temporal = temporal.plusNanos(nanos);
-      }
-    } else {
-      if (months != 0) {
-        temporal = temporal.minusMonths(months);
-      }
-      if (seconds != 0) {
-        temporal = temporal.minusSeconds(seconds);
-      }
-      if (nanos != 0) {
-        temporal = temporal.minusNanos(nanos);
-      }
-    }
-    return temporal;
+    return negate().addTo(temporal);
   }
 }

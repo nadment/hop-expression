@@ -950,7 +950,14 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Extract(MONTH from INTERVAL 30 MONTHS)", 6L);
     evalEquals("Extract(DAY from INTERVAL 30 MONTHS)", 0L);
     evalEquals("Extract(DAY from INTERVAL -45 DAYS)", -45L);
-    evalEquals("Extract(HOUR from INTERVAL 30 HOURS)", 6L);
+    // Hours are not converted to days, like PostgreSQL
+    evalEquals("Extract(HOUR from INTERVAL 30 HOURS)", 30L);
+    evalEquals("Extract(HOUR from INTERVAL '1 6' DAY TO HOUR)", 6L);
+    evalEquals("Extract(DAY from INTERVAL '1 6' DAY TO HOUR)", 1L);
+    // Each part keeps its sign
+    evalEquals("Extract(DAY from INTERVAL '1 month -2 days')", -2L);
+    evalEquals("Extract(MONTH from INTERVAL '1 month -2 days')", 1L);
+    evalEquals("Extract(MINUTE from INTERVAL '-1:30' HOUR TO MINUTE)", -30L);
     evalEquals("Extract(MINUTE from INTERVAL 30 MINUTES)", 30L);
     evalEquals("Extract(SECOND from INTERVAL 59 SECONDS)", 59L);
     evalEquals("Extract(MILLISECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987L);
@@ -1188,7 +1195,9 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("MAKE_INTERVAL(0,0,0,0,0,-1.5)", Interval.of(0, 0, 0, 0, 0, 1, 500000000).negate());
     evalEquals("MAKE_INTERVAL(0,0,1,-1,0,0)", Interval.of(0, 0, 0, 23));
     evalEquals("MAKE_INTERVAL(1,-1,0,0,0,0)", Interval.of(0, 11));
-    evalFails("MAKE_INTERVAL(1,0,-1,0,0,0)", ErrorCode.INTERVAL_MIXED_SIGN);
+    // The parts can have opposite signs, like PostgreSQL
+    evalEquals("MAKE_INTERVAL(1,0,-1,0,0,0)", Interval.ofSigned(12, -1, 0, 0));
+    evalEquals("CAST(MAKE_INTERVAL(1,0,-1,0,0,0) AS STRING)", "+1-0 -1 00:00:00.000000000");
 
     // Large values are not truncated
     evalEquals("MAKE_INTERVAL(0,0,30000,0,0,0)", Interval.of(0, 0, 30000));

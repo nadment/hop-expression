@@ -67,17 +67,16 @@ public class MakeIntervalFunction extends Function {
     if (v5 == null) return null;
 
     try {
-      // Signed total of months and seconds, each part can be negative
+      // Signed months, days and time parts, each value can be negative like PostgreSQL
       long months = Math.addExact(Math.multiplyExact(v0, 12), v1);
       long seconds =
           Math.addExact(
-              Math.addExact(Math.multiplyExact(v2, 86400), Math.multiplyExact(v3, 3600)),
-              Math.addExact(
-                  Math.multiplyExact(v4, 60), v5.setScale(0, RoundingMode.DOWN).longValueExact()));
+              Math.addExact(Math.multiplyExact(v3, 3600), Math.multiplyExact(v4, 60)),
+              v5.setScale(0, RoundingMode.DOWN).longValueExact());
       long nanos =
           v5.remainder(BigDecimal.ONE).movePointRight(9).setScale(0, RoundingMode.DOWN).longValue();
 
-      return Interval.ofSigned(months, seconds, nanos);
+      return Interval.ofSigned(months, v2, seconds, nanos);
     } catch (ArithmeticException e) {
       throw new ExpressionException(ErrorCode.INTERVAL_OVERFLOW, getName());
     }

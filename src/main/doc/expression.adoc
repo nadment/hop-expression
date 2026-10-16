@@ -222,14 +222,24 @@ INTERVAL '-1-3 10 23:30:58.999'
 { + | - } INTERVAL '<quantity> [ <unit> ] [, <quantity> [ <unit> ] ... ]'
 ----
 
-* `quantity` is a number
+* `quantity` is a number, optionally preceded by a sign
 * `unit` can be any of YEAR, QUARTER, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND, MILLISECOND, MICROSECOND or plural forms (MONTHS, DAYS, etc.).
 
 The following examples illustrate some interval values that use the verbose syntax:
 ----
 INTERVAL '2 MONTHS, 5 DAYS, 12 HOURS'
 INTERVAL '4 WEEKS'
+INTERVAL '1 MONTH -1 DAY'
 ----
+
+==== Months, days and time
+
+An interval has three independent parts, each one with its own sign: a number of months, a number of days and a time.
+
+* The parts can have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY` is `INTERVAL '+0-1 -1 00:00:00'`. In the full format, the days and the time take the leading sign unless they have their own sign.
+* Hours are not converted to days and days are not converted to months, `INTERVAL 30 HOURS` remains 30 hours.
+* When an interval is added to a timestamp, the months are added first, then the days, then the time. A day is a calendar day: adding `INTERVAL 1 DAY` keeps the local time across a daylight saving time change, while adding `INTERVAL 24 HOURS` adds an exact duration.
+* When intervals are compared, a month is 30 days and a day is 24 hours, so `INTERVAL 1 MONTH = INTERVAL 30 DAYS` and `INTERVAL 1 DAY = INTERVAL 24 HOURS` return TRUE.
 
 
 The following subtracts 4 months from March 31, 2023 and the result is November 30, 2022. The calculation considers the number of days in a month.
