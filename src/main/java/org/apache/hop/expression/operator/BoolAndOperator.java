@@ -19,8 +19,6 @@ package org.apache.hop.expression.operator;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -89,7 +87,6 @@ public class BoolAndOperator extends BinaryOperator {
 
     final List<IExpression> strongTerms = new ArrayList<>();
     final List<IExpression> nullTerms = new ArrayList<>();
-    final List<IExpression> notNullTerms = new ArrayList<>();
     final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
         new ArrayListValuedHashMap<>();
     final MultiValuedMap<IExpression, Pair<Call, IExpression>> inTerms =
@@ -105,9 +102,6 @@ public class BoolAndOperator extends BinaryOperator {
       if (predicate instanceof Call term) {
         if (term.isOperator(IsNullOperator.INSTANCE)) {
           nullTerms.add(term.getOperand(0));
-        }
-        if (term.isOperator(IsNotNullOperator.INSTANCE)) {
-          notNullTerms.add(term.getOperand(0));
         }
         if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1).is(Kind.LITERAL)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
@@ -136,26 +130,7 @@ public class BoolAndOperator extends BinaryOperator {
       }
     }
 
-    // Simplify IS NULL(x) AND x<5 → not satisfiable
-    if (!Collections.disjoint(nullTerms, strongTerms)) {
-      return Literal.FALSE;
-    }
-
-    // Simplify strong terms IS NOT NULL(x) AND x<5 → x<5
-    for (IExpression operand : notNullTerms) {
-      if (strongTerms.contains(operand)) {
-        Iterator<IExpression> iterator = predicates.iterator();
-        List<IExpression> unnecessary = new ArrayList<>();
-        while (iterator.hasNext()) {
-          IExpression condition = iterator.next();
-          if (condition.isOperator(IsNotNullOperator.INSTANCE)
-              && call(condition).getOperand(0).equals(operand)) {
-            unnecessary.add(condition);
-          }
-        }
-        predicates.removeAll(unnecessary);
-      }
-    }
+    // Don't simplify IS NOT NULL(x) AND x<5 → x<5, the result is FALSE and not NULL if x is NULL
 
     // Simplify union
     // X<>1 AND X<>2 → X NOT IN (1,2)
@@ -175,9 +150,9 @@ public class BoolAndOperator extends BinaryOperator {
     }
 
     // Simplify intersection
-    // X=1 AND X=2 → FALSE
-    // X=1 AND X IN (2,3,4) → FALSE
-    // X IN (1,2,3) AND X IN (4,5) → FALSE
+    // X=1 AND X=2 → NVL2(X,FALSE,NULL), NULL and not FALSE if X is NULL
+    // X=1 AND X IN (2,3,4) → NVL2(X,FALSE,NULL)
+    // X IN (1,2,3) AND X IN (4,5) → NVL2(X,FALSE,NULL)
     // X IN (1,2,3) AND X IN (2,3,4) → X IN (2,3)
     for (IExpression reference : inTerms.keySet()) {
       Collection<IExpression> values = new LinkedList<>();
@@ -206,10 +181,8 @@ public class BoolAndOperator extends BinaryOperator {
       }
 
       if (values.isEmpty()) {
-        return Literal.FALSE;
-      }
-
-      if (values.size() == 1) {
+        predicates.add(nullIfNull(reference));
+      } else if (values.size() == 1) {
         Call predicate = new Call(EqualOperator.INSTANCE, reference, values.iterator().next());
         predicate.inferReturnType();
         predicates.add(predicate);
@@ -217,6 +190,26 @@ public class BoolAndOperator extends BinaryOperator {
         Call predicate = new Call(InListOperator.INSTANCE, reference, new Array(values));
         predicate.inferReturnType();
         predicates.add(predicate);
+      }
+    }
+
+    // Simplify IS NULL(x) AND x<5 → NVL2(x,FALSE,NULL), FALSE if x is not NULL, but NULL and not
+    // FALSE if x is NULL
+    for (IExpression operand : nullTerms) {
+      if (strongTerms.contains(operand)) {
+        List<IExpression> unnecessary = new ArrayList<>();
+        for (IExpression condition : predicates) {
+          if (condition.isOperator(IsNullOperator.INSTANCE)
+              && call(condition).getOperand(0).equals(operand)) {
+            unnecessary.add(condition);
+          } else if (condition instanceof Call term
+              && Strong.isStrong(term)
+              && (term.getOperand(0).equals(operand) || term.getOperand(1).equals(operand))) {
+            unnecessary.add(condition);
+          }
+        }
+        predicates.removeAll(unnecessary);
+        predicates.add(nullIfNull(operand));
       }
     }
 
@@ -232,6 +225,16 @@ public class BoolAndOperator extends BinaryOperator {
     }
 
     return expression;
+  }
+
+  /**
+   * Returns {@code NVL2(x,FALSE,NULL)}, the value of a conjunction that is FALSE if x is not NULL
+   * and NULL if x is NULL, like {@code x=1 AND x=2}.
+   */
+  private static IExpression nullIfNull(IExpression operand) {
+    Call predicate = new Call(Nvl2Function.INSTANCE, operand, Literal.FALSE, Literal.NULL_BOOLEAN);
+    predicate.inferReturnType();
+    return predicate;
   }
 
   @Override

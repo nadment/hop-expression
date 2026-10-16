@@ -88,7 +88,7 @@ public class BoolOrOperator extends BinaryOperator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(call.getChainedOperands(false));
 
-    final List<IExpression> notNullTerms = new ArrayList<>();
+    final Map<IExpression, Call> notNullTerms = new HashMap<>();
     final List<Identifier> identifiers = new ArrayList<>();
     final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
@@ -116,7 +116,7 @@ public class BoolOrOperator extends BinaryOperator {
         identifiers.add(identifier);
       } else if (predicate instanceof Call term) {
         if (term.isOperator(IsNotNullOperator.INSTANCE)) {
-          notNullTerms.add(term.getOperand(0));
+          notNullTerms.put(term.getOperand(0), term);
         }
         if (term.isOperator(EqualOperator.INSTANCE)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
@@ -251,18 +251,37 @@ public class BoolOrOperator extends BinaryOperator {
     // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
     // Simplify x OR (x AND y) → x (if x not nullable)
 
-    // Simplify x OR x IS NOT NULL → x IS NOT NULL
+    // Simplify x OR x IS NOT NULL → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x is
+    // NULL
+    final List<IExpression> dominated = new ArrayList<>();
     for (IExpression identifier : identifiers) {
-      if (notNullTerms.contains(identifier)) {
+      if (notNullTerms.containsKey(identifier)) {
         predicates.remove(identifier);
+        dominated.add(identifier);
       }
     }
 
-    // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
+    // Simplify IS NOT NULL(x) OR x<5 → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x is
+    // NULL
     for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : strongTerms.entrySet()) {
       Pair<IExpression, IExpression> pair = entry.getKey();
-      if (notNullTerms.contains(pair.left()) || notNullTerms.contains(pair.right())) {
+      if (notNullTerms.containsKey(pair.left())) {
         predicates.remove(entry.getValue());
+        dominated.add(pair.left());
+      } else if (notNullTerms.containsKey(pair.right())) {
+        predicates.remove(entry.getValue());
+        dominated.add(pair.right());
+      }
+    }
+
+    // Replace x IS NOT NULL by NVL2(x,TRUE,NULL)
+    for (IExpression operand : dominated) {
+      Call notNullTerm = notNullTerms.get(operand);
+      if (notNullTerm != null && predicates.remove(notNullTerm)) {
+        Call predicate =
+            new Call(Nvl2Function.INSTANCE, operand, Literal.TRUE, Literal.NULL_BOOLEAN);
+        predicate.inferReturnType();
+        predicates.add(predicate);
       }
     }
 
