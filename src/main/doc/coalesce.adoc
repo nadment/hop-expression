@@ -26,11 +26,11 @@ COALESCE( expression1 [, expression2... ] )
 
 == Returns
 
-The data type of the returned value is the same as the data type of the input values.
+The data type of the returned value is the common data type of the arguments.
 
 == Usage
 
-* All arguments must have the same data type.
+* All arguments must have compatible data types.
 * Returns NULL only if all arguments are NULL.
 
 == Examples

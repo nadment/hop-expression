@@ -26,10 +26,11 @@ GREATEST( expression1 [, expressionN... ] )
 
 == Returns
 
-The data type of the returned value is the same as the data type of the input values.
+The data type of the returned value is the common data type of the arguments.
 
 == Usage
 
+* All arguments must have compatible data types that can be ordered.
 * NULL values are ignored.
 * Returns NULL only if all arguments are NULL.
 

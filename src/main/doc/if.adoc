@@ -32,10 +32,11 @@ false_value:: Value returned if condition is FALSE or NULL.
 
 == Returns
 
-The data type of the returned value is the same as the data type of true_value and false_value.
+The data type of the returned value is the common data type of true_value and false_value.
 
 == Usage
 
+* true_value and false_value must have compatible data types.
 * If false_value is omitted, NULL is returned when condition is not TRUE.
 
 == Examples
