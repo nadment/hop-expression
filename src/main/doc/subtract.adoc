@@ -42,7 +42,7 @@ interval1 - interval2
 * The difference of two intervals is an interval. An error is raised if its year-month part and its day-time part have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY`.
 * The difference of two dates is not supported, use xref:date_diff.adoc["DATE_DIFF",role=fun] or a function like xref:days_between.adoc["DAYS_BETWEEN",role=fun].
 * A date can't be subtracted from a number or an interval.
-* A boolean is implicitly converted to 1 for TRUE and 0 for FALSE, a string is not implicitly converted, use an explicit cast if needed.
+* A boolean or a string is not implicitly converted to a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) + 1`.
 
 == Examples
 

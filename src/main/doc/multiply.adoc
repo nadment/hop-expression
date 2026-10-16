@@ -32,7 +32,7 @@ Integer or Number
 
 * Returns an Integer if both operands are integers, otherwise a Number.
 * Raises an arithmetic overflow error if the product of two integers exceeds the integer range; use an explicit cast to NUMBER if needed.
-* A boolean is implicitly converted to 1 for TRUE and 0 for FALSE, a string is not implicitly converted, use an explicit cast if needed.
+* A boolean or a string is not implicitly converted to a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) + 1`.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

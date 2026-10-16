@@ -767,9 +767,11 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testCoercion() throws Exception {
-      // Implicit coercion from BOOLEAN
-      evalEquals("8/TRUE", 8D).returnType(NumberType.of(7, 6, false));
-      evalEquals("TRUE/2", 0.5D).returnType(NumberType.of(7, 6, false));
+      // A boolean is not coerced to a number, like PostgreSQL
+      evalFails("8/TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE/2", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER%FIELD_BOOLEAN_TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("MOD(TRUE,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1787,9 +1789,10 @@ public class OperatorTest extends ExpressionTest {
       optimize("ZEROIFNULL(FIELD_INTEGER)+ZEROIFNULL(FIELD_INTEGER)")
           .returnType(IntegerType.of(13, false));
 
-      // Implicit coercion from BOOLEAN
-      evalEquals("1+FALSE", 1L);
-      evalEquals("TRUE+1", 2L);
+      // A boolean is not coerced to a number, like PostgreSQL
+      evalFails("1+FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE+1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("DATE '2019-01-01'+TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Implicit coercion from STRING
       // evalEquals("'1'+2", 3L).returnType(NumberType.NUMBER);
@@ -1908,11 +1911,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("FIELD_INTEGER-FIELD_NUMBER-FIELD_BIGNUMBER", -123411.669D);
       evalEquals("FIELD_BIGNUMBER-FIELD_NUMBER-FIELD_INTEGER", 123421.909D);
 
-      // Implicit coercion from BOOLEAN
-      evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2, false));
-      evalEquals("FALSE-TRUE", -1L);
-      evalEquals("1-FIELD_BOOLEAN_FALSE", 1L).returnType(IntegerType.of(2));
-      evalEquals("FIELD_BOOLEAN_TRUE-2", -1L);
+      // A boolean is not coerced to a number, like PostgreSQL
+      evalFails("TRUE-FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1-FIELD_BOOLEAN_FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_BOOLEAN_TRUE-2", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       evalNull("5-NULL_INTEGER").returnType(IntegerType.of(19));
       evalNull("NULL_INTEGER-5");
@@ -2079,10 +2081,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("2*2.2", 4.4D).returnType(NumberType.of(3, 1, false));
       evalEquals("2.5*2::INTEGER", 5D).returnType(NumberType.of(21, 1, false));
 
-      // Implicit coercion from BOOLEAN, to an integer like the addition
-      evalEquals("TRUE * 3", 3L).returnType(IntegerType.of(2, false));
-      evalEquals("3 * FALSE", 0L).returnType(IntegerType.of(2, false));
-      evalEquals("FIELD_BOOLEAN_TRUE * 2.5", 2.5D);
+      // A boolean is not coerced to a number, like PostgreSQL
+      evalFails("TRUE * 3", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("3 * FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_BOOLEAN_TRUE * 2.5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test

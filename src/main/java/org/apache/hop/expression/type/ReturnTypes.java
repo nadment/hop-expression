@@ -465,8 +465,7 @@ public final class ReturnTypes {
     int p2 = type2.getPrecision();
 
     // Preserve integer type and adjust precision
-    if ((type1.isName(TypeName.INTEGER) || type1.isName(TypeName.BOOLEAN))
-        && (type2.isName(TypeName.INTEGER) || type2.isName(TypeName.BOOLEAN))) {
+    if (type1.isName(TypeName.INTEGER) && type2.isName(TypeName.INTEGER)) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), Math.max(p1, p2) + 1);
       return IntegerType.of(p, nullable);
     }
@@ -516,9 +515,8 @@ public final class ReturnTypes {
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
 
-    // Preserve integer type and adjust precision, a boolean is coerced to an integer
-    if ((type1.isName(TypeName.INTEGER) || type1.isName(TypeName.BOOLEAN))
-        && (type2.isName(TypeName.INTEGER) || type2.isName(TypeName.BOOLEAN))) {
+    // Preserve integer type and adjust precision
+    if (type1.isName(TypeName.INTEGER) && type2.isName(TypeName.INTEGER)) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), p1 + p2);
       return IntegerType.of(p, nullable);
     }

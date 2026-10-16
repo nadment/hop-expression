@@ -294,16 +294,6 @@ public final class Types {
       return coerceOperandsType(call, NumberType.NUMBER);
     }
 
-    // Numeric <operator> BOOLEAN -> Same type as left numeric
-    if (isNumeric(left) && isBoolean(right)) {
-      return Types.coerceOperandType(call, left, 1);
-    }
-
-    // BOOLEAN <operator> numeric -> Same type as right numeric
-    if (isBoolean(left) && isNumeric(right)) {
-      return Types.coerceOperandType(call, right, 0);
-    }
-
     // NUMBER <operator> INTEGER -> NUMBER
     //    if (Types.isNumber(left) && Types.isInteger(right)) {
     //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
@@ -331,16 +321,6 @@ public final class Types {
     // Numeric <operator> STRING -> NUMBER
     if (isNumeric(left) && isString(right)) {
       return Types.coerceOperandType(call, NumberType.NUMBER, 1);
-    }
-
-    // Numeric <operator> BOOLEAN -> Same type as left numeric
-    if (isNumeric(left) && isBoolean(right)) {
-      return Types.coerceOperandType(call, left, 1);
-    }
-
-    // BOOLEAN <operator> numeric -> Same type as right numeric
-    if (isBoolean(left) && isNumeric(right)) {
-      return Types.coerceOperandType(call, right, 0);
     }
 
     // NUMBER <operator> INTEGER -> NUMBER
@@ -453,6 +433,22 @@ public final class Types {
 
   public static boolean isBoolean(Type type) {
     return type.isName(TypeName.BOOLEAN);
+  }
+
+  /**
+   * Returns whether one of the operands of a call is a boolean. The arithmetic operators don't
+   * coerce a boolean to a number, like PostgreSQL.
+   *
+   * @param call the call
+   * @return true if one of the operands is a boolean
+   */
+  public static boolean hasBooleanOperand(Call call) {
+    for (IExpression operand : call.getOperands()) {
+      if (isBoolean(operand.getType())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public static boolean isNumeric(Type type) {

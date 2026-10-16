@@ -53,6 +53,12 @@ public class DivOperator extends BinaryOperator {
   }
 
   @Override
+  public boolean checkOperandTypes(Call call) {
+    // A boolean is not implicitly coerced to a number
+    return super.checkOperandTypes(call) && !Types.hasBooleanOperand(call);
+  }
+
+  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);

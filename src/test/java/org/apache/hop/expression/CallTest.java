@@ -97,8 +97,10 @@ class CallTest extends ExpressionTest {
   @Test
   void testImplicitCoercionToInteger() throws Exception {
     evalEquals("Abs(FIELD_BOOLEAN_TRUE)", 1L).returnType(IntegerType.INTEGER);
-    evalEquals("1+FALSE", 1L);
-    evalEquals("TRUE+1", 2L);
+
+    // The arithmetic operators don't coerce a boolean to a number, like PostgreSQL
+    evalFails("1+FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TRUE+1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test

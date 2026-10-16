@@ -31,6 +31,7 @@ Number
 == Usage
 
 * Raises a division-by-zero error if divisor is 0.
+* A boolean or a string is not implicitly converted to a number, use an explicit cast if needed.
 * Returns NULL if one of the arguments is NULL.
 
 == See also

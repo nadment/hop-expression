@@ -58,6 +58,12 @@ public class MultiplyOperator extends BinaryOperator {
   }
 
   @Override
+  public boolean checkOperandTypes(Call call) {
+    // A boolean is not implicitly coerced to a number
+    return super.checkOperandTypes(call) && !Types.hasBooleanOperand(call);
+  }
+
+  @Override
   public Operator reverse() {
     return this;
   }

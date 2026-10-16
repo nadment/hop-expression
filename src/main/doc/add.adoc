@@ -42,7 +42,7 @@ interval1 + interval2
 * Adding a number of days to a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun], the decimal part of the number of days is truncated.
 * Adding months or years to a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2019-01-31' + INTERVAL 1 MONTH` returns `DATE '2019-02-28'`.
 * The sum of two intervals is an interval. An error is raised if its year-month part and its day-time part have opposite signs, for example `INTERVAL 1 MONTH + INTERVAL -1 DAY`.
-* A boolean is implicitly converted to 1 for TRUE and 0 for FALSE, a string is not implicitly converted, use an explicit cast if needed.
+* A boolean or a string is not implicitly converted to a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) + 1`.
 
 == Examples
 
