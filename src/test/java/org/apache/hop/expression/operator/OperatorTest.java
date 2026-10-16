@@ -1767,6 +1767,11 @@ public class OperatorTest extends ExpressionTest {
       // Only integer, round number
       evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
       evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
+
+      // Normalize operands order
+      evalEquals("2+DATE '2019-01-15'", LocalDate.of(2019, 1, 17));
+      evalNull("DATE '2019-01-15'+NULL_INTEGER").returnType(DateType.DATE);
+      evalFails("DATE '2019-01-15'+'a'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1775,6 +1780,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1' YEAR TO MONTH");
       optimize("INTERVAL 4 HOUR+INTERVAL 1 HOUR", "INTERVAL 5 HOUR");
       optimize("INTERVAL 4 MONTHS+INTERVAL 0 MONTH", "INTERVAL 4 MONTH");
+      evalEquals("INTERVAL 1 DAY + INTERVAL 3 HOURS", Interval.of(0, 0, 1, 3));
 
       // The sign of the intervals is taken into account
       optimize("INTERVAL -3 DAYS+INTERVAL 1 DAY", "INTERVAL -2 DAY");
@@ -1825,6 +1831,14 @@ public class OperatorTest extends ExpressionTest {
       // Subtraction interval to a temporal
       evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
       evalEquals("DATE '2019-02-25'-INTERVAL 2 WEEKS", LocalDateTime.of(2019, 2, 11, 0, 0, 0));
+      evalEquals(
+          "TIMESTAMP '2019-01-15 10:00:00'-INTERVAL '1 2:30' DAY TO MINUTE",
+          LocalDateTime.of(2019, 1, 14, 7, 30, 0));
+
+      // A date can't be subtracted from a number, an interval or a date
+      evalFails("1-DATE '2019-01-15'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("INTERVAL 1 DAY-DATE '2019-01-15'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("DATE '2019-01-15'-DATE '2019-01-10'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // TODO: Diff of two date
       // evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
@@ -1844,6 +1858,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
       evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
       evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+      evalEquals("DATE '2019-01-15'-1.9", LocalDate.of(2019, 1, 14));
       // evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
       // evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
       // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));

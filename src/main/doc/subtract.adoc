@@ -16,32 +16,50 @@ under the License.
 ////
 = Subtraction operator -
 
-Subtracts the second numeric value from the first one.
+Subtracts the second numeric value from the first one, subtracts an interval or a number of days from a date, or subtracts an interval from an interval.
 
 == Syntax
 
 ----
 numeric1 - numeric2
+date - interval
+date - days
 interval1 - interval2
 ----
 
 == Returns
 
-Number
+* Integer if both operands are integers, otherwise Number.
+* Date when the first operand is a date.
+* Interval when both operands are intervals.
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+* The difference of two integers raises an arithmetic overflow error if it exceeds the integer range; use an explicit cast to NUMBER if needed.
+* Subtracting a number of days from a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun] with a negative number, the decimal part of the number of days is truncated.
+* Subtracting months or years from a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2020-03-31' - INTERVAL 1 MONTH` returns `DATE '2020-02-29'`.
 * The difference of two intervals is an interval. An error is raised if its year-month part and its day-time part have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY`.
+* The difference of two dates is not supported, use xref:date_diff.adoc["DATE_DIFF",role=fun] or a function like xref:days_between.adoc["DAYS_BETWEEN",role=fun].
+* A date can't be subtracted from a number or an interval.
+* A boolean is implicitly converted to 1 for TRUE and 0 for FALSE, a string is not implicitly converted, use an explicit cast if needed.
 
 == Examples
 
 ----
 10-0.5 returns 9.5
+DATE '2019-01-15' - 1 returns DATE '2019-01-14'
+DATE '2019-01-15' - 1.9 returns DATE '2019-01-14'
+DATE '2020-03-31' - INTERVAL 1 MONTH returns DATE '2020-02-29'
+TIMESTAMP '2019-01-15 10:00:00' - INTERVAL '1 2:30' DAY TO MINUTE returns TIMESTAMP '2019-01-14 07:30:00'
 INTERVAL 5 HOURS - INTERVAL 1 HOUR returns INTERVAL 4 HOURS
 INTERVAL 2 YEARS - INTERVAL 3 MONTHS returns INTERVAL '+1-9' YEAR TO MONTH
 ----
 
 == See also
 
-* xref:add.adoc["+",role=op]
+* xref:add.adoc["Addition operator +",role=op]
+* xref:negative.adoc["Unary negative operator -",role=op]
+* xref:add_days.adoc["ADD_DAYS",role=fun]
+* xref:add_months.adoc["ADD_MONTHS",role=fun]
+* xref:date_diff.adoc["DATE_DIFF",role=fun]

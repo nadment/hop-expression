@@ -16,22 +16,50 @@ under the License.
 ////
 = Addition operator +
 
-Returns the sum of two numeric values.
+Returns the sum of two numeric values, adds an interval or a number of days to a date, or adds two intervals.
 
 == Syntax
 
 ----
 numeric1 + numeric2
+date + interval
+interval + date
+date + days
+days + date
+interval1 + interval2
 ----
 
 == Returns
 
-Number
+* Integer if both operands are integers, otherwise Number.
+* Date when a date is one of the operands.
+* Interval when both operands are intervals.
 
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+* The sum of two integers raises an arithmetic overflow error if it exceeds the integer range; use an explicit cast to NUMBER if needed.
+* Adding a number of days to a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun], the decimal part of the number of days is truncated.
+* Adding months or years to a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2019-01-31' + INTERVAL 1 MONTH` returns `DATE '2019-02-28'`.
+* The sum of two intervals is an interval. An error is raised if its year-month part and its day-time part have opposite signs, for example `INTERVAL 1 MONTH + INTERVAL -1 DAY`.
+* A boolean is implicitly converted to 1 for TRUE and 0 for FALSE, a string is not implicitly converted, use an explicit cast if needed.
+
+== Examples
+
+----
+1+2 returns 3
+1.5+2.25 returns 3.75
+DATE '2019-01-15' + 1 returns DATE '2019-01-16'
+DATE '2019-01-15' + 1.9 returns DATE '2019-01-16'
+DATE '2019-01-31' + INTERVAL 1 MONTH returns DATE '2019-02-28'
+TIMESTAMP '2019-01-15 10:00:00' + INTERVAL 90 MINUTES returns TIMESTAMP '2019-01-15 11:30:00'
+INTERVAL 1 DAY + INTERVAL 3 HOURS returns INTERVAL '1 3' DAY TO HOUR
+----
 
 == See also
 
 * xref:subtract.adoc["Subtraction operator -",role=op]
+* xref:plus.adoc["Unary positive operator +",role=op]
+* xref:add_days.adoc["ADD_DAYS",role=fun]
+* xref:add_months.adoc["ADD_MONTHS",role=fun]
+* xref:date_add.adoc["DATE_ADD",role=fun]
