@@ -56,6 +56,8 @@ public class AtTimeZoneOperator extends Operator {
     if (value == null) return null;
 
     String zone = operands[1].getValue(String.class);
+    if (zone == null) return null;
+
     return value.withZoneSameLocal(DateTimeFormat.toZoneId(zone));
   }
 

@@ -37,7 +37,7 @@ Date
 
 * Time zone names are case-sensitive and must be enclosed in single quotes (e.g. `'UTC'`).
 * An unknown time zone name raises an error.
-* Returns NULL if the timestamp is NULL.
+* Returns NULL if the timestamp or the time zone is NULL.
 
 == Examples
 

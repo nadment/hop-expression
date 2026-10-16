@@ -2961,6 +2961,8 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testNullHandling() throws Exception {
       evalNull("NULL_DATE AT TIME ZONE 'CET'");
+      evalNull("FIELD_DATE AT TIME ZONE NULL_STRING");
+      evalNull("TIMESTAMP '2023-01-01 10:00:00' AT TIME ZONE NULL");
     }
 
     @Test
