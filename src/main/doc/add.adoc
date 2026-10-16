@@ -37,6 +37,7 @@ interval1 + interval2
 
 == Usage
 
+* A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 * The sum of two integers raises an arithmetic overflow error if it exceeds the integer range; use an explicit cast to NUMBER if needed.
 * Adding a number of days to a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun], the decimal part of the number of days is truncated.

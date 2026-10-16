@@ -36,6 +36,7 @@ Date
 == Usage
 
 * If nanoseconds has a decimal part, it is truncated before the addition.
+* A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 
 == See also

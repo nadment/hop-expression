@@ -1861,6 +1861,13 @@ public class OperatorTest extends ExpressionTest {
 
       evalEquals("DATE '0010-01-01'+INTERVAL 178956970 YEARS", LocalDate.of(178956980, 1, 1));
 
+      // A result out of the supported range raises an error
+      evalFails("FIELD_DATE+INTERVAL 2000000000 YEARS", ErrorCode.DATE_OVERFLOW);
+      evalFails("FIELD_DATE-INTERVAL 2000000000 YEARS", ErrorCode.DATE_OVERFLOW);
+      evalFails("DATE '2019-01-15'+1000000000000", ErrorCode.DATE_OVERFLOW);
+      evalFails("DATE '2019-01-15'-1000000000000", ErrorCode.DATE_OVERFLOW);
+      evalEquals("DATE '9999-12-31'+1", LocalDate.of(10000, 1, 1));
+
       optimize(
           "INTERVAL 1 HOUR+FIELD_DATE+INTERVAL 4 HOUR+INTERVAL 1 HOUR",
           "FIELD_DATE+INTERVAL 6 HOUR");

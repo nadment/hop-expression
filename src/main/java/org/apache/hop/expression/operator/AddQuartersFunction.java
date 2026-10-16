@@ -16,8 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -64,6 +66,10 @@ public class AddQuartersFunction extends Function {
     Long quarters = operands[1].getValue(Long.class);
     if (quarters == null) return null;
 
-    return datetime.plusMonths(3 * quarters);
+    try {
+      return datetime.plusMonths(Math.multiplyExact(3, quarters));
+    } catch (DateTimeException | ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 }

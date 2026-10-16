@@ -47,6 +47,7 @@ Date
 == Usage
 
 * Any other unit raises an error.
+* A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples

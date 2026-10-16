@@ -38,6 +38,7 @@ Date
 * If quarters has a decimal part, it is truncated before the addition.
 * A quarter is 3 months.
 * If the resulting month has fewer days than the day component of date, the result is the last day of the resulting month. Otherwise, the result has the same day component as date.
+* A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

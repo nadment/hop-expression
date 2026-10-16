@@ -16,8 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -64,6 +66,10 @@ public class AddNanosecondsFunction extends Function {
     Long nanos = operands[1].getValue(Long.class);
     if (nanos == null) return null;
 
-    return datetime.plusNanos(nanos);
+    try {
+      return datetime.plusNanos(nanos);
+    } catch (DateTimeException | ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 }

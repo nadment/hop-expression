@@ -16,8 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -54,8 +57,15 @@ public class MakeDateFunction extends Function {
 
     // Add the months and the days to the first day of the year, so that values out of the
     // normal ranges overflow to the next or previous months and years, e.g. February 30
-    LocalDate date = LocalDate.of(v0.intValue(), 1, 1).plusMonths(v1 - 1).plusDays(v2 - 1);
+    try {
+      LocalDate date =
+          LocalDate.of(Math.toIntExact(v0), 1, 1)
+              .plusMonths(Math.subtractExact(v1, 1))
+              .plusDays(Math.subtractExact(v2, 1));
 
-    return date.atStartOfDay().atZone(ZoneOffset.UTC);
+      return date.atStartOfDay().atZone(ZoneOffset.UTC);
+    } catch (DateTimeException | ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 }

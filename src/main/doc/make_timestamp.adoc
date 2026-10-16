@@ -51,6 +51,7 @@ Date
 * If hour is less than 0 or greater than 23, the day is adjusted.
 * If minute is less than 0 or greater than 59, the hour is adjusted.
 * If second is less than 0 or greater than 59, the minute is adjusted.
+* A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

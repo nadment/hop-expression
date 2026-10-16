@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.util.PriorityQueue;
 import org.apache.hop.expression.Call;
@@ -226,7 +227,11 @@ public class AddOperator extends BinaryOperator {
       Interval interval = operands[1].getValue(Interval.class);
       if (interval == null) return null;
 
-      return interval.addTo(datetime);
+      try {
+        return interval.addTo(datetime);
+      } catch (DateTimeException | ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      }
     }
   }
 

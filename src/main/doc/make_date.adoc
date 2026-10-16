@@ -45,6 +45,7 @@ Date
 * The function is typically used with values in the normal ranges (months 1-12, days 1-31), but it also handles values outside these ranges.
 * If day is less than 1 or greater than the number of days in the month, the month is adjusted.
 * If month is less than 1 or greater than 12, the year is adjusted.
+* A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

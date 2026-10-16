@@ -225,6 +225,18 @@ public enum ErrorCode {
    */
   ARITHMETIC_OVERFLOW,
   /**
+   * The result of a date arithmetic is out of the range of the {@code DATE} data type.
+   *
+   * <p>Message: <code>Date overflow in “{0}”, the result is out of the supported range</code>
+   */
+  DATE_OVERFLOW,
+  /**
+   * The result of an interval arithmetic is out of the range of the {@code INTERVAL} data type.
+   *
+   * <p>Message: <code>Interval overflow in “{0}”, the result is out of the supported range</code>
+   */
+  INTERVAL_OVERFLOW,
+  /**
    * A number is too large or too small to be converted to the {@code INTEGER} data type.
    *
    * <p>Message: <code>Integer conversion overflow with value '{0}'</code>

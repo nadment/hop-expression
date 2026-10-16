@@ -17,8 +17,12 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -64,21 +68,25 @@ public class MakeTimestampFunction extends Function {
     BigDecimal v5 = operands[5].getValue(BigDecimal.class);
     if (v5 == null) return null;
 
-    // The fractional part of the seconds, with the sign of the seconds
-    long seconds = v5.longValue();
-    long nanos = v5.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+    try {
+      // The fractional part of the seconds, with the sign of the seconds
+      long seconds = v5.setScale(0, RoundingMode.DOWN).longValueExact();
+      long nanos = v5.remainder(BigDecimal.ONE).movePointRight(9).longValue();
 
-    // Add each component to the start of the year, so that values out of the normal ranges
-    // overflow to the next or previous units, e.g. February 30 or -0.5 second
-    LocalDateTime datetime =
-        LocalDateTime.of(v0.intValue(), 1, 1, 0, 0)
-            .plusMonths(v1 - 1)
-            .plusDays(v2 - 1)
-            .plusHours(v3)
-            .plusMinutes(v4)
-            .plusSeconds(seconds)
-            .plusNanos(nanos);
+      // Add each component to the start of the year, so that values out of the normal ranges
+      // overflow to the next or previous units, e.g. February 30 or -0.5 second
+      LocalDateTime datetime =
+          LocalDateTime.of(Math.toIntExact(v0), 1, 1, 0, 0)
+              .plusMonths(Math.subtractExact(v1, 1))
+              .plusDays(Math.subtractExact(v2, 1))
+              .plusHours(v3)
+              .plusMinutes(v4)
+              .plusSeconds(seconds)
+              .plusNanos(nanos);
 
-    return datetime.atZone(ZoneOffset.UTC);
+      return datetime.atZone(ZoneOffset.UTC);
+    } catch (DateTimeException | ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 }

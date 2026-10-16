@@ -16,8 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -64,6 +66,10 @@ public class AddMonthsFunction extends Function {
     Long months = operands[1].getValue(Long.class);
     if (months == null) return null;
 
-    return datetime.plusMonths(months);
+    try {
+      return datetime.plusMonths(months);
+    } catch (DateTimeException | ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 }

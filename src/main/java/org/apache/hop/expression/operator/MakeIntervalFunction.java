@@ -17,6 +17,9 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -63,14 +66,20 @@ public class MakeIntervalFunction extends Function {
     BigDecimal v5 = operands[5].getValue(BigDecimal.class);
     if (v5 == null) return null;
 
-    int years = v0.intValue();
-    int months = v1.intValue();
-    int days = v2.intValue();
-    int hours = v3.intValue();
-    int minutes = v4.intValue();
-    int seconds = v5.intValue();
-    int nanos = v5.remainder(BigDecimal.ONE).movePointRight(9).intValue();
+    try {
+      // Signed total of months and seconds, each part can be negative
+      long months = Math.addExact(Math.multiplyExact(v0, 12), v1);
+      long seconds =
+          Math.addExact(
+              Math.addExact(Math.multiplyExact(v2, 86400), Math.multiplyExact(v3, 3600)),
+              Math.addExact(
+                  Math.multiplyExact(v4, 60), v5.setScale(0, RoundingMode.DOWN).longValueExact()));
+      long nanos =
+          v5.remainder(BigDecimal.ONE).movePointRight(9).setScale(0, RoundingMode.DOWN).longValue();
 
-    return Interval.of(years, months, days, hours, minutes, seconds, nanos);
+      return Interval.ofSigned(months, seconds, nanos);
+    } catch (ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.INTERVAL_OVERFLOW, getName());
+    }
   }
 }

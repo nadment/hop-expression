@@ -673,6 +673,24 @@ class DateFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Add_Overflow() throws Exception {
+    // A year beyond 9999 is supported
+    evalEquals("Add_Days(DATE '9999-12-31',1)", LocalDate.of(10000, Month.JANUARY, 1));
+
+    // A result out of the supported range raises an error
+    evalFails("Add_Years(FIELD_DATE,2000000000)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Quarters(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Months(FIELD_DATE,9000000000000)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Weeks(FIELD_DATE,900000000000)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Days(FIELD_DATE,1000000000000)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Days(FIELD_DATE,-9223372036854775807)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Hours(FIELD_DATE,9000000000000000)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Minutes(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Seconds(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
+    evalFails("DATE_ADD(DAY,1000000000000,FIELD_DATE)", ErrorCode.DATE_OVERFLOW);
+  }
+
+  @Test
   void Date_Add() throws Exception {
     evalEquals("DATE_ADD(DAY, 5, DATE '2023-02-01')", LocalDate.of(2023, Month.FEBRUARY, 6));
     evalEquals(
@@ -1064,6 +1082,12 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_DATE(2020)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_DATE(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_DATE(2020,1,1,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    // A result out of the supported range raises an error, a year is never truncated
+    evalFails("MAKE_DATE(1000000000,1,1)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_DATE(4294969316,1,1)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_DATE(2020,9223372036854775807,1)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_DATE(2020,1,-9223372036854775807-1)", ErrorCode.DATE_OVERFLOW);
   }
 
   @Test
@@ -1131,6 +1155,12 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_TIMESTAMP(2020)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_TIMESTAMP(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    // A result out of the supported range raises an error, a year is never truncated
+    evalFails("MAKE_TIMESTAMP(1000000000,1,1,0,0,0)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(4294969316,1,1,0,0,0)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,9223372036854775807,0,0)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,0,0,1e30)", ErrorCode.DATE_OVERFLOW);
   }
 
   @Test
@@ -1152,6 +1182,18 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_INTERVAL(20)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_INTERVAL(20,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    // Negative values give a negative interval
+    evalEquals("MAKE_INTERVAL(-1,0,0,0,0,0)", Interval.of(1).negate());
+    evalEquals("MAKE_INTERVAL(0,0,0,0,0,-1.5)", Interval.of(0, 0, 0, 0, 0, 1, 500000000).negate());
+    evalEquals("MAKE_INTERVAL(0,0,1,-1,0,0)", Interval.of(0, 0, 0, 23));
+    evalEquals("MAKE_INTERVAL(1,-1,0,0,0,0)", Interval.of(0, 11));
+    evalFails("MAKE_INTERVAL(1,0,-1,0,0,0)", ErrorCode.INTERVAL_MIXED_SIGN);
+
+    // Large values are not truncated
+    evalEquals("MAKE_INTERVAL(0,0,30000,0,0,0)", Interval.of(0, 0, 30000));
+    evalFails("MAKE_INTERVAL(0,0,0,0,0,1e30)", ErrorCode.INTERVAL_OVERFLOW);
+    evalFails("MAKE_INTERVAL(9223372036854775807,0,0,0,0,0)", ErrorCode.INTERVAL_OVERFLOW);
   }
 
   @Test

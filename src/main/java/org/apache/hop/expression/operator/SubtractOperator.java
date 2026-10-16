@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -167,7 +168,11 @@ public class SubtractOperator extends BinaryOperator {
       Interval interval = operands[1].getValue(Interval.class);
       if (interval == null) return null;
 
-      return interval.subtractFrom(datetime);
+      try {
+        return interval.subtractFrom(datetime);
+      } catch (DateTimeException | ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      }
     }
   }
 

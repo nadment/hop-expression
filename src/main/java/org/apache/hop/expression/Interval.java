@@ -944,24 +944,38 @@ public class Interval implements Serializable, Comparable<Interval> {
     long resultSeconds = sign1 * seconds + sign2 * interval.seconds;
     long resultNanos = sign1 * nanos + sign2 * interval.nanos;
 
+    return ofSigned(resultMonths, resultSeconds, resultNanos);
+  }
+
+  /**
+   * Creates an interval from signed months, seconds and nanoseconds. The nanoseconds are carried to
+   * the seconds and take the sign of the seconds.
+   *
+   * @param months the signed number of months
+   * @param seconds the signed number of seconds
+   * @param nanos the signed number of nanoseconds
+   * @return the interval
+   * @throws ExpressionException if the months and the day-time part have opposite signs
+   */
+  public static Interval ofSigned(long months, long seconds, long nanos) {
     // Carry the nanoseconds to the seconds, then give them the sign of the seconds
-    resultSeconds += Math.floorDiv(resultNanos, NANOS_PER_SECOND);
-    resultNanos = Math.floorMod(resultNanos, NANOS_PER_SECOND);
-    if (resultSeconds < 0 && resultNanos > 0) {
-      resultSeconds++;
-      resultNanos -= NANOS_PER_SECOND;
+    seconds = Math.addExact(seconds, Math.floorDiv(nanos, NANOS_PER_SECOND));
+    nanos = Math.floorMod(nanos, NANOS_PER_SECOND);
+    if (seconds < 0 && nanos > 0) {
+      seconds++;
+      nanos -= NANOS_PER_SECOND;
     }
 
-    long signMonths = Long.signum(resultMonths);
-    long signDayTime = (resultSeconds != 0) ? Long.signum(resultSeconds) : Long.signum(resultNanos);
+    long signMonths = Long.signum(months);
+    long signDayTime = (seconds != 0) ? Long.signum(seconds) : Long.signum(nanos);
     if (signMonths != 0 && signDayTime != 0 && signMonths != signDayTime) {
       throw new ExpressionException(ErrorCode.INTERVAL_MIXED_SIGN);
     }
 
     return new Interval(
-        Math.abs(resultMonths),
-        Math.abs(resultSeconds),
-        (int) Math.abs(resultNanos),
+        Math.abs(months),
+        Math.abs(seconds),
+        (int) Math.abs(nanos),
         signMonths < 0 || signDayTime < 0);
   }
 
