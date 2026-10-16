@@ -1146,7 +1146,15 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_DATE ILIKE '%2%'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("FIELD_STRING NOT ILIKE 4", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("'a' ILIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
+      // The escape must be a single character string literal
       evalFails("'a' ILIKE '%' ESCAPE NULL_STRING", ErrorCode.INVALID_ARGUMENT);
+      evalFails("'a' ILIKE '%' ESCAPE 5", ErrorCode.INVALID_ARGUMENT);
+      evalFails("'a' ILIKE '%' ESCAPE ''", ErrorCode.INVALID_ARGUMENT);
+      evalFails("'a' ILIKE '%' ESCAPE '!!'", ErrorCode.INVALID_ARGUMENT);
+
+      // The escape character must be followed by '_', '%' or itself
+      evalFails("FIELD_STRING ILIKE 'a!b' ESCAPE '!'", ErrorCode.INVALID_REGEXP_ESCAPE);
+      evalFails("FIELD_STRING ILIKE 'a!' ESCAPE '!'", ErrorCode.INVALID_REGEXP_ESCAPE);
     }
 
     @Test
@@ -2210,6 +2218,10 @@ public class OperatorTest extends ExpressionTest {
       evalFails("'a' LIKE '%' ESCAPE ''", ErrorCode.INVALID_ARGUMENT);
       evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
       evalFails("'a' LIKE '%' ESCAPE NULL_STRING", ErrorCode.INVALID_ARGUMENT);
+      evalFails("'a' LIKE '%' ESCAPE 5", ErrorCode.INVALID_ARGUMENT);
+      evalFails("'a' LIKE '%' ESCAPE FIELD_STRING", ErrorCode.INVALID_ARGUMENT);
+      evalFails("FIELD_STRING LIKE 'a!b' ESCAPE '!'", ErrorCode.INVALID_REGEXP_ESCAPE);
+      evalFails("FIELD_STRING LIKE 'a!' ESCAPE '!'", ErrorCode.INVALID_REGEXP_ESCAPE);
       evalFails("'give me 30% discount' like '%30!%%' escape '!!'", ErrorCode.INVALID_ARGUMENT);
       evalFails("'test' LIKE 'TEST' escape NULL", ErrorCode.INVALID_ARGUMENT);
     }

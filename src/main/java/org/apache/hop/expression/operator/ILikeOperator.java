@@ -91,11 +91,6 @@ public class ILikeOperator extends Operator {
         }
         return new Call(INSTANCE, value, Literal.of(simplifiedPattern));
       }
-
-      // Simplify x LIKE '%' ESCAPE NULL → NULL
-      if (call.getOperandCount() == 3 && call.getOperand(2).isNull()) {
-        return Literal.NULL_BOOLEAN;
-      }
     }
 
     Pattern pattern = LikeOperator.createConstantPattern(call, FLAGS);

@@ -160,10 +160,6 @@ public class LikeOperator extends Operator {
       }
 
       if (call.getOperandCount() == 3) {
-        if (call.getOperand(2).isNull()) {
-          return Literal.NULL_BOOLEAN;
-        }
-
         // For now, don't optimize if special escapes char
         return precompile(call);
       }

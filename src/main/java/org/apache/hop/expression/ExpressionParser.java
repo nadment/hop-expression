@@ -294,7 +294,7 @@ public class ExpressionParser {
       IExpression pattern = this.parseAdditive();
 
       if (lexer.ifThenNextAndNotEnd(Id.ESCAPE)) {
-        IExpression escape = this.parseLiteralString(lexer.next());
+        IExpression escape = this.parseEscape();
         expression = new Call(start, LikeOperator.INSTANCE, expression, pattern, escape);
       } else {
         expression = new Call(start, LikeOperator.INSTANCE, expression, pattern);
@@ -307,7 +307,7 @@ public class ExpressionParser {
     } else if (lexer.ifThenNext(Id.ILIKE)) {
       IExpression pattern = this.parseAdditive();
       if (lexer.ifThenNextAndNotEnd(Id.ESCAPE)) {
-        IExpression escape = this.parseLiteralString(lexer.next());
+        IExpression escape = this.parseEscape();
         expression = new Call(start, ILikeOperator.INSTANCE, expression, pattern, escape);
       } else {
         expression = new Call(start, ILikeOperator.INSTANCE, expression, pattern);
@@ -412,6 +412,15 @@ public class ExpressionParser {
   /** Literal String */
   private IExpression parseLiteralString(Token token) {
     return Literal.of(token.text());
+  }
+
+  /** Parses the escape character of LIKE and ILIKE, it must be a string literal. */
+  private IExpression parseEscape() throws ExpressionException {
+    Token token = lexer.next();
+    if (!token.is(Id.LITERAL_STRING)) {
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_ARGUMENT, token.text());
+    }
+    return parseLiteralString(token);
   }
 
   /** Literal Json */

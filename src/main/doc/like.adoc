@@ -30,7 +30,7 @@ string:: String to compare.
 pattern:: Pattern to match, which may contain the following SQL wildcards:
 * An underscore `_` matches any single character.
 * A percent sign `%` matches any sequence of zero or more characters.
-escape:: Single character that instructs the operator to treat the wildcard character that follows it as a regular character. The default escape character is backslash `\`.
+escape:: String literal of a single character that instructs the operator to treat the wildcard character that follows it as a regular character. The default escape character is backslash `\`.
 
 == Returns
 
@@ -40,7 +40,9 @@ Boolean
 
 * The pattern must match the entire string.
 * String, pattern and escape must be strings, other data types like a number or a date raise an error; use an explicit cast if needed.
+* The escape must be a string literal of exactly one character.
 * The escape character can only be followed by `_`, `%` or itself; any other character raises an error.
+* A pattern that ends with the escape character raises an error, for example `'a\'` with the default escape character.
 * Returns NULL if string or pattern is NULL.
 
 TIP: Use the xref:ilike.adoc["ILIKE",role=op] operator for a case-insensitive comparison.
