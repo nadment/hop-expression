@@ -35,6 +35,15 @@ The data type of the returned value is the same as the data type of the expressi
 * Raises an error if the expression is not a numeric or an interval, for example a string or a boolean.
 * Returns NULL if the argument is NULL.
 
+== Examples
+
+----
++40 returns 40
++(-3) returns -3
++INTERVAL 3 DAYS returns INTERVAL 3 DAYS
++'5' raises an error
+----
+
 == See also
 
 * xref:negative.adoc["-",role=op]

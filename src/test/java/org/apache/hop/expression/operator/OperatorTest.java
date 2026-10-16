@@ -625,6 +625,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("+40", 40L);
       evalEquals("1+ +2", 3L);
       evalEquals("+INTERVAL 3 DAYS", Interval.of(0, 0, 3));
+      evalEquals("+2.5", 2.5D).returnType(NumberType.of(2, 1, false));
+
+      // Does not return the positive value of a negative expression
+      evalEquals("+(-3)", -3L);
     }
 
     @Test
