@@ -255,7 +255,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("Greatest(NULL_INTEGER, NULL_NUMBER)");
 
     // Check mixed operands type
-    evalFails("Greatest(123,'str',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Greatest(123,FIELD_STRING,123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Greatest(123,'str',123)", ErrorCode.CONVERSION_ERROR);
     evalFails("Greatest(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Compare unordered type
@@ -305,7 +306,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalNull("Least(NULL_INTEGER, NULL_NUMBER)");
 
     // Non coercible data type mixed
-    evalFails("Least(123,'str',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Least(123,FIELD_STRING,123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Least(123,'str',123)", ErrorCode.CONVERSION_ERROR);
     evalFails("Least(123,DATE '2021-12-06',123)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Compare unordered type

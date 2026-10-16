@@ -384,7 +384,9 @@ public final class Types {
   }
 
   /**
-   * Returns whether two types are comparable. They need to be scalar types of the same family
+   * Returns whether two types are comparable. They need to be scalar types of the same family, a
+   * numeric is also comparable with a boolean. The result is the same whatever the order of the
+   * types.
    *
    * @param type1 First type
    * @param type2 Second type
@@ -394,18 +396,55 @@ public final class Types {
 
     final TypeFamily family1 = type1.getFamily();
     final TypeFamily family2 = type2.getFamily();
+
+    // If one of the arguments is of type 'ANY', return true.
+    if (family1 == TypeFamily.ANY || family2 == TypeFamily.ANY) {
+      return true;
+    }
+
+    // The comparison of arrays is not supported
+    if (family1 == TypeFamily.ARRAY || family2 == TypeFamily.ARRAY) {
+      return false;
+    }
+
     if (family1 == family2) {
       return true;
     }
 
-    // If one of the arguments is of type 'ANY', return true.
-    return family1 == TypeFamily.ANY || family2 == TypeFamily.ANY;
+    // A numeric is comparable with a boolean, like 1 = TRUE
+    return (family1 == TypeFamily.NUMERIC && family2 == TypeFamily.BOOLEAN)
+        || (family1 == TypeFamily.BOOLEAN && family2 == TypeFamily.NUMERIC);
 
     // If one of the arguments is of type 'NULL', return true.
     // if (family1 == TypeFamily.NULL
     // || family2 == TypeFamily.NULL) {
     // return true;
     // }
+  }
+
+  /**
+   * Returns whether two expressions are comparable. In addition to {@link #isComparable(Type,
+   * Type)}, a string literal is comparable with any scalar type, it is converted to the type of the
+   * other expression like an untyped literal in PostgreSQL, for example {@code FIELD_DATE >=
+   * '2020-01-01'}.
+   *
+   * @param expression1 First expression
+   * @param expression2 Second expression
+   * @return Whether expressions are comparable
+   */
+  public static boolean isComparable(IExpression expression1, IExpression expression2) {
+    Type type1 = expression1.getType();
+    Type type2 = expression2.getType();
+    if (isComparable(type1, type2)) {
+      return true;
+    }
+
+    return (isStringLiteral(expression1) && !type2.isFamily(TypeFamily.ARRAY))
+        || (isStringLiteral(expression2) && !type1.isFamily(TypeFamily.ARRAY));
+  }
+
+  private static boolean isStringLiteral(IExpression expression) {
+    return expression.is(Kind.LITERAL) && isString(expression.getType());
   }
 
   public static boolean isBinary(Type type) {

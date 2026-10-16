@@ -31,8 +31,9 @@ Boolean
 == Usage
 
 * NULL is not equal to anything, not even to another NULL.
-* `TIMESTAMP '2022-03-01 8:00:00 -8:00'` is equal to `TIMESTAMP '2022-03-01 11:00:00 -5:00'`.
 * Returns NULL if one of the arguments is NULL.
+
+include::comparison.adoc[]
 
 == See also
 

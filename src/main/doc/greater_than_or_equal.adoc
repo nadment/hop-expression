@@ -32,6 +32,8 @@ Boolean
 
 * Returns NULL if one of the arguments is NULL.
 
+include::comparison.adoc[]
+
 == See also
 
 * xref:greater_than.adoc[">",role=op]

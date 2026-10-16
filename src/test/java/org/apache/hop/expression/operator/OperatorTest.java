@@ -205,8 +205,8 @@ public class OperatorTest extends ExpressionTest {
       // Compare unordered type
       evalFails("FIELD_JSON > FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-      // Conversion error
-      evalFails("FIELD_STRING>5", ErrorCode.CONVERSION_ERROR);
+      // A string is not comparable with a number
+      evalFails("FIELD_STRING>5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails("> FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
@@ -296,8 +296,8 @@ public class OperatorTest extends ExpressionTest {
       // Unsupported coercion
       evalFails("FIELD_DATE>=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-      // Conversion error
-      evalFails("FIELD_STRING>=5", ErrorCode.CONVERSION_ERROR);
+      // A string is not comparable with a number
+      evalFails("FIELD_STRING>=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails(">=FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
@@ -393,8 +393,12 @@ public class OperatorTest extends ExpressionTest {
       // Compare unordered type
       evalFails("FIELD_JSON < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-      // Conversion error
-      evalFails("FIELD_STRING < 5", ErrorCode.CONVERSION_ERROR);
+      // A string is not comparable with a number
+      evalFails("FIELD_STRING < 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("5 < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("'2' < 3");
+      evalTrue("FIELD_DATE < '2030-01-01'");
+      evalFails("[1,2] < [1,3]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails("< FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
@@ -481,8 +485,8 @@ public class OperatorTest extends ExpressionTest {
       // Compare unordered type
       evalFails("FIELD_JSON <= FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-      // Conversion error
-      evalFails("FIELD_STRING <=5", ErrorCode.CONVERSION_ERROR);
+      // A string is not comparable with a number
+      evalFails("FIELD_STRING <=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails("<= FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
@@ -1326,6 +1330,13 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CASE FIELD_INTEGER WHEN NULL_INTEGER, 40 THEN 'A' ELSE 'B' END", "A");
       evalEquals("CASE FIELD_INTEGER WHEN NULL_INTEGER, 20 THEN 'A' ELSE 'B' END", "B");
       evalEquals("CASE NULL_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END", "B");
+
+      // A boolean is comparable with a number, like the equal operator
+      evalEquals("CASE FIELD_BOOLEAN_TRUE WHEN 0, 1 THEN 'A' ELSE 'B' END", "A");
+
+      // A string literal is converted to the type of the value
+      evalEquals("CASE FIELD_INTEGER WHEN '10', '40' THEN 'A' ELSE 'B' END", "A");
+      evalEquals("CASE FIELD_DATE WHEN '2020-01-01' THEN 'A' ELSE 'B' END", "B");
       optimize(
           "CASE FIELD_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END",
           "IF(FIELD_INTEGER IN (10,40),'A','B')");
@@ -1352,16 +1363,25 @@ public class OperatorTest extends ExpressionTest {
           ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
       // WHEN values must be comparable with the value, like the equal operator
-      evalFails(
-          "case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end",
-          ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-      evalFails("CASE FIELD_INTEGER WHEN 'A' THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("CASE FIELD_STRING WHEN 40 THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails(
-          "CASE FIELD_INTEGER WHEN 10, 'A' THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+          "CASE FIELD_INTEGER WHEN FIELD_STRING THEN 1 ELSE 2 END",
+          ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails(
+          "CASE FIELD_INTEGER WHEN 10, FIELD_STRING THEN 1 ELSE 2 END",
+          ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // A string literal is converted to the type of the value
+      evalFails(
+          "case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end",
+          ErrorCode.CONVERSION_ERROR);
+      evalFails("CASE FIELD_INTEGER WHEN 10, 'A' THEN 1 ELSE 2 END", ErrorCode.CONVERSION_ERROR);
 
       // Incompatible return type
       evalFails("CASE FIELD_INTEGER WHEN 40 THEN 1 ELSE 'A' END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // The comparison of arrays is not supported
+      evalFails("CASE [1,2] WHEN [1,2] THEN 1 ELSE 2 END", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Missing 'END'
       evalFails(
@@ -2272,6 +2292,29 @@ public class OperatorTest extends ExpressionTest {
       // Comparable unordered type
       evalNull("NULL_JSON = FIELD_JSON");
       evalFalse("FIELD_JSON = FIELD_STRING_JSON::JSON");
+
+      // Types of different families are not comparable, whatever the order of the operands
+      evalFails("FIELD_STRING = 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1 = FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE = FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING = FIELD_DATE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON = FIELD_STRING_JSON", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE = 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // A string literal is converted to the type of the other operand, like PostgreSQL
+      evalTrue("'1' = 1");
+      evalTrue("1 = '1'");
+      evalTrue("'.01' = 0.01");
+      evalTrue("FIELD_INTEGER = '40'");
+      evalTrue("DATE '2020-01-01' = '2020-01-01'");
+      evalTrue("'2020-01-01' = DATE '2020-01-01'");
+      evalTrue("FIELD_BOOLEAN_TRUE = 'TRUE'");
+      evalTrue("INTERVAL 1 DAY = '1 DAY'");
+      evalFails("'abc' = 1", ErrorCode.CONVERSION_ERROR);
+      evalFails("FIELD_DATE = 'abc'", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+
+      // The comparison of arrays is not supported
+      evalFails("[1,2] = [1,2]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -2298,7 +2341,7 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("0.0 = 0");
       evalTrue("0.0 = -0.000");
       evalTrue("15.0 = 15");
-      evalTrue("'.01' = 0.01");
+      evalTrue("'.01'::NUMBER = 0.01");
       evalTrue("FIELD_INTEGER = 40.0").returnType(BooleanType.BOOLEAN);
       evalTrue("0b11110000 = 0xF0");
     }
@@ -2537,6 +2580,7 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() {
       evalFails("'the' between 1 and 2", ErrorCode.CONVERSION_ERROR);
+      evalFails("FIELD_STRING between 1 and 2", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("FIELD_INTEGER between 10 and", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and 10", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER between and ", ErrorCode.SYNTAX_ERROR);

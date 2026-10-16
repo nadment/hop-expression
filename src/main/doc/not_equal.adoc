@@ -38,6 +38,8 @@ Boolean
 
 * Returns NULL if one of the arguments is NULL.
 
+include::comparison.adoc[]
+
 == Examples
 
 ----

@@ -38,7 +38,6 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
       max = call.getOperandCount();
     }
 
-    TypeName firstId = null;
     for (int i = 0; i < max; i++) {
       IExpression operand = call.getOperand(i);
 
@@ -49,12 +48,13 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
 
       // Ignore null
       if (operand.isNull()) continue;
-      if (firstId != null) {
-        if (!type.getName().isCoercible(firstId)) {
+
+      // Check with each previous operand, a string literal is comparable with any other type
+      for (int j = 0; j < i; j++) {
+        IExpression previous = call.getOperand(j);
+        if (!previous.isNull() && !Types.isComparable(previous, operand)) {
           return false;
         }
-      } else {
-        firstId = type.getName();
       }
     }
 

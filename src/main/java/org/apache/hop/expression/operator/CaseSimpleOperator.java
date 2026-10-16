@@ -147,7 +147,6 @@ public class CaseSimpleOperator extends Operator {
   public boolean checkOperandTypes(Call call) {
 
     IExpression valueOperand = call.getOperand(0);
-    Type valueType = valueOperand.getType();
 
     // Check WHEN operands are comparable with the value, like the equal operator
     if (!valueOperand.isNull()) {
@@ -155,11 +154,11 @@ public class CaseSimpleOperator extends Operator {
         if (operand.is(Kind.ARRAY)) {
           // Mutli-values simple form
           for (IExpression value : (Array) operand) {
-            if (!(value.isNull() || Types.isComparable(valueType, value.getType()))) {
+            if (!(value.isNull() || Types.isComparable(valueOperand, value))) {
               return false;
             }
           }
-        } else if (!(operand.isNull() || Types.isComparable(valueType, operand.getType()))) {
+        } else if (!(operand.isNull() || Types.isComparable(valueOperand, operand))) {
           return false;
         }
       }
