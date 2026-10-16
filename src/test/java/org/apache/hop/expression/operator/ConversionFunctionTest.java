@@ -80,6 +80,8 @@ class ConversionFunctionTest extends ExpressionTest {
   @Test
   void To_Boolean() throws Exception {
     evalTrue("To_Boolean('True')").returnType(BooleanType.BOOLEAN_NOT_NULL);
+    evalTrue("To_Boolean(' True  ')");
+    evalFalse("To_Boolean(' off')");
     evalTrue("To_Boolean('t')");
     evalTrue("To_Boolean('yes')");
     evalTrue("To_Boolean('y')");

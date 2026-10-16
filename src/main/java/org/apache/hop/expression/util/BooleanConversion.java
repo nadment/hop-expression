@@ -45,7 +45,7 @@ public final class BooleanConversion {
   }
 
   /**
-   * Convert String value to Boolean.
+   * Convert String value to Boolean, the leading and trailing spaces are ignored like PostgreSQL.
    *
    * @param value the string to convert
    * @return Boolean
@@ -53,38 +53,39 @@ public final class BooleanConversion {
    */
   public static @Nullable Boolean convert(@Nullable String value) {
     if (value == null) return null;
-    switch (value.length()) {
+    String str = value.strip();
+    switch (str.length()) {
       case 1:
-        if (value.equals("1") || value.equalsIgnoreCase("t") || value.equalsIgnoreCase("y")) {
+        if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
           return true;
         }
-        if (value.equals("0") || value.equalsIgnoreCase("f") || value.equalsIgnoreCase("n")) {
+        if (str.equals("0") || str.equalsIgnoreCase("f") || str.equalsIgnoreCase("n")) {
           return false;
         }
         break;
       case 2:
-        if (value.equalsIgnoreCase("on")) {
+        if (str.equalsIgnoreCase("on")) {
           return true;
         }
-        if (value.equalsIgnoreCase("no")) {
+        if (str.equalsIgnoreCase("no")) {
           return false;
         }
         break;
       case 3:
-        if (value.equalsIgnoreCase("yes")) {
+        if (str.equalsIgnoreCase("yes")) {
           return true;
         }
-        if (value.equalsIgnoreCase("off")) {
+        if (str.equalsIgnoreCase("off")) {
           return false;
         }
         break;
       case 4:
-        if (value.equalsIgnoreCase("true")) {
+        if (str.equalsIgnoreCase("true")) {
           return true;
         }
         break;
       case 5:
-        if (value.equalsIgnoreCase("false")) {
+        if (str.equalsIgnoreCase("false")) {
           return false;
         }
         break;

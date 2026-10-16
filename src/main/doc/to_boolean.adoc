@@ -33,7 +33,7 @@ Boolean
 
 * The strings `'true'`, `'t'`, `'yes'`, `'y'`, `'on'` and `'1'` are converted to TRUE.
 * The strings `'false'`, `'f'`, `'no'`, `'n'`, `'off'` and `'0'` are converted to FALSE.
-* The conversion of a string is case-insensitive.
+* The conversion of a string is case-insensitive, and the leading and trailing spaces are ignored.
 * The numeric value 0 is converted to FALSE.
 * All non-zero numeric values are converted to TRUE.
 * If the conversion is not possible, which is the case for all other strings, `TO_BOOLEAN` raises an error and `TRY_TO_BOOLEAN` returns NULL.

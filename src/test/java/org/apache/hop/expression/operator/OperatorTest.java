@@ -2717,12 +2717,15 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(IntegerType.INTEGER_NOT_NULL);
       evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
 
-      // String to boolean, not case-sensitive and without spaces
+      // String to boolean, not case-sensitive, leading and trailing spaces are ignored
       evalTrue("CAST('On' AS BOOLEAN)");
       evalFalse("CAST('Off' AS BOOLEAN)");
       evalTrue("CAST('T' AS BOOLEAN)");
       evalFalse("CAST('n' AS BOOLEAN)");
-      evalFails("CAST(' yes ' AS BOOLEAN)", ErrorCode.CONVERSION_ERROR);
+      evalTrue("CAST(' yes ' AS BOOLEAN)");
+      evalFalse("CAST('  Off' AS BOOLEAN)");
+      evalFails("CAST('y es' AS BOOLEAN)", ErrorCode.CONVERSION_ERROR);
+      evalFails("CAST('  ' AS BOOLEAN)", ErrorCode.CONVERSION_ERROR);
       evalFails("CAST('2' AS BOOLEAN)", ErrorCode.CONVERSION_ERROR);
       evalEquals("CAST(TRUE AS STRING)", "TRUE");
 

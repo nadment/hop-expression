@@ -58,7 +58,7 @@ The data type of the returned value is the type specified in the `AS` clause.
 * If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format raises an error in both cases.
 * When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
 * When converting a boolean to a number, FALSE is 0 and TRUE is 1.
-* When converting a string to a boolean, the accepted values are `true`, `t`, `yes`, `y`, `on` and `1` for TRUE, and `false`, `f`, `no`, `n`, `off` and `0` for FALSE. The values are not case-sensitive and must not contain spaces; any other value raises an error.
+* When converting a string to a boolean, the accepted values are `true`, `t`, `yes`, `y`, `on` and `1` for TRUE, and `false`, `f`, `no`, `n`, `off` and `0` for FALSE. The values are not case-sensitive and the leading and trailing spaces are ignored, like for a number; any other value raises an error.
 * When converting a boolean to a string, the result is `TRUE` or `FALSE`.
 * When converting a number or a string to an integer, the value is rounded to the nearest integer, and halfway values are rounded away from zero, for example `CAST(-1.5 AS INTEGER)` returns -2.
 * When converting a string to a number or an integer without format, the leading and trailing spaces are ignored, an optional sign and an exponent are accepted, and the underscore `_` can be used as a digit separator, for example `'1_000'::INTEGER` returns 1000.
