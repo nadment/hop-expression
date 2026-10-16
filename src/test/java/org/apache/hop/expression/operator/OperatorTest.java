@@ -2382,9 +2382,12 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("'abc' NOT SIMILAR TO 'abc'");
       evalTrue("'xyz' SIMILAR TO '%(y|a)%'");
 
-      // An empty pattern '' matches nothing
-      evalFalse("'' SIMILAR TO  ''");
+      // An empty pattern '' matches only an empty string, like PostgreSQL
+      evalTrue("'' SIMILAR TO ''");
       evalFalse("'ABC' SIMILAR TO ''");
+      evalFalse("'' NOT SIMILAR TO ''");
+      evalTrue("'ABC' NOT SIMILAR TO ''");
+      evalTrue("FIELD_STRING NOT SIMILAR TO ''");
     }
 
     @Test

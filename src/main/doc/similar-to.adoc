@@ -38,7 +38,7 @@ Boolean
 * String and pattern must be strings, other data types like a number or a date raise an error; use an explicit cast if needed.
 * Returns TRUE only if pattern matches the entire subject.
 * The match is case-sensitive.
-* Returns FALSE if pattern is an empty string.
+* An empty pattern matches only an empty string.
 * Returns NULL if one of the arguments is NULL.
 
 The pattern supports the following operators:
@@ -68,6 +68,7 @@ Any other character matches itself. Unlike POSIX regular expressions, `.`, `^` a
 'abc' SIMILAR TO '_b_' returns TRUE
 'abc' SIMILAR TO 'a' returns FALSE
 'abc' NOT SIMILAR TO 'abc' returns FALSE
+'' SIMILAR TO '' returns TRUE
 ----
 
 == See also

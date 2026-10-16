@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.util.regex.Pattern;
-import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -88,10 +87,6 @@ public class NotSimilarToOperator extends BinaryOperator {
     String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
       return null;
-    }
-
-    if (Utils.isEmpty(pattern)) {
-      return false;
     }
 
     return !SimilarToOperator.createPattern(pattern).matcher(value).matches();
