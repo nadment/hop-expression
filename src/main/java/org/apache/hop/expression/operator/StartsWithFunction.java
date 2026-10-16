@@ -57,10 +57,12 @@ public class StartsWithFunction extends Function {
       return false;
     }
 
-    // A binary value only accepts a binary prefix, or a string prefix converted to binary
-    if (Types.isBinary(call.getOperand(0).getType())) {
-      Type prefix = call.getOperand(1).getType();
-      return Types.isBinary(prefix) || Types.isString(prefix) || prefix.isName(TypeName.UNKNOWN);
+    // Only string or binary values, a string is converted to binary if value is binary
+    for (IExpression operand : call.getOperands()) {
+      Type type = operand.getType();
+      if (!(Types.isString(type) || Types.isBinary(type) || type.isName(TypeName.UNKNOWN))) {
+        return false;
+      }
     }
 
     return true;

@@ -53,10 +53,12 @@ public class ContainsFunction extends Function {
       return false;
     }
 
-    // A binary value only accepts a binary search, or a string search converted to binary
-    if (Types.isBinary(call.getOperand(0).getType())) {
-      Type search = call.getOperand(1).getType();
-      return Types.isBinary(search) || Types.isString(search) || search.isName(TypeName.UNKNOWN);
+    // Only string or binary values, a string is converted to binary if value is binary
+    for (IExpression operand : call.getOperands()) {
+      Type type = operand.getType();
+      if (!(Types.isString(type) || Types.isBinary(type) || type.isName(TypeName.UNKNOWN))) {
+        return false;
+      }
     }
 
     return true;

@@ -35,7 +35,8 @@ Boolean
 
 == Usage
 
-* If value is binary, prefix must be binary or a string converted to binary; otherwise both arguments are compared as strings.
+* Value and prefix must be strings or binaries, other data types are not accepted.
+* If value is binary, a string prefix is converted to binary; if value is a string, a binary prefix is converted to string.
 * The comparison of strings is case-sensitive.
 * Returns TRUE if prefix is empty.
 * Returns NULL if one of the arguments is NULL.

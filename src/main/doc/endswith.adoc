@@ -30,7 +30,8 @@ Boolean
 
 == Usage
 
-* If value is binary, suffix must be binary or a string converted to binary; otherwise both arguments are compared as strings.
+* Value and suffix must be strings or binaries, other data types are not accepted.
+* If value is binary, a string suffix is converted to binary; if value is a string, a binary suffix is converted to string.
 * The comparison of strings is case-sensitive.
 * Returns TRUE if value ends with suffix, FALSE otherwise.
 * Returns TRUE if suffix is empty.

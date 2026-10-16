@@ -30,7 +30,8 @@ Boolean
 
 == Usage
 
-* If value is binary, search must be binary or a string converted to binary; otherwise both arguments are compared as strings.
+* Value and search must be strings or binaries, other data types are not accepted.
+* If value is binary, a string search is converted to binary; if value is a string, a binary search is converted to string.
 * The comparison of strings is case-sensitive.
 * Returns TRUE if search is empty.
 * Returns TRUE if search is found inside value, FALSE otherwise.

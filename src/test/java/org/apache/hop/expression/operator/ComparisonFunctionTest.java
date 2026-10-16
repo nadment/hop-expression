@@ -175,6 +175,10 @@ class ComparisonFunctionTest extends ExpressionTest {
     // A binary value only accepts a binary or a string search
     evalFails("CONTAINS(BINARY '616263',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("CONTAINS(BINARY '616263',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // Only accepts string or binary values
+    evalFails("CONTAINS(123,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("CONTAINS('123',2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("CONTAINS(FIELD_DATE,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -210,6 +214,10 @@ class ComparisonFunctionTest extends ExpressionTest {
     // A binary value only accepts a binary or a string prefix
     evalFails("StartsWith(BINARY '616263',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("StartsWith(BINARY '616263',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // Only accepts string or binary values
+    evalFails("StartsWith(123,'1')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("StartsWith('123',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("StartsWith(FIELD_DATE,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -246,5 +254,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     // A binary value only accepts a binary or a string suffix
     evalFails("EndsWith(BINARY '616263',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("EndsWith(BINARY '616263',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // Only accepts string or binary values
+    evalFails("EndsWith(123,'3')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EndsWith('123',3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EndsWith(FIELD_DATE,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 }

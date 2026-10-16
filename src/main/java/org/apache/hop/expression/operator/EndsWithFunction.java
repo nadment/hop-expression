@@ -57,10 +57,12 @@ public class EndsWithFunction extends Function {
       return false;
     }
 
-    // A binary value only accepts a binary suffix, or a string suffix converted to binary
-    if (Types.isBinary(call.getOperand(0).getType())) {
-      Type suffix = call.getOperand(1).getType();
-      return Types.isBinary(suffix) || Types.isString(suffix) || suffix.isName(TypeName.UNKNOWN);
+    // Only string or binary values, a string is converted to binary if value is binary
+    for (IExpression operand : call.getOperands()) {
+      Type type = operand.getType();
+      if (!(Types.isString(type) || Types.isBinary(type) || type.isName(TypeName.UNKNOWN))) {
+        return false;
+      }
     }
 
     return true;
