@@ -36,7 +36,7 @@ public class BitCountFunction extends Function {
     super(
         "BIT_COUNT",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER,
+        OperandTypes.EXACT_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_count.html");
   }

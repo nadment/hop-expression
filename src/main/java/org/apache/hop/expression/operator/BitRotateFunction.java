@@ -34,7 +34,7 @@ public class BitRotateFunction extends Function {
     super(
         "BIT_ROTATE",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.EXACT_INTEGER_EXACT_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_rotate.html");
   }

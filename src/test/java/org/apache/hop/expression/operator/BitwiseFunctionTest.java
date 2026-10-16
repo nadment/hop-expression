@@ -54,6 +54,8 @@ class BitwiseFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Bit_Clear()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Bit_Clear(123)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Bit_Clear(3.7,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Clear(3,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -88,13 +90,15 @@ class BitwiseFunctionTest extends ExpressionTest {
     evalNull("Bit_Shift(NULL_INTEGER,3)").returnType(IntegerType.INTEGER);
     evalNull("Bit_Shift(123, NULL_INTEGER)");
 
-    // TODO: Implicit cast number to integer no supported
-    // evalFails("Bit_Shift(16.3,-4)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // evalFails("Bit_Shift(16,2.1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-
     // Check operands
     evalFails("Bit_Shift()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Bit_Shift(123)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    // A number or a boolean is not implicitly cast to integer
+    evalFails("Bit_Shift(16.3,-4)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Shift(16,2.1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Shift(FIELD_NUMBER,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Shift(TRUE,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Shift(16,FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Bit_Shift('Bidon',3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Bit_Shift(DATE '2022-11-25', 3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
@@ -123,6 +127,8 @@ class BitwiseFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Bit_Rotate()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Bit_Rotate(123)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Bit_Rotate(1.5,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Rotate(1,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -149,13 +155,14 @@ class BitwiseFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Bit_Get()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Bit_Get(123)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Bit_Get(3.7,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Get(3,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
   void BitCount() throws Exception {
     evalEquals("Bit_Count(FIELD_INTEGER)", 2L).returnType(IntegerType.INTEGER);
     evalEquals("Bit_Count(31)", 5L);
-    evalEquals("Bit_Count(True)", 1L);
 
     // Null handling
     evalNull("Bit_Count(NULL_INTEGER)").returnType(IntegerType.INTEGER);
@@ -163,6 +170,9 @@ class BitwiseFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Bit_Count()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Bit_Count(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Bit_Count(3.7)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Count(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Count(TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -189,6 +199,8 @@ class BitwiseFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Bit_Set()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Bit_Set(123)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Bit_Set(16.9,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Bit_Set(16,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Nested
@@ -217,6 +229,8 @@ class BitwiseFunctionTest extends ExpressionTest {
       evalFails("BIT_NOT()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
       evalFails("BIT_NOT(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
       evalFails("BIT_NOT(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("BIT_NOT(1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("BIT_NOT(TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
   }
 
@@ -279,6 +293,8 @@ class BitwiseFunctionTest extends ExpressionTest {
       evalFails("BIT_AND(3)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
       evalFails("BIT_AND(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
       evalFails("BIT_AND(FIELD_DATE,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("BIT_AND(3.5,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("BIT_AND(TRUE,FALSE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
   }
 
@@ -312,6 +328,7 @@ class BitwiseFunctionTest extends ExpressionTest {
       evalFails("BIT_OR(3)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
       evalFails("BIT_OR(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
       evalFails("BIT_OR(FIELD_DATE,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("BIT_OR(3,2.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -375,6 +392,7 @@ class BitwiseFunctionTest extends ExpressionTest {
       evalFails("BIT_XOR(3)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
       evalFails("BIT_XOR(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
       evalFails("BIT_XOR(FIELD_DATE,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("BIT_XOR(FIELD_NUMBER,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test

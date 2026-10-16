@@ -39,7 +39,7 @@ public class BitSetFunction extends Function {
     super(
         "BIT_SET",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.EXACT_INTEGER_EXACT_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_set.html");
   }

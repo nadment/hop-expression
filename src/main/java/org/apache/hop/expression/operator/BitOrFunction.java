@@ -46,7 +46,7 @@ public class BitOrFunction extends Function {
     super(
         "BIT_OR",
         ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
-        OperandTypes.INTEGER_INTEGER.or(OperandTypes.BINARY_BINARY),
+        OperandTypes.EXACT_INTEGER_EXACT_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
         "/docs/bit_or.html");
   }

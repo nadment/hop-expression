@@ -39,7 +39,7 @@ public class BitNotFunction extends Function {
     super(
         "BIT_NOT",
         ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.INTEGER,
+        OperandTypes.EXACT_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_not.html");
   }

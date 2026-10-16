@@ -123,6 +123,21 @@ public final class OperandTypes {
       sequence(INTEGER, INTEGER).or(sequence(NUMBER, NUMBER));
   public static final IOperandTypeChecker INTEGER_INTEGER =
       explicit(TypeName.INTEGER, TypeName.INTEGER);
+
+  /**
+   * Operand type-checking strategy where the operand must be an integer, a number or a boolean is
+   * not implicitly coerced, like the PostgreSQL bitwise operators.
+   */
+  // A single operand checker returns true when the check fails
+  private static final ISingleOperandTypeChecker EXACT_INTEGER_OPERAND =
+      operand ->
+          !operand.getType().getName().isCoercible(TypeName.INTEGER)
+              || operand.getType().getName().is(TypeName.NUMBER, TypeName.BOOLEAN);
+
+  public static final IOperandTypeChecker EXACT_INTEGER = sequence(EXACT_INTEGER_OPERAND);
+  public static final IOperandTypeChecker EXACT_INTEGER_EXACT_INTEGER =
+      sequence(EXACT_INTEGER_OPERAND, EXACT_INTEGER_OPERAND);
+
   public static final IOperandTypeChecker NUMBER_NUMBER =
       explicit(TypeName.NUMBER, TypeName.NUMBER);
   public static final IOperandTypeChecker INTEGER_INTEGER_INTEGER =

@@ -26,7 +26,7 @@ BIT_ROTATE( value, distance )
 
 == Arguments
 
-value:: This expression must evaluate to a data type that can be cast to Integer.
+value:: An integer value. A number or a boolean is not implicitly cast to Integer, an explicit cast is required.
 distance:: The number of bits to rotate. A positive distance rotates to the left, a negative distance rotates to the right.
 
 == Returns

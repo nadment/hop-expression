@@ -39,7 +39,7 @@ public class BitGetFunction extends Function {
     super(
         "BIT_GET",
         ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.INTEGER_INTEGER,
+        OperandTypes.EXACT_INTEGER_EXACT_INTEGER,
         OperatorCategory.BITWISE,
         "/docs/bit_get.html");
   }

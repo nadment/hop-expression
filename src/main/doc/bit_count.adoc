@@ -26,7 +26,7 @@ BIT_COUNT( value )
 
 == Arguments
 
-value:: This expression must evaluate to a data type that can be cast to Integer.
+value:: An integer value. A number or a boolean is not implicitly cast to Integer, an explicit cast is required.
 
 == Returns
 
