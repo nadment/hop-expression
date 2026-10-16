@@ -110,6 +110,10 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFalse("IS_DATE(NULL,'YYYY')");
     evalFalse("IS_DATE('2023',NULL_STRING)");
     evalFails("IS_DATE('2023','XYZ')", ErrorCode.INVALID_DATE_FORMAT);
+    // The format is checked whatever the data type or the nullity of the value
+    evalFails("IS_DATE(NULL_STRING,'XYZ')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("IS_DATE(FIELD_DATE,'XYZ')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("IS_DATE(FIELD_NUMBER,'XYZ')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Date or Timestamp
     evalTrue("IS_DATE(FIELD_DATE,'YYYY-MM-DD')").returnType(BooleanType.BOOLEAN_NOT_NULL);

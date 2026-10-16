@@ -48,26 +48,22 @@ public class IsDateFunction extends Function {
   }
 
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
+  public IExpression compile(final IExpressionContext context, Call call)
       throws ExpressionException {
 
-    if (Types.isString(call.getOperand(0).getType())) {
-      Object value = call.getOperand(1).getValue();
-      if (value instanceof DateTimeFormat) {
-        // format already compiled
-        return call;
-      }
-
+    // Compile format to check it, whatever the data type of the value
+    if (!(call.getOperand(1).getValue() instanceof DateTimeFormat)) {
       String pattern = call.getOperand(1).getValue(String.class);
-
-      // Compile format to check it
       Object start = context.getAttribute(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START);
       DateTimeFormat format =
           DateTimeFormat.of(
               pattern,
               (start instanceof Integer year) ? year : DateTimeFormat.DEFAULT_TWO_DIGIT_YEAR_START);
+      call = new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
+    }
 
-      return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
+    if (Types.isString(call.getOperand(0).getType())) {
+      return call;
     }
 
     // Optimize "IS_DATE(d)" to "d IS NOT NULL"
