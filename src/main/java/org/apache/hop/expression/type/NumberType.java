@@ -153,16 +153,15 @@ public final class NumberType extends Type {
       return (bool) ? BigDecimal.ONE : BigDecimal.ZERO;
     }
     if (value instanceof Long l) {
-      return BigDecimal.valueOf(l);
+      return checkOverflow(BigDecimal.valueOf(l));
     }
     if (value instanceof String str) {
       // A string keeps its decimals, it is parsed with the format if any
-      return (pattern == null)
-          ? NumberConversion.convert(str)
-          : NumberFormat.of(pattern).parse(str);
+      return checkOverflow(
+          (pattern == null) ? NumberConversion.convert(str) : NumberFormat.of(pattern).parse(str));
     }
     if (value instanceof ZonedDateTime dt) {
-      return NumberConversion.convert(dt);
+      return checkOverflow(NumberConversion.convert(dt));
     }
 
     throw new ExpressionException(

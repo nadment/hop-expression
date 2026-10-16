@@ -236,13 +236,13 @@ public final class Types {
 
     if (type2.isName(TypeName.UNKNOWN)) return type1;
 
-    // NUMBER compare INTEGER -> NUMBER
+    // NUMBER compare INTEGER -> NUMBER, with enough integer digits to hold the INTEGER values
     if (isNumber(type1) && isInteger(type2)) {
-      return type1;
+      return widenNumber(type1, type2);
     }
-    // INTEGER compare NUMBER -> NUMBER
+    // INTEGER compare NUMBER -> NUMBER, with enough integer digits to hold the INTEGER values
     if (isInteger(type1) && isNumber(type2)) {
-      return type2;
+      return widenNumber(type2, type1);
     }
     // DATE compare STRING -> DATE
     if (isDate(type1) && isString(type2)) {

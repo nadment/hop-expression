@@ -47,6 +47,8 @@ type:: The data type to convert the value to. Supported data types:
 
 format:: The optional format used for the conversion.
 
+The type can also be written as a string literal, for example `CAST('1' AS 'INTEGER')`.
+
 == Returns
 
 The data type of the returned value is the type specified in the `AS` clause.
@@ -56,7 +58,12 @@ The data type of the returned value is the type specified in the `AS` clause.
 * If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format raises an error in both cases.
 * When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
 * When converting a boolean to a number, FALSE is 0 and TRUE is 1.
-* When converting a number to a number of another type, the value is checked for overflow: an error is raised if its integer part has more digits than the precision minus the scale, for example `CAST(12345.6 AS NUMBER(3,1))`.
+* When converting a string to a boolean, the accepted values are `true`, `t`, `yes`, `y`, `on` and `1` for TRUE, and `false`, `f`, `no`, `n`, `off` and `0` for FALSE. The values are not case-sensitive and must not contain spaces; any other value raises an error.
+* When converting a boolean to a string, the result is `TRUE` or `FALSE`.
+* When converting a number or a string to an integer, the value is rounded to the nearest integer, and halfway values are rounded away from zero, for example `CAST(-1.5 AS INTEGER)` returns -2.
+* When converting a string to a number or an integer without format, the leading and trailing spaces are ignored, an optional sign and an exponent are accepted, and the underscore `_` can be used as a digit separator, for example `'1_000'::INTEGER` returns 1000.
+* When converting a value to a string with a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.
+* When converting a value to a number with a precision, the value is checked for overflow: an error is raised if its integer part has more digits than the precision minus the scale, for example `CAST(12345.6 AS NUMBER(3,1))`, `CAST(12345 AS NUMBER(3))` or `CAST('12345.6' AS NUMBER(3,1))`. `TRY_CAST` returns NULL instead.
 * When converting a string to a number or an integer, the optional format is a number format model, as in xref:to_number.adoc["TO_NUMBER",role=fun], and the result keeps all the decimals of the string.
 * When converting a number to a number, the value is truncated to the scale of the type. `NUMBER` without precision and scale has a scale of 0, for example `1.23456::NUMBER` returns 1.
 * When converting a string to a binary, the result is the UTF-8 encoding of the string. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
@@ -70,6 +77,12 @@ The data type of the returned value is the type specified in the `AS` clause.
 
 ----
 CAST('yes' AS BOOLEAN) returns TRUE
+CAST('Off' AS BOOLEAN) returns FALSE
+CAST(TRUE AS STRING) returns 'TRUE'
+CAST(2.5 AS INTEGER) returns 3
+CAST(-1.5 AS INTEGER) returns -2
+'1_000'::INTEGER returns 1000
+CAST('abcdef' AS STRING(3)) returns 'abc'
 TRY_CAST('-1234.56' AS INTEGER FORMAT '9999.99') returns -1235
 '-1234.56'::INTEGER returns -1235
 CAST('1,234.56' AS NUMBER FORMAT '9,999.99') returns 1234.56

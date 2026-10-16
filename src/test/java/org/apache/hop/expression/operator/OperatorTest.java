@@ -603,8 +603,9 @@ public class OperatorTest extends ExpressionTest {
       optimizeTrue("25 in (1,25,66)");
       optimizeTrue("1.15 IN (1.1, 1.2, 1.3, 1.15)");
 
+      // The common type has enough integer digits to hold the values of FIELD_INTEGER
       optimize(
-          "FIELD_INTEGER in (1,2,1,2,3,4.1)", "CAST(FIELD_INTEGER AS NUMBER(2,1)) IN (1,2,3,4.1)");
+          "FIELD_INTEGER in (1,2,1,2,3,4.1)", "CAST(FIELD_INTEGER AS NUMBER(13,1)) IN (1,2,3,4.1)");
       optimize("FIELD_NUMBER in (1,2,1,2,3,4.1)", "FIELD_NUMBER IN (1,2,3,4.1)");
       optimize("FIELD_STRING in ('1','2','1')", "FIELD_STRING IN ('1','2')");
 
@@ -2036,7 +2037,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224)
           .returnType(NumberType.of(38, 15, false));
       evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15.3).returnType(NumberType.of(7, 3));
-      evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204.8)
+      evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(10,8)", -204.8)
           .returnType(NumberType.of(38, 8));
 
       // Check no arithmetic overflow Long.MAX_VALUE * 2
@@ -2673,6 +2674,49 @@ public class OperatorTest extends ExpressionTest {
       // Accept data type quoted like a String
       evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(IntegerType.INTEGER_NOT_NULL);
       evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
+
+      // String to boolean, not case-sensitive and without spaces
+      evalTrue("CAST('On' AS BOOLEAN)");
+      evalFalse("CAST('Off' AS BOOLEAN)");
+      evalTrue("CAST('T' AS BOOLEAN)");
+      evalFalse("CAST('n' AS BOOLEAN)");
+      evalFails("CAST(' yes ' AS BOOLEAN)", ErrorCode.CONVERSION_ERROR);
+      evalFails("CAST('2' AS BOOLEAN)", ErrorCode.CONVERSION_ERROR);
+      evalEquals("CAST(TRUE AS STRING)", "TRUE");
+
+      // Round to the nearest integer, halfway values away from zero
+      evalEquals("CAST(2.5 AS INTEGER)", 3L);
+      evalEquals("CAST(-1.5 AS INTEGER)", -2L);
+      evalEquals("CAST(1.4 AS INTEGER)", 1L);
+
+      // Spaces, sign, exponent and digit separator of a string
+      evalEquals("'1_000'::INTEGER", 1000L);
+      evalEquals("' +12 '::INTEGER", 12L);
+      evalEquals("'1e3'::NUMBER", 1000D);
+      evalFails("'1 000'::INTEGER", ErrorCode.CONVERSION_ERROR);
+
+      // Truncate a string to the maximum length without error
+      evalEquals("CAST('abcdef' AS STRING(3))", "abc");
+
+      // Overflow of the precision of a number, whatever the source type
+      evalFails("CAST(12345 AS NUMBER(3))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("CAST(FIELD_INTEGER AS NUMBER(2,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("CAST('12345.6' AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails(
+          "CAST('1,234.56' AS NUMBER(3,1) FORMAT '9,999.99')",
+          ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("CAST(FIELD_DATE AS NUMBER(3))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalNull("TRY_CAST(12345 AS NUMBER(3))");
+      evalEquals("CAST(123 AS NUMBER(3))", new BigDecimal("123"));
+      evalEquals("CAST('12.5' AS NUMBER(3,1))", 12.5D);
+
+      // An implicit coercion of an integer to a number never overflows
+      evalFalse("FIELD_INTEGER = 1.5");
+      evalTrue("FIELD_INTEGER > 1.5");
+      evalFalse("FIELD_INTEGER IN (1.5, 2.5)");
+      evalEquals("IF(FIELD_BOOLEAN_TRUE, FIELD_INTEGER, 0.5)", 40D);
+      evalEquals("GREATEST(FIELD_INTEGER, 0.5)", 40D);
+      evalEquals("NULLIF(FIELD_INTEGER, 0.5)", 40D);
     }
 
     @Test
