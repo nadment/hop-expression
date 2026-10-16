@@ -34,6 +34,8 @@ default:: The optional value returned if no search value matches expression.
 == Returns
 
 The data type of the returned value is the data type of result1.
+If result1 is numeric, the data type of the returned value is the numeric data type with the highest precedence among the results and default, like Oracle.
+The other results and default are converted to the data type of the returned value.
 
 == Usage
 
@@ -52,6 +54,10 @@ DECODE(EXTRACT(ISODAYOFWEEK FROM CURRENT_DATE()),
 5, 'Friday',
 6, 'Saturday',
 7, 'Sunday')
+----
+
+----
+DECODE(2, 1, 1, 2, 2.5) returns 2.5
 ----
 
 == See also

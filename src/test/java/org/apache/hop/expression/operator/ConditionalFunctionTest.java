@@ -416,6 +416,20 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     evalEquals("Decode('A','B',2,'C',3,0)", 0L).returnType(IntegerType.of(1, false));
 
+    // Numeric results are converted to the numeric type with the highest precedence
+    // Without default value (odd number of arguments), the result is nullable
+    evalEquals("Decode(2,1,1,2,2.5)", new BigDecimal("2.5")).returnType(NumberType.of(2, 1));
+    evalEquals("Decode(1,1,1,2,2.5)", BigDecimal.ONE).returnType(NumberType.of(2, 1));
+    evalEquals("Decode(2,1,2.5,2,1)", BigDecimal.ONE).returnType(NumberType.of(2, 1));
+    evalNull("Decode(9,1,1,2,2.5)").returnType(NumberType.of(2, 1));
+    // With default value (even number of arguments)
+    evalEquals("Decode(9,1,1,2.5)", new BigDecimal("2.5")).returnType(NumberType.of(2, 1, false));
+    evalEquals("Decode(1,1,1,2.5)", BigDecimal.ONE).returnType(NumberType.of(2, 1, false));
+    evalNull("Decode(9,1,1,NULL)").returnType(IntegerType.of(1));
+    optimize(
+        "DECODE(FIELD_INTEGER,1,FIELD_INTEGER,FIELD_NUMBER)",
+        "DECODE(FIELD_INTEGER,1,CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)");
+
     // Support ERROR as default
     evalEquals(
         "Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',Error('Error generated with ABORT'))",

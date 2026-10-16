@@ -31,6 +31,7 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -82,6 +83,20 @@ public class DecodeFunction extends Function {
     }
 
     return new Call(call.getOperator(), operands);
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    // Like Oracle, convert the results and the default value to the return type
+    Type type = call.getType();
+    boolean coerced = false;
+    for (int i = 2; i < call.getOperandCount(); i += 2) {
+      coerced |= Types.coerceOperandType(call, type, i);
+    }
+    if (call.getOperandCount() % 2 == 0) {
+      coerced |= Types.coerceOperandType(call, type, call.getOperandCount() - 1);
+    }
+    return coerced;
   }
 
   @Override
