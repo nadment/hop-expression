@@ -111,9 +111,9 @@ public class NotInListOperator extends Operator {
     // Remove null and duplicate element in list
     for (IExpression expression : array) {
 
-      // Simplify B in (A,B,C) → B=B (only if reference is not nullable)
+      // Simplify B NOT IN (A,B,C) → B<>B (only if reference is not nullable)
       if (reference.equals(expression) && !reference.getType().isNullable()) {
-        return new Call(EqualOperator.INSTANCE, reference, reference);
+        return new Call(NotEqualOperator.INSTANCE, reference, reference);
       }
 
       // If this element is not present in a new list, then add it
@@ -122,9 +122,9 @@ public class NotInListOperator extends Operator {
       }
     }
 
-    // Simplify x IN (a) → x = a
+    // Simplify x NOT IN (a) → x <> a
     if (list.size() == 1) {
-      return new Call(EqualOperator.INSTANCE, reference, list.get(0));
+      return new Call(NotEqualOperator.INSTANCE, reference, list.get(0));
     }
 
     // Sort list on cost

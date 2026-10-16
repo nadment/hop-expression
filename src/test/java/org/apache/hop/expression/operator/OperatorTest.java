@@ -585,6 +585,12 @@ public class OperatorTest extends ExpressionTest {
       // Normalize IN list with a single element to comparison
       optimize("FIELD_INTEGER in (1)", "FIELD_INTEGER=1");
       optimize("FIELD_STRING in ('AB','AB')", "FIELD_STRING='AB'");
+      optimize("FIELD_INTEGER NOT IN (1)", "FIELD_INTEGER!=1");
+      optimize("FIELD_STRING NOT IN ('AB','AB')", "FIELD_STRING!='AB'");
+      evalFalse("FIELD_INTEGER NOT IN (40)");
+      evalFalse("FIELD_INTEGER NOT IN (40,40)");
+      evalTrue("FIELD_INTEGER NOT IN (1)");
+      optimizeFalse("2 NOT IN (1,2,3)");
 
       optimize("(0 / 0) in (2, 2)", "2=0/0");
 
