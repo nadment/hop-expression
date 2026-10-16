@@ -92,6 +92,10 @@ public class GreaterThanOrEqualOperator extends BinaryOperator {
     if (left.equals(right) && !left.getType().isNullable()) {
       return Literal.TRUE;
     }
+    // Simplify x>=x → NVL2(x,TRUE,NULL)
+    if (left.equals(right)) {
+      return new Call(Nvl2Function.INSTANCE, left, Literal.TRUE, Literal.NULL_BOOLEAN);
+    }
 
     // Simplify only if x is data type boolean TRUE>=x → x IS NOT NULL
     if (left.equals(Literal.TRUE) && Types.isBoolean(right.getType())) {

@@ -323,7 +323,9 @@ public class OperatorTest extends ExpressionTest {
       optimize("3>=FIELD_INTEGER+1", "FIELD_INTEGER<=2");
 
       // Simplify comparison with same term
-      optimize("FIELD_STRING>=FIELD_STRING", "FIELD_STRING>=FIELD_STRING");
+      optimize("FIELD_STRING>=FIELD_STRING", "NVL2(FIELD_STRING,TRUE,NULL)");
+      evalTrue("FIELD_STRING>=FIELD_STRING");
+      evalNull("NULL_STRING>=NULL_STRING");
       optimize("PI()>=PI()", "TRUE");
     }
   }
