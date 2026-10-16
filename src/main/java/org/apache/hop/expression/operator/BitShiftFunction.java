@@ -47,11 +47,14 @@ public class BitShiftFunction extends Function {
     if (v1 == null) return null;
 
     // Check the long value, the conversion to int would wrap a value out of the int range
-    if (v1 >= 64 || v1 <= -64) return 0L;
+    if (v1 >= 64) return 0L;
+    // An arithmetic right shift of 64 bits or more only keeps the sign
+    if (v1 <= -64) return value < 0 ? -1L : 0L;
     int distance = v1.intValue();
 
+    // Arithmetic right shift preserving the sign
     if (distance < 0) {
-      return value >>> (-distance);
+      return value >> (-distance);
     }
     return value << distance;
   }

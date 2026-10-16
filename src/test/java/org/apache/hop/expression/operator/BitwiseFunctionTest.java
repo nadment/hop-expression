@@ -63,14 +63,21 @@ class BitwiseFunctionTest extends ExpressionTest {
     evalEquals("Bit_Shift(16,-4)", 1L);
     evalEquals("Bit_Shift(10000,-3)", 1250L);
     evalEquals("Bit_Shift(1,63)", 0x8000000000000000L);
-    // evalEquals("Bit_Shift(0x8000000000000000,-63)", 1);
+
+    // Right shift is arithmetic and preserves the sign
+    evalEquals("Bit_Shift(-16,-2)", -4L);
+    evalEquals("Bit_Shift(-1,-60)", -1L);
+    evalEquals("Bit_Shift(Bit_Shift(1,63),-63)", -1L);
 
     // Overflow
     evalEquals("Bit_Shift(1,64)", 0L);
     evalEquals("Bit_Shift(1,-64)", 0L);
+    evalEquals("Bit_Shift(-1,64)", 0L);
+    evalEquals("Bit_Shift(-1,-64)", -1L);
     // A distance out of the int range must not wrap
     evalEquals("Bit_Shift(1,4294967297)", 0L);
     evalEquals("Bit_Shift(16,-4294967297)", 0L);
+    evalEquals("Bit_Shift(-16,-4294967297)", -1L);
 
     // Underflow
     evalEquals("Bit_Shift(1,-1)", 0L);

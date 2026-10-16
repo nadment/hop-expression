@@ -35,7 +35,10 @@ Integer
 
 == Usage
 
-* If the absolute value of distance is 64 or more, no error is raised and the result is 0.
+* A left shift fills the vacated bits with zeros.
+* A right shift is arithmetic and preserves the sign of the value.
+* If distance is 64 or more, no error is raised and the result is 0.
+* If distance is -64 or less, no error is raised and the result is 0 for a positive value or -1 for a negative value.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
@@ -43,7 +46,9 @@ Integer
 ----
 BIT_SHIFT(1,4) returns 16
 BIT_SHIFT(16,-4) returns 1
+BIT_SHIFT(-16,-2) returns -4
 BIT_SHIFT(1,64) returns 0
+BIT_SHIFT(-1,-64) returns -1
 ----
 
 == See also
