@@ -42,7 +42,7 @@ Date
 == Examples
 
 ----
-TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'
+TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris' returns TIMESTAMP '2020-05-25 20:48:00 +02:00'
 ----
 
 == See also

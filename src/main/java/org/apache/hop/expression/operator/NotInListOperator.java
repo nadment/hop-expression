@@ -33,7 +33,6 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -71,11 +70,14 @@ public class NotInListOperator extends Operator {
 
   @Override
   public boolean checkOperandTypes(final Call call) {
-    Type type = call.getOperand(0).getType();
+    IExpression reference = call.getOperand(0);
+    if (reference.isNull()) return true;
+
+    // The values must be comparable with the reference, like the equal operator
     Array array = (Array) call.getOperand(1);
     for (IExpression operand : array) {
       // An untyped NULL value is accepted in the list
-      if (!type.isCoercible(operand.getType()) && !operand.getType().isName(TypeName.UNKNOWN)) {
+      if (!operand.isNull() && !Types.isComparable(reference, operand)) {
         return false;
       }
     }

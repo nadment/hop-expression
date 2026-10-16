@@ -30,6 +30,11 @@ The xref:mod.adoc["%",role=op] operator provides alternative syntax.
 dividend % divisor
 ----
 
+== Arguments
+
+dividend:: The numeric value to divide.
+divisor:: The numeric value by which to divide.
+
 == Returns
 
 Number
@@ -46,4 +51,7 @@ Number
 MOD(16,5) returns 1
 MOD(11,4) returns 3
 MOD(-11,4) returns -3
+MOD(11,-4) returns 3
+MOD(11.3,4) returns 3.3
+11 % 4 returns 3
 ----

@@ -30,6 +30,7 @@ Boolean
 
 == Usage
 
+* The values of the list must be comparable with the expression, like with the xref:equal.adoc["=",role=op] operator; a string literal is converted to the data type of the expression, for example `FIELD_INTEGER IN ('40','2')`.
 * Returns NULL if expression is NULL, even if the list contains a NULL value: `NULL IN (NULL)` returns NULL.
 * If the list contains a NULL value, `IN` returns NULL instead of FALSE when expression is not found, and `NOT IN` returns NULL instead of TRUE.
 

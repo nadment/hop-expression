@@ -579,6 +579,20 @@ public class OperatorTest extends ExpressionTest {
 
       evalFails("FIELD_INTEGER in (1,2,FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("FIELD_DATE in (1,2,3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // The values must be comparable with the expression, whatever their order, like "="
+      evalFails("FIELD_INTEGER IN (FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING IN (1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER NOT IN (1,FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING NOT IN (1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // A string literal is converted to the type of the expression
+      evalTrue("FIELD_INTEGER IN ('40','2')");
+      evalFalse("FIELD_INTEGER NOT IN ('40','2')");
+      evalFails("FIELD_INTEGER IN ('A','2')", ErrorCode.CONVERSION_ERROR);
+
+      // A number is comparable with a boolean
+      evalTrue("FIELD_BOOLEAN_TRUE IN (1,2)");
     }
 
     @Test
@@ -2497,6 +2511,24 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("'' NOT SIMILAR TO ''");
       evalTrue("'ABC' NOT SIMILAR TO ''");
       evalTrue("FIELD_STRING NOT SIMILAR TO ''");
+
+      // Named character class, the name is not case-sensitive
+      evalTrue("'abc1' SIMILAR TO '[:alpha:]+[:digit:]'");
+      evalTrue("'abc1' SIMILAR TO '[:ALPHA:]+[:DIGIT:]'");
+
+      // Named character class inside a bracket expression, like PostgreSQL
+      evalTrue("'abc1' SIMILAR TO '[[:alpha:]]+[[:digit:]]'");
+      evalFalse("'b' SIMILAR TO '[[:digit:]]'");
+      evalTrue("'a_1' SIMILAR TO '[[:alpha:]_[:digit:]]+'");
+      evalFalse("'a-1' SIMILAR TO '[[:alpha:]_[:digit:]]+'");
+      evalTrue("'1' SIMILAR TO '[^[:alpha:]]'");
+      evalFalse("'a' SIMILAR TO '[^[:alpha:]]'");
+      evalFails("'a' SIMILAR TO '[[:unknown:]]'", ErrorCode.INVALID_REGEXP_PATTERN);
+      evalFails("'a' SIMILAR TO '[[:alpha]'", ErrorCode.INVALID_REGEXP_PATTERN);
+
+      // Escape a wildcard
+      evalTrue("'a%' SIMILAR TO 'a\\%'");
+      evalFalse("'ab' SIMILAR TO 'a\\%'");
     }
 
     @Test

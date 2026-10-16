@@ -57,9 +57,15 @@ The pattern supports the following operators:
 |{m,n}|Repeat the previous item at least m and not more than n times.
 |()|Parentheses group items into a single logical item.
 |[...]|A bracket expression specifies a character class, just as in POSIX regular expressions.
+|[:class:]|Matches any single character of a named character class: `alpha`, `alnum`, `digit`, `xdigit`, `upper`, `lower`, `space`, `blank`, `punct`, `cntrl` or `word`. The name is not case-sensitive.
+|+\+|Escapes the following `_`, `%` or `\` character, to match it literally.
 |===
 
 Any other character matches itself. Unlike POSIX regular expressions, `.`, `^` and `$` are not metacharacters. The characters of a bracket expression are taken literally, `_` and `%` are not wildcards inside brackets.
+
+* A named character class can be used inside a bracket expression like in PostgreSQL, for example `'[[:alpha:]_]+'`, or alone without the enclosing brackets, for example `'[:digit:]+'`.
+* An unknown character class name raises an error.
+* The escape character can only be followed by `_`, `%` or itself; any other character raises an error.
 
 == Examples
 
@@ -69,6 +75,11 @@ Any other character matches itself. Unlike POSIX regular expressions, `.`, `^` a
 'abc' SIMILAR TO 'a' returns FALSE
 'abc' NOT SIMILAR TO 'abc' returns FALSE
 '' SIMILAR TO '' returns TRUE
+'abc1' SIMILAR TO '[[:alpha:]]+[[:digit:]]' returns TRUE
+'a_1' SIMILAR TO '[[:alpha:]_[:digit:]]+' returns TRUE
+'abc1' SIMILAR TO '[:alpha:]+[:digit:]' returns TRUE
+'a%' SIMILAR TO 'a\%' returns TRUE
+'ab' SIMILAR TO 'a\%' returns FALSE
 ----
 
 == See also

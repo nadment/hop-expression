@@ -161,6 +161,17 @@ public final class Regexp {
 
       // Characters of a bracket expression are copied literally, like PostgreSQL
       if (inBracket) {
+        // Named character class inside a bracket expression, like [[:alpha:]_]
+        if (c == '[' && i + 1 < len && pattern.charAt(i + 1) == ':') {
+          int end = pattern.indexOf(":]", i + 2);
+          if (end < 0) {
+            throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, i);
+          }
+          javaPattern.append(toCharacterClass(pattern.substring(i + 2, end), pattern, i));
+          i = end + 1;
+          continue;
+        }
+
         javaPattern.append(c);
         if (c == ']') {
           inBracket = false;
@@ -197,43 +208,7 @@ public final class Regexp {
             throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, i);
           }
 
-          String cls = pattern.substring(i + 2, end - 1).toLowerCase();
-          // Alphabetic characters
-          switch (cls) {
-            case "alpha" -> javaPattern.append("\\p{Alpha}");
-
-              // Alphanumeric characters
-            case "alnum" -> javaPattern.append("\\p{Alnum}");
-            case "cntrl" -> javaPattern.append("\\p{Cntrl}");
-
-              // Blank space and tab characters
-            case "blank" -> javaPattern.append("\\h");
-
-              // Punctuation and symbols characters
-            case "punct" -> javaPattern.append("\\p{Punct}");
-
-              // Numeric digits
-            case "digit" -> javaPattern.append("\\d");
-
-              // Hexadecimal digits
-            case "xdigit" -> javaPattern.append("\\p{XDigit}");
-
-              // All whitespace characters, including line breaks
-            case "space" -> javaPattern.append("\\s");
-
-              // Uppercase letters
-            case "upper" -> javaPattern.append("\\p{Upper}");
-
-              // Lowercase letters
-            case "lower" -> javaPattern.append("\\p{Lower}");
-
-              // Word characters (letters, numbers and underscores)
-            case "word" -> javaPattern.append("\\w");
-
-              // Unknown character class
-            default -> throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, i);
-          }
-
+          javaPattern.append(toCharacterClass(pattern.substring(i + 2, end - 1), pattern, i));
           i = end;
         } else {
           javaPattern.append(c);
@@ -247,6 +222,54 @@ public final class Regexp {
       }
     }
     return javaPattern.toString();
+  }
+
+  /**
+   * Translates the name of a POSIX character class to a Java regex character class.
+   *
+   * @param name the name of the class, like {@code alpha}, not case-sensitive
+   * @param pattern the SIMILAR TO pattern, for the error message
+   * @param index the position of the class in the pattern, for the error message
+   * @return the Java regex character class
+   * @throws ExpressionException if the name is unknown
+   */
+  private static String toCharacterClass(String name, String pattern, int index)
+      throws ExpressionException {
+    return switch (name.toLowerCase()) {
+        // Alphabetic characters
+      case "alpha" -> "\\p{Alpha}";
+
+        // Alphanumeric characters
+      case "alnum" -> "\\p{Alnum}";
+      case "cntrl" -> "\\p{Cntrl}";
+
+        // Blank space and tab characters
+      case "blank" -> "\\h";
+
+        // Punctuation and symbols characters
+      case "punct" -> "\\p{Punct}";
+
+        // Numeric digits
+      case "digit" -> "\\d";
+
+        // Hexadecimal digits
+      case "xdigit" -> "\\p{XDigit}";
+
+        // All whitespace characters, including line breaks
+      case "space" -> "\\s";
+
+        // Uppercase letters
+      case "upper" -> "\\p{Upper}";
+
+        // Lowercase letters
+      case "lower" -> "\\p{Lower}";
+
+        // Word characters (letters, numbers and underscores)
+      case "word" -> "\\w";
+
+        // Unknown character class
+      default -> throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, index);
+    };
   }
 
   /**

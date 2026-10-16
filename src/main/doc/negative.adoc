@@ -31,12 +31,15 @@ The data type of the returned value is the same as the data type of the expressi
 == Usage
 
 * Raises an error if the expression is not a numeric or an interval, for example a string or a boolean.
+* Raises an arithmetic overflow error if the negation of an Integer exceeds the integer range, for example `-(-9223372036854775807-1)`; use an explicit cast to NUMBER if needed.
 * Returns NULL if the argument is NULL.
 
 == Examples
 
 ----
 -(1+2) returns -3
+-(-5.12) returns 5.12
+-INTERVAL 3 DAYS returns INTERVAL -3 DAYS
 ----
 
 == See also

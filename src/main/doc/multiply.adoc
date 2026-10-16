@@ -30,6 +30,9 @@ Integer or Number
 
 == Usage
 
+* Returns an Integer if both operands are integers, otherwise a Number.
+* Raises an arithmetic overflow error if the product of two integers exceeds the integer range; use an explicit cast to NUMBER if needed.
+* A boolean is implicitly converted to 1 for TRUE and 0 for FALSE, a string is not implicitly converted, use an explicit cast if needed.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
@@ -37,4 +40,5 @@ Integer or Number
 ----
 4*10 returns 40
 2.5*4 returns 10
+CAST(9223372036854775807 AS NUMBER)*2 returns 18446744073709551614
 ----
