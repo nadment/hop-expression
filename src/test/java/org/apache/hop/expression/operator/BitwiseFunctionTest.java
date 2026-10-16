@@ -257,7 +257,8 @@ class BitwiseFunctionTest extends ExpressionTest {
     @Test
     void testWithBinary() throws Exception {
       // Binary
-      evalEquals("BIT_AND(BINARY '0F000001',BINARY '0000003')", new byte[] {0x00, 0x00, 0x00, 0x01})
+      evalEquals(
+              "BIT_AND(BINARY '0F000001',BINARY '00000003')", new byte[] {0x00, 0x00, 0x00, 0x01})
           .returnType(BinaryType.BINARY_NOT_NULL);
       evalFails("BIT_AND(BINARY '0F',BINARY '0F01')", ErrorCode.INVALID_BITWISE_OPERANDS_SIZE);
     }

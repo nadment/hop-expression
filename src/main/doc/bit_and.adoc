@@ -24,6 +24,11 @@ Performs a bitwise AND operation between two integer or binary values.
 BIT_AND( value1, value2 )
 ----
 
+== Arguments
+
+value1:: An integer or binary value.
+value2:: A value of the same type as value1.
+
 == Returns
 
 Integer or Binary
@@ -39,6 +44,7 @@ Integer or Binary
 ----
 BIT_AND(3,2) returns 2
 BIT_AND(100,2) returns 0
+BIT_AND(BINARY '0F000001',BINARY '00000003') returns BINARY '00000001'
 ----
 
 == See also

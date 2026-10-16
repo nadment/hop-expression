@@ -21,8 +21,12 @@ Performs a bitwise NOT operation on an integer value.
 == Syntax
 
 ----
-BIT_NOT( integer )
+BIT_NOT( value )
 ----
+
+== Arguments
+
+value:: An integer value. A number or a boolean is not implicitly cast to Integer, an explicit cast is required.
 
 == Returns
 

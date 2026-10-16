@@ -24,6 +24,11 @@ Performs a bitwise XOR (exclusive OR) operation between two integer or binary va
 BIT_XOR( value1, value2 )
 ----
 
+== Arguments
+
+value1:: An integer or binary value.
+value2:: A value of the same type as value1.
+
 == Returns
 
 Integer or Binary
@@ -39,6 +44,7 @@ Integer or Binary
 ----
 BIT_XOR(2,1) returns 3
 BIT_XOR(2,2) returns 0
+BIT_XOR(BINARY '0F01',BINARY 'F0FE') returns BINARY 'FFFF'
 ----
 
 == See also
