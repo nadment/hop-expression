@@ -138,6 +138,19 @@ public final class OperandTypes {
   public static final IOperandTypeChecker EXACT_INTEGER_EXACT_INTEGER =
       sequence(EXACT_INTEGER_OPERAND, EXACT_INTEGER_OPERAND);
 
+  /**
+   * Operand type-checking strategy where the operand must be a string, a number or a date is not
+   * implicitly coerced to a string, like the PostgreSQL pattern matching operators.
+   */
+  // A single operand checker returns true when the check fails
+  private static final ISingleOperandTypeChecker EXACT_STRING_OPERAND =
+      operand -> !operand.getType().getName().is(TypeName.STRING, TypeName.UNKNOWN);
+
+  public static final IOperandTypeChecker EXACT_STRING_EXACT_STRING =
+      sequence(EXACT_STRING_OPERAND, EXACT_STRING_OPERAND);
+  public static final IOperandTypeChecker EXACT_STRING_EXACT_STRING_EXACT_STRING =
+      sequence(EXACT_STRING_OPERAND, EXACT_STRING_OPERAND, EXACT_STRING_OPERAND);
+
   public static final IOperandTypeChecker NUMBER_NUMBER =
       explicit(TypeName.NUMBER, TypeName.NUMBER);
   public static final IOperandTypeChecker INTEGER_INTEGER_INTEGER =

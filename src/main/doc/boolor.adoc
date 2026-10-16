@@ -32,6 +32,15 @@ Boolean
 
 * Returns TRUE if one of the arguments is TRUE, even if the other one is NULL.
 * Returns NULL if one of the arguments is NULL and the other one is FALSE or NULL.
+* A number is converted to a boolean: 0 is FALSE and any other value is TRUE. Other data types like a string raise an error.
+
+== Examples
+
+----
+TRUE OR NULL returns TRUE
+FALSE OR NULL returns NULL
+3 OR FALSE returns TRUE
+----
 
 == See also
 

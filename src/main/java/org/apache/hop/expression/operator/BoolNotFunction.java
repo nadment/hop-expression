@@ -26,6 +26,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -73,6 +74,9 @@ public class BoolNotFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Coerce numeric operands to boolean before simplification, x OR FALSE → x must be a boolean
+    Types.coerceOperandsToBoolean(call);
+
     IExpression operand = call.getOperand(0);
 
     // NOT(NOT(x)) → x
@@ -107,6 +111,11 @@ public class BoolNotFunction extends Function {
     }
 
     return call;
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsToBoolean(call);
   }
 
   @Override

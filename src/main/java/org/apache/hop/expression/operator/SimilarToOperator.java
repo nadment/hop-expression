@@ -54,7 +54,7 @@ public class SimilarToOperator extends BinaryOperator {
         80,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING,
+        OperandTypes.EXACT_STRING_EXACT_STRING,
         OperatorCategory.COMPARISON,
         "/docs/similar-to.html");
     this.compiledPattern = compiledPattern;

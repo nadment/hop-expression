@@ -25,6 +25,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -63,6 +64,11 @@ public class BoolXorOperator extends BinaryOperator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return call;
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsToBoolean(call);
   }
 
   @Override

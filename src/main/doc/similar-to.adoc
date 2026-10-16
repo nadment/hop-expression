@@ -35,6 +35,7 @@ Boolean
 
 == Usage
 
+* String and pattern must be strings, other data types like a number or a date raise an error; use an explicit cast if needed.
 * Returns TRUE only if pattern matches the entire subject.
 * The match is case-sensitive.
 * Returns FALSE if pattern is an empty string.

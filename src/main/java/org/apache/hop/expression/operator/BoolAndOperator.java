@@ -39,6 +39,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Pair;
 import org.apache.hop.expression.util.Strong;
 import org.jspecify.annotations.NullMarked;
@@ -75,6 +76,9 @@ public class BoolAndOperator extends BinaryOperator {
   /** Simplifies AND expressions whose answer can be determined without evaluating both sides. */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Coerce numeric operands to boolean before simplification, x OR FALSE → x must be a boolean
+    Types.coerceOperandsToBoolean(call);
 
     // Get all chained predicates sorted
     // Remove duplicate predicate
@@ -228,6 +232,11 @@ public class BoolAndOperator extends BinaryOperator {
     }
 
     return expression;
+  }
+
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coerceOperandsToBoolean(call);
   }
 
   @Override

@@ -36,6 +36,7 @@ Boolean
 
 == Usage
 
+* A number is converted to a boolean: 0 is FALSE and any other value is TRUE. Other data types like a string raise an error.
 * Returns NULL if the argument is NULL.
 
 == See also

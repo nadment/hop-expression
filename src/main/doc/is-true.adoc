@@ -30,7 +30,16 @@ Boolean
 
 == Usage
 
+* The expression must be a boolean or a number, a number is TRUE if it is not 0 and FALSE if it is 0. Other data types like a string raise an error.
 * Never returns NULL: if expression is NULL, `IS TRUE` returns FALSE and `IS NOT TRUE` returns TRUE.
+
+== Examples
+
+----
+TRUE IS TRUE returns TRUE
+3 IS TRUE returns TRUE
+0 IS TRUE returns FALSE
+----
 
 == See also
 

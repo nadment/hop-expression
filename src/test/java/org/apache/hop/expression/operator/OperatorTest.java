@@ -833,6 +833,9 @@ public class OperatorTest extends ExpressionTest {
   class BoolXor {
     @Test
     void testPredicate() throws Exception {
+      // A number is coerced to a boolean, 0 is FALSE and any other value is TRUE
+      evalFalse("3 XOR TRUE").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalTrue("FIELD_INTEGER XOR FALSE").returnType(BooleanType.BOOLEAN);
       evalFalse("true XOR true").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalFalse("false XOR false").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("true XOR false").returnType(BooleanType.BOOLEAN_NOT_NULL);
@@ -858,6 +861,14 @@ public class OperatorTest extends ExpressionTest {
   class BoolOr {
     @Test
     void testPredicate() throws Exception {
+      // A number is coerced to a boolean, 0 is FALSE and any other value is TRUE
+      evalTrue("3 OR FALSE").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalFalse("0 OR FALSE");
+      evalTrue("TRUE OR NULL");
+      evalNull("FALSE OR NULL");
+      evalTrue("FIELD_INTEGER OR FALSE").returnType(BooleanType.BOOLEAN);
+      evalFalse("FIELD_INTEGER_ZERO OR FALSE");
+      evalTrue("FIELD_NUMBER OR FALSE");
       evalTrue("true OR true").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("true OR false");
       evalTrue("false OR true");
@@ -932,7 +943,8 @@ public class OperatorTest extends ExpressionTest {
       // Simplify x > a OR x = a → x >= a
       optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "FIELD_INTEGER>=1");
       // Simplify x OR x IS NOT NULL → x IS NOT NULL
-      optimize("FIELD_INTEGER OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
+      optimize(
+          "FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE IS NOT NULL", "FIELD_BOOLEAN_TRUE IS NOT NULL");
       // Simplify x<5 OR IS NOT NULL(x) → IS NOT NULL(x)
       optimize("FIELD_INTEGER>10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
       optimize("FIELD_INTEGER>=10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
@@ -973,6 +985,11 @@ public class OperatorTest extends ExpressionTest {
   class BoolAnd {
     @Test
     void testPredicate() throws Exception {
+      // A number is coerced to a boolean, 0 is FALSE and any other value is TRUE
+      evalTrue("3 AND TRUE").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalFalse("0 AND TRUE");
+      evalTrue("FIELD_INTEGER AND TRUE").returnType(BooleanType.BOOLEAN);
+      evalFalse("FIELD_INTEGER_ZERO AND TRUE");
       evalTrue("true AND true");
       evalTrue("true AND FIELD_BOOLEAN_TRUE");
       evalFalse("true AND false");
@@ -1333,6 +1350,14 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("True IS False").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("FIELD_BOOLEAN_TRUE is True").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalFalse("FIELD_STRING='XX' IS TRUE").returnType(BooleanType.BOOLEAN_NOT_NULL);
+
+      // A number is TRUE if it is not 0
+      evalTrue("3 IS TRUE");
+      evalFalse("0 IS TRUE");
+      evalTrue("2.5 IS TRUE");
+      evalTrue("FIELD_INTEGER IS TRUE");
+      evalTrue("3 IS NOT FALSE");
+      evalFalse("3 IS NOT TRUE");
     }
 
     @Test
@@ -1403,6 +1428,12 @@ public class OperatorTest extends ExpressionTest {
     void testPredicate() throws Exception {
       evalFalse("FIELD_BOOLEAN_TRUE IS FALSE").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("FIELD_STRING='XX' IS FALSE");
+
+      // A number is TRUE if it is not 0
+      evalFalse("3 IS FALSE");
+      evalTrue("0 IS FALSE");
+      evalFalse("FIELD_INTEGER IS FALSE");
+      evalTrue("FIELD_INTEGER_ZERO IS FALSE");
     }
 
     @Test
@@ -2326,12 +2357,6 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
-    void testCoercion() throws Exception {
-      // Coercion integer to string
-      evalTrue("FIELD_INTEGER SIMILAR TO '4_'");
-    }
-
-    @Test
     void testNullHandling() throws Exception {
       evalNull("NULL_STRING SIMILAR TO 'A'");
       evalNull("'A' SIMILAR TO NULL_STRING");
@@ -2343,6 +2368,12 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_STRING SIMILAR 'A'", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_STRING SIMILAR TO ", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_STRING SIMILAR AND TO ", ErrorCode.SYNTAX_ERROR);
+
+      // Only accepts string values, no implicit conversion of a number or a date to a string
+      evalFails("FIELD_INTEGER SIMILAR TO '4_'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE SIMILAR TO '%'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING SIMILAR TO 4", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER NOT SIMILAR TO '4_'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test

@@ -161,6 +161,27 @@ public final class Types {
   }
 
   /**
+   * Coerces the numeric operands of a logical operator into a boolean, 0 is FALSE and any other
+   * value is TRUE.
+   */
+  public static boolean coerceOperandsToBoolean(Call call) {
+    boolean coerced = false;
+    for (int index = 0; index < call.getOperandCount(); index++) {
+      IExpression operand = call.getOperand(index);
+      if (isNumeric(operand.getType())) {
+        call.setOperand(index, cast(operand, BooleanType.BOOLEAN));
+        coerced = true;
+      }
+    }
+
+    if (coerced) {
+      call.inferReturnType();
+    }
+
+    return coerced;
+  }
+
+  /**
    * Coerce the operand at the specified index to target {@code Type}.
    *
    * <p>If the operand is a {@code Array}, coercion of all its elements

@@ -28,9 +28,6 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Regexp;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -55,27 +52,11 @@ public class ILikeOperator extends Operator {
         80,
         Associativity.LEFT,
         ReturnTypes.BOOLEAN_NULLABLE,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
+        OperandTypes.EXACT_STRING_EXACT_STRING.or(
+            OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
         OperatorCategory.COMPARISON,
         "/docs/ilike.html");
     this.compiledPattern = compiledPattern;
-  }
-
-  @Override
-  public boolean checkOperandTypes(Call call) {
-    if (!super.checkOperandTypes(call)) {
-      return false;
-    }
-
-    // Only accepts string values, a number or a date is not implicitly converted to a string
-    for (IExpression operand : call.getOperands()) {
-      Type type = operand.getType();
-      if (!(Types.isString(type) || type.isName(TypeName.UNKNOWN))) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   @Override
