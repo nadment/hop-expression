@@ -42,7 +42,7 @@ public class IsDateFunction extends Function {
     super(
         "IS_DATE",
         ReturnTypes.BOOLEAN_NOT_NULL,
-        OperandTypes.ANY_STRING,
+        OperandTypes.ANY_TEXT,
         OperatorCategory.COMPARISON,
         "/docs/is_date.html");
   }
