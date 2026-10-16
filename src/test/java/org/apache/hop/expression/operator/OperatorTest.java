@@ -618,11 +618,21 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("+FIELD_BIGNUMBER", 123456.789).returnType(NumberType.NUMBER);
       evalEquals("+40", 40L);
       evalEquals("1+ +2", 3L);
+      evalEquals("+INTERVAL 3 DAYS", Interval.of(0, 0, 3));
     }
 
     @Test
     void testNullHandling() throws Exception {
       evalNull("+NULL_INTEGER").returnType(IntegerType.INTEGER);
+    }
+
+    @Test
+    void testError() throws Exception {
+      // Only numeric or interval
+      evalFails("+FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("+'5'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("+TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("+FIELD_DATE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -652,6 +662,11 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       // Arithmetic overflow
       evalFails("-CAST(-9223372036854775808 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
+
+      // Only numeric or interval
+      evalFails("-FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("-TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("-FIELD_DATE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test

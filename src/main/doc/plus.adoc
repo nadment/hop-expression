@@ -26,12 +26,14 @@ Indicates a positive numeric expression.
 
 == Returns
 
-Number
+The data type of the returned value is the same as the data type of the expression (Integer, Number or Interval).
 
 == Usage
 
-* A unary plus can appear before any numeric expression; it performs no operation on the value of the expression.
+* A unary plus can appear before any numeric or interval expression; it performs no operation on the value of the expression.
 * It does not return the positive value of a negative expression. To get the positive value of a negative expression, use the xref:abs.adoc["ABS",role=fun] function.
+* Raises an error if the expression is not a numeric or an interval, for example a string or a boolean.
+* Returns NULL if the argument is NULL.
 
 == See also
 

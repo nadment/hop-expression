@@ -30,6 +30,7 @@ The data type of the returned value is the same as the data type of the expressi
 
 == Usage
 
+* Raises an error if the expression is not a numeric or an interval, for example a string or a boolean.
 * Returns NULL if the argument is NULL.
 
 == Examples

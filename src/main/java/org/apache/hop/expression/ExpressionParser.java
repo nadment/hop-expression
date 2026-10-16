@@ -61,6 +61,7 @@ import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NotInListOperator;
 import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.NthValueFunction;
+import org.apache.hop.expression.operator.PositiveOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
 import org.apache.hop.expression.type.BinaryType;
@@ -401,8 +402,9 @@ public class ExpressionParser {
       return new Call(start, NegativeOperator.INSTANCE, this.parsePrimary());
     }
 
-    // Ignore
-    lexer.ifThenNextAndNotEnd(Id.PLUS);
+    if (lexer.ifThenNextAndNotEnd(Id.PLUS)) {
+      return new Call(start, PositiveOperator.INSTANCE, this.parsePrimary());
+    }
 
     return this.parsePrimary();
   }
