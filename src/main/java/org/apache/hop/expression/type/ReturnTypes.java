@@ -18,6 +18,7 @@ package org.apache.hop.expression.type;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 
@@ -116,7 +117,14 @@ public final class ReturnTypes {
       call -> {
         Type type = call.getOperand(0).getType();
         if (type instanceof ArrayType arrayType) {
-          return arrayType.getElementType();
+          // The element is null if the array or the index is null, an array constructor is never
+          // null
+          Type elementType = arrayType.getElementType();
+          boolean nullable =
+              elementType.isNullable()
+                  || (type.isNullable() && !(call.getOperand(0) instanceof Array))
+                  || call.getOperand(1).getType().isNullable();
+          return elementType.withNullability(nullable);
         }
         return UnknownType.UNKNOWN;
       };
@@ -508,8 +516,9 @@ public final class ReturnTypes {
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
 
-    // Preserve integer type and adjust precision
-    if (type1.isName(TypeName.INTEGER) && type2.isName(TypeName.INTEGER)) {
+    // Preserve integer type and adjust precision, a boolean is coerced to an integer
+    if ((type1.isName(TypeName.INTEGER) || type1.isName(TypeName.BOOLEAN))
+        && (type2.isName(TypeName.INTEGER) || type2.isName(TypeName.BOOLEAN))) {
       int p = Math.min(TypeName.INTEGER.getMaxPrecision(), p1 + p2);
       return IntegerType.of(p, nullable);
     }

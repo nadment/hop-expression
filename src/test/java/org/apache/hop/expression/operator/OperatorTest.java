@@ -96,6 +96,20 @@ public class OperatorTest extends ExpressionTest {
     }
 
     @Test
+    void testError() throws Exception {
+      // Types not comparable
+      evalFails("FIELD_DATE <> 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING <> 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_JSON <> FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] <> [1,2]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Syntax error
+      evalFails("<> FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_INTEGER <>", ErrorCode.SYNTAX_ERROR);
+      evalFails("FIELD_INTEGER != ", ErrorCode.SYNTAX_ERROR);
+    }
+
+    @Test
     void testNullHandling() throws Exception {
       // NULL is not equal to anything, not even to another NULL.
       // x<>NULL is always null
@@ -396,6 +410,9 @@ public class OperatorTest extends ExpressionTest {
       // A string is not comparable with a number
       evalFails("FIELD_STRING < 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("5 < FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // A date is not comparable with a number
+      evalFails("FIELD_DATE < 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalTrue("'2' < 3");
       evalTrue("FIELD_DATE < '2030-01-01'");
       evalFails("[1,2] < [1,3]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -487,6 +504,9 @@ public class OperatorTest extends ExpressionTest {
 
       // A string is not comparable with a number
       evalFails("FIELD_STRING <=5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // A date is not comparable with a number
+      evalFails("FIELD_DATE <= 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails("<= FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
@@ -1127,6 +1147,12 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("'ABCDEFG' ILIKE 'abcde%'");
       evalTrue("'ABCDEFG' ILIKE '%defg'");
       evalTrue("'ABCDEFG' ILIKE '%cde%'");
+
+      // NOT ILIKE
+      evalFalse("'test' NOT ILIKE '%T%'");
+      evalTrue("'test' NOT ILIKE '%X%'");
+      evalFalse("'a%' NOT ILIKE 'A^%' ESCAPE '^'");
+      evalNull("NULL_STRING NOT ILIKE '%T%'");
     }
 
     @Test
@@ -2053,6 +2079,11 @@ public class OperatorTest extends ExpressionTest {
       // Implicit coercion from INTEGER to NUMBER
       evalEquals("2*2.2", 4.4D).returnType(NumberType.of(3, 1, false));
       evalEquals("2.5*2::INTEGER", 5D).returnType(NumberType.of(21, 1, false));
+
+      // Implicit coercion from BOOLEAN, to an integer like the addition
+      evalEquals("TRUE * 3", 3L).returnType(IntegerType.of(2, false));
+      evalEquals("3 * FALSE", 0L).returnType(IntegerType.of(2, false));
+      evalEquals("FIELD_BOOLEAN_TRUE * 2.5", 2.5D);
     }
 
     @Test
@@ -2289,6 +2320,10 @@ public class OperatorTest extends ExpressionTest {
       // Negative index
       evalEquals("[1,3,5][-1]", 5L);
       evalEquals("[1,3,5][-3]", 1L);
+
+      // The element is nullable if the index or the computed array is nullable
+      evalNull("[1,3,5][NULL_INTEGER]").returnType(IntegerType.of(1, true));
+      optimize("STRING_TO_ARRAY(FIELD_STRING_DATE,'-')[2]").returnType(StringType.STRING);
     }
 
     @Test
@@ -3238,6 +3273,11 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testError() {
       evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'XYZ'", ErrorCode.INVALID_TIMEZONE);
+
+      // Time zone names are case-sensitive
+      evalFails(
+          "TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'europe/paris'",
+          ErrorCode.INVALID_TIMEZONE);
       evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME 'Europe/Paris'", ErrorCode.SYNTAX_ERROR);
       evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE", ErrorCode.SYNTAX_ERROR);
       evalFails("TIMESTAMP '2023-05-25 20:48:00' AT ZONE 'Europe/Paris'", ErrorCode.SYNTAX_ERROR);
