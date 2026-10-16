@@ -1116,6 +1116,10 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testError() throws Exception {
+      // Only accepts string values
+      evalFails("FIELD_INTEGER ILIKE '4%'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE ILIKE '%2%'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING NOT ILIKE 4", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("'a' ILIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);
       evalFails("'a' ILIKE '%' ESCAPE NULL_STRING", ErrorCode.INVALID_ARGUMENT);
     }
@@ -2074,6 +2078,12 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testError() throws Exception {
+      // Only accepts string values
+      evalFails("FIELD_INTEGER LIKE '4%'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER LIKE '4_'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_DATE LIKE '%2%'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING LIKE 4", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING NOT LIKE 4", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("'a' LIKE '%' ESCAPE", ErrorCode.SYNTAX_ERROR);
       evalFails("'a' LIKE '%' ESCAPE ''", ErrorCode.INVALID_ARGUMENT);
       evalFails("'a' LIKE '%' ESCAPE NULL", ErrorCode.INVALID_ARGUMENT);

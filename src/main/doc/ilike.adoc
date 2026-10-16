@@ -39,6 +39,7 @@ Boolean
 == Usage
 
 * The pattern must match the entire string.
+* String, pattern and escape must be strings, other data types like a number or a date raise an error; use an explicit cast if needed.
 * The escape character can only be followed by `_`, `%` or itself; any other character raises an error.
 * Returns NULL if string or pattern is NULL.
 
