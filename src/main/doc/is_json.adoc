@@ -38,6 +38,7 @@ Boolean
 ----
 IS_JSON('{name:"Smith", age:29}') returns TRUE
 IS_JSON('name:"Smith", age:29}') returns FALSE
+IS_JSON('{name:"Smith"} x') returns FALSE
 ----
 
 == See also

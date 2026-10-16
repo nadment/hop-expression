@@ -1122,6 +1122,9 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')", ErrorCode.CONVERSION_ERROR);
     evalFails("To_Json('')", ErrorCode.CONVERSION_ERROR);
     evalFails("To_Json('   ')", ErrorCode.CONVERSION_ERROR);
+    // Content after the JSON value is not ignored
+    evalFails("To_Json('{a:1} x')", ErrorCode.CONVERSION_ERROR);
+    evalFails("To_Json('[1,2]]')", ErrorCode.CONVERSION_ERROR);
   }
 
   @Test

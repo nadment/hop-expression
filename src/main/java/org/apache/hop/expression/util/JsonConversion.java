@@ -19,6 +19,7 @@ package org.apache.hop.expression.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.hop.expression.ErrorCode;
@@ -30,9 +31,13 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class JsonConversion {
 
-  // JsonMapper is thread-safe after its configuration
+  // JsonMapper is thread-safe after its configuration.
+  // Content after the JSON value is rejected, otherwise it would be silently ignored.
   private static final JsonMapper JSON_READER =
-      JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      JsonMapper.builder()
+          .enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
+          .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+          .build();
 
   private JsonConversion() {
     // Utility class

@@ -72,6 +72,12 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalTrue("IS_JSON('{id:1,coordinates:[10,20]}')");
     evalTrue("IS_JSON('[1,2]')");
     evalFalse("IS_JSON('name:\"Smith\", age:29}')");
+    // Content after the JSON value is not valid
+    evalFalse("IS_JSON('{a:1} x')");
+    evalFalse("IS_JSON('{a:1}{b:2}')");
+    // A scalar value is a valid JSON
+    evalTrue("IS_JSON('123')");
+    evalTrue("IS_JSON('\"a\"')");
     evalFalse("IS_JSON('')");
     evalFalse("IS_JSON('   ')");
     evalFalse("IS_JSON(NULL_STRING)");
