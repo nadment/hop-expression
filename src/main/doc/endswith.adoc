@@ -30,7 +30,7 @@ Boolean
 
 == Usage
 
-* If value is binary, suffix is converted to binary; otherwise both arguments are compared as strings.
+* If value is binary, suffix must be binary or a string converted to binary; otherwise both arguments are compared as strings.
 * The comparison of strings is case-sensitive.
 * Returns TRUE if value ends with suffix, FALSE otherwise.
 * Returns TRUE if suffix is empty.
@@ -41,6 +41,9 @@ Boolean
 ----
 ENDSWITH('TEST FROM','ROM') returns TRUE
 ENDSWITH('TEST FROM','ROMA') returns FALSE
+ENDSWITH(BINARY 'FAA12345',BINARY '2345') returns TRUE
+ENDSWITH(BINARY 'FAA12345',BINARY '88') returns FALSE
+ENDSWITH(BINARY '616263','c') returns TRUE
 ----
 
 == See also

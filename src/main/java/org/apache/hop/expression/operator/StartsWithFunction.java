@@ -26,6 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -48,6 +49,21 @@ public class StartsWithFunction extends Function {
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.COMPARISON,
         "/docs/startswith.html");
+  }
+
+  @Override
+  public boolean checkOperandTypes(Call call) {
+    if (!super.checkOperandTypes(call)) {
+      return false;
+    }
+
+    // A binary value only accepts a binary prefix, or a string prefix converted to binary
+    if (Types.isBinary(call.getOperand(0).getType())) {
+      Type prefix = call.getOperand(1).getType();
+      return Types.isBinary(prefix) || Types.isString(prefix) || prefix.isName(TypeName.UNKNOWN);
+    }
+
+    return true;
   }
 
   @Override

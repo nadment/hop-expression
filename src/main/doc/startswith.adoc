@@ -35,7 +35,7 @@ Boolean
 
 == Usage
 
-* If value is binary, prefix is converted to binary; otherwise both arguments are compared as strings.
+* If value is binary, prefix must be binary or a string converted to binary; otherwise both arguments are compared as strings.
 * The comparison of strings is case-sensitive.
 * Returns TRUE if prefix is empty.
 * Returns NULL if one of the arguments is NULL.
@@ -45,7 +45,9 @@ Boolean
 ----
 STARTSWITH('TEST FROM','TES') returns TRUE
 STARTSWITH('XXXTEST FROM','TES') returns FALSE
+STARTSWITH(BINARY 'FAA12345',BINARY 'FA') returns TRUE
 STARTSWITH(BINARY 'FAA12345',BINARY 'EE') returns FALSE
+STARTSWITH(BINARY '616263','a') returns TRUE
 ----
 
 == See also

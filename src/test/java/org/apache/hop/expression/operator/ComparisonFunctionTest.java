@@ -172,6 +172,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFails("CONTAINS(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("CONTAINS(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("CONTAINS('a','b','c')", ErrorCode.TOO_MANY_ARGUMENTS);
+    // A binary value only accepts a binary or a string search
+    evalFails("CONTAINS(BINARY '616263',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("CONTAINS(BINARY '616263',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -204,6 +207,9 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFails("StartsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("StartsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("StartsWith('a','b','c')", ErrorCode.TOO_MANY_ARGUMENTS);
+    // A binary value only accepts a binary or a string prefix
+    evalFails("StartsWith(BINARY '616263',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("StartsWith(BINARY '616263',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -237,5 +243,8 @@ class ComparisonFunctionTest extends ExpressionTest {
     evalFails("EndsWith(FIELD_STRING)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("EndsWith(FIELD_BINARY)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("EndsWith('a','b','c')", ErrorCode.TOO_MANY_ARGUMENTS);
+    // A binary value only accepts a binary or a string suffix
+    evalFails("EndsWith(BINARY '616263',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EndsWith(BINARY '616263',FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 }

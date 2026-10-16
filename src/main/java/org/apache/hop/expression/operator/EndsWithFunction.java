@@ -26,6 +26,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -48,6 +49,21 @@ public class EndsWithFunction extends Function {
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.COMPARISON,
         "/docs/endswith.html");
+  }
+
+  @Override
+  public boolean checkOperandTypes(Call call) {
+    if (!super.checkOperandTypes(call)) {
+      return false;
+    }
+
+    // A binary value only accepts a binary suffix, or a string suffix converted to binary
+    if (Types.isBinary(call.getOperand(0).getType())) {
+      Type suffix = call.getOperand(1).getType();
+      return Types.isBinary(suffix) || Types.isString(suffix) || suffix.isName(TypeName.UNKNOWN);
+    }
+
+    return true;
   }
 
   @Override

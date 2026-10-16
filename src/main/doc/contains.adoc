@@ -30,7 +30,7 @@ Boolean
 
 == Usage
 
-* If value is binary, search is converted to binary; otherwise both arguments are compared as strings.
+* If value is binary, search must be binary or a string converted to binary; otherwise both arguments are compared as strings.
 * The comparison of strings is case-sensitive.
 * Returns TRUE if search is empty.
 * Returns TRUE if search is found inside value, FALSE otherwise.
@@ -39,6 +39,8 @@ Boolean
 == Examples
 
 ----
+CONTAINS('TEST','ES') returns TRUE
+CONTAINS('TEST','es') returns FALSE
 CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '2B3C') returns TRUE
 CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B') returns FALSE
 ----
