@@ -16,7 +16,7 @@ under the License.
 ////
 = MINUTES_BETWEEN
 
-Returns the number of minutes between two timestamps.
+Returns the number of complete minutes between two timestamps.
 
 == Syntax
 
@@ -30,6 +30,7 @@ Integer
 
 == Usage
 
+* Only complete minutes are counted: `MINUTES_BETWEEN(TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:28:58')` returns 27.
 * The result is positive if timestamp1 is earlier than timestamp2, and negative if timestamp1 is later than timestamp2.
 * Returns NULL if one of the arguments is NULL.
 

@@ -118,7 +118,13 @@ public final class NumberType extends Type {
       return clazz.cast(!BigInteger.ZERO.equals(((BigDecimal) value).unscaledValue()));
     }
     if (clazz == Long.class) {
-      return clazz.cast(((BigDecimal) value).longValue());
+      // Truncate the decimal part, a value out of the integer range raises an error instead of
+      // keeping only the low-order 64 bits
+      try {
+        return clazz.cast(((BigDecimal) value).toBigInteger().longValueExact());
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.INTEGER_CONVERSION_OVERFLOW, value);
+      }
     }
     if (clazz == String.class) {
       return clazz.cast(StringConversion.convert((BigDecimal) value));

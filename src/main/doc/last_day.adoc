@@ -28,10 +28,15 @@ LAST_DAY( date [, unit ] )
 
 date:: Date or timestamp.
 unit:: Time unit, `MONTH` by default. The possible units are:
+* `MILLENNIUM`
+* `CENTURY`
+* `DECADE`
 * `YEAR`
+* `ISOYEAR`
 * `QUARTER`
 * `MONTH`
 * `WEEK`
+* `ISOWEEK`
 
 == Returns
 
@@ -39,7 +44,10 @@ Date
 
 == Usage
 
-* The last day of a week is Sunday.
+* The last day of a week is Sunday, `WEEK` and `ISOWEEK` are equivalent.
+* An ISO year ends on the Sunday of its last ISO week, which is the week 52 or 53.
+* A decade ends in a year ending with 9, a century and a millennium in a year ending with 00 (the 21st century ends in 2100).
+* Raises an error if unit is not supported.
 * The time of a timestamp is kept.
 * Returns NULL if date is NULL. The unit cannot be NULL.
 
@@ -50,6 +58,9 @@ LAST_DAY(DATE '2021-06-15', QUARTER) returns DATE '2021-06-30'
 LAST_DAY(DATE '2020-02-27') returns 2020-02-29
 LAST_DAY(DATE '2020-04-27', QUARTER) returns 2020-06-30
 LAST_DAY(DATE '2020-12-31', WEEK) returns 2021-01-03
+LAST_DAY(DATE '2020-06-15', ISOYEAR) returns DATE '2021-01-03'
+LAST_DAY(DATE '2020-02-27', DECADE) returns DATE '2029-12-31'
+LAST_DAY(DATE '2020-02-27', CENTURY) returns DATE '2100-12-31'
 ----
 
 == See also

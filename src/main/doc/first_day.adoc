@@ -28,10 +28,15 @@ FIRST_DAY( date [, unit ] )
 
 date:: The date or timestamp.
 unit:: The optional time unit, `MONTH` by default. Supported units:
+* `MILLENNIUM`
+* `CENTURY`
+* `DECADE`
 * `YEAR`
+* `ISOYEAR`
 * `QUARTER`
 * `MONTH`
 * `WEEK`
+* `ISOWEEK`
 
 == Returns
 
@@ -39,7 +44,9 @@ Date
 
 == Usage
 
-* A week starts on Monday.
+* A week starts on Monday, `WEEK` and `ISOWEEK` are equivalent.
+* An ISO year starts on the Monday of the week that contains January 4.
+* A decade starts in a year ending with 0, a century and a millennium in a year ending with 1 (the 21st century starts in 2001), as with xref:date_trunc.adoc["DATE_TRUNC",role=fun].
 * Raises an error if unit is not supported.
 * The time of a timestamp is kept.
 * Returns NULL if date is NULL. The unit cannot be NULL.
@@ -51,6 +58,9 @@ FIRST_DAY(DATE '2021-06-15', QUARTER) returns DATE '2021-04-01'
 FIRST_DAY(DATE '2020-02-27') returns DATE '2020-02-01'
 FIRST_DAY(DATE '2020-05-27', QUARTER) returns DATE '2020-04-01'
 FIRST_DAY(DATE '2020-02-27', WEEK) returns DATE '2020-02-24'
+FIRST_DAY(DATE '2020-06-15', ISOYEAR) returns DATE '2019-12-30'
+FIRST_DAY(DATE '2020-02-27', DECADE) returns DATE '2020-01-01'
+FIRST_DAY(DATE '2020-02-27', CENTURY) returns DATE '2001-01-01'
 ----
 
 == See also

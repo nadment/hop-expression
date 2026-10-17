@@ -18,6 +18,8 @@ package org.apache.hop.expression.operator;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.EnumSet;
@@ -39,8 +41,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Returns the last day of the time unit.
  *
- * <p>The supported units of a time are: {@link TimeUnit#YEAR} {@link TimeUnit#MONTH} {@link
- * TimeUnit#QUARTER} {@link TimeUnit#WEEK} {@link TimeUnit#DAY}.
+ * <p>The supported units of a time are: {@link TimeUnit#MILLENNIUM} {@link TimeUnit#CENTURY} {@link
+ * TimeUnit#DECADE} {@link TimeUnit#YEAR} {@link TimeUnit#ISOYEAR} {@link TimeUnit#QUARTER} {@link
+ * TimeUnit#MONTH} {@link TimeUnit#WEEK} {@link TimeUnit#ISOWEEK}.
  *
  * @see FirstDayFunction
  */
@@ -51,7 +54,16 @@ public class LastDayFunction extends Function {
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
   private static final EnumSet<TimeUnit> SUPPORTED_TIME_UNITS =
-      EnumSet.of(TimeUnit.YEAR, TimeUnit.QUARTER, TimeUnit.MONTH, TimeUnit.WEEK);
+      EnumSet.of(
+          TimeUnit.MILLENNIUM,
+          TimeUnit.CENTURY,
+          TimeUnit.DECADE,
+          TimeUnit.YEAR,
+          TimeUnit.ISOYEAR,
+          TimeUnit.QUARTER,
+          TimeUnit.MONTH,
+          TimeUnit.WEEK,
+          TimeUnit.ISOWEEK);
 
   public LastDayFunction() {
     super(
@@ -87,11 +99,23 @@ public class LastDayFunction extends Function {
     if (operands.length == 2) {
       TimeUnit unit = operands[1].getValue(TimeUnit.class);
 
+      int year = value.getYear();
       adjuster =
           switch (unit) {
+              // Last year of the period starting at the same first year as DATE_TRUNC
+            case MILLENNIUM -> lastDayOfYear(DateTruncFunction.firstYear(year, 1000) + 999);
+            case CENTURY -> lastDayOfYear(DateTruncFunction.firstYear(year, 100) + 99);
+            case DECADE -> lastDayOfYear(year - year % 10 + 9);
             case YEAR -> TemporalAdjusters.lastDayOfYear();
+              // Sunday of the last ISO week
+            case ISOYEAR ->
+                t ->
+                    t.with(
+                            IsoFields.WEEK_OF_WEEK_BASED_YEAR,
+                            t.range(IsoFields.WEEK_OF_WEEK_BASED_YEAR).getMaximum())
+                        .with(ChronoField.DAY_OF_WEEK, DayOfWeek.SUNDAY.getValue());
             case MONTH -> TemporalAdjusters.lastDayOfMonth();
-            case WEEK -> TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
+            case WEEK, ISOWEEK -> TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
             case QUARTER -> LastDayOfQuarter;
             case null, default ->
                 throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
@@ -100,5 +124,9 @@ public class LastDayFunction extends Function {
 
     // Adjust the date, the time is kept
     return value.with(adjuster);
+  }
+
+  private static TemporalAdjuster lastDayOfYear(int year) {
+    return t -> t.with(ChronoField.YEAR, year).with(TemporalAdjusters.lastDayOfYear());
   }
 }

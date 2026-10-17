@@ -33,8 +33,8 @@ unit:: The time unit to truncate to. Supported units:
 * `YEAR`
 * `MONTH`
 * `QUARTER`
-* `WEEK`
-* `DAY`
+* `WEEK` (synonym `WEEKOFYEAR`)
+* `DAY` (synonym `DAYOFMONTH`)
 * `HOUR`
 * `MINUTE`
 * `SECOND`
@@ -52,6 +52,7 @@ Date
 
 * A week starts on Monday.
 * As with xref:extract.adoc["EXTRACT",role=fun], a century or a millennium starts in a year ending with 1: `DATE_TRUNC(CENTURY, DATE '2020-05-08')` returns `DATE '2001-01-01'`.
+* Raises an error if unit is not supported, for example `ISOWEEK`.
 * The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples

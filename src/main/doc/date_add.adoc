@@ -37,7 +37,7 @@ unit:: The time unit of value. Supported units:
 * `SECOND`
 * `NANOSECOND`
 
-value:: The integer number of units to add. A negative value subtracts the units.
+value:: The number of units to add. A negative value subtracts the units. If value has a decimal part, it is truncated before the addition.
 date:: The date or timestamp to modify.
 
 == Returns

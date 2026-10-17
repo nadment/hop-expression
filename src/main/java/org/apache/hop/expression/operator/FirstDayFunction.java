@@ -18,6 +18,8 @@ package org.apache.hop.expression.operator;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.EnumSet;
@@ -39,8 +41,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Returns the first day of the time unit.
  *
- * <p>The supported units of a time are: {@link TimeUnit#YEAR} {@link TimeUnit#MONTH} {@link
- * TimeUnit#QUARTER} {@link TimeUnit#WEEK} {@link TimeUnit#DAY}.
+ * <p>The supported units of a time are: {@link TimeUnit#MILLENNIUM} {@link TimeUnit#CENTURY} {@link
+ * TimeUnit#DECADE} {@link TimeUnit#YEAR} {@link TimeUnit#ISOYEAR} {@link TimeUnit#QUARTER} {@link
+ * TimeUnit#MONTH} {@link TimeUnit#WEEK} {@link TimeUnit#ISOWEEK}.
  *
  * @see LastDayFunction
  */
@@ -49,7 +52,16 @@ import org.jspecify.annotations.Nullable;
 public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
   private static final EnumSet<TimeUnit> SUPPORTED_TIME_UNITS =
-      EnumSet.of(TimeUnit.YEAR, TimeUnit.QUARTER, TimeUnit.MONTH, TimeUnit.WEEK);
+      EnumSet.of(
+          TimeUnit.MILLENNIUM,
+          TimeUnit.CENTURY,
+          TimeUnit.DECADE,
+          TimeUnit.YEAR,
+          TimeUnit.ISOYEAR,
+          TimeUnit.QUARTER,
+          TimeUnit.MONTH,
+          TimeUnit.WEEK,
+          TimeUnit.ISOWEEK);
 
   public FirstDayFunction() {
     super(
@@ -85,11 +97,21 @@ public class FirstDayFunction extends Function {
     if (operands.length == 2) {
       TimeUnit unit = operands[1].getValue(TimeUnit.class);
 
+      int year = value.getYear();
       adjuster =
           switch (unit) {
+              // Same first year as DATE_TRUNC
+            case MILLENNIUM -> firstDayOfYear(DateTruncFunction.firstYear(year, 1000));
+            case CENTURY -> firstDayOfYear(DateTruncFunction.firstYear(year, 100));
+            case DECADE -> firstDayOfYear(year - year % 10);
             case YEAR -> TemporalAdjusters.firstDayOfYear();
+              // Monday of the first ISO week
+            case ISOYEAR ->
+                t ->
+                    t.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, 1)
+                        .with(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.getValue());
             case MONTH -> TemporalAdjusters.firstDayOfMonth();
-            case WEEK -> TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
+            case WEEK, ISOWEEK -> TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
             case QUARTER -> FirstDayOfQuarter;
             case null, default ->
                 throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
@@ -98,5 +120,9 @@ public class FirstDayFunction extends Function {
 
     // Adjust the date, the time is kept
     return value.with(adjuster);
+  }
+
+  private static TemporalAdjuster firstDayOfYear(int year) {
+    return t -> t.with(ChronoField.YEAR, year).with(ChronoField.DAY_OF_YEAR, 1);
   }
 }

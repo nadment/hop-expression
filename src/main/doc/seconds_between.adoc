@@ -16,7 +16,7 @@ under the License.
 ////
 = SECONDS_BETWEEN
 
-Returns the number of seconds between two timestamps.
+Returns the number of complete seconds between two timestamps.
 
 == Syntax
 
@@ -30,6 +30,7 @@ Integer
 
 == Usage
 
+* Only complete seconds are counted, the fractional seconds are ignored: `SECONDS_BETWEEN(TIMESTAMP '2019-01-01 15:00:00.900',TIMESTAMP '2019-01-01 15:00:01.100')` returns 0.
 * The result is positive if timestamp1 is earlier than timestamp2, and negative if timestamp1 is later than timestamp2.
 * Returns NULL if one of the arguments is NULL.
 

@@ -37,7 +37,8 @@ Date
 == Usage
 
 * Time zone names are case-sensitive and must be enclosed in single quotes (e.g. `'UTC'`).
-* Raises an error if a time zone is not valid.
+* A timestamp without time zone, like `TIMESTAMP '2020-05-25 20:48:00'`, is in UTC.
+* Raises an error if a time zone is not valid or is NULL.
 * Returns NULL if timestamp is NULL.
 
 == Examples

@@ -67,10 +67,16 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Current_TimeZone() throws Exception {
-    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
-    evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12, false));
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3, false));
+    // The default time zone is global, restore it so that the concurrent tests are not affected
+    TimeZone defaultTimeZone = TimeZone.getDefault();
+    try {
+      TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
+      evalEquals("Current_Timezone()", "Europe/Paris").returnType(StringType.of(12, false));
+      TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+      evalEquals("Current_Timezone()", "UTC").returnType(StringType.of(3, false));
+    } finally {
+      TimeZone.setDefault(defaultTimeZone);
+    }
 
     // Check operands
     evalFails("Current_Timezone(Null)", ErrorCode.TOO_MANY_ARGUMENTS);
@@ -213,13 +219,9 @@ class DateFunctionTest extends ExpressionTest {
         .returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Months_Between(DATE '2007-11-09',DATE '2003-12-28')", -45.54838709677419);
 
-    // The time difference is ignored because the day of the month is the same for both values.
-    // evalEquals("Months_Between(TIMESTAMP '2007-12-13-09.40.30',TIMESTAMP '2007-11-13-08.40.30')",
-    // 1.0);
-
-    // evalEquals("Months_Between(DATE '2007-11-10',DATE '2007-12-09')", -0.967742);
-    // TODO: If the months and days are identical, the result is an integer.
+    // The result is the number of days divided by 31, even if the day of the month is the same
     evalEquals("Months_Between(DATE '2007-11-09',DATE '2007-12-09')", 0.967741935483871);
+    evalEquals("Months_Between(DATE '2007-02-09',DATE '2007-03-09')", 0.9032258064516129);
 
     // Null handling
     evalNull("Months_Between(DATE '2007-11-09',NULL_DATE)");
@@ -688,6 +690,20 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Add_Minutes(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
     evalFails("Add_Seconds(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
     evalFails("DATE_ADD(DAY,1000000000000,FIELD_DATE)", ErrorCode.DATE_OVERFLOW);
+
+    // A number out of the integer range raises an error, it must not wrap to a small value
+    evalFails(
+        "Add_Days(DATE '2019-01-15',18446744073709551617)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+    evalFails(
+        "Add_Days(DATE '2019-01-15',18446744073709551615)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+    evalFails(
+        "Add_Years(DATE '2019-01-15',18446744073709551617)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+    evalFails(
+        "Add_Months(DATE '2019-01-15',18446744073709551616.5)",
+        ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+    evalFails(
+        "DATE_ADD(DAY,18446744073709551617,DATE '2019-01-15')",
+        ErrorCode.INTEGER_CONVERSION_OVERFLOW);
   }
 
   @Test
@@ -1193,7 +1209,9 @@ class DateFunctionTest extends ExpressionTest {
     // Negative values give a negative interval
     evalEquals("MAKE_INTERVAL(-1,0,0,0,0,0)", Interval.of(1).negate());
     evalEquals("MAKE_INTERVAL(0,0,0,0,0,-1.5)", Interval.of(0, 0, 0, 0, 0, 1, 500000000).negate());
-    evalEquals("MAKE_INTERVAL(0,0,1,-1,0,0)", Interval.of(0, 0, 0, 23));
+    // The days and the hours are kept in separate parts, 1 day minus 1 hour is not 23 hours
+    evalEquals("MAKE_INTERVAL(0,0,1,-1,0,0)", Interval.ofSigned(0, 1, -3600, 0));
+    evalEquals("CAST(MAKE_INTERVAL(0,0,1,-1,0,0) AS STRING)", "+0-0 1 -01:00:00.000000000");
     evalEquals("MAKE_INTERVAL(1,-1,0,0,0,0)", Interval.of(0, 11));
     // The parts can have opposite signs, like PostgreSQL
     evalEquals("MAKE_INTERVAL(1,0,-1,0,0,0)", Interval.ofSigned(12, -1, 0, 0));
@@ -1222,11 +1240,31 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("First_Day(DATE '2020-12-31', WEEK)", LocalDate.of(2020, Month.DECEMBER, 28));
     evalEquals("First_Day(FIELD_DATE, YEAR)", LocalDate.of(1981, Month.JANUARY, 1));
     evalEquals("First_Day(FIELD_TIMESTAMP, YEAR)", LocalDate.of(2023, Month.JANUARY, 1));
+    evalEquals("First_Day(DATE '2020-02-27', ISOWEEK)", LocalDate.of(2020, Month.FEBRUARY, 24));
+
+    // The first ISO week starts on the Monday of the week containing January 4
+    evalEquals("First_Day(DATE '2020-06-15', ISOYEAR)", LocalDate.of(2019, Month.DECEMBER, 30));
+    evalEquals("First_Day(DATE '2021-01-02', ISOYEAR)", LocalDate.of(2019, Month.DECEMBER, 30));
+    evalEquals("First_Day(DATE '2021-01-04', ISOYEAR)", LocalDate.of(2021, Month.JANUARY, 4));
+
+    // Same first year as DATE_TRUNC, a century and a millennium start in a year ending with 1
+    evalEquals("First_Day(DATE '2020-02-27', DECADE)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("First_Day(DATE '2029-12-31', DECADE)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("First_Day(DATE '2020-02-27', CENTURY)", LocalDate.of(2001, Month.JANUARY, 1));
+    evalEquals("First_Day(DATE '2000-06-15', CENTURY)", LocalDate.of(1901, Month.JANUARY, 1));
+    evalEquals("First_Day(DATE '2020-02-27', MILLENNIUM)", LocalDate.of(2001, Month.JANUARY, 1));
+    evalEquals("First_Day(DATE '2000-06-15', MILLENNIUM)", LocalDate.of(1001, Month.JANUARY, 1));
 
     // The time of a timestamp is kept
     evalEquals(
         "First_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)",
         LocalDateTime.of(2020, Month.JANUARY, 1, 23, 59, 12));
+    evalEquals(
+        "First_Day(TIMESTAMP '2024-02-29 23:59:12', DECADE)",
+        LocalDateTime.of(2020, Month.JANUARY, 1, 23, 59, 12));
+    evalEquals(
+        "First_Day(TIMESTAMP '2020-06-15 23:59:12', ISOYEAR)",
+        LocalDateTime.of(2019, Month.DECEMBER, 30, 23, 59, 12));
     evalEquals(
         "First_Day(TIMESTAMP '2020-02-27 23:59:12', MONTH)",
         LocalDateTime.of(2020, Month.FEBRUARY, 1, 23, 59, 12));
@@ -1262,11 +1300,31 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Last_Day(DATE '2020-12-31', WEEK)", LocalDate.of(2021, Month.JANUARY, 3));
     evalEquals("Last_Day(FIELD_DATE, YEAR)", LocalDate.of(1981, Month.DECEMBER, 31));
     evalEquals("Last_Day(FIELD_TIMESTAMP, YEAR)", LocalDate.of(2023, Month.DECEMBER, 31));
+    evalEquals("Last_Day(DATE '2020-12-31', ISOWEEK)", LocalDate.of(2021, Month.JANUARY, 3));
+
+    // The last ISO week of 2020 is the week 53, of 2021 the week 52
+    evalEquals("Last_Day(DATE '2020-06-15', ISOYEAR)", LocalDate.of(2021, Month.JANUARY, 3));
+    evalEquals("Last_Day(DATE '2019-12-30', ISOYEAR)", LocalDate.of(2021, Month.JANUARY, 3));
+    evalEquals("Last_Day(DATE '2021-06-15', ISOYEAR)", LocalDate.of(2022, Month.JANUARY, 2));
+
+    // A century and a millennium end in a year ending with 00
+    evalEquals("Last_Day(DATE '2020-02-27', DECADE)", LocalDate.of(2029, Month.DECEMBER, 31));
+    evalEquals("Last_Day(DATE '2029-12-31', DECADE)", LocalDate.of(2029, Month.DECEMBER, 31));
+    evalEquals("Last_Day(DATE '2020-02-27', CENTURY)", LocalDate.of(2100, Month.DECEMBER, 31));
+    evalEquals("Last_Day(DATE '2000-06-15', CENTURY)", LocalDate.of(2000, Month.DECEMBER, 31));
+    evalEquals("Last_Day(DATE '2020-02-27', MILLENNIUM)", LocalDate.of(3000, Month.DECEMBER, 31));
+    evalEquals("Last_Day(DATE '2000-06-15', MILLENNIUM)", LocalDate.of(2000, Month.DECEMBER, 31));
 
     // The time of a timestamp is kept
     evalEquals(
         "Last_Day(TIMESTAMP '2020-02-27 23:59:12')",
         LocalDateTime.of(2020, Month.FEBRUARY, 29, 23, 59, 12));
+    evalEquals(
+        "Last_Day(TIMESTAMP '2020-02-29 23:59:12', DECADE)",
+        LocalDateTime.of(2029, Month.DECEMBER, 31, 23, 59, 12));
+    evalEquals(
+        "Last_Day(TIMESTAMP '2020-06-15 23:59:12', ISOYEAR)",
+        LocalDateTime.of(2021, Month.JANUARY, 3, 23, 59, 12));
     evalEquals(
         "Last_Day(TIMESTAMP '2020-02-27 23:59:12', YEAR)",
         LocalDateTime.of(2020, Month.DECEMBER, 31, 23, 59, 12));

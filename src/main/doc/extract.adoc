@@ -36,7 +36,9 @@ Integer
 
 == Usage
 
-* Returns NULL if the date, timestamp or interval is NULL.
+* For an interval, the unit gives its part of the interval and is not limited to the range of a date: `EXTRACT(HOUR FROM INTERVAL 30 HOURS)` returns 30. `CENTURY`, `DECADE` and `MILLENNIUM` are the years divided by 100, 10 and 1000: `EXTRACT(CENTURY FROM INTERVAL 1234 YEARS)` returns 12.
+* The units `DAYOFWEEK`, `DAYOFYEAR`, `EPOCH`, `ISODAYOFWEEK`, `ISOWEEKOFYEAR`, `ISOYEAR` and `WEEKOFMONTH` are not supported for an interval and raise an error.
+* The unit cannot be NULL. Returns NULL if the date, timestamp or interval is NULL.
 
 The following table lists the supported time units, their synonyms and the equivalent function.
 

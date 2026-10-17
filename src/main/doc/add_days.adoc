@@ -50,8 +50,8 @@ Date
 ----
 ADD_DAYS(DATE '2019-01-15', 1) returns DATE '2019-01-16'
 ADD_DAYS(DATE '2019-01-15', -20) returns DATE '2018-12-26'
-ADD_DAYS( Date '2022-05-24', -4 )
-Date '2022-05-24' - 4
+ADD_DAYS(DATE '2022-05-24', -4) returns DATE '2022-05-20'
+DATE '2022-05-24' - 4 returns DATE '2022-05-20'
 ----
 
 == See also

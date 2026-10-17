@@ -100,7 +100,7 @@ public class DateTruncFunction extends Function {
    * @param size the number of years, 100 for a century or 1000 for a millennium
    * @return the first year
    */
-  private static int firstYear(int year, int size) {
+  static int firstYear(int year, int size) {
     return (year > 0) ? (year - 1) / size * size + 1 : year - year % size;
   }
 }
