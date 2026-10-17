@@ -43,6 +43,10 @@ import org.junit.jupiter.api.parallel.Execution;
 class MathematicalFunctionTest extends ExpressionTest {
   @Test
   void Abs() throws Exception {
+    // A boolean returns an integer
+    evalEquals("ABS(TRUE)", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("ABS(FIELD_BOOLEAN_TRUE)", 1L).returnType(IntegerType.INTEGER);
+
     // The absolute value of the smallest integer is out of the integer range
     evalFails("ABS(-9223372036854775807-1)", ErrorCode.ARITHMETIC_OVERFLOW);
     evalNull("TRY(ABS(-9223372036854775807-1))");
@@ -303,11 +307,15 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Documentation example
     evalEquals("CEIL(28.05)", 29D);
     evalEquals("Ceil(1)", 1D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Ceil(125.9)", 126D).returnType(NumberType.of(3).withNullability(false));
-    evalEquals("Ceil(0.4873)", 1D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Ceil(-0.1)", 0D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Ceil(-0.65)", 0D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Ceil(-42.8)", -42D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Ceil(125.9)", 126D).returnType(NumberType.of(4).withNullability(false));
+    evalEquals("Ceil(0.4873)", 1D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Ceil(-0.1)", 0D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Ceil(-0.65)", 0D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Ceil(-42.8)", -42D).returnType(NumberType.of(3).withNullability(false));
+    // Rounding a fraction can add a digit, the value fits in the type
+    evalEquals("Ceil(9.5)", 10D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Ceil(999.9)", 1000D).returnType(NumberType.of(4).withNullability(false));
+    evalEquals("CAST(Ceil(9.5) AS NUMBER(2))", 10D);
     evalEquals("Ceil(FIELD_INTEGER)", 40D);
     evalEquals("Ceil(FIELD_NUMBER)", -5D);
     evalEquals("Ceil(FIELD_BIGNUMBER)", new BigDecimal("123457"));
@@ -332,11 +340,13 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Documentation example
     evalEquals("FLOOR(28.05)", 28D);
     evalEquals("Floor(1)", 1D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Floor(125.9)", 125D).returnType(NumberType.of(3).withNullability(false));
-    evalEquals("Floor(0.4873)", 0D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Floor(-0.1)", -1D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Floor(-0.65)", -1D).returnType(NumberType.of(1).withNullability(false));
-    evalEquals("Floor(-42.8)", -43D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Floor(125.9)", 125D).returnType(NumberType.of(4).withNullability(false));
+    evalEquals("Floor(0.4873)", 0D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Floor(-0.1)", -1D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Floor(-0.65)", -1D).returnType(NumberType.of(2).withNullability(false));
+    evalEquals("Floor(-42.8)", -43D).returnType(NumberType.of(3).withNullability(false));
+    // Rounding a fraction can add a digit, the value fits in the type
+    evalEquals("Floor(-9.5)", -10D).returnType(NumberType.of(2).withNullability(false));
     evalEquals("Floor(FIELD_INTEGER)", 40D);
     evalEquals("Floor(FIELD_NUMBER)", -6D);
     evalEquals("Floor(FIELD_BIGNUMBER)", new BigDecimal("123456"));
@@ -397,6 +407,9 @@ class MathematicalFunctionTest extends ExpressionTest {
 
     // Function repetition
     optimize("ROUND(ROUND(FIELD_NUMBER))", "ROUND(FIELD_NUMBER)");
+    // Not with a scale in the inner call
+    optimize("ROUND(ROUND(FIELD_NUMBER,1))", "ROUND(ROUND(FIELD_NUMBER,1))");
+    evalEquals("ROUND(ROUND(FIELD_NUMBER,1))", -5D);
   }
 
   @Test

@@ -19,6 +19,7 @@ package org.apache.hop.expression.type;
 
 import java.util.Objects;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -64,8 +65,13 @@ public final class ArrayType extends Type {
     return elementType.getComparability();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>An array type always has an element type, it is never null.
+   */
   @Override
-  public Type getElementType() {
+  public @NonNull Type getElementType() {
     return elementType;
   }
 

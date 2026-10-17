@@ -85,8 +85,11 @@ public class RoundFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Idempotent function repetition
-    if (call.getOperandCount() == 1 && call.getOperand(0).isOperator(call.getOperator())) {
+    // Idempotent function repetition, only if the inner call has no scale ROUND(ROUND(x)) →
+    // ROUND(x)
+    if (call.getOperandCount() == 1
+        && call.getOperand(0).isOperator(call.getOperator())
+        && call(call.getOperand(0)).getOperandCount() == 1) {
       return call.getOperand(0);
     }
 

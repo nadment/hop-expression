@@ -120,9 +120,6 @@ public final class ReturnTypes {
           // The element is null if the array or the index is null, an array constructor is never
           // null
           Type elementType = arrayType.getElementType();
-          if (elementType == null) {
-            return UnknownType.UNKNOWN;
-          }
           boolean nullable =
               elementType.isNullable()
                   || (type.isNullable() && !(call.getOperand(0) instanceof Array))
@@ -149,7 +146,7 @@ public final class ReturnTypes {
 
   /**
    * Type-inference strategy whereby the result type of the call is a number with scale 0, with the
-   * number of whole digits and the nullability of the operand #0.
+   * number of whole digits of the operand #0, plus one if it has a fraction, and its nullability.
    *
    * <p>This rule is used for CEILING, FLOOR.
    */
@@ -162,7 +159,9 @@ public final class ReturnTypes {
           precision = type.getPrecision();
         } else if (type.isName(TypeName.NUMBER) && !Types.hasVariableScale(type)) {
           precision = type.getPrecision() - type.getScale();
-          if (precision == 0) precision = 1;
+          // Rounding a fraction can add a digit, CEIL(9.5) → 10, and zero needs a digit
+          if (type.getScale() > 0) precision++;
+          precision = Math.min(precision, TypeName.NUMBER.getMaxPrecision());
         }
 
         return NumberType.of(precision, 0, type.isNullable());
