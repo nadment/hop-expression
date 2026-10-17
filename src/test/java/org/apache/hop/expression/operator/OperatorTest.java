@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
@@ -28,7 +29,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -961,6 +964,19 @@ public class OperatorTest extends ExpressionTest {
       evalNull("false OR NULL_BOOLEAN").returnType(BooleanType.BOOLEAN);
       evalNull("NULL_BOOLEAN OR false");
       evalNull("NULL_BOOLEAN OR NULL_BOOLEAN");
+
+      // Evaluated with fields, not simplified at compile time
+      evalTrue("NULL_BOOLEAN OR FIELD_BOOLEAN_TRUE");
+      evalTrue("FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN");
+      evalNull("NULL_BOOLEAN OR FIELD_BOOLEAN_FALSE");
+      evalNull("FIELD_BOOLEAN_FALSE OR NULL_BOOLEAN");
+
+      // The operands are sorted at compile time, evaluate a NULL left operand directly
+      assertEquals(
+          Boolean.TRUE,
+          BoolOrOperator.INSTANCE.eval(new IExpression[] {Literal.NULL_BOOLEAN, Literal.TRUE}));
+      assertNull(
+          BoolOrOperator.INSTANCE.eval(new IExpression[] {Literal.NULL_BOOLEAN, Literal.FALSE}));
     }
 
     @Test
@@ -968,6 +984,10 @@ public class OperatorTest extends ExpressionTest {
       evalFails("false OR", ErrorCode.SYNTAX_ERROR);
       evalFails("OR false", ErrorCode.SYNTAX_ERROR);
       evalFails("true OR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Other data types than boolean and number raise an error
+      evalFails("'abc' OR TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING OR FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1019,6 +1039,15 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER>1 OR FIELD_INTEGER!=1", "FIELD_INTEGER!=1");
       // Simplify x > a OR x = a → x >= a
       optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "FIELD_INTEGER>=1");
+      // Also with the literal on the left, two fields or another equal term
+      optimize("FIELD_INTEGER<1 OR 1=FIELD_INTEGER", "FIELD_INTEGER<=1");
+      optimize(
+          "FIELD_INTEGER=FIELD_NUMBER OR FIELD_INTEGER<FIELD_NUMBER",
+          "FIELD_NUMBER>=CAST(FIELD_INTEGER AS NUMBER)");
+      optimize(
+          "FIELD_INTEGER<5 OR FIELD_INTEGER=5 OR FIELD_INTEGER=6",
+          "FIELD_INTEGER<=5 OR FIELD_INTEGER=6");
+      evalTrue("FIELD_INTEGER<5 OR FIELD_INTEGER=5 OR FIELD_INTEGER=40");
       // Simplify x OR x IS NOT NULL → NVL2(x,TRUE,NULL), NULL and not FALSE if x is NULL
       optimize(
           "FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE IS NOT NULL",
@@ -1036,6 +1065,28 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("FIELD_INTEGER>100 OR FIELD_INTEGER IS NOT NULL");
       evalNull("NULL_INTEGER>10 OR NULL_INTEGER IS NOT NULL");
       evalNull("NOT(NULL_INTEGER>10 OR NULL_INTEGER IS NOT NULL)");
+      // Also if the value is the right operand of the comparison
+      optimize(
+          "FIELD_INTEGER>NULL_INTEGER OR NULL_INTEGER IS NOT NULL", "NVL2(NULL_INTEGER,TRUE,NULL)");
+      evalNull("FIELD_INTEGER>NULL_INTEGER OR NULL_INTEGER IS NOT NULL");
+      // A value dominated by several predicates is replaced once
+      optimize(
+          "FIELD_INTEGER IS NOT NULL OR (FIELD_INTEGER>5 OR FIELD_INTEGER<2)",
+          "NVL2(FIELD_INTEGER,TRUE,NULL)");
+      // NVL2(x,TRUE,NULL) is a simplified x IS NOT NULL, also without parentheses
+      optimize(
+          "FIELD_INTEGER IS NOT NULL OR FIELD_INTEGER>5 OR FIELD_INTEGER<2",
+          "NVL2(FIELD_INTEGER,TRUE,NULL)");
+      optimize("NVL2(FIELD_INTEGER,TRUE,NULL) OR FIELD_INTEGER<2", "NVL2(FIELD_INTEGER,TRUE,NULL)");
+      optimize(
+          "FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE IS NOT NULL OR FIELD_INTEGER>5",
+          "FIELD_INTEGER>5 OR NVL2(FIELD_BOOLEAN_TRUE,TRUE,NULL)");
+      evalNull("NULL_INTEGER IS NOT NULL OR NULL_INTEGER>5 OR NULL_INTEGER<2");
+      evalTrue("FIELD_INTEGER IS NOT NULL OR FIELD_INTEGER>50 OR FIELD_INTEGER<2");
+      // Not with another value than TRUE and NULL
+      optimize(
+          "NVL2(FIELD_INTEGER,FALSE,NULL) OR FIELD_INTEGER<2",
+          "FIELD_INTEGER<2 OR NVL2(FIELD_INTEGER,FALSE,NULL)");
 
       // Other predicates are kept
       optimize(
@@ -1048,9 +1099,15 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (1,2,3,4)");
       optimize(
           "FIELD_STRING='1' OR NULL_INTEGER in (1,2)", "FIELD_STRING='1' OR NULL_INTEGER IN (1,2)");
+      optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER=1", "FIELD_INTEGER IN (1,2)");
+      // Not with a list of values that is not constant
+      optimize(
+          "FIELD_INTEGER IN (FIELD_NUMBER,2) OR FIELD_INTEGER=1",
+          "FIELD_INTEGER=1 OR CAST(FIELD_INTEGER AS NUMBER) IN (2,FIELD_NUMBER)");
 
       // Simplify intersection != and NOT IN
       optimize("FIELD_INTEGER!=2 OR FIELD_INTEGER NOT IN (1,2,3,4)", "FIELD_INTEGER!=2");
+      optimize("FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER!=2", "FIELD_INTEGER!=2");
       optimize(
           "FIELD_INTEGER NOT IN (1,2,3) OR FIELD_INTEGER NOT IN (2,3,4,5)",
           "FIELD_INTEGER NOT IN (3,2)");

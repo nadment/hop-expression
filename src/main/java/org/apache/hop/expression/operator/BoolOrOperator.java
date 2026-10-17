@@ -118,6 +118,13 @@ public class BoolOrOperator extends BinaryOperator {
         if (term.isOperator(IsNotNullOperator.INSTANCE)) {
           notNullTerms.put(term.getOperand(0), term);
         }
+        // NVL2(x,TRUE,NULL) is a simplified x IS NOT NULL, it also dominates the strong terms of x
+        // x IS NOT NULL OR x>5 OR x<2 → NVL2(x,TRUE,NULL) OR x<2 → NVL2(x,TRUE,NULL)
+        if (term.isOperator(Nvl2Function.INSTANCE)
+            && Literal.TRUE.equals(term.getOperand(1))
+            && term.getOperand(2).isNull()) {
+          notNullTerms.put(term.getOperand(0), term);
+        }
         if (term.isOperator(EqualOperator.INSTANCE)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           if (term.getOperand(1).is(Kind.LITERAL)) {
@@ -143,7 +150,6 @@ public class BoolOrOperator extends BinaryOperator {
           greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
         if (Strong.isStrong(term)) {
-          strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
       }
@@ -274,10 +280,15 @@ public class BoolOrOperator extends BinaryOperator {
       }
     }
 
-    // Replace x IS NOT NULL by NVL2(x,TRUE,NULL)
+    // Replace x IS NOT NULL by NVL2(x,TRUE,NULL) once its dominated terms are removed. Alone, x IS
+    // NOT NULL returns FALSE if x is NULL, while the removed terms made the disjunction NULL:
+    // x IS NOT NULL OR x<5 is FALSE OR NULL → NULL. A term that is already NVL2(x,TRUE,NULL) is
+    // kept as is.
     for (IExpression operand : dominated) {
       Call notNullTerm = notNullTerms.get(operand);
-      if (notNullTerm != null && predicates.remove(notNullTerm)) {
+      if (notNullTerm != null
+          && notNullTerm.isOperator(IsNotNullOperator.INSTANCE)
+          && predicates.remove(notNullTerm)) {
         Call predicate =
             new Call(Nvl2Function.INSTANCE, operand, Literal.TRUE, Literal.NULL_BOOLEAN);
         predicate.inferReturnType();

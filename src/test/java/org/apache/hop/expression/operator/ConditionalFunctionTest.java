@@ -395,6 +395,21 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("Nvl2('test','ex1','ex2')", "ex1");
     evalEquals("Nvl2(NULL_STRING,'ex1','ex2')", "ex2");
 
+    // Simplify NVL2(x,TRUE,FALSE) → x IS NOT NULL and NVL2(x,FALSE,TRUE) → x IS NULL
+    optimize("NVL2(FIELD_STRING,TRUE,FALSE)", "FIELD_STRING IS NOT NULL")
+        .returnType(BooleanType.BOOLEAN_NOT_NULL);
+    optimize("NVL2(FIELD_STRING,FALSE,TRUE)", "FIELD_STRING IS NULL")
+        .returnType(BooleanType.BOOLEAN_NOT_NULL);
+    evalTrue("NVL2(FIELD_STRING,TRUE,FALSE)");
+    evalFalse("NVL2(NULL_STRING,TRUE,FALSE)");
+    evalFalse("NVL2(FIELD_STRING,FALSE,TRUE)");
+    evalTrue("NVL2(NULL_STRING,FALSE,TRUE)");
+
+    // NVL2(x,TRUE,NULL) is not simplified, it returns NULL and not FALSE if x is NULL
+    optimize("NVL2(FIELD_STRING,TRUE,NULL)");
+    evalNull("NVL2(NULL_STRING,TRUE,NULL)");
+    optimize("NVL2(FIELD_STRING,TRUE,TRUE)");
+
     // Check operands
     evalFails("Nvl2()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Nvl2(true)", ErrorCode.NOT_ENOUGH_ARGUMENTS);

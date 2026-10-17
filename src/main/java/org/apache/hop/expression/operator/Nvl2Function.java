@@ -17,9 +17,12 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -44,6 +47,27 @@ public class Nvl2Function extends Function {
         OperandTypes.ANY_SAME_SAME,
         OperatorCategory.CONDITIONAL,
         "/docs/nvl2.html");
+  }
+
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    IExpression ifNotNull = call.getOperand(1);
+    IExpression ifNull = call.getOperand(2);
+
+    // NVL2(x,TRUE,FALSE) → x IS NOT NULL
+    if (Literal.TRUE.equals(ifNotNull) && Literal.FALSE.equals(ifNull)) {
+      return new Call(IsNotNullOperator.INSTANCE, call.getOperand(0));
+    }
+
+    // NVL2(x,FALSE,TRUE) → x IS NULL
+    if (Literal.FALSE.equals(ifNotNull) && Literal.TRUE.equals(ifNull)) {
+      return new Call(IsNullOperator.INSTANCE, call.getOperand(0));
+    }
+
+    // NVL2(x,TRUE,NULL) is not simplified, it returns NULL and not FALSE if x is NULL
+
+    return call;
   }
 
   @Override
