@@ -978,6 +978,14 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Soundex('123456')", "");
     evalEquals("Soundex('')", "");
     evalEquals("Soundex(' ')", "");
+    // The diacritic marks are removed first
+    evalEquals("Soundex('Émile')", "E540");
+    evalEquals("Soundex('Łódź')", "L320");
+    // The Latin letters without decomposition are transliterated
+    evalEquals("Soundex('Søren')", "S650");
+    evalEquals("Soundex('Ærø')", "A600");
+    // A letter that is not a Latin letter is not mapped
+    evalFails("Soundex('Ωmega')", ErrorCode.CALL_FUNCTION_ERROR);
 
     // Null handling
     evalNull("Soundex(NULL_STRING)").returnType(StringType.STRING);
@@ -995,6 +1003,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Difference('Perfect', 'Perfect')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Difference('Juice', 'Jucy')", 4L);
     evalEquals("Difference('Apple', 'Orange')", 0L);
+    // The diacritic marks are removed first
+    evalEquals("Difference('Émile', 'Emile')", 4L);
 
     // No similarity when a string has no letter, its SOUNDEX is empty
     evalEquals("Difference('123', 'abc')", 0L);
@@ -1083,6 +1093,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Regexp_Like()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Regexp_Like('A')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Regexp_Like('A','[a-z]','z')", ErrorCode.INVALID_ARGUMENT);
+    // The parameters are validated even with an empty pattern
+    evalFails("Regexp_Like('A','','z')", ErrorCode.INVALID_ARGUMENT);
 
     // Parameters, the last of the 'c' and 'i' letters wins
     evalTrue("Regexp_Like('A','a','ci')");
@@ -1165,6 +1177,15 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Replace('a'||Chr(10)||'a','^a','x',1,0)", "x\na");
     evalEquals("Regexp_Replace('a'||Chr(10)||'b','a.b','x',1,0,'n')", "x");
     evalFails("Regexp_Replace('Aa','a','x',1,0,'z')", ErrorCode.INVALID_ARGUMENT);
+    // The arguments are validated even with an empty pattern or a position after the end
+    evalNull("Regexp_Replace('A','',NULL_STRING)");
+    evalFails("Regexp_Replace('aaa','','b',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Replace('aaa','','b',1,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Replace('aaa','','b',1,0,'z')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("Regexp_Replace('aaa','a','b',5,-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Replace('aaa','a','b',5,0,'z')", ErrorCode.INVALID_ARGUMENT);
+    // A NULL occurrence is treated as its default value
+    evalEquals("Regexp_Replace('aaa','a','b',1,NULL_INTEGER)", "bbb");
 
     // Invalid pattern, constant or not
     evalFails("Regexp_Replace('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
@@ -1209,6 +1230,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Count('a'||Chr(10)||'a','^a$',1)", 0L);
     evalEquals("Regexp_Count('a'||Chr(10)||'b','a.b',1,'n')", 1L);
     evalFails("Regexp_Count('Aa','a',1,'z')", ErrorCode.INVALID_ARGUMENT);
+    // The arguments are validated even with an empty pattern
+    evalFails("Regexp_Count('aaa','',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Count('aaa','',1,'z')", ErrorCode.INVALID_ARGUMENT);
 
     // Invalid pattern, constant or not
     evalFails("Regexp_Count('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
@@ -1258,6 +1282,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Instr('a'||Chr(10)||'b','^b',1,1,0)", 0L);
     evalEquals("Regexp_Instr('a'||Chr(10)||'b','a.b',1,1,0,'n')", 1L);
     evalFails("Regexp_Instr('Aa','a',1,1,0,'z')", ErrorCode.INVALID_ARGUMENT);
+    // The arguments are validated even with an empty pattern or a position after the end
+    evalFails("Regexp_Instr('abc','',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Instr('abc','b',5,0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Instr('abc','b',5,1,0,'z')", ErrorCode.INVALID_ARGUMENT);
+    // The return option must not wrap
+    evalEquals("Regexp_Instr('abc','b',1,1,4294967296)", 3L);
 
     // Invalid pattern, constant or not
     evalFails("Regexp_Instr('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
@@ -1317,6 +1347,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Regexp_Substr('a'||Chr(10)||'b','^b',1,1)");
     evalEquals("Regexp_Substr('a'||Chr(10)||'b','a.b',1,1,'n')", "a\nb");
     evalFails("Regexp_Substr('ABC','b',1,1,'z')", ErrorCode.INVALID_ARGUMENT);
+    // The arguments are validated even with an empty pattern or a position after the end
+    evalFails("Regexp_Substr('ABC','',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Substr('ABC','b',5,0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Substr('ABC','b',5,1,'z')", ErrorCode.INVALID_ARGUMENT);
 
     // Invalid pattern, constant or not
     evalFails("Regexp_Substr('abc','(')", ErrorCode.INVALID_REGEXP_PATTERN);
@@ -1378,6 +1412,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("BINARY '1F' || BINARY '2A3B' || NULL_BINARY", new byte[] {0x1F, 0x2A, 0x3B})
         .returnType(BinaryType.BINARY_NOT_NULL);
     evalNull("Concat(NULL_BINARY,NULL_BINARY)").returnType(BinaryType.BINARY);
+    // Empty binaries are not NULL
+    evalEquals("BINARY '' || BINARY ''", new byte[0]);
+    evalEquals("Concat(BINARY '',NULL_BINARY)", new byte[0]);
 
     evalFails("Concat()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 

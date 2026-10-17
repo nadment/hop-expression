@@ -35,6 +35,7 @@ String
 
 == Usage
 
+* The whitespace characters are the Java whitespace characters, which do not include the no-break space `CHR(160)`.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

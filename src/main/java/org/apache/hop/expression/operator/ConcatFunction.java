@@ -99,7 +99,7 @@ public class ConcatFunction extends Function {
       case 0: // Nothing to concat
         return new Literal(null, call.getType());
       case 1: // Concat(X) → X
-        return operands.get(0);
+        return operands.getFirst();
       default:
         Operator operator = StringConcatFunction.INSTANCE;
         if (call.getType().isName(TypeName.ARRAY)) {
@@ -161,15 +161,18 @@ public class ConcatFunction extends Function {
       byte[][] values = new byte[operands.length][];
       int i = 0;
       int length = 0;
+      boolean nulls = true;
       for (IExpression operand : operands) {
         byte[] value = operand.getValue(byte[].class);
         values[i++] = value;
         if (value != null) {
           length += value.length;
+          nulls = false;
         }
       }
 
-      if (length == 0) return null;
+      // Returns NULL only if all values are NULL, empty binaries give an empty binary
+      if (nulls) return null;
 
       final byte[] result = new byte[length];
       int index = 0;

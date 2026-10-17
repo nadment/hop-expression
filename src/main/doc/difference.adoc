@@ -33,6 +33,7 @@ Integer between 0 and 4
 * The result is the number of leading characters that the `SOUNDEX` values have in common, on a scale of 0 to 4. For example, `DIFFERENCE('Robert','Bobert')` returns 0, as their `SOUNDEX` values R163 and B163 differ on the first character.
 * A value of 0 indicates a weak or no similarity between the `SOUNDEX` values; a value of 4 indicates that the `SOUNDEX` values are extremely similar, or even identical.
 * Returns 0 if one of the strings has no letter, as its `SOUNDEX` value is empty.
+* The diacritic marks are removed first, like `SOUNDEX` does: `DIFFERENCE('Émile','Emile')` returns 4.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

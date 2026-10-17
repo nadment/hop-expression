@@ -16,10 +16,17 @@
  */
 package org.apache.hop.expression.util;
 
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class Characters {
+
+  // Only the combining marks left by the decomposition of the accented letters, not the modifier
+  // letters (Lm) and symbols (Sk) which are characters on their own, like ^ or the Japanese ー
+  private static final Pattern DIACRITICS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
   private static final byte[] FLAGS = new byte[256];
   private static final byte IS_DIGIT = 0x01;
@@ -219,5 +226,81 @@ public final class Characters {
       builder.appendCodePoint(chars[i % chars.length]);
     }
     return builder.toString();
+  }
+
+  /**
+   * Removes the accents (diacritic marks) from a string, the ligatures are left as is.
+   *
+   * <p>Example: {@code unaccent("Émile")} returns {@code "Emile"}.
+   *
+   * @param value the string
+   * @return the string without accents
+   */
+  public static String unaccent(final String value) {
+    final StringBuilder decomposed =
+        new StringBuilder(Normalizer.normalize(value, Normalizer.Form.NFD));
+
+    for (int i = 0; i < decomposed.length(); i++) {
+      if (decomposed.charAt(i) == 'Ł') {
+        decomposed.deleteCharAt(i);
+        decomposed.insert(i, 'L');
+      } else if (decomposed.charAt(i) == 'ł') {
+        decomposed.deleteCharAt(i);
+        decomposed.insert(i, 'l');
+      }
+    }
+
+    // Note that this doesn't correctly remove ligatures...
+    return DIACRITICS.matcher(decomposed).replaceAll("");
+  }
+
+  /**
+   * Transliterates the Latin letters that have no Unicode decomposition, and so no diacritic mark
+   * to remove, into letters A to Z: Ø to O, Æ to AE, Œ to OE, Đ to D, Ħ to H and Þ to TH, in upper
+   * and lower case.
+   *
+   * <p>The string is read in a single pass and is returned as is, without any copy, if it has no
+   * letter to transliterate.
+   *
+   * <p>Example: {@code transliterate("Søren")} returns {@code "Soren"}.
+   *
+   * @param str the string
+   * @return the transliterated string
+   */
+  public static String transliterate(final String str) {
+    @Nullable StringBuilder builder = null;
+    for (int i = 0; i < str.length(); i++) {
+      char ch = str.charAt(i);
+      // Fast path, Æ is the first letter to transliterate
+      String latin = (ch < 'Æ') ? null : transliterate(ch);
+      if (latin != null) {
+        if (builder == null) {
+          builder = new StringBuilder(str.length() + 4);
+          builder.append(str, 0, i);
+        }
+        builder.append(latin);
+      } else if (builder != null) {
+        builder.append(ch);
+      }
+    }
+    return (builder == null) ? str : builder.toString();
+  }
+
+  private static @Nullable String transliterate(final char ch) {
+    return switch (ch) {
+      case 'Æ' -> "AE"; // Æ
+      case 'æ' -> "ae"; // æ
+      case 'Ø' -> "O"; // Ø
+      case 'ø' -> "o"; // ø
+      case 'Þ' -> "TH"; // Þ
+      case 'þ' -> "th"; // þ
+      case 'Đ' -> "D"; // Đ
+      case 'đ' -> "d"; // đ
+      case 'Ħ' -> "H"; // Ħ
+      case 'ħ' -> "h"; // ħ
+      case 'Œ' -> "OE"; // Œ
+      case 'œ' -> "oe"; // œ
+      default -> null;
+    };
   }
 }

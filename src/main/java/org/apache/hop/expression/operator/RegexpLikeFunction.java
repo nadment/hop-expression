@@ -79,15 +79,15 @@ public class RegexpLikeFunction extends Function {
       return null;
     }
 
-    // An empty pattern matches nothing
-    if (pattern.isEmpty()) {
-      return Boolean.FALSE;
-    }
-
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 3) {
       String v2 = operands[2].getValue(String.class);
       flags = Regexp.parseFlags(v2);
+    }
+
+    // An empty pattern matches nothing, checked after the parameters so they are still validated
+    if (pattern.isEmpty()) {
+      return Boolean.FALSE;
     }
 
     try {

@@ -40,7 +40,7 @@ String
 == Usage
 
 * Normalization is often used when two strings render the same on the screen but have different Unicode code points.
-* Fails if form is not one of the supported forms.
+* Fails if form is not one of the supported forms. The form is case-sensitive and must be in upper case.
 * Returns NULL if string or form is NULL.
 
 == Examples

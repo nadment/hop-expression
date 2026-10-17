@@ -23,6 +23,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -46,6 +47,18 @@ public class SoundexFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
-    return SOUNDEX.soundex(value);
+    return soundex(value);
+  }
+
+  /**
+   * Returns the Soundex code of a string, the diacritic marks are removed first and the Latin
+   * letters that have no decomposition, like Ø or Æ, are transliterated.
+   *
+   * @param value the string
+   * @return the Soundex code, empty if the string has no letter
+   */
+  public static String soundex(final String value) {
+    // Soundex only maps the letters A to Z
+    return SOUNDEX.soundex(Characters.transliterate(Characters.unaccent(value)));
   }
 }

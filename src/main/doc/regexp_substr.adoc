@@ -45,7 +45,7 @@ String
 * The pattern is defined according to the Java language regular expression rules. The POSIX bracket expressions like `[:alnum:]` are not supported, use the Java classes like `\p{Alnum}`.
 * If no match is found, the function returns NULL.
 * An empty pattern matches nothing.
-* Raises an error if position or occurrence is less than 1.
+* Raises an error if position or occurrence is less than 1, returns NULL if position is beyond the end of source.
 * A NULL position, occurrence or parameters argument is treated as its default value.
 * An unknown letter in parameters raises an error. If both `c` and `i` are specified, the last one is used.
 * Returns NULL if source or pattern is NULL.

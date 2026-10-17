@@ -88,11 +88,6 @@ public class RegexpCountFunction extends Function {
       return null;
     }
 
-    // An empty pattern matches nothing
-    if (pattern.isEmpty()) {
-      return count;
-    }
-
     long start = 1;
     int parameters = Pattern.UNICODE_CASE;
     if (operands.length >= 3) {
@@ -109,8 +104,9 @@ public class RegexpCountFunction extends Function {
     if (start < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, start);
     }
-    // A search starting after the end of the string finds nothing
-    if (start - 1 > Characters.length(source)) {
+    // An empty pattern matches nothing and a search starting after the end of the string finds
+    // nothing, checked after the arguments so they are still validated
+    if (pattern.isEmpty() || start - 1 > Characters.length(source)) {
       return count;
     }
 

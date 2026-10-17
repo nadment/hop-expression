@@ -36,10 +36,10 @@ String
 
 == Usage
 
-* The string is split into at most 256 tokens.
+* The string is split into at most 256 tokens, the 256th token holds the rest of the string, delimiters included.
 * If string starts or ends with a delimiter, the empty string before or after that delimiter is a valid token.
 * Adjacent delimiters are treated as delimiters for empty tokens.
-* If part is negative, the tokens are counted backward from the end of the string.
+* If part is negative, the tokens are counted backward from the last token.
 * Returns NULL if the requested token does not exist.
 * Returns NULL if one of the arguments is NULL.
 

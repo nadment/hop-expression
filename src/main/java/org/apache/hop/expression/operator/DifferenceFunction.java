@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.language.Soundex;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -30,7 +29,6 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class DifferenceFunction extends Function {
-  private static final Soundex SOUNDEX = new Soundex();
   private static final int SOUNDEX_LENGTH = 4;
 
   public DifferenceFunction() {
@@ -43,8 +41,9 @@ public class DifferenceFunction extends Function {
   }
 
   private static int difference(final String str0, final String str1) {
-    String soundex0 = SOUNDEX.soundex(str0);
-    String soundex1 = SOUNDEX.soundex(str1);
+    // Same codes as the SOUNDEX function
+    String soundex0 = SoundexFunction.soundex(str0);
+    String soundex1 = SoundexFunction.soundex(str1);
     // The SOUNDEX of a string without any letter is empty, there is no similarity
     if (soundex0.isEmpty() || soundex1.isEmpty()) {
       return 0;

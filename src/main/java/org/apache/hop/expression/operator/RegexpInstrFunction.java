@@ -83,11 +83,6 @@ public class RegexpInstrFunction extends Function {
       return null;
     }
 
-    // An empty pattern matches nothing
-    if (regexp.isEmpty()) {
-      return 0L;
-    }
-
     // Default position 1
     long position = 1;
     if (operands.length >= 3) {
@@ -98,10 +93,6 @@ public class RegexpInstrFunction extends Function {
     }
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
-    }
-    // A search starting after the end of the string finds nothing
-    if (position - 1 > Characters.length(input)) {
-      return 0L;
     }
 
     // Default occurrence
@@ -122,7 +113,8 @@ public class RegexpInstrFunction extends Function {
     if (operands.length >= 5) {
       Long v4 = operands[4].getValue(Long.class);
       if (v4 != null) {
-        returnOption = v4.intValue();
+        // Compare the long value, the conversion to int would wrap a multiple of 2^32 to 0
+        returnOption = (v4 == 0) ? 0 : 1;
       }
     }
 
@@ -131,6 +123,12 @@ public class RegexpInstrFunction extends Function {
     if (operands.length == 6) {
       String v5 = operands[5].getValue(String.class);
       flags = Regexp.parseFlags(v5);
+    }
+
+    // An empty pattern matches nothing and a search starting after the end of the string finds
+    // nothing, checked after the arguments so they are still validated
+    if (regexp.isEmpty() || position - 1 > Characters.length(input)) {
+      return 0L;
     }
 
     try {

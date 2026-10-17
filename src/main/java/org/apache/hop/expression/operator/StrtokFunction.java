@@ -77,7 +77,7 @@ public class StrtokFunction extends Function {
 
     if (index < 0) index += parts.length + 1;
 
-    // If the part index is out of range, the returned value is an empty string.
+    // If the part index is out of range, the returned value is NULL.
     if (index < 1 || index > parts.length) {
       return null;
     }

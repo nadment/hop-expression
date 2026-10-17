@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.text.Normalizer;
-import java.util.regex.Pattern;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,6 +25,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -37,10 +36,6 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class UnaccentFunction extends Function {
-
-  // Only the combining marks left by the decomposition of the accented letters, not the modifier
-  // letters (Lm) and symbols (Sk) which are characters on their own, like ^ or the Japanese ー
-  private static final Pattern DIACRITICS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
   public UnaccentFunction() {
     super(
@@ -68,20 +63,6 @@ public class UnaccentFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    final StringBuilder decomposed =
-        new StringBuilder(Normalizer.normalize(value, Normalizer.Form.NFD));
-
-    for (int i = 0; i < decomposed.length(); i++) {
-      if (decomposed.charAt(i) == '\u0141') {
-        decomposed.deleteCharAt(i);
-        decomposed.insert(i, 'L');
-      } else if (decomposed.charAt(i) == '\u0142') {
-        decomposed.deleteCharAt(i);
-        decomposed.insert(i, 'l');
-      }
-    }
-
-    // Note that this doesn't correctly remove ligatures...
-    return DIACRITICS.matcher(decomposed).replaceAll("");
+    return Characters.unaccent(value);
   }
 }

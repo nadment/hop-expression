@@ -30,7 +30,8 @@ String
 
 == Usage
 
-* A word starts after a space, a tab or a punctuation character, such as an apostrophe, a period, a hyphen or a question mark: `INITCAP('won''t it?no')` returns 'Won'T It?No'.
+* A word starts after a space, a tab or an ASCII punctuation character, such as an apostrophe, a period, a hyphen or a question mark: `INITCAP('won''t it?no')` returns 'Won'T It?No'.
+* A newline, a no-break space or a non-ASCII punctuation character, such as `«`, does not start a word.
 * Returns NULL if the argument is NULL.
 
 == Examples

@@ -82,11 +82,6 @@ public class RegexpSubstrFunction extends Function {
       return null;
     }
 
-    // An empty pattern matches nothing
-    if (regexp.isEmpty()) {
-      return null;
-    }
-
     // Default position 1
     long position = 1;
     if (operands.length >= 3) {
@@ -97,10 +92,6 @@ public class RegexpSubstrFunction extends Function {
     }
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
-    }
-    // A search starting after the end of the string finds nothing
-    if (position - 1 > Characters.length(input)) {
-      return null;
     }
 
     // Default occurrence
@@ -120,6 +111,12 @@ public class RegexpSubstrFunction extends Function {
     if (operands.length == 5) {
       String v4 = operands[4].getValue(String.class);
       flags = Regexp.parseFlags(v4);
+    }
+
+    // An empty pattern matches nothing and a search starting after the end of the string finds
+    // nothing, checked after the arguments so they are still validated
+    if (regexp.isEmpty() || position - 1 > Characters.length(input)) {
+      return null;
     }
 
     try {

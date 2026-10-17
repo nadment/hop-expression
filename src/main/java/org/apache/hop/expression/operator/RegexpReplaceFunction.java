@@ -91,11 +91,6 @@ public class RegexpReplaceFunction extends Function {
       return null;
     }
 
-    // An empty pattern matches nothing
-    if (pattern.isEmpty()) {
-      return input;
-    }
-
     // Default empty string
     String replacement = "";
     if (operands.length >= 3) {
@@ -116,10 +111,6 @@ public class RegexpReplaceFunction extends Function {
     if (position < 1) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, position);
     }
-    // A search starting after the end of the string replaces nothing
-    if (position - 1 > Characters.length(input)) {
-      return input;
-    }
 
     // Default occurrence 0
     int occurrence = 0;
@@ -139,6 +130,12 @@ public class RegexpReplaceFunction extends Function {
     if (operands.length == 6) {
       String v5 = operands[5].getValue(String.class);
       flags = Regexp.parseFlags(v5);
+    }
+
+    // An empty pattern matches nothing and a search starting after the end of the string replaces
+    // nothing, checked after the arguments so they are still validated
+    if (pattern.isEmpty() || position - 1 > Characters.length(input)) {
+      return input;
     }
 
     try {

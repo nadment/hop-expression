@@ -46,8 +46,9 @@ String
 == Usage
 
 * If the requested part or key is not found, the function returns NULL.
-* If part is not one of the allowed values, or if url is not a valid URL, the function returns NULL. The part is case-sensitive and must be in upper case.
-* The `FILE` part is the path and the query, without the fragment.
+* If part is not one of the allowed values, or if url is not a valid URI reference (for example if it contains a space), the function returns NULL. The part is case-sensitive and must be in upper case.
+* A relative reference without protocol is accepted: `PARSE_URL('abc','PATH')` returns 'abc'.
+* The `FILE` part is the path and the query, without the fragment. It is an empty string if the URL has neither path nor query, and starts with `?` if the URL has a query but no path.
 * If a key appears several times in the query, the first value is returned.
 * Returns NULL if one of the arguments is NULL.
 

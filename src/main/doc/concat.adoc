@@ -21,7 +21,7 @@ Concatenates two or more strings, binaries or arrays into one.
 == Syntax
 
 ----
-CONCAT( string1, string2 [, string3... ] )
+CONCAT( string1 [, string2... ] )
 ----
 
 The xref:concat.adoc["||",role=op] operator provides alternative syntax.
@@ -37,7 +37,8 @@ String, Binary or Array
 == Usage
 
 * The arguments of another data type, such as a number, a boolean or a date, are converted to string.
-* If an argument is an array, the other arguments are added as elements to the array.
+* With a single argument, the function returns the argument.
+* If an argument is an array, the other arguments are added as elements to the array. Two arrays are joined: `[1,2,3] || [4,5]` returns `[1,2,3,4,5]`.
 * NULL values are ignored.
 * Returns NULL only if all arguments are NULL.
 

@@ -36,7 +36,7 @@ The data type of the returned value is the same as the data type of value (Strin
 
 == Usage
 
-* Both value and pad must be of the same string or binary type.
+* If pad is not of the same type as value, it is converted: a string pad is encoded in UTF-8 for a binary value, and a binary pad is decoded as UTF-8 for a string value.
 * If pad is omitted or NULL, the function pads with spaces for a string or with `0x00` for a binary.
 * If length is smaller than the length of value, the function truncates value to length.
 * If pad is empty, value is not padded but is still truncated.
