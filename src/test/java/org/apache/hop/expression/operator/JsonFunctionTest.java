@@ -46,7 +46,8 @@ class JsonFunctionTest extends ExpressionTest {
     // embedded in array (won't work in transformation after variables resolution because $[0] is
     // translated)
     // https://hop.apache.org/manual/latest/variables.html#_hexadecimal_values
-    evalEquals("JSON_VALUE('[ { \"id\":3902113,\"similarity\":0.95 } ]','$[0].similarity')", 0.95);
+    evalEquals(
+        "JSON_VALUE('[ { \"id\":3902113,\"similarity\":0.95 } ]','$[0].similarity')", "0.95");
 
     // bracket–notation
     evalEquals(
@@ -79,8 +80,9 @@ class JsonFunctionTest extends ExpressionTest {
     // Support JSON without field name quotes
     evalEquals("Json_Value('{name:\"Smith\", age:29}','$.name')", "Smith");
 
-    // Support JSON function
+    // Support JSON function, the returning type also applies to its result
     evalEquals("Json_Value(FIELD_JSON, '$..book.length()' RETURNING INTEGER)", 4L);
+    evalEquals("Json_Value(FIELD_JSON, '$..book.length()')", "4");
 
     // Return NULL from NULL value
     evalNull("Json_Value(NULL_STRING,'$.name')");
@@ -93,6 +95,8 @@ class JsonFunctionTest extends ExpressionTest {
     evalNull("Json_Value(FIELD_JSON,NULL_STRING)");
 
     evalFails("Json_Value(FIELD_JSON)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Json_Value(FIELD_DATE,'$')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Json_Value(FIELD_INTEGER,'$')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Json_Value(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
     evalFails("Json_Value(FIELD_JSON,'$.notexist' RETURNING INET)", ErrorCode.UNEXPECTED_DATA_TYPE);
   }
@@ -110,6 +114,13 @@ class JsonFunctionTest extends ExpressionTest {
         "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}'::JSON,'$.Suspect.Hobbies')",
         JsonConversion.convert("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
     evalEquals("Json_Query('null'::JSON,'$')", JsonConversion.convert("null"));
+
+    // Coerce a JSON-formatted string to JSON
+    evalEquals(
+        "Json_Query('{\"language\":[\"English\", \"French\"]}','$.language')",
+        JsonConversion.convert("[\"English\",\"French\"]"));
+    evalEquals("Json_Query('{name:\"Smith\"}')", JsonConversion.convert("{name:\"Smith\"}"));
+    evalNull("Json_Query(NULL_STRING,'$')");
 
     // Wildcard all elements
     evalEquals(
@@ -208,6 +219,14 @@ class JsonFunctionTest extends ExpressionTest {
         "Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$.b')",
         new Array(ArrayType.of(StringType.STRING), Literal.of("c")));
 
+    // Coerce a JSON-formatted string to JSON
+    evalEquals(
+        "Json_Keys('{\"a\": 1, \"b\": {\"c\": 30}}')",
+        new Array(ArrayType.of(StringType.STRING), Literal.of("a"), Literal.of("b")));
+    evalEquals(
+        "Json_Keys('{\"a\": 1, \"b\": {\"c\": 30}}','$.b')",
+        new Array(ArrayType.of(StringType.STRING), Literal.of("c")));
+
     // If the JSON object has no keys, an empty array is returned.
     evalEquals("Json_Keys(JSON '{}')", new Array(ArrayType.of(StringType.STRING)));
 
@@ -219,11 +238,15 @@ class JsonFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Json_Keys(NULL_JSON)").returnType(ArrayType.of(StringType.STRING));
-    // evalNull("Json_Keys(NULL_STRING)").returnType(ArrayType.of(StringType.STRING));
+    evalNull("Json_Keys(NULL_STRING)").returnType(ArrayType.of(StringType.STRING));
     evalNull("Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}',NULL_STRING)");
 
     // Returns `NULL` if the given path does not locate an object
     evalNull("Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$.c')");
+
+    // Returns `NULL` if the path or the JSON value does not locate an object
+    evalNull("Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}','$.a')");
+    evalNull("Json_Keys(JSON '[1,2]')");
 
     // Check operands
     evalFails("Json_Keys()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

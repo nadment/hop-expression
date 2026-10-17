@@ -44,7 +44,7 @@ include::jsonpath.adoc[]
 == Examples
 
 ----
-JSON_QUERY('{"language":["English", "French"]}','$.language') returns [English, French]
+JSON_QUERY('{"language":["English", "French"]}','$.language') returns ["English","French"]
 ----
 
 == See also

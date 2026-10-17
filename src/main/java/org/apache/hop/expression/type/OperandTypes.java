@@ -146,6 +146,9 @@ public final class OperandTypes {
   private static final ISingleOperandTypeChecker EXACT_STRING_OPERAND =
       operand -> !operand.getType().getName().is(TypeName.STRING, TypeName.UNKNOWN);
 
+  public static final IOperandTypeChecker EXACT_STRING = sequence(EXACT_STRING_OPERAND);
+  public static final IOperandTypeChecker EXACT_STRING_STRING =
+      sequence(EXACT_STRING_OPERAND, explicit(TypeName.STRING));
   public static final IOperandTypeChecker EXACT_STRING_EXACT_STRING =
       sequence(EXACT_STRING_OPERAND, EXACT_STRING_OPERAND);
   public static final IOperandTypeChecker EXACT_STRING_EXACT_STRING_EXACT_STRING =
@@ -253,8 +256,8 @@ public final class OperandTypes {
   public static final IOperandTypeChecker JSON_VALUE =
       sequence(JSON, STRING)
           .or(sequence(JSON, STRING, DATATYPE))
-          .or(sequence(STRING, STRING))
-          .or(sequence(STRING, STRING, DATATYPE));
+          .or(sequence(EXACT_STRING_OPERAND, STRING))
+          .or(sequence(EXACT_STRING_OPERAND, STRING, DATATYPE));
 
   private OperandTypes() {
     // Utility class

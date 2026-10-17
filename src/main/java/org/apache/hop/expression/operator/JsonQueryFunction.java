@@ -57,7 +57,10 @@ public class JsonQueryFunction extends Function {
     super(
         "JSON_QUERY",
         ReturnTypes.JSON_NULLABLE,
-        OperandTypes.JSON.or(OperandTypes.JSON_STRING),
+        OperandTypes.JSON
+            .or(OperandTypes.JSON_STRING)
+            .or(OperandTypes.EXACT_STRING)
+            .or(OperandTypes.EXACT_STRING_STRING),
         OperatorCategory.JSON,
         "/docs/json_query.html");
   }

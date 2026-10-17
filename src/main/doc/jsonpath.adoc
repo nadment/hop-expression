@@ -28,7 +28,7 @@ These are the supported operators from the JsonPath standard.
 |`.name`|Child property with dot notation
 |`..name`|Child property at any level deeper
 |[`number`, `number`]|Array index or indexes
-|[`start`:`end`)]|Array slice operator
+|[`start`:`end`]|Array slice operator
 |?(`expression`)|Filter expression (Expression must evaluate to a boolean value).
 |===
 

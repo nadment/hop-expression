@@ -64,7 +64,10 @@ public class JsonKeysFunction extends Function {
     super(
         "JSON_KEYS",
         ReturnTypes.ARRAY_OF_STRING,
-        OperandTypes.JSON.or(OperandTypes.JSON_STRING),
+        OperandTypes.JSON
+            .or(OperandTypes.JSON_STRING)
+            .or(OperandTypes.EXACT_STRING)
+            .or(OperandTypes.EXACT_STRING_STRING),
         OperatorCategory.JSON,
         "/docs/json_keys.html");
   }
@@ -79,7 +82,10 @@ public class JsonKeysFunction extends Function {
       if (path == null) return null;
       try {
         JsonPath jsonPath = JsonPath.compile(path);
-        jsonNode = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+        Object value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+        // Returns NULL if the path does not locate a JSON node, like the result of a function
+        if (!(value instanceof JsonNode node)) return null;
+        jsonNode = node;
       } catch (PathNotFoundException e) {
         // Returns NULL if the path does not locate an object
         return null;
@@ -87,6 +93,9 @@ public class JsonKeysFunction extends Function {
         throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
       }
     }
+
+    // Returns NULL if the JSON value is not an object
+    if (!jsonNode.isObject()) return null;
 
     Set<IExpression> keys = new HashSet<>();
     Iterator<String> iterator = jsonNode.fieldNames();
