@@ -102,7 +102,7 @@ class MathematicalFunctionTest extends ExpressionTest {
   @Test
   void Div0() throws Exception {
     // Documentation example
-    evalEquals("DIV0(6,0)", 0L);
+    evalEquals("DIV0(6,0)", 0D).returnType(NumberType.of(7, 6, false));
     evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6, false));
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
     evalEquals("Div0(FIELD_INTEGER,0)", 0D);
@@ -164,6 +164,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalEquals("FACTORIAL(21)", new BigDecimal("51090942171709440000"));
     // The decimal part of a number is truncated
     evalEquals("FACTORIAL(5.7)", 120D);
+    evalEquals("FACTORIAL(-0.5)", 1D);
     evalEquals("Factorial(0)", BigDecimal.ONE);
     evalEquals("Factorial(1)", BigDecimal.ONE);
     evalEquals("Factorial(5)", new BigDecimal("120"));

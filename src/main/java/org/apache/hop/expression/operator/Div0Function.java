@@ -65,9 +65,9 @@ public class Div0Function extends Function {
       return Literal.NULL;
     }
 
-    // Simplify arithmetic DIV0(A,0) → 0 if x is not nullable
+    // Simplify arithmetic DIV0(A,0) → 0 if x is not nullable, keeping the number type of the call
     if (Literal.ZERO.equals(right) && !left.getType().isNullable()) {
-      return Literal.ZERO;
+      return new Literal(BigDecimal.ZERO, call.getType());
     }
 
     // Simplify arithmetic DIV0(A,1) → A
