@@ -42,6 +42,10 @@ public class TryCastFunction extends CastFunction {
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
+    // An invalid format raises an error, it is not caught by TRY
+    if (call.getOperandCount() == 3 && !call.getOperand(0).isNull()) {
+      checkFormat(call.getOperand(0).getType(), call.getType(), call.getOperand(2));
+    }
     return new Call(TryFunction.INSTANCE, new Call(CastFunction.INSTANCE, call.getOperands()));
   }
 }

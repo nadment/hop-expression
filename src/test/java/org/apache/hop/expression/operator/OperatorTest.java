@@ -2835,6 +2835,26 @@ public class OperatorTest extends ExpressionTest {
       evalFails("Cast(123 as TRUE)", ErrorCode.INVALID_DATA_TYPE);
       evalFails("CAST('2020-01-01' AS NULL)", ErrorCode.INVALID_DATA_TYPE);
       evalFails("Cast(123 as 'Text')", ErrorCode.INVALID_DATA_TYPE);
+
+      // A format is not ignored when the conversion does not use it
+      evalFails("CAST('abc' AS STRING FORMAT 'xyz')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST(12.5 AS INTEGER FORMAT 'xyz')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST(12.5 AS NUMBER FORMAT '99.9')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST('yes' AS BOOLEAN FORMAT 'zz')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST(TRUE AS STRING FORMAT '999')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST('414243' AS BINARY FORMAT 'HEX')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST('{}' AS JSON FORMAT 'x')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST('10.0.0.1' AS INET FORMAT 'x')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST('5 years' AS INTERVAL FORMAT 'x')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("CAST(FIELD_STRING AS BOOLEAN FORMAT 'x')", ErrorCode.INVALID_ARGUMENT);
+      evalFails("TRY_CAST('yes' AS BOOLEAN FORMAT 'zz')", ErrorCode.INVALID_ARGUMENT);
+
+      // An invalid format raises an error, also with TRY_CAST
+      evalFails("CAST('12' AS INTEGER FORMAT 'xyz')", ErrorCode.INVALID_NUMBER_FORMAT);
+      evalFails("TRY_CAST(FIELD_STRING AS NUMBER FORMAT 'xyz')", ErrorCode.INVALID_NUMBER_FORMAT);
+      evalFails("CAST(12 AS STRING FORMAT 'xyz')", ErrorCode.INVALID_NUMBER_FORMAT);
+      evalFails("TRY_CAST('2020' AS DATE FORMAT 'OOOO')", ErrorCode.INVALID_DATE_FORMAT);
+      evalFails("CAST(DATE '2020-01-01' AS STRING FORMAT 'OOOO')", ErrorCode.INVALID_DATE_FORMAT);
     }
 
     @Test

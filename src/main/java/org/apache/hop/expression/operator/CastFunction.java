@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -31,6 +32,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.NumberFormat;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -79,6 +82,11 @@ public class CastFunction extends Function {
     // Cast null value
     if (call.getOperand(0).isNull()) {
       return new Literal(null, call.getType());
+    }
+
+    // Check the format, instead of ignoring it when the conversion does not use it
+    if (call.getOperandCount() == 3) {
+      checkFormat(call.getOperand(0).getType(), call.getType(), call.getOperand(2));
     }
 
     // When cast without format
@@ -142,6 +150,29 @@ public class CastFunction extends Function {
     // TODO: the CAST function and the :: operator should call the appropriate conversion function.
 
     return call;
+  }
+
+  /**
+   * Checks that the conversion uses a format and that the format is valid. A number format converts
+   * a string to a number or a number to a string, a date format converts a string to a date or a
+   * date to a string.
+   *
+   * @param from the type of the value to convert
+   * @param to the type to convert the value to
+   * @param operand the format
+   * @throws ExpressionException if the conversion does not use a format or the format is invalid
+   */
+  static void checkFormat(final Type from, final Type to, final IExpression operand) {
+    String format = operand.getValue(String.class);
+    if (Types.isString(from) && Types.isNumeric(to)
+        || Types.isNumeric(from) && Types.isString(to)) {
+      NumberFormat.of(format);
+    } else if (Types.isString(from) && Types.isDate(to)
+        || Types.isDate(from) && Types.isString(to)) {
+      DateTimeFormat.of(format);
+    } else {
+      throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, format);
+    }
   }
 
   @Override

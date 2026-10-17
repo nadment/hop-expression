@@ -45,7 +45,9 @@ type:: The data type to convert the value to. Supported data types:
 * String
 * Json
 
-format:: The optional format used for the conversion.
+format:: The optional format used for the conversion:
+* a xref:numberformat.adoc[number format] to convert a string to a number or an integer, or a number or an integer to a string,
+* a xref:dateformat.adoc[date format] to convert a string to a date, or a date to a string.
 
 The type can also be written as a string literal, for example `CAST('1' AS 'INTEGER')`.
 
@@ -55,7 +57,7 @@ The data type of the returned value is the type specified in the `AS` clause.
 
 == Usage
 
-* If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format raises an error in both cases.
+* If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format, or a format with a conversion that does not use one, like `CAST('yes' AS BOOLEAN FORMAT 'zz')`, raises an error in both cases.
 * When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
 * When converting a boolean to a number, FALSE is 0 and TRUE is 1.
 * When converting a string to a boolean, the accepted values are `true`, `t`, `yes`, `y`, `on` and `1` for TRUE, and `false`, `f`, `no`, `n`, `off` and `0` for FALSE. The values are not case-sensitive and the leading and trailing spaces are ignored, like for a number; any other value raises an error.
