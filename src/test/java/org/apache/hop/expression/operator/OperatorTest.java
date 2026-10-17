@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
@@ -810,8 +811,6 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testPredicate() throws Exception {
       // Operator syntax
-      evalTrue("FIELD_BOOLEAN_TRUE is not false").returnType(BooleanType.BOOLEAN_NOT_NULL);
-      evalTrue("NULL_BOOLEAN is null").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("NOT (NULL_BOOLEAN is not null)").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalFalse("NOT 1").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("NOT 0").returnType(BooleanType.BOOLEAN_NOT_NULL);
@@ -820,19 +819,46 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("NOT FIELD_STRING_BOOLEAN_TRUE::BOOLEAN").returnType(BooleanType.BOOLEAN);
       evalTrue("NOT NOT True").returnType(BooleanType.BOOLEAN_NOT_NULL);
 
+      // A number is converted to a boolean, 0 is FALSE and any other value is TRUE
+      evalFalse("NOT 1.5").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalTrue("NOT 0.0").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalFalse("NOT FIELD_NUMBER").returnType(BooleanType.BOOLEAN);
+
+      // NOT has a lower precedence than a comparison
+      evalFalse("NOT FIELD_INTEGER = 40");
+      evalTrue("NOT FIELD_INTEGER = 41");
+
       // Function syntax
       evalTrue("NOT(FALSE)").returnType(BooleanType.BOOLEAN_NOT_NULL);
     }
 
     @Test
+    void testOperator() {
+      // The operator used by the expression editor
+      BoolNotFunction operator = new BoolNotFunction("NOT");
+      assertEquals("BOOLNOT", operator.getId());
+      assertEquals("NOT", operator.getName());
+    }
+
+    @Test
     void testNullHandling() throws Exception {
       evalNull("NOT NULL_BOOLEAN").returnType(BooleanType.BOOLEAN);
+      evalNull("NOT NULL_INTEGER").returnType(BooleanType.BOOLEAN);
+      evalNull("NOT NULL").returnType(BooleanType.BOOLEAN);
     }
 
     @Test
     void testError() throws Exception {
-      evalFails("FIELD_BOOLEAN_TRUE is ", ErrorCode.SYNTAX_ERROR);
       evalFails("NOT", ErrorCode.SYNTAX_ERROR);
+      evalFails("NOT()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+      evalFails("NOT(TRUE, FALSE)", ErrorCode.TOO_MANY_ARGUMENTS);
+
+      // Other data types than boolean and number raise an error
+      evalFails("NOT 'abc'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("NOT FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("NOT FIELD_DATE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("NOT FIELD_BINARY", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("NOT FIELD_JSON", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -840,6 +866,10 @@ public class OperatorTest extends ExpressionTest {
       optimize("NOT FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
       optimize("NOT NOT FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
       optimize("NOT NOT NOT FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
+      // A number is converted to a boolean before the simplification, the result is a boolean
+      optimize("NOT NOT FIELD_INTEGER", "CAST(FIELD_INTEGER AS BOOLEAN)")
+          .returnType(BooleanType.BOOLEAN);
+      optimize("NOT FIELD_INTEGER = 40", "FIELD_INTEGER!=40");
       optimizeFalse("not true");
       optimizeTrue("not false");
       optimizeTrue("not not true");
@@ -1645,7 +1675,7 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("False IS Null");
       evalTrue("NULL_INTEGER IS NULL");
       evalTrue("NULL_STRING IS NULL");
-      evalTrue("NULL_BOOLEAN IS NULL");
+      evalTrue("NULL_BOOLEAN is null").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalFalse("FIELD_BOOLEAN_TRUE IS NULL").returnType(BooleanType.BOOLEAN_NOT_NULL);
     }
 
