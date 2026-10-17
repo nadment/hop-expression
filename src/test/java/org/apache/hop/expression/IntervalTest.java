@@ -176,6 +176,14 @@ public class IntervalTest extends ExpressionTest {
     assertEquals("-0-1 +2 03:00:00.000000000", Interval.ofSigned(-1, 2, -10800, 0).toString());
     assertEquals("-0-0 1 +01:00:00.000000000", Interval.ofSigned(0, -1, 3600, 0).toString());
     assertEquals("-0-0 0 00:00:01.500000000", Interval.ofSigned(0, 0, -1, -500000000).toString());
+
+    // The smallest number of days is written with a single minus sign
+    Interval smallest = Interval.ofSigned(0, Long.MIN_VALUE, 0, 0);
+    assertEquals("-0-0 9223372036854775808 00:00:00.000000000", smallest.toString());
+    assertEquals("-9223372036854775808", smallest.toString(IntervalQualifier.DAY));
+    assertEquals(
+        "+0-1 -9223372036854775808 00:00:00.000000000",
+        Interval.ofSigned(1, Long.MIN_VALUE, 0, 0).toString());
   }
 
   @Test

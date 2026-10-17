@@ -114,7 +114,12 @@ public class AbsFunction extends Function {
       Interval value = operands[0].getValue(Interval.class);
       if (value == null) return null;
 
-      return value.abs();
+      // The absolute value of a part that is the smallest long value is out of range
+      try {
+        return value.abs();
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.INTERVAL_OVERFLOW, getName());
+      }
     }
   }
 }

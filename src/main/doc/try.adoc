@@ -37,6 +37,7 @@ The data type of the returned value is the same as the data type of the expressi
 * The following errors are handled:
 ** Division by zero
 ** Arithmetic overflow
+** Date or interval out of the supported range, like `ADD_YEARS(DATE '2020-01-01', 2000000000)`
 ** Invalid cast or function argument
 ** Argument value out of range
 * Any other error is raised.

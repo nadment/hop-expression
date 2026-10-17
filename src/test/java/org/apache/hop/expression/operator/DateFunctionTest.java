@@ -660,15 +660,57 @@ class DateFunctionTest extends ExpressionTest {
         "Add_NanoSeconds(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
     evalEquals(
-        "Add_NanoSeconds(DATE '2019-01-15',140)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140));
+            "Add_NanoSeconds(DATE '2019-01-15',140)",
+            LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140))
+        .returnType(DateType.DATE_NOT_NULL);
+
+    // The decimal part of a negative number is also truncated
+    evalEquals(
+        "Add_Nanoseconds(DATE '2019-01-15', -20.9)",
+        LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 59, 999999980));
+
+    // Fields, one billion nanoseconds is one second
+    evalEquals(
+            "Add_Nanoseconds(FIELD_TIMESTAMP, 1000000000)",
+            LocalDateTime.of(2023, Month.FEBRUARY, 28, 22, 11, 2))
+        .returnType(DateType.DATE);
+    evalEquals(
+        "Add_Nanoseconds(FIELD_DATE, FIELD_INTEGER)",
+        LocalDateTime.of(1981, Month.JUNE, 23, 21, 44, 58, 123000040));
+
+    // The time zone is kept
+    evalEquals(
+        "Add_Nanoseconds(TIMESTAMP '2019-01-15 10:00:00 +02:00', 1)",
+        ZonedDateTime.of(2019, 1, 15, 10, 0, 0, 1, ZoneOffset.ofHours(2)));
+    evalEquals(
+        "Add_Nanoseconds(TIMESTAMP '2019-01-15 10:00:00' AT TIME ZONE 'Europe/Paris', 1)",
+        ZonedDateTime.of(2019, 1, 15, 10, 0, 0, 1, ZoneId.of("Europe/Paris")));
+
+    // The largest number of nanoseconds is about 292 years
+    evalEquals(
+        "Add_Nanoseconds(DATE '2019-01-15', 9223372036854775807)",
+        LocalDateTime.of(2311, Month.APRIL, 26, 23, 47, 16, 854775807));
+
+    // A result out of the range of dates raises an error
+    evalFails(
+        "Add_Nanoseconds(Add_Years(DATE '2019-01-15', 999997980), 9223372036854775807)",
+        ErrorCode.DATE_OVERFLOW);
+    evalNull("TRY(Add_Nanoseconds(Add_Years(DATE '2019-01-15', 999997980), 9223372036854775807))");
+    // A number out of the integer range raises an error
+    evalFails("Add_Nanoseconds(DATE '2019-01-15', 1E20)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
 
     // Null handling
     evalNull("Add_NanoSeconds(NULL_DATE,140)");
     evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
+    evalNull("Add_NanoSeconds(NULL,140)").returnType(DateType.DATE);
+    evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL)");
 
     // Check operands
     evalFails("Add_NanoSeconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_NanoSeconds(DATE '2019-01-15',1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Add_NanoSeconds('2019-01-15',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Add_NanoSeconds(FIELD_INTEGER,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Add_NanoSeconds(DATE '2019-01-15','5')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_NanoSeconds(FIELD_DATE,0)", "FIELD_DATE");
@@ -1221,6 +1263,13 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("MAKE_INTERVAL(0,0,30000,0,0,0)", Interval.of(0, 0, 30000));
     evalFails("MAKE_INTERVAL(0,0,0,0,0,1e30)", ErrorCode.INTERVAL_OVERFLOW);
     evalFails("MAKE_INTERVAL(9223372036854775807,0,0,0,0,0)", ErrorCode.INTERVAL_OVERFLOW);
+
+    // The smallest number of days is written with a single minus sign
+    optimize(
+        "MAKE_INTERVAL(0,0,-9223372036854775807-1,0,0,0)", "INTERVAL -9223372036854775808 DAY");
+    evalEquals(
+        "CAST(MAKE_INTERVAL(0,0,-9223372036854775807-1,0,0,0) AS STRING)",
+        "-0-0 9223372036854775808 00:00:00.000000000");
   }
 
   @Test

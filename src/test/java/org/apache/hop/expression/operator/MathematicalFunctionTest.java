@@ -78,6 +78,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalEquals("Abs(INTERVAL 5 YEARS)", Interval.of(5)).returnType(IntervalType.INTERVAL_NOT_NULL);
     evalEquals("Abs(INTERVAL -5 YEARS)", Interval.of(5)).returnType(IntervalType.INTERVAL_NOT_NULL);
     evalNull("Abs(NULL_STRINg::INTERVAL)").returnType(IntervalType.INTERVAL);
+    // The absolute value of an interval with the smallest value is out of range
+    evalFails("Abs(MAKE_INTERVAL(0,0,-9223372036854775807-1,0,0,0))", ErrorCode.INTERVAL_OVERFLOW);
 
     // Check operands
     evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

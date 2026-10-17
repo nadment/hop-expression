@@ -28,6 +28,7 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.Nested;
@@ -132,6 +133,14 @@ class SpecialFunctionTest extends ExpressionTest {
       // @code{ErrorCode.ARITHMETIC_OVERFLOW}
       evalNull("TRY(9223372036854775807::INTEGER+1::INTEGER)").returnType(IntegerType.INTEGER);
       optimize("TRY(9223372036854775807::INTEGER+1::INTEGER)", "NULL");
+
+      // @code{ErrorCode.DATE_OVERFLOW}
+      evalNull("TRY(ADD_YEARS(FIELD_DATE,2000000000))").returnType(DateType.DATE);
+      evalNull("TRY(ADD_DAYS(FIELD_DATE,1000000000000))");
+
+      // @code{ErrorCode.INTERVAL_OVERFLOW}
+      evalNull("TRY(MAKE_INTERVAL(9223372036854775807,1,0,0,0,0))")
+          .returnType(IntervalType.INTERVAL);
 
       // @code{ErrorCode.INTEGER_CONVERSION_OVERFLOW}
       evalNull("TRY(CAST(9223372036854775808 as INTEGER))").returnType(IntegerType.INTEGER);

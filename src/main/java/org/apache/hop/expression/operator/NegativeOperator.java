@@ -139,7 +139,11 @@ public class NegativeOperator extends PrefixUnaryOperator {
     public @Nullable Object eval(final IExpression[] operands) {
       Interval interval = operands[0].getValue(Interval.class);
       if (interval == null) return null;
-      return interval.negate();
+      try {
+        return interval.negate();
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.INTERVAL_OVERFLOW, getName());
+      }
     }
   }
 }

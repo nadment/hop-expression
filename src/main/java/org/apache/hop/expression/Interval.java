@@ -685,9 +685,14 @@ public class Interval implements Serializable, Comparable<Interval> {
     return of(years, months, days, hours, minutes, seconds, nanos);
   }
 
-  /** Negate the interval (change the sign of each part) */
+  /**
+   * Negate the interval (change the sign of each part)
+   *
+   * @throws ArithmeticException if a part is the smallest long value, its negation overflows
+   */
   public final Interval negate() {
-    return new Interval(-months, -days, -seconds, -nanos);
+    return new Interval(
+        Math.negateExact(months), Math.negateExact(days), Math.negateExact(seconds), -nanos);
   }
 
   /** Abs the interval, negate it if it is less than zero */
@@ -857,7 +862,7 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (days != 0 && (days < 0) != negative) {
       sb.append(days < 0 ? '-' : '+');
     }
-    sb.append(Math.abs(days));
+    sb.append(absToString(days));
     sb.append(' ');
     if (timeSign != 0 && (timeSign < 0) != negative) {
       sb.append(timeSign < 0 ? '-' : '+');
@@ -905,7 +910,7 @@ public class Interval implements Serializable, Comparable<Interval> {
 
       case DAY:
         if (negative) sb.append('-');
-        sb.append(Math.abs(getDays()));
+        sb.append(absToString(getDays()));
         break;
 
       case HOUR:
@@ -927,14 +932,14 @@ public class Interval implements Serializable, Comparable<Interval> {
 
       case DAY_TO_HOUR:
         sb.append(negative ? '-' : '+');
-        sb.append(Math.abs(getDays()));
+        sb.append(absToString(getDays()));
         sb.append(' ');
         toStringHour(sb);
         break;
 
       case DAY_TO_SECOND:
         sb.append(negative ? '-' : '+');
-        sb.append(Math.abs(getDays()));
+        sb.append(absToString(getDays()));
         sb.append(' ');
         toStringHour(sb);
         sb.append(':');
@@ -969,6 +974,15 @@ public class Interval implements Serializable, Comparable<Interval> {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Returns the digits of the absolute value, the sign is written apart. Math.abs of the smallest
+   * long value is still negative, its digits are written as an unsigned value to not write two
+   * minus signs.
+   */
+  private static String absToString(final long value) {
+    return Long.toUnsignedString(Math.abs(value));
   }
 
   private void toStringHour(final StringBuilder sb) {

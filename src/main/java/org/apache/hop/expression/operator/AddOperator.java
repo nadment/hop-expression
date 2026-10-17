@@ -261,7 +261,11 @@ public class AddOperator extends BinaryOperator {
       Interval interval1 = operands[1].getValue(Interval.class);
       if (interval1 == null) return null;
 
-      return interval0.add(interval1);
+      try {
+        return interval0.add(interval1);
+      } catch (ArithmeticException e) {
+        throw new ExpressionException(ErrorCode.INTERVAL_OVERFLOW, getName());
+      }
     }
   }
 }

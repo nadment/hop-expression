@@ -737,6 +737,11 @@ public class OperatorTest extends ExpressionTest {
       // Negative
       optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
       optimize("-(FIELD_INTEGER-FIELD_NUMBER)", "FIELD_NUMBER-FIELD_INTEGER");
+
+      // The negation of an interval with the smallest value is out of range
+      evalEquals("-INTERVAL 5 YEAR", Interval.of(-5));
+      evalFails("-MAKE_INTERVAL(0,0,-9223372036854775807-1,0,0,0)", ErrorCode.INTERVAL_OVERFLOW);
+      evalNull("TRY(-MAKE_INTERVAL(0,0,-9223372036854775807-1,0,0,0))");
     }
   }
 
@@ -2171,6 +2176,12 @@ public class OperatorTest extends ExpressionTest {
       // The parts can have opposite signs, like PostgreSQL
       evalEquals("INTERVAL 1 MONTH+INTERVAL -1 DAY", Interval.ofSigned(1, -1, 0, 0));
       optimize("INTERVAL 1 MONTH+INTERVAL -1 DAY", "INTERVAL '+0-1 -1 00:00:00.000000000'");
+
+      // An interval out of the supported range raises an error
+      evalFails(
+          "INTERVAL 9223372036854775807 SECOND + INTERVAL 9223372036854775807 SECOND",
+          ErrorCode.INTERVAL_OVERFLOW);
+      evalNull("TRY(INTERVAL 9223372036854775807 SECOND + INTERVAL 9223372036854775807 SECOND)");
     }
   }
 
@@ -2268,6 +2279,16 @@ public class OperatorTest extends ExpressionTest {
       evalEquals(
           "DATE '2020-01-31' + (INTERVAL 1 MONTH - INTERVAL 1 DAY)", LocalDate.of(2020, 2, 28));
       evalFails("INTERVAL 5 HOUR - 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // An interval out of the supported range raises an error
+      evalFails(
+          "INTERVAL 9223372036854775807 SECOND - INTERVAL -9223372036854775807 SECOND",
+          ErrorCode.INTERVAL_OVERFLOW);
+      // The negation of the smallest value is out of range
+      evalFails(
+          "INTERVAL 1 DAY - MAKE_INTERVAL(0,0,-9223372036854775807-1,0,0,0)",
+          ErrorCode.INTERVAL_OVERFLOW);
+      evalNull("TRY(INTERVAL 9223372036854775807 SECOND - INTERVAL -9223372036854775807 SECOND)");
     }
   }
 
