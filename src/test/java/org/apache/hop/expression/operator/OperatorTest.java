@@ -920,6 +920,23 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("false XOR false").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("true XOR false").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalTrue("false XOR true").returnType(BooleanType.BOOLEAN_NOT_NULL);
+
+      // Evaluated with fields, not simplified at compile time
+      evalTrue("FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_FALSE").returnType(BooleanType.BOOLEAN);
+      evalTrue("FIELD_BOOLEAN_FALSE XOR FIELD_BOOLEAN_TRUE");
+      evalFalse("FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_TRUE");
+      evalFalse("FIELD_BOOLEAN_FALSE XOR FIELD_BOOLEAN_FALSE");
+
+      // A number is converted to a boolean
+      evalTrue("2.5 XOR 0").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalFalse("0 XOR 0");
+      evalTrue("FIELD_NUMBER XOR FIELD_BOOLEAN_FALSE");
+
+      // XOR has a lower precedence than AND and NOT, and a higher precedence than OR
+      evalTrue("TRUE XOR TRUE AND FALSE");
+      evalTrue("TRUE OR TRUE XOR TRUE");
+      evalTrue("NOT TRUE XOR TRUE");
+      evalTrue("TRUE XOR TRUE XOR TRUE");
     }
 
     @Test
@@ -927,6 +944,12 @@ public class OperatorTest extends ExpressionTest {
       evalNull("NULL XOR true");
       evalNull("true XOR NULLIF(true,true)");
       evalNull("false XOR NULLIF(true,true)");
+
+      // Evaluated with fields, not simplified at compile time
+      evalNull("FIELD_BOOLEAN_TRUE XOR NULL_BOOLEAN").returnType(BooleanType.BOOLEAN);
+      evalNull("NULL_BOOLEAN XOR FIELD_BOOLEAN_TRUE");
+      evalNull("NULL_BOOLEAN XOR FIELD_BOOLEAN_FALSE");
+      evalNull("NULL_BOOLEAN XOR NULL_BOOLEAN");
     }
 
     @Test
@@ -934,6 +957,36 @@ public class OperatorTest extends ExpressionTest {
       evalFails(" XOR true", ErrorCode.SYNTAX_ERROR);
       evalFails("XOR false", ErrorCode.SYNTAX_ERROR);
       evalFails("true XOR Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Other data types than boolean and number raise an error
+      evalFails("'abc' XOR TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING XOR TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    }
+
+    @Test
+    void testOptimize() throws Exception {
+      optimize("FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_FALSE");
+
+      // Simplify x XOR NULL → NULL
+      optimizeNull("FIELD_BOOLEAN_TRUE XOR NULL");
+      optimizeNull("NULL XOR FIELD_BOOLEAN_TRUE");
+
+      // Simplify x XOR FALSE → x
+      optimize("FIELD_BOOLEAN_TRUE XOR FALSE", "FIELD_BOOLEAN_TRUE");
+      optimize("FALSE XOR FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+      optimize("FIELD_INTEGER XOR FALSE", "CAST(FIELD_INTEGER AS BOOLEAN)")
+          .returnType(BooleanType.BOOLEAN);
+
+      // Simplify x XOR TRUE → NOT x
+      optimize("FIELD_BOOLEAN_TRUE XOR TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
+      optimize("TRUE XOR FIELD_BOOLEAN_TRUE", "NOT(FIELD_BOOLEAN_TRUE)");
+      evalFalse("FIELD_BOOLEAN_TRUE XOR TRUE");
+      evalNull("NULL_BOOLEAN XOR TRUE");
+      optimize("FIELD_INTEGER>5 XOR TRUE", "FIELD_INTEGER<=5");
+
+      // Simplify x XOR x → NVL2(x,FALSE,NULL), NULL and not FALSE if x is NULL
+      optimize("FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_TRUE", "NVL2(FIELD_BOOLEAN_TRUE,FALSE,NULL)");
+      evalNull("NULL_BOOLEAN XOR NULL_BOOLEAN");
     }
   }
 

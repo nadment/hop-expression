@@ -21,6 +21,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -63,7 +64,48 @@ public class BoolXorOperator extends BinaryOperator {
   /** Simplifies XOR expressions whose answer can be determined without evaluating both sides. */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Coerce numeric operands to boolean before simplification, x XOR FALSE → x must be a boolean
+    Types.coerceOperandsToBoolean(call);
+
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // x XOR NULL → NULL
+    if (left.isNull() || right.isNull()) {
+      return Literal.NULL_BOOLEAN;
+    }
+
+    // x XOR FALSE → x
+    if (Literal.FALSE.equals(right)) {
+      return left;
+    }
+    if (Literal.FALSE.equals(left)) {
+      return right;
+    }
+
+    // x XOR TRUE → NOT x
+    if (Literal.TRUE.equals(right)) {
+      return not(left);
+    }
+    if (Literal.TRUE.equals(left)) {
+      return not(right);
+    }
+
+    // x XOR x → NVL2(x,FALSE,NULL), FALSE if x is not NULL, but NULL and not FALSE if x is NULL
+    if (left.equals(right)) {
+      Call predicate = new Call(Nvl2Function.INSTANCE, left, Literal.FALSE, Literal.NULL_BOOLEAN);
+      predicate.inferReturnType();
+      return predicate;
+    }
+
     return call;
+  }
+
+  private static IExpression not(IExpression operand) {
+    Call predicate = new Call(BoolNotFunction.INSTANCE, operand);
+    predicate.inferReturnType();
+    return predicate;
   }
 
   @Override
