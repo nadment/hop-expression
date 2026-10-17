@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.type.DateType;
 import org.junit.jupiter.api.Test;
 
@@ -81,8 +83,8 @@ public class IdentifierTest extends ExpressionTest {
         LocalDate.of(2025, Month.JANUARY, 1));
     evalEquals("Abs(FIELD_STRING_NUMBER::NUMBER)", new BigDecimal("12.56"));
     evalEquals("LOWER(FIELD_STRING_JSON)", "{id:\"01\",name:\"john\",age:29}");
-    evalEquals("Json_Value(FIELD_STRING_JSON, '$.age')", new BigDecimal("29"));
-    // evalEquals("DECOMPRESS(FIELD_STRING)","");
+    evalEquals("Json_Value(FIELD_STRING_JSON, '$.age')", "29");
+    evalFails("DECOMPRESS(FIELD_STRING)", ErrorCode.DECOMPRESSION_ERROR);
   }
 
   @Test
@@ -128,7 +130,10 @@ public class IdentifierTest extends ExpressionTest {
 
   @Test
   void coercionValueMetaTimestamp() throws Exception {
-    evalEquals("FIRST_DAY(FIELD_TIMESTAMP)", LocalDate.of(2023, 2, 1)).returnType(DateType.DATE);
+    evalEquals(
+            "FIRST_DAY(FIELD_TIMESTAMP)",
+            ZonedDateTime.of(2023, 2, 1, 22, 11, 1, 0, ZoneOffset.UTC))
+        .returnType(DateType.DATE);
     evalEquals("HOUR(FIELD_TIMESTAMP)", 22L);
   }
 

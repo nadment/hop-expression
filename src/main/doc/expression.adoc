@@ -341,8 +341,8 @@ When there is no ambiguity about the data type of an expression value, it is imp
 |Boolean|❌|-|❌|✅|✅|✅|❌|❌|❌
 |Date|❌|❌|-|☑️|☑️|✅|❌|❌|❌
 |Integer|❌|✅|☑️|-|✅|✅|❌|❌|❌
-|Number|❌|✅|☑️|☑️|-|✅|❌|❌|❌
-|String|☑️|☑️|☑️|☑️|☑️|-|☑️|☑️|☑️
+|Number|❌|✅|☑️|✅|-|✅|❌|❌|❌
+|String|✅|☑️|☑️|☑️|☑️|-|☑️|☑️|☑️
 |Json|❌|❌|❌|❌|❌|✅|-|❌|❌
 |Inet|❌|❌|❌|❌|❌|✅|❌|-|❌
 |Interval|❌|❌|❌|❌|❌|✅|❌|❌|-
@@ -353,6 +353,8 @@ When there is no ambiguity about the data type of an expression value, it is imp
 ☑️ Cast: Explicit conversion
 
 * Numeric types can be coerced to a wider numeric type. For example, an INTEGER type can be coerced to a NUMBER.
+* A NUMBER is also coerced to an INTEGER when an integer is expected, an error is raised if the value is out of the integer range.
+* A STRING is coerced to a BINARY when a binary is expected, the result is the UTF-8 encoding of the string.
 
 == Variables
 
