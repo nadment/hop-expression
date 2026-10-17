@@ -22,6 +22,28 @@ import org.junit.jupiter.api.Test;
 class CharactersTest {
 
   @Test
+  void unaccent() {
+    assertEquals("Emile", Characters.unaccent("Émile"));
+    assertEquals("AAAAAAaaaaaa", Characters.unaccent("ÀÁÂÃÄÅàáâãäå"));
+    assertEquals("CcEeIiNnOoUuYy", Characters.unaccent("ÇçÉéÏïÑñÖöÜüÝý"));
+    // An already decomposed letter, e followed by the combining acute accent
+    assertEquals("e", Characters.unaccent("é"));
+    // The letters Ł and ł have no decomposition but are replaced
+    assertEquals("Lodz", Characters.unaccent("Łódź"));
+    // Greek letters keep their base letter
+    assertEquals("αωΩ", Characters.unaccent("άώὨ"));
+
+    // The ligatures and the letters without decomposition are left as is
+    assertEquals("ÆæØøŒœß", Characters.unaccent("ÆæØøŒœß"));
+    // The modifier letters and symbols are not accents of a letter
+    assertEquals("2^3 `x` ¨ ˜", Characters.unaccent("2^3 `x` ¨ ˜"));
+    assertEquals("Cafe ラーメン", Characters.unaccent("Café ラーメン"));
+
+    assertEquals("", Characters.unaccent(""));
+    assertEquals("Hop expression", Characters.unaccent("Hop expression"));
+  }
+
+  @Test
   void transliterate() {
     assertEquals("Soren", Characters.transliterate("Søren"));
     assertEquals("AEaeOoTHthDdHhOEoe", Characters.transliterate("ÆæØøÞþĐđĦħŒœ"));

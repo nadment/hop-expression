@@ -17,16 +17,11 @@
 package org.apache.hop.expression.util;
 
 import java.text.Normalizer;
-import java.util.regex.Pattern;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class Characters {
-
-  // Only the combining marks left by the decomposition of the accented letters, not the modifier
-  // letters (Lm) and symbols (Sk) which are characters on their own, like ^ or the Japanese ー
-  private static final Pattern DIACRITICS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
   private static final byte[] FLAGS = new byte[256];
   private static final byte IS_DIGIT = 0x01;
@@ -237,21 +232,37 @@ public final class Characters {
    * @return the string without accents
    */
   public static String unaccent(final String value) {
-    final StringBuilder decomposed =
-        new StringBuilder(Normalizer.normalize(value, Normalizer.Form.NFD));
+    // Fast path, a character before À has no canonical decomposition and is not a combining mark,
+    // so a string like an ASCII string is returned without any copy
+    int index = 0;
+    while (index < value.length() && value.charAt(index) < 'À') {
+      index++;
+    }
+    if (index == value.length()) {
+      return value;
+    }
 
+    final String decomposed = Normalizer.normalize(value, Normalizer.Form.NFD);
+    final StringBuilder builder = new StringBuilder(decomposed.length());
     for (int i = 0; i < decomposed.length(); i++) {
-      if (decomposed.charAt(i) == 'Ł') {
-        decomposed.deleteCharAt(i);
-        decomposed.insert(i, 'L');
-      } else if (decomposed.charAt(i) == 'ł') {
-        decomposed.deleteCharAt(i);
-        decomposed.insert(i, 'l');
+      char ch = decomposed.charAt(i);
+      // Only the combining marks left by the decomposition of the accented letters (block
+      // Combining Diacritical Marks), not the modifier letters (Lm) and symbols (Sk) which are
+      // characters on their own, like ^ or the Japanese ー
+      if (ch >= '̀' && ch <= 'ͯ') {
+        continue;
       }
+      // The letters Ł and ł have no decomposition
+      if (ch == 'Ł') {
+        ch = 'L';
+      } else if (ch == 'ł') {
+        ch = 'l';
+      }
+      builder.append(ch);
     }
 
     // Note that this doesn't correctly remove ligatures...
-    return DIACRITICS.matcher(decomposed).replaceAll("");
+    return builder.toString();
   }
 
   /**
