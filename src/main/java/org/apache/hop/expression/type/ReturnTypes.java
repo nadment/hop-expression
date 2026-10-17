@@ -168,15 +168,17 @@ public final class ReturnTypes {
       };
 
   /**
-   * Type-inference strategy for ABS function: INTEGER and INTERVAL are preserved, BOOLEAN gives
-   * INTEGER and any other type NUMBER, with the nullability of the operand #0.
+   * Type-inference strategy for ABS function: INTEGER, NUMBER and INTERVAL are preserved, BOOLEAN
+   * gives INTEGER and any other type NUMBER, with the nullability of the operand #0.
    */
   public static final IReturnTypeInference ABS_FUNCTION =
       call -> {
         Type type = call.getOperand(0).getType();
 
-        // Keep ARG0 type
-        if (type.isName(TypeName.INTEGER) || type.isName(TypeName.INTERVAL)) return type;
+        // Keep ARG0 type, the absolute value keeps the precision and the scale of a number
+        if (type.isName(TypeName.INTEGER)
+            || type.isName(TypeName.NUMBER)
+            || type.isName(TypeName.INTERVAL)) return type;
 
         // If boolean return integer
         if (type.isName(TypeName.BOOLEAN))

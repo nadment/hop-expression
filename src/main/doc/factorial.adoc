@@ -30,8 +30,8 @@ Number
 
 == Usage
 
-* Raises an error if the truncated argument is negative or greater than 33, for example `FACTORIAL(-0.5)` returns 1. The factorial of 33 has 37 digits, the largest factorial that fits in the maximum precision of a number.
-* The decimal part of a number is truncated: `FACTORIAL(5.7)` returns 120.
+* The decimal part of a number is truncated: `FACTORIAL(5.7)` returns 120, and `FACTORIAL(-0.5)` returns 1 because -0.5 is truncated to 0.
+* Raises an error if the truncated argument is negative or greater than 33, for example `FACTORIAL(-1)` or `FACTORIAL(34)`. The factorial of 33 has 37 digits, the largest factorial that fits in the maximum precision of a number.
 * Returns NULL if the argument is NULL.
 
 == Examples

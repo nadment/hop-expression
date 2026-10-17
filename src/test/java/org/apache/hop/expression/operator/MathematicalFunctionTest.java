@@ -60,6 +60,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalEquals("Abs(-1)", 1L).returnType(IntegerType.of(1, false));
     evalEquals("Abs(FIELD_INTEGER)", 40L).returnType(IntegerType.of(12));
     evalEquals("Abs(FIELD_NUMBER)", 5.12D).returnType(NumberType.NUMBER);
+    // A number keeps its precision and scale
+    evalEquals("Abs(-1.5)", 1.5D).returnType(NumberType.of(2, 1, false));
+    evalEquals("Abs(CAST(FIELD_NUMBER AS NUMBER(5,2)))", 5.12D).returnType(NumberType.of(5, 2));
     evalEquals("Abs(-1::INTEGER)", 1L);
     evalEquals("Abs(-1.12345679)", 1.12345679D);
     evalEquals(
@@ -177,6 +180,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // The largest argument is 33, its factorial of 37 digits fits in the precision of a number
     evalFails("Factorial(34)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Factorial(40)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Factorial(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     // The argument must not wrap
     evalFails("Factorial(4294967296)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Factorial(4294967301)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
