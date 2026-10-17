@@ -1831,6 +1831,20 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("NULL_STRING IS NULL");
       evalTrue("NULL_BOOLEAN is null").returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalFalse("FIELD_BOOLEAN_TRUE IS NULL").returnType(BooleanType.BOOLEAN_NOT_NULL);
+
+      // Any data type
+      evalTrue("NULL_DATE IS NULL");
+      evalFalse("FIELD_DATE IS NULL");
+      evalTrue("NULL_JSON IS NULL");
+      evalFalse("FIELD_JSON IS NULL");
+      evalTrue("NULL_BINARY IS NULL");
+      evalFalse("FIELD_BINARY IS NULL");
+      evalTrue("NULL_INET IS NULL");
+      evalFalse("FIELD_INET IS NULL");
+
+      // A nullable expression
+      evalTrue("FIELD_INTEGER+NULL_INTEGER IS NULL").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalFalse("UPPER(FIELD_STRING) IS NULL");
     }
 
     @Test
@@ -1851,8 +1865,25 @@ public class OperatorTest extends ExpressionTest {
       optimizeFalse("CURRENT_DATE() IS NULL");
       optimizeFalse("UUID() IS NULL");
 
-      // CAST(x AS type) IS NULL → x IS NULL
+      // CAST(x AS type) IS NULL → x IS NULL, the call has only the value as operand
       optimize("CAST(FIELD_NUMBER AS STRING) IS NULL", "FIELD_NUMBER IS NULL");
+      optimize("FIELD_DATE::STRING IS NULL", "FIELD_DATE IS NULL");
+      optimize("CAST(FIELD_STRING AS STRING(2000)) IS NULL", "FIELD_STRING IS NULL");
+      optimize(
+          "CAST(FIELD_NUMBER AS STRING) IS NULL AND FIELD_NUMBER IS NULL", "FIELD_NUMBER IS NULL");
+      optimize(
+          "CAST(FIELD_NUMBER AS STRING) IS NULL OR FIELD_NUMBER IS NULL", "FIELD_NUMBER IS NULL");
+
+      // Not with a cast that can fail, the error must be raised
+      optimize("CAST(FIELD_STRING AS INTEGER) IS NULL");
+      evalFails("CAST(FIELD_STRING AS INTEGER) IS NULL", ErrorCode.CONVERSION_ERROR);
+      optimize("CAST(FIELD_INTEGER AS NUMBER(1)) IS NULL");
+      evalFails("CAST(FIELD_INTEGER AS NUMBER(1)) IS NULL", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NULL");
+      optimize(
+          "CAST(FIELD_DATE AS STRING FORMAT 'YYYY') IS NULL", "TO_CHAR(FIELD_DATE,'YYYY') IS NULL");
+      // TRY_CAST returns NULL if the cast fails
+      evalTrue("TRY_CAST(FIELD_STRING AS INTEGER) IS NULL");
     }
   }
 
@@ -1886,8 +1917,16 @@ public class OperatorTest extends ExpressionTest {
       optimizeTrue("CURRENT_DATE() IS NOT NULL");
       optimizeTrue("UUID() IS NOT NULL");
 
-      // CAST(x AS type) IS NOT NULL → x IS NOT NULL
+      // CAST(x AS type) IS NOT NULL → x IS NOT NULL, the call has only the value as operand
       optimize("CAST(FIELD_NUMBER AS STRING) IS NOT NULL", "FIELD_NUMBER IS NOT NULL");
+      optimize(
+          "CAST(FIELD_NUMBER AS STRING) IS NOT NULL AND FIELD_NUMBER IS NOT NULL",
+          "FIELD_NUMBER IS NOT NULL");
+
+      // Not with a cast that can fail, the error must be raised
+      optimize("CAST(FIELD_STRING AS INTEGER) IS NOT NULL");
+      evalFails("CAST(FIELD_STRING AS INTEGER) IS NOT NULL", ErrorCode.CONVERSION_ERROR);
+      optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NOT NULL");
     }
   }
 

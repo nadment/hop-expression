@@ -26,6 +26,8 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -64,11 +66,34 @@ public class IsNullOperator extends PostfixUnaryOperator {
     }
 
     // Simplify CAST(x AS type) IS NULL → x IS NULL
-    if (operand.isOperator(CastOperator.INSTANCE)) {
-      return new Call(call.getOperator(), call(operand).getOperands());
+    if (isSafeCast(operand)) {
+      return new Call(call.getOperator(), call(operand).getOperand(0));
     }
 
     return call;
+  }
+
+  /**
+   * Returns whether the expression is a cast that can neither fail nor return NULL for a value that
+   * is not NULL, so that the cast can be removed when checking if the value is NULL. A cast to a
+   * string without format of an atomic value never fails, nor does a loss-less cast, but a cast
+   * like CAST('abc' AS INTEGER) raises an error.
+   *
+   * @param operand the operand of IS NULL or IS NOT NULL
+   * @return true if the cast can be removed
+   */
+  static boolean isSafeCast(IExpression operand) {
+    if (!operand.isOperator(CastOperator.INSTANCE)) {
+      return false;
+    }
+    Call cast = call(operand);
+    // A format can fail to apply
+    if (cast.getOperandCount() > 2) {
+      return false;
+    }
+    Type source = cast.getOperand(0).getType();
+    Type target = cast.getType();
+    return (Types.isString(target) && source.isAtomic()) || Types.isLosslessCast(source, target);
   }
 
   @Override

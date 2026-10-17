@@ -57,9 +57,9 @@ public class IsNotNullOperator extends PostfixUnaryOperator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
 
-    // CAST(x AS type) IS NOT NULL → x IS NOT NULL
-    if (operand.isOperator(CastOperator.INSTANCE)) {
-      return new Call(call.getOperator(), call(operand).getOperands());
+    // CAST(x AS type) IS NOT NULL → x IS NOT NULL, if the cast can neither fail nor return NULL
+    if (IsNullOperator.isSafeCast(operand)) {
+      return new Call(call.getOperator(), call(operand).getOperand(0));
     }
 
     // If the operand is not nullable, always true
