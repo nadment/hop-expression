@@ -98,6 +98,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
           if (c == previous) {
             throw createUnparsableNumber(format, text, position);
           }
+          previous = c;
           position++;
           continue;
         }

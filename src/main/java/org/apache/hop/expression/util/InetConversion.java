@@ -18,7 +18,6 @@
 package org.apache.hop.expression.util;
 
 import java.net.InetAddress;
-import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
@@ -40,7 +39,12 @@ public final class InetConversion {
    * @throws ExpressionException - When the conversion is not possible
    */
   public static @Nullable InetAddress convert(final @Nullable String str) {
-    if (Utils.isEmpty(str)) return null;
+    if (str == null) return null;
+    // An empty string is not an address, InetAddress would return the loopback address
+    if (str.isEmpty()) {
+      throw new ExpressionException(
+          ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.INET, str);
+    }
     try {
       return InetAddress.getByName(str);
     } catch (Exception e) {

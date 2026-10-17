@@ -48,7 +48,10 @@ public abstract class Type {
    */
   @Getter protected final int precision;
 
-  /** The scale of this type, or (-1) if scale is not valid for this type. */
+  /**
+   * The scale of this type, or (-1) if scale is not valid for this type or not fixed, like NUMBER
+   * without precision and scale.
+   */
   @Getter protected final int scale;
 
   /** Queries whether this type allows null values. */
@@ -96,7 +99,9 @@ public abstract class Type {
   private void generateLiteral(StringBuilder builder) {
     TypeName id = getName();
     builder.append(id.name());
-    if (precision != id.getMaxPrecision() || (scale > 0 && scale != id.getDefaultScale())) {
+    // A type with a fixed scale writes it, NUMBER without scale has no fixed scale
+    boolean fixedScale = id.supportsScale() && scale != SCALE_NOT_SPECIFIED;
+    if (precision != id.getMaxPrecision() || fixedScale) {
       builder.append('(');
       builder.append(precision);
       if (scale > 0) {
@@ -119,6 +124,7 @@ public abstract class Type {
           typeName.getMaxPrecision());
     }
     if (typeName.supportsScale()
+        && scale != SCALE_NOT_SPECIFIED
         && (scale < typeName.getMinScale() || scale > typeName.getMaxScale())) {
       throw new ExpressionException(
           ErrorCode.SCALE_OUT_OF_RANGE,

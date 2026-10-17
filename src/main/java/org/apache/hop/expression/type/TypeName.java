@@ -302,14 +302,6 @@ public enum TypeName {
     return this.supportsScale;
   }
 
-  public int getDefaultScale() {
-    return switch (this) {
-      case NUMBER -> 9;
-      case BOOLEAN -> 0;
-      default -> -1;
-    };
-  }
-
   /** Returns whether types are in the same type. */
   public boolean is(final TypeName... names) {
     for (TypeName name : names) {

@@ -1284,8 +1284,10 @@ class ConversionFunctionTest extends ExpressionTest {
         "CAST('1,234.56' AS NUMBER FORMAT '9999.99')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
     evalFails("CAST('1234' AS NUMBER FORMAT '###0')", ErrorCode.INVALID_NUMBER_FORMAT);
 
-    // A number converted to a number is truncated to the scale of the type
-    evalEquals("1.23456::NUMBER", 1D);
+    // A number converted to a number is truncated to the scale of the type, NUMBER has no fixed
+    // scale
+    evalEquals("1.23456::NUMBER", 1.23456D);
+    evalEquals("1.23456::NUMBER(10)", 1D);
     evalEquals("TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')", "2020-2");
     evalEquals(
         "CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH24:MI:SS')",

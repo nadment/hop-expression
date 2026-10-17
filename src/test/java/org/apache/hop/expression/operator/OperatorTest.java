@@ -2119,7 +2119,7 @@ public class OperatorTest extends ExpressionTest {
           .returnType(NumberType.of(38, 15, false));
       evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15.3).returnType(NumberType.of(7, 3));
       evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(10,8)", -204.8)
-          .returnType(NumberType.of(38, 8));
+          .returnType(NumberType.of(38, 13));
 
       // Check no arithmetic overflow Long.MAX_VALUE * 2
       evalEquals("9223372036854775807*2::NUMBER", new BigDecimal("18446744073709551614"))
@@ -2786,6 +2786,9 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("' +12 '::INTEGER", 12L);
       evalEquals("'1e3'::NUMBER", 1000D);
       evalFails("'1 000'::INTEGER", ErrorCode.CONVERSION_ERROR);
+      evalFails("'1__000'::INTEGER", ErrorCode.CONVERSION_ERROR);
+      evalFails("'1000_'::INTEGER", ErrorCode.CONVERSION_ERROR);
+      evalFails("'_1000'::INTEGER", ErrorCode.CONVERSION_ERROR);
 
       // Truncate a string to the maximum length without error
       evalEquals("CAST('abcdef' AS STRING(3))", "abc");
@@ -3032,7 +3035,12 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(5))",
           "CAST(FIELD_INTEGER AS INTEGER(5))");
-      optimize("CAST(FIELD_NUMBER AS NUMBER(38,9))", "FIELD_NUMBER");
+      optimize("CAST(FIELD_NUMBER AS NUMBER)", "FIELD_NUMBER");
+      // A fixed scale can truncate the decimals of a NUMBER without fixed scale
+      optimize("CAST(FIELD_NUMBER AS NUMBER(38,9))", "CAST(FIELD_NUMBER AS NUMBER(38,9))");
+      // The scale is written to parse the same type again
+      optimize("CAST(FIELD_INTEGER AS NUMBER(38,9))", "CAST(FIELD_INTEGER AS NUMBER(38,9))");
+      optimize("CAST(FIELD_INTEGER AS NUMBER(38))", "CAST(FIELD_INTEGER AS NUMBER(38))");
       optimize(
           "CAST(CAST(FIELD_STRING AS STRING(100)) AS STRING(20))",
           "CAST(FIELD_STRING AS STRING(20))");
@@ -3049,10 +3057,32 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "CAST(CAST(FIELD_STRING AS STRING(10)) AS STRING(100))",
           "CAST(CAST(FIELD_STRING AS STRING(10)) AS STRING(100))");
+
+      // Don't remove an inner cast with a format
+      optimize(
+          "CAST(CAST(FIELD_STRING_DATE AS DATE FORMAT 'YYYY-MM-DD') AS DATE)",
+          "CAST(CAST(FIELD_STRING_DATE AS DATE FORMAT 'YYYY-MM-DD') AS DATE)");
+      evalEquals("CAST(CAST(FIELD_DATE AS STRING(20) FORMAT 'DD/MM/YYYY') AS STRING(5))", "23/06");
+
+      // Don't remove an inner cast with fewer digits in its integer part, it can overflow
+      optimize(
+          "CAST(CAST(FIELD_INTEGER AS NUMBER(3,2)) AS NUMBER(2))",
+          "CAST(CAST(FIELD_INTEGER AS NUMBER(3,2)) AS NUMBER(2))");
+      evalFails(
+          "CAST(CAST(FIELD_INTEGER AS NUMBER(3,2)) AS NUMBER(2))",
+          ErrorCode.NUMBER_CONVERSION_OVERFLOW);
     }
 
     @Test
     void castToNumber() throws Exception {
+      // Overflow of the integer part, also with the maximum precision or a boolean
+      evalFails("CAST(12 AS NUMBER(38,37))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("CAST(TRUE AS NUMBER(1,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      // The integer part of zero has no digit
+      evalEquals("CAST(0 AS NUMBER(1,1))", 0D);
+      evalEquals("'0'::NUMBER(2,2)", 0D);
+      evalEquals("CAST(FALSE AS NUMBER(1,1))", 0D);
+
       // Boolean
       evalEquals("CAST(TRUE as Number)", 1D).returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("CAST(FALSE as Number(1))", 0D)
@@ -3067,7 +3097,8 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST(1234.456 as Number(20,9))", 1234.456D)
           .returnType(NumberType.of(20, 9, false));
       evalEquals("CAST(1234.456 as Number(10,1))", 1234.4D);
-      evalEquals("1.23456::Number", 1D);
+      // NUMBER without precision and scale keeps the decimals, NUMBER(p) has a scale of 0
+      evalEquals("1.23456::Number", 1.23456D).returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("1.23456::Number(10)", 1D).returnType(NumberType.of(10).withNullability(false));
       evalEquals("1.23456::Number(10,0)", 1D).returnType(NumberType.of(10).withNullability(false));
       evalEquals("1.23456::Number(10,2)", 1.23D).returnType(NumberType.of(10, 2, false));
@@ -3145,6 +3176,11 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST(FIELD_BOOLEAN_TRUE as String)", "TRUE");
       evalEquals("true::String", "TRUE");
       evalEquals("true::String(1)", "T");
+
+      // Date without format, the time is kept
+      evalEquals("CAST(DATE '2019-02-25' AS STRING)", "2019-02-25");
+      evalEquals("CAST(TIMESTAMP '2019-02-25 12:34:56' AS STRING)", "2019-02-25 12:34:56");
+      evalEquals("CAST(FIELD_TIMESTAMP AS STRING)", "2023-02-28 22:11:01");
 
       // Integer
       evalEquals("CAST(12923 AS STRING)", "12923");
@@ -3317,6 +3353,8 @@ public class OperatorTest extends ExpressionTest {
       evalNull("CAST(NULL_STRING as INET)");
 
       evalFails("CAST('xyz' as INET)", ErrorCode.CONVERSION_ERROR);
+      // An empty string is not the loopback address
+      evalFails("CAST('' as INET)", ErrorCode.CONVERSION_ERROR);
       evalFails("CAST(TRUE as INET)", ErrorCode.UNSUPPORTED_CONVERSION);
 
       // Remove lossless cast

@@ -160,7 +160,7 @@ public final class ReturnTypes {
         int precision = TypeName.NUMBER.getMaxPrecision();
         if (type.isName(TypeName.INTEGER)) {
           precision = type.getPrecision();
-        } else if (type.isName(TypeName.NUMBER)) {
+        } else if (type.isName(TypeName.NUMBER) && !Types.hasVariableScale(type)) {
           precision = type.getPrecision() - type.getScale();
           if (precision == 0) precision = 1;
         }
@@ -473,6 +473,11 @@ public final class ReturnTypes {
       return IntegerType.of(p, nullable);
     }
 
+    // A NUMBER without fixed scale gives a NUMBER without fixed scale
+    if (Types.hasVariableScale(type1) || Types.hasVariableScale(type2)) {
+      return NumberType.NUMBER.withNullability(nullable);
+    }
+
     int s1 = type1.getScale();
     int s2 = type2.getScale();
 
@@ -524,6 +529,11 @@ public final class ReturnTypes {
       return IntegerType.of(p, nullable);
     }
 
+    // A NUMBER without fixed scale gives a NUMBER without fixed scale
+    if (Types.hasVariableScale(type1) || Types.hasVariableScale(type2)) {
+      return NumberType.NUMBER.withNullability(nullable);
+    }
+
     // Return type precision
     int p = Math.min(TypeName.NUMBER.getMaxPrecision(), p1 + p2);
 
@@ -559,7 +569,11 @@ public final class ReturnTypes {
   public static Type deriveDivideType(final Type type1, final Type type2) {
     boolean nullable = type1.isNullable() || type2.isNullable();
 
-    if (Types.isString(type1) || Types.isString(type2)) {
+    // A NUMBER without fixed scale gives a NUMBER without fixed scale
+    if (Types.isString(type1)
+        || Types.isString(type2)
+        || Types.hasVariableScale(type1)
+        || Types.hasVariableScale(type2)) {
       return NumberType.NUMBER.withNullability(nullable);
     }
 
@@ -603,7 +617,11 @@ public final class ReturnTypes {
 
     boolean nullable = type1.isNullable() || type2.isNullable();
 
-    if (Types.isString(type1) || Types.isString(type2)) {
+    // A NUMBER without fixed scale gives a NUMBER without fixed scale
+    if (Types.isString(type1)
+        || Types.isString(type2)
+        || Types.hasVariableScale(type1)
+        || Types.hasVariableScale(type2)) {
       return NumberType.NUMBER.withNullability(nullable);
     }
 

@@ -106,7 +106,12 @@ public class CastFunction extends Function {
       if (call.getOperand(0).isOperator(CastOperator.INSTANCE)) {
         Type toType = call.getType();
         Type fromType = call.getOperand(0).getType();
-        if (Types.isLosslessCast(toType, fromType)) {
+        // The inner cast must not have a format, and must not overflow where the outer cast does
+        // not: its integer part must have at least as many digits
+        if (call(call.getOperand(0)).getOperandCount() == 2
+            && Types.isLosslessCast(toType, fromType)
+            && fromType.getPrecision() - Math.max(fromType.getScale(), 0)
+                >= toType.getPrecision() - Math.max(toType.getScale(), 0)) {
           return new Call(
               call.getOperator(), call(call.getOperand(0)).getOperand(0), Literal.of(toType));
         }

@@ -51,9 +51,6 @@ public final class StringType extends Type {
   /** The format used to cast a number to a string without pattern. */
   private static final NumberFormat DEFAULT_NUMBER_FORMAT = NumberFormat.of("TM");
 
-  /** The format used to cast a date to a string without pattern. */
-  private static final DateTimeFormat DEFAULT_DATE_FORMAT = DateTimeFormat.of("YYYY-MM-DD");
-
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
   }
@@ -154,11 +151,12 @@ public final class StringType extends Type {
         NumberFormat format = (pattern == null) ? DEFAULT_NUMBER_FORMAT : NumberFormat.of(pattern);
         result = format.format(number);
       }
-      case ZonedDateTime datetime -> {
-        DateTimeFormat format =
-            (pattern == null) ? DEFAULT_DATE_FORMAT : DateTimeFormat.of(pattern);
-        result = format.format(datetime);
-      }
+      case ZonedDateTime datetime ->
+          // Without pattern, the time is kept as with an implicit conversion
+          result =
+              (pattern == null)
+                  ? StringConversion.convert(datetime)
+                  : DateTimeFormat.of(pattern).format(datetime);
       case byte[] bytes -> result = new String(bytes, StandardCharsets.UTF_8);
       case JsonNode json -> result = StringConversion.convert(json);
       case InetAddress inet -> result = StringConversion.convert(inet);

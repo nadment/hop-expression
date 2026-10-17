@@ -112,6 +112,14 @@ public final class Types {
       return widenNumber(type1, type2);
     }
 
+    // A NUMBER without fixed scale holds the values of any other NUMBER
+    if (hasVariableScale(type1) && isNumber(type2)) {
+      return type1;
+    }
+    if (isNumber(type1) && hasVariableScale(type2)) {
+      return type2;
+    }
+
     if (type1.getName().ordinal() > type2.getName().ordinal()
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
@@ -133,6 +141,10 @@ public final class Types {
    * <p>For example, NUMBER(2,1) and INTEGER(3) give NUMBER(4,1).
    */
   private static Type widenNumber(Type number, Type integer) {
+    // A NUMBER without fixed scale already has the maximum precision
+    if (hasVariableScale(number)) {
+      return number;
+    }
     int scale = number.getScale();
     int integerDigits = Math.max(number.getPrecision() - scale, integer.getPrecision());
     int precision = Math.min(integerDigits + scale, TypeName.NUMBER.getMaxPrecision());
@@ -356,11 +368,19 @@ public final class Types {
    */
   public static boolean isLosslessCast(Type source, Type target) {
 
-    return source.getName() == target.getName()
-        && source.getPrecision() <= target.getPrecision()
-        && source.getScale() <= target.getScale();
+    if (source.getName() != target.getName() || source.getPrecision() > target.getPrecision()) {
+      return false;
+    }
 
-    // Return FALSE by default
+    // A NUMBER without fixed scale keeps all the decimals, but a fixed scale can truncate them
+    if (hasVariableScale(target)) {
+      return true;
+    }
+    if (hasVariableScale(source)) {
+      return false;
+    }
+
+    return source.getScale() <= target.getScale();
   }
 
   /**
@@ -461,6 +481,14 @@ public final class Types {
 
   public static boolean isNumber(Type type) {
     return type.isName(TypeName.NUMBER);
+  }
+
+  /**
+   * Returns whether the type is a NUMBER without fixed scale, declared without precision and scale.
+   * A value of this type keeps its decimals.
+   */
+  public static boolean hasVariableScale(Type type) {
+    return isNumber(type) && type.getScale() == Type.SCALE_NOT_SPECIFIED;
   }
 
   public static boolean isString(Type type) {

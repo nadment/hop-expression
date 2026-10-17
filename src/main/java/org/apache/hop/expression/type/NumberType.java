@@ -32,13 +32,13 @@ import org.jspecify.annotations.Nullable;
 /** Number type with optional precision and scale: */
 @NullMarked
 public final class NumberType extends Type {
-  /** Default NUMBER(38,9) type with max precision and default scale. */
+  /** Default NUMBER type with max precision and no fixed scale, a value keeps its decimals. */
   public static final NumberType NUMBER =
-      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), true);
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED, true);
 
-  /** Default NUMBER(38,9) NOT NULL type with max precision and default scale. */
+  /** Default NUMBER NOT NULL type with max precision and no fixed scale. */
   public static final NumberType NUMBER_NOT_NULL =
-      new NumberType(TypeName.NUMBER.getMaxPrecision(), TypeName.NUMBER.getDefaultScale(), false);
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED, false);
 
   NumberType(int precision, int scale, boolean nullable) {
     super(precision, scale, nullable);
@@ -81,12 +81,16 @@ public final class NumberType extends Type {
    * @return
    */
   public static NumberType of(int precision, int scale, boolean nullable) {
-    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.NUMBER.getMaxPrecision();
-    if (scale == SCALE_NOT_SPECIFIED) scale = 0;
+    // NUMBER without precision and scale has no fixed scale
+    if (precision == PRECISION_NOT_SPECIFIED) {
+      if (scale == SCALE_NOT_SPECIFIED) {
+        return nullable ? NUMBER : NUMBER_NOT_NULL;
+      }
+      precision = TypeName.NUMBER.getMaxPrecision();
+    }
 
-    if (precision == TypeName.NUMBER.getMaxPrecision()
-        && scale == TypeName.NUMBER.getDefaultScale()
-        && nullable) return NumberType.NUMBER;
+    // NUMBER(p) has a scale of 0
+    if (scale == SCALE_NOT_SPECIFIED) scale = 0;
 
     return new NumberType(precision, scale, nullable);
   }
@@ -156,7 +160,7 @@ public final class NumberType extends Type {
       return checkOverflow(number);
     }
     if (value instanceof Boolean bool) {
-      return (bool) ? BigDecimal.ONE : BigDecimal.ZERO;
+      return checkOverflow((bool) ? BigDecimal.ONE : BigDecimal.ZERO);
     }
     if (value instanceof Long l) {
       return checkOverflow(BigDecimal.valueOf(l));
@@ -176,9 +180,9 @@ public final class NumberType extends Type {
 
   /** Raises an error if the integer part of the number exceeds the precision minus the scale. */
   private BigDecimal checkOverflow(BigDecimal number) throws ExpressionException {
-    if (precision != PRECISION_NOT_SPECIFIED
-        && precision < TypeName.NUMBER.getMaxPrecision()
-        && number.precision() - number.scale() > precision - Math.max(scale, 0)) {
+    // The integer part of zero has no digit, so zero fits in a type like NUMBER(1,1)
+    int integerDigits = (number.signum() == 0) ? 0 : number.precision() - number.scale();
+    if (precision != PRECISION_NOT_SPECIFIED && integerDigits > precision - Math.max(scale, 0)) {
       throw new ExpressionException(ErrorCode.NUMBER_CONVERSION_OVERFLOW, number, this);
     }
     return number;

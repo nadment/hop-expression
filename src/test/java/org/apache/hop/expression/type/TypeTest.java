@@ -19,6 +19,7 @@ package org.apache.hop.expression.type;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -87,6 +88,11 @@ public class TypeTest extends ExpressionTest {
     assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10)));
     assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10, 0)));
     assertEquals("NUMBER(10,2)", String.valueOf(NumberType.of(10, 2)));
+    // NUMBER has no fixed scale, a fixed scale is always written to parse the same type again
+    assertEquals(NumberType.NUMBER, NumberType.of(-1, -1));
+    assertEquals("NUMBER(38)", String.valueOf(NumberType.of(38)));
+    assertEquals("NUMBER(38,9)", String.valueOf(NumberType.of(38, 9)));
+    assertNotEquals(NumberType.NUMBER, NumberType.of(38, 0));
     assertEquals("STRING", String.valueOf(StringType.STRING));
     assertEquals("STRING", String.valueOf(StringType.of(-1)));
     assertEquals("STRING(10)", String.valueOf(StringType.of(10)));
