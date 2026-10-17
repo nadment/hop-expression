@@ -206,6 +206,7 @@ import org.jspecify.annotations.Nullable;
       }
     }
     int result = 0;
+    if (index >= length) return result;
     if (index + len > length) len = length - index;
 
     char sign = text.charAt(index);

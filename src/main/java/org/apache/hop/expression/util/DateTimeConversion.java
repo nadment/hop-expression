@@ -18,9 +18,13 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -47,16 +51,30 @@ public final class DateTimeConversion {
     if (seconds == null) {
       return null;
     }
-    Instant instant = Instant.ofEpochSecond(seconds);
-    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+    try {
+      Instant instant = Instant.ofEpochSecond(seconds);
+      return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+    } catch (DateTimeException e) {
+      throw createConversionError(seconds);
+    }
   }
 
   public static @Nullable ZonedDateTime convert(final @Nullable BigDecimal number) {
     if (number == null) {
       return null;
     }
-    long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
-    Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
-    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+    try {
+      long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+      // A number out of the range of epoch seconds raises an error instead of wrapping around
+      Instant instant = Instant.ofEpochSecond(number.toBigInteger().longValueExact(), nanos);
+      return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+    } catch (ArithmeticException | DateTimeException e) {
+      throw createConversionError(number);
+    }
+  }
+
+  private static ExpressionException createConversionError(final Object value) {
+    return new ExpressionException(
+        ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.DATE, value);
   }
 }

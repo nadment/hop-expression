@@ -17,10 +17,14 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 
 final class RomanNumberFormat extends NumberFormat {
+
+  private static final BigDecimal MAX_VALUE = BigDecimal.valueOf(3999);
 
   // Original format
   private final String format;
@@ -43,7 +47,13 @@ final class RomanNumberFormat extends NumberFormat {
 
   @Override
   public String format(final BigDecimal value) {
-    String rn = RomanNumeral.format(value.intValue(), lowerCase);
+    // A value with a fractional part is rounded, the range is checked before the conversion to an
+    // int to not keep only the low-order bits of a large value
+    BigDecimal rounded = value.setScale(0, RoundingMode.HALF_UP);
+    if (rounded.signum() <= 0 || rounded.compareTo(MAX_VALUE) > 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
+    }
+    String rn = RomanNumeral.format(rounded.intValue(), lowerCase);
     if (this.fillMode) {
       rn = StringUtils.leftPad(rn, 15, " ");
     }

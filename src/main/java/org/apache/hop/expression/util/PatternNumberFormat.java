@@ -270,6 +270,10 @@ final class PatternNumberFormat extends NumberFormat {
       for (index++; index < length; index++, this.v++) {
         char c = format.charAt(index);
         if (c != '0' && c != '9') break;
+        // The digits after V are digits of the shifted integer part
+        builder.append(c);
+        this.precision++;
+        this.separator++;
       }
     } else if (startsWithIgnoreCase(format, index, ".", "D")) {
 
@@ -508,7 +512,8 @@ final class PatternNumberFormat extends NumberFormat {
         String str = text.substring(start, end);
         BigInteger bigInt = new BigInteger(str, 16);
 
-        return new BigDecimal(bigInt);
+        // Keep the sign already consumed
+        return new BigDecimal(isNegative ? bigInt.negate() : bigInt);
       }
 
       StringBuilder digits = new StringBuilder();
@@ -516,7 +521,12 @@ final class PatternNumberFormat extends NumberFormat {
       char decimalSeparator = (this.localSymbols) ? symbols.getDecimalSeparator() : '.';
       char groupingSeparator = (this.localSymbols) ? symbols.getGroupingSeparator() : ',';
 
-      int dot = text.indexOf(decimalSeparator);
+      // Without a decimal separator in the format, a separator that can be a grouping separator is
+      // not the decimal separator, for example the comma of '12,345' with the format '99G999' in
+      // a French locale
+      boolean hasDecimal = pattern.indexOf('.') >= 0 || pattern.indexOf('D') >= 0;
+      boolean hasGroup = pattern.indexOf('G') >= 0 || pattern.indexOf(',') >= 0;
+      int dot = (hasDecimal || !hasGroup) ? text.indexOf(decimalSeparator) : -1;
 
       // integer part
       int pos = (dot < 0 ? end : dot);
@@ -623,17 +633,25 @@ final class PatternNumberFormat extends NumberFormat {
       return hex;
     }
 
-    // Adjust number scale to format scale
-    if (this.scale < number.scale()) {
-      number = number.setScale(this.scale, RoundingMode.HALF_UP);
-    }
-
     int power = 0;
     if (this.scientific > 0) {
-      power = number.precision() - number.scale() - 1;
-      number = number.movePointLeft(power);
+      // Normalize the mantissa to one integer digit before rounding it to the format scale
+      if (number.signum() != 0) {
+        power = number.precision() - number.scale() - 1;
+        number = number.movePointLeft(power);
+      }
+      number = number.setScale(this.scale, RoundingMode.HALF_UP);
+      // The rounding can carry to a second integer digit, 9.99 => 10.0
+      if (number.abs().compareTo(BigDecimal.TEN) >= 0) {
+        number = number.movePointLeft(1).setScale(this.scale, RoundingMode.HALF_UP);
+        power++;
+      }
     } else if (this.v > 0) {
-      number = number.scaleByPowerOfTen(v);
+      // Multiply by 10^v before rounding, 12.34 with '99V9' => 123
+      number = number.scaleByPowerOfTen(v).setScale(this.scale, RoundingMode.HALF_UP);
+    } else if (this.scale < number.scale()) {
+      // Adjust number scale to format scale
+      number = number.setScale(this.scale, RoundingMode.HALF_UP);
     }
 
     String unscaled = number.unscaledValue().abs().toString();
@@ -645,6 +663,10 @@ final class PatternNumberFormat extends NumberFormat {
     // The integer part of zero is empty with a decimal format, "0" => " .00"
     if (this.fillMode && this.scale > 0 && number.signum() == 0) {
       dot = 0;
+    }
+    // The mantissa of the scientific notation always has one integer digit, "0" => "0.0E+00"
+    if (this.scientific > 0) {
+      dot = 1;
     }
     int length = 0;
 

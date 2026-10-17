@@ -522,36 +522,50 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @throws ExpressionException if the string could not be parsed.
    */
   public static @Nullable Interval of(@Nullable String string) {
-    if (string != null) {
-
-      Matcher matcher = PATTERN_YTS.matcher(string);
-      if (matcher.find()) {
-        String sign = matcher.group(1);
-        long signMonths = "-".equals(sign) ? -1 : 1;
-        long signDays = "-".equals(matcher.group(4) == null ? sign : matcher.group(4)) ? -1 : 1;
-        long signTime = "-".equals(matcher.group(6) == null ? sign : matcher.group(6)) ? -1 : 1;
-        int years = parseField(matcher.group(2));
-        int months = parseField(matcher.group(3));
-        int days = parseField(matcher.group(5));
-        int hours = parseField(matcher.group(7));
-        int minutes = parseField(matcher.group(8));
-        int seconds = parseField(matcher.group(9));
-        int nanos = parseField(StringUtils.rightPad(matcher.group(10), 9, "0"));
-
-        return of(
-            signMonths * years,
-            signMonths * months,
-            signDays * days,
-            signTime * hours,
-            signTime * minutes,
-            signTime * seconds,
-            signTime * nanos);
-      } else {
-        return parse(string);
-      }
+    if (string == null) {
+      return null;
     }
 
-    return null;
+    try {
+      return parseString(string);
+    } catch (NumberFormatException | ArithmeticException e) {
+      // A field or a quantity out of range
+      throw new ExpressionException(ErrorCode.INVALID_INTERVAL, string);
+    }
+  }
+
+  /** Parse the short syntax, or the verbose syntax if the string does not match it. */
+  private static Interval parseString(final String string) {
+    Matcher matcher = PATTERN_YTS.matcher(string);
+    if (!matcher.find()) {
+      return parse(string);
+    }
+
+    // More than 9 digits of fractional seconds are not supported
+    if (matcher.group(10) != null && matcher.group(10).length() > 9) {
+      throw new ExpressionException(ErrorCode.INVALID_INTERVAL, string);
+    }
+
+    String sign = matcher.group(1);
+    long signMonths = "-".equals(sign) ? -1 : 1;
+    long signDays = "-".equals(matcher.group(4) == null ? sign : matcher.group(4)) ? -1 : 1;
+    long signTime = "-".equals(matcher.group(6) == null ? sign : matcher.group(6)) ? -1 : 1;
+    int years = parseField(matcher.group(2));
+    int months = parseField(matcher.group(3));
+    int days = parseField(matcher.group(5));
+    int hours = parseField(matcher.group(7));
+    int minutes = parseField(matcher.group(8));
+    int seconds = parseField(matcher.group(9));
+    int nanos = parseField(StringUtils.rightPad(matcher.group(10), 9, "0"));
+
+    return of(
+        signMonths * years,
+        signMonths * months,
+        signDays * days,
+        signTime * hours,
+        signTime * minutes,
+        signTime * seconds,
+        signTime * nanos);
   }
 
   // -------------------------------------------------------------------------
@@ -572,6 +586,11 @@ public class Interval implements Serializable, Comparable<Interval> {
     long minutes = 0;
     long seconds = 0;
     long nanos = 0;
+
+    // An empty string is not an interval
+    if (text.isBlank()) {
+      throw new ExpressionException(ErrorCode.INVALID_INTERVAL, text);
+    }
 
     int length = text.length();
     int index = 0;
@@ -600,8 +619,7 @@ public class Interval implements Serializable, Comparable<Interval> {
           break;
         }
         index++;
-        quantity *= 10;
-        quantity += digit;
+        quantity = Math.addExact(Math.multiplyExact(quantity, 10), digit);
       }
 
       if (index == start) {
@@ -619,28 +637,28 @@ public class Interval implements Serializable, Comparable<Interval> {
         if (text.regionMatches(true, index, unit.name(), 0, unit.name().length())) {
           switch (unit) {
             case YEAR:
-              years += quantity;
+              years = Math.addExact(years, quantity);
               break;
             case QUARTER:
-              months += 3 * quantity;
+              months = Math.addExact(months, Math.multiplyExact(3, quantity));
               break;
             case MONTH:
-              months += quantity;
+              months = Math.addExact(months, quantity);
               break;
             case WEEK:
-              days += 7 * quantity;
+              days = Math.addExact(days, Math.multiplyExact(7, quantity));
               break;
             case DAY:
-              days += quantity;
+              days = Math.addExact(days, quantity);
               break;
             case HOUR:
-              hours += quantity;
+              hours = Math.addExact(hours, quantity);
               break;
             case MINUTE:
-              minutes += quantity;
+              minutes = Math.addExact(minutes, quantity);
               break;
             case SECOND:
-              seconds += quantity;
+              seconds = Math.addExact(seconds, quantity);
               break;
             default:
               break;

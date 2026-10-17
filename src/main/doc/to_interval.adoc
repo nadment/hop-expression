@@ -31,8 +31,10 @@ Interval
 == Usage
 
 * The string uses either the verbose syntax, such as `'1 year 6 months 12 hours'`, or the short syntax, such as `'1-6 0 12:00:00'`.
-* The string can start with a `+` or `-` sign; `-` negates the interval. In the short syntax, the days and the time can have their own sign, such as `'+0-1 -1 00:00:00'`, and in the verbose syntax each quantity can have its own sign, such as `'1 month -1 day'`.
-* Raises an error if the string is not a valid interval.
+* In the short syntax, the string can start with a `+` or `-` sign; `-` negates the interval. The days and the time can have their own sign, such as `'+0-1 -1 00:00:00'`.
+* In the verbose syntax, each quantity has its own sign, such as `'1 month -1 day'`: `'-1 year 6 months'` is -6 months.
+* The fractional seconds have at most 9 digits.
+* Raises an error if the string is empty, is not a valid interval or a quantity is out of range.
 * Returns NULL if the argument is NULL.
 
 == Examples

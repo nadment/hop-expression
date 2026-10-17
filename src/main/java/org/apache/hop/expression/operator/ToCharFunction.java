@@ -119,7 +119,8 @@ public class ToCharFunction extends Function {
       };
     }
 
-    return call;
+    // For example a string with a format, which could be a number or a date
+    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT_TYPE, getName());
   }
 
   /** Converts a date expression to a string value. */

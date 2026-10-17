@@ -771,8 +771,13 @@ import org.jspecify.annotations.Nullable;
     }
 
     DateTimeParser parser = new DateTimeParser(this, text);
-    for (Format format : formats) {
-      format.parse(parser);
+    try {
+      for (Format format : formats) {
+        format.parse(parser);
+      }
+    } catch (DateTimeException e) {
+      // For example an unknown time zone
+      throw new ExpressionException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT, text, pattern);
     }
 
     if (!parser.isAllCharParsed()) {
@@ -941,11 +946,10 @@ import org.jspecify.annotations.Nullable;
     public void parse(DateTimeParser parser) {
       String str = parser.parseString(AD_BC);
       if (str != null) {
+        // The era does not change the day of year or the Julian day already parsed
         if (str.charAt(0) == 'B') {
           parser.bc = true;
         }
-        parser.isDayOfYear = false;
-        parser.isEpochDay = false;
       }
     }
   }
@@ -1622,12 +1626,17 @@ import org.jspecify.annotations.Nullable;
     @Override
     public void parse(final DateTimeParser parser) {
 
+      parser.skipSpace();
+      int start = parser.index;
       int year = parser.parseInt(length);
 
-      // Years between 00-49 will be given the 21st century (the year 2000)
-      if (year >= 0 && year <= 49) year += 2000;
-      // Years between 50-99 will be given the 20th century (the year 1900).
-      else if (year >= 50 && year <= 99) year += 1900;
+      // Only a year of 1 or 2 digits is rounded, a year of 3 or 4 digits is kept as is
+      if (parser.index - start <= 2) {
+        // Years between 00-49 will be given the 21st century (the year 2000)
+        if (year >= 0 && year <= 49) year += 2000;
+        // Years between 50-99 will be given the 20th century (the year 1900).
+        else if (year >= 50 && year <= 99) year += 1900;
+      }
 
       parser.year = year;
       parser.isEpochDay = false;
@@ -1844,14 +1853,15 @@ import org.jspecify.annotations.Nullable;
         }
       }
 
-      if (this.exactMode) {
+      if (this.exactMode || length == 2) {
         parser.year = parser.parseExactInt(length);
-      } else if (length == 2) {
-        int year = parser.parseExactInt(2);
-        year += (year < twoDigitYearStart - 1900) ? 2000 : 1900;
-        parser.year = year;
       } else {
         parser.year = parser.parseInt(length);
+      }
+
+      // A 2-digit year is completed with a century, also in exact mode
+      if (length == 2) {
+        parser.year += (parser.year < twoDigitYearStart - 1900) ? 2000 : 1900;
       }
 
       if (negative) {

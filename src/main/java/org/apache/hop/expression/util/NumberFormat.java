@@ -145,7 +145,7 @@ public abstract class NumberFormat extends BaseFormat {
   public static NumberFormat of(final @Nullable String pattern) {
 
     if (pattern == null || pattern.isEmpty()) {
-      throw new NumberFormatException("Pattern is null or empty");
+      throw new ExpressionException(ErrorCode.INVALID_NUMBER_FORMAT, "");
     }
 
     return cache.computeIfAbsent(pattern, NumberFormat::create);

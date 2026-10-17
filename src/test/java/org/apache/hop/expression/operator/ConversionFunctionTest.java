@@ -44,13 +44,31 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.JsonConversion;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 @TestInstance(PER_CLASS)
 @Execution(CONCURRENT)
+@ResourceLock(Resources.LOCALE)
 class ConversionFunctionTest extends ExpressionTest {
+
+  private Locale defaultLocale = Locale.getDefault();
+
+  @BeforeAll
+  void saveLocale() {
+    defaultLocale = Locale.getDefault();
+  }
+
+  /** Restore the default locale changed by a test, so that a test does not depend on another. */
+  @AfterEach
+  void restoreLocale() {
+    Locale.setDefault(defaultLocale);
+  }
 
   @Test
   void To_Binary() throws Exception {
@@ -143,7 +161,7 @@ class ConversionFunctionTest extends ExpressionTest {
     // Format No Decimals
     evalEquals("TO_NUMBER('4687841', '9999999')", 4687841D);
 
-    // Trailing space
+    // Leading space
     evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12D);
 
     // No sign
@@ -197,6 +215,8 @@ class ConversionFunctionTest extends ExpressionTest {
     Locale.setDefault(Locale.FRANCE);
     evalEquals("TO_NUMBER('12 345 678', '999G999G999')", 12_345_678D);
     evalEquals("TO_NUMBER('12 345 678,123', '999G999G999D000')", 12_345_678.123D);
+    // Without a decimal separator in the format, the comma is a grouping separator
+    evalEquals("TO_NUMBER('12,345', '99G999')", 12_345D);
     Locale.setDefault(Locale.GERMANY);
     evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678D);
 
@@ -279,6 +299,12 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER('12.3:4','99.9:9')", 12.34D);
     evalFails("TO_NUMBER('1234','99/99')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
     evalFails("TO_NUMBER('1 2','99')", ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT);
+
+    // Hexadecimal keeps the sign
+    evalEquals("TO_NUMBER('-FF','XX')", -255D);
+
+    // An empty format
+    evalFails("TO_NUMBER('1','')", ErrorCode.INVALID_NUMBER_FORMAT);
   }
 
   @Test
@@ -413,19 +439,34 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_CHAR(1.50,'TME')", "1.5E+00");
     evalEquals("TO_CHAR(1500,'TME')", "1.5E+03");
     evalEquals("TO_CHAR(123.456,'tMe')", "1.23456e+02");
-    evalEquals("TO_CHAR(123.456,'tMe')", "1.23456e+02");
 
-    // Scientific
+    // Scientific, the mantissa is rounded after the normalization of the exponent
     evalEquals("TO_CHAR(123.456,'9.9EEEE')", "  1.2E+02");
+    evalEquals("TO_CHAR(125,'9.9EEEE')", "  1.3E+02");
+    evalEquals("TO_CHAR(-125,'9.9EEEE')", " -1.3E+02");
+    evalEquals("TO_CHAR(999,'9.9EEEE')", "  1.0E+03");
+    evalEquals("TO_CHAR(0.00123,'9.9EEEE')", "  1.2E-03");
+    evalEquals("TO_CHAR(0,'9.9EEEE')", "  0.0E+00");
+
+    // Shifted by V digits
+    evalEquals("TO_CHAR(12.3,'99V9')", " 123");
+    evalEquals("TO_CHAR(12,'99V9')", " 120");
+    evalEquals("TO_CHAR(999,'99V9')", "####");
 
     // Roman
     evalEquals("TO_CHAR(11,'FMRN')", "XI");
     evalEquals("TO_CHAR(11,'rn')", "             xi");
     evalEquals("TO_CHAR(5.2, 'FMRN')", "V");
+    // A value with a fractional part is rounded
+    evalEquals("TO_CHAR(5.7, 'FMRN')", "VI");
+    evalEquals("TO_CHAR(0.6, 'FMRN')", "I");
+    evalFails("TO_CHAR(3999.5, 'RN')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // A value out of the integer range is not truncated to its low-order bits
+    evalFails("TO_CHAR(4294967297, 'RN')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalEquals("TO_CHAR(485, 'FMRN')", "CDLXXXV");
     evalEquals("TO_CHAR(515, 'RN')", "            DXV");
-    evalFails("TO_CHAR(0, 'RN')", ErrorCode.CALL_FUNCTION_ERROR); // Must be > 0
-    evalFails("TO_CHAR(4000, 'RN')", ErrorCode.CALL_FUNCTION_ERROR); // Must be < 4000
+    evalFails("TO_CHAR(0, 'RN')", ErrorCode.ARGUMENT_OUT_OF_RANGE); // Must be > 0
+    evalFails("TO_CHAR(4000, 'RN')", ErrorCode.ARGUMENT_OUT_OF_RANGE); // Must be < 4000
 
     // Hex
     evalEquals("TO_CHAR(123,'XX')", " 7B");
@@ -667,19 +708,19 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','DL')", "mardi 23 juillet 2019");
 
     // Local radix character
-    // Locale.setDefault(new Locale("en", "GB"));
     Locale.setDefault(Locale.UK);
-    // evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
-    // Locale.setDefault(new Locale("fr", "BE"));
+    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00.000000");
     Locale.setDefault(Locale.FRANCE);
-    // evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
+    evalEquals("To_Char(TIMESTAMP '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
 
     // Special char
     evalEquals("To_Char(DATE '2019-07-23',':;.,=-/(FMMONTH)')", ":;.,=-/(JULY)");
 
     // Check operands
     evalFails("To_Char(DATE '2019-07-23','*')", ErrorCode.INVALID_DATE_FORMAT);
-    evalFails("To_Char(DATE '2019-07-23','Â£')", ErrorCode.INVALID_DATE_FORMAT);
+    evalFails("To_Char(DATE '2019-07-23','£')", ErrorCode.INVALID_DATE_FORMAT);
+    // A string with a format, which could be a number or a date
+    evalFails("To_Char('12','99')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("To_Char(DATE '2019-07-23','{}[]')", ErrorCode.INVALID_DATE_FORMAT);
 
     // Full case
@@ -846,12 +887,26 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails(
         "To_Date('2019-02-13 Unknown/Zone','YYYY-MM-DD TZR')",
         ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("To_Date('2019-02-13 XYZ','YYYY-MM-DD TZD')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+
+    // An omitted time zone hour at the end of the text
+    evalEquals(
+        "To_Date('2019-02-13','YYYY-MM-DD TZH')",
+        ZonedDateTime.of(2019, 2, 13, 0, 0, 0, 0, ZoneOffset.UTC));
+
+    // The era does not reset the day of year or the Julian day
+    evalEquals("To_Date('2020-100 AD','YYYY-DDD AD')", LocalDate.of(2020, 4, 9));
+    evalEquals("To_Date('2454803 AD','J AD')", LocalDate.of(2008, 12, 2));
 
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
     evalEquals("To_Date(' 08- 2020','MM-SYYYY')", LocalDate.of(2020, 8, 1));
 
-    evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(2001, Month.FEBRUARY, 1));
+    // Only a year of 1 or 2 digits is rounded
+    evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(1, Month.FEBRUARY, 1));
+    evalEquals("To_Date('01/2/0049','DD/MM/RRRR')", LocalDate.of(49, Month.FEBRUARY, 1));
+    evalEquals("To_Date('01/2/1','DD/MM/RRRR')", LocalDate.of(2001, Month.FEBRUARY, 1));
+    evalEquals("To_Date('01/2/49','DD/MM/RRRR')", LocalDate.of(2049, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/2/52','DD/MM/RRRR')", LocalDate.of(1952, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/2/0923','DD/MM/RRRR')", LocalDate.of(923, Month.FEBRUARY, 1));
 
@@ -901,6 +956,8 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
     evalFails("To_Date('1-02-2020','FXDD/MM/YYYY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
     evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    // A 2-digit year is completed with a century, also in exact mode
+    evalEquals("To_Date('20-05-24','FXYY-MM-DD')", LocalDate.of(2020, 5, 24));
     // evalEquals("To_Date('1/02/2020','FXFMDD-MON-YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
     // Is interpreted as 10 February 2003
@@ -919,27 +976,36 @@ class ConversionFunctionTest extends ExpressionTest {
         "To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
-    // Is interpreted as 12 May 2003, 00:00:10.123
+    // Is interpreted as 12 May 2000, 00:00:10.123
     evalEquals(
         "To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3')",
         LocalDateTime.of(2000, 5, 12, 0, 0, 10, 123000000));
 
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
 
-    // Integer Unix Epoch in seconds
-    evalEquals("TO_DATE(0)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
-    evalEquals("TO_DATE(1551052800)", LocalDate.of(2019, 2, 25));
-    evalEquals("TO_DATE(-5364662400)", LocalDate.of(1800, 1, 1));
-    evalEquals("TO_DATE(1284352323)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
+    // Integer Unix Epoch in seconds, in the UTC time zone
+    evalEquals("TO_DATE(0)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals("TO_DATE(1551052800)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals("TO_DATE(-5364662400)", ZonedDateTime.of(1800, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals("TO_DATE(1284352323)", ZonedDateTime.of(2010, 9, 13, 4, 32, 3, 0, ZoneOffset.UTC));
 
     // Number Unix Epoch in seconds with fractional
-    evalEquals("TO_DATE(1551052800.000000000)", LocalDate.of(2019, 2, 25));
-    evalEquals("TO_DATE(-5364662400.000000000)", LocalDate.of(1800, 1, 1));
-    evalEquals("TO_DATE(-1.5)", LocalDateTime.of(1969, 12, 31, 23, 59, 58, 500000000));
+    evalEquals(
+        "TO_DATE(1551052800.000000000)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals(
+        "TO_DATE(-5364662400.000000000)", ZonedDateTime.of(1800, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals(
+        "TO_DATE(-1.5)", ZonedDateTime.of(1969, 12, 31, 23, 59, 58, 500000000, ZoneOffset.UTC));
     evalEquals("TO_DATE(1284352323.1)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 100000000));
     evalEquals("TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
     evalEquals("TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
-    evalEquals("TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+    evalEquals(
+        "TO_DATE(1284352323.123456789)",
+        ZonedDateTime.of(2010, 9, 13, 4, 32, 3, 123456789, ZoneOffset.UTC));
+
+    // An epoch out of the range of dates raises an error instead of wrapping around
+    evalFails("TO_DATE(9223372036854775807)", ErrorCode.CONVERSION_ERROR);
+    evalFails("TO_DATE(18446744073709551616)", ErrorCode.CONVERSION_ERROR);
 
     // Explicit AUTO format ISO 8601
     evalEquals(
@@ -950,10 +1016,10 @@ class ConversionFunctionTest extends ExpressionTest {
         LocalDateTime.of(2024, 12, 1, 12, 5, 6, 123456789));
     evalEquals(
         "TO_DATE('2024-12-01 3:05:06.123456789+02:00','AUTO')",
-        LocalDateTime.of(2024, 12, 1, 3, 5, 6, 123456789));
+        ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 123456789, ZoneOffset.ofHours(2)));
     evalEquals(
         "TO_DATE('2024-12-01 3:05:06.123456789 +02:00','AUTO')",
-        LocalDateTime.of(2024, 12, 1, 3, 5, 6, 123456789));
+        ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 123456789, ZoneOffset.ofHours(2)));
     evalEquals(
         "TO_DATE('2024-12-01 3:05:06-05:30','AUTO')",
         ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 0, ZoneOffset.ofHoursMinutes(-5, -30)));
@@ -1101,6 +1167,21 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TO_INTERVAL('1-6 0 12:00:00')", Interval.of(1, 6, 0, 12, 0, 0));
 
     evalFails("TO_INTERVAL('abc')", ErrorCode.INVALID_INTERVAL);
+    evalFails("TO_INTERVAL('')", ErrorCode.INVALID_INTERVAL);
+    evalFails("TO_INTERVAL('   ')", ErrorCode.INVALID_INTERVAL);
+
+    // In the verbose syntax, each quantity has its own sign
+    evalEquals("TO_INTERVAL('-1 year 6 months')", Interval.of(0, -6));
+    evalEquals("TO_INTERVAL('1 month -1 day')", Interval.of(0, 1, -1));
+
+    // At most 9 digits of fractional seconds
+    evalEquals("TO_INTERVAL('0-0 0 00:00:00.123456789')", Interval.of(0, 0, 0, 0, 0, 0, 123456789));
+    evalFails("TO_INTERVAL('0-0 0 00:00:00.1234567891')", ErrorCode.INVALID_INTERVAL);
+
+    // A field or a quantity out of range
+    evalFails("TO_INTERVAL('3000000000-0 0 00:00:00')", ErrorCode.INVALID_INTERVAL);
+    evalFails("TO_INTERVAL('99999999999999999999 days')", ErrorCode.INVALID_INTERVAL);
+    evalFails("TO_INTERVAL('9223372036854775807 weeks')", ErrorCode.INVALID_INTERVAL);
 
     optimize("TO_INTERVAL('-0-0 45 22:30:58')", "INTERVAL '-45 22:30:58' DAY TO SECOND");
   }
@@ -1145,6 +1226,11 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("TRY_CAST('2024' as DATE format 'YYYY')", LocalDate.of(2024, 1, 1))
         .returnType(DateType.DATE_NOT_NULL);
     evalNull("TRY_CAST('XXXX' as DATE format 'YYYY')").returnType(DateType.DATE);
+
+    // Number to Date, an epoch out of the range of dates
+    evalEquals(
+        "TRY_CAST(1551052800 AS DATE)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalNull("TRY_CAST(9223372036854775807 AS DATE)");
 
     // String to JSON
     evalEquals(
@@ -1308,9 +1394,17 @@ class ConversionFunctionTest extends ExpressionTest {
     // Failed if the format is bad
     evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')", ErrorCode.INVALID_DATE_FORMAT);
 
-    // Integer Unix Epoch in seconds
-    evalEquals("TRY_TO_DATE(0)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
-    evalEquals("TRY_TO_DATE(1551052800)", LocalDate.of(2019, 2, 25));
+    // An epoch out of the range of dates
+    evalNull("TRY_TO_DATE(9223372036854775807)");
+    evalNull("TRY_TO_DATE(18446744073709551616)");
+
+    // An unknown time zone abbreviation
+    evalNull("TRY_TO_DATE('2019-02-13 XYZ','YYYY-MM-DD TZD')");
+
+    // Integer Unix Epoch in seconds, in the UTC time zone
+    evalEquals("TRY_TO_DATE(0)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals(
+        "TRY_TO_DATE(1551052800)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
     evalEquals("TRY_TO_DATE(-5364662400)", LocalDate.of(1800, 1, 1));
     evalEquals("TRY_TO_DATE(1284352323)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
 
