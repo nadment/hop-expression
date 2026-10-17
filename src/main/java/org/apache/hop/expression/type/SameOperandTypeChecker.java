@@ -50,6 +50,9 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
       if (operand.isNull()) continue;
 
       Type type = operand.getType();
+
+      // Ignore a value of any type, like ERROR(), it matches every family whatever its position
+      if (type.getFamily() == TypeFamily.ANY) continue;
       if (firstFamily != null) {
         if (!type.isFamily(firstFamily)) {
           return false;

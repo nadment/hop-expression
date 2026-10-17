@@ -51,6 +51,17 @@ class SpecialFunctionTest extends ExpressionTest {
         "CASE 3 WHEN 1 THEN 'Flag 1' WHEN 2 THEN 'Flag 2' ELSE ERROR('Unsupported value') END",
         ErrorCode.USER_DEFINED_ERROR);
 
+    // Usage with a field, a simple CASE with one WHEN is rewritten to IF
+    evalEquals("CASE FIELD_INTEGER WHEN 40 THEN 'a' ELSE ERROR('x') END", "a");
+    evalFails(
+        "CASE FIELD_INTEGER WHEN 1 THEN 'a' ELSE ERROR('x') END", ErrorCode.USER_DEFINED_ERROR);
+    evalEquals("CASE FIELD_INTEGER WHEN 40 THEN 'a' WHEN 2 THEN 'b' ELSE ERROR('x') END", "a");
+    evalEquals("CASE WHEN FIELD_INTEGER=40 THEN 'a' ELSE ERROR('x') END", "a");
+    evalEquals("IF(FIELD_INTEGER=40, 'a', ERROR('x'))", "a");
+    evalEquals("IF(FIELD_INTEGER=1, ERROR('x'), 'a')", "a");
+    evalFails("IF(FIELD_INTEGER=40, ERROR('x'), 'a')", ErrorCode.USER_DEFINED_ERROR);
+    evalEquals("CASE WHEN FIELD_INTEGER=1 THEN ERROR('x') ELSE 'a' END", "a");
+
     // Check operands
     evalFails("ERROR()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ERROR('a','b')", ErrorCode.TOO_MANY_ARGUMENTS);

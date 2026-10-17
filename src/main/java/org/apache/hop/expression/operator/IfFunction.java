@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import static org.apache.hop.expression.type.Types.coerceOperandType;
-import static org.apache.hop.expression.type.Types.getCommonTypeForComparison;
+import static org.apache.hop.expression.type.Types.getLeastRestrictive;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
@@ -108,7 +108,7 @@ public class IfFunction extends Function {
     // Determine common type
     Type type = call.getOperand(1).getType();
     if (call.getOperandCount() == 3) {
-      type = getCommonTypeForComparison(type, call.getOperand(2).getType());
+      type = getLeastRestrictive(type, call.getOperand(2).getType());
     }
     boolean coerced = coerceOperandType(call, type, 1);
     coerced |= coerceOperandType(call, type, 2);

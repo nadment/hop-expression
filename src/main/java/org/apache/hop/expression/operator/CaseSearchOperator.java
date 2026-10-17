@@ -216,6 +216,8 @@ public class CaseSearchOperator extends Operator {
     results.add(elseTerm);
     for (IExpression result : results) {
       if (result.isNull()) continue;
+      // Ignore a value of any type, like ERROR(), it matches every family whatever its position
+      if (result.getType().getFamily() == TypeFamily.ANY) continue;
       if (family == null) {
         family = result.getType().getFamily();
       } else if (!result.getType().isFamily(family)) {
