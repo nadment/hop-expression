@@ -173,7 +173,7 @@ public class ExpressionTest {
     row[33] = "Paris";
     row[34] = true;
     row[35] = "A";
-    row[36] = 2;
+    row[36] = 2L;
 
     // Identifier
     row[37] = "SPACE";

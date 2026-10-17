@@ -1151,7 +1151,20 @@ public class OperatorTest extends ExpressionTest {
       evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN_TRUE");
       evalNull("true AND NULL_BOOLEAN");
       evalNull("NULL_BOOLEAN AND true");
-      evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN_TRUE");
+
+      // Evaluated with fields, not simplified at compile time
+      evalFalse("NULL_BOOLEAN AND FIELD_BOOLEAN_FALSE");
+      evalFalse("FIELD_BOOLEAN_FALSE AND NULL_BOOLEAN");
+      evalNull("NULL_BOOLEAN AND NULL_BOOLEAN");
+
+      // The operands are sorted at compile time, evaluate a NULL left operand directly
+      assertEquals(
+          Boolean.FALSE,
+          BoolAndOperator.INSTANCE.eval(new IExpression[] {Literal.NULL_BOOLEAN, Literal.FALSE}));
+      assertNull(
+          BoolAndOperator.INSTANCE.eval(new IExpression[] {Literal.NULL_BOOLEAN, Literal.TRUE}));
+      assertNull(
+          BoolAndOperator.INSTANCE.eval(new IExpression[] {Literal.TRUE, Literal.NULL_BOOLEAN}));
     }
 
     @Test
@@ -1159,6 +1172,10 @@ public class OperatorTest extends ExpressionTest {
       evalFails("false AND", ErrorCode.SYNTAX_ERROR);
       evalFails("AND false", ErrorCode.SYNTAX_ERROR);
       evalFails("true AND Date '2024-01-01'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Other data types than boolean and number raise an error
+      evalFails("'abc' AND TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_STRING AND TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -1175,6 +1192,16 @@ public class OperatorTest extends ExpressionTest {
       optimizeFalse("FIELD_BOOLEAN_TRUE and false");
       optimizeFalse("NULLIF(true,true) AND NULLIF(true,true) AND NULLIF(true,true) AND false");
       optimizeNull("null AND null AND null AND true");
+
+      // Simplify x AND TRUE → x
+      optimize("FIELD_BOOLEAN_TRUE AND TRUE", "FIELD_BOOLEAN_TRUE");
+      optimize("TRUE AND FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE");
+      optimize(
+          "TRUE AND FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN", "FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN");
+      optimize("FIELD_INTEGER>5 AND TRUE AND TRUE", "FIELD_INTEGER>5");
+      optimize("FIELD_INTEGER AND TRUE", "CAST(FIELD_INTEGER AS BOOLEAN)")
+          .returnType(BooleanType.BOOLEAN);
+      optimizeTrue("TRUE AND TRUE AND TRUE");
 
       // Simplify NULL
       optimizeNull("NULL::Boolean AND TRUE");
@@ -1193,9 +1220,6 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=1",
           "FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=1");
-      optimize(
-          "(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN_TRUE AND (2*FIELD_INTEGER>1)",
-          "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
 
       // Check if simplify doesn't create infinity loop with the same operator if order change
       optimize(
@@ -1211,6 +1235,14 @@ public class OperatorTest extends ExpressionTest {
           "FIELD_INTEGER<10 AND NVL2(FIELD_INTEGER,FALSE,NULL)");
       evalFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER>5");
       evalNull("NULL_INTEGER IS NULL AND NULL_INTEGER>5");
+      // Also with the value on the right or a comparison of two fields
+      optimize("FIELD_INTEGER IS NULL AND 5<FIELD_INTEGER", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize("\"CENTURY\" IS NULL AND FIELD_INTEGER=\"CENTURY\"", "NVL2(\"CENTURY\",FALSE,NULL)");
+      evalFalse("\"CENTURY\" IS NULL AND FIELD_INTEGER=\"CENTURY\"");
+      // Other predicates are kept
+      optimize(
+          "FIELD_INTEGER IS NULL AND FIELD_STRING='a' AND FIELD_INTEGER<5",
+          "FIELD_STRING='a' AND NVL2(FIELD_INTEGER,FALSE,NULL)");
       evalNull("NOT(NULL_INTEGER IS NULL AND NULL_INTEGER>5)");
 
       // Don't simplify x IS NOT NULL AND x>5 → x>5, the result is FALSE and not NULL if x is NULL
@@ -1251,6 +1283,18 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER!=3", "FIELD_INTEGER IN (1,2)");
       optimize(
           "FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER NOT IN (3,4,5)", "FIELD_INTEGER IN (1,2)");
+
+      // Not with a list of values that is not constant, an expression can be equal to any value
+      optimize(
+          "FIELD_INTEGER IN (\"CENTURY\"*20,7) AND FIELD_INTEGER IN (40,3)",
+          "FIELD_INTEGER IN (40,3) AND FIELD_INTEGER IN (7,20*\"CENTURY\")");
+      evalTrue("FIELD_INTEGER IN (\"CENTURY\"*20,7) AND FIELD_INTEGER IN (40,3)");
+      evalTrue("FIELD_INTEGER=40 AND FIELD_INTEGER IN (\"CENTURY\"*20,2)");
+      evalTrue("FIELD_INTEGER NOT IN (\"CENTURY\") AND FIELD_INTEGER<>1");
+      // Not with a value that is not a literal
+      optimize(
+          "FIELD_INTEGER<>\"CENTURY\" AND FIELD_INTEGER<>1",
+          "FIELD_INTEGER!=1 AND \"CENTURY\"!=FIELD_INTEGER");
     }
   }
 

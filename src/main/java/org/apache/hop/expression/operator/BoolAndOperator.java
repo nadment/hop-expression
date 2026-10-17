@@ -85,6 +85,12 @@ public class BoolAndOperator extends BinaryOperator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(call.getChainedOperands(false));
 
+    // Simplify x AND TRUE → x, removed before the loop to not change the queue while iterating it
+    predicates.removeIf(Literal.TRUE::equals);
+    if (predicates.isEmpty()) {
+      return Literal.TRUE;
+    }
+
     final List<IExpression> strongTerms = new ArrayList<>();
     final List<IExpression> nullTerms = new ArrayList<>();
     final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
@@ -111,7 +117,8 @@ public class BoolAndOperator extends BinaryOperator {
             notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.isOperator(InListOperator.INSTANCE)) {
+        // Only a list of constant values, an expression can be equal to any value
+        if (term.isOperator(InListOperator.INSTANCE) && term.getOperand(1).isConstant()) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(NotInListOperator.INSTANCE) && term.getOperand(1).isConstant()) {

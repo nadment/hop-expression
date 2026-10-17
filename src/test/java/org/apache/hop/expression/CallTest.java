@@ -159,7 +159,7 @@ class CallTest extends ExpressionTest {
 
     // Normalize operands by cost
     optimize("1+FIELD_NUMBER+3", "4+FIELD_NUMBER");
-    optimize("FIELD_NUMBER>3 AND TRUE", "TRUE AND FIELD_NUMBER>3");
+    optimize("FIELD_NUMBER>3 AND FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE AND FIELD_NUMBER>3");
     optimize("2::INTEGER*FIELD_NUMBER*3::NUMBER", "6*FIELD_NUMBER");
   }
 
