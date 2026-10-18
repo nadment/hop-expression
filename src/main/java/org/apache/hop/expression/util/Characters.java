@@ -17,6 +17,8 @@
 package org.apache.hop.expression.util;
 
 import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -128,14 +130,16 @@ public final class Characters {
    *
    * <p>! ? @ " ^ # $ &amp; ~ _ , . : ; = + - * % / | \ [ ] ( ) { } &lt; &gt;
    *
-   * @param ch the character to check
+   * @param codePoint the character to check, a code point so that a character outside the Basic
+   *     Multilingual Plane is not truncated to a delimiter
    * @return true if it is a delimiter
    */
-  public static boolean isWordDelimiter(char ch) {
-    if (ch > 255) {
+  public static boolean isWordDelimiter(int codePoint) {
+    // The word delimiters are all ASCII characters
+    if (codePoint > 255) {
       return false;
     }
-    return (FLAGS[ch] & (IS_DELIMITER)) != 0;
+    return (FLAGS[codePoint] & (IS_DELIMITER)) != 0;
   }
 
   /**
@@ -199,6 +203,163 @@ public final class Characters {
    */
   public static int position(final String str, final int index) {
     return str.codePointCount(0, index);
+  }
+
+  /**
+   * Removes the leading and trailing characters of a string that are in a set of characters, a
+   * character outside the Basic Multilingual Plane counting as one character.
+   *
+   * <p>Example: {@code strip("xxaxx", "x")} returns {@code "a"}.
+   *
+   * @param str the string
+   * @param chars the characters to remove, or {@code null} to remove the white spaces
+   * @return the string without the leading and trailing characters
+   */
+  public static String strip(final String str, final @Nullable String chars) {
+    // A single substring, the string is returned as is if there is nothing to remove
+    int start = startIndex(str, chars);
+    int end = start == str.length() ? start : endIndex(str, chars);
+    return str.substring(start, end);
+  }
+
+  /**
+   * Removes the leading characters of a string that are in a set of characters, a character outside
+   * the Basic Multilingual Plane counting as one character.
+   *
+   * <p>Example: {@code stripStart("xxaxx", "x")} returns {@code "axx"}.
+   *
+   * @param str the string
+   * @param chars the characters to remove, or {@code null} to remove the white spaces
+   * @return the string without the leading characters
+   */
+  public static String stripStart(final String str, final @Nullable String chars) {
+    return str.substring(startIndex(str, chars));
+  }
+
+  /**
+   * Removes the trailing characters of a string that are in a set of characters, a character
+   * outside the Basic Multilingual Plane counting as one character.
+   *
+   * <p>Example: {@code stripEnd("xxaxx", "x")} returns {@code "xxa"}.
+   *
+   * @param str the string
+   * @param chars the characters to remove, or {@code null} to remove the white spaces
+   * @return the string without the trailing characters
+   */
+  public static String stripEnd(final String str, final @Nullable String chars) {
+    return str.substring(0, endIndex(str, chars));
+  }
+
+  /** Returns the index of the first character that is not removed, the length if none. */
+  private static int startIndex(final String str, final @Nullable String chars) {
+    int start = 0;
+    while (start < str.length()) {
+      int codePoint = str.codePointAt(start);
+      if (!isStripped(codePoint, chars)) {
+        break;
+      }
+      start += Character.charCount(codePoint);
+    }
+    return start;
+  }
+
+  /** Returns the index after the last character that is not removed, 0 if none. */
+  private static int endIndex(final String str, final @Nullable String chars) {
+    int end = str.length();
+    while (end > 0) {
+      int codePoint = str.codePointBefore(end);
+      if (!isStripped(codePoint, chars)) {
+        break;
+      }
+      end -= Character.charCount(codePoint);
+    }
+    return end;
+  }
+
+  private static boolean isStripped(final int codePoint, final @Nullable String chars) {
+    return (chars == null) ? Character.isWhitespace(codePoint) : chars.indexOf(codePoint) >= 0;
+  }
+
+  /**
+   * Returns the index of the first occurrence of a substring from an index, like {@link
+   * String#indexOf(String, int)}, but an occurrence that starts or ends in the middle of a
+   * surrogate pair is ignored.
+   *
+   * @param str the string to search in
+   * @param substr the substring to search for
+   * @param from the index to start the search from
+   * @return the index of the occurrence, or -1 if not found
+   */
+  public static int indexOf(final String str, final String substr, final int from) {
+    int index = str.indexOf(substr, from);
+    while (index >= 0 && isSplittingPair(str, index, index + substr.length())) {
+      index = str.indexOf(substr, index + 1);
+    }
+    return index;
+  }
+
+  /**
+   * Returns the index of the last occurrence of a substring searching backward from an index, like
+   * {@link String#lastIndexOf(String, int)}, but an occurrence that starts or ends in the middle of
+   * a surrogate pair is ignored.
+   *
+   * @param str the string to search in
+   * @param substr the substring to search for
+   * @param from the index to start the search backward from
+   * @return the index of the occurrence, or -1 if not found
+   */
+  public static int lastIndexOf(final String str, final String substr, final int from) {
+    int index = str.lastIndexOf(substr, from);
+    while (index > 0 && isSplittingPair(str, index, index + substr.length())) {
+      index = str.lastIndexOf(substr, index - 1);
+    }
+    // The index 0 cannot be in the middle of a surrogate pair, but its end can
+    if (index == 0 && isSplittingPair(str, 0, substr.length())) {
+      return -1;
+    }
+    return index;
+  }
+
+  private static boolean isSplittingPair(final String str, final int start, final int end) {
+    return isInsidePair(str, start) || isInsidePair(str, end);
+  }
+
+  private static boolean isInsidePair(final String str, final int index) {
+    return index > 0
+        && index < str.length()
+        && Character.isHighSurrogate(str.charAt(index - 1))
+        && Character.isLowSurrogate(str.charAt(index));
+  }
+
+  /**
+   * Maps two strings to strings where each character, including a character outside the Basic
+   * Multilingual Plane, is a single {@code char}. The same character is mapped to the same {@code
+   * char} in both strings, so an algorithm that only compares the {@code char} values, like an edit
+   * distance, counts a surrogate pair as one character. The strings are returned as is if they have
+   * no surrogate pair.
+   *
+   * @param str1 the first string
+   * @param str2 the second string
+   * @return the two mapped strings
+   */
+  public static String[] toSingleChars(final String str1, final String str2) {
+    if (str1.codePointCount(0, str1.length()) == str1.length()
+        && str2.codePointCount(0, str2.length()) == str2.length()) {
+      return new String[] {str1, str2};
+    }
+    // Each distinct character gets the next char value, more than 65536 distinct characters would
+    // wrap, far beyond the strings an edit distance can compare
+    Map<Integer, Character> mapping = new HashMap<>();
+    return new String[] {toSingleChars(str1, mapping), toSingleChars(str2, mapping)};
+  }
+
+  private static String toSingleChars(final String str, final Map<Integer, Character> mapping) {
+    StringBuilder builder = new StringBuilder(str.length());
+    str.codePoints()
+        .forEach(
+            codePoint ->
+                builder.append(mapping.computeIfAbsent(codePoint, key -> (char) mapping.size())));
+    return builder.toString();
   }
 
   /**

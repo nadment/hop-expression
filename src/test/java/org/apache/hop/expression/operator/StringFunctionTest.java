@@ -177,6 +177,16 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("InitCap('tRy a littlE  ')", "Try A Little  ");
     evalEquals("InitCap('won''t it?no')", "Won'T It?No");
     evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
+    // A letter outside the Basic Multilingual Plane is a surrogate pair (Deseret 𐐀 and 𐐨)
+    evalEquals("InitCap(CHR(66600)||CHR(66600)||' '||CHR(66600))", "𐐀𐐨 𐐀");
+    evalEquals("InitCap(CHR(66560)||CHR(66560))", "𐐀𐐨");
+    // An emoji is not a word delimiter
+    evalEquals("InitCap('a'||CHR(128512)||'b c')", "A😀b C");
+    // A character outside the Basic Multilingual Plane is not truncated to a delimiter, U+10020
+    // and U+1002E would be a space and a period
+    evalEquals(
+        "InitCap('a'||CHR(65568)||'b'||CHR(65582)||'c')",
+        "A" + Character.toString(65568) + "b" + Character.toString(65582) + "c");
 
     // Null handling
     evalNull("InitCap(NULL_STRING)").returnType(StringType.STRING);
@@ -543,6 +553,21 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Strtok('127.1-2-3','.-:',2)", "1");
     evalEquals("Strtok('127.1-2-3','.-:',4)", "3");
     evalEquals("Strtok('127.1-2-3','.-:',-1)", "3");
+    // A surrogate pair is a single character, an emoji sharing its high surrogate is not a
+    // delimiter
+    evalEquals("Strtok('a'||CHR(128512)||'b',CHR(128515),1)", "a😀b");
+    evalNull("Strtok('a'||CHR(128512)||'b',CHR(128515),2)");
+    evalEquals("Strtok('a'||CHR(128512)||'b',CHR(128512),2)", "b");
+    // At most 256 tokens, the last one holds the rest of the string
+    evalEquals("Strtok(Repeat('a,',300),',',256)", "a,".repeat(45));
+    evalNull("Strtok(Repeat('a,',300),',',257)");
+    evalEquals("Strtok(Repeat('a,',300),',',-1)", "a,".repeat(45));
+    evalEquals("Strtok(Repeat('a,',300),',',-256)", "a");
+    evalNull("Strtok(Repeat('a,',300),',',-257)");
+    evalEquals("Strtok('a,b',',',-2)", "a");
+    evalNull("Strtok('a,b',',',3)");
+    evalEquals("Strtok('a,',',',2)", "");
+    evalNull("Strtok('',',',1)");
     evalEquals("Strtok('127.1-2-3','.-:',-2)", "2");
     evalEquals("Strtok('AAA.BBB:CCC-DDD','.-:',2)", "BBB");
 
@@ -628,6 +653,13 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("TRIM(LTRIM(FIELD_STRING,'T'))", "TRIM(LTRIM(FIELD_STRING,'T'))");
     optimize("TRIM(RTRIM(FIELD_STRING,'T'))", "TRIM(RTRIM(FIELD_STRING,'T'))");
     evalEquals("TRIM(TRIM(FIELD_STRING,'T'))", "ES");
+
+    // A surrogate pair is a single character, an emoji sharing its high surrogate is not removed
+    evalEquals("TRIM(CHR(128512)||'a'||CHR(128512),CHR(128515))", "😀a😀");
+    evalEquals("TRIM(CHR(128512)||'a'||CHR(128512),CHR(128512))", "a");
+    // All the characters removed
+    evalEquals("TRIM('xxx','x')", "");
+    evalEquals("TRIM('   ')", "");
   }
 
   @Test
@@ -652,6 +684,10 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("LTRIM(TRIM(FIELD_STRING,'T'))", "LTRIM(TRIM(FIELD_STRING,'T'))");
     optimize("LTRIM(RTRIM(FIELD_STRING,'T'))", "LTRIM(RTRIM(FIELD_STRING,'T'))");
     evalEquals("LTRIM(RTRIM(FIELD_STRING,'T'))", "TES");
+
+    // A surrogate pair is a single character, an emoji sharing its high surrogate is not removed
+    evalEquals("LTRIM(CHR(128512)||'a',CHR(128515))", "😀a");
+    evalEquals("LTRIM(CHR(128512)||CHR(128515)||'a',CHR(128515)||CHR(128512))", "a");
   }
 
   @Test
@@ -678,6 +714,10 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("RTRIM(TRIM(FIELD_STRING,'T'))", "RTRIM(TRIM(FIELD_STRING,'T'))");
     optimize("RTRIM(LTRIM(FIELD_STRING,'T'))", "RTRIM(LTRIM(FIELD_STRING,'T'))");
     evalEquals("RTRIM(LTRIM(FIELD_STRING,'T'))", "EST");
+
+    // A surrogate pair is a single character, an emoji sharing its high surrogate is not removed
+    evalEquals("RTRIM('a'||CHR(128512),CHR(128515))", "a😀");
+    evalEquals("RTRIM('a'||CHR(128515)||CHR(128512),CHR(128512)||CHR(128515))", "a");
   }
 
   @Test
@@ -1068,6 +1108,10 @@ public class StringFunctionTest extends ExpressionTest {
   void Levenshtein() throws Exception {
     evalEquals("Levenshtein('Superman', 'Superman')", 0L);
     evalEquals("Levenshtein('kitten', 'sitting')", 3L);
+    // A surrogate pair is a single character
+    evalEquals("Levenshtein(CHR(128512), 'a')", 1L);
+    evalEquals("Levenshtein(CHR(128512), CHR(128513))", 1L);
+    evalEquals("Levenshtein('a'||CHR(128512)||'b', 'a'||CHR(128512)||'c')", 1L);
 
     // Null handling
     evalNull("Levenshtein(NULL_STRING,NULL_STRING)");
@@ -1090,6 +1134,9 @@ public class StringFunctionTest extends ExpressionTest {
     // Two empty strings are identical
     evalEquals("JaroWinkler('', '')", 100L);
     evalEquals("JaroWinkler('a', '')", 0L);
+    // A surrogate pair is a single character, two emojis sharing their high surrogate differ
+    evalEquals("JaroWinkler(CHR(128512), CHR(128513))", 0L);
+    evalEquals("JaroWinkler('MART'||CHR(128512)||'A', 'MAR'||CHR(128512)||'TA')", 96L);
 
     // Null handling
     evalNull("JaroWinkler(NULL_STRING,NULL_STRING)");
@@ -1910,6 +1957,13 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Position('abc' IN 'abcdefgh')", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Position('XYZ' IN 'abcdefgh')", 0L).returnType(IntegerType.INTEGER_NOT_NULL);
     evalEquals("Position('def' IN 'abcdefgh')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
+    // A half of a surrogate pair is not found in the pair
+    evalEquals("Position(String_Decode('\\uDE00') IN CHR(128512))", 0L);
+    evalEquals("Position(String_Decode('\\uD83D') IN CHR(128512))", 0L);
+    evalEquals("Position(String_Decode('\\uDE00') IN CHR(128512)||String_Decode('\\uDE00'))", 2L);
+    evalEquals("Instr(CHR(128512),String_Decode('\\uDE00'))", 0L);
+    evalEquals("Instr(CHR(128512),String_Decode('\\uDE00'),-1)", 0L);
+    evalEquals("Instr(CHR(128512),String_Decode('\\uD83D'),-1)", 0L);
 
     // Null handling
     evalNull("Position(NULL_STRING IN 'abcdefgh')").returnType(IntegerType.INTEGER);

@@ -23,6 +23,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -51,6 +52,8 @@ public class JaroWinklerFunction extends Function {
     if (v1 == null) return null;
 
     // The Jaro similarity with the Winkler boost of the common prefix, on a scale of 0 to 100
-    return Long.valueOf(Math.round(100 * JARO_WINKLER.apply(v0, v1)));
+    // A surrogate pair is a single character
+    String[] strings = Characters.toSingleChars(v0, v1);
+    return Long.valueOf(Math.round(100 * JARO_WINKLER.apply(strings[0], strings[1])));
   }
 }

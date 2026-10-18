@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,6 +33,9 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class StrtokFunction extends Function {
+
+  /** The maximum number of tokens, the last one holds the rest of the string. */
+  private static final int MAX_TOKENS = 256;
 
   private static final IOperandTypeChecker OTC =
       OperandTypes.STRING
@@ -73,15 +75,57 @@ public class StrtokFunction extends Function {
       index = Math.clamp(v2, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
-    String[] parts = StringUtils.splitPreserveAllTokens(str, delimiter, 256);
+    // An empty string has no token
+    if (str.isEmpty()) return null;
 
-    if (index < 0) index += parts.length + 1;
+    // A negative part number counts from the end, only then the tokens are counted
+    if (index < 0) index += countTokens(str, delimiter) + 1;
 
     // If the part index is out of range, the returned value is NULL.
-    if (index < 1 || index > parts.length) {
+    if (index < 1 || index > MAX_TOKENS) {
       return null;
     }
 
-    return parts[index - 1];
+    return token(str, delimiter, index);
+  }
+
+  /**
+   * Returns the nth token of a string split on each character of the delimiters, a surrogate pair
+   * being a single character. The empty tokens are kept and the last of the {@link #MAX_TOKENS}
+   * tokens holds the rest of the string. Only the requested token is extracted.
+   *
+   * @return the token, or {@code null} if the string has fewer tokens
+   */
+  private static @Nullable String token(final String str, final String delimiters, final int n) {
+    int start = 0;
+    int part = 1;
+    int i = 0;
+    while (i < str.length() && part < MAX_TOKENS) {
+      int codePoint = str.codePointAt(i);
+      int next = i + Character.charCount(codePoint);
+      if (delimiters.indexOf(codePoint) >= 0) {
+        if (part == n) {
+          return str.substring(start, i);
+        }
+        part++;
+        start = next;
+      }
+      i = next;
+    }
+    return (part == n) ? str.substring(start) : null;
+  }
+
+  /** Returns the number of tokens of a non-empty string, at most {@link #MAX_TOKENS}. */
+  private static int countTokens(final String str, final String delimiters) {
+    int count = 1;
+    int i = 0;
+    while (i < str.length() && count < MAX_TOKENS) {
+      int codePoint = str.codePointAt(i);
+      if (delimiters.indexOf(codePoint) >= 0) {
+        count++;
+      }
+      i += Character.charCount(codePoint);
+    }
+    return count;
   }
 }

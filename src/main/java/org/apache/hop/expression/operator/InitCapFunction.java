@@ -71,17 +71,20 @@ public class InitCapFunction extends Function {
     int length = value.length();
     StringBuilder builder = new StringBuilder(length);
     boolean capitalizeNext = true;
-    for (int i = 0; i < length; i++) {
-      char ch = value.charAt(i);
+    // Iterate on code points, a letter outside the Basic Multilingual Plane is a surrogate pair
+    for (int i = 0; i < length; ) {
+      int codePoint = value.codePointAt(i);
+      i += Character.charCount(codePoint);
 
-      if (Characters.isWordDelimiter(ch)) {
-        builder.append(ch);
+      // The word delimiters are all ASCII characters
+      if (Characters.isWordDelimiter(codePoint)) {
+        builder.append((char) codePoint);
         capitalizeNext = true;
       } else if (capitalizeNext) {
-        builder.append(Character.toTitleCase(ch));
+        builder.appendCodePoint(Character.toTitleCase(codePoint));
         capitalizeNext = false;
       } else {
-        builder.append(Character.toLowerCase(ch));
+        builder.appendCodePoint(Character.toLowerCase(codePoint));
       }
     }
     return builder.toString();

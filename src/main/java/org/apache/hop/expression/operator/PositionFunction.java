@@ -54,7 +54,7 @@ public class PositionFunction extends Function {
     }
 
     // The position is in characters, a surrogate pair is a single character
-    int index = str.indexOf(substr);
+    int index = Characters.indexOf(str, substr, 0);
     return Long.valueOf((index < 0) ? 0L : Characters.position(str, index) + 1L);
   }
 

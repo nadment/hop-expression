@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,6 +25,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -60,7 +60,9 @@ public class TrimFunction extends Function {
       if (stripChars == null) return null;
     }
 
-    return StringUtils.strip(value, stripChars);
+    // The characters are compared by code point, a surrogate pair is a single character. Without
+    // specified characters, the white spaces are removed
+    return Characters.strip(value, stripChars);
   }
 
   @Override

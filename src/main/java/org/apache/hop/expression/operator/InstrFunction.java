@@ -60,7 +60,7 @@ public class InstrFunction extends Function {
 
     // Fast path, the first occurrence from the beginning
     if (operands.length == 2) {
-      return toPosition(str, str.indexOf(substr));
+      return toPosition(str, Characters.indexOf(str, substr, 0));
     }
 
     Long position = operands[2].getValue(Long.class);
@@ -113,7 +113,7 @@ public class InstrFunction extends Function {
    */
   private static int indexOf(String str, String substr, int start, int occurrence) {
     int index;
-    while ((index = str.indexOf(substr, start)) >= 0 && --occurrence > 0) {
+    while ((index = Characters.indexOf(str, substr, start)) >= 0 && --occurrence > 0) {
       // An empty substring is found at the end of the string, there is nothing after it
       if (index == str.length()) {
         return -1;
@@ -130,7 +130,7 @@ public class InstrFunction extends Function {
    */
   private static int lastIndexOf(String str, String substr, int start, int occurrence) {
     int index;
-    while ((index = str.lastIndexOf(substr, start)) >= 0 && --occurrence > 0) {
+    while ((index = Characters.lastIndexOf(str, substr, start)) >= 0 && --occurrence > 0) {
       if (index == 0) {
         return -1;
       }

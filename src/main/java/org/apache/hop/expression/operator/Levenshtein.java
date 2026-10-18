@@ -23,6 +23,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -50,6 +51,8 @@ public class Levenshtein extends Function {
     String str2 = operands[1].getValue(String.class);
     if (str2 == null) return null;
 
-    return Long.valueOf(LEVENSHTEIN_DISTANCE.apply(str1, str2));
+    // A surrogate pair is a single character
+    String[] strings = Characters.toSingleChars(str1, str2);
+    return Long.valueOf(LEVENSHTEIN_DISTANCE.apply(strings[0], strings[1]));
   }
 }
