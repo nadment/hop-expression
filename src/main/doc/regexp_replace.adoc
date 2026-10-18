@@ -44,7 +44,9 @@ String
 == Usage
 
 * The pattern is defined according to the Java language regular expression rules. The POSIX bracket expressions like `[:alnum:]` are not supported, use the Java classes like `\p{Alnum}`.
-* The replacement can contain backreferences to capture groups, written as a backslash followed by the number of the group. A capture group is a regular expression enclosed within parentheses.
+* The replacement can contain backreferences to capture groups, written as a backslash followed by the number of the group, from `\1` to `\9`, `\0` being the whole match. A capture group is a regular expression enclosed within parentheses. A group that did not match is replaced by an empty string.
+* In the replacement, a backslash followed by another character is that character, use `\\` for a backslash. The `$` character has no special meaning.
+* Raises an error if the replacement ends with a backslash or refers to a capture group that does not exist in the pattern.
 * If no match is found, the function returns source unchanged.
 * An empty pattern matches nothing.
 * Raises an error if position is less than 1 or if occurrence is negative.

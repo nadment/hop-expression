@@ -139,26 +139,17 @@ public class RegexpReplaceFunction extends Function {
     }
 
     try {
-
-      // Back reference
-      if ((replacement.indexOf('\\') >= 0) || (replacement.indexOf('$') >= 0)) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < replacement.length(); i++) {
-          char c = replacement.charAt(i);
-          if (c == '$') {
-            builder.append('\\');
-          } else if (c == '\\' && ++i < replacement.length()) {
-            c = replacement.charAt(i);
-            builder.append(c >= '0' && c <= '9' ? '$' : '\\');
-          }
-          builder.append(c);
-        }
-        replacement = builder.toString();
-      }
-
       Pattern p = (compiledPattern != null) ? compiledPattern : Pattern.compile(pattern, flags);
       Matcher matcher = p.matcher(input);
       StringBuilder buffer = new StringBuilder();
+
+      // The back references are expanded by this function, not by Matcher.appendReplacement()
+      // whose syntax differs: '$' is a literal and '\10' is the group 1 followed by '0'
+      boolean hasBackReference = replacement.indexOf('\\') >= 0;
+      if (hasBackReference) {
+        checkReplacement(replacement, matcher.groupCount());
+      }
+      String literal = hasBackReference ? "" : Matcher.quoteReplacement(replacement);
 
       // The position is 1-based, the matcher start index is 0-based.
       // Do not use replaceAll(), it resets the matcher and would search from the beginning.
@@ -167,7 +158,10 @@ public class RegexpReplaceFunction extends Function {
       int index = 1;
       while (found) {
         if (occurrence == 0 || index == occurrence) {
-          matcher.appendReplacement(buffer, replacement);
+          matcher.appendReplacement(buffer, literal);
+          if (hasBackReference) {
+            appendBackReferences(buffer, matcher, replacement);
+          }
           if (occurrence != 0) {
             break;
           }
@@ -179,6 +173,51 @@ public class RegexpReplaceFunction extends Function {
       return buffer.toString();
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);
+    }
+  }
+
+  /**
+   * Checks that each backslash of the replacement is followed by a character and that a back
+   * reference {@code \n} refers to an existing capture group.
+   *
+   * @throws ExpressionException with {@link ErrorCode#INVALID_REGEXP_ESCAPE} if not
+   */
+  private static void checkReplacement(String replacement, int groupCount) {
+    for (int i = 0; i < replacement.length(); i++) {
+      if (replacement.charAt(i) == '\\') {
+        if (i + 1 == replacement.length()) {
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, replacement, i);
+        }
+        char c = replacement.charAt(i + 1);
+        if (c >= '0' && c <= '9' && c - '0' > groupCount) {
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, replacement, i);
+        }
+        i++;
+      }
+    }
+  }
+
+  /**
+   * Appends the replacement of the current match: {@code \0} to {@code \9} is replaced by the
+   * capture group, empty if the group did not match, and a backslash followed by another character
+   * is that character, like {@code \\} for a backslash.
+   */
+  private static void appendBackReferences(
+      StringBuilder buffer, Matcher matcher, String replacement) {
+    for (int i = 0; i < replacement.length(); i++) {
+      char c = replacement.charAt(i);
+      if (c == '\\') {
+        // Checked before, a backslash is followed by a character
+        c = replacement.charAt(++i);
+        if (c >= '0' && c <= '9') {
+          String group = matcher.group(c - '0');
+          if (group != null) {
+            buffer.append(group);
+          }
+          continue;
+        }
+      }
+      buffer.append(c);
     }
   }
 }

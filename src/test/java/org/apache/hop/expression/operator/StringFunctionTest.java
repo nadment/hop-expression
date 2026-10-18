@@ -1204,6 +1204,22 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals(
         "Regexp_Replace('FIRSTNAME MIDDLENAME LASTNAME','(.*) (.*) (.*)','\\3, \\1 \\2')",
         "LASTNAME, FIRSTNAME MIDDLENAME");
+    evalEquals("Regexp_Replace('abc', 'b', '[\\0]')", "a[b]c");
+    // A back reference is a single digit, '\10' is the group 1 followed by '0'
+    evalEquals("Regexp_Replace('abc', '(b)', '\\10')", "ab0c");
+    // A group that did not match is replaced by an empty string
+    evalEquals("Regexp_Replace('ac', 'a(b)?c', 'x\\1y')", "xy");
+    // A backslash followed by another character is that character, '$' is a literal
+    evalEquals("Regexp_Replace('abc', 'b', '\\\\')", "a\\c");
+    evalEquals("Regexp_Replace('abc', 'b', '\\n')", "anc");
+    evalEquals("Regexp_Replace('abc', 'b', '$1')", "a$1c");
+    evalEquals("Regexp_Replace('abc', '(b)', '$1\\1')", "a$1bc");
+    // A trailing backslash or a group that does not exist raises an error, even without match
+    evalFails("Regexp_Replace('abc', 'b', 'x\\')", ErrorCode.INVALID_REGEXP_ESCAPE);
+    evalFails("Regexp_Replace('abc', 'b', '\\1')", ErrorCode.INVALID_REGEXP_ESCAPE);
+    evalFails("Regexp_Replace('abc', '(a)(b)', '\\3')", ErrorCode.INVALID_REGEXP_ESCAPE);
+    evalFails("Regexp_Replace('abc', 'z', '\\1')", ErrorCode.INVALID_REGEXP_ESCAPE);
+    evalFails("Regexp_Replace('abc', 'b'||FIELD_STRING, '\\1')", ErrorCode.INVALID_REGEXP_ESCAPE);
 
     // Null handling
     evalNull("Regexp_Replace(NULL_STRING,'A')").returnType(StringType.STRING);
