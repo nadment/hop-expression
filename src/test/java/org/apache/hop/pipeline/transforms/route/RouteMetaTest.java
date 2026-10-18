@@ -30,7 +30,7 @@ public class RouteMetaTest {
     RouteMeta meta =
         TransformSerializationTestUtil.testSerialization("/route-transform.xml", RouteMeta.class);
 
-    Route route = meta.getRoutes().get(0);
+    Route route = meta.getRoutes().getFirst();
     assertEquals("FIELD_BOOLEAN is TRUE", route.getCondition());
     assertEquals("Condition 1", route.getTransformName());
     assertEquals(4, meta.getRoutes().size());

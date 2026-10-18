@@ -54,6 +54,6 @@ public class ExpressionMetaTest {
 
     // Only the warning about the missing input fields, the expression is valid
     assertEquals(1, remarks.size());
-    assertEquals(ICheckResult.TYPE_RESULT_WARNING, remarks.get(0).getType());
+    assertEquals(ICheckResult.TYPE_RESULT_WARNING, remarks.getFirst().getType());
   }
 }

@@ -149,9 +149,9 @@ public class MultiplyOperator extends BinaryOperator {
 
     // Simplify arithmetic only if one negate const * (-A) → -const * A
     else if (negateCount == 1 && !constantTerms.isEmpty()) {
-      Call term = negativeTerms.get(0);
+      Call term = negativeTerms.getFirst();
       operands.add(term.getOperand(0));
-      IExpression constant = constantTerms.get(0);
+      IExpression constant = constantTerms.getFirst();
       operands.remove(constant);
       term.setOperand(0, constant);
     }

@@ -77,8 +77,8 @@ class ExpressionLexerTest {
     ExpressionLexer lexer = new ExpressionLexer("field1 \"quoted field\" \"CASE\"");
     List<Token> tokens = lexer.getTokens();
 
-    assertEquals(Id.IDENTIFIER, tokens.get(0).id());
-    assertEquals("field1", tokens.get(0).text());
+    assertEquals(Id.IDENTIFIER, tokens.getFirst().id());
+    assertEquals("field1", tokens.getFirst().text());
     assertEquals(Id.IDENTIFIER, tokens.get(1).id());
     assertEquals("QUOTED FIELD", tokens.get(1).text());
     assertEquals(Id.IDENTIFIER, tokens.get(2).id());
@@ -91,7 +91,7 @@ class ExpressionLexerTest {
         new ExpressionLexer("CASE WHEN THEN ELSE END AND OR NOT XOR IS NULL TRUE FALSE");
     List<Token> tokens = lexer.getTokens();
 
-    assertEquals(Id.CASE, tokens.get(0).id());
+    assertEquals(Id.CASE, tokens.getFirst().id());
     assertEquals(Id.WHEN, tokens.get(1).id());
     assertEquals(Id.THEN, tokens.get(2).id());
     assertEquals(Id.ELSE, tokens.get(3).id());
@@ -111,8 +111,8 @@ class ExpressionLexerTest {
         new ExpressionLexer("123 123_456 12.34 .5 1e10 1.2E-5 0xABC 0b101 0o777");
     List<Token> tokens = lexer.getTokens();
 
-    assertEquals(Id.LITERAL_NUMERIC_DECIMAL, tokens.get(0).id());
-    assertEquals("123", tokens.get(0).text());
+    assertEquals(Id.LITERAL_NUMERIC_DECIMAL, tokens.getFirst().id());
+    assertEquals("123", tokens.getFirst().text());
     assertEquals(Id.LITERAL_NUMERIC_DECIMAL, tokens.get(1).id());
     assertEquals("123456", tokens.get(1).text());
     assertEquals(Id.LITERAL_NUMERIC_DECIMAL, tokens.get(2).id());
@@ -140,7 +140,7 @@ class ExpressionLexerTest {
     List<Token> tokens = lexer.getTokens();
 
     assertEquals(5, tokens.size());
-    assertEquals("1", tokens.get(0).text());
+    assertEquals("1", tokens.getFirst().text());
     assertEquals("2", tokens.get(1).text());
     assertEquals("3", tokens.get(2).text());
     assertEquals("4", tokens.get(3).text());
@@ -152,8 +152,8 @@ class ExpressionLexerTest {
     ExpressionLexer lexer = new ExpressionLexer("ABS(x) UPPER('a') NOT(TRUE) NOT TRUE");
     List<Token> tokens = lexer.getTokens();
 
-    assertEquals(Id.FUNCTION, tokens.get(0).id());
-    assertEquals("ABS", tokens.get(0).text());
+    assertEquals(Id.FUNCTION, tokens.getFirst().id());
+    assertEquals("ABS", tokens.getFirst().text());
     assertEquals(Id.LPARENTHESIS, tokens.get(1).id());
 
     // Jump to next function
@@ -170,8 +170,8 @@ class ExpressionLexerTest {
     ExpressionLexer lexer = new ExpressionLexer("INTEGER STRING BOOLEAN DAY MONTH YEAR");
     List<Token> tokens = lexer.getTokens();
 
-    assertEquals(Id.LITERAL_DATATYPE, tokens.get(0).id());
-    assertEquals("INTEGER", tokens.get(0).text());
+    assertEquals(Id.LITERAL_DATATYPE, tokens.getFirst().id());
+    assertEquals("INTEGER", tokens.getFirst().text());
     assertEquals(Id.LITERAL_DATATYPE, tokens.get(1).id());
     assertEquals("STRING", tokens.get(1).text());
     assertEquals(Id.LITERAL_DATATYPE, tokens.get(2).id());

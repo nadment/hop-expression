@@ -129,7 +129,7 @@ public class InListOperator extends Operator {
 
     // Simplify x IN (a) → x = a
     if (list.size() == 1) {
-      return new Call(EqualOperator.INSTANCE, reference, list.get(0));
+      return new Call(EqualOperator.INSTANCE, reference, list.getFirst());
     }
 
     // Sort list on cost

@@ -128,7 +128,7 @@ public class NotInListOperator extends Operator {
 
     // Simplify x NOT IN (a) → x <> a
     if (list.size() == 1) {
-      return new Call(NotEqualOperator.INSTANCE, reference, list.get(0));
+      return new Call(NotEqualOperator.INSTANCE, reference, list.getFirst());
     }
 
     // Sort list on cost

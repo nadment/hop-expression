@@ -80,7 +80,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
 
         // Find TRUE output row set
-        if (!Utils.isEmpty(streams.get(0).getTransformName())) {
+        if (!Utils.isEmpty(streams.getFirst().getTransformName())) {
           TransformMeta to = streams.getFirst().getTransformMeta();
           PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
           if (hop != null && hop.isEnabled()) {

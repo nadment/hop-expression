@@ -42,7 +42,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
 
   @Override
   public String format(final ZonedDateTime value) {
-    return formats.get(0).format(value);
+    return formats.getFirst().format(value);
   }
 
   @Override
