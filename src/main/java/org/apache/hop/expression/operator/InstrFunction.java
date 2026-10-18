@@ -58,61 +58,89 @@ public class InstrFunction extends Function {
       return null;
     }
 
-    int start = 0;
-    boolean forward = true;
-    int occurrence = 1;
-    int result = 0;
+    // Fast path, the first occurrence from the beginning
+    if (operands.length == 2) {
+      return toPosition(str, str.indexOf(substr));
+    }
 
-    // If 3 operands, indicate the position to start
-    if (operands.length >= 3) {
-      Long position = operands[2].getValue(Long.class);
-      if (position == null) {
+    Long position = operands[2].getValue(Long.class);
+    if (position == null) {
+      return null;
+    }
+    if (position == 0) {
+      throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
+    }
+
+    // The occurrence to find, must be positive
+    int occurrence = 1;
+    if (operands.length == 4) {
+      Long nth = operands[3].getValue(Long.class);
+      if (nth == null) {
         return null;
       }
-      if (position == 0) {
-        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 3, position);
+      if (nth < 1) {
+        throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, nth);
       }
-
-      // Clamp to just outside the string, the conversion to int would wrap a value out of the
-      // int range, and a position beyond the string finds nothing either way
-      long bound = Characters.length(str) + 1L;
-      start = (int) Math.clamp(position, -bound, bound);
-
-      // Convert the 1-based position to a 0-based index, a negative position counts back from
-      // the end (-1 is the last character) and searches towards the beginning
-      // The position is in characters, a surrogate pair is a single character
-      forward = start > 0;
-      long index = forward ? start - 1L : (long) Characters.length(str) + start;
-      start = (index < 0) ? -1 : Characters.offset(str, index);
-
-      // The occurrence to find, must be positive
-      if (operands.length == 4) {
-        Long nth = operands[3].getValue(Long.class);
-        if (nth == null) {
-          return null;
-        }
-        if (nth < 1) {
-          throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 4, nth);
-        }
-        // Clamp to the int range, the conversion would wrap a larger occurrence
-        occurrence = Math.clamp(nth, 1, Integer.MAX_VALUE);
-      }
+      // Clamp to the int range, the conversion would wrap a larger occurrence
+      occurrence = Math.clamp(nth, 1, Integer.MAX_VALUE);
     }
 
-    // The next search starts one character after the previous match, so the overlapping
-    // occurrences are counted, like INSTR('AAA','AA',1,2) returns 2
-    if (forward) {
-      while ((result = str.indexOf(substr, start)) >= 0) {
-        if (--occurrence <= 0) break;
-        start = result + 1;
-      }
-    } else {
-      while ((result = str.lastIndexOf(substr, start)) >= 0) {
-        if (--occurrence <= 0) break;
-        start = result - 1;
-      }
+    // A position beyond the start or the end of the string finds nothing, not even an empty
+    // substring. Checked on the long value, the conversion to int would wrap a value out of
+    // the int range. The position is in characters, a surrogate pair is a single character
+    long length = Characters.length(str);
+    if (position > length + 1 || position < -length - 1) {
+      return 0L;
     }
 
-    return Long.valueOf((result < 0) ? 0L : Characters.position(str, result) + 1L);
+    // Convert the 1-based position to a 0-based index, a negative position counts back from
+    // the end (-1 is the last character) and searches towards the beginning
+    if (position > 0) {
+      return toPosition(
+          str, indexOf(str, substr, Characters.offset(str, position - 1), occurrence));
+    }
+    long index = length + position;
+    int start = (index < 0) ? -1 : Characters.offset(str, index);
+    return toPosition(str, lastIndexOf(str, substr, start, occurrence));
+  }
+
+  /**
+   * Searches forward the nth occurrence of a substring. The next search starts one character after
+   * the previous match, so the overlapping occurrences are counted, like {@code
+   * INSTR('AAA','AA',1,2)} returns 2.
+   *
+   * @return the index of the occurrence, or -1 if not found
+   */
+  private static int indexOf(String str, String substr, int start, int occurrence) {
+    int index;
+    while ((index = str.indexOf(substr, start)) >= 0 && --occurrence > 0) {
+      // An empty substring is found at the end of the string, there is nothing after it
+      if (index == str.length()) {
+        return -1;
+      }
+      start = str.offsetByCodePoints(index, 1);
+    }
+    return index;
+  }
+
+  /**
+   * Searches backward the nth occurrence of a substring, the overlapping occurrences are counted.
+   *
+   * @return the index of the occurrence, or -1 if not found
+   */
+  private static int lastIndexOf(String str, String substr, int start, int occurrence) {
+    int index;
+    while ((index = str.lastIndexOf(substr, start)) >= 0 && --occurrence > 0) {
+      if (index == 0) {
+        return -1;
+      }
+      start = str.offsetByCodePoints(index, -1);
+    }
+    return index;
+  }
+
+  /** Converts an index in the string to a 1-based position in characters, 0 if not found. */
+  private static Long toPosition(String str, int index) {
+    return (index < 0) ? 0L : Characters.position(str, index) + 1L;
   }
 }

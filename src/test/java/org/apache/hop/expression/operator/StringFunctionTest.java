@@ -242,6 +242,25 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Instr('ABAB','AB',1,4294967297)", 0L);
     evalFails("Instr('ABAB','AB',1,-4294967295)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
 
+    // An empty substring is found at each position, from 1 to the end of the string
+    evalEquals("Instr('ABC','')", 1L);
+    evalEquals("Instr('','')", 1L);
+    evalEquals("Instr('ABC','',1,4)", 4L);
+    evalEquals("Instr('ABC','',1,5)", 0L);
+    evalEquals("Instr('ABC','',1,9223372036854775807)", 0L);
+    evalEquals("Instr('ABC','',4)", 4L);
+    evalEquals("Instr('ABC','',5)", 0L);
+    evalEquals("Instr('ABC','',10)", 0L);
+    evalEquals("Instr('ABC','',-1,3)", 1L);
+    evalEquals("Instr('ABC','',-1,4)", 0L);
+    // A surrogate pair is a single character
+    evalEquals("Instr('A'||CHR(128512)||'B','',1,3)", 3L);
+    evalEquals("Instr('A'||CHR(128512)||'B','',-1,2)", 2L);
+    evalEquals("Instr(CHR(128512)||CHR(128512),CHR(128512),1,2)", 2L);
+    // A position beyond the string is checked after the occurrence
+    evalNull("Instr('ABC','A',10,NULL_INTEGER)");
+    evalFails("Instr('ABC','A',10,0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
     // Null handling
     evalNull("Instr(NULL_STRING,'test')");
     evalNull("Instr('test',NULL_STRING)");
