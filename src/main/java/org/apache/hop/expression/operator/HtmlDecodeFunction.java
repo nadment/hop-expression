@@ -16,7 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,6 +39,9 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class HtmlDecodeFunction extends Function {
 
+  /** A decimal or hexadecimal numeric entity, the semicolon is required like by the decoder. */
+  private static final Pattern NUMERIC_ENTITY = Pattern.compile("&#([xX][0-9a-fA-F]+|[0-9]+);");
+
   public HtmlDecodeFunction() {
     super(
         "HTML_DECODE",
@@ -47,6 +54,34 @@ public class HtmlDecodeFunction extends Function {
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    return StringEscapeUtils.unescapeHtml4(value);
+    if (value == null) return null;
+
+    try {
+      return StringEscapeUtils.unescapeHtml4(value);
+    } catch (IllegalArgumentException e) {
+      // A numeric entity above U+10FFFF is not a character, report the first one
+      Matcher matcher = NUMERIC_ENTITY.matcher(value);
+      while (matcher.find()) {
+        if (!isValidCodePoint(matcher.group(1))) {
+          throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, matcher.group(), "HTML");
+        }
+      }
+      throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, value, "HTML");
+    }
+  }
+
+  /**
+   * Returns whether the number of a numeric entity is a valid code point. A number that does not
+   * fit in an int is left unchanged by the decoder, so it is considered valid.
+   */
+  private static boolean isValidCodePoint(String number) {
+    try {
+      boolean hex = number.charAt(0) == 'x' || number.charAt(0) == 'X';
+      int codePoint =
+          hex ? Integer.parseInt(number, 1, number.length(), 16) : Integer.parseInt(number);
+      return Character.isValidCodePoint(codePoint);
+    } catch (NumberFormatException e) {
+      return true;
+    }
   }
 }

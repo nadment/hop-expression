@@ -1817,6 +1817,13 @@ public class StringFunctionTest extends ExpressionTest {
   void Html_Decode() throws Exception {
     evalEquals("Html_Decode('18&euro; &amp; &lt;test&gt; &#8482;')", "18€ & <test> ™");
     evalEquals("Html_Decode('&#128512; &#x1F600;')", "😀 😀");
+    evalEquals("Html_Decode('&#1114111;')", Character.toString(1114111));
+
+    // A numeric entity above U+10FFFF is not a character
+    assertDecodingSymbolMessage("Html_Decode('a &#1114112; b')", "&#1114112;", "HTML");
+    assertDecodingSymbolMessage("Html_Decode('&#65; &#x110000;')", "&#x110000;", "HTML");
+    // A number too large to be parsed is left unchanged
+    evalEquals("Html_Decode('&#99999999999;')", "&#99999999999;");
 
     // Null handling
     evalNull("Html_Decode(NULL_STRING)");

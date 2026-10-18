@@ -30,6 +30,7 @@ String
 
 == Usage
 
+* Raises an error naming the entity if a numeric entity is above the last Unicode code point U+10FFFF, such as `&#1114112;`.
 * Returns NULL if the argument is NULL.
 
 == Examples
