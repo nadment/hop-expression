@@ -52,6 +52,6 @@ public class ExpFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
-    return BigDecimalMath.exp(value, MATH_CONTEXT);
+    return checkNumberOverflow(BigDecimalMath.exp(value, MATH_CONTEXT));
   }
 }

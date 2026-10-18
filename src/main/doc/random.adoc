@@ -42,7 +42,7 @@ Number
 
 * If seed is specified, the function returns a repeatable sequence of random numbers.
 * If seed is omitted, the function returns a completely random number.
-* Fails if seed is NULL.
+* Fails if seed is NULL, is not an integer or is not a constant.
 
 == Examples
 

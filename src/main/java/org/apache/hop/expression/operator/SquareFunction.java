@@ -53,6 +53,6 @@ public class SquareFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
 
-    return value.multiply(value, MATH_CONTEXT);
+    return checkNumberOverflow(value.multiply(value, MATH_CONTEXT));
   }
 }

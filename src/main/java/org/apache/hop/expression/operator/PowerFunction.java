@@ -62,7 +62,7 @@ public class PowerFunction extends Function {
       return null;
     }
 
-    return BigDecimalMath.pow(number, exponent, MATH_CONTEXT);
+    return checkNumberOverflow(BigDecimalMath.pow(number, exponent, MATH_CONTEXT));
   }
 
   @Override

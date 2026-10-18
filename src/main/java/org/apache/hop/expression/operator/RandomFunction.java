@@ -76,12 +76,16 @@ public class RandomFunction extends Function {
 
     // The registered function is shared by all expressions, so each call gets its own generator
     if (call.getOperandCount() == 1) {
+      // The seed is read once, so it must be an integer constant
+      if (!call.getOperand(0).isConstant()) {
+        throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
+      }
       try {
-        Long seed = call.getOperand(0).getValue(Long.class);
-        if (seed == null) {
+        BigDecimal seed = call.getOperand(0).getValue(BigDecimal.class);
+        if (seed == null || seed.stripTrailingZeros().scale() > 0) {
           throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
         }
-        return new Call(new RandomFunction(new Random(seed)), call.getOperands());
+        return new Call(new RandomFunction(new Random(seed.longValueExact())), call.getOperands());
       } catch (Exception e) {
         throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
       }

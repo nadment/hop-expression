@@ -52,6 +52,6 @@ public class DegreesFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
-    return BigDecimalMath.toDegrees(value, MATH_CONTEXT);
+    return checkNumberOverflow(BigDecimalMath.toDegrees(value, MATH_CONTEXT));
   }
 }

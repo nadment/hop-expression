@@ -63,7 +63,8 @@ public class CeilFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) return null;
 
-    return value.setScale(0, RoundingMode.CEILING);
+    // Rounding up can add an integer digit
+    return checkNumberOverflow(value.setScale(0, RoundingMode.CEILING));
   }
 
   @Override

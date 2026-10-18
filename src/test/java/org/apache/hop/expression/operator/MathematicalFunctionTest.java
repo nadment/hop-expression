@@ -168,6 +168,13 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Exp(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Exp(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
+    // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+    evalFails("Exp(100)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Exp(1000)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalNull("TRY(Exp(100))");
+    evalEquals("Exp(87)", new BigDecimal("6.0760302250568721495223289381303E+37"));
+    evalEquals("Exp(-1000)", new BigDecimal("5.0759588975494567652918094795743E-435"));
+
     optimize("EXP(1)", "2.7182818284590452353602874713527");
   }
 
@@ -236,6 +243,13 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Power(-4,0.5)", ErrorCode.CALL_FUNCTION_ERROR);
     // A zero base with a negative exponent is a division by zero
     evalFails("Power(0,-1)", ErrorCode.CALL_FUNCTION_ERROR);
+
+    // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+    evalFails("Power(10,38)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Power(2,1000)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Power(-1e20,3)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalEquals("Power(10,37)", new BigDecimal("1e37"));
+    evalEquals("Power(10,-50)", new BigDecimal("1e-50"));
 
     // Alias
     evalEquals("Pow(3,2)", 9D);
@@ -311,6 +325,11 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Square()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Square(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Square(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+    evalFails("Square(1e20)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Square(-1e20)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalEquals("Square(1e18)", new BigDecimal("1e36"));
   }
 
   @Test
@@ -340,6 +359,12 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Ceil()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Ceil(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Ceil('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Arithmetic overflow when rounding up adds a 39th integer digit
+    evalFails("Ceil(99999999999999999999999999999999999999.5)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalEquals(
+        "Ceil(-99999999999999999999999999999999999999.5)",
+        new BigDecimal("-99999999999999999999999999999999999999"));
 
     // Function repetition
     optimize("CEIL(CEIL(FIELD_NUMBER))", "CEIL(FIELD_NUMBER)");
@@ -371,6 +396,12 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Floor()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Floor(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Floor('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Arithmetic overflow when rounding down adds a 39th integer digit
+    evalFails("Floor(-99999999999999999999999999999999999999.5)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalEquals(
+        "Floor(99999999999999999999999999999999999999.5)",
+        new BigDecimal("99999999999999999999999999999999999999"));
 
     // Function repetition
     optimize("FLOOR(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
@@ -473,6 +504,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Degrees()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Degrees(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+    evalFails("Degrees(1e37)", ErrorCode.ARITHMETIC_OVERFLOW);
   }
 
   @Test
@@ -511,6 +545,11 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Random('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Random(NULL_INTEGER)", ErrorCode.INVALID_NUMBER);
+    // The seed must be an integer constant
+    evalFails("Random(FIELD_INTEGER)", ErrorCode.INVALID_NUMBER);
+    evalFails("Random(1.5)", ErrorCode.INVALID_NUMBER);
+    evalEquals("Random(180.0)", new Random(180).nextDouble());
+    evalEquals("Random(-1)", new Random(-1).nextDouble());
     evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Each call has its own generator, so a seed always gives the same sequence
