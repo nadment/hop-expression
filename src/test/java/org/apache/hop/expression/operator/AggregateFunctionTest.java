@@ -396,6 +396,10 @@ class AggregateFunctionTest extends ExpressionTest {
     // The variance of an empty group is NULL
     assertNull(evalAggregate("VARIANCE_SAMP(FIELD_INTEGER)"));
     assertNull(evalAggregate("VARIANCE_SAMP(FIELD_INTEGER)", (Long) null));
+
+    // The sample variance of a single value is NULL
+    assertNull(evalAggregate("VARIANCE_SAMP(FIELD_INTEGER)", 5L));
+    assertNull(evalAggregate("VARIANCE_SAMP(FIELD_INTEGER)", 5L, null));
   }
 
   @Test
@@ -428,5 +432,9 @@ class AggregateFunctionTest extends ExpressionTest {
     // The standard deviation of an empty group is NULL
     assertNull(evalAggregate("STDDEV_SAMP(FIELD_INTEGER)"));
     assertNull(evalAggregate("STDDEV_SAMP(FIELD_INTEGER)", (Long) null));
+
+    // The sample standard deviation of a single value is NULL
+    assertNull(evalAggregate("STDDEV_SAMP(FIELD_INTEGER)", 5L));
+    assertNull(evalAggregate("STDDEV_SAMP(FIELD_INTEGER)", 5L, null));
   }
 }

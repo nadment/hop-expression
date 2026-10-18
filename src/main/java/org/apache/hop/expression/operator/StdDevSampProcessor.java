@@ -42,7 +42,7 @@ public class StdDevSampProcessor implements IAggregateProcessor {
   @Override
   public @Nullable Object getValue() throws Exception {
     BigDecimal value = variance.getValue();
-    // The result of an empty group is NULL
+    // The result of an empty group or a single value is NULL
     if (value == null) return null;
 
     return value.sqrt(Operator.MATH_CONTEXT);

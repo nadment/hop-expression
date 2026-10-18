@@ -56,11 +56,8 @@ public class VarianceSampProcessor implements IAggregateProcessor {
 
   @Override
   public @Nullable BigDecimal getValue() throws Exception {
-    // The result of an empty group is NULL
-    if (count == 0) return null;
-
-    // The variance of a single value is zero
-    if (count == 1) return BigDecimal.ZERO;
+    // The sample variance is undefined for an empty group or a single value (division by N - 1)
+    if (count <= 1) return null;
 
     // (N * SUM(x²) - SUM(x)²) / (N * (N - 1)), with a single rounding
     BigDecimal n = BigDecimal.valueOf(count);
