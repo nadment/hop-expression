@@ -33,6 +33,7 @@ String
 * Only the accents of the letters are removed, the other characters such as `^` or `¨` are left as is.
 * The letters `Ł` and `ł` are replaced by `L` and `l`.
 * Ligatures are left as is.
+* The characters without accents, like the Korean syllables or the Japanese kana, are left as is.
 * Returns NULL if the argument is NULL.
 
 == Examples

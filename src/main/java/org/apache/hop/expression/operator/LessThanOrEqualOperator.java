@@ -84,7 +84,7 @@ public class LessThanOrEqualOperator extends BinaryOperator {
     IExpression right = call.getOperand(1);
 
     // Simplify if not nullable x<=x → TRUE
-    if (left.equals(right) && !left.getType().isNullable()) {
+    if (isSameExpression(left, right) && !left.getType().isNullable()) {
       return Literal.TRUE;
     }
     // Simplify x<=NULL → NULL
@@ -92,7 +92,7 @@ public class LessThanOrEqualOperator extends BinaryOperator {
       return Literal.NULL_BOOLEAN;
     }
     // Simplify x<=x → NVL2(x,TRUE,NULL)
-    if (left.equals(right)) {
+    if (isSameExpression(left, right)) {
       return new Call(Nvl2Function.INSTANCE, left, Literal.TRUE, Literal.NULL_BOOLEAN);
     }
 

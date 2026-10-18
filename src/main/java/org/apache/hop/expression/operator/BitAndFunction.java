@@ -78,7 +78,7 @@ public class BitAndFunction extends Function {
     }
 
     // Simplify A & A → A
-    if (left.equals(right)) {
+    if (isSameExpression(left, right)) {
       return left;
     }
 

@@ -31,6 +31,7 @@ Binary
 == Usage
 
 * Raises an error if the argument cannot be decompressed.
+* Raises an error if the decompressed value exceeds 16MB.
 * Returns NULL if the argument is NULL.
 
 == Examples

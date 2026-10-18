@@ -997,6 +997,8 @@ public class OperatorTest extends ExpressionTest {
       // Simplify x XOR x → NVL2(x,FALSE,NULL), NULL and not FALSE if x is NULL
       optimize("FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_TRUE", "NVL2(FIELD_BOOLEAN_TRUE,FALSE,NULL)");
       evalNull("NULL_BOOLEAN XOR NULL_BOOLEAN");
+      // Not simplified if x is not deterministic
+      optimize("RANDOM()>0.5 XOR RANDOM()>0.5", "0.5<RANDOM() XOR 0.5<RANDOM()");
     }
   }
 
@@ -1975,6 +1977,9 @@ public class OperatorTest extends ExpressionTest {
       optimizeTrue("10151082135029368 IS DISTINCT FROM 10151082135029369");
       optimizeFalse("FIELD_INTEGER IS DISTINCT FROM FIELD_INTEGER");
 
+      // Not simplified if the term is not deterministic
+      evalTrue("RANDOM() IS DISTINCT FROM RANDOM()");
+
       // The DISTINCT predicate is a verbose way of NULL safe comparisons
       optimizeFalse("NULL IS DISTINCT FROM NULL");
       optimize("NULL_INTEGER IS DISTINCT FROM NULL", "NULL_INTEGER IS NOT NULL");
@@ -2020,6 +2025,8 @@ public class OperatorTest extends ExpressionTest {
       optimizeFalse("NULL IS NOT DISTINCT FROM TRUE");
       optimizeFalse("10151082135029368 IS NOT DISTINCT FROM 10151082135029369");
       optimizeTrue("FIELD_INTEGER IS NOT DISTINCT FROM FIELD_INTEGER");
+      // Not simplified if the term is not deterministic
+      evalFalse("RANDOM() IS NOT DISTINCT FROM RANDOM()");
 
       // The DISTINCT predicate is a verbose way of NULL safe comparisons
       optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
@@ -2818,6 +2825,11 @@ public class OperatorTest extends ExpressionTest {
       // Simplify comparison with the same term when it is not nullable
       optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
       optimize("PI()=PI()", "TRUE");
+
+      // Not simplified if the term is not deterministic
+      evalFalse("RANDOM()=RANDOM()");
+      evalTrue("RANDOM()<>RANDOM()");
+      evalFalse("UUID()=UUID()");
     }
   }
 

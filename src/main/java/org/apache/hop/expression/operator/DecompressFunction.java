@@ -51,10 +51,19 @@ public class DecompressFunction extends Function {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) return null;
 
+    byte[] result;
     try (GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
-      return cis.readAllBytes();
+      // Read one byte more than the maximum size to detect a larger result without
+      // decompressing it entirely
+      result = cis.readNBytes(MAX_BINARY_RESULT_SIZE + 1);
     } catch (IOException e) {
       throw new ExpressionException(ErrorCode.DECOMPRESSION_ERROR);
     }
+
+    if (result.length > MAX_BINARY_RESULT_SIZE) {
+      throw new ExpressionException(
+          ErrorCode.RESULT_SIZE_TOO_LARGE, result.length, MAX_BINARY_RESULT_SIZE);
+    }
+    return result;
   }
 }

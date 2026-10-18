@@ -262,7 +262,9 @@ public final class Characters {
     }
 
     // Note that this doesn't correctly remove ligatures...
-    return builder.toString();
+    // Recompose the characters without accents decomposed by NFD, like the Korean syllables or
+    // the Japanese kana with a voiced sound mark
+    return Normalizer.normalize(builder, Normalizer.Form.NFC);
   }
 
   /**

@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Function;
@@ -58,17 +56,22 @@ public class StringToArrayFunction extends Function {
     String delimiter = operands[1].getValue(String.class);
     if (delimiter == null) return null;
 
-    // An empty delimiter does not split, the empty elements between delimiters are kept
-    String[] parts =
-        delimiter.isEmpty()
-            ? new String[] {str}
-            : StringUtils.splitByWholeSeparatorPreserveAllTokens(str, delimiter, -1);
-
-    List<IExpression> list = new ArrayList<>();
-    for (String s : parts) {
-      list.add(Literal.of(s));
+    // An empty string has no element, whatever the delimiter
+    if (str.isEmpty()) {
+      return new Array(DEFAULT_TYPE);
     }
 
-    return new Array(DEFAULT_TYPE, list);
+    // An empty delimiter does not split
+    if (delimiter.isEmpty()) {
+      return new Array(DEFAULT_TYPE, Literal.of(str));
+    }
+
+    // The empty elements between delimiters are kept
+    String[] parts = StringUtils.splitByWholeSeparatorPreserveAllTokens(str, delimiter, -1);
+    IExpression[] elements = new IExpression[parts.length];
+    for (int i = 0; i < parts.length; i++) {
+      elements[i] = Literal.of(parts[i]);
+    }
+    return new Array(DEFAULT_TYPE, elements);
   }
 }

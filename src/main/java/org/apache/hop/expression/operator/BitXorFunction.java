@@ -102,7 +102,7 @@ public class BitXorFunction extends Function {
       }
 
       // Simplify A ^ A → 0 (if A is not nullable)
-      if (left.equals(right) && !left.getType().isNullable()) {
+      if (isSameExpression(left, right) && !left.getType().isNullable()) {
         return Literal.ZERO;
       }
 

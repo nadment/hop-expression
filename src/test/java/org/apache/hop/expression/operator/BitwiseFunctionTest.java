@@ -413,6 +413,9 @@ class BitwiseFunctionTest extends ExpressionTest {
       // Simplify BIT_XOR(A,A) → 0 (if A is not nullable)
       optimize("BIT_XOR(FIELD_INTEGER,FIELD_INTEGER)", "BIT_XOR(FIELD_INTEGER,FIELD_INTEGER)");
       optimize("BIT_XOR(IFNULL(FIELD_INTEGER,4),IFNULL(FIELD_INTEGER,4))", "0");
+      // Not simplified if A is not deterministic
+      evalTrue(
+          "BIT_XOR(CAST(RANDOM()*1000000000 AS INTEGER),CAST(RANDOM()*1000000000 AS INTEGER))<>0");
 
       // Simplify BIT_XOR(0,A) → A (even if A is nullable)
       optimize("BIT_XOR(0,FIELD_INTEGER)", "FIELD_INTEGER");

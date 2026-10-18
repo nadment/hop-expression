@@ -51,7 +51,10 @@ public class ChrFunction extends Function {
     Long value = operands[0].getValue(Long.class);
     if (value == null) return null;
     // Check the long value, the conversion to int would wrap a value out of the int range
-    if (value < Character.MIN_CODE_POINT || value > Character.MAX_CODE_POINT) {
+    // A surrogate code point is not a character, only the half of a surrogate pair
+    if (value < Character.MIN_CODE_POINT
+        || value > Character.MAX_CODE_POINT
+        || (value >= Character.MIN_SURROGATE && value <= Character.MAX_SURROGATE)) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value);
     }
     return String.valueOf(Character.toChars(value.intValue()));

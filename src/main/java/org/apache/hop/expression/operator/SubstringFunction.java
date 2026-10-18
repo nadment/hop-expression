@@ -76,11 +76,11 @@ public class SubstringFunction extends Function {
     Long count = operands[2].getValue(Long.class);
     if (count == null) return null;
 
-    long end = start + count;
+    // Limit the end to the end of the string without computing start + count, which could overflow
+    long end = count > length - start ? length + 1 : start + count;
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);
-    end = Math.min(end, length + 1);
     // Out of the string, return an empty string like with only 2 operands
     if (start > length || end <= start) {
       return "";

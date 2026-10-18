@@ -93,7 +93,7 @@ public class BoolXorOperator extends BinaryOperator {
     }
 
     // x XOR x → NVL2(x,FALSE,NULL), FALSE if x is not NULL, but NULL and not FALSE if x is NULL
-    if (left.equals(right)) {
+    if (isSameExpression(left, right)) {
       Call predicate = new Call(Nvl2Function.INSTANCE, left, Literal.FALSE, Literal.NULL_BOOLEAN);
       predicate.inferReturnType();
       return predicate;

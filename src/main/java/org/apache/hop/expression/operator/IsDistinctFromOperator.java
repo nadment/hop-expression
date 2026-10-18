@@ -95,7 +95,7 @@ public class IsDistinctFromOperator extends BinaryOperator {
     IExpression right = call.getOperand(1);
 
     // Simplify same expressions.
-    if (left.equals(right)) {
+    if (isSameExpression(left, right)) {
       return Literal.FALSE;
     }
 

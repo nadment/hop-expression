@@ -136,6 +136,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Unaccent('ラーメン')", "ラーメン");
     evalEquals("Unaccent('Café ラーメン')", "Cafe ラーメン");
 
+    // Characters without accents decomposed by NFD are recomposed
+    evalEquals("Unaccent('한국어')", "한국어");
+    evalEquals("Length(Unaccent('한'))", 1L);
+    evalEquals("Unaccent('がガé')", "がガe");
+
     // Null handling
     evalNull("Unaccent(NULL_STRING)").returnType(StringType.STRING);
 
@@ -452,6 +457,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Substring('TEST',4294967297,2)", "");
     evalEquals("Substring('TEST',2,4294967296)", "EST");
     evalEquals("Substring('TEST',2,2147483647)", "EST");
+    // The end position must not overflow
+    evalEquals("Substring('TEST',1,9223372036854775807)", "TEST");
+    evalEquals("Substring('TEST',2,9223372036854775807)", "EST");
+    evalEquals("Substring('TEST',-2,9223372036854775807)", "ST");
+    evalEquals("Substring('TEST',-10,9223372036854775807)", "TEST");
+    evalEquals("Substring('TEST',2,-9223372036854775808)", "");
   }
 
   @Test
@@ -1376,6 +1387,10 @@ public class StringFunctionTest extends ExpressionTest {
     optimizeTrue("EQUAL_NULL(FIELD_INTEGER, FIELD_INTEGER)");
     optimizeTrue("EQUAL_NULL(FIELD_DATE, FIELD_DATE)");
 
+    // Not simplified if the operands are not deterministic
+    evalFalse("EQUAL_NULL(RANDOM(), RANDOM())");
+    evalFalse("EQUAL_NULL(UUID(), UUID())");
+
     optimize("EQUAL_NULL(FIELD_INTEGER,NULLIF(1,1))", "FIELD_INTEGER IS NULL");
     optimize("EQUAL_NULL(NULLIF(1,1),FIELD_INTEGER)", "FIELD_INTEGER IS NULL");
     // optimize("EQUAL_NULL(NULLIF(1,1),1+FIELD_INTEGER)", "(1+FIELD_INTEGER) IS NULL");
@@ -1529,6 +1544,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Chr(999999999999)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     // A code point out of the int range must not wrap to a valid one
     evalFails("Chr(4294967361)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    // A surrogate is not a character
+    evalFails("Chr(55296)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Chr(56832)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Chr(57343)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalEquals("UNICODE(CHR(55295))", 55295L);
+    evalEquals("UNICODE(CHR(57344))", 57344L);
   }
 
   @Test
@@ -1583,6 +1604,11 @@ public class StringFunctionTest extends ExpressionTest {
     // Multiple characters delimiter
     evalEquals("String_To_Array('a--b-c','--')", new Array(Literal.of("a"), Literal.of("b-c")));
 
+    // An empty string has no element, whatever the delimiter
+    evalEquals("String_To_Array('',',')", new Array());
+    evalEquals("String_To_Array('','')", new Array());
+    evalEquals("Cardinality(String_To_Array('',''))", 0L);
+
     // Null handling
     evalNull("String_To_Array('Green|Yellow|Blue',NULL_STRING)");
     evalNull("String_To_Array(NULL_STRING,',')");
@@ -1634,6 +1660,7 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void Html_Decode() throws Exception {
     evalEquals("Html_Decode('18&euro; &amp; &lt;test&gt; &#8482;')", "18€ & <test> ™");
+    evalEquals("Html_Decode('&#128512; &#x1F600;')", "😀 😀");
 
     // Null handling
     evalNull("Html_Decode(NULL_STRING)");
@@ -1814,6 +1841,16 @@ public class StringFunctionTest extends ExpressionTest {
     // Not a GZIP value or a truncated one
     evalFails("Decompress(BINARY '2A3B4C')", ErrorCode.DECOMPRESSION_ERROR);
     evalFails("Decompress(Left(Compress('Test'::BINARY),12))", ErrorCode.DECOMPRESSION_ERROR);
+    evalFails("Decompress(BINARY '')", ErrorCode.DECOMPRESSION_ERROR);
+
+    // Concatenated GZIP members are decompressed one after the other
+    evalEquals("Decompress(Compress('ab'::BINARY)||Compress('cd'::BINARY))::STRING", "abcd");
+
+    // The result size is limited to 16MB
+    evalEquals("Length(Decompress(Repeat(Compress(Repeat(BINARY '00',1048576)),16)))", 16777216L);
+    evalFails(
+        "Decompress(Repeat(Compress(Repeat(BINARY '00',1048576)),17))",
+        ErrorCode.RESULT_SIZE_TOO_LARGE);
   }
 
   @Test

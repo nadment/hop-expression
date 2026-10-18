@@ -106,7 +106,7 @@ public class NotEqualOperator extends BinaryOperator {
     }
 
     // Simplify x!=x → NULL AND x IS NULL
-    if (left.equals(right)) {
+    if (isSameExpression(left, right)) {
       return new Call(
           BoolAndOperator.INSTANCE, Literal.NULL_BOOLEAN, new Call(IsNullOperator.INSTANCE, left));
     }

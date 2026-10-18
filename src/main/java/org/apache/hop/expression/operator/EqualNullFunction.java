@@ -74,7 +74,7 @@ public class EqualNullFunction extends Function {
     IExpression right = call.getOperand(1);
 
     // Simplify same expressions.
-    if (left.equals(right)) {
+    if (isSameExpression(left, right)) {
       return Literal.TRUE;
     }
 
