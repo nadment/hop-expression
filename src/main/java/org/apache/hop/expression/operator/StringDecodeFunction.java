@@ -16,7 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.text.StringEscapeUtils;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -50,6 +51,72 @@ public class StringDecodeFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    return StringEscapeUtils.unescapeJava(value);
+    // Fast path, nothing to decode
+    int index = value.indexOf('\\');
+    if (index < 0) {
+      return value;
+    }
+
+    // Decoded here rather than with StringEscapeUtils.unescapeJava(), which silently drops the
+    // backslash of an unknown escape sequence and of a trailing backslash
+    int length = value.length();
+    StringBuilder builder = new StringBuilder(length);
+    builder.append(value, 0, index);
+    while (index < length) {
+      char ch = value.charAt(index++);
+      if (ch != '\\') {
+        builder.append(ch);
+        continue;
+      }
+      if (index == length) {
+        throw invalidSequence("\\");
+      }
+      ch = value.charAt(index++);
+      switch (ch) {
+        case 'b' -> builder.append('\b');
+        case 't' -> builder.append('\t');
+        case 'n' -> builder.append('\n');
+        case 'f' -> builder.append('\f');
+        case 'r' -> builder.append('\r');
+        case '"', '\'', '\\' -> builder.append(ch);
+        case 'u' -> {
+          // Several 'u' are allowed, like in a Java source
+          while (index < length && value.charAt(index) == 'u') {
+            index++;
+          }
+          if (index + 4 > length) {
+            throw invalidSequence("\\u" + value.substring(index));
+          }
+          int code = 0;
+          for (int end = index + 4; index < end; index++) {
+            int digit = Character.digit(value.charAt(index), 16);
+            if (digit < 0) {
+              throw invalidSequence("\\u" + value.substring(end - 4, end));
+            }
+            code = (code << 4) | digit;
+          }
+          builder.append((char) code);
+        }
+        case '0', '1', '2', '3', '4', '5', '6', '7' -> {
+          // Up to 3 octal digits, the third one only if the code stays below \377
+          int code = ch - '0';
+          int max = (ch <= '3') ? 2 : 1;
+          for (int i = 0; i < max && index < length && isOctalDigit(value.charAt(index)); i++) {
+            code = (code << 3) | (value.charAt(index++) - '0');
+          }
+          builder.append((char) code);
+        }
+        default -> throw invalidSequence("\\" + Character.toString(value.codePointAt(index - 1)));
+      }
+    }
+    return builder.toString();
+  }
+
+  private static boolean isOctalDigit(char ch) {
+    return ch >= '0' && ch <= '7';
+  }
+
+  private static ExpressionException invalidSequence(String sequence) {
+    return new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, sequence, "Java string");
   }
 }

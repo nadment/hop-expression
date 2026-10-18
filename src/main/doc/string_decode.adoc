@@ -31,6 +31,8 @@ String
 == Usage
 
 * The escape sequences are `+\b+`, `+\t+`, `+\n+`, `+\f+`, `+\r+`, `+\"+`, `+\\+`, `+\u+` followed by the hexadecimal code of a Unicode character, and `+\+` followed by the octal code of a character, such as `+\366+` for 'ö'.
+* The escape sequence `+\'+` is also decoded, and `+\u+` can be repeated, such as `+\uu20AC+`. An octal code has up to 3 digits and is at most `+\377+`.
+* Raises an error naming the escape sequence if it is unknown, such as `+\q+`, or malformed, such as `+\u12+`, or if the string ends with a single backslash.
 * Returns NULL if the argument is NULL.
 
 == Examples

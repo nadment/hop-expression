@@ -31,6 +31,8 @@ String
 == Usage
 
 * The escape sequences are `+\b+`, `+\t+`, `+\n+`, `+\f+`, `+\r+`, `+\"+`, `+\\+` and `+\u+` followed by the hexadecimal code of a Unicode character.
+* The control characters without an escape sequence and the non-ASCII characters are encoded with `+\u+`, a character outside the Basic Multilingual Plane is encoded as two `+\u+` escape sequences, such as `+😀+` for '😀'.
+* `STRING_DECODE` is the inverse function: `STRING_DECODE(STRING_ENCODE(string))` returns string.
 * Returns NULL if the argument is NULL.
 
 == Examples

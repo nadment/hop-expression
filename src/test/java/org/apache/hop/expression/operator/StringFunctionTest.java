@@ -1724,6 +1724,14 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Encode 16 bit unicode
     evalEquals("String_Encode('€')", "\\u20AC");
+    // A control character, a backslash, a surrogate pair, the single quote and 0x7F are kept
+    evalEquals("String_Encode(CHR(1)||'\\'||CHR(128512))", "\\u0001\\\\\\uD83D\\uDE00");
+    evalEquals("String_Encode('it''s /'||CHR(127))", "it's /" + (char) 127);
+    evalEquals("String_Encode('abc')", "abc");
+    // STRING_DECODE is the inverse function
+    evalEquals(
+        "String_Decode(String_Encode('a\t\"\\é'||CHR(0)||CHR(128512)))",
+        "a\t\"\\é\0" + Character.toString(128512));
 
     // Null handling
     evalNull("String_Encode(NULL_STRING)").returnType(StringType.STRING);
@@ -1739,6 +1747,19 @@ public class StringFunctionTest extends ExpressionTest {
     // Decode octal
     // Octal escapes, escaped in the Java source to reach the function
     evalEquals("String_Decode('\\366\\344\\374')", "öäü");
+    // Up to 3 octal digits, the third one only if the code stays below \377
+    evalEquals("String_Decode('\\0a\\101\\1012\\477')", "\0aAA2'7");
+    // A single quote, a backslash, several 'u' and a surrogate pair
+    evalEquals("String_Decode('it\\''s \\\\ \\uu20AC')", "it's \\ €");
+    evalEquals("String_Decode('\\uD83D\\uDE00')", "😀");
+    evalEquals("String_Decode('abc')", "abc");
+
+    // An unknown escape sequence, a trailing backslash or a malformed unicode escape raises an
+    // error rather than being silently dropped
+    assertDecodingSymbolMessage("String_Decode('a\\qb')", "\\q", "Java string");
+    assertDecodingSymbolMessage("String_Decode('abc\\')", "\\", "Java string");
+    assertDecodingSymbolMessage("String_Decode('\\u12')", "\\u12", "Java string");
+    assertDecodingSymbolMessage("String_Decode('\\u12xy')", "\\u12xy", "Java string");
 
     // Null handling
     evalNull("String_Decode(NULL_STRING)").returnType(StringType.STRING);

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,6 +34,8 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class StringEncodeFunction extends Function {
 
+  private static final char[] HEX = "0123456789ABCDEF".toCharArray();
+
   public StringEncodeFunction() {
     super(
         "STRING_ENCODE",
@@ -49,6 +50,44 @@ public class StringEncodeFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    return StringEscapeUtils.escapeJava(value);
+    // Fast path, nothing to encode
+    int index = 0;
+    int length = value.length();
+    while (index < length && !isEscaped(value.charAt(index))) {
+      index++;
+    }
+    if (index == length) {
+      return value;
+    }
+
+    // The escape sequences decoded by StringDecodeFunction
+    StringBuilder builder = new StringBuilder(length + 16);
+    builder.append(value, 0, index);
+    for (; index < length; index++) {
+      char ch = value.charAt(index);
+      switch (ch) {
+        case '\b' -> builder.append("\\b");
+        case '\t' -> builder.append("\\t");
+        case '\n' -> builder.append("\\n");
+        case '\f' -> builder.append("\\f");
+        case '\r' -> builder.append("\\r");
+        case '"', '\\' -> builder.append('\\').append(ch);
+        default -> {
+          if (isEscaped(ch)) {
+            // A control or a non-ASCII character, a surrogate pair is encoded as two escapes
+            builder.append("\\u").append(HEX[(ch >> 12) & 0xF]).append(HEX[(ch >> 8) & 0xF]);
+            builder.append(HEX[(ch >> 4) & 0xF]).append(HEX[ch & 0xF]);
+          } else {
+            builder.append(ch);
+          }
+        }
+      }
+    }
+    return builder.toString();
+  }
+
+  /** Returns whether the character is encoded, a control, a non-ASCII character, '"' or '\'. */
+  private static boolean isEscaped(char ch) {
+    return ch < 32 || ch > 0x7F || ch == '"' || ch == '\\';
   }
 }
