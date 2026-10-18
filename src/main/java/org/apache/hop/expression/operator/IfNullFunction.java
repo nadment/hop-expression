@@ -85,13 +85,13 @@ public class IfNullFunction extends Function {
       case 0 -> // Nothing to coalesce
           new Literal(null, call.getType());
       case 1 -> // COALESCE(X) → X
-          operands.get(0);
+          operands.getFirst();
       case 2 -> // COALESCE(X,Y) → IFNULL(X,Y)
           new Call(IfNullFunction.INSTANCE, operands);
       default -> {
         // The first is literal COALESCE(1, a, b) → 1
-        if (operands.get(0).isConstant()) {
-          yield operands.get(0);
+        if (operands.getFirst().isConstant()) {
+          yield operands.getFirst();
         }
 
         yield new Call(CoalesceFunction.INSTANCE, operands);

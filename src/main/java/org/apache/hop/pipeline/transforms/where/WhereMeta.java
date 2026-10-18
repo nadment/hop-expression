@@ -163,14 +163,14 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
   @Override
   public void convertIOMetaToTransformNames() {
     List<IStream> streams = getTransformIOMeta().getTargetStreams();
-    trueTransformName = Const.NVL(streams.get(0).getTransformName(), "");
+    trueTransformName = Const.NVL(streams.getFirst().getTransformName(), "");
     falseTransformName = Const.NVL(streams.get(1).getTransformName(), "");
   }
 
   @Override
   public void searchInfoAndTargetTransforms(List<TransformMeta> transforms) {
     List<IStream> streams = getTransformIOMeta().getTargetStreams();
-    streams.get(0).setTransformMeta(TransformMeta.findTransform(transforms, trueTransformName));
+    streams.getFirst().setTransformMeta(TransformMeta.findTransform(transforms, trueTransformName));
     streams.get(1).setTransformMeta(TransformMeta.findTransform(transforms, falseTransformName));
   }
 

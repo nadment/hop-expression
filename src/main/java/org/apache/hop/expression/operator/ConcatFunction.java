@@ -104,7 +104,7 @@ public class ConcatFunction extends Function {
         Operator operator = StringConcatFunction.INSTANCE;
         if (call.getType().isName(TypeName.ARRAY)) {
           if (operands.size() == 2) {
-            IExpression left = operands.get(0);
+            IExpression left = operands.getFirst();
             IExpression right = operands.get(1);
             if (left.getType().isName(TypeName.ARRAY) && !right.getType().isName(TypeName.ARRAY)) {
               return new Call(ArrayAppendFunction.INSTANCE, left, right);
