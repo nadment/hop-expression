@@ -283,6 +283,16 @@ class AggregateFunctionTest extends ExpressionTest {
             ExpressionException.class,
             () -> evalAggregate("NTH_VALUE(FIELD_INTEGER,NULL_INTEGER)", 10L));
     assertEquals(ErrorCode.ARGUMENT_OUT_OF_RANGE, exception.getErrorCode());
+
+    // The offset starts at 1
+    exception =
+        assertThrows(
+            ExpressionException.class, () -> evalAggregate("NTH_VALUE(FIELD_INTEGER,0)", 10L));
+    assertEquals(ErrorCode.ARGUMENT_OUT_OF_RANGE, exception.getErrorCode());
+    exception =
+        assertThrows(
+            ExpressionException.class, () -> evalAggregate("NTH_VALUE(FIELD_INTEGER,-1)", 10L));
+    assertEquals(ErrorCode.ARGUMENT_OUT_OF_RANGE, exception.getErrorCode());
   }
 
   @Test

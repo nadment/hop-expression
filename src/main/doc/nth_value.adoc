@@ -39,6 +39,7 @@ The data type of the returned value is the same as the data type of the input va
 * With `RESPECT NULLS`, the function returns NULL if the nth value is NULL.
 * With `IGNORE NULLS`, NULL values are skipped and the function returns the nth non-NULL value.
 * Returns NULL if the group contains fewer than offset values.
+* Raises an error if offset is NULL or less than 1.
 
 NOTE: This is an aggregate function that should only be used in the Aggregate transform.
 

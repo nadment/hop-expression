@@ -54,7 +54,8 @@ public class NthValueFunction extends AggregateFunction {
   @Override
   public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     Long offset = operands[1].getValue(Long.class);
-    if (offset == null) {
+    // The offset is mandatory and starts at 1
+    if (offset == null || offset <= 0) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, operands[1]);
     }
     return (ignoreNulls)
