@@ -126,6 +126,11 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Div0(40)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Div0(40,1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
 
+    // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+    evalFails("Div0(1e37::NUMBER(38,0), 0.01)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Div0(-1e30::NUMBER(38,0), 1e-10)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalEquals("Div0(1e35::NUMBER(38,0), 0.01)", new BigDecimal("1e37"));
+
     // Normalize
     optimize("DIV0(FIELD_INTEGER,4)");
 

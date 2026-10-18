@@ -98,6 +98,6 @@ public class Div0Function extends Function {
     // Prevent a division by zero and return zero
     if (divisor.signum() == 0) return BigDecimal.ZERO;
 
-    return value.divide(divisor, MATH_CONTEXT);
+    return checkNumberOverflow(value.divide(divisor, MATH_CONTEXT));
   }
 }

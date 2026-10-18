@@ -119,9 +119,9 @@ public class DivOperator extends BinaryOperator {
     BigDecimal divisor = operands[1].getValue(BigDecimal.class);
     if (divisor == null) return null;
 
-    // Prevent a division by zero ..
+    // Prevent a division by zero
     if (divisor.signum() == 0) throw new ExpressionException(ErrorCode.DIVISION_BY_ZERO);
 
-    return value.divide(divisor, MATH_CONTEXT);
+    return checkNumberOverflow(value.divide(divisor, MATH_CONTEXT));
   }
 }

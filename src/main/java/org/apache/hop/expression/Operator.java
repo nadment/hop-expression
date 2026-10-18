@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.DocumentationUtil;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -164,6 +166,23 @@ public abstract class Operator {
     } catch (NoSuchMethodException | IllegalAccessException e) {
       throw new ExpressionException(ErrorCode.INTERNAL_ERROR, clazz);
     }
+  }
+
+  /**
+   * Raises an error if the integer part of the number exceeds the maximum precision of the NUMBER
+   * type.
+   *
+   * @param number the result of an arithmetic operation
+   * @return the number unchanged
+   * @throws ExpressionException with {@link ErrorCode#ARITHMETIC_OVERFLOW} if the number overflows
+   */
+  protected BigDecimal checkNumberOverflow(BigDecimal number) throws ExpressionException {
+    // The integer part of zero has no digit
+    if (number.signum() != 0
+        && number.precision() - number.scale() > TypeName.NUMBER.getMaxPrecision()) {
+      throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
+    }
+    return number;
   }
 
   /**

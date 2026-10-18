@@ -146,7 +146,7 @@ public class SubtractOperator extends BinaryOperator {
       BigDecimal right = operands[1].getValue(BigDecimal.class);
       if (right == null) return null;
 
-      return left.subtract(right);
+      return checkNumberOverflow(left.subtract(right));
     }
   }
 

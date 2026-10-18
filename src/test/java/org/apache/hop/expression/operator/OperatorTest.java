@@ -772,6 +772,11 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       // Division by zero
       evalFails("40/0", ErrorCode.DIVISION_BY_ZERO);
+
+      // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+      evalFails("1e37::NUMBER(38,0) / 0.01", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalFails("-1e30::NUMBER(38,0) / 1e-10", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalEquals("1e35::NUMBER(38,0) / 0.01", new BigDecimal("1e37"));
     }
 
     @Test
@@ -2068,6 +2073,11 @@ public class OperatorTest extends ExpressionTest {
       // Arithmetic overflow
       evalFails("cast(5e18 as INTEGER)+cast(5e18 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
 
+      // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+      evalFails("9e37::NUMBER(38,0) + 2e37::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalFails("-9e37::NUMBER(38,0) + -2e37::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalEquals("5e37::NUMBER(38,0) + 4e37::NUMBER(38,0)", new BigDecimal("9e37"));
+
       // Syntax error
       evalFails("5+", ErrorCode.SYNTAX_ERROR);
 
@@ -2210,6 +2220,11 @@ public class OperatorTest extends ExpressionTest {
 
       // Arithmetic overflow
       evalFails("cast(-5e18 as INTEGER)-cast(5e18 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
+
+      // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+      evalFails("-9e37::NUMBER(38,0) - 2e37::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalFails("9e37::NUMBER(38,0) - -2e37::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalEquals("-5e37::NUMBER(38,0) - 4e37::NUMBER(38,0)", new BigDecimal("-9e37"));
 
       // Syntax error
       evalFails("5-", ErrorCode.SYNTAX_ERROR);
@@ -2389,8 +2404,14 @@ public class OperatorTest extends ExpressionTest {
     void testError() throws Exception {
       // Arithmetic overflow
       evalFails("cast(5e9 as INTEGER) * cast(2e9 as INTEGER)", ErrorCode.ARITHMETIC_OVERFLOW);
-      // evalFails("cast(2e9 as NUMBER(19,0)) * cast(-5e9 as NUMBER(19,0))");
-      // evalFails("cast(5e4 as NUMBER(19,10)) * cast(2e4 as NUMBER(19,10))");
+      // The integer part of a NUMBER exceeds 38 digits
+      evalFails("1e20::NUMBER(38,0) * 1e20::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalFails("-1e20::NUMBER(38,0) * 1e19::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalFails("1e30::NUMBER * 1e30::NUMBER", ErrorCode.ARITHMETIC_OVERFLOW);
+      evalFails("FIELD_INTEGER * 1e37::NUMBER(38,0)", ErrorCode.ARITHMETIC_OVERFLOW);
+      // No overflow at the maximum precision
+      evalEquals("1e19::NUMBER(38,0) * 1e18::NUMBER(38,0)", new BigDecimal("1e37"));
+      evalEquals("cast(2e9 as NUMBER(19,0)) * cast(-5e9 as NUMBER(29,0))", new BigDecimal("-1e19"));
     }
 
     @Test

@@ -222,7 +222,7 @@ public class MultiplyOperator extends BinaryOperator {
       BigDecimal right = operands[1].getValue(BigDecimal.class);
       if (right == null) return null;
 
-      return left.multiply(right, MATH_CONTEXT);
+      return checkNumberOverflow(left.multiply(right, MATH_CONTEXT));
     }
   }
 }

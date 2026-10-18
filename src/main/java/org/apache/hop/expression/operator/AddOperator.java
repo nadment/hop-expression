@@ -195,7 +195,7 @@ public class AddOperator extends BinaryOperator {
       BigDecimal right = operands[1].getValue(BigDecimal.class);
       if (right == null) return null;
 
-      return left.add(right);
+      return checkNumberOverflow(left.add(right));
     }
   }
 
