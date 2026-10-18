@@ -16,9 +16,14 @@
  */
 package org.apache.hop.expression.util;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -203,6 +208,42 @@ public final class Characters {
    */
   public static int position(final String str, final int index) {
     return str.codePointCount(0, index);
+  }
+
+  /**
+   * Decodes UTF-8 bytes to a string, raising an error for an invalid sequence instead of replacing
+   * it with U+FFFD like {@code new String(bytes, UTF_8)}.
+   *
+   * @param bytes the bytes to decode
+   * @param encoding the name of the decoded encoding, such as base64, for the error message
+   * @return the string
+   * @throws ExpressionException with {@link ErrorCode#INVALID_UTF8_SEQUENCE} if not valid UTF-8
+   */
+  public static String decodeUtf8(final byte[] bytes, final String encoding) {
+    return decodeUtf8(bytes, 0, bytes.length, encoding);
+  }
+
+  /**
+   * Decodes a range of UTF-8 bytes to a string, raising an error for an invalid sequence.
+   *
+   * @param bytes the bytes to decode
+   * @param offset the index of the first byte
+   * @param length the number of bytes
+   * @param encoding the name of the decoded encoding, such as base64, for the error message
+   * @return the string
+   * @throws ExpressionException with {@link ErrorCode#INVALID_UTF8_SEQUENCE} if not valid UTF-8
+   */
+  public static String decodeUtf8(
+      final byte[] bytes, final int offset, final int length, final String encoding) {
+    try {
+      // A new decoder reports the malformed sequences, it is not thread-safe
+      return StandardCharsets.UTF_8
+          .newDecoder()
+          .decode(ByteBuffer.wrap(bytes, offset, length))
+          .toString();
+    } catch (CharacterCodingException e) {
+      throw new ExpressionException(ErrorCode.INVALID_UTF8_SEQUENCE, encoding);
+    }
   }
 
   /**

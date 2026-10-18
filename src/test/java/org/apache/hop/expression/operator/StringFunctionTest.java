@@ -970,6 +970,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("HEX_DECODE('41706163686520486f70')", "Apache Hop");
     // The bytes are decoded as UTF-8, whatever the default charset
     evalEquals("HEX_DECODE('c3a9e282acf09f9880')", "é€" + Character.toString(128512));
+    // Bytes that are not valid UTF-8 raise an error rather than being replaced with U+FFFD
+    evalFails("HEX_DECODE('ff')", ErrorCode.INVALID_UTF8_SEQUENCE);
+    evalFails("HEX_DECODE('c3')", ErrorCode.INVALID_UTF8_SEQUENCE);
+    evalFails("HEX_DECODE('eda080')", ErrorCode.INVALID_UTF8_SEQUENCE);
+    evalEquals("HEX_DECODE('efbfbd')", "�");
     evalEquals(
         "HEX_DECODE(HEX_ENCODE('Café ' || CHR(128512)))", "Café " + Character.toString(128512));
 
@@ -1782,10 +1787,20 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void Url_Decode() throws Exception {
     // A malformed escape sequence raises an error
-    evalFails("Url_Decode('a%%2Bb')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Url_Decode('a%%2Bb')", ErrorCode.INVALID_DECODING_SYMBOL);
+    evalFails("Url_Decode('%zz')", ErrorCode.INVALID_DECODING_SYMBOL);
+    evalFails("Url_Decode('%')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    evalFails("Url_Decode('a%2')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
     evalEquals("Url_Decode('a+b')", "a b").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Url_Decode('a%2Bb')", "a+b");
     evalEquals("Url_Decode('%C3%A2%C3%A9%C3%A8')", "âéè");
+    evalEquals("Url_Decode('abc')", "abc");
+    evalEquals("Url_Decode('%f0%9f%98%80+%41')", "😀 A");
+    // The characters that are not escaped are kept as is
+    evalEquals("Url_Decode('é%20😀')", "é 😀");
+    // Bytes that are not valid UTF-8 raise an error rather than being replaced with U+FFFD
+    evalFails("Url_Decode('%FF')", ErrorCode.INVALID_UTF8_SEQUENCE);
+    evalFails("Url_Decode('%C3+%A9')", ErrorCode.INVALID_UTF8_SEQUENCE);
 
     // Null handling
     evalNull("Url_Decode(NULL_STRING)");
@@ -1793,7 +1808,6 @@ public class StringFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Url_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Url_Decode('x','y')", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("Url_Decode('a%%2Bb')", ErrorCode.CALL_FUNCTION_ERROR);
   }
 
   @Test
@@ -1814,6 +1828,10 @@ public class StringFunctionTest extends ExpressionTest {
   void Base64_Decode() throws Exception {
     // The decoded bytes are interpreted as UTF-8, '4oKs' is the euro sign
     evalEquals("BASE64_DECODE('4oKs')", "€");
+    // Bytes that are not valid UTF-8 raise an error rather than being replaced with U+FFFD
+    evalFails("BASE64_DECODE('/w==')", ErrorCode.INVALID_UTF8_SEQUENCE);
+    evalFails("BASE64_DECODE('4oI=')", ErrorCode.INVALID_UTF8_SEQUENCE);
+    evalEquals("BASE64_DECODE('77+9')", "�");
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop")
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop")
@@ -1829,10 +1847,20 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Base64_Decode('QXBh Y2hlIEhvcA==')", ErrorCode.INVALID_DECODING_SYMBOL);
     assertDecodingSymbolMessage("Base64_Decode('QXBh&Y2hlIEhvcA==')", "&", "base64");
     assertDecodingSymbolMessage("Base64_Decode('QXBh€Y2hlIEhvcA==')", "€", "base64");
+    // The URL-safe symbols are not in the standard alphabet
+    assertDecodingSymbolMessage("Base64_Decode('-_==')", "-", "base64");
 
     // The padding is only allowed at the end
     assertDecodingSymbolMessage("Base64_Decode('QQ=A')", "=", "base64");
     assertDecodingSymbolMessage("Base64_Decode('QQ==QQ==')", "=", "base64");
+
+    // Without padding
+    evalEquals("Base64_Decode('QXBhY2hlIEhvcA')", "Apache Hop");
+
+    // The unused bits of the last symbol must be zero, 'QR==' is not 'A'
+    evalEquals("Base64_Decode('QQ==')", "A");
+    evalFails("Base64_Decode('QR==')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    evalFails("Base64_Decode('QUJ=')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
 
     // Truncated value
     evalFails("Base64_Decode('QXBhY2hlIEhvcA=')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
@@ -1862,6 +1890,8 @@ public class StringFunctionTest extends ExpressionTest {
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base32_Decode('ifygcy3imuqeq33q')", "Apache Hop");
     evalEquals("Base32_Decode('MY======')", "f");
+    // Bytes that are not valid UTF-8 raise an error rather than being replaced with U+FFFD
+    evalFails("Base32_Decode('74======')", ErrorCode.INVALID_UTF8_SEQUENCE);
     evalEquals("Base32_Decode('')", "");
     evalEquals("Base32_Decode(Base32_Encode('Apache Hop €'))", "Apache Hop €");
 

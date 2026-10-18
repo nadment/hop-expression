@@ -375,6 +375,12 @@ public enum ErrorCode {
    */
   TRUNCATED_DECODING_SEQUENCE,
   /**
+   * The bytes of a decoded value, such as base32 or base64, are not a valid UTF-8 string.
+   *
+   * <p>Message: <code>The decoded {0} sequence is not a valid UTF-8 string</code>
+   */
+  INVALID_UTF8_SEQUENCE,
+  /**
    * A JSON path is malformed.
    *
    * <p>Message: <code>Invalid json path “{0}”</code>

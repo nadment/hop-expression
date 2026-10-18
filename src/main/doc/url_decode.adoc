@@ -30,7 +30,9 @@ String
 
 == Usage
 
+* The escaped bytes are decoded as UTF-8, the characters that are not escaped are kept as is.
 * Raises an error if the string contains a malformed escape sequence, such as `%%2B`.
+* Raises an error if the decoded bytes are not a valid UTF-8 string.
 * Returns NULL if the argument is NULL.
 
 == Examples

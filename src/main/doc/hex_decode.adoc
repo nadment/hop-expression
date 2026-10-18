@@ -31,6 +31,7 @@ String
 == Usage
 
 * The decoded bytes are read as UTF-8, like the bytes encoded by `HEX_ENCODE`.
+* Raises an error if the decoded bytes are not a valid UTF-8 string.
 * Raises an error if the string has an odd number of characters or a character that is not a hexadecimal digit.
 * Returns NULL if the argument is NULL.
 

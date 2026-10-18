@@ -27,6 +27,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -39,7 +40,7 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class Base32DecodeFunction extends Function {
   // Strict decoding, rejects an encoded value whose last character is not possible
-  private static final Base32 BASE32 = new Base32(0, null, false, (byte) '=', CodecPolicy.STRICT);
+  private static final Base32 BASE32 = Base32.builder().setDecodingPolicy(CodecPolicy.STRICT).get();
 
   public Base32DecodeFunction() {
     super(
@@ -72,7 +73,7 @@ public class Base32DecodeFunction extends Function {
     }
 
     try {
-      return new String(BASE32.decode(value), StandardCharsets.UTF_8);
+      return Characters.decodeUtf8(BASE32.decode(value), "base32");
     } catch (IllegalArgumentException e) {
       // The symbols are valid, so the last ones do not form whole bytes
       throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base32");

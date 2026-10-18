@@ -16,13 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.Hex;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -48,6 +48,6 @@ public class HexDecodeFunction extends Function {
       return null;
     }
 
-    return new String(Hex.decode(value), StandardCharsets.UTF_8);
+    return Characters.decodeUtf8(Hex.decode(value), "hexadecimal");
   }
 }

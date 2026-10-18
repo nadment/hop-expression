@@ -17,8 +17,8 @@
 package org.apache.hop.expression.operator;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Base64.Decoder;
+import org.apache.commons.codec.CodecPolicy;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,6 +27,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -38,7 +39,8 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class Base64DecodeFunction extends Function {
-  private static final Decoder DECODER = Base64.getDecoder();
+  // Strict decoding, rejects an encoded value whose last character is not possible
+  private static final Base64 BASE64 = Base64.builder().setDecodingPolicy(CodecPolicy.STRICT).get();
 
   public Base64DecodeFunction() {
     super(
@@ -54,6 +56,8 @@ public class Base64DecodeFunction extends Function {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) return null;
 
+    // The decoder silently ignores the characters outside the alphabet and the characters after
+    // the padding, reject them
     int padding = -1;
     for (int i = 0; i < value.length; i++) {
       if (value[i] == '=') {
@@ -68,15 +72,24 @@ public class Base64DecodeFunction extends Function {
       }
     }
 
+    // The decoder does not check the number of padding symbols, a padded value is made of whole
+    // blocks of 4 symbols
+    if (padding >= 0 && value.length % 4 != 0) {
+      throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base64");
+    }
+
     try {
-      return new String(DECODER.decode(value), StandardCharsets.UTF_8);
+      return Characters.decodeUtf8(BASE64.decode(value), "base64");
     } catch (IllegalArgumentException e) {
       // The symbols are valid, so the last ones do not form whole bytes
       throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base64");
     }
   }
 
-  /** Returns whether the byte is a symbol of the base64 alphabet. */
+  /**
+   * Returns whether the byte is a symbol of the standard base64 alphabet. The decoder also accepts
+   * the URL-safe symbols '-' and '_', reject them like {@code Base64.isBase64(byte)} does not.
+   */
   private static boolean isBase64(byte b) {
     return (b >= 'A' && b <= 'Z')
         || (b >= 'a' && b <= 'z')
