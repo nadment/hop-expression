@@ -67,11 +67,9 @@ public class UpperFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
 
-    // Repetitions of functions that do not have any effects on the result
-    if (operand.isOperator(this)
-        || operand.isOperator(LowerFunction.INSTANCE)
-        || operand.isOperator(InitCapFunction.INSTANCE)) {
-      return new Call(this, call(operand).getOperand(0));
+    // Repetitions of functions that do not have any effects on the result.
+    if (operand.isOperator(this)) {
+      return operand;
     }
 
     return call;

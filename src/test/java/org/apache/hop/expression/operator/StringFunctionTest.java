@@ -163,8 +163,11 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Function repetition
     optimize("UPPER(UPPER(FIELD_STRING))", "UPPER(FIELD_STRING)");
-    optimize("UPPER(LOWER(FIELD_STRING))", "UPPER(FIELD_STRING)");
-    optimize("UPPER(INITCAP(FIELD_STRING))", "UPPER(FIELD_STRING)");
+    // Not simplified with another case function, the result may differ (Kelvin sign)
+    optimize("UPPER(LOWER(FIELD_STRING))", "UPPER(LOWER(FIELD_STRING))");
+    optimize("UPPER(INITCAP(FIELD_STRING))", "UPPER(INITCAP(FIELD_STRING))");
+    evalEquals("UPPER(LOWER(FIELD_STRING||CHR(8490)))", "TESTK");
+    evalEquals("UPPER(INITCAP(FIELD_STRING||CHR(8490)))", "TESTK");
   }
 
   @Test
@@ -182,9 +185,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("InitCap()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Function repetition
-    optimize("INITCAP(LOWER(FIELD_STRING))", "INITCAP(FIELD_STRING)");
-    optimize("INITCAP(UPPER(FIELD_STRING))", "INITCAP(FIELD_STRING)");
     optimize("INITCAP(INITCAP(FIELD_STRING))", "INITCAP(FIELD_STRING)");
+    // Not simplified with another case function, the result may differ (ß, Kelvin sign)
+    optimize("INITCAP(LOWER(FIELD_STRING))", "INITCAP(LOWER(FIELD_STRING))");
+    optimize("INITCAP(UPPER(FIELD_STRING))", "INITCAP(UPPER(FIELD_STRING))");
+    evalEquals("INITCAP(UPPER(FIELD_STRING||' '||CHR(223)))", "Test Ss");
+    evalEquals("INITCAP(LOWER(FIELD_STRING||' '||CHR(8490)))", "Test K");
   }
 
   @Test
@@ -391,8 +397,11 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Function repetition
     optimize("LOWER(LOWER(FIELD_STRING))", "LOWER(FIELD_STRING)");
-    optimize("LOWER(UPPER(FIELD_STRING))", "LOWER(FIELD_STRING)");
-    optimize("LOWER(INITCAP(FIELD_STRING))", "LOWER(FIELD_STRING)");
+    // Not simplified with another case function, the result may differ (ß, long s)
+    optimize("LOWER(UPPER(FIELD_STRING))", "LOWER(UPPER(FIELD_STRING))");
+    optimize("LOWER(INITCAP(FIELD_STRING))", "LOWER(INITCAP(FIELD_STRING))");
+    evalEquals("LOWER(UPPER(FIELD_STRING||CHR(223)))", "testss");
+    evalEquals("LOWER(INITCAP(FIELD_STRING||' '||CHR(383)))", "test s");
   }
 
   @Test
