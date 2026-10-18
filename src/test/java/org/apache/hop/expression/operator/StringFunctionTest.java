@@ -1102,7 +1102,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Soundex('Søren')", "S650");
     evalEquals("Soundex('Ærø')", "A600");
     // A letter that is not a Latin letter is not mapped
-    evalFails("Soundex('Ωmega')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("Soundex('Ωmega')", ErrorCode.UNSUPPORTED_SOUNDEX_LETTER);
+    assertDecodingMessage("Soundex('Omega Ω')", ErrorCode.UNSUPPORTED_SOUNDEX_LETTER.message("Ω"));
+    // The German sharp s is uppercased to SS
+    evalEquals("Soundex('Straße')", "S362");
 
     // Null handling
     evalNull("Soundex(NULL_STRING)").returnType(StringType.STRING);
@@ -1127,6 +1130,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Difference('123', 'abc')", 0L);
     evalEquals("Difference('abc', '123')", 0L);
     evalEquals("Difference('', '')", 0L);
+    // A letter that is not a Latin letter has no Soundex code, like with SOUNDEX
+    evalFails("Difference('Ωmega','Omega')", ErrorCode.UNSUPPORTED_SOUNDEX_LETTER);
+    evalFails("Difference('Omega','Ωmega')", ErrorCode.UNSUPPORTED_SOUNDEX_LETTER);
 
     // Null handling
     evalNull("Difference(NULL_STRING,NULL_STRING)");

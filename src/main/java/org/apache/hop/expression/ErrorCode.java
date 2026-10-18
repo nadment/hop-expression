@@ -431,6 +431,12 @@ public enum ErrorCode {
    */
   UNSUPPORTED_JSON_TYPE,
   /**
+   * A letter has no Soundex code, only the Latin letters are coded.
+   *
+   * <p>Message: <code>Letter “{0}” has no Soundex code, only the Latin letters are coded</code>
+   */
+  UNSUPPORTED_SOUNDEX_LETTER,
+  /**
    * The time unit is valid but not supported by the function.
    *
    * <p>Message: <code>Unsupported time unit {0}</code>

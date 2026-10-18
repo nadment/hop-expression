@@ -34,7 +34,7 @@ String
 * Returns an empty string if the string is empty or has no letter.
 * The diacritic marks are removed first, like xref:unaccent.adoc["UNACCENT",role=fun] does: `SOUNDEX('Émile')` returns 'E540'.
 * The Latin letters that have no diacritic mark to remove are transliterated: `Ø` to `O`, `Æ` to `AE`, `Œ` to `OE`, `Đ` to `D`, `Ħ` to `H` and `Þ` to `TH`. `SOUNDEX('Søren')` returns 'S650'.
-* Raises an error if the string contains a letter that is not a Latin letter, such as a Greek letter.
+* Raises an error naming the letter if the string contains a letter that is not a Latin letter, such as a Greek letter.
 * Returns NULL if the argument is NULL.
 
 == Examples

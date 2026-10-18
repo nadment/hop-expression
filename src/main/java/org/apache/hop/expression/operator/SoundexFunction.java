@@ -16,7 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.Locale;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -58,7 +61,20 @@ public class SoundexFunction extends Function {
    * @return the Soundex code, empty if the string has no letter
    */
   public static String soundex(final String value) {
-    // Soundex only maps the letters A to Z
-    return SOUNDEX.soundex(Characters.transliterate(Characters.unaccent(value)));
+    String latin = Characters.transliterate(Characters.unaccent(value));
+    try {
+      return SOUNDEX.soundex(latin);
+    } catch (IllegalArgumentException e) {
+      // Soundex only maps the letters A to Z, report the first other letter
+      String letter =
+          latin
+              .codePoints()
+              .filter(Character::isLetter)
+              .mapToObj(Character::toString)
+              .filter(ch -> !ch.toUpperCase(Locale.ENGLISH).matches("[A-Z]+"))
+              .findFirst()
+              .orElse(latin);
+      throw new ExpressionException(ErrorCode.UNSUPPORTED_SOUNDEX_LETTER, letter);
+    }
   }
 }
