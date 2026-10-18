@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -47,6 +48,6 @@ public class HexDecodeFunction extends Function {
       return null;
     }
 
-    return new String(Hex.decode(value));
+    return new String(Hex.decode(value), StandardCharsets.UTF_8);
   }
 }

@@ -928,6 +928,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("HEX_DECODE('zz')", ErrorCode.CALL_FUNCTION_ERROR);
     evalEquals("HEX_DECODE('')", "");
     evalEquals("HEX_DECODE('41706163686520486f70')", "Apache Hop");
+    // The bytes are decoded as UTF-8, whatever the default charset
+    evalEquals("HEX_DECODE('c3a9e282acf09f9880')", "é€" + Character.toString(128512));
+    evalEquals(
+        "HEX_DECODE(HEX_ENCODE('Café ' || CHR(128512)))", "Café " + Character.toString(128512));
 
     evalNull("HEX_DECODE(NULL_STRING)");
 
