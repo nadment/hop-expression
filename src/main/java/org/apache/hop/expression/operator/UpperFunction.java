@@ -60,7 +60,8 @@ public class UpperFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
-    return value.toUpperCase(Locale.getDefault());
+    // Independent of the default locale, like with a Turkish locale UPPER('i') is not 'I'
+    return value.toUpperCase(Locale.ROOT);
   }
 
   @Override

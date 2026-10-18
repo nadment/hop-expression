@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
+import java.util.Locale;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -33,9 +34,11 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.Isolated;
 
 @TestInstance(PER_CLASS)
 @Execution(CONCURRENT)
@@ -67,6 +70,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','PATH')", "/path");
     evalEquals(
         "Parse_Url('https://hop.apache.org:80/path?query=1#fragment','FILE')", "/path?query=1");
+    // The file is an empty string without path nor query, it starts with '?' without path
+    // An opaque URI like 'mailto:' has no path, the file is NULL
+    evalNull("Parse_Url('mailto:a@b.c','FILE')");
+    evalEquals("Parse_Url('https://hop.apache.org','FILE')", "");
+    evalEquals("Parse_Url('https://hop.apache.org?id=1','FILE')", "?id=1");
     evalEquals(
         "Parse_Url('https://hop.apache.org:80/path?query=1&lang=fr','QUERY')", "query=1&lang=fr");
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1&id=2','QUERY','id')", "2");
@@ -431,6 +439,27 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("LOWER(INITCAP(FIELD_STRING))", "LOWER(INITCAP(FIELD_STRING))");
     evalEquals("LOWER(UPPER(FIELD_STRING||CHR(223)))", "testss");
     evalEquals("LOWER(INITCAP(FIELD_STRING||' '||CHR(383)))", "test s");
+  }
+
+  /**
+   * The case functions do not depend on the default locale. Isolated because the default locale is
+   * shared by the tests running in parallel.
+   */
+  @Nested
+  @Isolated
+  class CaseWithDefaultLocale {
+    @Test
+    void turkish() throws Exception {
+      Locale locale = Locale.getDefault();
+      try {
+        // With a Turkish locale, 'i' would be uppercased to 'İ' and 'I' lowercased to 'ı'
+        Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+        evalEquals("Upper(FIELD_STRING||'i')", "TESTI");
+        evalEquals("Lower(FIELD_STRING||'I')", "testi");
+      } finally {
+        Locale.setDefault(locale);
+      }
+    }
   }
 
   @Test

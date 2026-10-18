@@ -60,7 +60,8 @@ public class LowerFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
-    return value.toLowerCase(Locale.getDefault());
+    // Independent of the default locale, like with a Turkish locale LOWER('I') is not 'i'
+    return value.toLowerCase(Locale.ROOT);
   }
 
   @Override
