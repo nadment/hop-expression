@@ -15,12 +15,12 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
+import org.apache.commons.math3.util.ResizableDoubleArray;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Returns the median of all values in the expression over a group of rows. */
 @NullMarked
@@ -28,27 +28,27 @@ public class MedianProcessor implements IAggregateProcessor {
 
   private static final Median MEDIAN = new Median();
 
-  private final List<Double> values;
+  // Primitive array to avoid boxing each value
+  private final ResizableDoubleArray values;
 
   public MedianProcessor() {
-    values = new ArrayList<>();
+    values = new ResizableDoubleArray();
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value.doubleValue());
+      values.addElement(value.doubleValue());
     }
   }
 
   @Override
-  public Object getValue() throws Exception {
-    final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = values.get(i);
-    }
-    double value = MEDIAN.evaluate(array);
+  public @Nullable Object getValue() throws Exception {
+    // The result of an empty group is NULL
+    if (values.getNumElements() == 0) return null;
+
+    double value = MEDIAN.evaluate(values.getElements());
     return BigDecimal.valueOf(value);
   }
 }

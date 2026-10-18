@@ -16,12 +16,11 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Operator;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the variance of a sample of all values in the expression over a group of rows.
@@ -34,29 +33,40 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class VarianceSampProcessor implements IAggregateProcessor {
 
-  private static final Variance VARIANCE = new Variance(true);
-
-  private final List<Double> values;
+  // Exact sums computed incrementally, without storing the values
+  private long count;
+  private BigDecimal sum;
+  private BigDecimal sumOfSquares;
 
   public VarianceSampProcessor() {
-    values = new ArrayList<>();
+    count = 0;
+    sum = BigDecimal.ZERO;
+    sumOfSquares = BigDecimal.ZERO;
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value.doubleValue());
+      count++;
+      sum = sum.add(value);
+      sumOfSquares = sumOfSquares.add(value.multiply(value));
     }
   }
 
   @Override
-  public Object getValue() throws Exception {
-    final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = values.get(i);
-    }
-    double value = VARIANCE.evaluate(array, 0, array.length);
-    return BigDecimal.valueOf(value);
+  public @Nullable BigDecimal getValue() throws Exception {
+    // The result of an empty group is NULL
+    if (count == 0) return null;
+
+    // The variance of a single value is zero
+    if (count == 1) return BigDecimal.ZERO;
+
+    // (N * SUM(x²) - SUM(x)²) / (N * (N - 1)), with a single rounding
+    BigDecimal n = BigDecimal.valueOf(count);
+    return sumOfSquares
+        .multiply(n)
+        .subtract(sum.multiply(sum))
+        .divide(n.multiply(BigDecimal.valueOf(count - 1)), Operator.MATH_CONTEXT);
   }
 }

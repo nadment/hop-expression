@@ -14,8 +14,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
@@ -24,11 +22,14 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class ListAggAllProcessor implements IAggregateProcessor {
   private final String delimiter;
-  private final Queue<String> values;
+  // The values are appended directly, without storing them
+  private final StringBuilder builder;
+  private boolean empty;
 
   public ListAggAllProcessor(String delimiter) {
-    this.values = new LinkedList<>();
+    this.builder = new StringBuilder();
     this.delimiter = delimiter;
+    this.empty = true;
   }
 
   @Override
@@ -38,22 +39,18 @@ public class ListAggAllProcessor implements IAggregateProcessor {
 
     if (value == null) return;
 
-    values.add(value);
+    if (!empty) {
+      builder.append(delimiter);
+    }
+    builder.append(value);
+    empty = false;
   }
 
   @Override
   public @Nullable Object getValue() throws Exception {
 
-    if (values.isEmpty()) {
+    if (empty) {
       return null;
-    }
-
-    StringBuilder builder = new StringBuilder();
-    for (String str : values) {
-      if (!builder.isEmpty()) {
-        builder.append(delimiter);
-      }
-      builder.append(str);
     }
 
     return builder.toString();

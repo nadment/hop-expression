@@ -15,12 +15,13 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.apache.commons.math3.util.ResizableDoubleArray;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
@@ -31,10 +32,11 @@ public class PercentileProcessor implements IAggregateProcessor {
 
   private static final Percentile PERCENTILE = new Percentile();
   private final double quantile;
-  private final List<Double> values;
+  // Primitive array to avoid boxing each value
+  private final ResizableDoubleArray values;
 
   public PercentileProcessor(BigDecimal quantile) {
-    this.values = new ArrayList<>();
+    this.values = new ResizableDoubleArray();
     // The percentage is between 0 and 1, but commons-math expects a value between 0 and 100
     this.quantile = quantile.movePointRight(2).doubleValue();
   }
@@ -43,18 +45,20 @@ public class PercentileProcessor implements IAggregateProcessor {
   public void process(IExpression[] operands) throws Exception {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value.doubleValue());
+      values.addElement(value.doubleValue());
     }
   }
 
   @Override
-  public Object getValue() throws Exception {
+  public @Nullable Object getValue() throws Exception {
 
-    final double[] array = new double[values.size()];
+    // The percentile of an empty group is NULL
+    if (values.getNumElements() == 0) return null;
 
-    for (int i = 0; i < array.length; i++) array[i] = values.get(i);
+    final double[] array = values.getElements();
 
-    double value = PERCENTILE.evaluate(array, quantile);
+    // Commons-math rejects a quantile of 0, which is the minimum value
+    double value = (quantile == 0) ? StatUtils.min(array) : PERCENTILE.evaluate(array, quantile);
 
     return BigDecimal.valueOf(value);
   }

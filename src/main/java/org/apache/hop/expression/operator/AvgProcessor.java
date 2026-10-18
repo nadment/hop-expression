@@ -15,10 +15,11 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Operator;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
@@ -45,7 +46,10 @@ public class AvgProcessor implements IAggregateProcessor {
   }
 
   @Override
-  public Object getValue() throws Exception {
-    return sum.divide(BigDecimal.valueOf(count), RoundingMode.HALF_UP);
+  public @Nullable Object getValue() throws Exception {
+    // The average of an empty group is NULL
+    if (count == 0) return null;
+
+    return sum.divide(BigDecimal.valueOf(count), Operator.MATH_CONTEXT);
   }
 }

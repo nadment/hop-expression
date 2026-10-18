@@ -15,12 +15,11 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Operator;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Computes the statistical variance of a population of all values over a group of rows.
@@ -33,30 +32,37 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class VariancePopProcessor implements IAggregateProcessor {
 
-  private static final Variance VARIANCE = new Variance(false);
-
-  private final List<Double> values;
+  // Exact sums computed incrementally, without storing the values
+  private long count;
+  private BigDecimal sum;
+  private BigDecimal sumOfSquares;
 
   public VariancePopProcessor() {
-    values = new ArrayList<>();
+    count = 0;
+    sum = BigDecimal.ZERO;
+    sumOfSquares = BigDecimal.ZERO;
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      values.add(value.doubleValue());
+      count++;
+      sum = sum.add(value);
+      sumOfSquares = sumOfSquares.add(value.multiply(value));
     }
   }
 
   @Override
-  public Object getValue() throws Exception {
-    final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = values.get(i);
-    }
-    double value = VARIANCE.evaluate(array, 0, array.length);
+  public @Nullable BigDecimal getValue() throws Exception {
+    // The result of an empty group is NULL
+    if (count == 0) return null;
 
-    return BigDecimal.valueOf(value);
+    // (N * SUM(x²) - SUM(x)²) / N², with a single rounding
+    BigDecimal n = BigDecimal.valueOf(count);
+    return sumOfSquares
+        .multiply(n)
+        .subtract(sum.multiply(sum))
+        .divide(n.multiply(n), Operator.MATH_CONTEXT);
   }
 }

@@ -42,7 +42,8 @@ public class PercentileFunction extends AggregateFunction {
   public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     BigDecimal percentile = operands[1].getValue(BigDecimal.class);
-    if (percentile == null) {
+    // The percentage is mandatory and between 0 and 1
+    if (percentile == null || percentile.signum() < 0 || percentile.compareTo(BigDecimal.ONE) > 0) {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, operands[1]);
     }
 

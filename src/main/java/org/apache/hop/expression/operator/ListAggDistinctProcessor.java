@@ -14,8 +14,8 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
@@ -24,11 +24,12 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class ListAggDistinctProcessor implements IAggregateProcessor {
   private final String delimiter;
-  private final Queue<String> values;
+  // Keeps the insertion order with a constant time lookup
+  private final Set<String> values;
 
   public ListAggDistinctProcessor(String delimiter) {
     this.delimiter = delimiter;
-    this.values = new LinkedList<>();
+    this.values = new LinkedHashSet<>();
   }
 
   @Override
@@ -36,7 +37,7 @@ public class ListAggDistinctProcessor implements IAggregateProcessor {
 
     String value = operands[0].getValue(String.class);
 
-    if (value == null || values.contains(value)) return;
+    if (value == null) return;
 
     values.add(value);
   }
@@ -46,14 +47,6 @@ public class ListAggDistinctProcessor implements IAggregateProcessor {
 
     if (values.isEmpty()) return null;
 
-    StringBuilder builder = new StringBuilder();
-    for (String str : values) {
-      if (!builder.isEmpty()) {
-        builder.append(delimiter);
-      }
-      builder.append(str);
-    }
-
-    return builder.toString();
+    return String.join(delimiter, values);
   }
 }

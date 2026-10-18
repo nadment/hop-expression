@@ -15,36 +15,36 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Operator;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+/**
+ * Returns the population standard deviation (square root of the population variance) of all values
+ * in the expression over a group of rows. Null values are ignored.
+ */
 @NullMarked
 public class StdDevPopProcessor implements IAggregateProcessor {
 
-  private final List<Double> values;
+  private final VariancePopProcessor variance;
 
   public StdDevPopProcessor() {
-    values = new ArrayList<>();
+    variance = new VariancePopProcessor();
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-    BigDecimal value = operands[0].getValue(BigDecimal.class);
-    if (value != null) {
-      values.add(value.doubleValue());
-    }
+    variance.process(operands);
   }
 
   @Override
-  public Object getValue() throws Exception {
-    final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) array[i] = values.get(i);
-    double value = FastMath.sqrt(StatUtils.populationVariance(array));
-    return BigDecimal.valueOf(value);
+  public @Nullable Object getValue() throws Exception {
+    BigDecimal value = variance.getValue();
+    // The result of an empty group is NULL
+    if (value == null) return null;
+
+    return value.sqrt(Operator.MATH_CONTEXT);
   }
 }
