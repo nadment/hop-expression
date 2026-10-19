@@ -24,12 +24,16 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
+import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /** Expression representing a named column in an input row. */
 @NullMarked
 public class Identifier implements IExpression {
+
+  /** The characters that end an unquoted identifier, as in {@link ExpressionLexer}. */
+  private static final String IDENTIFIER_DELIMITERS = "()/*%,^&><=~+-.!|$:[]";
 
   /** The position in the expression source */
   @Getter private final int position;
@@ -55,13 +59,14 @@ public class Identifier implements IExpression {
   }
 
   /**
-   * If the name contains space, is a reserved word or is a function name must be quoted.
+   * If the name contains space or a special character, is a reserved word or is a function name
+   * must be quoted.
    *
    * @param name the name to quote
    */
   public static String quoteIfNeeded(final String name) {
 
-    if (name.indexOf(' ') >= 0
+    if (hasSpecialCharacter(name)
         || Keyword.is(name)
         || TypeName.of(name) != null
         || TimeUnit.of(name) != null
@@ -70,6 +75,27 @@ public class Identifier implements IExpression {
     }
 
     return name;
+  }
+
+  /**
+   * Checks if a name cannot be read back as a single identifier without quotes: it is empty, starts
+   * like a number or a string, or contains a white space or a character that ends an identifier in
+   * {@link ExpressionLexer}, for example {@code A-B} would be read as a subtraction.
+   *
+   * @param name the name to check
+   * @return true if the name must be quoted
+   */
+  private static boolean hasSpecialCharacter(final String name) {
+    if (name.isEmpty()) return true;
+
+    char first = name.charAt(0);
+    if (Characters.isDigit(first) || first == '\'') return true;
+
+    for (int i = 0; i < name.length(); i++) {
+      char c = name.charAt(i);
+      if (Characters.isSpace(c) || IDENTIFIER_DELIMITERS.indexOf(c) >= 0) return true;
+    }
+    return false;
   }
 
   @Override
@@ -113,8 +139,9 @@ public class Identifier implements IExpression {
 
   @Override
   public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
-    // If the identifier name contains space or is a reserved word or a function name
-    if (name.indexOf(' ') >= 0
+    // If the identifier name contains space or a special character, or is a reserved word or a
+    // function name
+    if (hasSpecialCharacter(name)
         || Keyword.is(name)
         || FunctionRegistry.isFunction(name)
         || TypeName.of(name) != null

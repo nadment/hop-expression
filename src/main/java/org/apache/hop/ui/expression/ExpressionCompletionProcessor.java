@@ -32,10 +32,9 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Keyword;
-import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -252,17 +251,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         if (name.length() >= prefix.length()
             && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
-          String content = name;
-          // If identifier name contains space, is a reserved word or a function name must be
-          // quoted
-          if (quoted
-              || name.indexOf(' ') >= 0
-              || Keyword.is(name)
-              || TypeName.of(name) != null
-              || TimeUnit.of(name) != null
-              || FunctionRegistry.isFunction(name)) {
-            content = '\"' + name + '\"';
-          }
+          // If identifier name contains space or a special character, is a reserved word or a
+          // function name must be quoted, same rules as when an expression is written
+          String content = quoted ? '\"' + name + '\"' : Identifier.quoteIfNeeded(name);
 
           Image image = GuiResource.getInstance().getImage(valueMeta);
           String description =

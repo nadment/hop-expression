@@ -46,6 +46,37 @@ public class IdentifierTest extends ExpressionTest {
     assertEquals("\"TRIM\"", Identifier.quoteIfNeeded("TRIM"));
     assertEquals("\"OR\"", Identifier.quoteIfNeeded("OR"));
     assertEquals("\"FIELD WITH SPACE\"", Identifier.quoteIfNeeded("FIELD WITH SPACE"));
+    assertEquals("NAME_WITH_UNDERSCORE", Identifier.quoteIfNeeded("NAME_WITH_UNDERSCORE"));
+    assertEquals("NAME2", Identifier.quoteIfNeeded("NAME2"));
+
+    // Other white spaces
+    assertEquals("\"FIELD\tTAB\"", Identifier.quoteIfNeeded("FIELD\tTAB"));
+    assertEquals("\"FIELD\nLINE\"", Identifier.quoteIfNeeded("FIELD\nLINE"));
+    assertEquals("\"FIELD NBSP\"", Identifier.quoteIfNeeded("FIELD NBSP"));
+
+    // A character that ends an identifier, A-B would be read as a subtraction
+    for (char c : "()/*%,^&><=~+-.!|$:[]".toCharArray()) {
+      String name = "A" + c + "B";
+      assertEquals('"' + name + '"', Identifier.quoteIfNeeded(name));
+    }
+
+    // Starts like a number or a string
+    assertEquals("\"2020_SALES\"", Identifier.quoteIfNeeded("2020_SALES"));
+    assertEquals("\".5\"", Identifier.quoteIfNeeded(".5"));
+    assertEquals("\"'NAME\"", Identifier.quoteIfNeeded("'NAME"));
+
+    // Empty name
+    assertEquals("\"\"", Identifier.quoteIfNeeded(""));
+  }
+
+  @Test
+  void unparse() {
+    assertEquals("NORMAL", new Identifier("NORMAL").toString());
+    assertEquals("\"FIELD WITH SPACE\"", new Identifier("FIELD WITH SPACE").toString());
+    assertEquals("\"PRICE.TTC\"", new Identifier("PRICE.TTC").toString());
+    assertEquals("\"A-B\"", new Identifier("A-B").toString());
+    assertEquals("\"X(1)\"", new Identifier("X(1)").toString());
+    assertEquals("\"2020_SALES\"", new Identifier("2020_SALES").toString());
   }
 
   @Test
