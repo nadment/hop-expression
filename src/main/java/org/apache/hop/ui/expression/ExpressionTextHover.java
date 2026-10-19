@@ -30,24 +30,24 @@ import org.eclipse.jface.text.Region;
 
 public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
-  public ExpressionTextHover() {
-    super();
-  }
-
   @Override
   public String getHoverInfo(ITextViewer textViewer, IRegion region) {
-
+    IDocument document = textViewer.getDocument();
     try {
-      String text = textViewer.getDocument().get(region.getOffset(), region.getLength());
-
       // If hover identifier, display
 
-      // If hover function, display description
+      // If hover function, display description. As in the lexer, a word is a function only if it
+      // is immediately followed by a left parenthesis, otherwise it is a field like "YEAR".
+      int end = region.getOffset() + region.getLength();
+      if (region.getLength() == 0 || end >= document.getLength() || document.getChar(end) != '(') {
+        return null;
+      }
+
+      String text = document.get(region.getOffset(), region.getLength());
       Function function = FunctionRegistry.getFunction(text);
       if (function != null) return function.getDescription();
-
-      return null;
     } catch (BadLocationException e) {
+      // The document changed, no hover
     }
 
     return null;
@@ -55,41 +55,29 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
   @Override
   public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-
-    int start = -2;
-    int end = -1;
     IDocument document = textViewer.getDocument();
     try {
-      int pos = offset;
-      char c;
-      while (pos >= 0) {
-        c = document.getChar(pos);
-        if (!Character.isUnicodeIdentifierPart(c)) break;
-        --pos;
+      // Not over a word, for example a space or an operator
+      if (offset >= document.getLength()
+          || !Character.isUnicodeIdentifierPart(document.getChar(offset))) {
+        return new Region(offset, 0);
       }
-      start = pos;
 
-      pos = offset;
-      int length = document.getLength();
-
-      while (pos < length) {
-        c = document.getChar(pos);
-        if (!Character.isUnicodeIdentifierPart(c)) break;
-        ++pos;
+      // Expand to the start and the end of the word
+      int start = offset;
+      while (start > 0 && Character.isUnicodeIdentifierPart(document.getChar(start - 1))) {
+        start--;
       }
-      end = pos;
-    } catch (BadLocationException ignored) {
+      int end = offset + 1;
+      while (end < document.getLength()
+          && Character.isUnicodeIdentifierPart(document.getChar(end))) {
+        end++;
+      }
+      return new Region(start, end - start);
+    } catch (BadLocationException e) {
+      // The document changed, no hover
+      return null;
     }
-
-    // if a mouse is hovered over an invalid word
-    if (start >= -1 && end > -1) {
-      // if hovered over a one-letter identifier
-      if (start == offset && end == offset) return new Region(offset, 0);
-      else if (start == offset) return new Region(start, end - start);
-      else return new Region(start + 1, end - start - 1);
-    }
-
-    return null;
   }
 
   @Override

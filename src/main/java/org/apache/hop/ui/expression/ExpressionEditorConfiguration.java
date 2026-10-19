@@ -283,6 +283,10 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+    // No hover in the comments and the strings, a word is not a function there
+    if (!IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
+      return null;
+    }
     return new ExpressionTextHover();
   }
 
