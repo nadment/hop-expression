@@ -15,9 +15,10 @@
 package org.apache.hop.expression;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
@@ -36,8 +37,11 @@ import org.jspecify.annotations.Nullable;
 public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
 
-  /** Set of functions or alias by name. */
-  private static final HashMap<String, Function> functions = new HashMap<>();
+  /**
+   * Set of functions or alias by name. Concurrent because user-defined functions are registered
+   * from the GUI while expressions are compiled in other threads.
+   */
+  private static final Map<String, Function> functions = new ConcurrentHashMap<>();
 
   /** Initialize the registry, keep private to keep this a singleton */
   private FunctionRegistry() {}
@@ -62,8 +66,13 @@ public class FunctionRegistry {
     return functions.get(name.toUpperCase(Locale.ROOT));
   }
 
+  /**
+   * Returns the names and aliases of the registered functions.
+   *
+   * @return an unmodifiable copy, not affected by functions registered or unregistered later
+   */
   public static Set<String> getFunctionNames() {
-    return functions.keySet();
+    return Set.copyOf(functions.keySet());
   }
 
   private static void register(final ClassInfo classInfo) {
@@ -132,16 +141,20 @@ public class FunctionRegistry {
   /**
    * Registers a function under a name or alias (ignore case).
    *
-   * @param name the name or alias of the function, ignored if null
+   * @param name the name or alias of the function
    * @param function the function to register
+   * @throws IllegalArgumentException if the name is null or blank
    */
-  public static void register(@Nullable String name, Function function) {
-    if (name == null) return;
+  public static void register(String name, Function function) {
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("The name of a function is required");
+    }
 
     // Names are case-insensitive, see getFunction
     name = name.toUpperCase(Locale.ROOT);
 
-    if (functions.containsKey(name)) {
+    // Atomic, a function registered at the same time by another thread is not replaced
+    if (functions.putIfAbsent(name, function) != null) {
       log.logError("Function ''{0}'' already registered", name);
       return;
     }
@@ -149,8 +162,6 @@ public class FunctionRegistry {
     if (log.isDebug()) {
       log.logDebug("Register function ''{0}''", name);
     }
-
-    functions.put(name, function);
   }
 
   /**
@@ -197,7 +208,7 @@ public class FunctionRegistry {
       IHopMetadataSerializer<UserDefinedFunctionMeta> serializer, String name) {
     try {
       if (log.isDebug()) {
-        log.logBasic("Register user defined function: " + name);
+        log.logDebug("Register user defined function: " + name);
       }
       UserDefinedFunctionMeta udfMeta = serializer.load(name);
       register(name, new UserDefinedFunction(udfMeta));
