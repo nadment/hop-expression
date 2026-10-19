@@ -21,18 +21,33 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationAccess;
 import org.eclipse.jface.text.source.IAnnotationAccessExtension;
+import org.eclipse.jface.text.source.ImageUtilities;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 
+/** Gives access to the annotations of the expression editor, the errors of the expression. */
 public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotationAccessExtension {
 
-  private static final Image image = GuiResource.getInstance().getImageError();
+  /** The type of the annotation of an error in the expression. */
+  public static final String ERROR_TYPE = "org.hop.expression.error";
+
+  /**
+   * Checks if an annotation is an error in the expression.
+   *
+   * @param annotation the annotation
+   * @return true if the annotation is an error
+   */
+  public static boolean isError(Annotation annotation) {
+    return ERROR_TYPE.equals(annotation.getType());
+  }
 
   @Override
   public String getTypeLabel(Annotation annotation) {
-    return annotation.getText();
+    // The label of the type, the message is the text of the annotation
+    return isError(annotation) ? "Error" : null;
   }
 
   @Override
@@ -42,17 +57,22 @@ public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotatio
 
   @Override
   public void paint(Annotation annotation, GC gc, Canvas canvas, Rectangle bounds) {
-    gc.drawImage(image, bounds.x, bounds.y);
+    if (isError(annotation)) {
+      // Get the image when painting, the images of GuiResource can be created again (zoom, theme)
+      Image image = GuiResource.getInstance().getImageError();
+      ImageUtilities.drawImage(image, gc, canvas, bounds, SWT.CENTER);
+    }
   }
 
   @Override
   public boolean isPaintable(Annotation annotation) {
-    return true;
+    return isError(annotation);
   }
 
   @Override
   public boolean isSubtype(Object annotationType, Object potentialSupertype) {
-    return true;
+    // A type has no super type, it is only a subtype of itself
+    return annotationType != null && annotationType.equals(potentialSupertype);
   }
 
   @Override
@@ -67,7 +87,8 @@ public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotatio
 
   @Override
   public boolean isMultiLine(Annotation annotation) {
-    return true;
+    // An error is shown on the line where it starts
+    return false;
   }
 
   @Override

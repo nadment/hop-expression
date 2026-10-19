@@ -84,15 +84,19 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
 import org.apache.hop.ui.core.gui.IToolbarContainer;
 import org.apache.hop.ui.hopgui.ToolbarFacade;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IDocumentPartitioner;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModel;
+import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.AnnotationRulerColumn;
 import org.eclipse.jface.text.source.CompositeRuler;
 import org.eclipse.jface.text.source.IAnnotationModel;
@@ -157,7 +161,7 @@ public class ExpressionEditor extends Composite
   public static final String ID_CONTEXT_MENU_FIND_REPLACE =
       "ExpressionEditor-ContextMenu-40010-find-replace";
 
-  private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
+  private static final String ANNOTATION_ERROR_TYPE = ExpressionAnnotationAccess.ERROR_TYPE;
 
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> OPERATORS =
@@ -406,6 +410,26 @@ public class ExpressionEditor extends Composite
 
     wViewer.setDocument(document, new AnnotationModel());
     wViewer.configure(configuration);
+    wViewer.addPainter(createErrorPainter());
+  }
+
+  /**
+   * Underlines the errors in the text, the ruler shows their icon.
+   *
+   * <p>The deprecated SquigglesStrategy is used because the text style strategy
+   * UnderlineStrategy(SWT.UNDERLINE_SQUIGGLE) shows no underline in this editor, even with the
+   * painter added as text presentation listener.
+   */
+  @SuppressWarnings("deprecation")
+  private AnnotationPainter createErrorPainter() {
+    AnnotationPainter painter = new AnnotationPainter(wViewer, new ExpressionAnnotationAccess());
+    painter.addDrawingStrategy(ANNOTATION_ERROR_TYPE, new AnnotationPainter.SquigglesStrategy());
+    // painter.paint(AnnotationPainter.TEXT_CHANGE);
+    // painter.addTextStyleStrategy(ANNOTATION_ERROR_TYPE, new
+    // AnnotationPainter.UnderlineStrategy(SWT.UNDERLINE_SQUIGGLE));
+    painter.addAnnotationType(ANNOTATION_ERROR_TYPE, ANNOTATION_ERROR_TYPE);
+    painter.setAnnotationTypeColor(ANNOTATION_ERROR_TYPE, GuiResource.getInstance().getColorRed());
+    return painter;
   }
 
   /**
@@ -1054,14 +1078,44 @@ public class ExpressionEditor extends Composite
       IExpression.of(createExpressionContext(), expression);
     } catch (ParseExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
-      annotationModel.addAnnotation(annotation, new Position(e.getPosition(), 0));
+      annotationModel.addAnnotation(
+          annotation, findErrorPosition(event.getDocument(), e.getPosition()));
     } catch (RuntimeException e) {
-      // An ExpressionException, or an unexpected error, must not break the editing
+      // An ExpressionException, or an unexpected error, must not break the editing.
+      // Without position, the whole expression is underlined.
       Annotation annotation =
           new Annotation(ANNOTATION_ERROR_TYPE, false, String.valueOf(e.getMessage()));
-      annotationModel.addAnnotation(annotation, new Position(0, 0));
+      annotationModel.addAnnotation(annotation, new Position(0, expression.length()));
     }
 
     updateToolbar();
+  }
+
+  /**
+   * Finds the position to underline for an error: the word at the position of the error, or the
+   * character at this position, or the last character if the error is at the end.
+   *
+   * @param document the document
+   * @param offset the position of the error
+   * @return the position to underline
+   */
+  private static Position findErrorPosition(IDocument document, int offset) {
+    int length = document.getLength();
+    if (length == 0) {
+      return new Position(0, 0);
+    }
+    // At the end of the expression, for example a missing parenthesis
+    if (offset >= length) {
+      return new Position(length - 1, 1);
+    }
+    try {
+      IRegion word = ExpressionTextHover.findWordRegion(document, Math.max(offset, 0));
+      if (word.getLength() > 0) {
+        return new Position(word.getOffset(), word.getLength());
+      }
+    } catch (BadLocationException e) {
+      // Underline the character
+    }
+    return new Position(Math.max(offset, 0), 1);
   }
 }
