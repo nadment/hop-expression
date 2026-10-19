@@ -56,7 +56,6 @@ public class Keyword {
           "OR",
           "RESPECT",
           "RETURNING",
-          "RLIKE",
           "SIMILAR",
           "SYMMETRIC",
           "THEN",

@@ -33,6 +33,14 @@ class KeywordTest {
 
   @Test
   void testGet() throws Exception {
-    assertEquals(43, Keyword.get().size());
+    assertEquals(42, Keyword.get().size());
+  }
+
+  @Test
+  void eachKeywordIsAToken() {
+    // The lexer creates the token of a reserved word with Token.Id.valueOf
+    for (String word : Keyword.get()) {
+      assertEquals(word, Token.Id.valueOf(word).name());
+    }
   }
 }

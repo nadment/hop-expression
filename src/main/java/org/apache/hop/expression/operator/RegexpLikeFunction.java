@@ -33,7 +33,7 @@ import org.apache.hop.expression.util.Regexp;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** The REGEXP_LIKE function and RLIKE operator. */
+/** The REGEXP_LIKE function. */
 @FunctionPlugin
 @NullMarked
 public class RegexpLikeFunction extends Function {
