@@ -16,12 +16,15 @@
 package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Locale;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-public class TimeUnitTest extends ExpressionTest {
+public class TimeUnitTest {
 
   @Test
   void of() {
@@ -60,11 +63,41 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.TIMEZONE_HOUR, TimeUnit.of("Timezone_Hour"));
     assertEquals(TimeUnit.TIMEZONE_MINUTE, TimeUnit.of("Timezone_Minute"));
     assertEquals(TimeUnit.TIMEZONE, TimeUnit.of("TimeZone"));
+    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("millennium"));
+    assertEquals(TimeUnit.DAYOFYEAR, TimeUnit.of("DayOfYear"));
+    assertEquals(TimeUnit.WEEK, TimeUnit.of("Week"));
+    assertEquals(TimeUnit.WEEK, TimeUnit.of("weeks"));
+    assertEquals(TimeUnit.WEEK, TimeUnit.of("WeekOfYear"));
+    assertEquals(TimeUnit.WEEKOFMONTH, TimeUnit.of("WeekOfMonth"));
 
-    assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
-    assertNotEquals(null, TimeUnit.of("HOUR"));
-
-    // TODO: throw exception or return NULL ?
+    // An unknown name returns NULL instead of raising an error, the lexer and
+    // Identifier.quoteIfNeeded use it to check whether a name is a time unit
     assertNull(TimeUnit.of("NOP"));
+    assertNull(TimeUnit.of(""));
+    assertNull(TimeUnit.of(null));
+  }
+
+  @Test
+  void eachNameIsFound() {
+    for (TimeUnit unit : TimeUnit.values()) {
+      for (String name : unit.names()) {
+        // Each name or alias is found, ignore case, and is not used by another time unit
+        assertSame(unit, TimeUnit.of(name), name);
+        assertSame(unit, TimeUnit.of(name.toLowerCase(Locale.ROOT)), name);
+      }
+    }
+  }
+
+  @Test
+  void names() {
+    assertEquals(Set.of("EPOCH"), TimeUnit.EPOCH.names());
+    assertEquals(Set.of("DAY", "DAYS", "DAYOFMONTH"), TimeUnit.DAY.names());
+    assertEquals(Set.of("WEEK", "WEEKS", "WEEKOFYEAR"), TimeUnit.WEEK.names());
+    assertEquals(Set.of("ISOWEEK", "ISOWEEKOFYEAR"), TimeUnit.ISOWEEK.names());
+
+    // The name of each time unit is in its names
+    for (TimeUnit unit : TimeUnit.values()) {
+      assertTrue(unit.names().contains(unit.name()), unit.name());
+    }
   }
 }

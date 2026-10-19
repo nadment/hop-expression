@@ -614,7 +614,7 @@ public enum TimeUnit {
    * @param name The name of the time unit
    * @return Time unit, or {@code null} if not valid
    */
-  public static @Nullable TimeUnit of(final String name) {
+  public static @Nullable TimeUnit of(final @Nullable String name) {
     for (TimeUnit unit : TimeUnit.values()) {
       if (unit.name().equalsIgnoreCase(name)) {
         return unit;
