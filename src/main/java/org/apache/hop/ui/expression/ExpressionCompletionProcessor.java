@@ -39,7 +39,6 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
-import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.ContextInformationValidator;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
@@ -68,6 +67,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   @Override
   public ICompletionProposal[] computeCompletionProposals(ITextViewer textViewer, int offset) {
 
+    // Clear the error message of a previous completion
+    message = null;
+
     try {
       IDocument document = textViewer.getDocument();
 
@@ -95,32 +97,28 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       }
 
       int end = offset;
+      char next = 0;
       while (end < document.getLength()) {
-        ch = document.getChar(end);
-
-        if (Character.isJavaIdentifierPart(ch) || ch == '.') {
-          end++;
-          continue;
-        }
-
-        if (!quoted) break;
-
-        if (ch == '\"') {
-          end++;
-          // If you use another double quote to escape it
-          if (end < document.getLength() && document.getChar(end) != '\"') break;
-        }
-
-        // Reset to not erase to end of the expression
-        if (ch == '\r' || ch == '\n') {
-          end = offset;
-          break;
-        }
-
-        end++;
+        next = document.getChar(end);
+        if (Character.isJavaIdentifierPart(next) || next == '.') end++;
+        else break;
       }
 
-      if (ch == '}') end++;
+      // A quoted identifier is replaced up to its closing quote on the same line. Without closing
+      // quote, only the identifier characters are replaced, to not erase the end of the expression.
+      // The lexer has no escape, the first double quote ends the identifier.
+      if (quoted) {
+        for (int index = end; index < document.getLength(); index++) {
+          char c = document.getChar(index);
+          if (c == '\"') {
+            end = index + 1;
+            break;
+          }
+          if (c == '\r' || c == '\n') break;
+        }
+      } else if (next == '}') {
+        end++;
+      }
 
       String prefix = document.get(start, offset - start);
 
@@ -166,9 +164,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
             VariableRegistry.getInstance().getDeprecatedVariableNames().contains(variableName);
 
         String content = "${" + variableName + '}';
-        ContextInformation contextInfo =
-            new ContextInformation("Context display test", "information display test");
-        String additionalProposalInfo = (isDeprecated) ? Const.getDeprecatedPrefix() : null;
+        // A deprecated variable is flagged in the list of proposals
+        String displayName =
+            isDeprecated ? variableName + Const.getDeprecatedPrefix() : variableName;
         Image image = GuiResource.getInstance().getImageVariable();
 
         String additionalInfo = null;
@@ -185,8 +183,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
                 end - start,
                 content.length(),
                 image,
-                variableName,
-                contextInfo,
+                displayName,
+                null,
                 additionalInfo);
 
         proposals.add(proposal);
@@ -306,7 +304,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     @Serial private static final long serialVersionUID = 1L;
 
     public int compare(ICompletionProposal p1, ICompletionProposal p2) {
-      return p1.getDisplayString().compareTo(p2.getDisplayString());
+      // Ignore case, the fields in lower case are not sorted after the functions
+      return String.CASE_INSENSITIVE_ORDER.compare(p1.getDisplayString(), p2.getDisplayString());
     }
   }
 }
