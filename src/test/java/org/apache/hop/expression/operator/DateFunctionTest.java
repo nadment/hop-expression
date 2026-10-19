@@ -174,6 +174,15 @@ class DateFunctionTest extends ExpressionTest {
     // With leap year
     evalEquals("Date_Diff(DAY,DATE '2015-12-15',DATE '2019-04-23')", 1225L);
 
+    // A number of units out of the integer range raises an error, about 292 years of nanoseconds
+    evalFails(
+        "Date_Diff(NANOSECOND, DATE '1000-01-01', DATE '3000-01-01')",
+        ErrorCode.ARITHMETIC_OVERFLOW);
+    evalNull("TRY(Date_Diff(NANOSECOND, DATE '1000-01-01', DATE '3000-01-01'))");
+    evalFails(
+        "Date_Diff(MICROSECOND, MAKE_DATE(-900000000,1,1), MAKE_DATE(900000000,1,1))",
+        ErrorCode.ARITHMETIC_OVERFLOW);
+
     // Null handling
     evalNull("Date_Diff(YEAR, NULL_DATE, DATE '2007-11-09')").returnType(IntegerType.INTEGER);
     evalNull("Date_Diff(YEAR, DATE '2007-11-09',NULL_DATE)");

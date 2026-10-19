@@ -64,25 +64,30 @@ public class DateDiffFunction extends Function {
     ZonedDateTime endDateTime = operands[2].getValue(ZonedDateTime.class);
     if (endDateTime == null) return null;
 
-    return switch (unit) {
-      case MILLENNIUM -> startDateTime.until(endDateTime, ChronoUnit.MILLENNIA);
-      case CENTURY -> startDateTime.until(endDateTime, ChronoUnit.CENTURIES);
-      case DECADE -> startDateTime.until(endDateTime, ChronoUnit.DECADES);
-      case YEAR -> startDateTime.until(endDateTime, ChronoUnit.YEARS);
-      case MONTH -> startDateTime.until(endDateTime, ChronoUnit.MONTHS);
-      case QUARTER -> {
-        long months = startDateTime.until(endDateTime, ChronoUnit.MONTHS);
-        yield months / 3L;
-      }
-      case WEEK -> startDateTime.until(endDateTime, ChronoUnit.WEEKS);
-      case DAY -> startDateTime.until(endDateTime, ChronoUnit.DAYS);
-      case HOUR -> startDateTime.until(endDateTime, ChronoUnit.HOURS);
-      case MINUTE -> startDateTime.until(endDateTime, ChronoUnit.MINUTES);
-      case SECOND -> startDateTime.until(endDateTime, ChronoUnit.SECONDS);
-      case MILLISECOND -> startDateTime.until(endDateTime, ChronoUnit.MILLIS);
-      case MICROSECOND -> startDateTime.until(endDateTime, ChronoUnit.MICROS);
-      case NANOSECOND -> startDateTime.until(endDateTime, ChronoUnit.NANOS);
-      default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
-    };
+    try {
+      return switch (unit) {
+        case MILLENNIUM -> startDateTime.until(endDateTime, ChronoUnit.MILLENNIA);
+        case CENTURY -> startDateTime.until(endDateTime, ChronoUnit.CENTURIES);
+        case DECADE -> startDateTime.until(endDateTime, ChronoUnit.DECADES);
+        case YEAR -> startDateTime.until(endDateTime, ChronoUnit.YEARS);
+        case MONTH -> startDateTime.until(endDateTime, ChronoUnit.MONTHS);
+        case QUARTER -> {
+          long months = startDateTime.until(endDateTime, ChronoUnit.MONTHS);
+          yield months / 3L;
+        }
+        case WEEK -> startDateTime.until(endDateTime, ChronoUnit.WEEKS);
+        case DAY -> startDateTime.until(endDateTime, ChronoUnit.DAYS);
+        case HOUR -> startDateTime.until(endDateTime, ChronoUnit.HOURS);
+        case MINUTE -> startDateTime.until(endDateTime, ChronoUnit.MINUTES);
+        case SECOND -> startDateTime.until(endDateTime, ChronoUnit.SECONDS);
+        case MILLISECOND -> startDateTime.until(endDateTime, ChronoUnit.MILLIS);
+        case MICROSECOND -> startDateTime.until(endDateTime, ChronoUnit.MICROS);
+        case NANOSECOND -> startDateTime.until(endDateTime, ChronoUnit.NANOS);
+        default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
+      };
+    } catch (ArithmeticException e) {
+      // The number of small units, like nanoseconds, exceeds the integer range
+      throw new ExpressionException(ErrorCode.ARITHMETIC_OVERFLOW, getName());
+    }
   }
 }

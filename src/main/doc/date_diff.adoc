@@ -52,6 +52,7 @@ Integer
 == Usage
 
 * The result is negative if end_date is earlier than start_date.
+* Raises an arithmetic overflow error if the number of units exceeds the integer range, for example more than about 292 years in nanoseconds.
 * The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples
