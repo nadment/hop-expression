@@ -63,7 +63,7 @@ class CallTest extends ExpressionTest {
     Call call8 = new Call(FunctionRegistry.getFunction("RANDOM"));
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
-    assertTrue(call1.is(Kind.CALL));
+    assertTrue(call1.isKind(Kind.CALL));
     assertTrue(call1.isOperator(AddOperator.INSTANCE));
     assertTrue(call1.isConstant());
     assertFalse(call4.isConstant());

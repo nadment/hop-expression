@@ -446,18 +446,18 @@ public abstract class Operator {
     IExpression right = call.getOperand(1);
 
     // Nothing to normalize
-    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
+    if (left.isKind(Kind.IDENTIFIER) && (right.isKind(Kind.LITERAL) || right.isKind(Kind.CALL))) {
       return call;
     }
 
     // Normalize identifier to the left
-    if (right.is(Kind.IDENTIFIER)) {
+    if (right.isKind(Kind.IDENTIFIER)) {
       // Swap terms and reverse operator 1>A → A<1
-      if (left.is(Kind.LITERAL)) {
+      if (left.isKind(Kind.LITERAL)) {
         return call.reverse();
       }
       // Swap terms and reverse operator B>A → A<B
-      if (left.is(Kind.IDENTIFIER)
+      if (left.isKind(Kind.IDENTIFIER)
           && identifier(left).getName().compareTo(identifier(right).getName()) > 0) {
         return call.reverse();
       }
@@ -494,18 +494,18 @@ public abstract class Operator {
     IExpression right = call.getOperand(1);
 
     // Nothing to normalize
-    if (left.is(Kind.IDENTIFIER) && (right.is(Kind.LITERAL) || right.is(Kind.CALL))) {
+    if (left.isKind(Kind.IDENTIFIER) && (right.isKind(Kind.LITERAL) || right.isKind(Kind.CALL))) {
       return call;
     }
 
-    if (right.is(Kind.IDENTIFIER)) {
+    if (right.isKind(Kind.IDENTIFIER)) {
 
       // Swap terms 1=A → A=1
-      if (left.is(Kind.LITERAL)) {
+      if (left.isKind(Kind.LITERAL)) {
         return call.swap();
       }
       // Swap terms B=A → A=B
-      if (left.is(Kind.IDENTIFIER)
+      if (left.isKind(Kind.IDENTIFIER)
           && identifier(left).getName().compareTo(identifier(right).getName()) > 0) {
         return call.swap();
       }

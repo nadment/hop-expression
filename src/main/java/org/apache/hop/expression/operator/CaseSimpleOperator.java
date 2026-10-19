@@ -66,7 +66,7 @@ public class CaseSimpleOperator extends Operator {
       for (IExpression whenOperand : whenTerm) {
 
         // Multi-values
-        if (whenOperand.is(Kind.ARRAY)) {
+        if (whenOperand.isKind(Kind.ARRAY)) {
           for (IExpression expression : (Array) whenOperand) {
             Object value = expression.getValue();
             // A null value never matches
@@ -98,7 +98,7 @@ public class CaseSimpleOperator extends Operator {
       IExpression whenOperand = whenTerm.get(0);
 
       // Multi-values: CASE value WHEN x1,x2 THEN y ELSE z END → IF(value IN (x1,x2),y,z)
-      if (whenOperand.is(Kind.ARRAY)) {
+      if (whenOperand.isKind(Kind.ARRAY)) {
         return new Call(
             IfFunction.INSTANCE,
             new Call(InListOperator.INSTANCE, call.getOperand(0), whenOperand),
@@ -151,7 +151,7 @@ public class CaseSimpleOperator extends Operator {
     // Check WHEN operands are comparable with the value, like the equal operator
     if (!valueOperand.isNull()) {
       for (IExpression operand : (Array) call.getOperand(1)) {
-        if (operand.is(Kind.ARRAY)) {
+        if (operand.isKind(Kind.ARRAY)) {
           // Mutli-values simple form
           for (IExpression value : (Array) operand) {
             if (!(value.isNull() || Types.isComparable(valueOperand, value))) {

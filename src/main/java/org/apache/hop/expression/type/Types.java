@@ -203,7 +203,7 @@ public final class Types {
     IExpression operand = call.getOperand(index);
 
     // If the operand is an array, coercion of all its elements
-    if (operand.is(Kind.ARRAY)) {
+    if (operand.isKind(Kind.ARRAY)) {
       Array array = coerceOperandType((Array) operand, type);
       if (!array.equals(operand)) {
         call.setOperand(index, array);
@@ -444,7 +444,7 @@ public final class Types {
   }
 
   private static boolean isStringLiteral(IExpression expression) {
-    return expression.is(Kind.LITERAL) && isString(expression.getType());
+    return expression.isKind(Kind.LITERAL) && isString(expression.getType());
   }
 
   public static boolean isBinary(Type type) {

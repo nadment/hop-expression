@@ -58,7 +58,7 @@ public class LiteralTest extends ExpressionTest {
   void testNull() {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Objects.hash(null, UnknownType.UNKNOWN), Literal.NULL.hashCode());
-    assertFalse(Literal.NULL.is(null));
+    assertFalse(Literal.NULL.isKind(null));
     assertFalse(Literal.NULL.isOperator(null));
     assertTrue(Literal.NULL.isConstant());
     assertNotEquals(Literal.NULL, null);

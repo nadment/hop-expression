@@ -133,7 +133,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       // Compile expression
       try {
         IExpression expression = IExpression.of(context, field.getExpression());
-        if (!expression.is(Kind.CALL)) {
+        if (!expression.isKind(Kind.CALL)) {
           throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
         }
         Operator operator = ((Call) expression).getOperator();

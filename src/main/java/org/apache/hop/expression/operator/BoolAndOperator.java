@@ -109,11 +109,11 @@ public class BoolAndOperator extends BinaryOperator {
         if (term.isOperator(IsNullOperator.INSTANCE)) {
           nullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1).is(Kind.LITERAL)) {
+        if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1).isKind(Kind.LITERAL)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         if (term.isOperator(NotEqualOperator.INSTANCE)) {
-          if (term.getOperand(1).is(Kind.LITERAL)) {
+          if (term.getOperand(1).isKind(Kind.LITERAL)) {
             notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
@@ -127,10 +127,10 @@ public class BoolAndOperator extends BinaryOperator {
           }
         }
         if (Strong.isStrong(term)) {
-          if (term.getOperand(0).is(Kind.IDENTIFIER)) {
+          if (term.getOperand(0).isKind(Kind.IDENTIFIER)) {
             strongTerms.add(term.getOperand(0));
           }
-          if (term.getOperand(1).is(Kind.IDENTIFIER)) {
+          if (term.getOperand(1).isKind(Kind.IDENTIFIER)) {
             strongTerms.add(term.getOperand(1));
           }
         }
@@ -166,11 +166,11 @@ public class BoolAndOperator extends BinaryOperator {
       for (Pair<Call, IExpression> pair : inTerms.get(reference)) {
         IExpression term = pair.right();
         if (values.isEmpty()) {
-          if (term.is(Kind.ARRAY)) {
+          if (term.isKind(Kind.ARRAY)) {
             array(term).forEach(values::add);
           } else values.add(term);
         } else {
-          if (term.is(Kind.ARRAY)) {
+          if (term.isKind(Kind.ARRAY)) {
             values = CollectionUtils.intersection(values, array(term));
           } else {
             values = CollectionUtils.intersection(values, List.of(term));

@@ -140,7 +140,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           IExpression expression = IExpression.of(data.context, source);
           Call call = null;
           AggregateFunction function = null;
-          if (expression.is(Kind.CALL)) {
+          if (expression.isKind(Kind.CALL)) {
             call = (Call) expression;
             if (call.getOperator() instanceof AggregateFunction operator) {
               function = operator;

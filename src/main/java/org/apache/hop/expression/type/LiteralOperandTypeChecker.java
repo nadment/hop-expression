@@ -34,7 +34,7 @@ public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
 
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
-    if (operand.is(Kind.LITERAL)) {
+    if (operand.isKind(Kind.LITERAL)) {
       Object value = operand.getValue();
       return !javaClass.isAssignableFrom((value == null) ? Void.class : value.getClass());
     }

@@ -59,7 +59,7 @@ public interface IExpression {
    * Returns the kind of expression.
    *
    * @return a {@link Kind} value, never null
-   * @see #is
+   * @see #isKind
    */
   Kind getKind();
 
@@ -69,7 +69,7 @@ public interface IExpression {
    * @param kind The kind to check
    * @return {@code true} if the expression is of the specified kind
    */
-  default boolean is(final Kind kind) {
+  default boolean isKind(final Kind kind) {
     return getKind() == kind;
   }
 

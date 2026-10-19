@@ -127,7 +127,7 @@ public class BoolOrOperator extends BinaryOperator {
         }
         if (term.isOperator(EqualOperator.INSTANCE)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-          if (term.getOperand(1).is(Kind.LITERAL)) {
+          if (term.getOperand(1).isKind(Kind.LITERAL)) {
             inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
@@ -204,11 +204,11 @@ public class BoolOrOperator extends BinaryOperator {
         IExpression term = pair.right();
         if (values == null) {
           values = new LinkedList<>();
-          if (term.is(Kind.ARRAY)) {
+          if (term.isKind(Kind.ARRAY)) {
             array(term).forEach(values::add);
           } else values.add(term);
         } else {
-          if (term.is(Kind.ARRAY)) {
+          if (term.isKind(Kind.ARRAY)) {
             values = CollectionUtils.intersection(values, array(term));
           } else {
             values = CollectionUtils.intersection(values, List.of(term));

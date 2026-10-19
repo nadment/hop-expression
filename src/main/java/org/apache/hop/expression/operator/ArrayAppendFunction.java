@@ -68,7 +68,7 @@ public class ArrayAppendFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // If the operand is an array (not an operator)
-    if (call.getOperand(0).is(Kind.ARRAY)) {
+    if (call.getOperand(0).isKind(Kind.ARRAY)) {
       return (Array) eval(call.getOperands());
     }
     return call;
