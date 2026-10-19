@@ -18,10 +18,9 @@ package org.apache.hop.ui.expression;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import org.apache.commons.io.IOUtils;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.DescribedVariable;
@@ -37,19 +36,10 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   private String css;
 
-  public ExpressionLabelProvider() {
-    super();
-  }
-
   private String getCss() {
     if (css == null) {
-      try (StringWriter writer = new StringWriter()) {
-        InputStream is = this.getClass().getResourceAsStream("/docs/expression.css");
-        if (is != null) {
-          InputStreamReader reader = new InputStreamReader(is);
-          IOUtils.copy(reader, writer);
-        }
-        css = writer.toString();
+      try (InputStream is = this.getClass().getResourceAsStream("/docs/expression.css")) {
+        css = (is == null) ? "" : new String(is.readAllBytes(), StandardCharsets.UTF_8);
       } catch (IOException e) {
         css = "";
       }
@@ -57,11 +47,52 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
     return css;
   }
 
+  /**
+   * Starts the help page of an element, with its title.
+   *
+   * @param title the title, escaped
+   * @return the builder of the page
+   */
+  private StringBuilder beginHtml(String title) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("<html><style>");
+    builder.append(getCss());
+    builder.append("</style><body class=\"article\">");
+    builder.append("<div id=\"header\"><h1>");
+    builder.append(StringEscapeUtils.escapeHtml4(title));
+    builder.append("</h1></div><div id=\"content\">");
+    return builder;
+  }
+
+  /**
+   * Appends a section to the help page.
+   *
+   * @param builder the builder of the page
+   * @param heading the heading of the section
+   * @param text the text of the section, escaped because it can contain characters like '&lt;'
+   */
+  private static void appendSection(StringBuilder builder, String heading, String text) {
+    builder.append("<h2>").append(heading).append("</h2>");
+    builder.append(StringEscapeUtils.escapeHtml4(text));
+  }
+
+  /**
+   * Ends the help page.
+   *
+   * @param builder the builder of the page
+   * @return the page
+   */
+  private static String endHtml(StringBuilder builder) {
+    // Close the content
+    builder.append("</div></body></html>");
+    return builder.toString();
+  }
+
   @Override
   public void addListener(ILabelProviderListener listener) {}
 
   @Override
-  public boolean isLabelProperty(Object var1, String var2) {
+  public boolean isLabelProperty(Object element, String property) {
     return false;
   }
 
@@ -110,49 +141,27 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
     }
 
     if (element instanceof DescribedVariable variable) {
-      StringBuilder builder = new StringBuilder();
-
       // Header
-      builder.append("<html><style>");
-      builder.append(getCss());
-      builder.append("</style><body class=\"article\">");
-      builder.append("<div id=\"header\"><h1>");
-      builder.append(variable.getName());
-      builder.append("</h1></div><div id=\"content\">");
+      StringBuilder builder = beginHtml(variable.getName());
 
       // Content
-      builder.append("<h2>Description</h2>");
-      builder.append(Const.NVL(variable.getDescription(), "-"));
+      appendSection(builder, "Description", Const.NVL(variable.getDescription(), "-"));
 
       // Footer
-      builder.append("</div></div></body></html>");
-
-      return builder.toString();
+      return endHtml(builder);
     }
 
     if (element instanceof IValueMeta meta) {
-      StringBuilder builder = new StringBuilder();
-
       // Header
-      builder.append("<html><style>");
-      builder.append(getCss());
-      builder.append("</style><body class=\"article\">");
-      builder.append("<div id=\"header\"><h1>");
-      builder.append(meta.getName());
-      builder.append("</h1></div><div id=\"content\">");
+      StringBuilder builder = beginHtml(meta.getName());
 
       // Content
-      builder.append("<h2>Type</h2>");
-      builder.append(meta.getTypeDesc());
-      builder.append("<h2>Transform origin</h2>");
-      builder.append(Const.NVL(meta.getOrigin(), "-"));
-      builder.append("<h2>Comment</h2>");
-      builder.append(StringUtils.defaultString(meta.getComments()));
+      appendSection(builder, "Type", meta.getTypeDesc());
+      appendSection(builder, "Transform origin", Const.NVL(meta.getOrigin(), "-"));
+      appendSection(builder, "Comment", StringUtils.defaultString(meta.getComments()));
 
       // Footer
-      builder.append("</div></div></body></html>");
-
-      return builder.toString();
+      return endHtml(builder);
     }
 
     return null;
