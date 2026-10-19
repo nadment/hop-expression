@@ -36,7 +36,6 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
@@ -117,7 +116,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -212,6 +210,9 @@ public class ExpressionEditor extends Composite
   private IRowMeta rowMeta;
   private Browser wBrowser;
   private SashForm wEditorSashForm;
+
+  /** The tree item of the fields or arguments, or null if the mode has no fields. */
+  private TreeItem wTreeItemFields;
 
   public ExpressionEditor(
       Composite parent,
@@ -312,7 +313,7 @@ public class ExpressionEditor extends Composite
     // In the Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
     // Use Ctrl-ALT-SPACE instead.
     final int modifierKeys =
-        (System.getProperty("user.language").equals("zh")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
+        "zh".equals(System.getProperty("user.language")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
 
     widget.setTabs(4);
     widget.addListener(SWT.FocusIn, e -> hideHelp());
@@ -378,7 +379,15 @@ public class ExpressionEditor extends Composite
             if (textTransfer.isSupportedType(event.currentDataType)) {
               String str = (String) event.data;
               StyledText styledText = wViewer.getTextWidget();
-              styledText.insert(str);
+
+              // Insert at the drop location, or at the caret if not over the text
+              Point point = styledText.toControl(event.x, event.y);
+              int offset = styledText.getOffsetAtPoint(point);
+              if (offset < 0) {
+                offset = styledText.getCaretOffset();
+              }
+              styledText.replaceTextRange(offset, 0, str);
+              styledText.setCaretOffset(offset + str.length());
             }
           }
         });
@@ -432,12 +441,14 @@ public class ExpressionEditor extends Composite
         new DragSourceAdapter() {
           @Override
           public void dragStart(DragSourceEvent event) {
-            TreeItem item = wTree.getSelection()[0];
-            event.doit = item != null && item.getData() != null;
+            event.doit = wTree.getSelectionCount() > 0 && wTree.getSelection()[0].getData() != null;
           }
 
           @Override
           public void dragSetData(DragSourceEvent event) {
+            if (wTree.getSelectionCount() == 0) {
+              return;
+            }
             TreeItem item = wTree.getSelection()[0];
             String str = String.valueOf(item.getData());
             if (item.getData() instanceof Operator operator) {
@@ -458,13 +469,13 @@ public class ExpressionEditor extends Composite
         });
 
     if (mode == ExpressionMode.ROW || mode == ExpressionMode.COLUMN || mode == ExpressionMode.UDF) {
-      TreeItem item = new TreeItem(wTree, SWT.NULL);
-      item.setImage(GuiResource.getInstance().getImageFolder());
+      wTreeItemFields = new TreeItem(wTree, SWT.NULL);
+      wTreeItemFields.setImage(GuiResource.getInstance().getImageFolder());
       String text =
           (mode == ExpressionMode.UDF)
               ? "ExpressionEditor.Tree.Arguments.Label"
               : "ExpressionEditor.Tree.Fields.Label";
-      item.setText(BaseMessages.getString(PKG, text));
+      wTreeItemFields.setText(BaseMessages.getString(PKG, text));
     }
 
     TreeItem treeItemOperator = new TreeItem(wTree, SWT.NULL);
@@ -548,11 +559,11 @@ public class ExpressionEditor extends Composite
       for (String name : names) {
         boolean isDeprecated = variableRegistry.getDeprecatedVariableNames().contains(name);
 
+        // The described variable is shared by Hop, it must not be modified
         DescribedVariable variable = variableRegistry.findDescribedVariable(name);
         if (variable == null) {
           variable = new DescribedVariable(name, null, null);
         }
-        variable.setValue("${" + name + '}');
 
         TreeItem item = new TreeItem(treeItemVariable, SWT.NULL);
         item.setImage(GuiResource.getInstance().getImageVariable());
@@ -626,7 +637,7 @@ public class ExpressionEditor extends Composite
       lineNumberRulerColumn.setForeground(new Color(this.getDisplay(), 120, 120, 120));
     }
 
-    // ineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
+    // lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
     lineNumberRulerColumn.setFont(GuiResource.getInstance().getFontFixed());
 
     PropsUi props = PropsUi.getInstance();
@@ -867,6 +878,7 @@ public class ExpressionEditor extends Composite
   @GuiKeyboardShortcut(control = true, key = 'f')
   @GuiOsxKeyboardShortcut(command = true, key = 'f')
   public static void find() {
+    // TODO: only available in 2.20, for now button is disabled
     // FindReplaceDialog.open(control.getShell(), this, false);
   }
 
@@ -884,6 +896,7 @@ public class ExpressionEditor extends Composite
   @GuiKeyboardShortcut(control = true, key = 'h')
   @GuiOsxKeyboardShortcut(command = true, key = 'h')
   public static void findReplace() {
+    // TODO: only available in 2.20, for now button is disabled
     // FindReplaceDialog.open(control.getShell(), this, true);
   }
 
@@ -897,12 +910,31 @@ public class ExpressionEditor extends Composite
 
     String source = wViewer.getTextWidget().getText();
 
-    IExpression expression = IExpression.of(new RowExpressionContext(variables, rowMeta), source);
-
-    MessageBox dialog = new MessageBox(getShell());
-    dialog.setText("Expression simplified");
-    dialog.setMessage(expression.toString());
+    MessageBox dialog;
+    try {
+      IExpression expression = IExpression.of(createExpressionContext(), source);
+      dialog = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+      dialog.setText(BaseMessages.getString(PKG, "ExpressionEditor.Evaluate.Title"));
+      dialog.setMessage(expression.toString());
+    } catch (RuntimeException e) {
+      // An invalid expression, ExpressionException is a RuntimeException
+      dialog = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+      dialog.setText(BaseMessages.getString(PKG, "ExpressionEditor.Evaluate.Error.Title"));
+      dialog.setMessage(String.valueOf(e.getMessage()));
+    }
     dialog.open();
+  }
+
+  /**
+   * Creates the context to compile the expression, with the fields when they are known.
+   *
+   * @return the expression context
+   */
+  private IExpressionContext createExpressionContext() {
+    if (rowMeta == null) {
+      return new ExpressionContext(variables);
+    }
+    return new RowExpressionContext(variables, rowMeta);
   }
 
   protected void onTreeExpandCollapseAll(boolean expanded) {
@@ -922,20 +954,26 @@ public class ExpressionEditor extends Composite
   public void setRowMeta(final IRowMeta rowMeta) {
     this.rowMeta = rowMeta;
 
-    Display.getDefault()
+    // The row meta can be ready after the editor is closed, or the mode has no fields
+    if (isDisposed() || wTreeItemFields == null) {
+      return;
+    }
+
+    getDisplay()
         .asyncExec(
             () -> {
+              if (wTreeItemFields.isDisposed()) {
+                return;
+              }
+
               // Remove existing fields
-
-              TreeItem parentItem = wTree.getItem(0);
-
-              parentItem.removeAll();
+              wTreeItemFields.removeAll();
 
               if (rowMeta != null) {
                 for (int i = 0; i < rowMeta.size(); i++) {
                   IValueMeta valueMeta = rowMeta.getValueMeta(i);
 
-                  TreeItem item = new TreeItem(parentItem, SWT.NULL);
+                  TreeItem item = new TreeItem(wTreeItemFields, SWT.NULL);
                   item.setImage(GuiResource.getInstance().getImage(valueMeta));
                   item.setText(valueMeta.getName());
                   item.setData(valueMeta);
@@ -944,9 +982,43 @@ public class ExpressionEditor extends Composite
             });
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The events of the text, like {@code SWT.Modify}, are listened on the text widget, the other
+   * events like {@code SWT.Dispose} or {@code SWT.Resize} on the editor itself.
+   */
   @Override
   public void addListener(int eventType, Listener listener) {
-    wViewer.getTextWidget().addListener(eventType, listener);
+    if (isTextEvent(eventType)) {
+      wViewer.getTextWidget().addListener(eventType, listener);
+    } else {
+      super.addListener(eventType, listener);
+    }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void removeListener(int eventType, Listener listener) {
+    if (isTextEvent(eventType)) {
+      wViewer.getTextWidget().removeListener(eventType, listener);
+    } else {
+      super.removeListener(eventType, listener);
+    }
+  }
+
+  /**
+   * Checks if an event is an event of the text widget, the text widget must be created.
+   *
+   * @param eventType the type of event
+   * @return true if the event is listened on the text widget
+   */
+  private boolean isTextEvent(int eventType) {
+    return wViewer != null
+        && switch (eventType) {
+          case SWT.Modify, SWT.Verify, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut -> true;
+          default -> false;
+        };
   }
 
   @Override
@@ -963,19 +1035,14 @@ public class ExpressionEditor extends Composite
 
     String expression = event.getDocument().get();
     try {
-      IExpressionContext context;
-      if (rowMeta == null) {
-        context = new ExpressionContext(variables);
-      } else {
-        context = new RowExpressionContext(variables, rowMeta);
-      }
-
-      IExpression.of(context, expression);
+      IExpression.of(createExpressionContext(), expression);
     } catch (ParseExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
       annotationModel.addAnnotation(annotation, new Position(e.getPosition(), 0));
-    } catch (ExpressionException e) {
-      Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
+    } catch (RuntimeException e) {
+      // An ExpressionException, or an unexpected error, must not break the editing
+      Annotation annotation =
+          new Annotation(ANNOTATION_ERROR_TYPE, false, String.valueOf(e.getMessage()));
       annotationModel.addAnnotation(annotation, new Position(0, 0));
     }
 
