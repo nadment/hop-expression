@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Locale;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionContext;
@@ -61,7 +62,7 @@ public class ToBinaryFunction extends Function {
 
     if (format != null) {
       // Normalize pattern
-      format = format.toUpperCase();
+      format = format.toUpperCase(Locale.ROOT);
 
       switch (format) {
         case "HEX" -> {

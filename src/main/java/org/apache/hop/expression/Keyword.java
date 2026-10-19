@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import java.util.Locale;
 import java.util.Set;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -91,6 +92,6 @@ public class Keyword {
    */
   public static boolean is(@Nullable String name) {
     if (name == null) return false;
-    return WORDS.contains(name.toUpperCase());
+    return WORDS.contains(name.toUpperCase(Locale.ROOT));
   }
 }

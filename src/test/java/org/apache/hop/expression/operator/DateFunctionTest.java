@@ -25,6 +25,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.TimeZone;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ErrorCode;
@@ -36,9 +37,11 @@ import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.Isolated;
 
 @TestInstance(PER_CLASS)
 @Execution(CONCURRENT)
@@ -1446,5 +1449,26 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.INVALID_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  /**
+   * The name of the day of the week does not depend on the default locale. Isolated because the
+   * default locale is shared by the tests running in parallel.
+   */
+  @Nested
+  @Isolated
+  class DayOfWeekWithDefaultLocale {
+    @Test
+    void turkish() throws Exception {
+      Locale locale = Locale.getDefault();
+      try {
+        // With a Turkish locale, 'friday' would be uppercased to 'FRİDAY'
+        Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+        evalEquals("Next_Day(DATE '2021-06-15', 'friday')", LocalDate.of(2021, Month.JUNE, 18));
+        evalEquals("Previous_Day(DATE '2021-06-15', 'friday')", LocalDate.of(2021, Month.JUNE, 11));
+      } finally {
+        Locale.setDefault(locale);
+      }
+    }
   }
 }

@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import org.apache.hop.expression.operator.BitAndFunction;
 import org.apache.hop.expression.operator.BitOrFunction;
 import org.apache.hop.expression.operator.BitXorFunction;
@@ -51,7 +52,9 @@ import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Isolated;
 
 public class ExpressionParserTest extends ExpressionTest {
 
@@ -439,5 +442,29 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("Cast('123.1' as INTEGER(4,2)", ErrorCode.SCALE_NOT_SUPPORTED);
     evalFails("Cast('TRUE' as BoolEAN(4)", ErrorCode.PRECISION_NOT_SUPPORTED);
     evalFails("Cast('2023-12-31' as DATE(10)", ErrorCode.PRECISION_NOT_SUPPORTED);
+  }
+
+  /**
+   * Function names, reserved words, data types and time units do not depend on the default locale.
+   * Isolated because the default locale is shared by the tests running in parallel.
+   */
+  @Nested
+  @Isolated
+  class NameWithDefaultLocale {
+    @Test
+    void turkish() throws Exception {
+      Locale locale = Locale.getDefault();
+      try {
+        // With a Turkish locale, 'i' would be uppercased to 'İ' and the names not recognized
+        Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+        evalEquals("initcap('hop')", "Hop");
+        evalTrue("'a' is not null");
+        evalTrue("'a' in ('a','b')");
+        evalEquals("cast('12' as integer)", 12L);
+        evalEquals("extract(minute from timestamp '2019-01-01 15:28:59')", 28L);
+      } finally {
+        Locale.setDefault(locale);
+      }
+    }
   }
 }

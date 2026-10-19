@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import lombok.Getter;
 import org.apache.hop.core.row.IValueMeta;
@@ -129,7 +130,7 @@ public class Field extends Identifier {
 
     throw new ExpressionException(
         ErrorCode.CONVERSION_ERROR,
-        valueMeta.getTypeDesc().toUpperCase(),
+        valueMeta.getTypeDesc().toUpperCase(Locale.ROOT),
         AnyType.ANY,
         row[ordinal]);
   }
@@ -240,7 +241,10 @@ public class Field extends Identifier {
       // Ignore
     }
     throw new ExpressionException(
-        ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), clazz, row[ordinal]);
+        ErrorCode.CONVERSION_ERROR,
+        valueMeta.getTypeDesc().toUpperCase(Locale.ROOT),
+        clazz,
+        row[ordinal]);
   }
 
   @Override

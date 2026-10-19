@@ -15,6 +15,7 @@
 
 package org.apache.hop.expression.util;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -235,7 +236,7 @@ public final class Regexp {
    */
   private static String toCharacterClass(String name, String pattern, int index)
       throws ExpressionException {
-    return switch (name.toLowerCase()) {
+    return switch (name.toLowerCase(Locale.ROOT)) {
         // Alphabetic characters
       case "alpha" -> "\\p{Alpha}";
 

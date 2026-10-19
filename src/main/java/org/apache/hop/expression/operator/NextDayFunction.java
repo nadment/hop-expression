@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Locale;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -53,7 +54,7 @@ public class NextDayFunction extends Function {
 
     DayOfWeek dayofweek;
     try {
-      dayofweek = DayOfWeek.valueOf(dow.toUpperCase());
+      dayofweek = DayOfWeek.valueOf(dow.toUpperCase(Locale.ROOT));
     } catch (Exception e) {
       throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, dow);
     }

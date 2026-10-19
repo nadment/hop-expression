@@ -16,6 +16,7 @@ package org.apache.hop.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.Getter;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.TypeName;
@@ -361,7 +362,7 @@ public class ExpressionLexer {
             while (position < source.length()) {
               c = source.charAt(position++);
               if (c == '"') {
-                String value = source.substring(start + 1, position - 1).toUpperCase();
+                String value = source.substring(start + 1, position - 1).toUpperCase(Locale.ROOT);
                 return new Token(Id.IDENTIFIER, start, position, value);
               }
             }
@@ -548,7 +549,7 @@ public class ExpressionLexer {
           }
 
           String identifier = source.substring(start, position);
-          String name = identifier.toUpperCase();
+          String name = identifier.toUpperCase(Locale.ROOT);
 
           // Function is follow by a parenthesis
           if (c == '(') {

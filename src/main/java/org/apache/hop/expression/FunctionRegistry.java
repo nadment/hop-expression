@@ -16,6 +16,7 @@ package org.apache.hop.expression;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
@@ -58,7 +59,7 @@ public class FunctionRegistry {
   public static @Nullable Function getFunction(@Nullable String name) {
     if (name == null) return null;
 
-    return functions.get(name.toUpperCase());
+    return functions.get(name.toUpperCase(Locale.ROOT));
   }
 
   public static Set<String> getFunctionNames() {
@@ -138,7 +139,7 @@ public class FunctionRegistry {
     if (name == null) return;
 
     // Names are case-insensitive, see getFunction
-    name = name.toUpperCase();
+    name = name.toUpperCase(Locale.ROOT);
 
     if (functions.containsKey(name)) {
       log.logError("Function ''{0}'' already registered", name);
@@ -161,7 +162,7 @@ public class FunctionRegistry {
   public static @Nullable Function unregister(@Nullable String name) {
     if (name == null) return null;
 
-    Function function = functions.remove(name.toUpperCase());
+    Function function = functions.remove(name.toUpperCase(Locale.ROOT));
     if (function == null) {
       log.logError("Function ''{0}'' not registered", name);
     }

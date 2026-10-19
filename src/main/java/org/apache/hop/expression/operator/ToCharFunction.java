@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.Locale;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionContext;
@@ -107,7 +108,7 @@ public class ToCharFunction extends Function {
 
       // Normalize pattern
       if (pattern != null) {
-        pattern = pattern.toUpperCase();
+        pattern = pattern.toUpperCase(Locale.ROOT);
       }
 
       return switch (pattern) {
