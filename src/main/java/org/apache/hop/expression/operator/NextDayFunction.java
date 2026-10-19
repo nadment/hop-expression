@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -59,6 +60,10 @@ public class NextDayFunction extends Function {
       throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, dow);
     }
 
-    return value.with(TemporalAdjusters.next(dayofweek));
+    try {
+      return value.with(TemporalAdjusters.next(dayofweek));
+    } catch (DateTimeException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
@@ -123,7 +124,11 @@ public class LastDayFunction extends Function {
     }
 
     // Adjust the date, the time is kept
-    return value.with(adjuster);
+    try {
+      return value.with(adjuster);
+    } catch (DateTimeException e) {
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 
   private static TemporalAdjuster lastDayOfYear(int year) {

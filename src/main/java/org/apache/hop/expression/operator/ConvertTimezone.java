@@ -16,8 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -51,13 +54,21 @@ public class ConvertTimezone extends Function {
 
       if (value == null) return null;
 
-      return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
+      try {
+        return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
+      } catch (DateTimeException e) {
+        throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      }
     } else {
       ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
       ZonedDateTime value = operands[1].getValue(ZonedDateTime.class);
 
       if (value == null) return null;
-      return value.withZoneSameInstant(zoneTarget);
+      try {
+        return value.withZoneSameInstant(zoneTarget);
+      } catch (DateTimeException e) {
+        throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      }
     }
   }
 }

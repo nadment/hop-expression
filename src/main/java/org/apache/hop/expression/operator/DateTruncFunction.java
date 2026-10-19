@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -54,15 +55,20 @@ public class DateTruncFunction extends Function {
     ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
     if (datetime == null) return null;
 
-    return switch (unit) {
-      case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
-      case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
-      case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);
-      case MILLISECOND -> datetime.truncatedTo(ChronoUnit.MILLIS);
-      case MICROSECOND -> datetime.truncatedTo(ChronoUnit.MICROS);
-      case NANOSECOND -> datetime.truncatedTo(ChronoUnit.NANOS);
-      default -> truncateToDayOrMore(unit, datetime);
-    };
+    try {
+      return switch (unit) {
+        case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
+        case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
+        case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);
+        case MILLISECOND -> datetime.truncatedTo(ChronoUnit.MILLIS);
+        case MICROSECOND -> datetime.truncatedTo(ChronoUnit.MICROS);
+        case NANOSECOND -> datetime.truncatedTo(ChronoUnit.NANOS);
+        default -> truncateToDayOrMore(unit, datetime);
+      };
+    } catch (DateTimeException e) {
+      // The first year of the decade can be before the first supported year
+      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+    }
   }
 
   /** Truncates to a unit of a day or more, so the time is always reset to midnight. */

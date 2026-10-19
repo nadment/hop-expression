@@ -897,6 +897,10 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Date_Trunc(123, DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
+    // A result out of the supported range raises an error
+    evalFails("Date_Trunc(DECADE, MAKE_DATE(-999999999,6,1))", ErrorCode.DATE_OVERFLOW);
+    evalNull("TRY(Date_Trunc(DECADE, MAKE_DATE(-999999999,6,1)))");
+
     // Truncate timestamp
     evalEquals(
         "Date_Trunc(DAY, TIMESTAMP '2020-05-25 23:59:59')", LocalDate.of(2020, Month.MAY, 25));
@@ -1123,6 +1127,13 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("CONVERT_TIMEZONE(Null, '2023-01-01 14:00:00')", ErrorCode.INVALID_TIMEZONE);
+
+    // A result out of the supported range raises an error
+    evalFails(
+        "CONVERT_TIMEZONE('+18:00', MAKE_TIMESTAMP(999999999,12,31,23,0,0))",
+        ErrorCode.DATE_OVERFLOW);
+    evalFails(
+        "CONVERT_TIMEZONE('+18:00', '-18:00', MAKE_DATE(-999999999,1,1))", ErrorCode.DATE_OVERFLOW);
 
     // evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE
     // 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
@@ -1353,6 +1364,9 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("First_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("First_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
+
+    // A result out of the supported range raises an error
+    evalFails("First_Day(MAKE_DATE(-999999999,6,1), DECADE)", ErrorCode.DATE_OVERFLOW);
   }
 
   @Test
@@ -1418,6 +1432,12 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Last_Day(FIELD_DATE, 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Last_Day(FIELD_DATE, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
+
+    // A result out of the supported range raises an error
+    evalFails("Last_Day(MAKE_DATE(999999999,6,1), MILLENNIUM)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,6,1), CENTURY)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,12,31), ISOYEAR)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,12,31), WEEK)", ErrorCode.DATE_OVERFLOW);
   }
 
   @Test
@@ -1446,6 +1466,9 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Next_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Next_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // A result out of the supported range raises an error
+    evalFails("Next_Day(MAKE_DATE(999999999,12,31), 'monday')", ErrorCode.DATE_OVERFLOW);
   }
 
   @Test
@@ -1472,6 +1495,9 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Previous_Day(FIELD_DATE, 'bad')", ErrorCode.INVALID_ARGUMENT);
     evalFails("Previous_Day(FIELD_DATE, HOUR)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // A result out of the supported range raises an error
+    evalFails("Previous_Day(MAKE_DATE(-999999999,1,1), 'monday')", ErrorCode.DATE_OVERFLOW);
   }
 
   /**
