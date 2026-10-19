@@ -47,6 +47,7 @@ Date
 * The last day of a week is Sunday, `WEEK` and `ISOWEEK` are equivalent.
 * An ISO year ends on the Sunday of its last ISO week, which is the week 52 or 53.
 * A decade ends in a year ending with 9, a century and a millennium in a year ending with 00 (the 21st century ends in 2100).
+* Before year 1, the decade -1 ends in year -1 and the century 0 in year 0, as with xref:date_trunc.adoc["DATE_TRUNC",role=fun].
 * Raises an error if unit is not supported.
 * The time of a timestamp is kept.
 * Returns NULL if date is NULL. The unit cannot be NULL.

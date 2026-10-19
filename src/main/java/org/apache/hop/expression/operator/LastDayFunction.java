@@ -105,7 +105,7 @@ public class LastDayFunction extends Function {
               // Last year of the period starting at the same first year as DATE_TRUNC
             case MILLENNIUM -> lastDayOfYear(DateTruncFunction.firstYear(year, 1000) + 999);
             case CENTURY -> lastDayOfYear(DateTruncFunction.firstYear(year, 100) + 99);
-            case DECADE -> lastDayOfYear(year - year % 10 + 9);
+            case DECADE -> lastDayOfYear(DateTruncFunction.firstYearOfDecade(year) + 9);
             case YEAR -> TemporalAdjusters.lastDayOfYear();
               // Sunday of the last ISO week
             case ISOYEAR ->

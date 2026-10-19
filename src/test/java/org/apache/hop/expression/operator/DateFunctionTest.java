@@ -860,6 +860,13 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Date_Trunc(MILLENNIUM, DATE '2000-12-31')", LocalDate.of(1001, Month.JANUARY, 1));
     evalEquals("Date_Trunc(MILLENNIUM, DATE '2001-01-01')", LocalDate.of(2001, Month.JANUARY, 1));
     evalEquals("Date_Trunc(CENTURY, DATE '0001-06-01')", LocalDate.of(1, Month.JANUARY, 1));
+    // Before year 1, the same period as EXTRACT, the result is never after the date
+    evalEquals("Date_Trunc(DECADE, MAKE_DATE(-1,6,1))", LocalDate.of(-10, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(DECADE, MAKE_DATE(-10,6,1))", LocalDate.of(-10, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, MAKE_DATE(0,6,1))", LocalDate.of(-99, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, MAKE_DATE(-50,6,1))", LocalDate.of(-99, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, MAKE_DATE(-100,6,1))", LocalDate.of(-199, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(MILLENNIUM, MAKE_DATE(-50,6,1))", LocalDate.of(-999, Month.JANUARY, 1));
     evalEquals("Date_Trunc(DECADE, DATE '2021-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
     evalEquals("Date_Trunc(YEAR, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
     evalEquals("Date_Trunc(MONTH, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));
@@ -1315,6 +1322,9 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("First_Day(DATE '2000-06-15', CENTURY)", LocalDate.of(1901, Month.JANUARY, 1));
     evalEquals("First_Day(DATE '2020-02-27', MILLENNIUM)", LocalDate.of(2001, Month.JANUARY, 1));
     evalEquals("First_Day(DATE '2000-06-15', MILLENNIUM)", LocalDate.of(1001, Month.JANUARY, 1));
+    // Before year 1, the same period as EXTRACT
+    evalEquals("First_Day(MAKE_DATE(-1,6,1), DECADE)", LocalDate.of(-10, Month.JANUARY, 1));
+    evalEquals("First_Day(MAKE_DATE(-50,6,1), CENTURY)", LocalDate.of(-99, Month.JANUARY, 1));
 
     // The time of a timestamp is kept
     evalEquals(
@@ -1375,6 +1385,10 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Last_Day(DATE '2000-06-15', CENTURY)", LocalDate.of(2000, Month.DECEMBER, 31));
     evalEquals("Last_Day(DATE '2020-02-27', MILLENNIUM)", LocalDate.of(3000, Month.DECEMBER, 31));
     evalEquals("Last_Day(DATE '2000-06-15', MILLENNIUM)", LocalDate.of(2000, Month.DECEMBER, 31));
+    // Before year 1, the same period as EXTRACT
+    evalEquals("Last_Day(MAKE_DATE(-1,6,1), DECADE)", LocalDate.of(-1, Month.DECEMBER, 31));
+    evalEquals("Last_Day(MAKE_DATE(-50,6,1), CENTURY)", LocalDate.of(0, Month.DECEMBER, 31));
+    evalEquals("Last_Day(MAKE_DATE(-100,6,1), CENTURY)", LocalDate.of(-100, Month.DECEMBER, 31));
 
     // The time of a timestamp is kept
     evalEquals(

@@ -103,7 +103,7 @@ public class FirstDayFunction extends Function {
               // Same first year as DATE_TRUNC
             case MILLENNIUM -> firstDayOfYear(DateTruncFunction.firstYear(year, 1000));
             case CENTURY -> firstDayOfYear(DateTruncFunction.firstYear(year, 100));
-            case DECADE -> firstDayOfYear(year - year % 10);
+            case DECADE -> firstDayOfYear(DateTruncFunction.firstYearOfDecade(year));
             case YEAR -> TemporalAdjusters.firstDayOfYear();
               // Monday of the first ISO week
             case ISOYEAR ->

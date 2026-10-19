@@ -72,7 +72,7 @@ public class DateTruncFunction extends Function {
     return switch (unit) {
       case MILLENNIUM -> day.withDayOfYear(1).withYear(firstYear(day.getYear(), 1000));
       case CENTURY -> day.withDayOfYear(1).withYear(firstYear(day.getYear(), 100));
-      case DECADE -> day.withDayOfYear(1).minusYears(day.getYear() % 10);
+      case DECADE -> day.withDayOfYear(1).withYear(firstYearOfDecade(day.getYear()));
       case YEAR ->
           // First day of the year
           day.withDayOfYear(1);
@@ -94,13 +94,25 @@ public class DateTruncFunction extends Function {
 
   /**
    * Returns the first year of the century or millennium that contains a year. As with EXTRACT, the
-   * first century and millennium start in year 1, so the 21st century starts in 2001.
+   * first century and millennium start in year 1, so the 21st century starts in 2001. Before year
+   * 1, the century 0 goes from year -99 to year 0, the century -1 from year -199 to year -100.
    *
    * @param year the year
    * @param size the number of years, 100 for a century or 1000 for a millennium
    * @return the first year
    */
   static int firstYear(int year, int size) {
-    return (year > 0) ? (year - 1) / size * size + 1 : year - year % size;
+    return (year > 0) ? (year - 1) / size * size + 1 : year / size * size - size + 1;
+  }
+
+  /**
+   * Returns the first year of the decade that contains a year. As with EXTRACT, the decade is the
+   * year divided by 10 rounded down, so the decade -1 goes from year -10 to year -1.
+   *
+   * @param year the year
+   * @return the first year
+   */
+  static int firstYearOfDecade(int year) {
+    return Math.floorDiv(year, 10) * 10;
   }
 }

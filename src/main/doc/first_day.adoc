@@ -47,6 +47,7 @@ Date
 * A week starts on Monday, `WEEK` and `ISOWEEK` are equivalent.
 * An ISO year starts on the Monday of the week that contains January 4.
 * A decade starts in a year ending with 0, a century and a millennium in a year ending with 1 (the 21st century starts in 2001), as with xref:date_trunc.adoc["DATE_TRUNC",role=fun].
+* Before year 1, the decade -1 starts in year -10 and the century 0 in year -99, as with xref:date_trunc.adoc["DATE_TRUNC",role=fun].
 * Raises an error if unit is not supported.
 * The time of a timestamp is kept.
 * Returns NULL if date is NULL. The unit cannot be NULL.
