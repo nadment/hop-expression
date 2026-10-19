@@ -214,6 +214,9 @@ public class ExpressionEditor extends Composite
   /** The tree item of the fields or arguments, or null if the mode has no fields. */
   private TreeItem wTreeItemFields;
 
+  /** The configuration of the viewer, which highlights the fields. */
+  private ExpressionEditorConfiguration configuration;
+
   public ExpressionEditor(
       Composite parent,
       int style,
@@ -312,8 +315,7 @@ public class ExpressionEditor extends Composite
 
     // In the Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
     // Use Ctrl-ALT-SPACE instead.
-    final int modifierKeys =
-        "zh".equals(System.getProperty("user.language")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
+    final int modifierKeys = isAlternateContentAssistShortcut() ? SWT.CTRL | SWT.ALT : SWT.CTRL;
 
     widget.setTabs(4);
     widget.addListener(SWT.FocusIn, e -> hideHelp());
@@ -395,8 +397,7 @@ public class ExpressionEditor extends Composite
     Document document = new Document();
     document.addDocumentListener(this);
 
-    ExpressionEditorConfiguration configuration =
-        new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
+    configuration = new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
     IDocumentPartitioner partitioner =
         new FastPartitioner(
             new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(wViewer));
@@ -405,6 +406,16 @@ public class ExpressionEditor extends Composite
 
     wViewer.setDocument(document, new AnnotationModel());
     wViewer.configure(configuration);
+  }
+
+  /**
+   * Checks if the content assist uses Ctrl+Alt+Space instead of Ctrl+Space. In the Chinese window,
+   * Ctrl+Space is reserved by system for input Chinese character.
+   *
+   * @return true if the shortcut is Ctrl+Alt+Space
+   */
+  static boolean isAlternateContentAssistShortcut() {
+    return "zh".equals(System.getProperty("user.language"));
   }
 
   protected void createTree(final Composite parent) {
@@ -429,6 +440,7 @@ public class ExpressionEditor extends Composite
     toolbar.pack();
 
     // Tree widget
+    // TODO: in 2.20 use HopTree
     wTree = new Tree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
     wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
     wTree.addListener(SWT.MouseDoubleClick, this::onTreeDoubleClick);
@@ -965,6 +977,10 @@ public class ExpressionEditor extends Composite
               if (wTreeItemFields.isDisposed()) {
                 return;
               }
+
+              // Highlight the fields in the expression
+              configuration.setRowMeta(rowMeta);
+              wViewer.invalidateTextPresentation();
 
               // Remove existing fields
               wTreeItemFields.removeAll();

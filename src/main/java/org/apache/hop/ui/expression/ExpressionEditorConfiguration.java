@@ -16,17 +16,19 @@
 package org.apache.hop.ui.expression;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Keyword;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -60,6 +62,7 @@ import org.eclipse.swt.graphics.Color;
 
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
+  private static final Class<?> PKG = ExpressionEditor.class;
   private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
   private static final int MAX_UNDO_LEVEL = 25;
 
@@ -67,12 +70,33 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private final ExpressionMode mode;
   private final CompletableFuture<IRowMeta> futurRowMeta;
 
+  /** The names of the fields, case-sensitive, empty until the row meta is known. */
+  private Set<String> fieldNames = Set.of();
+
   public ExpressionEditorConfiguration(
       IVariables variables, CompletableFuture<IRowMeta> futurRowMeta, ExpressionMode mode) {
     super();
     this.variables = variables;
     this.futurRowMeta = futurRowMeta;
     this.mode = mode;
+  }
+
+  /**
+   * Sets the fields to highlight in the expression, the viewer must invalidate its text
+   * presentation to apply them.
+   *
+   * @param rowMeta the fields, or null if they are unknown
+   */
+  public void setRowMeta(IRowMeta rowMeta) {
+    Set<String> names = new HashSet<>();
+    if (rowMeta != null) {
+      for (IValueMeta valueMeta : rowMeta.getValueMetaList()) {
+        if (valueMeta != null && !Utils.isEmpty(valueMeta.getName())) {
+          names.add(valueMeta.getName());
+        }
+      }
+    }
+    this.fieldNames = names;
   }
 
   @Override
@@ -123,7 +147,11 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     assistant.setContextInformationPopupBackground(GuiResource.getInstance().getColorBackground());
 
     assistant.setStatusLineVisible(true);
-    assistant.setStatusMessage("Press 'Ctrl+Space' to show variables");
+    assistant.setStatusMessage(
+        BaseMessages.getString(
+            PKG,
+            "ExpressionEditor.ContentAssist.Status",
+            ExpressionEditor.isAlternateContentAssistShortcut() ? "Ctrl+Alt+Space" : "Ctrl+Space"));
     return assistant;
   }
 
@@ -157,16 +185,12 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
         new Token(new TextAttribute(resource.getColor(255, 127, 80), null, SWT.BOLD));
     Token keyword = new Token(new TextAttribute(resource.getColor(30, 144, 255)));
     Token function = new Token(new TextAttribute(resource.getColor(148, 0, 211)));
-    Token string = new Token(new TextAttribute(resource.getColor(8, 154, 0)));
     Token number = new Token(new TextAttribute(resource.getColorOrange()));
     Token extra = new Token(new TextAttribute(resource.getColor(255, 0, 255)));
     Token variable = new Token(new TextAttribute(resource.getColorBlack(), null, SWT.BOLD));
     Token undefined = new Token(new TextAttribute(resource.getColorBlack()));
 
     List<IRule> rules = new ArrayList<>();
-
-    // Add rule for string
-    rules.add(new SingleLineRule("'", "'", string, '\'', false));
 
     // Add rule for variables
     rules.add(new SingleLineRule("${", "}", variable));
@@ -183,35 +207,13 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // Add rule for operator
     rules.add(new OperatorRule(keyword));
 
-    // Add case-sensitive rule for identifier without double quote
-    if (futurRowMeta != null) {
-      WordRule rule = new WordRule(new IdentifierDetector(), Token.UNDEFINED, false);
-      try {
-        IRowMeta rowMeta = futurRowMeta.get();
-        if (rowMeta != null) {
-          for (IValueMeta vm : rowMeta.getValueMetaList()) {
-            String name = vm != null ? vm.getName() : null;
-            if (name != null && !name.isEmpty()) {
-              rule.addWord(name, identifier);
-            }
-          }
-        }
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      } catch (ExecutionException e) {
-        // Ignore
-      }
-      rules.add(rule);
-    }
+    // Add case-sensitive rule for identifier without double quote, the fields are checked when
+    // the text is scanned because they are known after the editor is created
+    rules.add(
+        new NameRule(new IdentifierDetector(), name -> fieldNames.contains(name), identifier));
 
-    // Add case-insensitive rule for reserved world and function name
-    // If word not found use Token.WHITESPACE to signal problem
+    // Add case-insensitive rule for reserved world, data type and time unit
     WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
-    for (String name : FunctionRegistry.getFunctionNames()) {
-      if (!name.isEmpty()) {
-        rule.addWord(name, function);
-      }
-    }
     for (String word : Keyword.get()) {
       if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
       else rule.addWord(word, keyword);
@@ -227,6 +229,13 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       }
     }
     rules.add(rule);
+
+    // Add case-insensitive rule for function name, after the reserved words that have priority.
+    // The functions are checked when the text is scanned, a user-defined function can be created
+    // after the editor.
+    rules.add(
+        new NameRule(
+            new WordDetector(), name -> FunctionRegistry.getFunction(name) != null, function));
 
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules.toArray(new IRule[0]));
