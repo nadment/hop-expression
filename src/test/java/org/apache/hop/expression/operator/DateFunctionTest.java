@@ -25,13 +25,19 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.IntervalType;
@@ -1504,6 +1510,37 @@ class DateFunctionTest extends ExpressionTest {
    * The name of the day of the week does not depend on the default locale. Isolated because the
    * default locale is shared by the tests running in parallel.
    */
+  @Nested
+  @Isolated
+  class DateFieldWithDefaultTimeZone {
+    @Test
+    void daysBetweenAcrossDaylightSavingTime() throws Exception {
+      // The default time zone is global, restore it so that the other tests are not affected
+      TimeZone defaultTimeZone = TimeZone.getDefault();
+      try {
+        // A date field holds the midnight of the system time zone, UTC+1 in winter, UTC+2 in summer
+        ZoneId paris = ZoneId.of("Europe/Paris");
+        TimeZone.setDefault(TimeZone.getTimeZone(paris));
+
+        IRowMeta rowMeta = new RowMeta();
+        rowMeta.addValueMeta(new ValueMetaDate("START_DATE"));
+        rowMeta.addValueMeta(new ValueMetaDate("END_DATE"));
+        RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);
+        context.setRow(
+            new Object[] {
+              Date.from(LocalDate.of(2015, 12, 15).atStartOfDay(paris).toInstant()),
+              Date.from(LocalDate.of(2019, 4, 23).atStartOfDay(paris).toInstant())
+            });
+
+        evalEquals(context, "Days_Between(START_DATE, END_DATE)", 1225L);
+        evalEquals(context, "Days_Between(DATE '2015-12-15', END_DATE)", 1225L);
+        evalEquals(context, "Day(START_DATE)", 15L);
+      } finally {
+        TimeZone.setDefault(defaultTimeZone);
+      }
+    }
+  }
+
   @Nested
   @Isolated
   class DayOfWeekWithDefaultLocale {

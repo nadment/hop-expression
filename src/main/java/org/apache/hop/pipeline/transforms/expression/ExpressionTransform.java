@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -164,7 +165,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
     return true;
   }
 
-  public Object processValue(IExpression expression, IValueMeta meta)
+  public static Object processValue(IExpression expression, IValueMeta meta)
       throws HopException, ExpressionException {
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
@@ -185,7 +186,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           if (date == null) {
             return null;
           }
-          return Date.from(date.toInstant());
+          // The same local date-time in the system time zone, as a date field is read
+          return Date.from(date.toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant());
         }
       case IValueMeta.TYPE_TIMESTAMP:
         {
@@ -193,7 +195,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           if (date == null) {
             return null;
           }
-          return Timestamp.from(date.toInstant());
+          // The same local date-time in the system time zone, as a timestamp field is read
+          return Timestamp.valueOf(date.toLocalDateTime());
         }
       case IValueMeta.TYPE_BIGNUMBER:
         return expression.getValue(BigDecimal.class);

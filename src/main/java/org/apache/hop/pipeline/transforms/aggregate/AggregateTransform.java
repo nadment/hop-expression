@@ -17,6 +17,7 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,7 +65,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return null;
     }
     if (value instanceof ZonedDateTime dt) {
-      return Date.from(dt.toInstant());
+      // The same local date-time in the system time zone, as a date field is read
+      return Date.from(dt.toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant());
     }
     throw new IllegalArgumentException(
         ErrorCode.UNSUPPORTED_CONVERSION.message(value, TypeName.fromValue(value), DateType.DATE));
