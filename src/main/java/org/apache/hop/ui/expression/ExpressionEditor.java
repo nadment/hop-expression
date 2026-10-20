@@ -623,7 +623,6 @@ public class ExpressionEditor extends Composite
       Arrays.sort(names);
 
       VariableRegistry variableRegistry = VariableRegistry.getInstance();
-      treeItemVariable.removeAll();
       for (String name : names) {
         boolean isDeprecated = variableRegistry.getDeprecatedVariableNames().contains(name);
 
@@ -937,7 +936,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
 
-  /** Clears the selection and moves the caret to the start of the expression. */
+  /** Clears the selection, the caret stays in place. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_UNSELECT_ALL,
@@ -950,7 +949,7 @@ public class ExpressionEditor extends Composite
       label = "i18n::ExpressionEditor.Menu.UnselectAll.Label",
       image = "ui/images/unselect-all.svg")
   public void unselectAll() {
-    wViewer.setSelectedRange(0, 0);
+    wViewer.setSelectedRange(getCaretPosition(), 0);
   }
 
   /** Undoes the last change of the expression. */
