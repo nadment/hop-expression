@@ -1,0 +1,127 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+:documentationPath: /pipeline/transforms/
+:language: en_US
+:description: The Expression transform calculates fields with expressions written in a SQL-like language.
+
+:page-engines: Hop Engine=yes
+
+= image:transforms/icons/expression.svg[Expression transform Icon, role="image-doc-icon"] Expression
+
+== Description
+
+The Expression transform calculates fields with expressions written in a SQL-like language, made of literal values, field names, operators and functions.
+
+Each expression creates a new field, or replaces an input field with the same name.
+
+== Usage
+
+Add a line for each field to calculate, with the name of the field, its expression and the type of its value.
+
+Click the button of the expression column to open the expression editor.
+The editor lists the input fields, the operators, the functions and the variables, highlights the syntax, completes the names with kbd:[Ctrl+Space] and underlines the errors of the expression.
+
+=== Input fields only
+
+The expressions only read the input fields, with their input type:
+
+* A field replaced by an expression keeps its input value and its input type for all the expressions.
+* An expression cannot use the result of another expression of the same transform.
+To reuse a result, calculate it in a previous transform, or repeat the sub-expression: a sub-expression used several times is evaluated only once per row, see <<shared-subexpressions>>.
+
+For example, with an input field `A` of type Integer and the value `21`:
+
+[options="header"]
+|===
+|Name|Expression|Type|Result
+|A|A * 2|Integer|42
+|B|A + 1|Integer|22, the input value of `A` is used
+|C|B * 2|Integer|Error, `B` is not an input field
+|===
+
+A replaced field can change its type, the expression reads it with its input type.
+For example, an input field `AMOUNT` of type String with the value `'12.5'` is replaced by a Number with the expression `TO_NUMBER(AMOUNT)`.
+
+=== Variables
+
+The variables are resolved in the expression before it is compiled, for example `AMOUNT * ${RATE}`.
+
+== Optimization
+
+The expressions are compiled and optimized once, with the first row, so their readability has no cost when the rows are processed.
+The button *Evaluate or simplify expression* of the toolbar of the expression editor shows the optimized expression.
+
+=== Literals calculated once
+
+The parts of an expression made only of literal values and deterministic functions are calculated once, when the expression is compiled, and not for each row.
+The operands are reordered to group the literal values:
+
+[options="header"]
+|===
+|Expression|Optimized expression
+|1 + PRICE + 3|4 + PRICE
+|2 * PRICE * 3|6 * PRICE
+|PRICE * ${RATE}|1.2 * PRICE, with the variable `RATE` set to `1.2`
+|===
+
+A variable is resolved before the expression is compiled, so it is a literal value calculated once.
+
+[[shared-subexpressions]]
+=== Sub-expressions shared between lines
+
+A sub-expression found several times, in one expression or in the expressions of several lines of the transform, is evaluated only once per row, and its value is reused.
+
+For example, with these lines, `UPPER(TRIM(NAME))` is evaluated once per row for the three fields:
+
+[options="header"]
+|===
+|Name|Expression
+|NAME_UPPER|UPPER(TRIM(NAME))
+|INITIAL|LEFT(UPPER(TRIM(NAME)), 1)
+|IS_ADMIN|UPPER(TRIM(NAME)) = 'ADMIN'
+|===
+
+* Only the deterministic sub-expressions are shared: `RANDOM()` or `UUID()` return a new value each time they are called.
+* A shared sub-expression is still evaluated only when it is needed: in a branch of a `CASE` that is not taken, it is not evaluated.
+* As the expressions only read the input fields, a shared sub-expression gives the same value for all the lines.
+
+== Options
+
+[options="header"]
+|===
+|Option|Description
+|Transform name|Name of the transform, this name has to be unique in a single pipeline.
+|Name|Name of the field to calculate.
+A field with the name of an input field replaces it.
+A line without name is ignored, and a field can be calculated by only one expression; the names are not case-sensitive.
+|Expression|The expression that calculates the value of the field.
+|Type|The type of the field, the result of the expression is converted to this type.
+With the type None, the expression is ignored and the field is null.
+|Length|The length of the field.
+|Precision|The precision of the field.
+|===
+
+== Errors
+
+* The verification of the pipeline compiles the expressions with the input fields, and reports an empty expression, an invalid expression, or a field calculated by several expressions.
+* When the pipeline runs, the expressions are compiled with the first row.
+An invalid expression, a field calculated by several expressions, or an error while evaluating an expression stops the pipeline with an error.
+
+== Metadata injection support
+
+All fields of this transform support metadata injection.
+You can use this transform with ETL Metadata Injection to pass metadata to your pipeline at runtime.

@@ -83,10 +83,12 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           data.outputRowMeta, this.getTransformName(), null, null, this, metadataProvider);
       data.expressions = new IExpression[data.outputRowMeta.size()];
 
-      data.context = new RowExpressionContext(this, data.outputRowMeta);
+      // The expressions read the input row with the type of the input fields, a replaced field
+      // keeps its input value and the result of another expression is not available
+      data.context = new RowExpressionContext(this, getInputRowMeta());
 
-      // The fields modified in the row when the expressions are evaluated
-      BitSet modifiedOrdinals = new BitSet();
+      // The fields computed by the expressions, to detect a field computed twice
+      BitSet computedOrdinals = new BitSet();
 
       // For all fields expressions
       for (ExpressionField field : meta.getFields()) {
@@ -97,7 +99,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         int index = data.outputRowMeta.indexOfValue(field.getName());
 
         // A field computed by several expressions would evaluate only the last one
-        if (modifiedOrdinals.get(index)) {
+        if (computedOrdinals.get(index)) {
           logError(
               BaseMessages.getString(
                   PKG, "ExpressionTransform.Exception.DuplicateField", field.getName()));
@@ -106,7 +108,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           setOutputDone();
           return false;
         }
-        modifiedOrdinals.set(index);
+        computedOrdinals.set(index);
 
         String source = field.getExpression();
 
@@ -137,8 +139,9 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         }
       }
 
-      // Evaluate once per row the sub-expressions common to several fields
-      CommonSubexpressionEliminator.eliminate(data.context, data.expressions, modifiedOrdinals);
+      // Evaluate once per row the sub-expressions common to several fields, the input row read by
+      // the expressions is not modified while they are evaluated
+      CommonSubexpressionEliminator.eliminate(data.context, data.expressions, new BitSet());
     }
 
     String name = null;
@@ -148,8 +151,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       // output values
       Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
 
-      // Use output row as context, so second expression can use result from the first
-      data.context.setRow(outputRowValues);
+      // The expressions read the input row, their results are written in the output row
+      data.context.setRow(row);
 
       for (ExpressionField field : meta.getFields()) {
         name = field.getName();

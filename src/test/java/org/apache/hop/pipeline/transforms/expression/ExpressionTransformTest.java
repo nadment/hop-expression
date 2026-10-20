@@ -34,6 +34,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.IExpression;
@@ -78,15 +79,27 @@ class ExpressionTransformTest {
   }
 
   private static ExpressionField createField(String name, String expression) {
+    return createField(name, expression, "Integer");
+  }
+
+  private static ExpressionField createField(String name, String expression, String type) {
     ExpressionField field = new ExpressionField();
     field.setName(name);
     field.setExpression(expression);
-    field.setType("Integer");
+    field.setType(type);
     return field;
   }
 
+  /** Creates the transform with the input row {@code A = 21}. */
   private static OneRowExpressionTransform createTransform(ExpressionField... fields)
       throws Exception {
+    IRowMeta inputRowMeta = new RowMeta();
+    inputRowMeta.addValueMeta(new ValueMetaInteger("A"));
+    return createTransform(inputRowMeta, new Object[] {21L}, fields);
+  }
+
+  private static OneRowExpressionTransform createTransform(
+      IRowMeta inputRowMeta, Object[] input, ExpressionField... fields) throws Exception {
     HopEnvironment.init();
 
     ExpressionMeta meta = new ExpressionMeta();
@@ -98,13 +111,46 @@ class ExpressionTransformTest {
     TransformMeta transformMeta = new TransformMeta("expression", meta);
     pipelineMeta.addTransform(transformMeta);
 
-    IRowMeta inputRowMeta = new RowMeta();
-    inputRowMeta.addValueMeta(new ValueMetaInteger("A"));
     OneRowExpressionTransform transform =
-        new OneRowExpressionTransform(pipelineMeta, transformMeta, new Object[] {21L});
+        new OneRowExpressionTransform(pipelineMeta, transformMeta, input);
     transform.setInputRowMeta(inputRowMeta);
     assertTrue(transform.init());
     return transform;
+  }
+
+  @Test
+  void replacedFieldIsReadWithItsInputType() throws Exception {
+    IRowMeta inputRowMeta = new RowMeta();
+    inputRowMeta.addValueMeta(new ValueMetaString("AMOUNT"));
+    OneRowExpressionTransform transform =
+        createTransform(
+            inputRowMeta,
+            new Object[] {"12.5"},
+            createField("AMOUNT", "TO_NUMBER(AMOUNT)", "Number"));
+
+    assertTrue(transform.processRow());
+    assertEquals(0, transform.getErrors());
+    assertEquals(12.5D, transform.output[0]);
+  }
+
+  @Test
+  void resultOfAnotherExpressionIsNotAvailable() throws Exception {
+    OneRowExpressionTransform transform =
+        createTransform(createField("R", "A*2"), createField("S", "R+1"));
+
+    // R is not an input field, the second expression doesn't compile
+    assertFalse(transform.processRow());
+    assertEquals(1, transform.getErrors());
+  }
+
+  @Test
+  void replacedFieldKeepsItsInputValueForTheOtherExpressions() throws Exception {
+    OneRowExpressionTransform transform =
+        createTransform(createField("A", "A*2"), createField("B", "A+1"));
+
+    assertTrue(transform.processRow());
+    assertEquals(42L, transform.output[0]);
+    assertEquals(22L, transform.output[1]);
   }
 
   @Test
