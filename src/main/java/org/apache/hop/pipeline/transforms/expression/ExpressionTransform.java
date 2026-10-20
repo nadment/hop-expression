@@ -27,6 +27,7 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.CommonSubexpressionEliminator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -89,7 +90,22 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
       // For all fields expressions
       for (ExpressionField field : meta.getFields()) {
+        // A field without name is not in the output row structure, it is ignored
+        if (Utils.isEmpty(field.getName())) {
+          continue;
+        }
         int index = data.outputRowMeta.indexOfValue(field.getName());
+
+        // A field computed by several expressions would evaluate only the last one
+        if (modifiedOrdinals.get(index)) {
+          logError(
+              BaseMessages.getString(
+                  PKG, "ExpressionTransform.Exception.DuplicateField", field.getName()));
+          setErrors(1);
+          stopAll();
+          setOutputDone();
+          return false;
+        }
         modifiedOrdinals.set(index);
 
         String source = field.getExpression();
@@ -137,6 +153,9 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
       for (ExpressionField field : meta.getFields()) {
         name = field.getName();
+        if (Utils.isEmpty(name)) {
+          continue;
+        }
         int index = data.outputRowMeta.indexOfValue(name);
 
         IExpression expression = data.expressions[index];

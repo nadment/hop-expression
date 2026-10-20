@@ -19,6 +19,7 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +56,27 @@ public class ExpressionMetaTest {
     // Only the warning about the missing input fields, the expression is valid
     assertEquals(1, remarks.size());
     assertEquals(ICheckResult.TYPE_RESULT_WARNING, remarks.getFirst().getType());
+  }
+
+  @Test
+  public void testCheckDuplicateField() {
+    ExpressionMeta meta = new ExpressionMeta();
+    meta.setDefault();
+    for (String name : new String[] {"result", "other", "RESULT"}) {
+      ExpressionField field = new ExpressionField();
+      field.setName(name);
+      field.setExpression("1+2");
+      meta.getFields().add(field);
+    }
+
+    List<ICheckResult> remarks = new ArrayList<>();
+    meta.check(
+        remarks, null, null, null, new String[] {"input"}, null, null, new Variables(), null);
+
+    // The warning about the missing input fields, and the error about the field computed twice,
+    // the names are case-insensitive
+    assertEquals(2, remarks.size());
+    assertEquals(ICheckResult.TYPE_RESULT_ERROR, remarks.get(1).getType());
+    assertTrue(remarks.get(1).getText().contains("RESULT"));
   }
 }

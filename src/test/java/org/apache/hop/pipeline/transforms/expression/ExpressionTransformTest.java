@@ -19,25 +19,112 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+import org.apache.hop.core.HopEnvironment;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.pipeline.PipelineMeta;
+import org.apache.hop.pipeline.engines.local.LocalPipelineEngine;
+import org.apache.hop.pipeline.transform.TransformMeta;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
 @Isolated
 class ExpressionTransformTest {
+
+  /** Serves one input row and keeps the output row, without the row sets of a pipeline. */
+  static final class OneRowExpressionTransform extends ExpressionTransform {
+    private Object[] input;
+    private Object[] output;
+
+    OneRowExpressionTransform(
+        PipelineMeta pipelineMeta, TransformMeta transformMeta, Object[] input) {
+      super(
+          transformMeta,
+          (ExpressionMeta) transformMeta.getTransform(),
+          new ExpressionData(),
+          0,
+          pipelineMeta,
+          new LocalPipelineEngine(pipelineMeta));
+      this.input = input;
+    }
+
+    @Override
+    public Object[] getRow() {
+      Object[] row = input;
+      input = null;
+      return row;
+    }
+
+    @Override
+    public void putRow(IRowMeta rowMeta, Object[] row) {
+      output = row;
+    }
+  }
+
+  private static ExpressionField createField(String name, String expression) {
+    ExpressionField field = new ExpressionField();
+    field.setName(name);
+    field.setExpression(expression);
+    field.setType("Integer");
+    return field;
+  }
+
+  private static OneRowExpressionTransform createTransform(ExpressionField... fields)
+      throws Exception {
+    HopEnvironment.init();
+
+    ExpressionMeta meta = new ExpressionMeta();
+    meta.setDefault();
+    meta.getFields().addAll(List.of(fields));
+
+    // The transform must be in the pipeline before it is created
+    PipelineMeta pipelineMeta = new PipelineMeta();
+    TransformMeta transformMeta = new TransformMeta("expression", meta);
+    pipelineMeta.addTransform(transformMeta);
+
+    IRowMeta inputRowMeta = new RowMeta();
+    inputRowMeta.addValueMeta(new ValueMetaInteger("A"));
+    OneRowExpressionTransform transform =
+        new OneRowExpressionTransform(pipelineMeta, transformMeta, new Object[] {21L});
+    transform.setInputRowMeta(inputRowMeta);
+    assertTrue(transform.init());
+    return transform;
+  }
+
+  @Test
+  void fieldWithoutNameIsIgnored() throws Exception {
+    OneRowExpressionTransform transform =
+        createTransform(createField(null, "1+1"), createField("R", "A*2"));
+
+    assertTrue(transform.processRow());
+    assertEquals(0, transform.getErrors());
+    assertEquals(42L, transform.output[1]);
+  }
+
+  @Test
+  void fieldComputedTwiceFails() throws Exception {
+    OneRowExpressionTransform transform =
+        createTransform(createField("R", "A*2"), createField("R", "A*3"));
+
+    assertFalse(transform.processRow());
+    assertEquals(1, transform.getErrors());
+  }
 
   @Test
   void dateAndTimestampFieldsAreWrittenUnchanged() throws Exception {

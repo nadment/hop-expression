@@ -18,6 +18,8 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.hop.core.CheckResult;
@@ -152,7 +154,20 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
     // Check expression, without input fields if the previous transform is unknown
     RowExpressionContext context =
         new RowExpressionContext(variables, (prev == null) ? new RowMeta() : prev);
+
+    // The names of the fields are case-insensitive, like in the row structure
+    Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     for (ExpressionField field : this.fields) {
+
+      // A field computed by several expressions fails when the pipeline runs
+      if (!Utils.isEmpty(field.getName()) && !names.add(field.getName())) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "ExpressionMeta.CheckResult.DuplicateField", field.getName()),
+                transformMeta));
+      }
 
       if (Utils.isEmpty(field.getExpression())) {
         remarks.add(
