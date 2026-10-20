@@ -1,0 +1,100 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+:documentationPath: /pipeline/transforms/
+:language: en_US
+:description: The Route transform sends each row to a target transform according to conditions written as expressions.
+
+:page-engines: Hop Engine=yes
+
+= image:transforms/icons/route.svg[Route transform Icon, role="image-doc-icon"] Route
+
+== Description
+
+The Route transform sends each row to a target transform according to conditions written as expressions in a SQL-like language.
+
+The rows are not modified, they are only sent to a target transform.
+
+== Usage
+
+Add a route for each condition, with the condition and the target transform of the rows that match it.
+The target transforms must be connected with a hop from this transform; when a hop is created, choose to create a new target or to set the default target.
+
+Click the button of the condition column to open the expression editor.
+The editor lists the input fields, the operators, the functions and the variables, highlights the syntax, completes the names with kbd:[Ctrl+Space] and underlines the errors of the condition.
+
+=== Order of the routes
+
+For each row, the conditions are evaluated in the order of the routes:
+
+* The row is sent to the target of the first route whose condition is true, the next conditions are not evaluated.
+A row is sent to only one target, even if several conditions are true.
+* A condition that is false or NULL does not match, the next route is evaluated.
+* A row that matches no condition is sent to the default target transform.
+Without default target transform, the row is ignored.
+
+Several routes can send the rows to the same target transform.
+
+For example, with an input field `AMOUNT`:
+
+[options="header"]
+|===
+|Condition|Target transform
+|AMOUNT > 1000|Large
+|AMOUNT > 100|Medium
+|AMOUNT IS NOT NULL|Small
+|===
+
+A row with `AMOUNT` equal to `5000` matches the first two conditions and is only sent to `Large`.
+A row with a NULL `AMOUNT` matches no condition, it is sent to the default target transform, or ignored without default target.
+
+=== Variables
+
+The variables are resolved in the condition before it is compiled, for example `AMOUNT > ${THRESHOLD}`.
+
+== Options
+
+[options="header"]
+|===
+|Option|Description
+|Transform name|Name of the transform, this name has to be unique in a single pipeline.
+|Condition|The condition of the route, an expression that returns a Boolean.
+A number is also accepted, zero is false and the other values are true.
+|Target transform|The transform that receives the rows matching the condition.
+|Default target transform to use when all conditions are false|The optional transform that receives the rows matching no condition.
+Without default target transform, these rows are ignored.
+|===
+
+== Optimization
+
+The conditions are compiled and optimized once, with the first row, so their readability has no cost when the rows are processed.
+
+* The parts of a condition made only of literal values and deterministic functions are calculated once, when the condition is compiled.
+For example, in `AMOUNT > 10 * 100`, the product `10 * 100` is calculated once and not for each row.
+* A sub-expression found several times, in one condition or in the conditions of several routes, is evaluated only once per row, and its value is reused.
+For example, with the conditions `UPPER(COUNTRY) = 'FR'` and `UPPER(COUNTRY) = 'DE'`, `UPPER(COUNTRY)` is evaluated by the first condition and its value is reused by the second one.
+Only the deterministic sub-expressions are shared: `RANDOM()` or `UUID()` return a new value each time they are called.
+
+== Errors
+
+* The verification of the pipeline reports a route without condition, an invalid condition, a condition that does not return a Boolean or a number, a route without valid target transform, or a default target transform that is not found.
+* When the pipeline runs, the conditions are compiled with the first row.
+An invalid condition, a missing target transform, or an error while evaluating a condition stops the pipeline with an error.
+
+== Metadata injection support
+
+All fields of this transform support metadata injection.
+You can use this transform with ETL Metadata Injection to pass metadata to your pipeline at runtime.

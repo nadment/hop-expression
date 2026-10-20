@@ -33,6 +33,7 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -95,8 +96,8 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
   public RouteMeta(RouteMeta meta) {
     this();
     this.defaultTargetTransformName = meta.defaultTargetTransformName;
-    for (Route route : this.routes) {
-      meta.routes.add(new Route(route));
+    for (Route route : meta.routes) {
+      this.routes.add(new Route(route));
     }
   }
 
@@ -154,7 +155,22 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
         remarks.add(cr);
       } else
         try {
-          IExpression.of(context, variables.resolve(route.getCondition()));
+          IExpression expression = IExpression.of(context, variables.resolve(route.getCondition()));
+
+          // The value of the condition must be converted to a Boolean without error
+          TypeName typeName = expression.getType().getName();
+          if (!typeName.isCoercible(TypeName.BOOLEAN)) {
+            remarks.add(
+                new CheckResult(
+                    ICheckResult.TYPE_RESULT_ERROR,
+                    BaseMessages.getString(
+                        PKG,
+                        "RouteMeta.CheckResult.ConditionNotBoolean",
+                        routeNumber,
+                        route.getTransformName(),
+                        typeName),
+                    transformMeta));
+          }
         } catch (Exception e) {
           remarks.add(
               new CheckResult(
@@ -185,8 +201,9 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
       routeNumber++;
     }
 
-    TransformMeta check = pipelineMeta.findTransform(this.getDefaultTargetTransformName());
-    if (check == null) {
+    // The default target is optional, without it the rows matching no condition are ignored
+    if (StringUtils.isNotEmpty(defaultTargetTransformName)
+        && pipelineMeta.findTransform(defaultTargetTransformName) == null) {
       cr =
           new CheckResult(
               ICheckResult.TYPE_RESULT_ERROR,
@@ -263,13 +280,12 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
   public void convertIOMetaToTransformNames() {
     // Update target transforms
     List<IStream> targetStreams = getTransformIOMeta().getTargetStreams();
+    // There is a stream for each route, even without target transform
     int index = 0;
     for (Route route : routes) {
-      if (route.getTransformName() != null) {
-        IStream stream = targetStreams.get(index++);
-        if (stream != null && stream.getTransformName() != null) {
-          route.setTransformName(stream.getTransformName());
-        }
+      IStream stream = targetStreams.get(index++);
+      if (route.getTransformName() != null && stream != null && stream.getTransformName() != null) {
+        route.setTransformName(stream.getTransformName());
       }
     }
 
@@ -335,6 +351,7 @@ public final class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData
               BaseMessages.getString(
                   PKG,
                   "RouteMeta.Route.SetTarget.Description",
+                  routes.size(),
                   Const.NVL(route.getCondition(), "")),
               StreamIcon.TARGET,
               stream.getTransformMeta().getName());

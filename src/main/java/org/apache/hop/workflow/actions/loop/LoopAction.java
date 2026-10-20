@@ -36,6 +36,7 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.HopMetadataPropertyType;
@@ -265,7 +266,18 @@ public class LoopAction extends ActionBase implements IAction {
     } else
       try {
         ExpressionContext context = new ExpressionContext(variables);
-        IExpression.of(context, variables.resolve(condition));
+        IExpression expression = IExpression.of(context, variables.resolve(condition));
+
+        // The value of the condition must be converted to a Boolean without error
+        TypeName typeName = expression.getType().getName();
+        if (!typeName.isCoercible(TypeName.BOOLEAN)) {
+          remarks.add(
+              new CheckResult(
+                  ICheckResult.TYPE_RESULT_ERROR,
+                  BaseMessages.getString(
+                      PKG, "LoopAction.CheckResult.LoopConditionNotBoolean", typeName),
+                  this));
+        }
       } catch (Exception e) {
         remarks.add(
             new CheckResult(
