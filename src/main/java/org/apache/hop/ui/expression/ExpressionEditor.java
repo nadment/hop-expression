@@ -92,6 +92,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextOperationTarget;
+import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.source.Annotation;
@@ -382,7 +383,8 @@ public class ExpressionEditor extends Composite
           public void dropAccept(DropTargetEvent event) {}
 
           public void drop(DropTargetEvent event) {
-            if (textTransfer.isSupportedType(event.currentDataType)) {
+            // A read-only editor accepts no drop
+            if (wViewer.isEditable() && textTransfer.isSupportedType(event.currentDataType)) {
               String str = (String) event.data;
               StyledText styledText = wViewer.getTextWidget();
 
@@ -732,6 +734,13 @@ public class ExpressionEditor extends Composite
     if (expression == null) return;
 
     wViewer.getDocument().set(expression);
+
+    // The loaded expression must not be undone
+    IUndoManager undoManager = wViewer.getUndoManager();
+    if (undoManager != null) {
+      undoManager.reset();
+    }
+    updateToolbar();
   }
 
   public String getSelectionText() {
@@ -1006,6 +1015,9 @@ public class ExpressionEditor extends Composite
               configuration.setRowMeta(rowMeta);
               wViewer.invalidateTextPresentation();
 
+              // Validate again, the fields were unresolved identifiers before
+              validate();
+
               // Remove existing fields
               wTreeItemFields.removeAll();
 
@@ -1066,6 +1078,12 @@ public class ExpressionEditor extends Composite
 
   @Override
   public void documentChanged(DocumentEvent event) {
+    validate();
+    updateToolbar();
+  }
+
+  /** Underlines the errors of the expression, compiled with the fields when they are known. */
+  private void validate() {
     // Remove all annotations
     IAnnotationModel annotationModel = wViewer.getAnnotationModel();
     Iterator<Annotation> iter = annotationModel.getAnnotationIterator();
@@ -1073,13 +1091,13 @@ public class ExpressionEditor extends Composite
       annotationModel.removeAnnotation(iter.next());
     }
 
-    String expression = event.getDocument().get();
+    IDocument document = wViewer.getDocument();
+    String expression = document.get();
     try {
       IExpression.of(createExpressionContext(), expression);
     } catch (ParseExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
-      annotationModel.addAnnotation(
-          annotation, findErrorPosition(event.getDocument(), e.getPosition()));
+      annotationModel.addAnnotation(annotation, findErrorPosition(document, e.getPosition()));
     } catch (RuntimeException e) {
       // An ExpressionException, or an unexpected error, must not break the editing.
       // Without position, the whole expression is underlined.
@@ -1087,8 +1105,6 @@ public class ExpressionEditor extends Composite
           new Annotation(ANNOTATION_ERROR_TYPE, false, String.valueOf(e.getMessage()));
       annotationModel.addAnnotation(annotation, new Position(0, expression.length()));
     }
-
-    updateToolbar();
   }
 
   /**
