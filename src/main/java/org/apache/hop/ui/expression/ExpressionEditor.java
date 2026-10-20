@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.hop.core.Props;
 import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.gui.plugin.key.GuiKeyboardShortcut;
@@ -218,7 +219,7 @@ public class ExpressionEditor extends Composite
   private GuiMenuWidgets contextMenuWidgets;
 
   /** The fields, set by the thread of the row meta future and read by the UI thread. */
-  private volatile IRowMeta rowMeta;
+  private final AtomicReference<IRowMeta> rowMeta = new AtomicReference<>();
 
   private Browser wBrowser;
   private SashForm wEditorSashForm;
@@ -1060,10 +1061,11 @@ public class ExpressionEditor extends Composite
    * @return the expression context
    */
   private IExpressionContext createExpressionContext() {
-    if (rowMeta == null) {
+    IRowMeta fields = rowMeta.get();
+    if (fields == null) {
       return new ExpressionContext(variables);
     }
-    return new RowExpressionContext(variables, rowMeta);
+    return new RowExpressionContext(variables, fields);
   }
 
   protected void onTreeExpandCollapseAll(boolean expanded) {
@@ -1085,7 +1087,7 @@ public class ExpressionEditor extends Composite
    * @param rowMeta the fields, or null if they are unknown
    */
   public void setRowMeta(final IRowMeta rowMeta) {
-    this.rowMeta = rowMeta;
+    this.rowMeta.set(rowMeta);
 
     // The row meta can be ready after the editor is closed, or the mode has no fields
     if (isDisposed() || wTreeItemFields == null) {
