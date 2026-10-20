@@ -17,7 +17,6 @@ package org.apache.hop.ui.expression;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,6 +100,7 @@ import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.AnnotationRulerColumn;
 import org.eclipse.jface.text.source.CompositeRuler;
 import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.LineNumberRulerColumn;
@@ -130,6 +130,10 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+/**
+ * Editor of an expression, with the syntax highlighting, the content assist, the errors underlined
+ * and a tree of the fields, operators, functions and variables to insert.
+ */
 @GuiPlugin
 public class ExpressionEditor extends Composite
     implements /*IFindReplaceTarget,*/ IDocumentListener {
@@ -212,7 +216,10 @@ public class ExpressionEditor extends Composite
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
   private GuiMenuWidgets contextMenuWidgets;
-  private IRowMeta rowMeta;
+
+  /** The fields, set by the thread of the row meta future and read by the UI thread. */
+  private volatile IRowMeta rowMeta;
+
   private Browser wBrowser;
   private SashForm wEditorSashForm;
 
@@ -222,6 +229,16 @@ public class ExpressionEditor extends Composite
   /** The configuration of the viewer, which highlights the fields. */
   private ExpressionEditorConfiguration configuration;
 
+  /**
+   * Creates the expression editor, with the tree of the elements and the help panel.
+   *
+   * @param parent the parent composite
+   * @param style the style of the editor
+   * @param variables the variables to list and resolve, or null
+   * @param mode the mode of the expression, which defines the elements available
+   * @param rowMetaFutur the future fields of the row, or null if they are set with {@link
+   *     #setRowMeta(IRowMeta)}
+   */
   public ExpressionEditor(
       Composite parent,
       int style,
@@ -330,7 +347,20 @@ public class ExpressionEditor extends Composite
           if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
             wViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
           }
-          if ((event.stateMask & SWT.MOD1) == 0 || (event.stateMask & SWT.MOD2) != 0) {
+          if ((event.stateMask & SWT.MOD1) == 0) {
+            return;
+          }
+          // The text widget has no undo, the shortcuts are handled here
+          if (event.keyCode == 'z') {
+            if ((event.stateMask & SWT.MOD2) != 0) {
+              redo();
+            } else {
+              undo();
+            }
+            event.doit = false;
+            return;
+          }
+          if ((event.stateMask & SWT.MOD2) != 0) {
             return;
           }
           if (event.keyCode == 'a') {
@@ -611,24 +641,23 @@ public class ExpressionEditor extends Composite
       }
     }
 
-    wTree.addMenuDetectListener(
-        event -> {
-          if (wTree.getSelectionCount() == 0) {
-            return;
-          }
-          TreeItem item = wTree.getSelection()[0];
-
-          if (item != null && item.getData() != null) {
-            // Context menu to display help
-            Menu menu = new Menu(wTree);
-            MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
-            menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label"));
-            menuItem.setImage(GuiResource.getInstance().getImageHelp());
-            menuItem.setData(item.getData());
-            menuItem.addListener(SWT.Selection, e -> showHelp(item.getData()));
-            menu.setVisible(true);
+    // Context menu to display help, created once and shown only for an element
+    Menu menu = new Menu(wTree);
+    MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
+    menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label"));
+    menuItem.setImage(GuiResource.getInstance().getImageHelp());
+    menuItem.addListener(
+        SWT.Selection,
+        e -> {
+          if (wTree.getSelectionCount() > 0) {
+            showHelp(wTree.getSelection()[0].getData());
           }
         });
+    wTree.setMenu(menu);
+    wTree.addMenuDetectListener(
+        event ->
+            event.doit =
+                wTree.getSelectionCount() > 0 && wTree.getSelection()[0].getData() != null);
   }
 
   protected void onTreeDoubleClick(Event event) {
@@ -665,10 +694,10 @@ public class ExpressionEditor extends Composite
    * @return the vertical ruler
    */
   protected IVerticalRuler createVerticalRuler() {
+    PropsUi props = PropsUi.getInstance();
     LineNumberRulerColumn lineNumberRulerColumn = new LineNumberRulerColumn();
 
-    boolean dark = PropsUi.getInstance().isDarkMode();
-    if (dark) {
+    if (props.isDarkMode()) {
       lineNumberRulerColumn.setForeground(new Color(this.getDisplay(), 130, 130, 130));
       lineNumberRulerColumn.setBackground(new Color(this.getDisplay(), 40, 40, 40));
     } else {
@@ -678,8 +707,7 @@ public class ExpressionEditor extends Composite
     // lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
     lineNumberRulerColumn.setFont(GuiResource.getInstance().getFontFixed());
 
-    PropsUi props = PropsUi.getInstance();
-    // Adapte annotation ruler to zoom factor
+    // Adapt the annotation ruler to the zoom factor
     AnnotationRulerColumn annotationRulerColumn =
         new AnnotationRulerColumn(
             (int) (ConstUi.SMALL_ICON_SIZE * props.getZoomFactor() + 2),
@@ -722,14 +750,29 @@ public class ExpressionEditor extends Composite
         });
   }
 
+  /**
+   * Checks if the expression can be edited.
+   *
+   * @return true if the expression is editable
+   */
   public boolean isEditable() {
     return wViewer.isEditable();
   }
 
+  /**
+   * Gets the source of the expression.
+   *
+   * @return the expression
+   */
   public String getText() {
     return wViewer.getDocument().get();
   }
 
+  /**
+   * Loads the source of the expression, which can't be undone.
+   *
+   * @param expression the expression, ignored if null
+   */
   public void setText(String expression) {
     if (expression == null) return;
 
@@ -743,30 +786,62 @@ public class ExpressionEditor extends Composite
     updateToolbar();
   }
 
+  /**
+   * Gets the selected text.
+   *
+   * @return the selected text, empty if there is no selection
+   */
   public String getSelectionText() {
     return wViewer.getTextWidget().getSelectionText();
   }
 
+  /**
+   * Gets the number of selected characters.
+   *
+   * @return the length of the selection
+   */
   public int getSelectionCount() {
     return wViewer.getTextWidget().getSelectionCount();
   }
 
+  /**
+   * Gets the position of the caret.
+   *
+   * @return the offset of the caret in the expression
+   */
   public int getCaretPosition() {
     return wViewer.getTextWidget().getCaretOffset();
   }
 
+  /**
+   * Moves the caret.
+   *
+   * @param position the offset of the caret in the expression
+   */
   public void setCaretPosition(int position) {
     wViewer.getTextWidget().setCaretOffset(position);
   }
 
+  /**
+   * Replaces the selection with the text, the caret does not move.
+   *
+   * @param text the text to insert
+   */
   public void insert(String text) {
     wViewer.getTextWidget().insert(text);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The focus is set on the text of the expression.
+   */
+  @Override
   public boolean setFocus() {
     return wViewer.getTextWidget().setFocus();
   }
 
+  /** Enables the items of the toolbar that apply to the state of the text. */
   public void updateToolbar() {
     boolean canUndo = wViewer.canDoOperation(ITextOperationTarget.UNDO);
     boolean canRedo = wViewer.canDoOperation(ITextOperationTarget.REDO);
@@ -786,6 +861,7 @@ public class ExpressionEditor extends Composite
     }
   }
 
+  /** Copies the selected text to the clipboard. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_COPY,
@@ -805,6 +881,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.COPY);
   }
 
+  /** Replaces the selection with the text of the clipboard. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_PASTE,
@@ -822,6 +899,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.PASTE);
   }
 
+  /** Moves the selected text to the clipboard. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_CUT,
@@ -839,6 +917,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.CUT);
   }
 
+  /** Selects the whole expression. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_SELECT_ALL,
@@ -858,6 +937,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
 
+  /** Clears the selection and moves the caret to the start of the expression. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_UNSELECT_ALL,
@@ -873,6 +953,7 @@ public class ExpressionEditor extends Composite
     wViewer.setSelectedRange(0, 0);
   }
 
+  /** Undoes the last change of the expression. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_UNDO,
@@ -890,6 +971,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.UNDO);
   }
 
+  /** Redoes the last undone change of the expression. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_REDO,
@@ -907,6 +989,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.REDO);
   }
 
+  /** Finds a text in the expression, not available yet. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_FIND,
@@ -927,6 +1010,7 @@ public class ExpressionEditor extends Composite
     // FindReplaceDialog.open(control.getShell(), this, false);
   }
 
+  /** Finds and replaces a text in the expression, not available yet. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_FIND_REPLACE,
@@ -945,6 +1029,7 @@ public class ExpressionEditor extends Composite
     // FindReplaceDialog.open(control.getShell(), this, true);
   }
 
+  /** Compiles the expression and shows its optimized form, or the error if it is invalid. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_OPTIMIZE,
@@ -987,15 +1072,19 @@ public class ExpressionEditor extends Composite
     wTree.setRedraw(false);
     for (TreeItem item : wTree.getItems()) {
       item.setExpanded(expanded);
-      if (item.getItemCount() > 0) {
-        for (TreeItem i : item.getItems()) {
-          i.setExpanded(expanded);
-        }
+      for (TreeItem i : item.getItems()) {
+        i.setExpanded(expanded);
       }
     }
     wTree.setRedraw(true);
   }
 
+  /**
+   * Sets the fields of the row, listed in the tree, highlighted and used to validate the
+   * expression. It can be called from any thread.
+   *
+   * @param rowMeta the fields, or null if they are unknown
+   */
   public void setRowMeta(final IRowMeta rowMeta) {
     this.rowMeta = rowMeta;
 
@@ -1073,23 +1162,34 @@ public class ExpressionEditor extends Composite
         };
   }
 
+  /** {@inheritDoc} */
   @Override
   public void documentAboutToBeChanged(DocumentEvent event) {}
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Underlines the errors of the changed expression and updates the toolbar.
+   */
   @Override
   public void documentChanged(DocumentEvent event) {
     validate();
-    updateToolbar();
+
+    // The undo manager, notified after this listener, records the change later
+    getDisplay()
+        .asyncExec(
+            () -> {
+              if (!isDisposed()) {
+                updateToolbar();
+              }
+            });
   }
 
   /** Underlines the errors of the expression, compiled with the fields when they are known. */
   private void validate() {
-    // Remove all annotations
+    // Remove all annotations at once, the model is the AnnotationModel set with the document
     IAnnotationModel annotationModel = wViewer.getAnnotationModel();
-    Iterator<Annotation> iter = annotationModel.getAnnotationIterator();
-    while (iter.hasNext()) {
-      annotationModel.removeAnnotation(iter.next());
-    }
+    ((IAnnotationModelExtension) annotationModel).removeAllAnnotations();
 
     IDocument document = wViewer.getDocument();
     String expression = document.get();
