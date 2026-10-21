@@ -19,6 +19,8 @@ package org.apache.hop.pipeline.transforms.aggregate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.hop.core.CheckResult;
@@ -27,6 +29,7 @@ import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
@@ -35,7 +38,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.expression.Kind;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
@@ -130,16 +132,9 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     //
     IRowExpressionContext context = new RowExpressionContext(variables, rowMeta);
     for (AggregateField field : aggregateFields) {
-      // Compile expression
+      // Compile expression, with the variables resolved like the transform
       try {
-        IExpression expression = IExpression.of(context, field.getExpression());
-        if (!expression.isKind(Kind.CALL)) {
-          throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
-        }
-        Operator operator = ((Call) expression).getOperator();
-        if (!(operator instanceof AggregateFunction)) {
-          throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
-        }
+        IExpression expression = compileAggregate(context, variables, field.getExpression());
 
         IValueMeta valueMeta = Types.createValueMeta(field.getName(), expression.getType());
         valueMeta.setOrigin(transformName);
@@ -183,5 +178,74 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
               BaseMessages.getString(PKG, "AggregateMeta.CheckResult.NoInputError"),
               transformMeta));
     }
+
+    // A field written several times is renamed in the output row, the names are not case-sensitive
+    Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    for (GroupField field : groupFields) {
+      checkDuplicateName(remarks, transformMeta, names, field.getName());
+    }
+    for (AggregateField field : aggregateFields) {
+      checkDuplicateName(remarks, transformMeta, names, field.getName());
+    }
+
+    // Check the aggregate expressions, the fields of the input stream are required to compile them
+    IRowExpressionContext context =
+        (prev == null) ? null : new RowExpressionContext(variables, prev);
+    for (AggregateField field : aggregateFields) {
+      if (Utils.isEmpty(field.getExpression())) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "AggregateMeta.CheckResult.ExpressionEmpty", field.getName()),
+                transformMeta));
+      } else if (context != null) {
+        try {
+          compileAggregate(context, variables, field.getExpression());
+        } catch (ExpressionException e) {
+          remarks.add(
+              new CheckResult(
+                  ICheckResult.TYPE_RESULT_ERROR,
+                  BaseMessages.getString(
+                      PKG,
+                      "AggregateMeta.CheckResult.ExpressionError",
+                      field.getName(),
+                      e.getMessage()),
+                  transformMeta));
+        }
+      }
+    }
+  }
+
+  /** Reports an error if the name of a field of the output row is already used. */
+  private static void checkDuplicateName(
+      List<ICheckResult> remarks, TransformMeta transformMeta, Set<String> names, String name) {
+    if (!Utils.isEmpty(name) && !names.add(name)) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "AggregateMeta.CheckResult.DuplicateField", name),
+              transformMeta));
+    }
+  }
+
+  /**
+   * Compiles an aggregate expression, with the variables resolved like the transform.
+   *
+   * @param context the context with the input fields
+   * @param variables the variables to resolve in the expression
+   * @param source the aggregate expression
+   * @return the compiled expression, a call to an aggregate function
+   * @throws ExpressionException if the expression is invalid or is not a call to an aggregate
+   *     function
+   */
+  private static IExpression compileAggregate(
+      IRowExpressionContext context, IVariables variables, String source) {
+    IExpression expression = IExpression.of(context, variables.resolve(source));
+    if (!expression.isKind(Kind.CALL)
+        || !(((Call) expression).getOperator() instanceof AggregateFunction)) {
+      throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
+    }
+    return expression;
   }
 }

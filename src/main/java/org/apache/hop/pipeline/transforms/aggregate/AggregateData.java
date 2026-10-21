@@ -39,7 +39,6 @@ public final class AggregateData extends BaseTransformData implements ITransform
   public IRowMeta aggregateMeta;
   public IRowMeta inputRowMeta;
   public IRowMeta outputRowMeta;
-  public boolean newBatch;
 
   public AggregateData() {
     super();

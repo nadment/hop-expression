@@ -1,0 +1,150 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+:documentationPath: /pipeline/transforms/
+:language: en_US
+:description: The Aggregate transform groups rows and calculates aggregates written as expressions.
+
+:page-engines: Hop Engine=yes
+
+= image:transforms/icons/aggregate.svg[Aggregate transform Icon, role="image-doc-icon"] Aggregate
+
+== Description
+
+The Aggregate transform groups the rows by the values of group fields, and calculates for each group aggregates written as expressions language, for example `SUM(AMOUNT)` or `COUNT(DISTINCT CUSTOMER)`.
+
+The transform writes one row per group, made of the group fields followed by the aggregates.
+The other input fields are not written.
+
+== Usage
+
+Add the fields that make up the group, the button *Get Fields* adds all the input fields.
+Without group field, all the rows make up a single group.
+
+Add a line for each aggregate, with the name of the field and its expression.
+Click the button of the expression column to open the expression editor.
+
+=== Aggregate expressions
+
+An aggregate expression is a call to an aggregate function.
+Its arguments are expressions evaluated for each row, they can combine the input fields with operators and functions:
+
+[options="header"]
+|===
+|Expression|Result
+|SUM(AMOUNT)|Valid
+|SUM(PRICE * QUANTITY)|Valid, the product is calculated for each row
+|SUM(AMOUNT) / COUNT(*)|Error, the expression is not a call to an aggregate function
+|UPPER(MAX(NAME))|Error, the expression is not a call to an aggregate function
+|===
+
+To transform an aggregate, use a transform after the Aggregate transform, for example an Expression transform.
+
+The aggregate functions are:
+
+* xref:../../../any_value.adoc["ANY_VALUE",role=fun]
+* xref:../../../avg.adoc["AVG",role=fun]
+* xref:../../../count.adoc["COUNT",role=fun]
+* xref:../../../countif.adoc["COUNTIF",role=fun]
+* xref:../../../first_value.adoc["FIRST_VALUE",role=fun]
+* xref:../../../last_value.adoc["LAST_VALUE",role=fun]
+* xref:../../../listagg.adoc["LISTAGG",role=fun]
+* xref:../../../max.adoc["MAX",role=fun]
+* xref:../../../median.adoc["MEDIAN",role=fun]
+* xref:../../../min.adoc["MIN",role=fun]
+* xref:../../../nth_value.adoc["NTH_VALUE",role=fun]
+* xref:../../../percentile.adoc["PERCENTILE",role=fun]
+* xref:../../../stddev_pop.adoc["STDDEV_POP",role=fun]
+* xref:../../../stddev_samp.adoc["STDDEV_SAMP",role=fun]
+* xref:../../../sum.adoc["SUM",role=fun]
+* xref:../../../variance_pop.adoc["VARIANCE_POP",role=fun]
+* xref:../../../variance_samp.adoc["VARIANCE_SAMP",role=fun]
+
+The type of an aggregate field is the type returned by its function, for example Integer for `COUNT`, Number for `SUM` and `AVG`, and the type of the argument for `MIN` and `MAX`.
+
+=== Groups
+
+* The rows don't need to be sorted: the groups are kept in memory until the last row is received, so the memory used grows with the number of groups.
+* The order of the output rows is not guaranteed, sort them after the transform if needed.
+* The NULL values of a group field make up a group.
+
+For example, with the group field `COUNTRY` and the aggregates `TOTAL` = `SUM(AMOUNT)` and `ORDERS` = `COUNT(*)`:
+
+[options="header"]
+|===
+|COUNTRY|AMOUNT
+|FR|100
+|US|50
+|FR|20
+|NULL|10
+|===
+
+The transform writes:
+
+[options="header"]
+|===
+|COUNTRY|TOTAL|ORDERS
+|FR|120|2
+|US|50|1
+|NULL|10|1
+|===
+
+[[no-input-row]]
+=== No input row
+
+Without input row, the transform writes no row.
+
+With the option *Always give back a result row*, the transform writes one row: the group fields are NULL, `COUNT` is 0 and the other aggregates are NULL.
+
+=== NULL aggregates
+
+With the variable `HOP_AGGREGATION_ALL_NULLS_ARE_ZERO` set to `Y`, a NULL aggregate of type Integer or Number is replaced by 0, and a NULL aggregate of type String by an empty string.
+The aggregates of the other types stay NULL.
+
+=== Variables
+
+The variables are resolved in the expressions before they are compiled, for example `SUM(${AMOUNT_FIELD})`.
+
+== Options
+
+[options="header"]
+|===
+|Option|Description
+|Transform name|Name of the transform, this name has to be unique in a single pipeline.
+|Group field|The input fields that make up the group, written first in the output row.
+|Name|Name of the aggregate field.
+|Expression|The aggregate expression, a call to an aggregate function.
+|Always give back a result row|Writes one row when the transform receives no row, see <<no-input-row>>.
+|===
+
+== Optimization
+
+The aggregate expressions are compiled and optimized once, with the first row.
+
+The parts of the arguments made only of literal values and deterministic functions are calculated once, when the expression is compiled.
+For example, in `SUM(AMOUNT * ${RATE})`, the variable is a literal value and is not resolved for each row.
+
+== Errors
+
+* The verification of the pipeline reports a transform without input, an empty aggregate expression, and a field name used by several group fields or aggregates; the names are not case-sensitive.
+With the input fields, it compiles the aggregate expressions and reports an invalid expression, or an expression that is not a call to an aggregate function.
+* When the pipeline runs, the expressions are compiled with the first row.
+A group field that is not found, an invalid expression, an expression that is not a call to an aggregate function, or an error while calculating an aggregate stops the pipeline with an error.
+
+== Metadata injection support
+
+All fields of this transform support metadata injection.
+You can use this transform with ETL Metadata Injection to pass metadata to your pipeline at runtime.

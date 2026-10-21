@@ -60,7 +60,14 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
-  public Date convertToDate(final Object value) {
+  /**
+   * Converts the value of a date aggregate to the value of a date field.
+   *
+   * @param value the value of the aggregate, a ZonedDateTime or null
+   * @return the date at the same local date-time in the system time zone, or null
+   * @throws IllegalArgumentException if the value is not a ZonedDateTime
+   */
+  private static Date convertToDate(final Object value) {
     if (value == null) {
       return null;
     }
@@ -116,10 +123,10 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         data.groupIndex[index] = data.inputRowMeta.indexOfValue(fieldName);
         if (data.groupIndex[index] < 0) {
           logError(
-              BaseMessages.getString(
-                  PKG, "AggregateTransform.Exception.GroupFieldNotFound", fieldName));
+              BaseMessages.getString(PKG, "Aggregate.Exception.GroupFieldNotFound", fieldName));
           setErrors(1);
           stopAll();
+          setOutputDone();
           return false;
         }
 
@@ -136,7 +143,9 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
         // Compile expression
         try {
-          IValueMeta valueMeta = data.outputRowMeta.searchValueMeta(field.getName());
+          // The aggregates follow the group fields, an aggregate with the name of another field is
+          // renamed in the output row, so the value meta is found by its position
+          IValueMeta valueMeta = data.outputRowMeta.getValueMeta(data.groupMeta.size() + index);
           data.aggregateMeta.addValueMeta(valueMeta);
 
           IExpression expression = IExpression.of(data.context, source);
@@ -175,19 +184,34 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
     // Here is where we start to do the real work...
     //
-    if (row == null) { // no more input to be expected... (or none received in the first place)
-      handleLastOfGroup();
+    try {
+      if (row == null) { // no more input to be expected... (or none received in the first place)
+        handleLastOfGroup();
 
+        // The first row is still expected when the transform receives no row at all
+        if (first && meta.isAlwaysGivingBackOneRow()) {
+          putEmptyResult();
+        }
+
+        setOutputDone();
+        return false;
+      }
+
+      first = false;
+
+      processAggregate(row);
+    } catch (HopException | RuntimeException e) {
+      // An error while calculating an aggregate stops the transform, like an invalid expression
+      // The message of a Hop exception is logged without the messages of its causes
+      logError((e instanceof HopException he) ? he.getSuperMessage() : e.getMessage());
+      if (isDebug()) {
+        logError(Const.getStackTracker(e));
+      }
+      setErrors(1);
+      stopAll();
       setOutputDone();
       return false;
     }
-
-    if (first || data.newBatch) {
-      first = false;
-      data.newBatch = false;
-    }
-
-    processAggregate(row);
 
     if (checkFeedback(getLinesRead())) {
       if (isBasic()) {
@@ -217,11 +241,13 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         Object value = results[i];
 
         // Value meta doesn't support ZonedDateTime
-        int type = data.aggregateMeta.getValueMeta(i).getType();
-        if (type == IValueMeta.TYPE_DATE) {
-          value = convertToDate(value);
-        } else if (type == IValueMeta.TYPE_TIMESTAMP) {
-          value = convertToDate(value);
+        // The aggregates are never of type Timestamp, the expressions only have the type DATE
+        if (data.aggregateMeta.getValueMeta(i).getType() == IValueMeta.TYPE_DATE) {
+          try {
+            value = convertToDate(value);
+          } catch (IllegalArgumentException e) {
+            throw aggregateError(i, e);
+          }
         }
 
         outputRow[index++] = data.aggregateMeta.getValueMeta(i).convertToNormalStorageType(value);
@@ -229,27 +255,54 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
       putRow(data.outputRowMeta, outputRow);
     }
+  }
 
-    // If we need to give back one row ?
-    // This means we give back 0 for COUNT function, null for everything else
-    //
-    if (data.map.isEmpty() && meta.isAlwaysGivingBackOneRow()) {
-      Object[] outputRow = new Object[data.outputRowMeta.size()];
-      int index = 0;
-      for (int i = 0; i < data.groupMeta.size(); i++) {
-        outputRow[index++] = null;
-      }
-      for (int i = 0; i < data.aggregateMeta.size(); i++) {
-        Object value = null;
-
-        if (data.aggregates[i].getOperator().is(CountFunction.COUNT_ALL)) {
-          value = 0L;
-        }
-        outputRow[index++] = value;
-      }
-
-      putRow(data.outputRowMeta, outputRow);
+  /**
+   * Gives back one row when the transform receives no row: 0 for the COUNT function, null for
+   * everything else. A batch without row gives back no row.
+   */
+  private void putEmptyResult() throws HopException {
+    Object[] outputRow = new Object[data.outputRowMeta.size()];
+    int index = 0;
+    for (int i = 0; i < data.groupMeta.size(); i++) {
+      outputRow[index++] = null;
     }
+    for (int i = 0; i < data.aggregateMeta.size(); i++) {
+      Object value = null;
+
+      if (data.aggregates[i].getOperator().is(CountFunction.COUNT_ALL)) {
+        value = 0L;
+      }
+      outputRow[index++] = value;
+    }
+
+    putRow(data.outputRowMeta, outputRow);
+  }
+
+  /**
+   * Returns the error of an aggregate, with the name of its field and its expression to identify
+   * it. The message of an expression error, like a conversion error of an argument, is kept as is,
+   * the other errors are reported with the name of the function.
+   *
+   * @param index the index of the aggregate
+   * @param e the error of the aggregate function
+   * @return the error to log, its cause is the error of the aggregate function
+   */
+  private HopException aggregateError(int index, Exception e) {
+    String message =
+        (e instanceof ExpressionException)
+            ? e.getMessage()
+            : ErrorCode.CALL_FUNCTION_ERROR.message(
+                data.functions[index].getName(), e.getMessage());
+    AggregateField field = meta.getAggregateFields().get(index);
+    return new HopException(
+        BaseMessages.getString(
+            PKG,
+            "Aggregate.Exception.ExpressionError",
+            field.getName(),
+            field.getExpression(),
+            message),
+        e);
   }
 
   /**
@@ -273,24 +326,27 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       data.map.put(key, aggregators);
     }
 
-    try {
-
-      for (int i = 0; i < aggregators.length; i++) {
+    for (int i = 0; i < aggregators.length; i++) {
+      try {
         aggregators[i].process(data.aggregates[i].getOperands());
+      } catch (Exception e) {
+        throw aggregateError(i, e);
       }
-    } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.CALL_FUNCTION_ERROR, e.getMessage());
     }
   }
 
   /** Create new aggregate */
-  protected IAggregateProcessor[] createAggregate() {
+  protected IAggregateProcessor[] createAggregate() throws HopException {
 
     IAggregateProcessor[] processors = new IAggregateProcessor[data.functions.length];
 
     for (int i = 0; i < data.functions.length; i++) {
-      processors[i] =
-          data.functions[i].createProcessor(data.context, data.aggregates[i].getOperands());
+      try {
+        processors[i] =
+            data.functions[i].createProcessor(data.context, data.aggregates[i].getOperands());
+      } catch (Exception e) {
+        throw aggregateError(i, e);
+      }
     }
 
     return processors;
@@ -298,19 +354,22 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
   protected Object[] getAggregateResult(IAggregateProcessor[] aggregators) throws HopException {
     Object[] result = new Object[aggregators.length];
-    try {
-      for (int i = 0; i < aggregators.length; i++) {
+    for (int i = 0; i < aggregators.length; i++) {
+      try {
         Object value = aggregators[i].getValue();
 
         if (value == null && allNullsAreZero) {
           // seems all rows for min function was nulls...
+          // Only the numbers and the strings have a zero value, the other types stay NULL
           IValueMeta valueMeta = data.aggregateMeta.getValueMeta(i);
-          value = ValueDataUtil.getZeroForValueMetaType(valueMeta);
+          if (valueMeta.isNumeric() || valueMeta.isString()) {
+            value = ValueDataUtil.getZeroForValueMetaType(valueMeta);
+          }
         }
         result[i] = value;
+      } catch (Exception e) {
+        throw aggregateError(i, e);
       }
-    } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.CALL_FUNCTION_ERROR, e.getMessage());
     }
     return result;
   }
@@ -321,7 +380,6 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (super.init()) {
 
       allNullsAreZero = this.getVariableBoolean(Const.HOP_AGGREGATION_ALL_NULLS_ARE_ZERO, false);
-      // minNullIsValued = this.getVariableBoolean(Const.HOP_AGGREGATION_MIN_NULL_IS_VALUED, false);
       data.map = new HashMap<>(5000);
       return true;
     }
@@ -343,7 +401,5 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     // Clear the complete cache...
     //
     data.map.clear();
-
-    data.newBatch = true;
   }
 }
