@@ -67,7 +67,24 @@ public class SetVariableAction extends ActionBase implements IAction {
 
   public SetVariableAction(SetVariableAction other) {
     super(other.getName(), other.getDescription(), other.getPluginId());
-    this.variableDefinitions = other.getVariableDefinitions();
+    this.variableDefinitions = copyOf(other.getVariableDefinitions());
+  }
+
+  /** Returns a copy of the action, with copies of the variable definitions. */
+  @Override
+  public Object clone() {
+    SetVariableAction action = (SetVariableAction) super.clone();
+    action.variableDefinitions = copyOf(variableDefinitions);
+    return action;
+  }
+
+  /** Returns copies of the variable definitions, a copy can be changed without the original. */
+  private static List<SetVariableDefinition> copyOf(List<SetVariableDefinition> definitions) {
+    List<SetVariableDefinition> copies = new ArrayList<>();
+    for (SetVariableDefinition definition : definitions) {
+      copies.add(new SetVariableDefinition(definition));
+    }
+    return copies;
   }
 
   @Override
@@ -99,6 +116,12 @@ public class SetVariableAction extends ActionBase implements IAction {
         String name = definition.getName();
 
         try {
+          // A definition without scope, read from the metadata, can not be set
+          if (definition.getScope() == null) {
+            throw new HopWorkflowException(
+                BaseMessages.getString(PKG, "SetVariableAction.Error.ScopeIsMissing", name));
+          }
+
           IExpression expression =
               IExpression.of(new ExpressionContext(this), resolve(definition.getExpression()));
           String value = expression.getValue(String.class);
@@ -193,7 +216,8 @@ public class SetVariableAction extends ActionBase implements IAction {
                   "SetVariableAction.Error.UnableSetVariableWithExpression",
                   name,
                   definition.getExpression(),
-                  e.getMessage()));
+                  // The message of a Hop exception without the line breaks around it
+                  (e instanceof HopWorkflowException he) ? he.getSuperMessage() : e.getMessage()));
         }
       }
     } catch (RuntimeException e) {
@@ -221,6 +245,15 @@ public class SetVariableAction extends ActionBase implements IAction {
     // Check variable definition
     ExpressionContext context = new ExpressionContext(variables);
     for (SetVariableDefinition definition : this.variableDefinitions) {
+      if (definition.getScope() == null) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG, "SetVariableAction.CheckResult.ScopeIsMissing", definition.getName()),
+                this));
+      }
+
       if (Utils.isEmpty(definition.getName())) {
         remarks.add(
             new CheckResult(

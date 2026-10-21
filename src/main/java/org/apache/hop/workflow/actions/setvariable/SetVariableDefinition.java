@@ -42,4 +42,13 @@ public final class SetVariableDefinition {
     this.expression = value;
     this.scope = type;
   }
+
+  /**
+   * Creates a copy of a variable definition.
+   *
+   * @param other the definition to copy
+   */
+  public SetVariableDefinition(SetVariableDefinition other) {
+    this(other.name, other.expression, other.scope);
+  }
 }

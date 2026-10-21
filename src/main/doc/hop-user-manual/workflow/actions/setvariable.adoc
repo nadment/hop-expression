@@ -1,0 +1,93 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+:documentationPath: /workflow/actions/
+:language: en_US
+:description: The Set variables expression action sets variables with values calculated by expressions.
+
+= image:icons/set-variable.svg[Set variables expression action Icon, role="image-doc-icon"] Set variables expression
+
+== Description
+
+The Set variables expression action sets one or several variables, with values calculated by expressions written in a SQL-like language.
+
+== Usage
+
+Add a line for each variable, with its name, the expression that calculates its value, and the scope where the variable is set.
+Click the button of the expression column to open the expression editor.
+
+The lines are processed in their order: a line can use the variables set by the previous lines.
+
+=== Expressions
+
+An expression is made of literal values, operators, variables and xref:../../../functions.adoc[functions].
+The variables are resolved in the expression before it is compiled, so a variable used as a string is written between quotes:
+
+[options="header"]
+|===
+|Name|Expression|Value
+|COUNT|1 + 2|3
+|RATE|1.5 * 2|3
+|ENABLED|1 = 1|TRUE
+|START|DATE '2024-03-15'|2024-03-15
+|LABEL|UPPER('abc')|ABC
+|CODE|CONCAT('${LABEL}', '-', '${COUNT}')|ABC-3, with the variables set by the previous lines
+|===
+
+The value of the expression is converted to a string.
+A variable that is not set is not resolved, for example `'${UNKNOWN}'` gives `${UNKNOWN}`.
+
+An expression that returns NULL removes the variable.
+
+[[scope]]
+=== Scope
+
+The scope is where the variable is set:
+
+[options="header"]
+|===
+|Scope|Description
+|Current workflow|The workflow running the action.
+|Parent workflow|The workflow running the action and its parent workflow.
+The action fails for this variable if the workflow has no parent workflow.
+|Root workflow|The workflow running the action and all its parent workflows, up to the root workflow.
+|Java Virtual Machine|A system property of the Java Virtual Machine, and the workflow running the action and all its parent workflows.
+The variable is visible to all the workflows and pipelines running in the same Java Virtual Machine, for example on a Hop server.
+|===
+
+When the action runs again, for example in a loop, the variables it set in the current workflow are first cleared, and a parameter gets back its initial value.
+
+== Options
+
+[options="header"]
+|===
+|Option|Description
+|Action name|Name of the action, this name has to be unique in a single workflow.
+|Name|Name of the variable.
+|Expression|The expression that calculates the value of the variable.
+|Scope|Where the variable is set, see <<scope>>.
+|===
+
+== Result
+
+The action succeeds when all the variables are set.
+
+A line that fails is reported in the log with the name of the variable and its expression, the following lines are still processed, and the action fails with one error for each line that failed.
+
+== Errors
+
+* The verification of the workflow reports a line without variable name, without expression or without scope, and an invalid expression.
+* When the workflow runs, an invalid expression, an error while evaluating an expression, a line without scope, or a current or parent workflow that is not found for the scope fails the line.
