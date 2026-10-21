@@ -1,0 +1,83 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+:documentationPath: /pipeline/transforms/
+:language: en_US
+:description: The Where transform filters rows with a condition written as an expression.
+
+:page-engines: Hop Engine=yes
+
+= image:transforms/icons/where.svg[Where transform Icon, role="image-doc-icon"] Where
+
+== Description
+
+The Where transform filters rows with a condition written as an expression language.
+
+The transform keeps only the rows where the condition is true, or sends the rows to a TRUE and a FALSE target transform.
+The rows are not modified.
+
+== Usage
+
+When a hop is created from this transform, choose what it receives:
+
+* *Main output of transform*: the transform filters the rows, only the rows where the condition is true are sent to the next transforms.
+* *Result is TRUE* or *Result is FALSE*: the transform sends the rows where the condition is true to the TRUE target transform, and the other rows to the FALSE target transform.
+A transform can be the target of only one result: choosing it for one result removes it from the other.
+
+As soon as a TRUE or a FALSE target transform is chosen, the main output receives no row.
+
+Write the condition in the expression editor of the dialog.
+
+=== Result of the condition
+
+For each row, the condition is evaluated, a NULL condition is false:
+
+* Without TRUE or FALSE target transform, the row is sent to the main output when the condition is true, otherwise it is ignored.
+* With target transforms, the row is sent to the TRUE target transform when the condition is true, otherwise to the FALSE target transform.
+Without target transform for a result, or when the hop to the target transform is disabled, the rows with this result are ignored.
+
+For example, with an input field `AMOUNT` and the condition `AMOUNT > 1000`:
+
+[options="header"]
+|===
+|AMOUNT|Result|Without target|With target transforms
+|5000|TRUE|Main output|TRUE target transform
+|50|FALSE|Ignored|FALSE target transform
+|NULL|NULL|Ignored|FALSE target transform
+|===
+
+To keep the rows with a NULL value, handle the NULL value in the condition, for example `AMOUNT > 1000 OR AMOUNT IS NULL`.
+
+=== Variables
+
+The variables are resolved in the condition before it is compiled, for example `AMOUNT > ${THRESHOLD}`.
+
+== Options
+
+[options="header"]
+|===
+|Option|Description
+|Transform name|Name of the transform, this name has to be unique in a single pipeline.
+|Condition|The condition, an expression that returns a Boolean.
+A number is also accepted, zero is false and the other values are true.
+|===
+
+The main output and the TRUE and FALSE target transforms are set by the hops from this transform.
+
+== Metadata injection support
+
+All fields of this transform support metadata injection.
+You can use this transform with ETL Metadata Injection to pass metadata to your pipeline at runtime.

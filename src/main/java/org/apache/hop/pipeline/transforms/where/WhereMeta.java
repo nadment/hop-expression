@@ -20,7 +20,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.hop.core.CheckResult;
-import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.row.IRowMeta;
@@ -58,14 +57,20 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class; // for i18n purposes
 
-  /** The target transform name if condition evaluate to true */
+  /**
+   * The target transform name if condition evaluate to true. The name is kept in the target stream,
+   * this field only declares the metadata property.
+   */
   @HopMetadataProperty(
       key = "send_true_to",
       injectionKey = "TRUE_TARGET_TRANSFORM_NAME",
       injectionKeyDescription = "WhereMeta.Injection.SEND_TRUE_TRANSFORM")
   private String trueTransformName;
 
-  /** The target transform name if condition evaluate to false */
+  /**
+   * The target transform name if condition evaluate to false. The name is kept in the target
+   * stream, this field only declares the metadata property.
+   */
   @HopMetadataProperty(
       key = "send_false_to",
       injectionKey = "FALSE_TARGET_TRANSFORM_NAME",
@@ -135,8 +140,8 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
               transformMeta));
     }
 
-    // Check if the expression is valide
-    else
+    // Check if the expression is valide, the fields of the input stream are required
+    else if (prev != null)
       try {
         RowExpressionContext context = new RowExpressionContext(variables, prev);
         IExpression expression = IExpression.of(context, variables.resolve(getCondition()));
@@ -155,40 +160,78 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
         remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR, e.getMessage(), transformMeta));
       }
 
-    // Check if there is at least one target (true, false or error)
-    ITransformIOMeta transformIOMeta = getTransformIOMeta();
-    int target = 0;
-    for (IStream stream : transformIOMeta.getTargetStreams()) {
-      if (stream.getTransformName() != null) {
-        target++;
-      }
-    }
-    if (target == 0) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_WARNING,
-              "WhereMeta.CheckResult.CheckAtLeastOneTarget",
-              transformMeta));
-    }
+    // Without TRUE or FALSE target, the rows are sent to the main output: no target to check
   }
 
+  /**
+   * Returns the name of the transform receiving the rows where the condition is true.
+   *
+   * @return the name of the transform, or null without TRUE target
+   */
+  public String getTrueTransformName() {
+    return getTargetTransformName(getTransformIOMeta().getTargetStreams().getFirst());
+  }
+
+  /**
+   * Sets the name of the transform receiving the rows where the condition is true. The transform is
+   * found by {@link #searchInfoAndTargetTransforms(List)}.
+   *
+   * @param name the name of the transform
+   */
+  public void setTrueTransformName(String name) {
+    setTargetTransformName(getTransformIOMeta().getTargetStreams().getFirst(), name);
+  }
+
+  /**
+   * Returns the name of the transform receiving the rows where the condition is false or NULL.
+   *
+   * @return the name of the transform, or null without FALSE target
+   */
+  public String getFalseTransformName() {
+    return getTargetTransformName(getTransformIOMeta().getTargetStreams().get(1));
+  }
+
+  /**
+   * Sets the name of the transform receiving the rows where the condition is false or NULL. The
+   * transform is found by {@link #searchInfoAndTargetTransforms(List)}.
+   *
+   * @param name the name of the transform
+   */
+  public void setFalseTransformName(String name) {
+    setTargetTransformName(getTransformIOMeta().getTargetStreams().get(1), name);
+  }
+
+  /**
+   * Returns the name of the target transform of a stream: the transform selected for the hop, or
+   * the name read from the metadata until the transform is found.
+   */
+  private static String getTargetTransformName(IStream stream) {
+    String name = stream.getTransformName();
+    return name != null ? name : stream.getSubject();
+  }
+
+  /** Sets the name of the target transform of a stream, the transform is found later. */
+  private static void setTargetTransformName(IStream stream, String name) {
+    stream.setSubject(name);
+    stream.setTransformMeta(null);
+  }
+
+  /**
+   * The streams keep the names of the target transforms, they must not be reset. Hop GUI resets the
+   * Input/Output metadata after the dialog, which would lose the TRUE and FALSE targets.
+   */
   @Override
-  public void convertIOMetaToTransformNames() {
-    List<IStream> streams = getTransformIOMeta().getTargetStreams();
-    trueTransformName = Const.NVL(streams.getFirst().getTransformName(), "");
-    falseTransformName = Const.NVL(streams.get(1).getTransformName(), "");
+  public void resetTransformIoMeta() {
+    // Do nothing
   }
 
   @Override
   public void searchInfoAndTargetTransforms(List<TransformMeta> transforms) {
-    List<IStream> streams = getTransformIOMeta().getTargetStreams();
-    streams.getFirst().setTransformMeta(TransformMeta.findTransform(transforms, trueTransformName));
-    streams.get(1).setTransformMeta(TransformMeta.findTransform(transforms, falseTransformName));
-  }
-
-  @Override
-  public boolean supportsErrorHandling() {
-    return true;
+    // The names are kept in the streams, they follow the transforms selected for the hops
+    for (IStream stream : getTransformIOMeta().getTargetStreams()) {
+      stream.setTransformMeta(
+          TransformMeta.findTransform(transforms, getTargetTransformName(stream)));
+    }
   }
 
   /** Returns the Input/Output metadata for this transform. */
@@ -197,7 +240,8 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     ITransformIOMeta ioMeta = super.getTransformIOMeta(false);
 
     if (ioMeta == null) {
-      ioMeta = new TransformIOMeta(true, false, false, false, false, false);
+      // The main output receives the rows where the condition is true, without TRUE or FALSE target
+      ioMeta = new TransformIOMeta(true, true, false, false, false, false);
       ioMeta.addStream(
           new Stream(
               StreamType.TARGET,
@@ -229,6 +273,7 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     // This transform targets another transform.
     // Make sure that we don't specify the same target transform for true and false...
     // If the user requests false, we blank out true and vice versa
+    // The name kept in the stream is also cleared, otherwise the target would be found again
     //
     List<IStream> targets = getTransformIOMeta().getTargetStreams();
     int index = targets.indexOf(stream);
@@ -236,16 +281,34 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
       // True
       TransformMeta falseTransform = targets.get(1).getTransformMeta();
       if (falseTransform != null && falseTransform.equals(stream.getTransformMeta())) {
-        targets.get(1).setTransformMeta(null);
+        setTargetTransformName(targets.get(1), null);
       }
     }
     if (index == 1) {
       // False
       TransformMeta trueTransform = targets.getFirst().getTransformMeta();
       if (trueTransform != null && trueTransform.equals(stream.getTransformMeta())) {
-        targets.getFirst().setTransformMeta(null);
+        setTargetTransformName(targets.getFirst(), null);
       }
     }
+  }
+
+  @Override
+  public boolean cleanAfterHopFromRemove() {
+    return true;
+  }
+
+  @Override
+  public boolean cleanAfterHopFromRemove(TransformMeta toTransform) {
+    for (IStream stream : getTransformIOMeta().getTargetStreams()) {
+      // A stream without target transform has no transform meta
+      if (toTransform.equals(stream.getTransformMeta())) {
+        stream.setSubject(null);
+        stream.setTransformMeta(null);
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

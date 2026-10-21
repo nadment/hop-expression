@@ -27,6 +27,10 @@ public class WhereData extends BaseTransformData {
   protected IRowMeta outputRowMeta;
   protected IRowSet trueRowSet;
   protected IRowSet falseRowSet;
+
+  /** True if a TRUE or FALSE target is chosen, otherwise the rows go to the main output */
+  protected boolean choosesTargetTransforms;
+
   protected IRowExpressionContext context;
   protected IExpression condition;
 

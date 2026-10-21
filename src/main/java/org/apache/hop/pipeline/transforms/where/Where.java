@@ -114,14 +114,32 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         } else {
           data.falseRowSet = null;
         }
+
+        // A chosen target with a disabled hop ignores its rows, they don't go to the main output
+        data.choosesTargetTransforms =
+            !Utils.isEmpty(streams.getFirst().getTransformName())
+                || !Utils.isEmpty(streams.get(1).getTransformName());
       }
 
       data.context.setRow(row);
-      Boolean predicate = data.condition.getValue(Boolean.class);
 
-      if (predicate == null) {
-        putError(data.outputRowMeta, row, 1, "Expression result is null", null, "EXP000");
-      } else if (predicate) {
+      // A NULL condition is false, like the Filter rows transform
+      boolean keep = Boolean.TRUE.equals(data.condition.getValue(Boolean.class));
+
+      if (!data.choosesTargetTransforms) {
+        // Without TRUE or FALSE target, keep only the rows where the condition is true
+        if (keep) {
+          if (isRowLevel()) {
+            logRowlevel(
+                BaseMessages.getString(
+                    PKG,
+                    "Where.Log.KeepRow",
+                    getTransformName(),
+                    getInputRowMeta().getString(row)));
+          }
+          putRow(data.outputRowMeta, row);
+        }
+      } else if (keep) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {
           if (isRowLevel()) {
