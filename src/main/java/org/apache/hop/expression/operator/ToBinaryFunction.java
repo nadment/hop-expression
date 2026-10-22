@@ -74,6 +74,9 @@ public class ToBinaryFunction extends Function {
         case "UTF8", "UTF-8" -> {
           return new Call(StringUtf8ToBinaryFunction.INSTANCE, call.getOperands());
         }
+        default -> {
+          // Invalid format, see below
+        }
       }
     }
     throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);

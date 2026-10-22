@@ -224,19 +224,18 @@ public class LoopActionDialog extends ActionDialog implements IActionDialog {
         margin,
         null);
 
-    ColumnInfo[] columnInfos =
-        new ColumnInfo[] {
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Name.Column.Header"),
-              ColumnInfo.COLUMN_TYPE_TEXT,
-              false,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Value.Column.Header"),
-              ColumnInfo.COLUMN_TYPE_TEXT,
-              false,
-              false),
-        };
+    ColumnInfo[] columnInfos = {
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Name.Column.Header"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "LoopActionDialog.Parameters.Value.Column.Header"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false,
+          false),
+    };
     columnInfos[1].setUsingVariables(true);
 
     wParameters =

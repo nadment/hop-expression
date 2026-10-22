@@ -111,7 +111,7 @@ public class RPadFunction extends Function {
   public static final class BinaryRPadFunction extends RPadFunction {
     public static final RPadFunction INSTANCE = new BinaryRPadFunction();
 
-    private static final byte[] DEFAULT = new byte[] {0x00};
+    private static final byte[] DEFAULT = {0x00};
 
     @Override
     public @Nullable Object eval(final IExpression[] operands) {

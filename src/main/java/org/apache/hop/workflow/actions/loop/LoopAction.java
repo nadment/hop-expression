@@ -131,7 +131,7 @@ public class LoopAction extends ActionBase implements IAction {
     boolean repeat = isConditionTrue(execution.variables());
     while (repeat && !parentWorkflow.isStopped()) {
 
-      execution = executeWorkflow(workflowMeta, numberOfRows, execution);
+      execution = executeWorkflow(workflowMeta, execution);
       Result result = execution.result();
       if (result.getNrErrors() > 0 || result.isStopped()) {
         logError(
@@ -159,8 +159,7 @@ public class LoopAction extends ActionBase implements IAction {
   }
 
   private ExecutionContext executeWorkflow(
-      WorkflowMeta workflowMeta, int numberOfRows, ExecutionContext executionContext)
-      throws HopException {
+      WorkflowMeta workflowMeta, ExecutionContext executionContext) throws HopException {
 
     IWorkflowEngine<WorkflowMeta> workflow =
         WorkflowEngineFactory.createWorkflowEngine(

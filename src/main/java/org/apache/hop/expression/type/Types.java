@@ -124,12 +124,11 @@ public final class Types {
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
     }
-    if (type1.isFamily(type2.getFamily())) {
-      if (type1.getPrecision() > type2.getPrecision()
-          || (type1.getPrecision() == type2.getPrecision()
-              && type1.getScale() > type2.getScale())) {
-        return type1;
-      }
+    if (type1.isFamily(type2.getFamily())
+        && (type1.getPrecision() > type2.getPrecision()
+            || (type1.getPrecision() == type2.getPrecision()
+                && type1.getScale() > type2.getScale()))) {
+      return type1;
     }
 
     return type2;

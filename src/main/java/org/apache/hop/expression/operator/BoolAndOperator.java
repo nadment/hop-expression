@@ -112,10 +112,8 @@ public class BoolAndOperator extends BinaryOperator {
         if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1).isKind(Kind.LITERAL)) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(NotEqualOperator.INSTANCE)) {
-          if (term.getOperand(1).isKind(Kind.LITERAL)) {
-            notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
-          }
+        if (term.isOperator(NotEqualOperator.INSTANCE) && term.getOperand(1).isKind(Kind.LITERAL)) {
+          notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         // Only a list of constant values, an expression can be equal to any value
         if (term.isOperator(InListOperator.INSTANCE) && term.getOperand(1).isConstant()) {
@@ -206,12 +204,11 @@ public class BoolAndOperator extends BinaryOperator {
       if (strongTerms.contains(operand)) {
         List<IExpression> unnecessary = new ArrayList<>();
         for (IExpression condition : predicates) {
-          if (condition.isOperator(IsNullOperator.INSTANCE)
-              && call(condition).getOperand(0).equals(operand)) {
-            unnecessary.add(condition);
-          } else if (condition instanceof Call term
-              && Strong.isStrong(term)
-              && (term.getOperand(0).equals(operand) || term.getOperand(1).equals(operand))) {
+          if ((condition.isOperator(IsNullOperator.INSTANCE)
+                  && call(condition).getOperand(0).equals(operand))
+              || (condition instanceof Call term
+                  && Strong.isStrong(term)
+                  && (term.getOperand(0).equals(operand) || term.getOperand(1).equals(operand)))) {
             unnecessary.add(condition);
           }
         }

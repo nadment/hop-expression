@@ -406,11 +406,17 @@ public class ExpressionEditor extends Composite
             event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
           }
 
-          public void dragOperationChanged(DropTargetEvent event) {}
+          public void dragOperationChanged(DropTargetEvent event) {
+            // Nothing to do
+          }
 
-          public void dragLeave(DropTargetEvent event) {}
+          public void dragLeave(DropTargetEvent event) {
+            // Nothing to do
+          }
 
-          public void dropAccept(DropTargetEvent event) {}
+          public void dropAccept(DropTargetEvent event) {
+            // Nothing to do
+          }
 
           public void drop(DropTargetEvent event) {
             // A read-only editor accepts no drop
@@ -1165,7 +1171,9 @@ public class ExpressionEditor extends Composite
 
   /** {@inheritDoc} */
   @Override
-  public void documentAboutToBeChanged(DocumentEvent event) {}
+  public void documentAboutToBeChanged(DocumentEvent event) {
+    // Only the changed document is handled
+  }
 
   /**
    * {@inheritDoc}

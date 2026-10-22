@@ -47,7 +47,7 @@ public class ExpressionComparator implements Comparator<IExpression>, Serializab
 
       if (familyCompare != 0) return familyCompare;
 
-      return e1.hashCode() - e2.hashCode();
+      return Integer.compare(e1.hashCode(), e2.hashCode());
     }
 
     // Order with textual representation

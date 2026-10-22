@@ -62,7 +62,6 @@ final class TextMinimalNumberFormat extends NumberFormat {
           + Math.abs(power);
     }
 
-    String s = number.stripTrailingZeros().toPlainString();
     // TODO: To be compatible with SQL
     // if (s.startsWith("0.")) {
     // we want ".1" not "0.1"
@@ -71,7 +70,7 @@ final class TextMinimalNumberFormat extends NumberFormat {
     // we want "-.1" not "-0.1"
     // return "-" + s.substring(2);
     // }
-    return s;
+    return number.stripTrailingZeros().toPlainString();
   }
 
   @Override

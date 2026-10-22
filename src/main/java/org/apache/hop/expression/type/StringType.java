@@ -161,7 +161,9 @@ public final class StringType extends Type {
       case JsonNode json -> result = StringConversion.convert(json);
       case InetAddress inet -> result = StringConversion.convert(inet);
       case Interval interval -> result = interval.toString();
-      default -> {}
+      default -> {
+        // Not convertible, see below
+      }
     }
 
     if (result == null) {

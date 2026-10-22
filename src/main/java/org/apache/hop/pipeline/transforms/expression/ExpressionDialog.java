@@ -233,29 +233,28 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
   protected Control createDialogArea(final Composite parent) {
 
-    ColumnInfo[] columns =
-        new ColumnInfo[] {
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Name.Label"),
-              ColumnInfo.COLUMN_TYPE_TEXT,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Expression.Label"),
-              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Type.Label"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMetaFactory.getValueMetaNames()),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Length.Label"),
-              ColumnInfo.COLUMN_TYPE_TEXT,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Precision.Label"),
-              ColumnInfo.COLUMN_TYPE_TEXT,
-              false)
-        };
+    ColumnInfo[] columns = {
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Name.Label"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Expression.Label"),
+          ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Type.Label"),
+          ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMetaFactory.getValueMetaNames()),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Length.Label"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Precision.Label"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false)
+    };
 
     columns[1].setUsingVariables(true);
     columns[1].setTextVarButtonSelectionListener(

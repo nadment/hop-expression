@@ -213,10 +213,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return false;
     }
 
-    if (checkFeedback(getLinesRead())) {
-      if (isBasic()) {
-        logBasic(BaseMessages.getString(PKG, "Aggregate.LineNumber") + getLinesRead());
-      }
+    if (checkFeedback(getLinesRead()) && isBasic()) {
+      logBasic(BaseMessages.getString(PKG, "Aggregate.LineNumber") + getLinesRead());
     }
 
     return true;
@@ -380,7 +378,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (super.init()) {
 
       allNullsAreZero = this.getVariableBoolean(Const.HOP_AGGREGATION_ALL_NULLS_ARE_ZERO, false);
-      data.map = new HashMap<>(5000);
+      data.map = HashMap.newHashMap(5000);
       return true;
     }
     return false;

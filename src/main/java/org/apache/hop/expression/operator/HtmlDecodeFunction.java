@@ -40,7 +40,7 @@ import org.jspecify.annotations.Nullable;
 public class HtmlDecodeFunction extends Function {
 
   /** A decimal or hexadecimal numeric entity, the semicolon is required like by the decoder. */
-  private static final Pattern NUMERIC_ENTITY = Pattern.compile("&#([xX][0-9a-fA-F]+|[0-9]+);");
+  private static final Pattern NUMERIC_ENTITY = Pattern.compile("&#([xX][0-9a-fA-F]+|\\d+);");
 
   public HtmlDecodeFunction() {
     super(

@@ -38,7 +38,6 @@ import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.expression.ExpressionText;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,12 +59,10 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
   // nr clones
   private ExpressionText wnrClone;
 
-  private Label wladdCloneFlag;
   private Button waddCloneFlag;
   private Label wlcloneFlagField;
   private ExpressionText wcloneFlagField;
 
-  private Label wladdCloneNum;
   private Button waddCloneNum;
   private Label wlCloneNumField;
   private ExpressionText wCloneNumField;
@@ -84,12 +81,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     PropsUi.setLook(shell);
     setShellImage(shell, input);
 
-    ModifyListener lsMod =
-        new ModifyListener() {
-          public void modifyText(ModifyEvent e) {
-            input.setChanged();
-          }
-        };
+    ModifyListener lsMod = e -> input.setChanged();
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -161,13 +153,13 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     PropsUi.setLook(wOutpuFields);
     wOutpuFields.setText(BaseMessages.getString(PKG, "CloneRowDialog.wOutpuFields.Label"));
 
-    FormLayout OutpuFieldsgroupLayout = new FormLayout();
-    OutpuFieldsgroupLayout.marginWidth = 10;
-    OutpuFieldsgroupLayout.marginHeight = 10;
-    wOutpuFields.setLayout(OutpuFieldsgroupLayout);
+    FormLayout outputFieldsGroupLayout = new FormLayout();
+    outputFieldsGroupLayout.marginWidth = 10;
+    outputFieldsGroupLayout.marginHeight = 10;
+    wOutpuFields.setLayout(outputFieldsGroupLayout);
 
     // add clone flag?
-    wladdCloneFlag = new Label(wOutpuFields, SWT.RIGHT);
+    Label wladdCloneFlag = new Label(wOutpuFields, SWT.RIGHT);
     wladdCloneFlag.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneFlag.Label"));
     PropsUi.setLook(wladdCloneFlag);
     FormData fdladdCloneFlag = new FormData();
@@ -186,6 +178,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     waddCloneFlag.setLayoutData(fdaddCloneFlag);
     SelectionAdapter lsSelR =
         new SelectionAdapter() {
+          @Override
           public void widgetSelected(SelectionEvent arg0) {
             input.setChanged();
             activeaddCloneFlag();
@@ -216,7 +209,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     wcloneFlagField.setLayoutData(fdcloneFlagField);
 
     // add clone num?
-    wladdCloneNum = new Label(wOutpuFields, SWT.RIGHT);
+    Label wladdCloneNum = new Label(wOutpuFields, SWT.RIGHT);
     wladdCloneNum.setText(BaseMessages.getString(PKG, "CloneRowDialog.addCloneNum.Label"));
     PropsUi.setLook(wladdCloneNum);
     FormData fdladdCloneNum = new FormData();
@@ -234,6 +227,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     waddCloneNum.setLayoutData(fdaddCloneNum);
     waddCloneNum.addSelectionListener(
         new SelectionAdapter() {
+          @Override
           public void widgetSelected(SelectionEvent arg0) {
             input.setChanged();
             activeaddCloneNum();

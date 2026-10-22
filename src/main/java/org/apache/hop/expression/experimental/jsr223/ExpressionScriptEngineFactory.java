@@ -58,7 +58,7 @@ public class ExpressionScriptEngineFactory implements ScriptEngineFactory {
 
   @Override
   public List<String> getNames() {
-    return List.of("hop-expression");
+    return List.of(LANGUAGE_NAME);
   }
 
   @Override

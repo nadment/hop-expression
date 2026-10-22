@@ -110,7 +110,7 @@ public class LPadFunction extends Function {
 
     public static final BinaryLPadFunction INSTANCE = new BinaryLPadFunction();
 
-    private static final byte[] DEFAULT = new byte[] {0x00};
+    private static final byte[] DEFAULT = {0x00};
 
     @Override
     public @Nullable Object eval(final IExpression[] operands) {

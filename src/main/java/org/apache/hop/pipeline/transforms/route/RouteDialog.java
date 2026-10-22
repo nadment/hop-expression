@@ -194,18 +194,17 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wlRoutes.setLayoutData(fdlRoutes);
     PropsUi.setLook(wlRoutes);
 
-    ColumnInfo[] columns =
-        new ColumnInfo[] {
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.Condition"),
-              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.TargetTransform"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              nextTransformNames,
-              false),
-        };
+    ColumnInfo[] columns = {
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.Condition"),
+          ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.TargetTransform"),
+          ColumnInfo.COLUMN_TYPE_CCOMBO,
+          nextTransformNames,
+          false),
+    };
 
     wRoutes =
         new TableView(

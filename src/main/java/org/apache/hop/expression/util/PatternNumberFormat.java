@@ -550,13 +550,13 @@ final class PatternNumberFormat extends NumberFormat {
           if (c == p) continue;
         } else if (p == ',') {
           if (c == ',') continue;
-        } else if (p == 'G') {
-
-          if (c == groupingSeparator
-              // If grouping is non-breaking space or narrow non-breaking space (special case for
-              // fr-FR locale)
-              || (Characters.isSpace(groupingSeparator) && Characters.isSpace(c))
-              || c == ',') continue;
+        } else if (p == 'G'
+            && (c == groupingSeparator
+                // If grouping is non-breaking space or narrow non-breaking space (special case for
+                // fr-FR locale)
+                || (Characters.isSpace(groupingSeparator) && Characters.isSpace(c))
+                || c == ',')) {
+          continue;
         }
 
         throw createUnparsableNumber(format, text, i);
@@ -656,10 +656,7 @@ final class PatternNumberFormat extends NumberFormat {
 
     String unscaled = number.unscaledValue().abs().toString();
 
-    int dot = unscaled.length();
-    // dot = dot - number.scale();
-
-    dot = number.precision() - number.scale();
+    int dot = number.precision() - number.scale();
     // The integer part of zero is empty with a decimal format, "0" => " .00"
     if (this.fillMode && this.scale > 0 && number.signum() == 0) {
       dot = 0;

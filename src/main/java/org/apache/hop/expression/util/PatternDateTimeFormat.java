@@ -945,11 +945,9 @@ import org.jspecify.annotations.Nullable;
     @Override
     public void parse(DateTimeParser parser) {
       String str = parser.parseString(AD_BC);
-      if (str != null) {
-        // The era does not change the day of year or the Julian day already parsed
-        if (str.charAt(0) == 'B') {
-          parser.bc = true;
-        }
+      // The era does not change the day of year or the Julian day already parsed
+      if (str != null && str.charAt(0) == 'B') {
+        parser.bc = true;
       }
     }
   }

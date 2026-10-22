@@ -89,7 +89,9 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   }
 
   @Override
-  public void addListener(ILabelProviderListener listener) {}
+  public void addListener(ILabelProviderListener listener) {
+    // The labels never change, no listener to notify
+  }
 
   @Override
   public boolean isLabelProperty(Object element, String property) {
@@ -97,7 +99,9 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   }
 
   @Override
-  public void removeListener(ILabelProviderListener listener) {}
+  public void removeListener(ILabelProviderListener listener) {
+    // The labels never change, no listener to notify
+  }
 
   @Override
   public Image getImage(Object element) {
@@ -168,5 +172,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   }
 
   @Override
-  public void dispose() {}
+  public void dispose() {
+    // No resource to dispose
+  }
 }

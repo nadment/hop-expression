@@ -19,6 +19,7 @@ package org.apache.hop.expression.experimental.jsr223;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.script.Bindings;
 
@@ -39,10 +40,7 @@ public class RowExpressionBindings implements Bindings {
    * @throws NullPointerException if m is null
    */
   public RowExpressionBindings(Map<String, Object> m) {
-    if (m == null) {
-      throw new NullPointerException();
-    }
-    this.map = m;
+    this.map = Objects.requireNonNull(m);
   }
 
   @Override

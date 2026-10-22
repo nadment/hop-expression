@@ -143,18 +143,17 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     fdlParams.top = new FormAttachment(wDescription, margin * 2);
     wlArguments.setLayoutData(fdlParams);
 
-    ColumnInfo[] columns =
-        new ColumnInfo[] {
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
-              ColumnInfo.COLUMN_TYPE_TEXT,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ARGUMENT_TYPES,
-              false)
-        };
+    ColumnInfo[] columns = {
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false),
+      new ColumnInfo(
+          BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
+          ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ARGUMENT_TYPES,
+          false)
+    };
 
     wArguments =
         new TableView(

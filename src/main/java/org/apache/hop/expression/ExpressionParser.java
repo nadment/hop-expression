@@ -459,11 +459,9 @@ public class ExpressionParser {
 
     //  <term> AT TIMEZONE <timezone>
     if (lexer.ifThenNextAndNotEnd(Id.AT)) {
-      if (lexer.ifThenNextAndNotEnd(Id.TIME)) {
-        if (lexer.ifThenNextAndNotEnd(Id.ZONE)) {
-          return new Call(
-              lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parseTerm());
-        }
+      if (lexer.ifThenNextAndNotEnd(Id.TIME) && lexer.ifThenNextAndNotEnd(Id.ZONE)) {
+        return new Call(
+            lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parseTerm());
       }
       throw new ParseExpressionException(lexer.getPosition(), ErrorCode.SYNTAX_ERROR, Id.AT);
     }
