@@ -18,11 +18,12 @@ package org.apache.hop.expression.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.apache.hop.expression.ExpressionExtension;
 import org.apache.hop.junit.rules.RestoreHopEnvironmentExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(RestoreHopEnvironmentExtension.class)
+@ExtendWith({RestoreHopEnvironmentExtension.class, ExpressionExtension.class})
 class DocumentationUtilTest {
 
   @Test

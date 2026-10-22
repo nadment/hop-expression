@@ -14,11 +14,17 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.core.HopEnvironment;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-class ExpressionExtension implements BeforeAllCallback, AfterAllCallback {
+/**
+ * Registers the functions for the tests of a class, and leaves the Hop environment ready for the
+ * next tests. It is declared after {@code RestoreHopEnvironmentExtension}, so its {@code afterAll}
+ * runs before the reset of the client environment.
+ */
+public class ExpressionExtension implements BeforeAllCallback, AfterAllCallback {
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
     FunctionRegistry.init();
@@ -26,6 +32,14 @@ class ExpressionExtension implements BeforeAllCallback, AfterAllCallback {
 
   @Override
   public void afterAll(ExtensionContext context) throws Exception {
+    // Remove the functions registered by the tests, like the user-defined functions, and register
+    // the built-in functions again, which are registered by the first initialization of the
+    // environment only
     FunctionRegistry.reset();
+    FunctionRegistry.init();
+
+    // RestoreHopEnvironmentExtension resets the client environment (log store, plugins) but not
+    // HopEnvironment, the next HopEnvironment.init() must initialize everything again
+    HopEnvironment.reset();
   }
 }
