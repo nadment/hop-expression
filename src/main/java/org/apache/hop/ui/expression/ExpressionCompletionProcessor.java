@@ -18,8 +18,8 @@ package org.apache.hop.ui.expression;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -122,7 +122,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
       String prefix = document.get(start, offset - start);
 
-      List<ICompletionProposal> proposals = new LinkedList<>();
+      List<ICompletionProposal> proposals = new ArrayList<>();
       if (!prefix.isEmpty()) {
         if (prefix.charAt(0) == '$') {
 
@@ -152,13 +152,27 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     return null;
   }
 
+  /**
+   * Checks if a name starts with the prefix entered by the user, ignoring case.
+   *
+   * @param name the name of the proposal
+   * @param prefix the prefix entered by the user
+   * @return true if the name starts with the prefix
+   */
+  static boolean startsWithIgnoreCase(String name, String prefix) {
+    return name.regionMatches(true, 0, prefix, 0, prefix.length());
+  }
+
   protected void computeVariableProposals(
       List<ICompletionProposal> proposals, String prefix, int start, int end) {
+    // No variables to propose
+    if (variables == null) {
+      return;
+    }
     for (String variableName : variables.getVariableNames()) {
 
       // Add to proposal if variable name start with the qualifier
-      if (variableName.length() >= prefix.length()
-          && variableName.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
+      if (startsWithIgnoreCase(variableName, prefix)) {
 
         boolean isDeprecated =
             VariableRegistry.getInstance().getDeprecatedVariableNames().contains(variableName);
@@ -196,8 +210,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       List<ICompletionProposal> proposals, String prefix, int start, int end) {
     // Keywords
     for (String word : Keyword.get()) {
-      if (word.length() >= prefix.length()
-          && word.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
+      if (startsWithIgnoreCase(word, prefix)) {
         CompletionProposal proposal =
             new CompletionProposal(word, start, end - start, word.length(), null, word, null, null);
         proposals.add(proposal);
@@ -207,8 +220,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     // Functions
     Image image = GuiResource.getInstance().getImageFunction();
     for (String name : FunctionRegistry.getFunctionNames()) {
-      if (name.length() >= prefix.length()
-          && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
+      if (startsWithIgnoreCase(name, prefix)) {
 
         Function function = FunctionRegistry.getFunction(name);
         if (function == null) {
@@ -246,8 +258,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       if (prefix.charAt(0) == '\"') prefix = prefix.substring(1);
       for (IValueMeta valueMeta : rowMeta.get().getValueMetaList()) {
         String name = valueMeta.getName();
-        if (name.length() >= prefix.length()
-            && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
+        if (startsWithIgnoreCase(name, prefix)) {
 
           // If identifier name contains space or a special character, is a reserved word or a
           // function name must be quoted, same rules as when an expression is written

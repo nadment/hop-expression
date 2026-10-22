@@ -18,58 +18,16 @@ package org.apache.hop.ui.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.junit.jupiter.api.Test;
 
 class LiteralNumberRuleTest {
 
-  /** Scans a string, like the scanner of the editor that returns EOF at the end. */
-  private static final class StringScanner implements ICharacterScanner {
-    private final String text;
-    private int offset;
-
-    StringScanner(String text) {
-      this.text = text;
-    }
-
-    @Override
-    public char[][] getLegalLineDelimiters() {
-      return new char[][] {{'\n'}};
-    }
-
-    @Override
-    public int getColumn() {
-      return offset;
-    }
-
-    @Override
-    public int read() {
-      // The offset is incremented at the end too, like RuleBasedScanner
-      int c = offset < text.length() ? text.charAt(offset) : EOF;
-      offset++;
-      return c;
-    }
-
-    @Override
-    public void unread() {
-      offset--;
-    }
-  }
-
-  private final IToken number = new Token("number");
+  private final LiteralNumberRule rule = new LiteralNumberRule(new Token("number"));
 
   /** Returns the length of the number at the start of the text, or -1 if it is not a number. */
   private int scan(String text) {
-    StringScanner scanner = new StringScanner(text);
-    IToken token = new LiteralNumberRule(number).evaluate(scanner);
-    if (token.isUndefined()) {
-      // A rule that does not match must not move the scanner
-      assertEquals(0, scanner.offset);
-      return -1;
-    }
-    return scanner.offset;
+    return StringScanner.scan(rule, text);
   }
 
   @Test

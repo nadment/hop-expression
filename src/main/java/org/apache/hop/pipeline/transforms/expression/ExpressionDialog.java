@@ -273,14 +273,14 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
             // Only the input fields, an expression can't use the result of another expression
             final IRowMeta rowMeta = new RowMeta();
-            CompletableFuture<IRowMeta> rowMetaFutur =
+            CompletableFuture<IRowMeta> rowMetaFuture =
                 getAsyncRowMeta(getVariables(), pipelineMeta, transformName, rowMeta);
 
             dialog = new ExpressionEditorDialog(shell);
             tableItem.setData(DIALOG_KEY, dialog);
 
             String expression = tableItem.getText(wTableFields.getActiveTableColumn());
-            expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFutur);
+            expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFuture);
 
             if (!shell.isDisposed()) {
               tableItem.setData(DIALOG_KEY, null);

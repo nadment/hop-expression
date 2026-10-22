@@ -189,12 +189,12 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
 
     wExpression =
         new ExpressionEditor(parent, SWT.BORDER, manager.getVariables(), ExpressionMode.UDF, null);
-    FormData fdExression = new FormData();
-    fdExression.left = new FormAttachment(0, 0);
-    fdExression.top = new FormAttachment(wlExpression, margin);
-    fdExression.right = new FormAttachment(100, 0);
-    fdExression.bottom = new FormAttachment(100, -2 * margin);
-    wExpression.setLayoutData(fdExression);
+    FormData fdExpression = new FormData();
+    fdExpression.left = new FormAttachment(0, 0);
+    fdExpression.top = new FormAttachment(wlExpression, margin);
+    fdExpression.right = new FormAttachment(100, 0);
+    fdExpression.bottom = new FormAttachment(100, -2 * margin);
+    wExpression.setLayoutData(fdExpression);
     wExpression.addListener(SWT.Modify, changedListener);
 
     this.setWidgetsContent();
@@ -223,9 +223,24 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
       FunctionArgument argument = udf.getArguments().get(i);
       wArguments.setText(Const.NVL(argument.getName(), ""), 1, i);
       if (argument.getType() != null) {
-        wArguments.setText(Const.NVL(argument.getType().name(), ""), 2, i);
+        wArguments.setText(getArgumentTypeLabel(argument.getType()), 2, i);
       }
     }
+  }
+
+  /**
+   * Returns the label of a data type in the list of the argument types, like "Integer" for INTEGER.
+   *
+   * @param type the data type of the argument
+   * @return the label in the list, or the name of the type if it is not in the list
+   */
+  private static String getArgumentTypeLabel(TypeName type) {
+    for (String label : ARGUMENT_TYPES) {
+      if (label.equalsIgnoreCase(type.name())) {
+        return label;
+      }
+    }
+    return type.name();
   }
 
   @Override

@@ -19,6 +19,7 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.widget.ControlSpaceKeyAdapter;
@@ -40,9 +41,8 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 /**
- * A Widget that combines a Text widget with a Variable button that will insert an Environment
- * variable. The tool tip of the text widget shows the content of the Text widget with expanded
- * variables.
+ * A Widget that combines a Text widget with a button that opens the expression editor. The tool tip
+ * of the text widget shows the content of the Text widget with expanded variables.
  */
 public class ExpressionText extends Composite {
   protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes
@@ -56,7 +56,7 @@ public class ExpressionText extends Composite {
   protected ToolBar wToolBar;
 
   protected ExpressionMode mode;
-  protected CompletableFuture<IRowMeta> rowMetaFutur;
+  protected CompletableFuture<IRowMeta> rowMetaFuture;
 
   public ExpressionText(IVariables variables, Composite composite, int flags) {
     this(variables, composite, flags, ExpressionMode.NONE, null);
@@ -67,13 +67,13 @@ public class ExpressionText extends Composite {
       Composite composite,
       int flags,
       ExpressionMode mode,
-      CompletableFuture<IRowMeta> rowMetaFutur) {
+      CompletableFuture<IRowMeta> rowMetaFuture) {
 
     super(composite, SWT.NONE);
 
     this.variables = variables;
     this.mode = mode;
-    this.rowMetaFutur = rowMetaFutur;
+    this.rowMetaFuture = rowMetaFuture;
 
     PropsUi.setLook(this);
 
@@ -100,7 +100,7 @@ public class ExpressionText extends Composite {
     wToolBar = new ToolBar(this, SWT.FLAT);
     final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
     toolItem.setImage(image);
-    toolItem.setToolTipText("Browse");
+    toolItem.setToolTipText(BaseMessages.getString(PKG, "ExpressionText.Button.ToolTip"));
     toolItem.addListener(SWT.Selection, e -> openExpressionDialog());
 
     wToolBar.setLayoutData(
@@ -114,7 +114,7 @@ public class ExpressionText extends Composite {
 
   protected void openExpressionDialog() {
     ExpressionEditorDialog dialog = new ExpressionEditorDialog(this.getShell());
-    String expression = dialog.open(wText.getText(), variables, mode, rowMetaFutur);
+    String expression = dialog.open(wText.getText(), variables, mode, rowMetaFuture);
     if (expression != null) {
       wText.setText(expression);
     }

@@ -57,7 +57,7 @@ public class ExpressionEditorDialog extends Dialog {
       String expression,
       IVariables variables,
       ExpressionMode mode,
-      CompletableFuture<IRowMeta> rowMetaFutur) {
+      CompletableFuture<IRowMeta> rowMetaFuture) {
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     PropsUi.setLook(shell);
     shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
@@ -93,10 +93,10 @@ public class ExpressionEditorDialog extends Dialog {
         shell, buttons.toArray(new Button[0]), PropsUi.getMargin(), null);
     shell.setDefaultButton(btnOK);
 
-    // ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
+    // ExpressionMode mode = (rowMetaFuture==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
 
     // The expression editor
-    wEditor = new ExpressionEditor(shell, SWT.NONE, variables, mode, rowMetaFutur);
+    wEditor = new ExpressionEditor(shell, SWT.NONE, variables, mode, rowMetaFuture);
     wEditor.setText(expression);
     wEditor.setLayoutData(
         new FormDataBuilder().top().bottom(btnOK, -PropsUi.getMargin()).left().right().result());

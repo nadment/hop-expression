@@ -68,16 +68,16 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private final IVariables variables;
   private final ExpressionMode mode;
-  private final CompletableFuture<IRowMeta> futurRowMeta;
+  private final CompletableFuture<IRowMeta> rowMetaFuture;
 
   /** The names of the fields, case-sensitive, empty until the row meta is known. */
   private Set<String> fieldNames = Set.of();
 
   public ExpressionEditorConfiguration(
-      IVariables variables, CompletableFuture<IRowMeta> futurRowMeta, ExpressionMode mode) {
+      IVariables variables, CompletableFuture<IRowMeta> rowMetaFuture, ExpressionMode mode) {
     super();
     this.variables = variables;
-    this.futurRowMeta = futurRowMeta;
+    this.rowMetaFuture = rowMetaFuture;
     this.mode = mode;
   }
 
@@ -118,7 +118,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
     ExpressionCompletionProcessor expressionProcessor =
-        new ExpressionCompletionProcessor(variables, futurRowMeta, mode);
+        new ExpressionCompletionProcessor(variables, rowMetaFuture, mode);
     ExpressionCompletionProcessor variableProcessor = new ExpressionCompletionProcessor(variables);
 
     ContentAssistant assistant = new ContentAssistant();
@@ -213,7 +213,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
         new NameRule(new IdentifierDetector(), name -> fieldNames.contains(name), identifier));
 
     // Add case-insensitive rule for reserved world, data type and time unit
-    WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
+    WordRule rule = new WordRule(new IdentifierDetector(), Token.UNDEFINED, true);
     for (String word : Keyword.get()) {
       if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
       else rule.addWord(word, keyword);
@@ -223,7 +223,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     }
     for (TimeUnit unit : TimeUnit.values()) {
       for (String name : unit.names()) {
-        if (name != null && !name.isEmpty()) {
+        if (!name.isEmpty()) {
           rule.addWord(name, extra);
         }
       }
@@ -235,7 +235,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // after the editor.
     rules.add(
         new NameRule(
-            new WordDetector(), name -> FunctionRegistry.getFunction(name) != null, function));
+            new IdentifierDetector(),
+            name -> FunctionRegistry.getFunction(name) != null,
+            function));
 
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules.toArray(new IRule[0]));

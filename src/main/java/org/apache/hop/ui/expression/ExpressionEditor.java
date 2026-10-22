@@ -118,7 +118,6 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -212,7 +211,7 @@ public class ExpressionEditor extends Composite
   private final ExpressionMode mode;
   private final ExpressionLabelProvider labelProvider;
   private final IVariables variables;
-  private final CompletableFuture<IRowMeta> rowMetaFutur;
+  private final CompletableFuture<IRowMeta> rowMetaFuture;
   private SourceViewer wViewer;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
@@ -237,7 +236,7 @@ public class ExpressionEditor extends Composite
    * @param style the style of the editor
    * @param variables the variables to list and resolve, or null
    * @param mode the mode of the expression, which defines the elements available
-   * @param rowMetaFutur the future fields of the row, or null if they are set with {@link
+   * @param rowMetaFuture the future fields of the row, or null if they are set with {@link
    *     #setRowMeta(IRowMeta)}
    */
   public ExpressionEditor(
@@ -245,11 +244,11 @@ public class ExpressionEditor extends Composite
       int style,
       IVariables variables,
       ExpressionMode mode,
-      CompletableFuture<IRowMeta> rowMetaFutur) {
+      CompletableFuture<IRowMeta> rowMetaFuture) {
     super(parent, style);
     this.variables = variables;
     this.mode = mode;
-    this.rowMetaFutur = rowMetaFutur;
+    this.rowMetaFuture = rowMetaFuture;
     this.labelProvider = new ExpressionLabelProvider();
 
     PropsUi.setLook(this);
@@ -262,8 +261,8 @@ public class ExpressionEditor extends Composite
     this.createContextMenu();
 
     // When IRowMeta is ready
-    if (rowMetaFutur != null) {
-      rowMetaFutur.thenAccept(this::setRowMeta);
+    if (rowMetaFuture != null) {
+      rowMetaFuture.thenAccept(this::setRowMeta);
     }
 
     wSashForm.setWeights(25, 75);
@@ -434,7 +433,7 @@ public class ExpressionEditor extends Composite
     Document document = new Document();
     document.addDocumentListener(this);
 
-    configuration = new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
+    configuration = new ExpressionEditorConfiguration(variables, rowMetaFuture, mode);
     IDocumentPartitioner partitioner =
         new FastPartitioner(
             new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(wViewer));
@@ -697,11 +696,12 @@ public class ExpressionEditor extends Composite
     PropsUi props = PropsUi.getInstance();
     LineNumberRulerColumn lineNumberRulerColumn = new LineNumberRulerColumn();
 
+    GuiResource resource = GuiResource.getInstance();
     if (props.isDarkMode()) {
-      lineNumberRulerColumn.setForeground(new Color(this.getDisplay(), 130, 130, 130));
-      lineNumberRulerColumn.setBackground(new Color(this.getDisplay(), 40, 40, 40));
+      lineNumberRulerColumn.setForeground(resource.getColor(130, 130, 130));
+      lineNumberRulerColumn.setBackground(resource.getColor(40, 40, 40));
     } else {
-      lineNumberRulerColumn.setForeground(new Color(this.getDisplay(), 120, 120, 120));
+      lineNumberRulerColumn.setForeground(resource.getColor(120, 120, 120));
     }
 
     // lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());

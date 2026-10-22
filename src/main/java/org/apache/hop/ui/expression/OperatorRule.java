@@ -21,6 +21,7 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
+/** A rule that returns a token for an operator, like {@code +}, {@code <=} or {@code ::}. */
 public class OperatorRule implements IRule {
   private final IToken token;
 
@@ -32,65 +33,58 @@ public class OperatorRule implements IRule {
   public IToken evaluate(ICharacterScanner scanner) {
     int c = scanner.read();
 
-    if (c != ICharacterScanner.EOF) {
+    boolean matched =
+        switch (c) {
+            // Single char operator
+          case '(', ')', ',', '=', '+', '-', '*', '/', '%', '&', '~', '^', '[', ']' -> true;
+            // Bitwise |
+            // Concat ||
+          case '|' -> {
+            readIf(scanner, '|');
+            yield true;
+          }
+            // Less or equals <=
+            // Less or greater <>
+          case '<' -> {
+            if (!readIf(scanner, '=')) {
+              readIf(scanner, '>');
+            }
+            yield true;
+          }
+            // Greater or equals >=
+          case '>' -> {
+            readIf(scanner, '=');
+            yield true;
+          }
+            // Cast operator ::
+          case ':' -> readIf(scanner, ':');
+            // Not equal !=
+          case '!' -> readIf(scanner, '=');
+          default -> false;
+        };
 
-      // Single char operator
-      if (c == '(' || c == ')' || c == ',' || c == '=' || c == '+' || c == '-' || c == '*'
-          || c == '/' || c == '%' || c == '&' || c == '~' || c == '^' || c == '[' || c == ']') {
-        return token;
-      }
-
-      // Bitwise |
-      // Concat ||
-
-      if (c == '|') {
-        c = scanner.read();
-        if (c != '|') {
-          scanner.unread();
-        }
-        return token;
-      }
-
-      // Less or equals <=
-      // Less or greater <>
-      if (c == '<') {
-        c = scanner.read();
-        if (c != '=' && c != '>') {
-          scanner.unread();
-        }
-        return token;
-      }
-
-      if (c == '>') {
-        c = scanner.read();
-        if (c != '=') {
-          scanner.unread();
-        }
-        return token;
-      }
-
-      // Cast operator ::
-      if (c == ':') {
-        c = scanner.read();
-        if (c == ':') {
-          return token;
-        }
-        scanner.unread();
-      }
-
-      // Not equal !=
-      if (c == '!') {
-        c = scanner.read();
-        if (c == '=') {
-          return token;
-        }
-        scanner.unread();
-      }
+    if (matched) {
+      return token;
     }
 
     // put the scanner back to the original position if no match
     scanner.unread();
 
     return Token.UNDEFINED;
+  }
+
+  /**
+   * Reads the next character if it is the expected one.
+   *
+   * @param scanner the scanner
+   * @param expected the expected character
+   * @return true if the character is read, false if it is left in the scanner
+   */
+  private static boolean readIf(ICharacterScanner scanner, char expected) {
+    if (scanner.read() == expected) {
+      return true;
+    }
+    scanner.unread();
+    return false;
   }
 }
