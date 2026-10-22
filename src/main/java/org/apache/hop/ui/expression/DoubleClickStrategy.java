@@ -40,18 +40,20 @@ public class DoubleClickStrategy implements ITextDoubleClickStrategy {
       int start = position;
       while (start >= 0) {
         char c = document.getChar(start);
-        if (c == Character.LINE_SEPARATOR || c == '}') return false;
+        if (isLineBreak(c) || c == '}') return false;
         if (c == '$') break;
         start--;
       }
 
-      if (document.getChar(start) != '$' && document.getChar(start + 1) != '{') return false;
+      // A variable starts with "${"
+      if (start < 0 || document.getChar(start + 1) != '{') return false;
 
-      int end = position;
+      // Search the end after "${", the position can be on the '$'
+      int end = Math.max(position, start + 2);
       int length = document.getLength();
       while (end < length) {
         char c = document.getChar(end);
-        if (c == Character.LINE_SEPARATOR || c == '$') return false;
+        if (isLineBreak(c) || c == '$') return false;
         if (c == '}') break;
         end++;
       }
@@ -71,18 +73,18 @@ public class DoubleClickStrategy implements ITextDoubleClickStrategy {
       int start = position;
       while (start >= 0) {
         char c = document.getChar(start);
-        if (c == Character.LINE_SEPARATOR || c == ']') return false;
+        if (isLineBreak(c) || c == ']') return false;
         if (c == '[') break;
         start--;
       }
 
-      if (document.getChar(start) != '[') return false;
+      if (start < 0) return false;
 
       int end = position;
       int length = document.getLength();
       while (end < length) {
         char c = document.getChar(end);
-        if (c == Character.LINE_SEPARATOR || c == '[') return false;
+        if (isLineBreak(c) || c == '[') return false;
         if (c == ']') break;
         end++;
       }
@@ -98,27 +100,29 @@ public class DoubleClickStrategy implements ITextDoubleClickStrategy {
   protected boolean selectWord(ITextViewer viewer, int position) {
     IDocument document = viewer.getDocument();
     try {
+      // The word includes the first character of the document
       int start = position;
-      while (start > 0) {
-        char c = document.getChar(start);
-        if (!Character.isJavaIdentifierPart(c)) break;
+      while (start > 0 && Character.isJavaIdentifierPart(document.getChar(start - 1))) {
         start--;
       }
 
       int end = position;
       int length = document.getLength();
-      while (end < length) {
-        char c = document.getChar(end);
-        if (!Character.isJavaIdentifierPart(c)) break;
+      while (end < length && Character.isJavaIdentifierPart(document.getChar(end))) {
         end++;
       }
 
-      viewer.setSelectedRange(start + 1, end - start - 1);
+      viewer.setSelectedRange(start, end - start);
 
     } catch (BadLocationException x) {
       return false;
     }
 
     return true;
+  }
+
+  /** Checks if a character ends a line, '\n' or '\r'. */
+  private static boolean isLineBreak(char c) {
+    return c == '\n' || c == '\r';
   }
 }

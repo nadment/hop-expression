@@ -15,12 +15,18 @@
 package org.apache.hop.ui.expression;
 
 import java.util.Objects;
+import java.util.function.IntPredicate;
 import org.apache.hop.expression.util.Characters;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
+/**
+ * A rule that returns a token for a numeric literal, with the same forms as the lexer: decimal
+ * 1_000.5E-3, hexadecimal 0xFF, binary 0b0101 and octal 0o17. An invalid literal is highlighted
+ * too, the error is reported by the validation of the expression.
+ */
 public class LiteralNumberRule implements IRule {
   private final IToken token;
 
@@ -31,57 +37,67 @@ public class LiteralNumberRule implements IRule {
   @Override
   public IToken evaluate(ICharacterScanner scanner) {
     int c = scanner.read();
-    if (Character.isDigit((char) c)) {
-
-      if (c == '0') {
-        c = scanner.read();
-        // Hexadecimal
-        if (c == 'x') {
-          do {
-            c = scanner.read();
-          } while (Characters.isHexDigit((char) c));
-          return token;
-        }
-
-        // Binary
-        if (c == 'b') {
-          do {
-            c = scanner.read();
-          } while (c == '0' || c == '1');
-          return token;
-        }
-        scanner.unread();
-      }
-
-      // Integer part
-      do {
-        c = scanner.read();
-      } while (Characters.isDigit((char) c));
-
-      if (c == '.') {
-        scanner.read();
-        // Decimal part
-        do {
-          c = scanner.read();
-        } while (Characters.isDigit((char) c));
-      }
-
-      if (c == 'E') {
-        c = scanner.read();
-        if (c == '+' || c == '-') {
-          scanner.read();
-        } else scanner.unread();
-
-        do {
-          c = scanner.read();
-        } while (Characters.isDigit((char) c));
-      }
-
+    if (!Characters.isDigit((char) c)) {
       scanner.unread();
-      return token;
+      return Token.UNDEFINED;
     }
 
+    if (c == '0') {
+      c = scanner.read();
+      // Hexadecimal
+      if (c == 'x' || c == 'X') {
+        readWhile(scanner, ch -> Characters.isHexDigit((char) ch) || ch == '_');
+        return token;
+      }
+      // Binary
+      if (c == 'b' || c == 'B') {
+        readWhile(scanner, ch -> Characters.isBitDigit((char) ch) || ch == '_');
+        return token;
+      }
+      // Octal
+      if (c == 'o' || c == 'O') {
+        readWhile(scanner, ch -> Characters.isOctDigit((char) ch) || ch == '_');
+        return token;
+      }
+      scanner.unread();
+    }
+
+    // Integer part
+    IntPredicate digit = ch -> Characters.isDigit((char) ch) || ch == '_';
+    readWhile(scanner, digit);
+
+    // Decimal part
+    c = scanner.read();
+    if (c == '.') {
+      readWhile(scanner, digit);
+      c = scanner.read();
+    }
+
+    // Exponent part
+    if (Characters.isExponent((char) c)) {
+      c = scanner.read();
+      if (c != '+' && c != '-') {
+        scanner.unread();
+      }
+      readWhile(scanner, digit);
+    } else {
+      scanner.unread();
+    }
+
+    return token;
+  }
+
+  /**
+   * Reads the characters accepted by a predicate, the first character not accepted is not read.
+   *
+   * @param scanner the scanner
+   * @param predicate the predicate that accepts a character
+   */
+  private static void readWhile(ICharacterScanner scanner, IntPredicate predicate) {
+    int c;
+    do {
+      c = scanner.read();
+    } while (c != ICharacterScanner.EOF && predicate.test(c));
     scanner.unread();
-    return Token.UNDEFINED;
   }
 }
