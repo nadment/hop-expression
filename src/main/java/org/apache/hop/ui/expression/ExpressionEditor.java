@@ -331,7 +331,9 @@ public class ExpressionEditor extends Composite
 
     final StyledText widget = wViewer.getTextWidget();
 
-    widget.setFont(GuiResource.getInstance().getFontFixed());
+    // The fixed font, the background and the text color of the theme, dark or light, like the other
+    // text widgets of Hop. The editor look is set before the text is created.
+    PropsUi.setLook(widget, Props.WIDGET_STYLE_FIXED);
 
     // In the Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
     // Use Ctrl-ALT-SPACE instead.

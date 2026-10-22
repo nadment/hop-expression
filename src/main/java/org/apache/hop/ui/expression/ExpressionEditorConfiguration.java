@@ -28,6 +28,7 @@ import org.apache.hop.expression.Keyword;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -185,7 +186,14 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     Token identifier =
         new Token(new TextAttribute(resource.getColor(255, 127, 80), null, SWT.BOLD));
     Token keyword = new Token(new TextAttribute(resource.getColor(30, 144, 255)));
-    Token function = new Token(new TextAttribute(resource.getColor(148, 0, 211)));
+    // The dark violet is not readable on a dark background, use the lighter violet of the SQL
+    // editor
+    // of Hop in dark mode
+    Color functionColor =
+        PropsUi.getInstance().isDarkMode()
+            ? resource.getColor(177, 102, 218)
+            : resource.getColor(148, 0, 211);
+    Token function = new Token(new TextAttribute(functionColor));
     Token number = new Token(new TextAttribute(resource.getColorOrange()));
     Token extra = new Token(new TextAttribute(resource.getColor(255, 0, 255)));
     Token variable = new Token(new TextAttribute(resource.getColorBlack(), null, SWT.BOLD));
