@@ -1,0 +1,95 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+:documentationPath: /workflow/actions/
+:language: en_US
+:description: The Loop action executes a workflow again and again while a condition expression is true.
+
+= image:icons/loop.svg[Loop action Icon, role="image-doc-icon"] Loop
+
+== Description
+
+The Loop action executes a workflow again and again while a condition, written in an expression language, is true.
+
+This action is experimental.
+
+== Usage
+
+Select the workflow to execute, write the condition, and add the parameters to give to the workflow.
+
+The condition is evaluated before each execution of the workflow:
+
+. The condition is evaluated with the variables of the action and the parameters.
+If it is false, the workflow is not executed at all.
+. The workflow is executed.
+. The condition is evaluated again with the variables of the executed workflow, including the variables it set.
+While it is true, the workflow is executed again, and so on.
+
+Each execution of the workflow starts with the variables of the previous execution.
+A variable set by the workflow, for example with the xref:setvariable.adoc[Set variables expression] action and the `Current workflow` scope, is therefore visible to the condition and to the next execution.
+This is how the workflow makes the loop progress and end.
+
+TIP: A condition that never becomes false executes the workflow endlessly, until the parent workflow is stopped.
+
+=== Condition
+
+A condition is made of literal values, operators, variables and xref:../../../functions.adoc[functions].
+The variables are resolved in the condition before it is compiled, so a variable used as a string is written between quotes.
+
+The value of the condition is converted to a Boolean, and a NULL value is false:
+
+[options="header"]
+|===
+|Condition|Executes the workflow
+|${COUNTER} < 10|While the variable COUNTER is lower than 10.
+|'${STATUS}' <> 'DONE'|While the variable STATUS is not `DONE`.
+|${REMAINING}|While the variable REMAINING is not 0.
+|===
+
+=== Example
+
+To execute a workflow 10 times, add the parameter `COUNTER` with the value `0`, write the condition `${COUNTER} < 10`, and add to the workflow a Set variables expression action with the variable `COUNTER`, the expression `${COUNTER} + 1` and the scope `Current workflow`.
+
+=== Parameters
+
+The parameters are set as variables of the executed workflow, before the first execution.
+
+The default values of the parameters declared in the executed workflow are not applied: give a value to each parameter used by the workflow.
+
+== Options
+
+[options="header"]
+|===
+|Option|Description
+|Action name|Name of the action, this name has to be unique in a single workflow.
+|Workflow|The workflow to execute.
+|Run configuration|The workflow run configuration used to execute the workflow, a local run configuration only.
+|Loop while a condition is true|The condition expression evaluated before each execution of the workflow.
+|Parameters|The name and the value of each parameter given to the workflow.
+|===
+
+== Result
+
+The action succeeds when the condition becomes false, including when it is false before the first execution.
+
+The action fails when an execution of the workflow has an error or is stopped, and the loop ends.
+
+The result of the last execution of the workflow, for example its rows, files and errors, is added to the result of the action.
+
+== Errors
+
+* The verification of the workflow reports a missing condition, an invalid condition, a condition whose type can not be converted to a Boolean, a missing workflow, and a workflow file that is not found.
+* When the workflow runs, a missing workflow, a missing condition, a workflow that can not be loaded, an invalid condition, or an error while evaluating the condition fails the action.

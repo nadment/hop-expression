@@ -19,7 +19,7 @@
 Project built with Java, using Eclipse SWT and JFace as frontend, using Maven as the build system.
 
 ## Tech Stack
-- **Backend:** Java 25, Lombok, Jspecify
+- **Backend:** Java 21, Lombok, Jspecify
 - **Frontend:** Eclipse SWT ands JFace
 - **Build:** Maven
 - **Testing:** JUnit 6

@@ -90,6 +90,17 @@ public class LoopAction extends ActionBase implements IAction {
     this("", "");
   }
 
+  /** Returns a copy of the action, with copies of the parameters. */
+  @Override
+  public Object clone() {
+    LoopAction action = (LoopAction) super.clone();
+    action.parameters = new ArrayList<>();
+    for (Parameter parameter : parameters) {
+      action.parameters.add(new Parameter(parameter.getName(), parameter.getValue()));
+    }
+    return action;
+  }
+
   @Override
   public Result execute(Result prevResult, int numberOfRows) throws HopException {
 
@@ -100,6 +111,15 @@ public class LoopAction extends ActionBase implements IAction {
       throw new HopException("Please specify a workflow to execute");
     }
 
+    // An empty condition would be NULL, and the workflow would never be executed
+    if (Utils.isEmpty(condition)) {
+      throw new HopException(
+          BaseMessages.getString(PKG, "LoopAction.CheckResult.LoopConditionIsMissing"));
+    }
+
+    // The result of a previous action must not be returned when the loop ends normally
+    prevResult.setResult(true);
+
     this.logBasic("Execute workflow '" + realFilename + "'");
 
     WorkflowMeta workflowMeta = loadWorkflow(realFilename, getMetadataProvider(), this);
@@ -108,11 +128,11 @@ public class LoopAction extends ActionBase implements IAction {
 
     // If the condition is false at the beginning of the loop, don't execute at all!
     //
-    boolean repeat = isConditionTrue(execution.variables);
+    boolean repeat = isConditionTrue(execution.variables());
     while (repeat && !parentWorkflow.isStopped()) {
 
       execution = executeWorkflow(workflowMeta, numberOfRows, execution);
-      Result result = execution.result;
+      Result result = execution.result();
       if (result.getNrErrors() > 0 || result.isStopped()) {
         logError(
             "Workflow execution has encountered an error or has been stopped. This ends the loop.");
@@ -125,14 +145,14 @@ public class LoopAction extends ActionBase implements IAction {
       } else {
         // Loop while the condition is true
         //
-        repeat = isConditionTrue(execution.variables);
+        repeat = isConditionTrue(execution.variables());
       }
     }
 
     // Add last execution results
     //
-    if (execution.result != null) {
-      prevResult.add(execution.result);
+    if (execution.result() != null) {
+      prevResult.add(execution.result());
     }
 
     return prevResult;
@@ -147,7 +167,7 @@ public class LoopAction extends ActionBase implements IAction {
             this, resolve(runConfigurationName), getMetadataProvider(), workflowMeta, this);
     workflow.setParentWorkflow(getParentWorkflow());
     workflow.setParentVariables(this);
-    workflow.initializeFrom(executionContext.variables);
+    workflow.initializeFrom(executionContext.variables());
 
     // The internal variables need to be reset to be able to use them properly.
     workflow.getWorkflowMeta().setInternalHopVariables(workflow);
@@ -300,7 +320,7 @@ public class LoopAction extends ActionBase implements IAction {
     } else {
       WorkflowMeta workflowToExecute = null;
       try {
-        workflowToExecute = loadWorkflow(realFilename, getMetadataProvider(), variables);
+        workflowToExecute = loadWorkflow(realFilename, metadataProvider, variables);
       } catch (HopException e) {
         // Ignore
       }
@@ -316,13 +336,6 @@ public class LoopAction extends ActionBase implements IAction {
     }
   }
 
-  private static class ExecutionContext {
-    public Result result;
-    public IVariables variables;
-
-    public ExecutionContext(Result result, IVariables variables) {
-      this.result = result;
-      this.variables = variables;
-    }
-  }
+  /** The result and the variables of the last execution of the workflow. */
+  private record ExecutionContext(Result result, IVariables variables) {}
 }
