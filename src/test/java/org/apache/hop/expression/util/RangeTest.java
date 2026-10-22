@@ -17,8 +17,10 @@ package org.apache.hop.expression.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
@@ -84,6 +86,29 @@ public class RangeTest {
     assertTrue(Range.all().isAll());
     assertFalse(Range.lessThan(5L).isAll());
     assertFalse(Range.between(-5L, 5L).isAll());
+  }
+
+  @Test
+  void equalsAndHashCode() {
+    // The unbounded ranges are equal, each range has its own bounds
+    assertEquals(Range.<Long>all(), Range.<Long>all());
+    assertEquals(Range.<Long>all().hashCode(), Range.<Long>all().hashCode());
+    assertEquals(Range.lessThan(5L), Range.lessThan(5L));
+    assertEquals(Range.lessThan(5L).hashCode(), Range.lessThan(5L).hashCode());
+    assertEquals(Range.greaterThanOrEqual(5L), Range.greaterThanOrEqual(5L));
+
+    assertNotEquals(Range.lessThan(5L), Range.lessThanOrEqual(5L));
+    assertNotEquals(Range.lessThan(5L), Range.greaterThan(5L));
+    assertNotEquals(Range.<Long>all(), Range.lessThan(5L));
+    assertNotEquals(Range.lessThan(5L), Range.lessThan("5"));
+
+    // Equal ranges have the same hash code, the endpoints are compared with equals
+    assertNotEquals(
+        Range.between(new BigDecimal("1.0"), BigDecimal.TEN),
+        Range.between(new BigDecimal("1.00"), BigDecimal.TEN));
+
+    // The unbounded range contains the bounded range
+    assertEquals(Range.between(1L, 5L), Range.<Long>all().intersect(Range.between(1L, 5L)));
   }
 
   @Test

@@ -34,7 +34,7 @@ public final class Range<T extends Comparable<? super T>> {
   private Range(final Bound<T> lower, final Bound<T> upper) {
     lowerBound = Objects.requireNonNull(lower, "lower must not be null");
     upperBound = Objects.requireNonNull(upper, "upper must not be null");
-    if (lower.compareTo(upper) > 0 && compareOrThrow(lower.endpoint, upper.endpoint) != 0) {
+    if (lower.compareTo(upper) > 0 && lower.endpoint.compareTo(upper.endpoint) != 0) {
       throw new IllegalArgumentException(
           String.format("lower must be less than or equal to upper %s", this));
     }
@@ -53,7 +53,7 @@ public final class Range<T extends Comparable<? super T>> {
   }
 
   public static <T extends Comparable<? super T>> Range<T> all() {
-    return new Range<>((Bound<T>) BelowAll.INSTANCE, (Bound<T>) AboveAll.INSTANCE);
+    return new Range<>(new BelowAll<T>(), new AboveAll<T>());
   }
 
   /**
@@ -62,10 +62,9 @@ public final class Range<T extends Comparable<? super T>> {
    * @param value the maximum value (exclusive)
    * @return the range
    */
-  @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> lessThan(T value) {
     Objects.requireNonNull(value, VALUE_IS_NULL);
-    return new Range<>((Bound<T>) BelowAll.INSTANCE, new Below<>(value, BoundType.EXCLUSIVE));
+    return new Range<>(new BelowAll<>(), new Below<>(value, BoundType.EXCLUSIVE));
   }
 
   /**
@@ -74,10 +73,9 @@ public final class Range<T extends Comparable<? super T>> {
    * @param value the maximum value (inclusive)
    * @return the range
    */
-  @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> lessThanOrEqual(T value) {
     Objects.requireNonNull(value, VALUE_IS_NULL);
-    return new Range<>((Bound<T>) BelowAll.INSTANCE, new Below<>(value, BoundType.INCLUSIVE));
+    return new Range<>(new BelowAll<>(), new Below<>(value, BoundType.INCLUSIVE));
   }
 
   /**
@@ -87,10 +85,9 @@ public final class Range<T extends Comparable<? super T>> {
    * @param value the minimum value (exclusive)
    * @return the range
    */
-  @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> greaterThan(T value) {
     Objects.requireNonNull(value, VALUE_IS_NULL);
-    return new Range<>(new Above<>(value, BoundType.EXCLUSIVE), (Bound<T>) AboveAll.INSTANCE);
+    return new Range<>(new Above<>(value, BoundType.EXCLUSIVE), new AboveAll<>());
   }
 
   /**
@@ -99,10 +96,9 @@ public final class Range<T extends Comparable<? super T>> {
    * @param value the minimum value (inclusive)
    * @return the range
    */
-  @SuppressWarnings("unchecked")
   public static <T extends Comparable<? super T>> Range<T> greaterThanOrEqual(T value) {
     Objects.requireNonNull(value, VALUE_IS_NULL);
-    return new Range<>(new Above<>(value, BoundType.INCLUSIVE), (Bound<T>) AboveAll.INSTANCE);
+    return new Range<>(new Above<>(value, BoundType.INCLUSIVE), new AboveAll<>());
   }
 
   public static <T extends Comparable<? super T>> Range<T> of(
@@ -113,10 +109,6 @@ public final class Range<T extends Comparable<? super T>> {
   public static <T extends Comparable<? super T>> Range<T> between(T lower, T upper) {
     return new Range<>(
         new Above<>(lower, BoundType.INCLUSIVE), new Below<>(upper, BoundType.INCLUSIVE));
-  }
-
-  static int compareOrThrow(Comparable left, Comparable right) {
-    return left.compareTo(right);
   }
 
   /** Returns the lower value of this range. */
@@ -137,13 +129,13 @@ public final class Range<T extends Comparable<? super T>> {
     // An unbounded range is never empty
     return lowerBound.endpoint != null
         && upperBound.endpoint != null
-        && compareOrThrow(lowerBound.endpoint, upperBound.endpoint) == 0
+        && lowerBound.endpoint.compareTo(upperBound.endpoint) == 0
         && (lowerBound.type == BoundType.EXCLUSIVE || upperBound.type == BoundType.EXCLUSIVE);
   }
 
   /** Returns {@code true} if this range is of the form {@code (-∞..+∞)}. */
   public boolean isAll() {
-    return lowerBound == BelowAll.INSTANCE && upperBound == AboveAll.INSTANCE;
+    return lowerBound instanceof BelowAll && upperBound instanceof AboveAll;
   }
 
   /** Checks if the {@code value} is within the bounds of this range. */
@@ -237,7 +229,7 @@ public final class Range<T extends Comparable<? super T>> {
     EXCLUSIVE;
   }
 
-  abstract static class Bound<T extends Comparable<?>> implements Comparable<Bound<T>> {
+  abstract static class Bound<T extends Comparable<? super T>> implements Comparable<Bound<T>> {
     final T endpoint;
     final BoundType type;
 
@@ -248,13 +240,13 @@ public final class Range<T extends Comparable<? super T>> {
 
     @Override
     public int compareTo(Bound<T> other) {
-      if (other == BelowAll.INSTANCE) {
+      if (other instanceof BelowAll) {
         return 1;
       }
-      if (other == AboveAll.INSTANCE) {
+      if (other instanceof AboveAll) {
         return -1;
       }
-      int result = Range.compareOrThrow(this.endpoint, other.endpoint);
+      int result = this.endpoint.compareTo(other.endpoint);
       if (result != 0) {
         return result;
       }
@@ -268,12 +260,12 @@ public final class Range<T extends Comparable<? super T>> {
     }
 
     boolean isLess(T value) {
-      int compare = Range.compareOrThrow(endpoint, value);
+      int compare = endpoint.compareTo(value);
       return (type == BoundType.INCLUSIVE) ? compare >= 0 : compare > 0;
     }
 
     boolean isGreater(T value) {
-      int compare = Range.compareOrThrow(endpoint, value);
+      int compare = endpoint.compareTo(value);
       return (type == BoundType.INCLUSIVE) ? compare <= 0 : compare < 0;
     }
 
@@ -283,22 +275,16 @@ public final class Range<T extends Comparable<? super T>> {
       if (obj == null || getClass() != obj.getClass()) {
         return false;
       }
-      // It might not really be a Bound<T>, but we'll catch a CCE if it's not
-      Bound<T> that = (Bound<T>) obj;
-      try {
-        int compareResult = compareTo(that);
-        return compareResult == 0;
-      } catch (ClassCastException wastNotComparableToOurType) {
-        return false;
-      }
+      // The endpoints can be of another type, they are compared with equals like in hashCode
+      Bound<?> that = (Bound<?>) obj;
+      return type == that.type && Objects.equals(endpoint, that.endpoint);
     }
 
     @Override
     public abstract int hashCode();
   }
 
-  private static final class BelowAll<T extends Comparable<?>> extends Bound<T> {
-    static final Bound<?> INSTANCE = new BelowAll<>();
+  private static final class BelowAll<T extends Comparable<? super T>> extends Bound<T> {
 
     BelowAll() {
       super(null, BoundType.EXCLUSIVE);
@@ -316,7 +302,7 @@ public final class Range<T extends Comparable<? super T>> {
 
     @Override
     public int compareTo(Bound<T> other) {
-      return (other == this) ? 0 : -1;
+      return (other instanceof BelowAll) ? 0 : -1;
     }
 
     @Override
@@ -335,7 +321,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
   }
 
-  private static final class Above<T extends Comparable<?>> extends Bound<T> {
+  private static final class Above<T extends Comparable<? super T>> extends Bound<T> {
     Above(T endpoint, BoundType type) {
       super(endpoint, type);
     }
@@ -351,8 +337,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
   }
 
-  private static final class AboveAll<T extends Comparable<?>> extends Bound<T> {
-    static final Bound<?> INSTANCE = new AboveAll<>();
+  private static final class AboveAll<T extends Comparable<? super T>> extends Bound<T> {
 
     AboveAll() {
       super(null, BoundType.EXCLUSIVE);
@@ -370,7 +355,7 @@ public final class Range<T extends Comparable<? super T>> {
 
     @Override
     public int compareTo(Bound<T> other) {
-      return (other == this) ? 0 : 1;
+      return (other instanceof AboveAll) ? 0 : 1;
     }
 
     @Override
@@ -389,7 +374,7 @@ public final class Range<T extends Comparable<? super T>> {
     }
   }
 
-  private static final class Below<T extends Comparable<?>> extends Bound<T> {
+  private static final class Below<T extends Comparable<? super T>> extends Bound<T> {
     Below(T endpoint, BoundType type) {
       super(endpoint, type);
     }
