@@ -21,8 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
@@ -48,7 +47,7 @@ import org.eclipse.swt.graphics.Image;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
-  private final CompletableFuture<IRowMeta> rowMeta;
+  private final Supplier<IRowMeta> rowMeta;
   private final IVariables variables;
   private final ExpressionMode mode;
   private String message;
@@ -57,8 +56,17 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     this(variables, null, ExpressionMode.NONE);
   }
 
+  /**
+   * Creates the processor of the proposals of an expression.
+   *
+   * @param variables the variables to propose
+   * @param rowMeta the supplier of the fields or the arguments to propose, which returns null while
+   *     they are not known. It is called in the UI thread, it must not wait for the fields. Null to
+   *     propose no field.
+   * @param mode the mode of the expression
+   */
   public ExpressionCompletionProcessor(
-      IVariables variables, CompletableFuture<IRowMeta> rowMeta, ExpressionMode mode) {
+      IVariables variables, Supplier<IRowMeta> rowMeta, ExpressionMode mode) {
     this.variables = variables;
     this.rowMeta = rowMeta;
     this.mode = mode;
@@ -233,7 +241,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         }
 
         String replacement = name;
-        // TODO: add function arguments to proposal
+        // TODO: show the arguments of the function in the proposal, like ABS(number)
         String displayName = name;
         CompletionProposal proposal =
             new CompletionProposal(
@@ -253,36 +261,34 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   protected void computeIdentifierProposals(
       List<ICompletionProposal> proposals, String prefix, int start, int end, boolean quoted) {
     // Value meta
+    IRowMeta fields = rowMeta.get();
+    if (fields == null) {
+      return;
+    }
 
-    try {
-      if (prefix.charAt(0) == '\"') prefix = prefix.substring(1);
-      for (IValueMeta valueMeta : rowMeta.get().getValueMetaList()) {
-        String name = valueMeta.getName();
-        if (startsWithIgnoreCase(name, prefix)) {
+    if (prefix.charAt(0) == '\"') prefix = prefix.substring(1);
+    for (IValueMeta valueMeta : fields.getValueMetaList()) {
+      String name = valueMeta.getName();
+      if (startsWithIgnoreCase(name, prefix)) {
 
-          // If identifier name contains space or a special character, is a reserved word or a
-          // function name must be quoted, same rules as when an expression is written
-          String content = quoted ? '\"' + name + '\"' : Identifier.quoteIfNeeded(name);
+        // If identifier name contains space or a special character, is a reserved word or a
+        // function name must be quoted, same rules as when an expression is written
+        String content = quoted ? '\"' + name + '\"' : Identifier.quoteIfNeeded(name);
 
-          Image image = GuiResource.getInstance().getImage(valueMeta);
-          String description =
-              "<b>Type:</b> "
-                  + valueMeta.getTypeDesc()
-                  + "<br><b>Transform origin:</b> "
-                  + valueMeta.getOrigin()
-                  + "<br><b>Comment:</b> "
-                  + StringUtils.defaultString(valueMeta.getComments());
+        Image image = GuiResource.getInstance().getImage(valueMeta);
+        String description =
+            "<b>Type:</b> "
+                + valueMeta.getTypeDesc()
+                + "<br><b>Transform origin:</b> "
+                + valueMeta.getOrigin()
+                + "<br><b>Comment:</b> "
+                + StringUtils.defaultString(valueMeta.getComments());
 
-          CompletionProposal proposal =
-              new CompletionProposal(
-                  content, start, end - start, content.length(), image, name, null, description);
-          proposals.add(proposal);
-        }
+        CompletionProposal proposal =
+            new CompletionProposal(
+                content, start, end - start, content.length(), image, name, null, description);
+        proposals.add(proposal);
       }
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    } catch (ExecutionException e) {
-      // Ignore
     }
   }
 

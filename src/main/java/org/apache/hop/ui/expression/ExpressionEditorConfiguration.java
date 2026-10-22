@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.util.Utils;
@@ -68,26 +67,28 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private final IVariables variables;
   private final ExpressionMode mode;
-  private final CompletableFuture<IRowMeta> rowMetaFuture;
+
+  /** The fields or the arguments of a user-defined function, null until they are known. */
+  private IRowMeta rowMeta;
 
   /** The names of the fields, case-sensitive, empty until the row meta is known. */
   private Set<String> fieldNames = Set.of();
 
-  public ExpressionEditorConfiguration(
-      IVariables variables, CompletableFuture<IRowMeta> rowMetaFuture, ExpressionMode mode) {
+  public ExpressionEditorConfiguration(IVariables variables, ExpressionMode mode) {
     super();
     this.variables = variables;
-    this.rowMetaFuture = rowMetaFuture;
     this.mode = mode;
   }
 
   /**
-   * Sets the fields to highlight in the expression, the viewer must invalidate its text
-   * presentation to apply them.
+   * Sets the fields to highlight in the expression and to propose in the content assist, the viewer
+   * must invalidate its text presentation to apply them.
    *
    * @param rowMeta the fields, or null if they are unknown
    */
   public void setRowMeta(IRowMeta rowMeta) {
+    this.rowMeta = rowMeta;
+
     Set<String> names = new HashSet<>();
     if (rowMeta != null) {
       for (IValueMeta valueMeta : rowMeta.getValueMetaList()) {
@@ -118,7 +119,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
     ExpressionCompletionProcessor expressionProcessor =
-        new ExpressionCompletionProcessor(variables, rowMetaFuture, mode);
+        new ExpressionCompletionProcessor(variables, () -> rowMeta, mode);
     ExpressionCompletionProcessor variableProcessor = new ExpressionCompletionProcessor(variables);
 
     ContentAssistant assistant = new ContentAssistant();

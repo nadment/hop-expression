@@ -211,7 +211,6 @@ public class ExpressionEditor extends Composite
   private final ExpressionMode mode;
   private final ExpressionLabelProvider labelProvider;
   private final IVariables variables;
-  private final CompletableFuture<IRowMeta> rowMetaFuture;
   private SourceViewer wViewer;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
@@ -226,7 +225,7 @@ public class ExpressionEditor extends Composite
   /** The tree item of the fields or arguments, or null if the mode has no fields. */
   private TreeItem wTreeItemFields;
 
-  /** The configuration of the viewer, which highlights the fields. */
+  /** The configuration of the viewer, which highlights the fields and proposes them. */
   private ExpressionEditorConfiguration configuration;
 
   /**
@@ -248,7 +247,6 @@ public class ExpressionEditor extends Composite
     super(parent, style);
     this.variables = variables;
     this.mode = mode;
-    this.rowMetaFuture = rowMetaFuture;
     this.labelProvider = new ExpressionLabelProvider();
 
     PropsUi.setLook(this);
@@ -433,7 +431,7 @@ public class ExpressionEditor extends Composite
     Document document = new Document();
     document.addDocumentListener(this);
 
-    configuration = new ExpressionEditorConfiguration(variables, rowMetaFuture, mode);
+    configuration = new ExpressionEditorConfiguration(variables, mode);
     IDocumentPartitioner partitioner =
         new FastPartitioner(
             new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(wViewer));
