@@ -221,7 +221,8 @@ public final class Literal implements IExpression {
 
   @Override
   public int hashCode() {
-    return Objects.hash(value, type);
+    // Consistent with equals, which compares only the value
+    return Objects.hashCode(value);
   }
 
   @Override

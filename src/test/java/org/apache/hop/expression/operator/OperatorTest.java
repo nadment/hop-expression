@@ -1175,7 +1175,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER!=2", "FIELD_INTEGER!=2");
       optimize(
           "FIELD_INTEGER NOT IN (1,2,3) OR FIELD_INTEGER NOT IN (2,3,4,5)",
-          "FIELD_INTEGER NOT IN (3,2)");
+          "FIELD_INTEGER NOT IN (2,3)");
 
       // Nothing to simplify if no value is excluded by all predicates
       optimize("FIELD_INTEGER!=1 OR FIELD_INTEGER!=2", "FIELD_INTEGER!=1 OR FIELD_INTEGER!=2");
@@ -1329,9 +1329,9 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify intersection = and IN
       optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (3,4,5)", "FIELD_INTEGER=3");
-      optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5,3,1)", "FIELD_INTEGER IN (3,1)");
+      optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5,3,1)", "FIELD_INTEGER IN (1,3)");
       optimize(
-          "FIELD_INTEGER IN (1,2,3,5) AND FIELD_INTEGER IN (2,3,4,5)", "FIELD_INTEGER IN (3,2,5)");
+          "FIELD_INTEGER IN (1,2,3,5) AND FIELD_INTEGER IN (2,3,4,5)", "FIELD_INTEGER IN (2,3,5)");
       // An empty intersection is FALSE, but NULL and not FALSE if the value is NULL
       optimize(
           "FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER IN (4,5)", "NVL2(FIELD_INTEGER,FALSE,NULL)");

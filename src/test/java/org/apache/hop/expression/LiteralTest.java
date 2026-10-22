@@ -29,7 +29,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -57,7 +56,9 @@ public class LiteralTest extends ExpressionTest {
   @DisplayName("Literal NULL")
   void testNull() {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
-    assertEquals(Objects.hash(null, UnknownType.UNKNOWN), Literal.NULL.hashCode());
+    // Equal literals of different types have the same hash code
+    assertEquals(Literal.NULL_BOOLEAN, Literal.NULL);
+    assertEquals(Literal.NULL_BOOLEAN.hashCode(), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.isKind(null));
     assertFalse(Literal.NULL.isOperator(null));
     assertTrue(Literal.NULL.isConstant());
