@@ -15,6 +15,7 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.Objects;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IAggregateProcessor;
@@ -23,6 +24,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the first value over a group of rows.
@@ -48,6 +50,19 @@ public class FirstValueFunction extends AggregateFunction {
     super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/first_value.html");
 
     this.ignoreNulls = ignoreNulls;
+  }
+
+  /** {@inheritDoc} The null treatment is not an operand, it distinguishes the functions. */
+  @Override
+  public boolean equals(@Nullable Object other) {
+    return other instanceof FirstValueFunction function
+        && ignoreNulls == function.ignoreNulls
+        && super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), ignoreNulls);
   }
 
   @Override

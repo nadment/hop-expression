@@ -15,6 +15,7 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.Objects;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
@@ -24,6 +25,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @FunctionPlugin
 @NullMarked
@@ -48,6 +50,19 @@ public class ListAggFunction extends AggregateFunction {
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         "/docs/listagg.html");
     this.option = option;
+  }
+
+  /** {@inheritDoc} The option is not an operand, it distinguishes the functions. */
+  @Override
+  public boolean equals(@Nullable Object other) {
+    return other instanceof ListAggFunction function
+        && option == function.option
+        && super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), option);
   }
 
   @Override

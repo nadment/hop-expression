@@ -18,6 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -59,6 +60,29 @@ class AggregateFunctionTest extends ExpressionTest {
       processor.process(call.getOperands());
     }
     return processor.getValue();
+  }
+
+  @Test
+  void equalsWithOption() throws Exception {
+    IRowExpressionContext context = createExpressionContext();
+
+    // The option of an aggregate is not an operand, it distinguishes the aggregates
+    String[][] sources = {
+      {"COUNT(FIELD_STRING)", "COUNT(DISTINCT FIELD_STRING)"},
+      {"FIRST_VALUE(FIELD_STRING)", "FIRST_VALUE(FIELD_STRING) IGNORE NULLS"},
+      {"NTH_VALUE(FIELD_STRING,2)", "NTH_VALUE(FIELD_STRING,2) IGNORE NULLS"},
+      {"LISTAGG(FIELD_STRING)", "LISTAGG(DISTINCT FIELD_STRING)"}
+    };
+    for (String[] pair : sources) {
+      assertNotEquals(IExpression.of(context, pair[0]), IExpression.of(context, pair[1]));
+    }
+
+    assertEquals(
+        IExpression.of(context, "COUNT(DISTINCT FIELD_STRING)"),
+        IExpression.of(context, "COUNT(DISTINCT FIELD_STRING)"));
+    assertEquals(
+        CountFunction.COUNT_DISTINCT.hashCode(),
+        new CountFunction(CountFunction.Count.DISTINCT).hashCode());
   }
 
   @Test

@@ -15,6 +15,7 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.Objects;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IAggregateProcessor;
@@ -23,6 +24,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @FunctionPlugin
 @NullMarked
@@ -43,6 +45,19 @@ public class CountFunction extends AggregateFunction {
   public CountFunction(Count count) {
     super("COUNT", ReturnTypes.INTEGER_NOT_NULL, OperandTypes.ANY, "/docs/count.html");
     this.count = count;
+  }
+
+  /** {@inheritDoc} The count mode is not an operand, it distinguishes the functions. */
+  @Override
+  public boolean equals(@Nullable Object other) {
+    return other instanceof CountFunction function
+        && count == function.count
+        && super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), count);
   }
 
   @Override

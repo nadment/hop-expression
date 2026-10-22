@@ -15,6 +15,7 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.Objects;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -25,6 +26,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Returns the nth value over a group of rows.
@@ -49,6 +51,19 @@ public class NthValueFunction extends AggregateFunction {
     super("NTH_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_INTEGER, "/docs/nth_value.html");
 
     this.ignoreNulls = ignoreNulls;
+  }
+
+  /** {@inheritDoc} The null treatment is not an operand, it distinguishes the functions. */
+  @Override
+  public boolean equals(@Nullable Object other) {
+    return other instanceof NthValueFunction function
+        && ignoreNulls == function.ignoreNulls
+        && super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), ignoreNulls);
   }
 
   @Override
