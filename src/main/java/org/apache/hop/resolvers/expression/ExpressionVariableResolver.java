@@ -18,8 +18,6 @@
 
 package org.apache.hop.resolvers.expression;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.logging.LogChannel;
@@ -31,16 +29,20 @@ import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@Getter
-@Setter
 @NullMarked
 @GuiPlugin
 @VariableResolverPlugin(
-    id = "Expression-Variable-Resolver",
-    name = "Expression Variable Resolver",
+    id = ExpressionVariableResolver.ID,
+    name = ExpressionVariableResolver.NAME,
     description = "Evaluate value",
     documentationUrl = "/variables/resolvers/expression.html")
 public class ExpressionVariableResolver implements IVariableResolver {
+
+  /** The plugin id, also used to serialize the resolver in the metadata. */
+  public static final String ID = "Expression-Variable-Resolver";
+
+  /** The plugin name. */
+  public static final String NAME = "Expression Variable Resolver";
 
   @Override
   public @Nullable String resolve(String source, IVariables variables) throws HopException {
@@ -49,7 +51,7 @@ public class ExpressionVariableResolver implements IVariableResolver {
       IExpression expression = IExpression.of(new ExpressionContext(variables), source);
       return expression.getValue(String.class);
     } catch (Exception e) {
-      LogChannel.GENERAL.logError("Error evaluate expression: " + source, e);
+      LogChannel.GENERAL.logError("Error evaluating expression: " + source, e);
       return null;
     }
   }
@@ -61,11 +63,11 @@ public class ExpressionVariableResolver implements IVariableResolver {
 
   @Override
   public String getPluginId() {
-    return "Expression-Variable-Resolver";
+    return ID;
   }
 
   @Override
   public String getPluginName() {
-    return "Expression Variable Resolver";
+    return NAME;
   }
 }
