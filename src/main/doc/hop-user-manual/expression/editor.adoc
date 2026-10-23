@@ -35,7 +35,7 @@ Open it with the button next to an expression in the dialog of a transform or an
 
 == Completion
 
-* kbd:[Ctrl+Space] completes a field, a function or a reserved word; a function is inserted with its parentheses, like `LEFT()`.
+* kbd:[Ctrl+Space] completes a field, a function, a reserved word, a data type like `NUMBER` or a time unit like `YEAR`; a function is inserted with its parentheses, like `LEFT()`.
 * `$` opens the list of the variables, also in a string or a comment.
 * A single matching proposal is inserted without opening the list.
 

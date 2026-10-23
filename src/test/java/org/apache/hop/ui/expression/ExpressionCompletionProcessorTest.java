@@ -83,6 +83,34 @@ class ExpressionCompletionProcessorTest {
     assertEquals("PI|", complete("PI", true));
   }
 
+  /** Returns the data types and the time units proposed for a prefix. */
+  private static List<String> typesAndTimeUnits(String prefix) {
+    ExpressionCompletionProcessor processor =
+        new ExpressionCompletionProcessor(new Variables(), () -> null, ExpressionMode.ROW);
+    List<ICompletionProposal> proposals = new ArrayList<>();
+    processor.computeTypeAndTimeUnitProposals(proposals, prefix, 0, prefix.length());
+    return proposals.stream().map(ICompletionProposal::getDisplayString).sorted().toList();
+  }
+
+  @Test
+  void typeAndTimeUnitProposals() {
+    // A data type, like CAST(value AS NUMBER), the prefix is not case-sensitive
+    assertEquals(List.of("NUMBER"), typesAndTimeUnits("nu"));
+    assertEquals(List.of("STRING"), typesAndTimeUnits("STR"));
+    // A time unit with its main name, like EXTRACT(YEAR FROM date), not its aliases
+    assertEquals(List.of("YEAR"), typesAndTimeUnits("YEA"));
+    assertEquals(
+        List.of("MICROSECOND", "MILLENNIUM", "MILLISECOND", "MINUTE", "MONTH"),
+        typesAndTimeUnits("M"));
+    // A data type that is a reserved word, like DATE, is proposed with the reserved words
+    assertFalse(typesAndTimeUnits("DAT").contains("DATE"));
+    // The internal data types are not proposed
+    assertTrue(typesAndTimeUnits("AN").isEmpty());
+    assertTrue(typesAndTimeUnits("UNK").isEmpty());
+    assertTrue(typesAndTimeUnits("ENU").isEmpty());
+    assertFalse(typesAndTimeUnits("AR").contains("ARRAY"));
+  }
+
   @Test
   void startsWithIgnoreCase() {
     assertTrue(ExpressionCompletionProcessor.startsWithIgnoreCase("ABS", "ab"));

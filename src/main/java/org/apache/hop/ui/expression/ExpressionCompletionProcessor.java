@@ -20,7 +20,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.core.Const;
@@ -33,8 +35,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Keyword;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.IOperandCountRange;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -47,6 +51,10 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
+
+  /** The data types used internally, they are not written in an expression. */
+  private static final Set<TypeName> INTERNAL_TYPES =
+      EnumSet.of(TypeName.UNKNOWN, TypeName.ANY, TypeName.ARRAY, TypeName.ENUM);
 
   private final Supplier<IRowMeta> rowMeta;
   private final IVariables variables;
@@ -247,7 +255,42 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   }
 
   /**
-   * Proposes the reserved words and the functions that start with the prefix.
+   * Proposes the data types and the time units that start with the prefix, like {@code NUMBER} for
+   * {@code CAST(value AS NUMBER)} or {@code YEAR} for {@code EXTRACT(YEAR FROM date)}.
+   *
+   * <p>The internal data types, which are not written in an expression, and the aliases of the time
+   * units are not proposed. A name that is also a reserved word, like DATE, is proposed once with
+   * the reserved words.
+   *
+   * @param proposals the proposals to complete
+   * @param prefix the prefix entered by the user
+   * @param start the start of the replaced text
+   * @param end the end of the replaced text
+   */
+  protected void computeTypeAndTimeUnitProposals(
+      List<ICompletionProposal> proposals, String prefix, int start, int end) {
+    for (TypeName type : TypeName.values()) {
+      if (!INTERNAL_TYPES.contains(type)) {
+        addWordProposal(proposals, type.name(), prefix, start, end);
+      }
+    }
+    for (TimeUnit unit : TimeUnit.values()) {
+      addWordProposal(proposals, unit.name(), prefix, start, end);
+    }
+  }
+
+  /** Proposes a word that is not a reserved word if it starts with the prefix. */
+  private static void addWordProposal(
+      List<ICompletionProposal> proposals, String word, String prefix, int start, int end) {
+    if (!Keyword.is(word) && startsWithIgnoreCase(word, prefix)) {
+      proposals.add(
+          new CompletionProposal(word, start, end - start, word.length(), null, word, null, null));
+    }
+  }
+
+  /**
+   * Proposes the reserved words, the data types, the time units and the functions that start with
+   * the prefix.
    *
    * <p>A function is inserted with its parentheses, the caret between them, or after them for a
    * function without argument, like {@code PI()}.
@@ -273,6 +316,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         proposals.add(proposal);
       }
     }
+
+    // Data types and time units
+    computeTypeAndTimeUnitProposals(proposals, prefix, start, end);
 
     // Functions
     Image image = GuiResource.getInstance().getImageFunction();
