@@ -32,8 +32,8 @@ Each expression creates a new field, or replaces an input field with the same na
 
 Add a line for each field to calculate, with the name of the field, its expression and the type of its value.
 
-Click the button of the expression column to open the expression editor.
-The editor lists the input fields, the operators, the functions and the variables, highlights the syntax, completes the names with kbd:[Ctrl+Space] and underlines the errors of the expression.
+Click the button of the expression column to open the xref:../../expression/editor.adoc[expression editor].
+The editor lists the input fields, the operators, the functions and the variables, highlights the syntax, completes the names with kbd:[Ctrl+Space], comments or uncomments the lines with kbd:[Ctrl+/] and underlines the errors of the expression.
 
 === Input fields only
 

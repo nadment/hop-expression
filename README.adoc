@@ -105,6 +105,7 @@ end
 
 * Keywords and function names are not case-sensitive, identifiers are
 * Comments are supported to make expressions easier to read
+* The {url-doc}/hop-user-manual/expression/editor.adoc[expression editor] highlights the syntax, completes the names, explains the elements and underlines the errors
 * Parentheses control the order of evaluation
 * An expression is optimized right after parsing: `5+XYZ+4*2+5` becomes `XYZ+18`, so readability has no cost at runtime
 

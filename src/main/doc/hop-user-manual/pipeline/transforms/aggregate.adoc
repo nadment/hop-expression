@@ -35,7 +35,7 @@ Add the fields that make up the group, the button *Get Fields* adds all the inpu
 Without group field, all the rows make up a single group.
 
 Add a line for each aggregate, with the name of the field and its expression.
-Click the button of the expression column to open the expression editor.
+Click the button of the expression column to open the xref:../../expression/editor.adoc[expression editor].
 
 === Aggregate expressions
 

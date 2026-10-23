@@ -33,8 +33,7 @@ The rows are not modified, they are only sent to a target transform.
 Add a route for each condition, with the condition and the target transform of the rows that match it.
 The target transforms must be connected with a hop from this transform; when a hop is created, choose to create a new target or to set the default target.
 
-Click the button of the condition column to open the expression editor.
-The editor lists the input fields, the operators, the functions and the variables, highlights the syntax, completes the names with kbd:[Ctrl+Space] and underlines the errors of the condition.
+Click the button of the condition column to open the xref:../../expression/editor.adoc[expression editor].
 
 === Order of the routes
 

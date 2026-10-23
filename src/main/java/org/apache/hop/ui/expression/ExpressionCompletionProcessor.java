@@ -34,6 +34,7 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Keyword;
 import org.apache.hop.expression.UserDefinedFunction;
+import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -149,7 +150,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           if (rowMeta != null) {
             computeIdentifierProposals(proposals, prefix, start, end, quoted);
           }
-          computeReservedWordProposals(proposals, prefix, start, end);
+          // A function name already followed by its parenthesis is replaced without parentheses
+          boolean hasParenthesis = end < document.getLength() && document.getChar(end) == '(';
+          computeReservedWordProposals(proposals, prefix, start, end, hasParenthesis);
         }
       }
       proposals.sort(new ProposalComparator());
@@ -214,8 +217,54 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     }
   }
 
+  /**
+   * Gets the text inserted for a function: its name with the parentheses, or its name only if it is
+   * already followed by a left parenthesis.
+   *
+   * @param name the name of the function
+   * @param hasParenthesis true if the replaced text is followed by a left parenthesis
+   * @return the inserted text
+   */
+  static String getFunctionReplacement(String name, boolean hasParenthesis) {
+    return hasParenthesis ? name : name + "()";
+  }
+
+  /**
+   * Gets the position of the caret in the text inserted for a function: between the parentheses,
+   * after them for a function without argument, or after the name if it is already followed by a
+   * left parenthesis.
+   *
+   * @param name the name of the function
+   * @param function the function
+   * @param hasParenthesis true if the replaced text is followed by a left parenthesis
+   * @return the position of the caret, relative to the start of the inserted text
+   */
+  static int getFunctionCursorPosition(String name, Function function, boolean hasParenthesis) {
+    if (hasParenthesis) return name.length();
+    IOperandCountRange range = function.getOperandCountRange();
+    boolean noArgument = range != null && range.getMax() == 0;
+    return name.length() + (noArgument ? 2 : 1);
+  }
+
+  /**
+   * Proposes the reserved words and the functions that start with the prefix.
+   *
+   * <p>A function is inserted with its parentheses, the caret between them, or after them for a
+   * function without argument, like {@code PI()}.
+   *
+   * @param proposals the proposals to complete
+   * @param prefix the prefix entered by the user
+   * @param start the start of the replaced text
+   * @param end the end of the replaced text
+   * @param hasParenthesis true if the replaced text is followed by a left parenthesis, the name of
+   *     the function is then inserted without parentheses
+   */
   protected void computeReservedWordProposals(
-      List<ICompletionProposal> proposals, String prefix, int start, int end) {
+      List<ICompletionProposal> proposals,
+      String prefix,
+      int start,
+      int end,
+      boolean hasParenthesis) {
     // Keywords
     for (String word : Keyword.get()) {
       if (startsWithIgnoreCase(word, prefix)) {
@@ -240,7 +289,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           continue;
         }
 
-        String replacement = name;
+        String replacement = getFunctionReplacement(name, hasParenthesis);
+        int cursorPosition = getFunctionCursorPosition(name, function, hasParenthesis);
         // TODO: show the arguments of the function in the proposal, like ABS(number)
         String displayName = name;
         CompletionProposal proposal =
@@ -248,7 +298,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
                 replacement,
                 start,
                 end - start,
-                replacement.length(),
+                cursorPosition,
                 image,
                 displayName,
                 null,

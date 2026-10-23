@@ -27,7 +27,7 @@ The Set variables expression action sets one or several variables, with values c
 == Usage
 
 Add a line for each variable, with its name, the expression that calculates its value, and the scope where the variable is set.
-Click the button of the expression column to open the expression editor.
+Click the button of the expression column to open the xref:../../expression/editor.adoc[expression editor].
 
 The lines are processed in their order: a line can use the variables set by the previous lines.
 

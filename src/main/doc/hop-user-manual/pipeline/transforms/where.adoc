@@ -39,7 +39,7 @@ A transform can be the target of only one result: choosing it for one result rem
 
 As soon as a TRUE or a FALSE target transform is chosen, the main output receives no row.
 
-Write the condition in the expression editor of the dialog.
+Write the condition in the xref:../../expression/editor.adoc[expression editor] of the dialog.
 
 === Result of the condition
 

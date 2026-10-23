@@ -19,10 +19,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Keyword;
 import org.apache.hop.expression.TimeUnit;
@@ -42,7 +44,9 @@ import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.DefaultHyperlinkPresenter;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlinkPresenter;
+import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
@@ -59,6 +63,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.jspecify.annotations.Nullable;
 
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
@@ -74,6 +79,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   /** The names of the fields, case-sensitive, empty until the row meta is known. */
   private Set<String> fieldNames = Set.of();
+
+  /** Opens the documentation of a function with Ctrl+click, or null for no link. */
+  private @Nullable Consumer<Function> functionDocumentationOpener;
 
   public ExpressionEditorConfiguration(IVariables variables, ExpressionMode mode) {
     super();
@@ -294,11 +302,15 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-    // No hover in the comments and the strings, a word is not a function there
+    // In a string, a word is not a function or a field, only the variables are shown
+    if (ExpressionPartitionScanner.STRING.equals(contentType)) {
+      return new ExpressionTextHover(variables, () -> rowMeta, true);
+    }
+    // No hover in the comments
     if (!IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
       return null;
     }
-    return new ExpressionTextHover();
+    return new ExpressionTextHover(variables, () -> rowMeta, false);
   }
 
   @Override
@@ -309,5 +321,30 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   @Override
   public IHyperlinkPresenter getHyperlinkPresenter(ISourceViewer sourceViewer) {
     return new DefaultHyperlinkPresenter(GuiResource.getInstance().getColorLightBlue());
+  }
+
+  /**
+   * Sets how the documentation of a function is opened with Ctrl+click, it must be set before the
+   * viewer is configured.
+   *
+   * @param opener opens the documentation of a function, or null for no link on the functions
+   */
+  public void setFunctionDocumentationOpener(@Nullable Consumer<Function> opener) {
+    this.functionDocumentationOpener = opener;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The name of a function opens its documentation, an URL opens the browser.
+   */
+  @Override
+  public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+    if (functionDocumentationOpener == null) {
+      return super.getHyperlinkDetectors(sourceViewer);
+    }
+    return new IHyperlinkDetector[] {
+      new FunctionHyperlinkDetector(functionDocumentationOpener), new URLHyperlinkDetector()
+    };
   }
 }

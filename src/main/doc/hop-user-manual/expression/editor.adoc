@@ -16,133 +16,48 @@ under the License.
 ////
 = Expression editor
 
-The expression editor helps to write an expression: it lists the fields, the operators, the functions and the variables, highlights the syntax, completes the names, explains the elements and checks the expression while you type.
-
-== Opening the editor
-
-* In the dialog of a transform or an action, click the button *Open the expression editor* next to an expression, for example a field of the xref:../pipeline/transforms/expression.adoc[Expression] transform.
-* The xref:../pipeline/transforms/where.adoc[Where] transform shows the editor directly in its dialog.
-* A xref:udf.adoc[user-defined function] is written in the editor of its metadata.
-
-The *Help* button of the editor dialog opens the documentation of the xref:expression.adoc[expression language].
-
-== Layout
-
-The editor has three parts:
-
-* the tree of the elements on the left;
-* the text of the expression on the right, with a toolbar;
-* the help panel below the text, shown when you ask for the documentation of an element and hidden when you click in the text or on its close button.
+The expression editor helps to write an expression.
+Open it with the button next to an expression in the dialog of a transform or an action; the xref:../pipeline/transforms/where.adoc[Where] transform shows it directly.
 
 == Tree of the elements
 
-The tree lists the elements you can use, by group:
+* Lists the *Fields* (or the *Arguments* of a xref:udf.adoc[user-defined function]), the *Operators* and functions by category, and the *Variables*.
+* Double-click an element, or right-click it and choose *Help*, to show its documentation.
+* Drag an element into the text to insert it, like `"MY FIELD"`, `UPPER()` or `${PATH}`.
 
-[cols="1,3"]
-|===
-|Group |Content
+== Writing
 
-|Fields
-|The input fields of the transform, when they are known. For a user-defined function, the group is *Arguments* and lists its arguments.
-
-|Operators
-|The operators and the functions by category: conditional, mathematical, string, date... The aggregate functions are listed only for the xref:../pipeline/transforms/aggregate.adoc[Aggregate] transform. The aliases of a function are shown with its name.
-
-|Variables
-|The variables of the project and of the environment. A deprecated variable is grayed.
-|===
-
-* *Double-click* an element, or right-click it and choose *Help*, to show its documentation in the help panel.
-* *Drag* an element into the text to insert it: a field with quotes if needed, like `"MY FIELD"`, a function with its parentheses, like `UPPER()`, or a variable like `${PATH}`.
-* The buttons of the tree toolbar collapse or expand all the groups.
-
-== Writing the expression
-
-=== Syntax highlighting
-
-The text shows each element with its own style: the fields, the reserved words and the operators, the functions, the numbers, the literals `TRUE`, `FALSE` and `NULL`, the data types and the time units, the strings, the comments and the variables.
-The colors are adapted to the dark mode of Hop.
-
-=== Errors
-
-The expression is checked a short time after you stop typing, with the fields when they are known.
-
-* An error is underlined in red, and its icon is shown in the margin, next to the line numbers.
-* Hover the error or its icon to read the message.
-
-=== Matching bracket
-
-When the caret is next to a parenthesis `(` `)` or a bracket `[` `]`, a box is drawn around the matching one.
-A bracket in a string or a comment is not matched with a bracket of the expression.
-
-=== Selection with a double-click
-
-A double-click selects a variable `${NAME}` as a whole, a quoted identifier with its quotes, or a word.
-
-=== Comments
-
-Press kbd:[Ctrl+/] to comment or uncomment the selected lines, or the line of the caret:
-
-* if all the lines that are not blank start with `//` or `--`, the comment is removed;
-* otherwise `// ` is added at the start of each line that is not blank.
-
-The same action is available in the toolbar and in the context menu, and with kbd:[Ctrl+Shift+C] or the kbd:[/] key of the numeric keypad, for the keyboards where the slash needs kbd:[Shift].
-It is undone at once with kbd:[Ctrl+Z].
+* Syntax highlighting, adapted to the dark mode.
+* Errors underlined a short time after typing, with their message on hover.
+* Box around the bracket matching the one next to the caret.
+* Double-click selects a word, a quoted identifier or a variable `${NAME}`.
+* kbd:[Ctrl+/] comments or uncomments the lines with `//`.
 
 == Completion
 
-Press kbd:[Ctrl+Space] to complete the word at the caret.
-With a Chinese system language, where kbd:[Ctrl+Space] switches the input method, the shortcut is kbd:[Ctrl+Alt+Space].
+* kbd:[Ctrl+Space] completes a field, a function or a reserved word; a function is inserted with its parentheses, like `LEFT()`.
+* `$` opens the list of the variables, also in a string or a comment.
+* A single matching proposal is inserted without opening the list.
 
-* The proposals are the fields, the functions and the reserved words that start with the typed letters, ignoring the case.
-* A field whose name has spaces or special characters is inserted with quotes.
-* A function is inserted with its parentheses, the caret between them, like `LEFT(|)`, or after them for a function without argument, like `PI()|`. A function already followed by a parenthesis is inserted without parentheses.
-* Typing `$` opens the list of the variables, also in a string or a comment. A deprecated variable is marked in the list.
-* If only one proposal matches, it is inserted without opening the list. If several proposals start with the same letters, these letters are inserted first.
+== Information
 
-== Information on an element
+* Hover a function to read its description, a field to read its data type, a variable to read its value.
+* kbd:[Ctrl]+click a function to show its documentation.
 
-Hover an element of the expression to show information about it:
+== Shortcuts
 
-[cols="1,3"]
+On macOS, use kbd:[Cmd] instead of kbd:[Ctrl].
+
+[cols="1,2"]
 |===
-|Element |Information
+|Shortcut |Action
 
-|Error
-|The message of the error.
-
-|Function
-|The description of the function. A word is a function only if it is immediately followed by a left parenthesis, otherwise it is a field.
-
-|Field
-|The data type of the field in an expression, like `STRING(50)`, and the transform it comes from.
-
-|Variable
-|The value of the variable, or that it is not defined, and its description. The variables are also shown in a string.
+|kbd:[Ctrl+Space] |Complete
+|kbd:[Ctrl+/] |Comment or uncomment, also kbd:[Ctrl+Shift+C]
+|kbd:[Ctrl+Z] / kbd:[Ctrl+Shift+Z] |Undo / Redo
+|kbd:[Ctrl+F] / kbd:[Ctrl+H] |Find / Replace
+|kbd:[Ctrl+A] |Select all
+|kbd:[Ctrl+C] / kbd:[Ctrl+X] / kbd:[Ctrl+V] |Copy / Cut / Paste
 |===
 
-Press kbd:[Ctrl] and click the name of a function to show its documentation in the help panel.
-
-== Actions and shortcuts
-
-The actions are in the toolbar of the editor and in the context menu of the text. On macOS, use kbd:[Cmd] instead of kbd:[Ctrl].
-
-[cols="2,1,4"]
-|===
-|Action |Shortcut |Description
-
-|Undo |kbd:[Ctrl+Z] |Undoes the last change.
-|Redo |kbd:[Ctrl+Shift+Z] |Redoes the last undone change.
-|Select all |kbd:[Ctrl+A] |Selects all the text.
-|Clear selection | |Clears the selection.
-|Copy |kbd:[Ctrl+C] |Copies the selected text to the clipboard.
-|Cut |kbd:[Ctrl+X] |Cuts the selected text to the clipboard.
-|Paste |kbd:[Ctrl+V] |Pastes the text of the clipboard.
-|Find |kbd:[Ctrl+F] |Finds a text in the expression.
-|Replace |kbd:[Ctrl+H] |Finds and replaces a text, or only finds it in a read-only editor.
-|Toggle comment |kbd:[Ctrl+/] |Comments or uncomments the lines, see <<Comments>>.
-|Evaluate or simplify expression | |Shows the expression optimized by the compiler, like `2+3` simplified to `5`, or the error of an invalid expression. Toolbar only.
-|Complete | kbd:[Ctrl+Space] |Completes the word at the caret, see <<Completion>>.
-|===
-
-You can also drop a text from another application into the expression.
+The toolbar button *Evaluate or simplify expression* shows the optimized expression, like `2+3` simplified to `5`.

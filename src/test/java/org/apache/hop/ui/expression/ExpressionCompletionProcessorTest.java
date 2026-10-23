@@ -25,9 +25,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.ExpressionExtension;
+import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.junit.rules.RestoreHopEnvironmentExtension;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith({RestoreHopEnvironmentExtension.class, ExpressionExtension.class})
 class ExpressionCompletionProcessorTest {
 
   @Test
@@ -55,6 +61,26 @@ class ExpressionCompletionProcessorTest {
     processor.computeIdentifierProposals(new ArrayList<>(), "A", 0, 1, false);
     processor.computeIdentifierProposals(new ArrayList<>(), "A", 0, 1, false);
     assertEquals(2, reads.get());
+  }
+
+  /** Returns the text inserted for a function with a | at the caret. */
+  private static String complete(String name, boolean hasParenthesis) {
+    Function function = FunctionRegistry.getFunction(name);
+    String text = ExpressionCompletionProcessor.getFunctionReplacement(name, hasParenthesis);
+    int caret =
+        ExpressionCompletionProcessor.getFunctionCursorPosition(name, function, hasParenthesis);
+    return text.substring(0, caret) + "|" + text.substring(caret);
+  }
+
+  @Test
+  void functionInsertedWithParentheses() {
+    // The caret is between the parentheses, or after them for a function without argument
+    assertEquals("LEFT(|)", complete("LEFT", false));
+    assertEquals("COALESCE(|)", complete("COALESCE", false));
+    assertEquals("PI()|", complete("PI", false));
+    // A function already followed by its parenthesis is inserted without parentheses
+    assertEquals("LEFT|", complete("LEFT", true));
+    assertEquals("PI|", complete("PI", true));
   }
 
   @Test

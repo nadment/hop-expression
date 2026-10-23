@@ -88,6 +88,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.IRegion;
@@ -100,11 +101,14 @@ import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.AnnotationRulerColumn;
 import org.eclipse.jface.text.source.CompositeRuler;
+import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
+import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.LineNumberRulerColumn;
+import org.eclipse.jface.text.source.MatchingCharacterPainter;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -149,6 +153,7 @@ public class ExpressionEditor extends Composite
   public static final String ID_TOOLBAR_FIND = "ExpressionEditor-Toolbar-10300-find";
   public static final String ID_TOOLBAR_FIND_REPLACE =
       "ExpressionEditor-Toolbar-10310-find-replace";
+  public static final String ID_TOOLBAR_COMMENT = "ExpressionEditor-Toolbar-10400-comment";
   public static final String ID_TOOLBAR_OPTIMIZE = "ExpressionEditor-Toolbar-10500-simplify";
 
   private static final Class<?> PKG = ExpressionEditor.class;
@@ -162,11 +167,18 @@ public class ExpressionEditor extends Composite
   public static final String ID_CONTEXT_MENU_COPY = "ExpressionEditor-ContextMenu-30000-copy";
   public static final String ID_CONTEXT_MENU_PASTE = "ExpressionEditor-ContextMenu-30010-paste";
   public static final String ID_CONTEXT_MENU_CUT = "ExpressionEditor-ContextMenu-30020-cut";
-  public static final String ID_CONTEXT_MENU_FIND = "ExpressionEditor-ContextMenu-40000-find";
+  public static final String ID_CONTEXT_MENU_COMMENT = "ExpressionEditor-ContextMenu-40000-comment";
+  public static final String ID_CONTEXT_MENU_FIND = "ExpressionEditor-ContextMenu-50000-find";
   public static final String ID_CONTEXT_MENU_FIND_REPLACE =
-      "ExpressionEditor-ContextMenu-40010-find-replace";
+      "ExpressionEditor-ContextMenu-50010-find-replace";
 
   private static final String ANNOTATION_ERROR_TYPE = ExpressionAnnotationAccess.ERROR_TYPE;
+
+  /** The delay in milliseconds after the last change before the expression is validated. */
+  private static final int VALIDATION_DELAY = 300;
+
+  /** The prefix of a line comment written by {@link #toggleComment()}. */
+  private static final String LINE_COMMENT = "//";
 
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> OPERATORS =
@@ -227,6 +239,14 @@ public class ExpressionEditor extends Composite
 
   /** The configuration of the viewer, which highlights the fields and proposes them. */
   private ExpressionEditorConfiguration configuration;
+
+  /** Validates the expression after the delay of the typing, unless the editor is closed. */
+  private final Runnable delayedValidation =
+      () -> {
+        if (!isDisposed()) {
+          validate();
+        }
+      };
 
   /**
    * Creates the expression editor, with the tree of the elements and the help panel.
@@ -360,6 +380,15 @@ public class ExpressionEditor extends Composite
             event.doit = false;
             return;
           }
+          // Toggles the comment of the lines with Ctrl+/, or Ctrl+Shift+C like in Eclipse for the
+          // keyboards where the slash needs Shift, like AZERTY
+          if (event.keyCode == '/'
+              || event.keyCode == SWT.KEYPAD_DIVIDE
+              || (event.keyCode == 'c' && (event.stateMask & SWT.MOD2) != 0)) {
+            toggleComment();
+            event.doit = false;
+            return;
+          }
           if ((event.stateMask & SWT.MOD2) != 0) {
             return;
           }
@@ -440,6 +469,8 @@ public class ExpressionEditor extends Composite
     document.addDocumentListener(this);
 
     configuration = new ExpressionEditorConfiguration(variables, mode);
+    // Ctrl+click on a function shows its documentation in the help panel
+    configuration.setFunctionDocumentationOpener(this::showHelp);
     IDocumentPartitioner partitioner =
         new FastPartitioner(
             new ExpressionPartitionScanner(), configuration.getConfiguredContentTypes(wViewer));
@@ -449,6 +480,26 @@ public class ExpressionEditor extends Composite
     wViewer.setDocument(document, new AnnotationModel());
     wViewer.configure(configuration);
     wViewer.addPainter(createErrorPainter());
+    wViewer.addPainter(createBracketPainter());
+  }
+
+  /**
+   * Highlights the bracket matching the bracket next to the caret, a box is drawn around it.
+   *
+   * <p>The brackets are matched in the same partition, a bracket in a string or a comment is not
+   * matched with a bracket of the expression.
+   */
+  private MatchingCharacterPainter createBracketPainter() {
+    ICharacterPairMatcher matcher =
+        new DefaultCharacterPairMatcher(
+            new char[] {'(', ')', '[', ']'}, IDocumentExtension3.DEFAULT_PARTITIONING);
+    MatchingCharacterPainter painter = new MatchingCharacterPainter(wViewer, matcher);
+    GuiResource resource = GuiResource.getInstance();
+    painter.setColor(
+        PropsUi.getInstance().isDarkMode()
+            ? resource.getColor(150, 150, 150)
+            : resource.getColor(128, 128, 128));
+    return painter;
   }
 
   /**
@@ -784,6 +835,10 @@ public class ExpressionEditor extends Composite
 
     wViewer.getDocument().set(expression);
 
+    // The errors of the loaded expression are shown at once, without the delay of the typing
+    getDisplay().timerExec(-1, delayedValidation);
+    validate();
+
     // The loaded expression must not be undone
     IUndoManager undoManager = wViewer.getUndoManager();
     if (undoManager != null) {
@@ -863,7 +918,8 @@ public class ExpressionEditor extends Composite
       toolbarWidgets.enableToolbarItem(ID_TOOLBAR_COPY, canCopy);
       toolbarWidgets.enableToolbarItem(ID_TOOLBAR_PASTE, canPaste);
       toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND, false);
-      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND_REPLACE, false); // wViewer.isEditable());
+      toolbarWidgets.enableToolbarItem(
+          ID_TOOLBAR_FIND_REPLACE, false); // TODO in 2.20 : wViewer.isEditable());
     }
   }
 
@@ -957,6 +1013,107 @@ public class ExpressionEditor extends Composite
       image = "ui/images/unselect-all.svg")
   public void unselectAll() {
     wViewer.setSelectedRange(getCaretPosition(), 0);
+  }
+
+  /**
+   * Comments or uncomments the lines of the selection, or the line of the caret.
+   *
+   * <p>If all the lines that are not blank start with a line comment {@code //} or {@code --},
+   * after spaces, the comment is removed, otherwise {@code // } is added at the start of each line
+   * that is not blank. The change is undone at once.
+   */
+  @GuiToolbarElement(
+      root = ID_TOOLBAR,
+      id = ID_TOOLBAR_COMMENT,
+      image = "comment.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBar.Comment.ToolTip",
+      separator = true)
+  @GuiMenuElement(
+      root = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      parentId = GUI_PLUGIN_CONTEXT_MENU_PARENT_ID,
+      id = ID_CONTEXT_MENU_COMMENT,
+      label = "i18n::ExpressionEditor.Menu.Comment.Label",
+      image = "comment.svg",
+      separator = true)
+  @GuiKeyboardShortcut(control = true, key = '/')
+  @GuiOsxKeyboardShortcut(command = true, key = '/')
+  public void toggleComment() {
+    if (!wViewer.isEditable()) return;
+
+    Point range = wViewer.getSelectedRange();
+    IUndoManager undoManager = wViewer.getUndoManager();
+    if (undoManager != null) undoManager.beginCompoundChange();
+    try {
+      toggleComment(wViewer.getDocument(), range.x, range.y);
+    } catch (BadLocationException e) {
+      // The selection is outside the document, nothing to do
+    } finally {
+      if (undoManager != null) undoManager.endCompoundChange();
+    }
+  }
+
+  /**
+   * Comments or uncomments the lines of a range of the document, see {@link #toggleComment()}.
+   *
+   * @param document the document
+   * @param offset the start of the range
+   * @param length the length of the range, 0 for the line of the offset
+   * @throws BadLocationException if the range is outside the document
+   */
+  static void toggleComment(IDocument document, int offset, int length)
+      throws BadLocationException {
+    int startLine = document.getLineOfOffset(offset);
+    int endLine = document.getLineOfOffset(offset + length);
+    // A selection that ends at the start of a line does not include this line
+    if (endLine > startLine && document.getLineOffset(endLine) == offset + length) {
+      endLine--;
+    }
+
+    boolean commented = false;
+    for (int line = startLine; line <= endLine; line++) {
+      String text = getLineText(document, line);
+      if (text.isBlank()) continue;
+      if (findLineComment(text) < 0) {
+        commented = false;
+        break;
+      }
+      commented = true;
+    }
+
+    // From the last line, the offsets of the previous lines do not change
+    for (int line = endLine; line >= startLine; line--) {
+      String text = getLineText(document, line);
+      int lineOffset = document.getLineOffset(line);
+      if (commented) {
+        int index = findLineComment(text);
+        if (index >= 0) {
+          // Remove the comment prefix and the space written after it
+          int prefixLength = text.startsWith(" ", index + 2) ? 3 : 2;
+          document.replace(lineOffset + index, prefixLength, "");
+        }
+      } else if (!text.isBlank() || startLine == endLine) {
+        document.replace(lineOffset, 0, LINE_COMMENT + " ");
+      }
+    }
+  }
+
+  /** Gets the text of a line without its delimiter. */
+  private static String getLineText(IDocument document, int line) throws BadLocationException {
+    IRegion region = document.getLineInformation(line);
+    return document.get(region.getOffset(), region.getLength());
+  }
+
+  /**
+   * Finds the line comment {@code //} or {@code --} at the start of a line, after spaces.
+   *
+   * @return the index of the comment, or -1 if the line does not start with a line comment
+   */
+  private static int findLineComment(String text) {
+    int index = 0;
+    while (index < text.length() && Character.isWhitespace(text.charAt(index))) {
+      index++;
+    }
+    return (text.startsWith(LINE_COMMENT, index) || text.startsWith("--", index)) ? index : -1;
   }
 
   /** Undoes the last change of the expression. */
@@ -1182,7 +1339,9 @@ public class ExpressionEditor extends Composite
    */
   @Override
   public void documentChanged(DocumentEvent event) {
-    validate();
+    // The expression is compiled when the user pauses, not for each key typed. A runnable is
+    // scheduled once, the delay restarts with each change.
+    getDisplay().timerExec(VALIDATION_DELAY, delayedValidation);
 
     // The undo manager, notified after this listener, records the change later
     getDisplay()
