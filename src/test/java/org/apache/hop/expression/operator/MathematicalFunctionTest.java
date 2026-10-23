@@ -213,6 +213,46 @@ class MathematicalFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Gamma() throws Exception {
+    // The factorial of n-1 for a positive integer n
+    evalEquals("GAMMA(1)", BigDecimal.ONE).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("GAMMA(2)", BigDecimal.ONE);
+    evalEquals("GAMMA(5)", new BigDecimal("24"));
+    evalEquals("Gamma(5.0)", new BigDecimal("24"));
+    evalEquals("Gamma(34)", new BigDecimal("8683317618811886495518194401280000000"));
+    // A real number, Γ(0.5) is the square root of pi
+    evalEquals("GAMMA(0.5)", new BigDecimal("1.7724538509055160272981674833411"));
+    evalEquals("GAMMA(-1.5)", new BigDecimal("2.3632718012073547030642233111215"));
+    evalEquals("GAMMA(-0.5)", new BigDecimal("-3.5449077018110320545963349666823"));
+    evalEquals("GAMMA(1e-30)", new BigDecimal("999999999999999999999999999999.42"));
+
+    // Null handling
+    evalNull("Gamma(NULL_INTEGER)").returnType(NumberType.NUMBER);
+    evalNull("Gamma(NULL_NUMBER)");
+
+    // Check operands
+    evalFails("Gamma()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Gamma(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Gamma(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Undefined for zero and the negative integers
+    evalFails("Gamma(0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Gamma(0.0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Gamma(-1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Gamma(-2.000)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalNull("TRY(Gamma(-3))");
+
+    // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
+    evalFails("Gamma(34.9)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Gamma(35)", ErrorCode.ARITHMETIC_OVERFLOW);
+    // The result of a large argument is not computed
+    evalFails("Gamma(1000000)", ErrorCode.ARITHMETIC_OVERFLOW);
+    evalFails("Gamma(1e-40)", ErrorCode.ARITHMETIC_OVERFLOW);
+
+    optimize("GAMMA(5)", "24");
+  }
+
+  @Test
   void Power() throws Exception {
     evalEquals("Power(3,2)", BigDecimal.valueOf(9L)).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Power(100,0.5)", BigDecimal.valueOf(10L));

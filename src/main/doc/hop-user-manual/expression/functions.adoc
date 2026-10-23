@@ -111,6 +111,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:first_day.adoc["FIRST_DAY",role=fun]
 * xref:first_value.adoc["FIRST_VALUE",role=fun] aggregate
 * xref:floor.adoc["FLOOR",role=fun]
+* xref:gamma.adoc["GAMMA",role=fun]
 * xref:greatest.adoc["GREATEST",role=fun]
 * xref:hex_decode.adoc["HEX_DECODE",role=fun]
 * xref:hex_encode.adoc["HEX_ENCODE",role=fun]

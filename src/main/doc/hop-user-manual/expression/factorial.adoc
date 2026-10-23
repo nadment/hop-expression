@@ -40,3 +40,7 @@ Number
 FACTORIAL(5) returns 120
 FACTORIAL(0) returns 1
 ----
+
+== See also
+
+* xref:gamma.adoc["GAMMA",role=fun]

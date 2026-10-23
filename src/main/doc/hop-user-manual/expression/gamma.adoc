@@ -1,0 +1,50 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= GAMMA
+
+Returns the value of the gamma function Γ(x), which extends the factorial to real numbers.
+
+== Syntax
+
+----
+GAMMA( numeric )
+----
+
+== Returns
+
+Number
+
+== Usage
+
+* For a positive integer n, `GAMMA(n)` returns the factorial of n-1, for example `GAMMA(5)` returns 24.
+* For another value, the result has 32 significant digits.
+* Raises an error for zero and the negative integers, where the gamma function is undefined, for example `GAMMA(0)` or `GAMMA(-1)`.
+* Raises an error if the integer part of the result exceeds the maximum precision of a number, for an argument from 35, or near zero or a negative integer, for example `GAMMA(35)` or `GAMMA(1e-40)`.
+* Returns NULL if the argument is NULL.
+
+== Examples
+
+----
+GAMMA(1) returns 1
+GAMMA(5) returns 24
+GAMMA(0.5) returns 1.7724538509055160272981674833411
+GAMMA(-1.5) returns 2.3632718012073547030642233111215
+----
+
+== See also
+
+* xref:factorial.adoc["FACTORIAL",role=fun]
