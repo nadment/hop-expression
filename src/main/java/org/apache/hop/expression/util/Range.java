@@ -281,7 +281,11 @@ public final class Range<T extends Comparable<? super T>> {
     }
 
     @Override
-    public abstract int hashCode();
+    public int hashCode() {
+      // A lower bound and an upper bound on the same endpoint have different hash codes
+      int hash = Objects.hash(endpoint, type);
+      return (this instanceof Above) ? ~hash : hash;
+    }
   }
 
   private static final class BelowAll<T extends Comparable<? super T>> extends Bound<T> {
@@ -324,11 +328,6 @@ public final class Range<T extends Comparable<? super T>> {
   private static final class Above<T extends Comparable<? super T>> extends Bound<T> {
     Above(T endpoint, BoundType type) {
       super(endpoint, type);
-    }
-
-    @Override
-    public int hashCode() {
-      return ~Objects.hash(endpoint, type);
     }
 
     @Override
@@ -377,11 +376,6 @@ public final class Range<T extends Comparable<? super T>> {
   private static final class Below<T extends Comparable<? super T>> extends Bound<T> {
     Below(T endpoint, BoundType type) {
       super(endpoint, type);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(endpoint, type);
     }
 
     @Override

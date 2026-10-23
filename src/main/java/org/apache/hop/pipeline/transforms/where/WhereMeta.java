@@ -91,6 +91,9 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
   public WhereMeta(WhereMeta other) {
     super();
     this.condition = other.condition;
+    // The fields only declare the metadata properties, the names are kept in the target streams
+    this.trueTransformName = other.trueTransformName;
+    this.falseTransformName = other.falseTransformName;
     this.setTrueTransformName(other.getTrueTransformName());
     this.setFalseTransformName(other.getFalseTransformName());
   }

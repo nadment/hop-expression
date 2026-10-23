@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBinary;
@@ -55,9 +56,9 @@ public final class Types {
 
     if (types.isEmpty()) return UnknownType.UNKNOWN;
 
-    Type result = null;
-    for (Type type : types) {
-      result = getLeastRestrictive(result, type);
+    Type result = types.getFirst();
+    for (int i = 1; i < types.size(); i++) {
+      result = getLeastRestrictive(result, types.get(i));
     }
     return result;
   }
@@ -541,13 +542,9 @@ public final class Types {
   }
 
   public static IValueMeta createValueMeta(final String valueMetaName, final TypeName typeName) {
-
-    if (valueMetaName == null) {
-      throw new IllegalArgumentException("Value meta name must not be null");
-    }
-    if (typeName == null) {
-      throw new IllegalArgumentException("Type name must not be null");
-    }
+    // The callers outside the null-marked code can still pass null
+    Objects.requireNonNull(valueMetaName, "Value meta name must not be null");
+    Objects.requireNonNull(typeName, "Type name must not be null");
 
     return switch (typeName) {
       case BOOLEAN -> new ValueMetaBoolean(valueMetaName);
@@ -563,12 +560,9 @@ public final class Types {
   }
 
   public static IValueMeta createValueMeta(final String valueMetaName, final Type type) {
-    if (valueMetaName == null) {
-      throw new IllegalArgumentException("Value meta name must not be null");
-    }
-    if (type == null) {
-      throw new IllegalArgumentException("Type must not be null");
-    }
+    // The callers outside the null-marked code can still pass null
+    Objects.requireNonNull(valueMetaName, "Value meta name must not be null");
+    Objects.requireNonNull(type, "Type must not be null");
     return switch (type.getName()) {
       case BOOLEAN -> new ValueMetaBoolean(valueMetaName);
       case INTEGER -> new ValueMetaInteger(valueMetaName);

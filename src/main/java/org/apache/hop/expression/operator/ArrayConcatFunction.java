@@ -33,8 +33,9 @@ public class ArrayConcatFunction extends ConcatFunction {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    if (call.isConstant()) {
-      return (IExpression) eval(call.getOperands());
+    // A constant concatenation is replaced by its array, a null result is left to the evaluation
+    if (call.isConstant() && eval(call.getOperands()) instanceof Array array) {
+      return array;
     }
     return call;
   }
