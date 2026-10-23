@@ -38,7 +38,7 @@ public class TryToBinaryFunction extends Function {
         ReturnTypes.BINARY_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
         OperatorCategory.CONVERSION,
-        "/docs/to_binary.html");
+        "/docs/hop-user-manual/expression/to_binary.html");
   }
 
   @Override

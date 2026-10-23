@@ -41,7 +41,7 @@ public class Levenshtein extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING_STRING,
         OperatorCategory.STRING,
-        "/docs/levenshtein.html");
+        "/docs/hop-user-manual/expression/levenshtein.html");
   }
 
   @Override

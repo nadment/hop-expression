@@ -41,7 +41,7 @@ public class SechFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/sech.html");
+        "/docs/hop-user-manual/expression/sech.html");
   }
 
   @Override

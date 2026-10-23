@@ -43,7 +43,7 @@ public class UnaccentFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/unaccent.html");
+        "/docs/hop-user-manual/expression/unaccent.html");
   }
 
   @Override

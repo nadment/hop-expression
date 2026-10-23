@@ -50,7 +50,7 @@ public class IfNullFunction extends Function {
         ReturnTypes.LEAST_RESTRICTIVE,
         OperandTypes.SAME_SAME,
         OperatorCategory.CONDITIONAL,
-        "/docs/ifnull.html");
+        "/docs/hop-user-manual/expression/ifnull.html");
   }
 
   @Override

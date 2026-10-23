@@ -48,7 +48,7 @@ public class BitOrFunction extends Function {
         ReturnTypes.LEAST_RESTRICTIVE.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.EXACT_INTEGER_EXACT_INTEGER.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.BITWISE,
-        "/docs/bit_or.html");
+        "/docs/hop-user-manual/expression/bit_or.html");
   }
 
   @Override

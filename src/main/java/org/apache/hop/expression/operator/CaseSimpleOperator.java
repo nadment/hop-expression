@@ -48,7 +48,7 @@ public class CaseSimpleOperator extends Operator {
         ReturnTypes.CASE_OPERATOR,
         null,
         OperatorCategory.CONDITIONAL,
-        "/docs/case.html");
+        "/docs/hop-user-manual/expression/case.html");
   }
 
   @Override

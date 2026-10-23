@@ -45,7 +45,7 @@ public class StringToArrayFunction extends Function {
         ReturnTypes.ARRAY,
         OperandTypes.STRING_STRING,
         OperatorCategory.ARRAY,
-        "/docs/string_to_array.html");
+        "/docs/hop-user-manual/expression/string_to_array.html");
   }
 
   @Override

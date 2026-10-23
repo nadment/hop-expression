@@ -48,7 +48,7 @@ public class IsNullOperator extends PostfixUnaryOperator {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY,
         OperatorCategory.COMPARISON,
-        "/docs/is-null.html");
+        "/docs/hop-user-manual/expression/is-null.html");
   }
 
   @Override

@@ -62,7 +62,7 @@ public class JsonQueryFunction extends Function {
             .or(OperandTypes.EXACT_STRING)
             .or(OperandTypes.EXACT_STRING_STRING),
         OperatorCategory.JSON,
-        "/docs/json_query.html");
+        "/docs/hop-user-manual/expression/json_query.html");
   }
 
   @Override

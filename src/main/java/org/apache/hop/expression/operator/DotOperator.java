@@ -43,7 +43,7 @@ public class DotOperator extends Operator {
         ReturnTypes.DIVIDE_OPERATOR,
         OperandTypes.JSON_STRING,
         OperatorCategory.ARRAY,
-        "/docs/dot.html");
+        "/docs/hop-user-manual/expression/dot.html");
   }
 
   @Override

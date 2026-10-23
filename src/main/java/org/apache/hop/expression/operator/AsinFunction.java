@@ -42,7 +42,7 @@ public class AsinFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/asin.html");
+        "/docs/hop-user-manual/expression/asin.html");
   }
 
   @Override

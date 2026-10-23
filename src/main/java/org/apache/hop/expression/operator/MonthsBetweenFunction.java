@@ -43,7 +43,7 @@ public class MonthsBetweenFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/months_between.html");
+        "/docs/hop-user-manual/expression/months_between.html");
   }
 
   @Override

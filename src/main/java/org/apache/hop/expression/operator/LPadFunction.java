@@ -52,7 +52,7 @@ public class LPadFunction extends Function {
             .or(OperandTypes.STRING_INTEGER_STRING)
             .or(OperandTypes.BINARY_INTEGER_BINARY),
         OperatorCategory.STRING,
-        "/docs/lpad.html");
+        "/docs/hop-user-manual/expression/lpad.html");
   }
 
   @Override

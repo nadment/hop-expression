@@ -48,7 +48,7 @@ public class ArrayPositionFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.ARRAY_ANY.or(OperandTypes.ARRAY_ANY_INTEGER),
         OperatorCategory.ARRAY,
-        "/docs/array_position.html");
+        "/docs/hop-user-manual/expression/array_position.html");
   }
 
   @Override

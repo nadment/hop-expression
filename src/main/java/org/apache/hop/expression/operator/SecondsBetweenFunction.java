@@ -38,7 +38,7 @@ public class SecondsBetweenFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/seconds_between.html");
+        "/docs/hop-user-manual/expression/seconds_between.html");
   }
 
   @Override

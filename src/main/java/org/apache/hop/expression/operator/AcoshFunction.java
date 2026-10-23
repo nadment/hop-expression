@@ -42,7 +42,7 @@ public class AcoshFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/acosh.html");
+        "/docs/hop-user-manual/expression/acosh.html");
   }
 
   @Override

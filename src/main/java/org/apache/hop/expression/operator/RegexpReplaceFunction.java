@@ -64,7 +64,7 @@ public class RegexpReplaceFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OTC,
         OperatorCategory.STRING,
-        "/docs/regexp_replace.html");
+        "/docs/hop-user-manual/expression/regexp_replace.html");
     this.compiledPattern = compiledPattern;
   }
 

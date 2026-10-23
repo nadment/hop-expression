@@ -44,7 +44,7 @@ public class AddQuartersFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_quarters.html");
+        "/docs/hop-user-manual/expression/add_quarters.html");
   }
 
   @Override

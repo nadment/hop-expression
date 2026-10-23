@@ -50,7 +50,7 @@ public class ToDateFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.NUMBER),
         OperatorCategory.CONVERSION,
-        "/docs/to_date.html");
+        "/docs/hop-user-manual/expression/to_date.html");
   }
 
   @Override

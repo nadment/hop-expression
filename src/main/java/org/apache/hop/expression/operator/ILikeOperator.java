@@ -55,7 +55,7 @@ public class ILikeOperator extends Operator {
         OperandTypes.EXACT_STRING_EXACT_STRING.or(
             OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
         OperatorCategory.COMPARISON,
-        "/docs/ilike.html");
+        "/docs/hop-user-manual/expression/ilike.html");
     this.compiledPattern = compiledPattern;
   }
 

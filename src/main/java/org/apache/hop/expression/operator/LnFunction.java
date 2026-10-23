@@ -42,7 +42,7 @@ public class LnFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/ln.html");
+        "/docs/hop-user-manual/expression/ln.html");
   }
 
   @Override

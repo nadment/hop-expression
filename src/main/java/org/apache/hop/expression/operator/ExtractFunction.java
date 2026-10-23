@@ -59,7 +59,7 @@ public class ExtractFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.TIMEUNIT_DATE.or(OperandTypes.TIMEUNIT_INTERVAL),
         OperatorCategory.DATE,
-        "/docs/extract.html");
+        "/docs/hop-user-manual/expression/extract.html");
   }
 
   @Override

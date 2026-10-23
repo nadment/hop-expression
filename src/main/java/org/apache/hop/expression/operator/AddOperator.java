@@ -58,7 +58,7 @@ public class AddOperator extends BinaryOperator {
             .or(OperandTypes.INTERVAL_DATE)
             .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
-        "/docs/add.html");
+        "/docs/hop-user-manual/expression/add.html");
   }
 
   @Override

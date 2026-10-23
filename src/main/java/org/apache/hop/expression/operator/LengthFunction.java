@@ -43,7 +43,7 @@ public class LengthFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
-        "/docs/length.html");
+        "/docs/hop-user-manual/expression/length.html");
   }
 
   @Override

@@ -37,7 +37,7 @@ public class DayOfYearFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/dayofyear.html");
+        "/docs/hop-user-manual/expression/dayofyear.html");
   }
 
   @Override

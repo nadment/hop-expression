@@ -46,7 +46,7 @@ public class Nvl2Function extends Function {
         ReturnTypes.NVL2_FUNCTION,
         OperandTypes.ANY_SAME_SAME,
         OperatorCategory.CONDITIONAL,
-        "/docs/nvl2.html");
+        "/docs/hop-user-manual/expression/nvl2.html");
   }
 
   @Override

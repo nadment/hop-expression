@@ -45,7 +45,7 @@ public class AcosFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/acos.html");
+        "/docs/hop-user-manual/expression/acos.html");
   }
 
   @Override

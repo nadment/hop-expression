@@ -38,7 +38,7 @@ public class SpaceFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.INTEGER,
         OperatorCategory.STRING,
-        "/docs/space.html");
+        "/docs/hop-user-manual/expression/space.html");
   }
 
   @Override

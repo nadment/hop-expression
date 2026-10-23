@@ -55,7 +55,7 @@ public class ListAggFunction extends AggregateFunction {
         "LISTAGG",
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-        "/docs/listagg.html");
+        "/docs/hop-user-manual/expression/listagg.html");
     this.option = option;
   }
 

@@ -42,7 +42,7 @@ public class Base32EncodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
-        "/docs/base32_encode.html");
+        "/docs/hop-user-manual/expression/base32_encode.html");
   }
 
   @Override

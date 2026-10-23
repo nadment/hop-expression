@@ -40,7 +40,7 @@ public class CoshFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/cosh.html");
+        "/docs/hop-user-manual/expression/cosh.html");
   }
 
   @Override

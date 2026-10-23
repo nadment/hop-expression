@@ -43,7 +43,7 @@ public class PreviousDayFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
-        "/docs/previous_day.html");
+        "/docs/hop-user-manual/expression/previous_day.html");
   }
 
   @Override

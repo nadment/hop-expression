@@ -46,7 +46,7 @@ public class RepeatFunction extends Function {
             .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
-        "/docs/repeat.html");
+        "/docs/hop-user-manual/expression/repeat.html");
   }
 
   @Override

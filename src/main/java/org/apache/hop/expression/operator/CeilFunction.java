@@ -50,7 +50,7 @@ public class CeilFunction extends Function {
         ReturnTypes.CEIL_FLOOR_FUNCTION,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/ceil.html");
+        "/docs/hop-user-manual/expression/ceil.html");
   }
 
   @Override

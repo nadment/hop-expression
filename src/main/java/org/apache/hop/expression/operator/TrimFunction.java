@@ -46,7 +46,7 @@ public class TrimFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         OperatorCategory.STRING,
-        "/docs/trim.html");
+        "/docs/hop-user-manual/expression/trim.html");
   }
 
   @Override

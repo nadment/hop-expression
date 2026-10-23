@@ -35,7 +35,7 @@ public class PercentileFunction extends AggregateFunction {
         "PERCENTILE",
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER_NUMBER,
-        "/docs/percentile.html");
+        "/docs/hop-user-manual/expression/percentile.html");
   }
 
   @Override

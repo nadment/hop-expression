@@ -46,7 +46,7 @@ public class RTrimFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         OperatorCategory.STRING,
-        "/docs/rtrim.html");
+        "/docs/hop-user-manual/expression/rtrim.html");
   }
 
   @Override

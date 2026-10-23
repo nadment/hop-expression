@@ -41,7 +41,7 @@ public class BitSetFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.EXACT_INTEGER_EXACT_INTEGER,
         OperatorCategory.BITWISE,
-        "/docs/bit_set.html");
+        "/docs/hop-user-manual/expression/bit_set.html");
   }
 
   @Override

@@ -45,7 +45,7 @@ public class PositiveOperator extends PrefixUnaryOperator {
         ReturnTypes.ARG0,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER).or(OperandTypes.INTERVAL),
         OperatorCategory.MATHEMATICAL,
-        "/docs/plus.html");
+        "/docs/hop-user-manual/expression/plus.html");
   }
 
   @Override

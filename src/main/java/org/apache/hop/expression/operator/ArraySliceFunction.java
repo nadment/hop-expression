@@ -39,7 +39,7 @@ public class ArraySliceFunction extends Function {
         ReturnTypes.ARRAY,
         OperandTypes.ARRAY_INTEGER_INTEGER,
         OperatorCategory.ARRAY,
-        "/docs/array_slice.html");
+        "/docs/hop-user-manual/expression/array_slice.html");
   }
 
   @Override

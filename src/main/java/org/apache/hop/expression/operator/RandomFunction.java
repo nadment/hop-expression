@@ -51,7 +51,7 @@ public class RandomFunction extends Function {
         ReturnTypes.NUMBER_NOT_NULL,
         OperandTypes.NILADIC.or(OperandTypes.INTEGER),
         OperatorCategory.MATHEMATICAL,
-        "/docs/random.html");
+        "/docs/hop-user-manual/expression/random.html");
     this.random = random;
   }
 

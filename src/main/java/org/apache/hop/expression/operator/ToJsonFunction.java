@@ -38,7 +38,7 @@ public class ToJsonFunction extends Function {
         ReturnTypes.JSON_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.CONVERSION,
-        "/docs/to_json.html");
+        "/docs/hop-user-manual/expression/to_json.html");
   }
 
   @Override

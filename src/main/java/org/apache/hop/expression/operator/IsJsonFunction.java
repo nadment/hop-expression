@@ -44,7 +44,7 @@ public class IsJsonFunction extends Function {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY,
         OperatorCategory.COMPARISON,
-        "/docs/is_json.html");
+        "/docs/hop-user-manual/expression/is_json.html");
   }
 
   @Override

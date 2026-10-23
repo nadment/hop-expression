@@ -38,7 +38,7 @@ public class WeeksBetweenFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/weeks_between.html");
+        "/docs/hop-user-manual/expression/weeks_between.html");
   }
 
   @Override

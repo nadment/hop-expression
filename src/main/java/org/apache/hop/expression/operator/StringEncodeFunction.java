@@ -42,7 +42,7 @@ public class StringEncodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/string_encode.html");
+        "/docs/hop-user-manual/expression/string_encode.html");
   }
 
   @Override

@@ -74,7 +74,7 @@ public class LikeOperator extends Operator {
         OperandTypes.EXACT_STRING_EXACT_STRING.or(
             OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
         OperatorCategory.COMPARISON,
-        "/docs/like.html");
+        "/docs/hop-user-manual/expression/like.html");
     this.compiledPattern = compiledPattern;
   }
 

@@ -39,7 +39,7 @@ public class AsciiFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/ascii.html");
+        "/docs/hop-user-manual/expression/ascii.html");
   }
 
   @Override

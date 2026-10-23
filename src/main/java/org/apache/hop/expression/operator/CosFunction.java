@@ -42,7 +42,7 @@ public class CosFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/cos.html");
+        "/docs/hop-user-manual/expression/cos.html");
   }
 
   @Override

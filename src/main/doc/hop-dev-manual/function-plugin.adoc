@@ -1,0 +1,327 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= Developing a function in a plugin
+:toc:
+:toclevels: 2
+
+This guide explains how to add a function to the expression language from your own Hop plugin, written in Java.
+
+TIP: A function that only combines existing functions and operators does not need Java: a xref:../hop-user-manual/expression/udf.adoc[user-defined function] is a metadata element of the project, written as an expression.
+
+== Project setup
+
+A function plugin is a jar that depends on the `hop-expression` jar at compile time only, Hop provides it at runtime.
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.hop</groupId>
+  <artifactId>hop-expression</artifactId>
+  <version>${hop-expression.version}</version>
+  <scope>provided</scope>
+</dependency>
+----
+
+The `hop-expression` artifact is not published, install it in your local Maven repository by building this project, see the section _Building from source_ of the https://github.com/nadment/hop-expression[README].
+
+Hop finds the functions with the annotation index `META-INF/jandex.idx` of the jar.
+The parent pom of Apache Hop (`org.apache.hop:hop`) creates this index for each plugin; with another parent, add the `io.smallrye:jandex-maven-plugin` to the build.
+A jar without index is ignored, without error.
+
+== A first function
+
+A function extends `org.apache.hop.expression.Function`, it is annotated with `@FunctionPlugin` and has a public constructor without argument.
+
+[source,java]
+----
+/** Returns a greeting for a name. */
+@FunctionPlugin(names = "HI")
+public class GreetFunction extends Function {
+
+  public GreetFunction() {
+    super(
+        "GREET",                          // the name of the function
+        ReturnTypes.STRING_NULLABLE,      // the type of the result
+        OperandTypes.STRING,              // the number and the types of the arguments
+        OperatorCategory.STRING,          // the category shown in the editor
+        "/docs/acme/greet.html");         // the documentation, see below
+  }
+
+  @Override
+  public @Nullable Object eval(final IExpression[] operands) {
+    String name = operands[0].getValue(String.class);
+    if (name == null) return null;
+    return "Hello " + name;
+  }
+}
+----
+
+The expression `GREET('Hop')`, or its alias `HI('Hop')`, returns `'Hello Hop'`.
+
+=== Constructor
+
+[cols="1,3"]
+|===
+|Argument |Description
+
+|name
+|The name of the function, not case-sensitive. It must be unique: a name or an alias already registered is ignored with an error in the log, the first function is kept.
+
+|return type inference
+|Computes the type of the result from the types of the arguments. `ReturnTypes` provides the common ones, like `STRING_NULLABLE`, `INTEGER_NULLABLE`, `NUMBER_NULLABLE`, `BOOLEAN_NULLABLE` or `ARG0` for the type of the first argument.
+
+|operand type checker
+|Checks the number and the types of the arguments when the expression is compiled. `OperandTypes` provides the common ones, like `STRING`, `STRING_STRING`, `STRING_INTEGER` or `ANY`, combined with `or(...)` for several signatures. A call with wrong arguments raises `NOT_ENOUGH_ARGUMENTS`, `TOO_MANY_ARGUMENTS` or `ILLEGAL_ARGUMENT_TYPE`.
+
+|category
+|One of the `OperatorCategory` constants, used to group the functions in the editor.
+
+|documentation URL
+|The class path resource of the documentation page, see <<documentation>>.
+|===
+
+The optional `names` of `@FunctionPlugin` are aliases of the function.
+
+=== Evaluation
+
+`eval` receives the arguments of the call as expressions, the values are read with `getValue(Class)`, which converts the value to the requested Java class.
+
+[cols="1,2"]
+|===
+|Data type |Java class
+
+|BOOLEAN |`Boolean`
+|INTEGER |`Long`
+|NUMBER |`BigDecimal`
+|STRING |`String`
+|DATE |`ZonedDateTime`
+|INTERVAL |`org.apache.hop.expression.Interval`
+|BINARY |`byte[]`
+|JSON |`com.fasterxml.jackson.databind.JsonNode`
+|INET |`java.net.InetAddress`
+|ARRAY |`org.apache.hop.expression.Array`
+|===
+
+The result must be one of these classes, of the type given by the return type inference, or `null`.
+
+By convention, a function returns `null` when an argument is `null`, read each argument and return `null` before computing the result.
+
+An invalid argument raises an `ExpressionException` with an `ErrorCode`, for example `ARGUMENT_OUT_OF_RANGE` with the position of the argument and its value, or `INVALID_ARGUMENT`.
+Any other exception thrown by `eval` is reported as `CALL_FUNCTION_ERROR` with its message.
+
+[source,java]
+----
+if (count < 0) {
+  throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 2, count);
+}
+----
+
+=== Compilation
+
+When an expression is compiled, a call whose arguments are all constant is evaluated once and replaced by its result: `GREET('Hop')` becomes the literal `'Hello Hop'`.
+An error raised by this early evaluation is ignored, it is raised again when the expression is evaluated.
+
+Override these methods of `Function` to change this behavior:
+
+* `isDeterministic()` returns `false` for a function whose result changes for the same arguments, like a random value or the current date: the call is never replaced by its result.
+* `compile(IExpressionContext context, Call call)` returns a simplified expression for a call, for example another function for a type of argument. It returns the call by default.
+
+== An aggregate function
+
+An aggregate function, used by the Aggregate transform, extends `AggregateFunction` and creates a processor for each group of rows.
+
+[source,java]
+----
+@FunctionPlugin
+public class LongestFunction extends AggregateFunction {
+
+  public LongestFunction() {
+    super("LONGEST", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, "/docs/acme/longest.html");
+  }
+
+  @Override
+  public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
+    return new LongestProcessor();
+  }
+}
+
+/** Keeps the longest string of the group. */
+public class LongestProcessor implements IAggregateProcessor {
+  private @Nullable String longest;
+
+  @Override
+  public void process(IExpression[] operands) throws Exception {
+    String value = operands[0].getValue(String.class);
+    if (value != null && (longest == null || value.length() > longest.length())) {
+      longest = value;
+    }
+  }
+
+  @Override
+  public @Nullable Object getValue() throws Exception {
+    return longest;
+  }
+}
+----
+
+`process` is called for each row of the group, `getValue` returns the result of the group.
+
+== A function with an extended syntax
+
+By default, the arguments of a function are separated by commas.
+A function can read its arguments with its own syntax, with reserved words, like `CAST(value AS type)` or `EXTRACT(part FROM date)`.
+The parser does not need any change: the function declares its words and reads its arguments itself.
+
+[source,java]
+----
+/** Repeats a text: REPEAT_TEXT(text TIMES count) */
+@FunctionPlugin
+public class RepeatTextFunction extends Function {
+
+  public RepeatTextFunction() {
+    super(
+        "REPEAT_TEXT",
+        ReturnTypes.STRING_NULLABLE,
+        OperandTypes.STRING_INTEGER,
+        OperatorCategory.STRING,
+        "/docs/acme/repeat_text.html");
+  }
+
+  @Override
+  public Set<String> getKeywords() {
+    return Set.of("TIMES");
+  }
+
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+    // The left parenthesis is already read
+    IExpression text = parser.parseExpression();
+    parser.expectKeyword("TIMES", ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+    IExpression count = parser.parseExpression();
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    return new Call(token.start(), this, text, count);
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append("REPEAT_TEXT(");
+    operands[0].unparse(writer, 0, 0);
+    writer.append(" TIMES ");
+    operands[1].unparse(writer, 0, 0);
+    writer.append(')');
+  }
+
+  @Override
+  public @Nullable Object eval(final IExpression[] operands) {
+    String text = operands[0].getValue(String.class);
+    if (text == null) return null;
+    Long count = operands[1].getValue(Long.class);
+    if (count == null) return null;
+    return text.repeat(count.intValue());
+  }
+}
+----
+
+The expression `REPEAT_TEXT('ab' TIMES 3)` returns `'ababab'`.
+
+=== Reserved words
+
+`getKeywords()` declares the words of the syntax, they are registered with the function.
+
+* A word is made of letters and underscores, it is not case-sensitive.
+* A word cannot be the name of a data type or of a time unit, like `NUMBER` or `YEAR`: the function would not be registered.
+* A word of the grammar, like `FROM`, `IN` or `DISTINCT`, can be declared, it is already reserved.
+* A registered word is reserved in all the expressions: a field with this name must be quoted, like `"TIMES"`. Choose a word that is unlikely to be a field name.
+
+=== Parsing
+
+`parse(IExpressionParser parser, Token token)` is called after the left parenthesis of the call, `token` is the name of the function as written in the expression.
+It reads the arguments up to the right parenthesis, and returns the call, usually `new Call(token.start(), this, operands)`.
+It can return a call of another function, like a variant of this one for an option of the syntax.
+
+`IExpressionParser` reads the tokens of the expression:
+
+[cols="2,3"]
+|===
+|Method |Description
+
+|`parseExpression()` |Reads a complete expression, like an argument.
+|`parseExpressionList()` |Reads expressions separated by commas, the right parenthesis is not read.
+|`parsePrimary()` |Reads a term with its cast, element access or time zone, without operator.
+|`parseLiteralString(Token)`, `parseLiteralTimeUnit(Token)`, `parseDataType(Token)` |Reads a literal from a token returned by `next()`.
+|`isNextKeyword(String)` |Returns whether the next token is the reserved word, without reading it.
+|`acceptKeyword(String)` |Reads the next token if it is the reserved word.
+|`expectKeyword(String, ErrorCode, ...)` |Reads the next token, it must be the reserved word.
+|`isNext(Id)`, `accept(Id)`, `expect(Id, ErrorCode, ...)` |The same for the other tokens, like `Id.COMMA` or `Id.RPARENTHESIS`.
+|`hasNext()`, `expectNext(ErrorCode, ...)`, `next()` |Checks and reads the next token.
+|`getPosition()` |The position of the next token in the source, to raise a `ParseExpressionException`.
+|===
+
+A reserved word is matched by its text: a quoted identifier like `"TIMES"` is not the reserved word.
+
+=== Unparsing
+
+`unparse(StringWriter writer, IExpression[] operands)` writes the call with the same syntax, it is used to display an expression and must be parsed again into the same call.
+Keep `parse` and `unparse` next to each other in the class.
+
+[[documentation]]
+== Documentation
+
+The documentation URL of the constructor is a class path resource of the plugin jar, an HTML page shown in the expression editor.
+The description shown with the completion is the first paragraph of the page preamble, the `<div id="preamble">` of a page generated by Asciidoctor.
+
+* Write the page in AsciiDoc like the pages of this project in `src/main/doc/hop-user-manual/expression`, and generate it with the `asciidoctor-maven-plugin` into the jar.
+* Put the pages in a folder of your own, like `/docs/acme/`, so that they do not hide the pages of the built-in functions in `/docs/hop-user-manual/expression/`.
+
+A function without page works, it has no documentation and no description in the editor.
+
+== Deployment
+
+Copy the jar of the plugin into the folder of the Expression plugin, `plugins/misc/expression`, next to the `hop-expression` jar, and restart Hop.
+
+* The functions are loaded with the class loader of the Expression plugin: a function in the folder of another plugin is not found, an error is written in the log.
+* Hop does not search the annotations in the `lib` folders: a jar in `plugins/misc/expression/lib` is not registered.
+
+The libraries used by the function, which are not provided by Hop, go into `plugins/misc/expression/lib`.
+
+== Testing
+
+A unit test registers the function and evaluates expressions, without Hop running.
+`FunctionRegistry.init()` registers the built-in functions, for an expression that uses them.
+
+[source,java]
+----
+class GreetFunctionTest {
+
+  @BeforeAll
+  static void registerFunctions() throws Exception {
+    FunctionRegistry.init();
+    FunctionRegistry.register("GREET", new GreetFunction());
+  }
+
+  @Test
+  void greet() throws Exception {
+    IExpressionContext context = new ExpressionContext(new Variables());
+
+    assertEquals("Hello Hop", IExpression.of(context, "GREET('Hop')").getValue(String.class));
+    assertEquals("Hello HOP", IExpression.of(context, "GREET(UPPER('Hop'))").getValue(String.class));
+    assertNull(IExpression.of(context, "GREET(NULL)").getValue());
+  }
+}
+----
+
+`IExpression.of` parses, checks and compiles the expression, it raises an `ExpressionException` for a syntax or a type error.

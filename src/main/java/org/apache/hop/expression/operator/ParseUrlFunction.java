@@ -39,7 +39,7 @@ public class ParseUrlFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.STRING,
-        "/docs/parse_url.html");
+        "/docs/hop-user-manual/expression/parse_url.html");
   }
 
   @Override

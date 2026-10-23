@@ -44,7 +44,7 @@ public class IsDateFunction extends Function {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY_TEXT,
         OperatorCategory.COMPARISON,
-        "/docs/is_date.html");
+        "/docs/hop-user-manual/expression/is_date.html");
   }
 
   @Override

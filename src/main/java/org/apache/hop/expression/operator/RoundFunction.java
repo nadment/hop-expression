@@ -48,7 +48,7 @@ public class RoundFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER.or(OperandTypes.NUMBER_NUMBER),
         OperatorCategory.MATHEMATICAL,
-        "/docs/round.html");
+        "/docs/hop-user-manual/expression/round.html");
   }
 
   @Override

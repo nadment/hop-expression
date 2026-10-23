@@ -44,7 +44,7 @@ public class NotEqualOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,
-        "/docs/not_equal.html");
+        "/docs/hop-user-manual/expression/not_equal.html");
   }
 
   @Override

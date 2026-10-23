@@ -47,7 +47,7 @@ public class Div0Function extends Function {
         ReturnTypes.DIVIDE_OPERATOR,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/div0.html");
+        "/docs/hop-user-manual/expression/div0.html");
   }
 
   @Override

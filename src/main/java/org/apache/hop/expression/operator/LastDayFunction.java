@@ -72,7 +72,7 @@ public class LastDayFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE.or(OperandTypes.DATE_TIMEUNIT),
         OperatorCategory.DATE,
-        "/docs/last_day.html");
+        "/docs/hop-user-manual/expression/last_day.html");
   }
 
   @Override

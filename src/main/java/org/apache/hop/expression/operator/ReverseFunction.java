@@ -43,7 +43,7 @@ public class ReverseFunction extends Function {
         ReturnTypes.ARG0,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
-        "/docs/reverse.html");
+        "/docs/hop-user-manual/expression/reverse.html");
   }
 
   @Override

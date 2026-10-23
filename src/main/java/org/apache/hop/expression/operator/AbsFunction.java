@@ -44,7 +44,7 @@ public class AbsFunction extends Function {
         ReturnTypes.ABS_FUNCTION,
         OperandTypes.NUMERIC.or(OperandTypes.INTERVAL),
         OperatorCategory.MATHEMATICAL,
-        "/docs/abs.html");
+        "/docs/hop-user-manual/expression/abs.html");
   }
 
   @Override

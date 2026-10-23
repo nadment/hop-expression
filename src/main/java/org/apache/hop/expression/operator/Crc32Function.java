@@ -45,7 +45,7 @@ public class Crc32Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/crc32.html");
+        "/docs/hop-user-manual/expression/crc32.html");
   }
 
   @Override

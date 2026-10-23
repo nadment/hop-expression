@@ -40,7 +40,7 @@ public class CurrentTimeZoneFunction extends Function {
         ReturnTypes.STRING_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.DATE,
-        "/docs/current_timezone.html");
+        "/docs/hop-user-manual/expression/current_timezone.html");
   }
 
   @Override

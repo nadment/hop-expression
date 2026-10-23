@@ -42,7 +42,7 @@ public class ConvertTimezone extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE),
         OperatorCategory.DATE,
-        "/docs/convert_timezone.html");
+        "/docs/hop-user-manual/expression/convert_timezone.html");
   }
 
   @Override

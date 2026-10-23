@@ -60,7 +60,7 @@ public class ToCharFunction extends Function {
             .or(OperandTypes.BINARY_TEXT)
             .or(OperandTypes.BOOLEAN),
         OperatorCategory.CONVERSION,
-        "/docs/to_char.html");
+        "/docs/hop-user-manual/expression/to_char.html");
   }
 
   @Override

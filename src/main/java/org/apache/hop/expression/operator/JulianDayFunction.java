@@ -38,7 +38,7 @@ public class JulianDayFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/julian_day.html");
+        "/docs/hop-user-manual/expression/julian_day.html");
   }
 
   @Override

@@ -38,7 +38,7 @@ public class ToIntervalFunction extends Function {
         ReturnTypes.INTERVAL_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.CONVERSION,
-        "/docs/to_interval.html");
+        "/docs/hop-user-manual/expression/to_interval.html");
   }
 
   @Override

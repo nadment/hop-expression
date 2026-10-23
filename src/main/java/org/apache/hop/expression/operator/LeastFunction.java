@@ -43,7 +43,7 @@ public class LeastFunction extends Function {
         ReturnTypes.LEAST_RESTRICTIVE,
         OperandTypes.COMPARABLE_ORDERED_VARIADIC,
         OperatorCategory.CONDITIONAL,
-        "/docs/least.html");
+        "/docs/hop-user-manual/expression/least.html");
   }
 
   @Override

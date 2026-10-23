@@ -41,7 +41,7 @@ public class YearFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/year.html");
+        "/docs/hop-user-manual/expression/year.html");
   }
 
   @Override

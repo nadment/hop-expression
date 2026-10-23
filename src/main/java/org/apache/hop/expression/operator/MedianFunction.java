@@ -28,7 +28,11 @@ import org.jspecify.annotations.NullMarked;
 public class MedianFunction extends AggregateFunction {
 
   public MedianFunction() {
-    super("MEDIAN", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/median.html");
+    super(
+        "MEDIAN",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMBER,
+        "/docs/hop-user-manual/expression/median.html");
   }
 
   @Override

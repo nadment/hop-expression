@@ -40,7 +40,7 @@ public class CurrentTimestampFunction extends Function {
         ReturnTypes.DATE_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.DATE,
-        "/docs/current_timestamp.html");
+        "/docs/hop-user-manual/expression/current_timestamp.html");
   }
 
   @Override

@@ -39,7 +39,7 @@ public class OverlayFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING_STRING_INTEGER.or(OperandTypes.STRING_STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
-        "/docs/overlay.html");
+        "/docs/hop-user-manual/expression/overlay.html");
   }
 
   @Override

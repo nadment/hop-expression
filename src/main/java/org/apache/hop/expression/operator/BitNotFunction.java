@@ -41,7 +41,7 @@ public class BitNotFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.EXACT_INTEGER,
         OperatorCategory.BITWISE,
-        "/docs/bit_not.html");
+        "/docs/hop-user-manual/expression/bit_not.html");
   }
 
   @Override

@@ -37,7 +37,7 @@ public class DayFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/day.html");
+        "/docs/hop-user-manual/expression/day.html");
   }
 
   @Override

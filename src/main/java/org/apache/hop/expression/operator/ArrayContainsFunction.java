@@ -41,7 +41,7 @@ public class ArrayContainsFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.ARRAY_ANY,
         OperatorCategory.ARRAY,
-        "/docs/array_contains.html");
+        "/docs/hop-user-manual/expression/array_contains.html");
   }
 
   @Override

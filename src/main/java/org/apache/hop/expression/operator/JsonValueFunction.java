@@ -73,7 +73,7 @@ public class JsonValueFunction extends Function {
         ReturnTypes.JSON_VALUE,
         OperandTypes.JSON_VALUE,
         OperatorCategory.JSON,
-        "/docs/json_value.html");
+        "/docs/hop-user-manual/expression/json_value.html");
   }
 
   @Override

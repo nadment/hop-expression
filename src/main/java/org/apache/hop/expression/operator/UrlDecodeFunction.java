@@ -43,7 +43,7 @@ public class UrlDecodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/url_decode.html");
+        "/docs/hop-user-manual/expression/url_decode.html");
   }
 
   @Override

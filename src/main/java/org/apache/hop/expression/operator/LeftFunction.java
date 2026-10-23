@@ -50,7 +50,7 @@ public class LeftFunction extends Function {
             .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
-        "/docs/left.html");
+        "/docs/hop-user-manual/expression/left.html");
   }
 
   @Override

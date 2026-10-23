@@ -43,7 +43,7 @@ public class PowerFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/power.html");
+        "/docs/hop-user-manual/expression/power.html");
   }
 
   @Override

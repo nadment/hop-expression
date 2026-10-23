@@ -44,7 +44,7 @@ public class ContainsFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.COMPARISON,
-        "/docs/contains.html");
+        "/docs/hop-user-manual/expression/contains.html");
   }
 
   @Override

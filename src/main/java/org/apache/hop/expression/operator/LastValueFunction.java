@@ -48,7 +48,11 @@ public class LastValueFunction extends AggregateFunction {
   }
 
   public LastValueFunction(boolean ignoreNulls) {
-    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/last_value.html");
+    super(
+        "LAST_VALUE",
+        ReturnTypes.ARG0,
+        OperandTypes.ANY,
+        "/docs/hop-user-manual/expression/last_value.html");
     this.ignoreNulls = ignoreNulls;
   }
 

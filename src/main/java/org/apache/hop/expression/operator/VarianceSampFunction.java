@@ -33,7 +33,7 @@ public class VarianceSampFunction extends AggregateFunction {
         "VARIANCE_SAMP",
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
-        "/docs/variance_samp.html");
+        "/docs/hop-user-manual/expression/variance_samp.html");
   }
 
   @Override

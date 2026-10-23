@@ -69,7 +69,7 @@ public class JsonKeysFunction extends Function {
             .or(OperandTypes.EXACT_STRING)
             .or(OperandTypes.EXACT_STRING_STRING),
         OperatorCategory.JSON,
-        "/docs/json_keys.html");
+        "/docs/hop-user-manual/expression/json_keys.html");
   }
 
   @Override

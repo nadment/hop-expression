@@ -44,7 +44,7 @@ public class AddSecondsFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_seconds.html");
+        "/docs/hop-user-manual/expression/add_seconds.html");
   }
 
   @Override

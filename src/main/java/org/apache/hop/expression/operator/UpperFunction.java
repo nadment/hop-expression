@@ -48,7 +48,7 @@ public class UpperFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/upper.html");
+        "/docs/hop-user-manual/expression/upper.html");
   }
 
   @Override

@@ -63,7 +63,7 @@ public class BoolAndOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,
-        "/docs/booland.html");
+        "/docs/hop-user-manual/expression/booland.html");
   }
 
   @Override

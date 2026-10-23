@@ -49,7 +49,7 @@ public class InsertFunction extends Function {
             .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER_INTEGER_STRING.or(OperandTypes.BINARY_INTEGER_INTEGER_BINARY),
         OperatorCategory.STRING,
-        "/docs/insert.html");
+        "/docs/hop-user-manual/expression/insert.html");
   }
 
   @Override

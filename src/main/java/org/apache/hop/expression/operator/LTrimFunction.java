@@ -46,7 +46,7 @@ public class LTrimFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         OperatorCategory.STRING,
-        "/docs/ltrim.html");
+        "/docs/hop-user-manual/expression/ltrim.html");
   }
 
   @Override

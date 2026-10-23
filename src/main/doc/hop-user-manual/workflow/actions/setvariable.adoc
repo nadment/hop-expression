@@ -33,7 +33,7 @@ The lines are processed in their order: a line can use the variables set by the 
 
 === Expressions
 
-An expression is made of literal values, operators, variables and xref:../../../functions.adoc[functions].
+An expression is made of literal values, operators, variables and xref:../../expression/functions.adoc[functions].
 The variables are resolved in the expression before it is compiled, so a variable used as a string is written between quotes:
 
 [options="header"]

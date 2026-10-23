@@ -45,7 +45,7 @@ public class PiFunction extends Function {
         ReturnTypes.NUMBER_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.MATHEMATICAL,
-        "/docs/pi.html");
+        "/docs/hop-user-manual/expression/pi.html");
   }
 
   @Override

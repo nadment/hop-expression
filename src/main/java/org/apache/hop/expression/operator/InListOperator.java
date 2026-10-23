@@ -60,7 +60,7 @@ public class InListOperator extends Operator {
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
         OperatorCategory.COMPARISON,
-        "/docs/in.html");
+        "/docs/hop-user-manual/expression/in.html");
   }
 
   @Override

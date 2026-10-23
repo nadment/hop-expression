@@ -28,7 +28,11 @@ import org.jspecify.annotations.NullMarked;
 public class CountIfFunction extends AggregateFunction {
 
   public CountIfFunction() {
-    super("COUNTIF", ReturnTypes.INTEGER_NULLABLE, OperandTypes.BOOLEAN, "/docs/countif.html");
+    super(
+        "COUNTIF",
+        ReturnTypes.INTEGER_NULLABLE,
+        OperandTypes.BOOLEAN,
+        "/docs/hop-user-manual/expression/countif.html");
   }
 
   @Override

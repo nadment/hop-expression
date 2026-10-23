@@ -44,7 +44,7 @@ public class IsNotFalseOperator extends PostfixUnaryOperator {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.BOOLEAN,
         OperatorCategory.COMPARISON,
-        "/docs/is-false.html");
+        "/docs/hop-user-manual/expression/is-false.html");
   }
 
   @Override

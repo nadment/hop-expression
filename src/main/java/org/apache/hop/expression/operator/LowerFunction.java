@@ -48,7 +48,7 @@ public class LowerFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/lower.html");
+        "/docs/hop-user-manual/expression/lower.html");
   }
 
   @Override

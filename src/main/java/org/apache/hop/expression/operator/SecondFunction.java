@@ -42,7 +42,7 @@ public class SecondFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/second.html");
+        "/docs/hop-user-manual/expression/second.html");
   }
 
   @Override

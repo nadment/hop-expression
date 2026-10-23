@@ -37,7 +37,7 @@ public class DifferenceFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING_STRING,
         OperatorCategory.STRING,
-        "/docs/difference.html");
+        "/docs/hop-user-manual/expression/difference.html");
   }
 
   private static int difference(final String str0, final String str1) {

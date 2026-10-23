@@ -43,7 +43,7 @@ public class ConcatWsFunction extends Function {
         ReturnTypes.CONCATWS_FUNCTION,
         OperandTypes.STRING_STRING_VARIADIC.or(OperandTypes.BINARY_BINARY_VARIADIC),
         OperatorCategory.STRING,
-        "/docs/concat_ws.html");
+        "/docs/hop-user-manual/expression/concat_ws.html");
   }
 
   @Override

@@ -42,7 +42,7 @@ public class SqrtFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/sqrt.html");
+        "/docs/hop-user-manual/expression/sqrt.html");
   }
 
   @Override

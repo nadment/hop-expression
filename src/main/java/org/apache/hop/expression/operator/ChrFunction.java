@@ -43,7 +43,7 @@ public class ChrFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.INTEGER,
         OperatorCategory.STRING,
-        "/docs/chr.html");
+        "/docs/hop-user-manual/expression/chr.html");
   }
 
   @Override

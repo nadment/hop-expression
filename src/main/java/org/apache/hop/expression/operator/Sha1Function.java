@@ -50,7 +50,7 @@ public class Sha1Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/sha1.html");
+        "/docs/hop-user-manual/expression/sha1.html");
   }
 
   @Override

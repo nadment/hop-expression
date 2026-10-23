@@ -43,7 +43,7 @@ public class NextDayFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
-        "/docs/next_day.html");
+        "/docs/hop-user-manual/expression/next_day.html");
   }
 
   @Override

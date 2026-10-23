@@ -51,7 +51,7 @@ public class RegexpLikeFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.COMPARISON,
-        "/docs/regexp_like.html");
+        "/docs/hop-user-manual/expression/regexp_like.html");
     this.compiledPattern = compiledPattern;
   }
 

@@ -52,7 +52,7 @@ public class RPadFunction extends Function {
             .or(OperandTypes.STRING_INTEGER_STRING)
             .or(OperandTypes.BINARY_INTEGER_BINARY),
         OperatorCategory.STRING,
-        "/docs/rpad.html");
+        "/docs/hop-user-manual/expression/rpad.html");
   }
 
   @Override

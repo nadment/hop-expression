@@ -40,7 +40,7 @@ public class AsinhFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/asinh.html");
+        "/docs/hop-user-manual/expression/asinh.html");
   }
 
   @Override

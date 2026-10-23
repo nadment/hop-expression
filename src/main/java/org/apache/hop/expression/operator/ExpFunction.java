@@ -40,7 +40,7 @@ public class ExpFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/exp.html");
+        "/docs/hop-user-manual/expression/exp.html");
   }
 
   @Override

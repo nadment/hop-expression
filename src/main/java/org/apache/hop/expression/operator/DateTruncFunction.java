@@ -44,7 +44,7 @@ public class DateTruncFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.TIMEUNIT_DATE,
         OperatorCategory.DATE,
-        "/docs/date_trunc.html");
+        "/docs/hop-user-manual/expression/date_trunc.html");
   }
 
   @Override

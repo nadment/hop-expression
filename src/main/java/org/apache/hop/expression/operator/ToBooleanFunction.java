@@ -48,7 +48,7 @@ public class ToBooleanFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.NUMERIC),
         OperatorCategory.CONVERSION,
-        "/docs/to_boolean.html");
+        "/docs/hop-user-manual/expression/to_boolean.html");
   }
 
   @Override

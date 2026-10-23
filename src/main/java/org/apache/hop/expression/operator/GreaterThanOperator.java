@@ -44,7 +44,7 @@ public class GreaterThanOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
         OperatorCategory.COMPARISON,
-        "/docs/greater_than.html");
+        "/docs/hop-user-manual/expression/greater_than.html");
   }
 
   @Override

@@ -42,7 +42,7 @@ public class IsoDayOfWeekFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/isodayofweek.html");
+        "/docs/hop-user-manual/expression/isodayofweek.html");
   }
 
   @Override

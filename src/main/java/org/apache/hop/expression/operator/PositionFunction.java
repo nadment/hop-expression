@@ -40,7 +40,7 @@ public class PositionFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING_STRING,
         OperatorCategory.STRING,
-        "/docs/position.html");
+        "/docs/hop-user-manual/expression/position.html");
   }
 
   @Override

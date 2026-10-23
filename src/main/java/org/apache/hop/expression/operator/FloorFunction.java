@@ -50,7 +50,7 @@ public class FloorFunction extends Function {
         ReturnTypes.CEIL_FLOOR_FUNCTION,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/floor.html");
+        "/docs/hop-user-manual/expression/floor.html");
   }
 
   @Override

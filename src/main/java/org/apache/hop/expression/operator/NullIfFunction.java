@@ -45,7 +45,7 @@ public class NullIfFunction extends Function {
         ReturnTypes.ARG0.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.SAME_SAME,
         OperatorCategory.CONDITIONAL,
-        "/docs/nullif.html");
+        "/docs/hop-user-manual/expression/nullif.html");
   }
 
   @Override

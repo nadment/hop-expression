@@ -40,7 +40,7 @@ public class SquareFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/square.html");
+        "/docs/hop-user-manual/expression/square.html");
   }
 
   @Override

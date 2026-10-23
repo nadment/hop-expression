@@ -36,7 +36,7 @@ public class TypeOfFunction extends Function {
         ReturnTypes.STRING_NOT_NULL,
         OperandTypes.ANY,
         OperatorCategory.SPECIAL,
-        "/docs/typeof.html");
+        "/docs/hop-user-manual/expression/typeof.html");
   }
 
   @Override

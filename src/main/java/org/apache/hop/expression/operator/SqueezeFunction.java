@@ -48,7 +48,7 @@ public class SqueezeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/squeeze.html");
+        "/docs/hop-user-manual/expression/squeeze.html");
   }
 
   @Override

@@ -43,7 +43,7 @@ public class CschFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/csch.html");
+        "/docs/hop-user-manual/expression/csch.html");
   }
 
   @Override

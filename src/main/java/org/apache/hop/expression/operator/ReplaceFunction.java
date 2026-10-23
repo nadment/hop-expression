@@ -40,7 +40,7 @@ public class ReplaceFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.STRING,
-        "/docs/replace.html");
+        "/docs/hop-user-manual/expression/replace.html");
   }
 
   @Override

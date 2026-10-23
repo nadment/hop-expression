@@ -50,7 +50,7 @@ public class Sha384Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/sha384.html");
+        "/docs/hop-user-manual/expression/sha384.html");
   }
 
   @Override

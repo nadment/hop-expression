@@ -48,7 +48,7 @@ public class ArrayAppendFunction extends Function {
         ReturnTypes.ARRAY,
         OperandTypes.ARRAY_ANY,
         OperatorCategory.ARRAY,
-        "/docs/array_append.html");
+        "/docs/hop-user-manual/expression/array_append.html");
   }
 
   @Override

@@ -44,7 +44,7 @@ public class LessThanOrEqualOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
         OperatorCategory.COMPARISON,
-        "/docs/less_than_or_equal.html");
+        "/docs/hop-user-manual/expression/less_than_or_equal.html");
   }
 
   @Override

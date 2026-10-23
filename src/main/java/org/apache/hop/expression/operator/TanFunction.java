@@ -40,7 +40,7 @@ public class TanFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/tan.html");
+        "/docs/hop-user-manual/expression/tan.html");
   }
 
   @Override
