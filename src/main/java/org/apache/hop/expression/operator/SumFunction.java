@@ -28,7 +28,11 @@ import org.jspecify.annotations.NullMarked;
 public class SumFunction extends AggregateFunction {
 
   public SumFunction() {
-    super("SUM", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/sum.html");
+    super(
+        "SUM",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMBER,
+        "/docs/hop-user-manual/expression/sum.html");
   }
 
   @Override

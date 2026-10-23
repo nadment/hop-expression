@@ -48,7 +48,7 @@ public class LogFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/log.html");
+        "/docs/hop-user-manual/expression/log.html");
   }
 
   @Override

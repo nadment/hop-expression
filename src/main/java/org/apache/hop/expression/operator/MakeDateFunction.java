@@ -41,7 +41,7 @@ public class MakeDateFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.INTEGER_INTEGER_INTEGER,
         OperatorCategory.DATE,
-        "/docs/make_date.html");
+        "/docs/hop-user-manual/expression/make_date.html");
   }
 
   @Override

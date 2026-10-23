@@ -48,7 +48,7 @@ public class InitCapFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/initcap.html");
+        "/docs/hop-user-manual/expression/initcap.html");
   }
 
   @Override

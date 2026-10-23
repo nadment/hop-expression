@@ -42,7 +42,7 @@ public class NullIfZeroFunction extends Function {
         ReturnTypes.ARG0,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER),
         OperatorCategory.CONDITIONAL,
-        "/docs/nullifzero.html");
+        "/docs/hop-user-manual/expression/nullifzero.html");
   }
 
   @Override

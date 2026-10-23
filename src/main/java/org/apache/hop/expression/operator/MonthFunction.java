@@ -37,7 +37,7 @@ public class MonthFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/month.html");
+        "/docs/hop-user-manual/expression/month.html");
   }
 
   @Override

@@ -41,7 +41,7 @@ public class EpochFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/epoch.html");
+        "/docs/hop-user-manual/expression/epoch.html");
   }
 
   @Override

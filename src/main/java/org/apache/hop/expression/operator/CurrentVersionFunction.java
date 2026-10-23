@@ -47,7 +47,7 @@ public class CurrentVersionFunction extends Function {
         ReturnTypes.STRING_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.SPECIAL,
-        "/docs/current_version.html");
+        "/docs/hop-user-manual/expression/current_version.html");
   }
 
   @Override

@@ -53,7 +53,7 @@ public class NotSimilarToOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.EXACT_STRING_EXACT_STRING,
         OperatorCategory.COMPARISON,
-        "/docs/similar-to.html");
+        "/docs/hop-user-manual/expression/similar-to.html");
     this.compiledPattern = compiledPattern;
   }
 

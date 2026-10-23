@@ -52,7 +52,7 @@ public class ArrayElementAtOperator extends Operator {
         ReturnTypes.ARRAY_ELEMENT,
         OperandTypes.ARRAY_INTEGER,
         OperatorCategory.ARRAY,
-        "/docs/element_at.html");
+        "/docs/hop-user-manual/expression/element_at.html");
   }
 
   @Override

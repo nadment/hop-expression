@@ -50,7 +50,7 @@ public class Md5Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/md5.html");
+        "/docs/hop-user-manual/expression/md5.html");
   }
 
   @Override

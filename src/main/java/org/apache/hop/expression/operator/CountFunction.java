@@ -53,7 +53,11 @@ public class CountFunction extends AggregateFunction {
   }
 
   public CountFunction(Count count) {
-    super("COUNT", ReturnTypes.INTEGER_NOT_NULL, OperandTypes.ANY, "/docs/count.html");
+    super(
+        "COUNT",
+        ReturnTypes.INTEGER_NOT_NULL,
+        OperandTypes.ANY,
+        "/docs/hop-user-manual/expression/count.html");
     this.count = count;
   }
 

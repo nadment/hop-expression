@@ -70,7 +70,7 @@ public class FirstDayFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE.or(OperandTypes.DATE_TIMEUNIT),
         OperatorCategory.DATE,
-        "/docs/first_day.html");
+        "/docs/hop-user-manual/expression/first_day.html");
   }
 
   @Override

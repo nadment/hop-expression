@@ -53,7 +53,7 @@ public class BoolXorOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,
-        "/docs/boolxor.html");
+        "/docs/hop-user-manual/expression/boolxor.html");
   }
 
   @Override

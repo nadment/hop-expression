@@ -42,7 +42,7 @@ public class HourFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/hour.html");
+        "/docs/hop-user-manual/expression/hour.html");
   }
 
   @Override

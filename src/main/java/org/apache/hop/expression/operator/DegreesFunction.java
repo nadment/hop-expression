@@ -40,7 +40,7 @@ public class DegreesFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/degrees.html");
+        "/docs/hop-user-manual/expression/degrees.html");
   }
 
   @Override

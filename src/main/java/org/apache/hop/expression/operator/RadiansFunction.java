@@ -40,7 +40,7 @@ public class RadiansFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/radians.html");
+        "/docs/hop-user-manual/expression/radians.html");
   }
 
   @Override

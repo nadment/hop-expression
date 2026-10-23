@@ -42,7 +42,7 @@ public class UnicodeFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/unicode.html");
+        "/docs/hop-user-manual/expression/unicode.html");
   }
 
   @Override

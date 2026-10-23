@@ -44,7 +44,12 @@ public class StrtokFunction extends Function {
           .or(OperandTypes.STRING_STRING_INTEGER);
 
   public StrtokFunction() {
-    super("STRTOK", ReturnTypes.STRING_NULLABLE, OTC, OperatorCategory.STRING, "/docs/strtok.html");
+    super(
+        "STRTOK",
+        ReturnTypes.STRING_NULLABLE,
+        OTC,
+        OperatorCategory.STRING,
+        "/docs/hop-user-manual/expression/strtok.html");
   }
 
   @Override

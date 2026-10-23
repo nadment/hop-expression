@@ -45,7 +45,7 @@ public class BetweenSymmetricOperator extends Operator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BETWEEN,
         OperatorCategory.COMPARISON,
-        "/docs/between.html");
+        "/docs/hop-user-manual/expression/between.html");
   }
 
   @Override

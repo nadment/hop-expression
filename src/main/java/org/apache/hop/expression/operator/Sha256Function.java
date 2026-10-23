@@ -50,7 +50,7 @@ public class Sha256Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/sha256.html");
+        "/docs/hop-user-manual/expression/sha256.html");
   }
 
   @Override

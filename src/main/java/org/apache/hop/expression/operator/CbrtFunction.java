@@ -42,7 +42,7 @@ public class CbrtFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/cbrt.html");
+        "/docs/hop-user-manual/expression/cbrt.html");
   }
 
   @Override

@@ -42,7 +42,7 @@ public class ArrayToStringFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.ARRAY_STRING,
         OperatorCategory.ARRAY,
-        "/docs/array_to_string.html");
+        "/docs/hop-user-manual/expression/array_to_string.html");
   }
 
   @Override

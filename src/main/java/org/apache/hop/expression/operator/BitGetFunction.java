@@ -41,7 +41,7 @@ public class BitGetFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.EXACT_INTEGER_EXACT_INTEGER,
         OperatorCategory.BITWISE,
-        "/docs/bit_get.html");
+        "/docs/hop-user-manual/expression/bit_get.html");
   }
 
   @Override

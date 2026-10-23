@@ -50,7 +50,7 @@ public class EqualOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,
-        "/docs/equal.html");
+        "/docs/hop-user-manual/expression/equal.html");
   }
 
   @Override

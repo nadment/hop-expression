@@ -40,7 +40,7 @@ public class SubstringFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING_INTEGER.or(OperandTypes.STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
-        "/docs/substring.html");
+        "/docs/hop-user-manual/expression/substring.html");
   }
 
   @Override

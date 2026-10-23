@@ -54,7 +54,7 @@ public class BoolNotFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN,
         OperatorCategory.LOGICAL,
-        "/docs/boolnot.html");
+        "/docs/hop-user-manual/expression/boolnot.html");
   }
 
   // Operator
@@ -67,7 +67,7 @@ public class BoolNotFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN,
         OperatorCategory.LOGICAL,
-        "/docs/boolnot.html");
+        "/docs/hop-user-manual/expression/boolnot.html");
   }
 
   /** Simplifies by removing unnecessary `Not` operator */

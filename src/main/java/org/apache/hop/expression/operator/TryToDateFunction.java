@@ -41,7 +41,7 @@ public class TryToDateFunction extends Function {
             .or(OperandTypes.INTEGER)
             .or(OperandTypes.NUMBER),
         OperatorCategory.CONVERSION,
-        "/docs/to_date.html");
+        "/docs/hop-user-manual/expression/to_date.html");
   }
 
   @Override

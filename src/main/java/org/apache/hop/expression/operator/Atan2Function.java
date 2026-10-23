@@ -40,7 +40,7 @@ public class Atan2Function extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/atan2.html");
+        "/docs/hop-user-manual/expression/atan2.html");
   }
 
   @Override

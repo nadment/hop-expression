@@ -43,7 +43,7 @@ public class SoundexFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/soundex.html");
+        "/docs/hop-user-manual/expression/soundex.html");
   }
 
   @Override

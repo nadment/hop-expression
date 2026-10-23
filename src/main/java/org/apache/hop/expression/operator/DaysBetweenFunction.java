@@ -38,7 +38,7 @@ public class DaysBetweenFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/days_between.html");
+        "/docs/hop-user-manual/expression/days_between.html");
   }
 
   @Override

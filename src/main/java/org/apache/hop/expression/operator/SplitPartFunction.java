@@ -40,7 +40,7 @@ public class SplitPartFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING_STRING_INTEGER,
         OperatorCategory.STRING,
-        "/docs/split_part.html");
+        "/docs/hop-user-manual/expression/split_part.html");
   }
 
   @Override

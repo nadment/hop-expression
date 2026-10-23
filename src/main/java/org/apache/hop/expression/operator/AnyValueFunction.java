@@ -29,7 +29,11 @@ import org.jspecify.annotations.NullMarked;
 public class AnyValueFunction extends AggregateFunction {
 
   public AnyValueFunction() {
-    super("ANY_VALUE", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/any_value.html");
+    super(
+        "ANY_VALUE",
+        ReturnTypes.ARG0,
+        OperandTypes.ANY,
+        "/docs/hop-user-manual/expression/any_value.html");
   }
 
   @Override

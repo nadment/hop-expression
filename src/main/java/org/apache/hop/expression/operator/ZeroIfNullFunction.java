@@ -38,7 +38,7 @@ public class ZeroIfNullFunction extends Function {
         ReturnTypes.ARG0.andThen(TypeTransforms.TO_NOT_NULLABLE),
         OperandTypes.NUMERIC,
         OperatorCategory.CONDITIONAL,
-        "/docs/zeroifnull.html");
+        "/docs/hop-user-manual/expression/zeroifnull.html");
   }
 
   @Override

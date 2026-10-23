@@ -44,7 +44,7 @@ public class AddMinutesFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_minutes.html");
+        "/docs/hop-user-manual/expression/add_minutes.html");
   }
 
   @Override

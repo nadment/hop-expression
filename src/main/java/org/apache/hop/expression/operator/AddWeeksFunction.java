@@ -44,7 +44,7 @@ public class AddWeeksFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_weeks.html");
+        "/docs/hop-user-manual/expression/add_weeks.html");
   }
 
   @Override

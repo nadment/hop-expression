@@ -40,7 +40,7 @@ public class SinFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/sin.html");
+        "/docs/hop-user-manual/expression/sin.html");
   }
 
   @Override

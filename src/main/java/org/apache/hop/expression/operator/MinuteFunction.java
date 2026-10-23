@@ -42,7 +42,7 @@ public class MinuteFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/minute.html");
+        "/docs/hop-user-manual/expression/minute.html");
   }
 
   @Override

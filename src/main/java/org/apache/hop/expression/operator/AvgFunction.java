@@ -28,7 +28,11 @@ import org.jspecify.annotations.NullMarked;
 public class AvgFunction extends AggregateFunction {
 
   public AvgFunction() {
-    super("AVG", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/avg.html");
+    super(
+        "AVG",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMBER,
+        "/docs/hop-user-manual/expression/avg.html");
   }
 
   @Override

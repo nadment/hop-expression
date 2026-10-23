@@ -44,7 +44,7 @@ public class AddMonthsFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_months.html");
+        "/docs/hop-user-manual/expression/add_months.html");
   }
 
   @Override

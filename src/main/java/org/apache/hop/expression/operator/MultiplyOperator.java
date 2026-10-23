@@ -54,7 +54,7 @@ public class MultiplyOperator extends BinaryOperator {
         ReturnTypes.MULTIPLY_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL,
-        "/docs/multiply.html");
+        "/docs/hop-user-manual/expression/multiply.html");
   }
 
   @Override

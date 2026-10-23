@@ -38,7 +38,7 @@ public class ErrorFunction extends Function {
         ReturnTypes.ANY,
         OperandTypes.STRING,
         OperatorCategory.SPECIAL,
-        "/docs/error.html");
+        "/docs/hop-user-manual/expression/error.html");
   }
 
   @Override

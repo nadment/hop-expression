@@ -52,7 +52,7 @@ public class DateAddFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.TIMEUNIT_INTEGER_DATE,
         OperatorCategory.DATE,
-        "/docs/date_add.html");
+        "/docs/hop-user-manual/expression/date_add.html");
   }
 
   @Override

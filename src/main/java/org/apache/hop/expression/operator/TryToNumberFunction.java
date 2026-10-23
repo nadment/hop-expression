@@ -39,7 +39,7 @@ public class TryToNumberFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_TEXT).or(OperandTypes.DATE),
         OperatorCategory.CONVERSION,
-        "/docs/to_number.html");
+        "/docs/hop-user-manual/expression/to_number.html");
   }
 
   @Override

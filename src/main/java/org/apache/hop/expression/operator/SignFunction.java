@@ -40,7 +40,7 @@ public class SignFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER),
         OperatorCategory.MATHEMATICAL,
-        "/docs/sign.html");
+        "/docs/hop-user-manual/expression/sign.html");
   }
 
   @Override

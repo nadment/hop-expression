@@ -43,7 +43,7 @@ public class Base64EncodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
-        "/docs/base64_encode.html");
+        "/docs/hop-user-manual/expression/base64_encode.html");
   }
 
   @Override

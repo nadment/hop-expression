@@ -32,7 +32,7 @@ public class VariancePopFunction extends AggregateFunction {
         "VARIANCE_POP",
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
-        "/docs/variance_pop.html");
+        "/docs/hop-user-manual/expression/variance_pop.html");
   }
 
   @Override

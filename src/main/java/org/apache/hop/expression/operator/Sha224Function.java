@@ -52,7 +52,7 @@ public class Sha224Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/sha224.html");
+        "/docs/hop-user-manual/expression/sha224.html");
   }
 
   @Override

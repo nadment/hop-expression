@@ -41,7 +41,7 @@ public class JaroWinklerFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.STRING_STRING,
         OperatorCategory.STRING,
-        "/docs/jarowinkler.html");
+        "/docs/hop-user-manual/expression/jarowinkler.html");
   }
 
   @Override

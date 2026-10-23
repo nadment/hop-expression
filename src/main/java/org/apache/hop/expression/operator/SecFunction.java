@@ -40,7 +40,7 @@ public class SecFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/sec.html");
+        "/docs/hop-user-manual/expression/sec.html");
   }
 
   @Override

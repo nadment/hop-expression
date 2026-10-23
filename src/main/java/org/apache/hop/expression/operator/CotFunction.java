@@ -42,7 +42,7 @@ public class CotFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/cot.html");
+        "/docs/hop-user-manual/expression/cot.html");
   }
 
   @Override

@@ -38,7 +38,7 @@ public class YearsBetweenFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/years_between.html");
+        "/docs/hop-user-manual/expression/years_between.html");
   }
 
   @Override

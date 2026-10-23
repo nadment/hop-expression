@@ -44,7 +44,7 @@ public class InstrFunction extends Function {
             .or(OperandTypes.STRING_STRING_INTEGER)
             .or(OperandTypes.STRING_STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
-        "/docs/instr.html");
+        "/docs/hop-user-manual/expression/instr.html");
   }
 
   @Override

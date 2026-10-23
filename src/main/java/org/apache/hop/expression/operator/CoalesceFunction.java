@@ -51,7 +51,7 @@ public class CoalesceFunction extends Function {
         ReturnTypes.LEAST_RESTRICTIVE,
         OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.CONDITIONAL,
-        "/docs/coalesce.html");
+        "/docs/hop-user-manual/expression/coalesce.html");
   }
 
   @Override

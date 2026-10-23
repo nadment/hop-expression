@@ -38,7 +38,7 @@ public class HoursBetweenFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/hours_between.html");
+        "/docs/hop-user-manual/expression/hours_between.html");
   }
 
   @Override

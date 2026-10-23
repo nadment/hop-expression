@@ -50,7 +50,7 @@ public class Sha512Function extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC,
-        "/docs/sha512.html");
+        "/docs/hop-user-manual/expression/sha512.html");
   }
 
   @Override

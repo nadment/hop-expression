@@ -56,7 +56,7 @@ public class RegexpInstrFunction extends Function {
             .or(OperandTypes.STRING_STRING_INTEGER_INTEGER_INTEGER)
             .or(OperandTypes.STRING_STRING_INTEGER_INTEGER_INTEGER_STRING),
         OperatorCategory.STRING,
-        "/docs/regexp_instr.html");
+        "/docs/hop-user-manual/expression/regexp_instr.html");
     this.compiledPattern = compiledPattern;
   }
 

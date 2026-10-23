@@ -42,7 +42,7 @@ public class AtanhFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/atanh.html");
+        "/docs/hop-user-manual/expression/atanh.html");
   }
 
   @Override

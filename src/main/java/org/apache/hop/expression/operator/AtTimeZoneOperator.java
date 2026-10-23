@@ -47,7 +47,7 @@ public class AtTimeZoneOperator extends Operator {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.CONVERSION,
-        "/docs/attimezone.html");
+        "/docs/hop-user-manual/expression/attimezone.html");
   }
 
   @Override

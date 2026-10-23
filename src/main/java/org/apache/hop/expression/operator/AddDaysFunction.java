@@ -44,7 +44,7 @@ public class AddDaysFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_days.html");
+        "/docs/hop-user-manual/expression/add_days.html");
   }
 
   @Override

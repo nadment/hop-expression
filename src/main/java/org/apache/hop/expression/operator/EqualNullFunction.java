@@ -48,7 +48,7 @@ public class EqualNullFunction extends Function {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON,
-        "/docs/equal_null.html");
+        "/docs/hop-user-manual/expression/equal_null.html");
   }
 
   @Override

@@ -64,7 +64,7 @@ public class JsonObjectFunction extends Function {
         ReturnTypes.JSON_NULLABLE,
         OTC,
         OperatorCategory.JSON,
-        "/docs/json_object.html");
+        "/docs/hop-user-manual/expression/json_object.html");
   }
 
   @Override

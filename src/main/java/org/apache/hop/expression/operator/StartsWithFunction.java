@@ -48,7 +48,7 @@ public class StartsWithFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.COMPARISON,
-        "/docs/startswith.html");
+        "/docs/hop-user-manual/expression/startswith.html");
   }
 
   @Override

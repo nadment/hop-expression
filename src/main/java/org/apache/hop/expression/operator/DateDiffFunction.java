@@ -51,7 +51,7 @@ public class DateDiffFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.TIMEUNIT_DATE_DATE,
         OperatorCategory.DATE,
-        "/docs/date_diff.html");
+        "/docs/hop-user-manual/expression/date_diff.html");
   }
 
   @Override

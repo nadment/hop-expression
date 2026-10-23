@@ -40,7 +40,7 @@ public class TanhFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/tanh.html");
+        "/docs/hop-user-manual/expression/tanh.html");
   }
 
   @Override

@@ -48,7 +48,7 @@ public class HtmlDecodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/html_decode.html");
+        "/docs/hop-user-manual/expression/html_decode.html");
   }
 
   @Override

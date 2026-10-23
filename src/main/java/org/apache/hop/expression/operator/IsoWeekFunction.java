@@ -42,7 +42,7 @@ public class IsoWeekFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/isoweek.html");
+        "/docs/hop-user-manual/expression/isoweek.html");
   }
 
   @Override

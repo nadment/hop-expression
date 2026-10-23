@@ -43,7 +43,7 @@ public class StringDecodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/string_decode.html");
+        "/docs/hop-user-manual/expression/string_decode.html");
   }
 
   @Override

@@ -40,7 +40,7 @@ public class DayNameFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/dayname.html");
+        "/docs/hop-user-manual/expression/dayname.html");
   }
 
   @Override

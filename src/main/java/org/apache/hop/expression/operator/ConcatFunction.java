@@ -52,7 +52,7 @@ public class ConcatFunction extends Function {
             .or(OperandTypes.BINARY_VARIADIC)
             .or(OperandTypes.ARRAY_VARIADIC),
         OperatorCategory.STRING,
-        "/docs/concat.html");
+        "/docs/hop-user-manual/expression/concat.html");
   }
 
   // Operator
@@ -68,7 +68,7 @@ public class ConcatFunction extends Function {
             OperandTypes.BINARY_VARIADIC,
             OperandTypes.ARRAY_VARIADIC),
         OperatorCategory.STRING,
-        "/docs/concat.html");
+        "/docs/hop-user-manual/expression/concat.html");
   }
 
   @Override

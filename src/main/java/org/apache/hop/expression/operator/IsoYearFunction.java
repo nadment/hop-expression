@@ -42,7 +42,7 @@ public class IsoYearFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/isoyear.html");
+        "/docs/hop-user-manual/expression/isoyear.html");
   }
 
   @Override

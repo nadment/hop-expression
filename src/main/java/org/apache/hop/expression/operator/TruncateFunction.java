@@ -48,7 +48,7 @@ public class TruncateFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER.or(OperandTypes.NUMBER_NUMBER),
         OperatorCategory.MATHEMATICAL,
-        "/docs/truncate.html");
+        "/docs/hop-user-manual/expression/truncate.html");
   }
 
   @Override

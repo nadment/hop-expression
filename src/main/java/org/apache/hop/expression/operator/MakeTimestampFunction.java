@@ -45,7 +45,7 @@ public class MakeTimestampFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.INTEGER_INTEGER_INTEGER_INTEGER_INTEGER_NUMBER,
         OperatorCategory.DATE,
-        "/docs/make_timestamp.html");
+        "/docs/hop-user-manual/expression/make_timestamp.html");
   }
 
   @Override

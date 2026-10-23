@@ -66,7 +66,7 @@ public class BoolOrOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL,
-        "/docs/boolor.html");
+        "/docs/hop-user-manual/expression/boolor.html");
   }
 
   @Override

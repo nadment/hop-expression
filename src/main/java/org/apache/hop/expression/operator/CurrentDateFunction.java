@@ -40,7 +40,7 @@ public class CurrentDateFunction extends Function {
         ReturnTypes.DATE_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.DATE,
-        "/docs/current_date.html");
+        "/docs/hop-user-manual/expression/current_date.html");
   }
 
   @Override

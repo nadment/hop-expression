@@ -40,7 +40,7 @@ public class SinhFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/sinh.html");
+        "/docs/hop-user-manual/expression/sinh.html");
   }
 
   @Override

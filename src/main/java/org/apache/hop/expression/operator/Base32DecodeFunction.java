@@ -48,7 +48,7 @@ public class Base32DecodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
-        "/docs/base32_decode.html");
+        "/docs/hop-user-manual/expression/base32_decode.html");
   }
 
   @Override

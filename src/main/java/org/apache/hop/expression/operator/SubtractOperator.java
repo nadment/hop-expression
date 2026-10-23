@@ -55,7 +55,7 @@ public class SubtractOperator extends BinaryOperator {
             .or(OperandTypes.DATE_INTEGER)
             .or(OperandTypes.INTERVAL_INTERVAL),
         OperatorCategory.MATHEMATICAL,
-        "/docs/subtract.html");
+        "/docs/hop-user-manual/expression/subtract.html");
   }
 
   @Override

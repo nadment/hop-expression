@@ -42,7 +42,7 @@ public class UrlEncodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/url_encode.html");
+        "/docs/hop-user-manual/expression/url_encode.html");
   }
 
   @Override

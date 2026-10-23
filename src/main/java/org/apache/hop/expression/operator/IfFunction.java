@@ -46,7 +46,7 @@ public class IfFunction extends Function {
         ReturnTypes.IF_FUNCTION,
         OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME),
         OperatorCategory.CONDITIONAL,
-        "/docs/if.html");
+        "/docs/hop-user-manual/expression/if.html");
   }
 
   @Override

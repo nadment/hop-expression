@@ -39,7 +39,7 @@ public class CurrentUserFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.NILADIC,
         OperatorCategory.SPECIAL,
-        "/docs/current_user.html");
+        "/docs/hop-user-manual/expression/current_user.html");
   }
 
   @Override

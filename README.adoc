@@ -36,27 +36,27 @@ The plugin provides 4 transforms and 2 actions that use the power of the express
 | |Name |Description
 
 |image:{url-icons}/expression.svg[Expression,24,24]
-|`Expression` transform
+|{url-doc}/hop-user-manual/pipeline/transforms/expression.adoc[`Expression`] transform
 |Calculates fields with expressions.
 
 |image:{url-icons}/route.svg[Route,24,24]
-|`Route` transform
+|{url-doc}/hop-user-manual/pipeline/transforms/route.adoc[`Route`] transform
 |Routes rows to target transforms according to expression conditions.
 
 |image:{url-icons}/where.svg[Where,24,24]
-|`Where` transform
+|{url-doc}/hop-user-manual/pipeline/transforms/where.adoc[`Where`] transform
 |Filters rows and keeps only those where the expression is true.
 
 |image:{url-icons}/aggregate.svg[Aggregate,24,24]
-|`Aggregate` transform
+|{url-doc}/hop-user-manual/pipeline/transforms/aggregate.adoc[`Aggregate`] transform
 |Calculates values on groups of rows with aggregate functions; the input does not need to be sorted.
 
 |image:{url-icons}/set-variable.svg[Set variable,24,24]
-|`Set variables expression` action
+|{url-doc}/hop-user-manual/workflow/actions/setvariable.adoc[`Set variables expression`] action
 |Sets or modifies variables with expressions.
 
 |image:{url-icons}/loop.svg[Loop,24,24]
-|`Loop` action (experimental)
+|{url-doc}/hop-user-manual/workflow/actions/loop.adoc[`Loop`] action (experimental)
 |Executes a workflow in a loop while a condition expression is true.
 |===
 
@@ -94,8 +94,8 @@ end
 
 === Functions
 
-* Over 200 scalar and aggregate {url-doc}/functions.adoc[functions]: conditional, mathematical, trigonometry, conversion, bitwise, string, date, JSON, array...
-* {url-doc}/udf.adoc[User-defined functions] (UDF), stored as metadata of the project and written as expressions
+* Over 200 scalar and aggregate {url-doc}/hop-user-manual/expression/functions.adoc[functions]: conditional, mathematical, trigonometry, conversion, bitwise, string, date, JSON, array...
+* {url-doc}/hop-user-manual/expression/udf.adoc[User-defined functions] (UDF), stored as metadata of the project and written as expressions
 
 === Good to know
 
@@ -104,7 +104,7 @@ end
 * Parentheses control the order of evaluation
 * An expression is optimized right after parsing: `5+XYZ+4*2+5` becomes `XYZ+18`, so readability has no cost at runtime
 
-The {url-doc}/expression.adoc[documentation] is a work in progress.
+The {url-doc}/hop-user-manual/expression/expression.adoc[documentation] is a work in progress.
 
 == Getting started
 
@@ -139,6 +139,7 @@ NOTE: `mvn install` also unzips the archive into the `custom` directory of the H
 == Extending with plugins
 
 Use the `@FunctionPlugin` annotation to add your own function from another plugin.
+The {url-doc}/hop-dev-manual/function-plugin.adoc[developer guide] explains the setup, the aggregate functions, the functions with an extended syntax, the documentation, the deployment and the tests.
 
 [source,java]
 ----

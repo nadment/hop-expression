@@ -28,7 +28,11 @@ import org.jspecify.annotations.NullMarked;
 public class StdDevPopFunction extends AggregateFunction {
 
   public StdDevPopFunction() {
-    super("STDDEV_POP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMBER, "/docs/stddev_pop.html");
+    super(
+        "STDDEV_POP",
+        ReturnTypes.NUMBER_NULLABLE,
+        OperandTypes.NUMBER,
+        "/docs/hop-user-manual/expression/stddev_pop.html");
   }
 
   @Override

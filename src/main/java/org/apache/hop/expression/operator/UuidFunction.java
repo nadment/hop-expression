@@ -37,7 +37,7 @@ public class UuidFunction extends Function {
         ReturnTypes.STRING_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.STRING,
-        "/docs/uuid.html");
+        "/docs/hop-user-manual/expression/uuid.html");
   }
 
   @Override

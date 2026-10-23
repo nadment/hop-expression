@@ -48,7 +48,7 @@ public class CompressFunction extends Function {
         ReturnTypes.BINARY_NULLABLE,
         OperandTypes.BINARY,
         OperatorCategory.STRING,
-        "/docs/compress.html");
+        "/docs/hop-user-manual/expression/compress.html");
   }
 
   @Override

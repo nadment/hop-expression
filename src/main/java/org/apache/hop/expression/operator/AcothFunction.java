@@ -42,7 +42,7 @@ public class AcothFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/acoth.html");
+        "/docs/hop-user-manual/expression/acoth.html");
   }
 
   @Override

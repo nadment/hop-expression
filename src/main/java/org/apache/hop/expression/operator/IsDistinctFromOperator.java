@@ -52,7 +52,7 @@ public class IsDistinctFromOperator extends BinaryOperator {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,
-        "/docs/is-distinct-from.html");
+        "/docs/hop-user-manual/expression/is-distinct-from.html");
   }
 
   @Override

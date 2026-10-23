@@ -50,7 +50,7 @@ public class CastOperator extends Operator {
         ReturnTypes.CAST_OPERATOR,
         OperandTypes.CAST,
         OperatorCategory.CONVERSION,
-        "/docs/cast.html");
+        "/docs/hop-user-manual/expression/cast.html");
   }
 
   @Override

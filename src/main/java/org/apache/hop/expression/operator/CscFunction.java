@@ -42,7 +42,7 @@ public class CscFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/csc.html");
+        "/docs/hop-user-manual/expression/csc.html");
   }
 
   @Override

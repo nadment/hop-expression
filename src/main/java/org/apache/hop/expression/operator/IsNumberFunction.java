@@ -42,7 +42,7 @@ public class IsNumberFunction extends Function {
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY,
         OperatorCategory.COMPARISON,
-        "/docs/is_number.html");
+        "/docs/hop-user-manual/expression/is_number.html");
   }
 
   @Override

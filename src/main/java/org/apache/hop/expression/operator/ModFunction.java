@@ -49,7 +49,7 @@ public class ModFunction extends Function {
         ReturnTypes.MOD_OPERATOR,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/mod.html");
+        "/docs/hop-user-manual/expression/mod.html");
   }
 
   public ModFunction(String name) {
@@ -61,7 +61,7 @@ public class ModFunction extends Function {
         ReturnTypes.MOD_OPERATOR,
         OperandTypes.NUMBER_NUMBER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/mod.html");
+        "/docs/hop-user-manual/expression/mod.html");
   }
 
   @Override

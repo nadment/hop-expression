@@ -46,7 +46,7 @@ public class FactorialFunction extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.INTEGER,
         OperatorCategory.MATHEMATICAL,
-        "/docs/factorial.html");
+        "/docs/hop-user-manual/expression/factorial.html");
   }
 
   @Override

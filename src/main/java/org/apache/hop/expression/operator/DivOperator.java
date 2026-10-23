@@ -49,7 +49,7 @@ public class DivOperator extends BinaryOperator {
         ReturnTypes.DIVIDE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL,
-        "/docs/div.html");
+        "/docs/hop-user-manual/expression/div.html");
   }
 
   @Override

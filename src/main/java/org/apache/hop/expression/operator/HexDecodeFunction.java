@@ -38,7 +38,7 @@ public class HexDecodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/hex_decode.html");
+        "/docs/hop-user-manual/expression/hex_decode.html");
   }
 
   @Override

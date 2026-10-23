@@ -37,7 +37,7 @@ public class CardinalityFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.ARRAY,
         OperatorCategory.ARRAY,
-        "/docs/cardinality.html");
+        "/docs/hop-user-manual/expression/cardinality.html");
   }
 
   @Override

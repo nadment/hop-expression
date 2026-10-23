@@ -41,7 +41,7 @@ public class BitClearFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.EXACT_INTEGER_EXACT_INTEGER,
         OperatorCategory.BITWISE,
-        "/docs/bit_clear.html");
+        "/docs/hop-user-manual/expression/bit_clear.html");
   }
 
   @Override

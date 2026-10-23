@@ -40,7 +40,7 @@ public class MonthName extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/monthname.html");
+        "/docs/hop-user-manual/expression/monthname.html");
   }
 
   @Override

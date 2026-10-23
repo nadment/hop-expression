@@ -28,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 public class MaxFunction extends AggregateFunction {
 
   public MaxFunction() {
-    super("MAX", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/max.html");
+    super("MAX", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/hop-user-manual/expression/max.html");
   }
 
   @Override

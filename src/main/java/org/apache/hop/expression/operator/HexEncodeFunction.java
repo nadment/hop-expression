@@ -39,7 +39,7 @@ public class HexEncodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
-        "/docs/hex_encode.html");
+        "/docs/hop-user-manual/expression/hex_encode.html");
   }
 
   @Override

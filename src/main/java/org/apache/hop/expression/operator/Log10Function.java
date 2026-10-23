@@ -42,7 +42,7 @@ public class Log10Function extends Function {
         ReturnTypes.NUMBER_NULLABLE,
         OperandTypes.NUMBER,
         OperatorCategory.TRIGONOMETRY,
-        "/docs/log10.html");
+        "/docs/hop-user-manual/expression/log10.html");
   }
 
   @Override

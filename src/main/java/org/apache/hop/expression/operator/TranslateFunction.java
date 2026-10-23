@@ -36,7 +36,7 @@ public class TranslateFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING_STRING_STRING,
         OperatorCategory.STRING,
-        "/docs/translate.html");
+        "/docs/hop-user-manual/expression/translate.html");
   }
 
   @Override

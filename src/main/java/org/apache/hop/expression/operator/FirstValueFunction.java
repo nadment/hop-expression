@@ -51,7 +51,11 @@ public class FirstValueFunction extends AggregateFunction {
   }
 
   public FirstValueFunction(boolean ignoreNulls) {
-    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/first_value.html");
+    super(
+        "FIRST_VALUE",
+        ReturnTypes.ARG0,
+        OperandTypes.ANY,
+        "/docs/hop-user-manual/expression/first_value.html");
 
     this.ignoreNulls = ignoreNulls;
   }

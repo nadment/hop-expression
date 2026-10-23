@@ -46,7 +46,7 @@ TIP: A condition that never becomes false executes the workflow endlessly, until
 
 === Condition
 
-A condition is made of literal values, operators, variables and xref:../../../functions.adoc[functions].
+A condition is made of literal values, operators, variables and xref:../../expression/functions.adoc[functions].
 The variables are resolved in the condition before it is compiled, so a variable used as a string is written between quotes.
 
 The value of the condition is converted to a Boolean, and a NULL value is false:

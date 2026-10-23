@@ -44,7 +44,7 @@ public class AddYearsFunction extends Function {
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
-        "/docs/add_years.html");
+        "/docs/hop-user-manual/expression/add_years.html");
   }
 
   @Override

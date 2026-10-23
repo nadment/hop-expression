@@ -48,7 +48,7 @@ public class EndsWithFunction extends Function {
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         OperatorCategory.COMPARISON,
-        "/docs/endswith.html");
+        "/docs/hop-user-manual/expression/endswith.html");
   }
 
   @Override

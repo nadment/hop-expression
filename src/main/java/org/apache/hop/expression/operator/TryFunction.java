@@ -37,7 +37,12 @@ public class TryFunction extends Function {
   public static final TryFunction INSTANCE = new TryFunction();
 
   public TryFunction() {
-    super("TRY", ReturnTypes.ARG0, OperandTypes.ANY, OperatorCategory.SPECIAL, "/docs/try.html");
+    super(
+        "TRY",
+        ReturnTypes.ARG0,
+        OperandTypes.ANY,
+        OperatorCategory.SPECIAL,
+        "/docs/hop-user-manual/expression/try.html");
   }
 
   @Override

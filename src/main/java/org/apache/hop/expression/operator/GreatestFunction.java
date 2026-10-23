@@ -43,7 +43,7 @@ public class GreatestFunction extends Function {
         ReturnTypes.LEAST_RESTRICTIVE,
         OperandTypes.COMPARABLE_ORDERED_VARIADIC,
         OperatorCategory.CONDITIONAL,
-        "/docs/greatest.html");
+        "/docs/hop-user-manual/expression/greatest.html");
   }
 
   @Override

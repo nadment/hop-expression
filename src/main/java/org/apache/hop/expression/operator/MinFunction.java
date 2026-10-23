@@ -28,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 public class MinFunction extends AggregateFunction {
 
   public MinFunction() {
-    super("MIN", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/min.html");
+    super("MIN", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/hop-user-manual/expression/min.html");
   }
 
   @Override

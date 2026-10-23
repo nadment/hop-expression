@@ -50,7 +50,7 @@ public class RightFunction extends Function {
             .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER.or(OperandTypes.BINARY_INTEGER),
         OperatorCategory.STRING,
-        "/docs/right.html");
+        "/docs/hop-user-manual/expression/right.html");
   }
 
   @Override

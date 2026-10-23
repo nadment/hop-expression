@@ -45,7 +45,7 @@ public class NormalizeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         OperatorCategory.STRING,
-        "/docs/normalize.html");
+        "/docs/hop-user-manual/expression/normalize.html");
   }
 
   @Override

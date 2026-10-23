@@ -36,7 +36,7 @@ public class BitCountFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.EXACT_INTEGER,
         OperatorCategory.BITWISE,
-        "/docs/bit_count.html");
+        "/docs/hop-user-manual/expression/bit_count.html");
   }
 
   @Override

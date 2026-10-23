@@ -43,7 +43,7 @@ public class HtmlEncodeFunction extends Function {
         ReturnTypes.STRING_NULLABLE,
         OperandTypes.STRING,
         OperatorCategory.STRING,
-        "/docs/html_encode.html");
+        "/docs/hop-user-manual/expression/html_encode.html");
   }
 
   @Override

@@ -41,7 +41,7 @@ public class ArrayFunction extends Function {
         ReturnTypes.ARRAY,
         OperandTypes.SAME_VARIADIC,
         OperatorCategory.ARRAY,
-        "/docs/array.html");
+        "/docs/hop-user-manual/expression/array.html");
   }
 
   @Override

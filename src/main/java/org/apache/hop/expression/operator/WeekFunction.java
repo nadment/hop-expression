@@ -42,7 +42,7 @@ public class WeekFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/week.html");
+        "/docs/hop-user-manual/expression/week.html");
   }
 
   @Override

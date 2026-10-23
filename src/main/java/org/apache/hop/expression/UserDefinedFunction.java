@@ -52,7 +52,7 @@ public class UserDefinedFunction extends Function {
         ReturnTypes.ANY,
         new UserDefinedFunctionOperandTypeChecker(meta),
         OperatorCategory.UDF,
-        "/docs/udf.html");
+        "/docs/hop-user-manual/expression/udf.html");
     this.meta = meta;
   }
 

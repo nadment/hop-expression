@@ -38,7 +38,7 @@ public class QuarterFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/quarter.html");
+        "/docs/hop-user-manual/expression/quarter.html");
   }
 
   @Override

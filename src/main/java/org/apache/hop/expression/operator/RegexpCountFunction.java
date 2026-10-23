@@ -58,7 +58,7 @@ public class RegexpCountFunction extends Function {
             .or(OperandTypes.STRING_STRING_INTEGER)
             .or(OperandTypes.STRING_STRING_INTEGER_STRING),
         OperatorCategory.STRING,
-        "/docs/regexp_count.html");
+        "/docs/hop-user-manual/expression/regexp_count.html");
     this.compiledPattern = compiledPattern;
   }
 

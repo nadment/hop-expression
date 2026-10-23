@@ -43,7 +43,7 @@ public class DecompressFunction extends Function {
         ReturnTypes.BINARY_NULLABLE,
         OperandTypes.BINARY,
         OperatorCategory.STRING,
-        "/docs/decompress.html");
+        "/docs/hop-user-manual/expression/decompress.html");
   }
 
   @Override

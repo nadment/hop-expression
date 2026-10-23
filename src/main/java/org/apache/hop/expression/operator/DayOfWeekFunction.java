@@ -42,7 +42,7 @@ public class DayOfWeekFunction extends Function {
         ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.DATE,
         OperatorCategory.DATE,
-        "/docs/dayofweek.html");
+        "/docs/hop-user-manual/expression/dayofweek.html");
   }
 
   @Override

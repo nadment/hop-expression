@@ -46,7 +46,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
         ReturnTypes.ARG0,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER).or(OperandTypes.INTERVAL),
         OperatorCategory.MATHEMATICAL,
-        "/docs/negative.html");
+        "/docs/hop-user-manual/expression/negative.html");
   }
 
   @Override

@@ -43,7 +43,7 @@ public class MakeIntervalFunction extends Function {
         ReturnTypes.INTERVAL_NULLABLE,
         OperandTypes.INTEGER_INTEGER_INTEGER_INTEGER_INTEGER_NUMBER,
         OperatorCategory.DATE,
-        "/docs/make_interval.html");
+        "/docs/hop-user-manual/expression/make_interval.html");
   }
 
   @Override
