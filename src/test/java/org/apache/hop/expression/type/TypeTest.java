@@ -98,6 +98,9 @@ public class TypeTest extends ExpressionTest {
     assertEquals("STRING(10)", String.valueOf(StringType.of(10)));
     assertEquals("BINARY", String.valueOf(BinaryType.BINARY));
     assertEquals("BINARY", String.valueOf(BinaryType.of(-1)));
+    // A precision not specified is the maximum precision, whatever the nullability
+    assertEquals(BinaryType.BINARY_NOT_NULL, BinaryType.of(-1, false));
+    assertEquals("BINARY NOT NULL", String.valueOf(BinaryType.of(-1, false)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
     assertEquals("ARRAY<INTEGER(10)>", String.valueOf(ArrayType.of(IntegerType.of(10))));
   }
@@ -155,11 +158,21 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  void castToBinary() {
+  void castToBinary() throws Exception {
     BinaryType type = BinaryType.BINARY;
     assertNull(type.cast(null));
     // assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
     assertArrayEquals(new byte[] {0x41}, (byte[]) type.cast("A"));
+
+    // The result is truncated to the precision without error
+    BinaryType binary2 = BinaryType.of(2);
+    assertNull(binary2.cast(null));
+    assertArrayEquals(new byte[] {0x41, 0x42}, (byte[]) binary2.cast("ABC"));
+    assertArrayEquals(new byte[] {0x41, 0x42}, (byte[]) binary2.cast("AB"));
+    assertArrayEquals(
+        new byte[] {0x1F, 0x2E}, (byte[]) binary2.cast(new byte[] {0x1F, 0x2E, 0x3D}));
+    evalEquals("CAST('ABC' AS BINARY(2))", new byte[] {0x41, 0x42});
+    evalEquals("BINARY '1F2E3D'::BINARY(1)", new byte[] {0x1F});
 
     assertThrows(ExpressionException.class, () -> type.cast(true));
     assertThrows(ExpressionException.class, () -> type.cast(1L));

@@ -63,8 +63,6 @@ public class AcosFunction extends Function {
       throw new ExpressionException(ErrorCode.ARGUMENT_OUT_OF_RANGE, 1, value.stripTrailingZeros());
     }
 
-    // The bug https://github.com/eobermuhlner/big-math/issues/66 that required a double precision
-    // computation is fixed
     return BigDecimalMath.acos(value, MATH_CONTEXT);
   }
 }

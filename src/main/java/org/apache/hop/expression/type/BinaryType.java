@@ -51,7 +51,12 @@ public final class BinaryType extends Type {
   }
 
   public static BinaryType of(int precision, boolean nullable) {
-    if (precision == PRECISION_NOT_SPECIFIED && nullable) return BinaryType.BINARY;
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.BINARY.getMaxPrecision();
+
+    if (precision == TypeName.BINARY.getMaxPrecision()) {
+      return nullable ? BinaryType.BINARY : BinaryType.BINARY_NOT_NULL;
+    }
+
     return new BinaryType(precision, nullable);
   }
 
@@ -79,7 +84,8 @@ public final class BinaryType extends Type {
   }
 
   /**
-   * Convert a value to the specified type {@link BinaryType} with a pattern.
+   * Convert a value to the specified type {@link BinaryType} with a pattern and adjust to
+   * precision.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when the value is date or
@@ -89,14 +95,25 @@ public final class BinaryType extends Type {
   @Override
   public byte @Nullable [] cast(final @Nullable Object value, @Nullable String pattern)
       throws ExpressionException {
-    return switch (value) {
-      case null -> null;
-      case byte[] bytes -> bytes;
-      case String str -> str.getBytes(StandardCharsets.UTF_8);
-      default ->
-          throw new ExpressionException(
-              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-    };
+    if (value == null) {
+      return null;
+    }
+
+    byte[] result =
+        switch (value) {
+          case byte[] bytes -> bytes;
+          case String str -> str.getBytes(StandardCharsets.UTF_8);
+          default ->
+              throw new ExpressionException(
+                  ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+        };
+
+    // Adjust length
+    if (precision < result.length) {
+      result = Arrays.copyOf(result, precision);
+    }
+
+    return result;
   }
 
   @Override

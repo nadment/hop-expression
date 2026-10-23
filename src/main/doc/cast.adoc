@@ -73,7 +73,9 @@ The data type of the returned value is the type specified in the `AS` clause.
 * String:
 ** With a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.
 ** An interval converts with the format `+Y-M D HH:MM:SS.FFFFFFFFF`.
-* Binary: a string converts to its UTF-8 encoding. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
+* Binary:
+** A string converts to its UTF-8 encoding. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
+** With a maximum length, like `BINARY(2)`, the result is truncated to this number of bytes without error, for example `CAST('ABC' AS BINARY(2))` returns the bytes of 'AB'.
 * Inet: an empty string raises an error.
 
 == Examples
