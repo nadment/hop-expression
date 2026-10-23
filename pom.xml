@@ -342,6 +342,8 @@ http://www.apache.org/licenses/LICENSE-2.0
                                 <linkcss>false</linkcss>
                                 <nofooter>true</nofooter>
                                 <icons>font</icons>
+                                <!-- The keyboard macros kbd:[Ctrl+Space] of all the pages -->
+                                <experimental>true</experimental>
                             </attributes>
                         </configuration>
                     </execution>
