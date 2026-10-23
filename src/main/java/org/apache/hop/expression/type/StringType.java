@@ -130,40 +130,25 @@ public final class StringType extends Type {
       return null;
     }
 
-    String result = null;
-
-    switch (value) {
-      case String str -> result = str;
-      case Boolean bool -> result = StringConversion.convert(bool);
-      case Number num -> {
-        BigDecimal number;
-        if (value instanceof Long l) {
-          number = BigDecimal.valueOf(l);
-        } else {
-          number = (BigDecimal) value;
-        }
-        NumberFormat format = (pattern == null) ? DEFAULT_NUMBER_FORMAT : NumberFormat.of(pattern);
-        result = format.format(number);
-      }
-      case ZonedDateTime datetime ->
-          // Without pattern, the time is kept as with an implicit conversion
-          result =
+    String result =
+        switch (value) {
+          case String str -> str;
+          case Boolean bool -> StringConversion.convert(bool);
+          case Long integer -> formatNumber(BigDecimal.valueOf(integer), pattern);
+          case BigDecimal number -> formatNumber(number, pattern);
+            // Without pattern, the time is kept as with an implicit conversion
+          case ZonedDateTime datetime ->
               (pattern == null)
                   ? StringConversion.convert(datetime)
                   : DateTimeFormat.of(pattern).format(datetime);
-      case byte[] bytes -> result = new String(bytes, StandardCharsets.UTF_8);
-      case JsonNode json -> result = StringConversion.convert(json);
-      case InetAddress inet -> result = StringConversion.convert(inet);
-      case Interval interval -> result = interval.toString();
-      default -> {
-        // Not convertible, see below
-      }
-    }
-
-    if (result == null) {
-      throw new ExpressionException(
-          ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), this, value);
-    }
+          case byte[] bytes -> new String(bytes, StandardCharsets.UTF_8);
+          case JsonNode json -> StringConversion.convert(json);
+          case InetAddress inet -> StringConversion.convert(inet);
+          case Interval interval -> interval.toString();
+          default ->
+              throw new ExpressionException(
+                  ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+        };
 
     // Adjust length
     if (precision < result.length()) {
@@ -171,6 +156,12 @@ public final class StringType extends Type {
     }
 
     return result;
+  }
+
+  /** Formats a number with the pattern, or with the default format if none. */
+  private static String formatNumber(BigDecimal number, @Nullable String pattern) {
+    NumberFormat format = (pattern == null) ? DEFAULT_NUMBER_FORMAT : NumberFormat.of(pattern);
+    return format.format(number);
   }
 
   @Override

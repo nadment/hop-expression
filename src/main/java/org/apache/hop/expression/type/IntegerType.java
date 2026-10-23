@@ -99,23 +99,46 @@ public final class IntegerType extends Type {
     return super.convertValue(value, clazz);
   }
 
+  /**
+   * Convert a value to the specified type {@link IntegerType} with a pattern, the number of digits
+   * of the result is checked against the precision.
+   *
+   * @param value the value to convert
+   * @param pattern the optional pattern to use for conversion from string, or null if none
+   * @return the converted value
+   * @throws ExpressionException if the conversion is not supported or the result exceeds the
+   *     precision
+   */
   @Override
   public @Nullable Long cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
-    return switch (value) {
-      case null -> null;
-      case Long integer -> integer;
-      case BigDecimal number -> IntegerConversion.convert(number);
-      case Boolean bool -> (bool) ? 1L : 0L;
-      case String str ->
-          (pattern == null)
-              ? IntegerConversion.convert(str)
-              : IntegerConversion.convert(NumberFormat.of(pattern).parse(str));
-      case ZonedDateTime datetime -> IntegerConversion.convert(datetime);
-      default ->
-          throw new ExpressionException(
-              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-    };
+    Long result =
+        switch (value) {
+          case null -> null;
+          case Long integer -> integer;
+          case BigDecimal number -> IntegerConversion.convert(number);
+          case Boolean bool -> (bool) ? 1L : 0L;
+          case String str ->
+              (pattern == null)
+                  ? IntegerConversion.convert(str)
+                  : IntegerConversion.convert(NumberFormat.of(pattern).parse(str));
+          case ZonedDateTime datetime -> IntegerConversion.convert(datetime);
+          default ->
+              throw new ExpressionException(
+                  ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+        };
+    return checkOverflow(result);
+  }
+
+  /** Raises an error if the number of digits of the integer exceeds the precision. */
+  private @Nullable Long checkOverflow(@Nullable Long integer) throws ExpressionException {
+    // Any integer fits in the maximum precision, the digits are only counted below it
+    if (integer != null
+        && precision < TypeName.INTEGER.getMaxPrecision()
+        && numberOfDigit(integer) > precision) {
+      throw new ExpressionException(ErrorCode.NUMBER_CONVERSION_OVERFLOW, integer, this);
+    }
+    return integer;
   }
 
   @Override

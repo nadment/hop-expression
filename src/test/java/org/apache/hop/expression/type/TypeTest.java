@@ -206,10 +206,29 @@ public class TypeTest extends ExpressionTest {
     assertEquals("{\"name\":\"Smith\"}", type.cast(JsonConversion.convert("{\"name\":\"Smith\"}")));
     assertEquals("+5-0 0 00:00:00.000000000", type.cast(Interval.of(5)));
     assertEquals("-0-0 0 02:30:00.000000000", type.cast(Interval.of(0, 0, 0, 2, 30).negate()));
+
+    // A value of an unsupported Java type raises an expression error, not a ClassCastException
+    ExpressionException exception =
+        assertThrows(ExpressionException.class, () -> type.cast(Integer.valueOf(1)));
+    assertEquals(ErrorCode.UNSUPPORTED_CONVERSION, exception.getErrorCode());
+    exception = assertThrows(ExpressionException.class, () -> type.cast(new Object()));
+    assertEquals(ErrorCode.UNSUPPORTED_CONVERSION, exception.getErrorCode());
   }
 
   @Test
-  void castToInteger() {
+  void castToInterval() {
+    IntervalType type = IntervalType.INTERVAL;
+    Interval interval = Interval.of(0, 0, 0, 2);
+    assertNull(type.cast(null));
+    assertEquals(interval, type.cast(interval));
+    assertEquals(interval, type.cast("2 hours"));
+
+    ExpressionException exception = assertThrows(ExpressionException.class, () -> type.cast(1L));
+    assertEquals(ErrorCode.UNSUPPORTED_CONVERSION, exception.getErrorCode());
+  }
+
+  @Test
+  void castToInteger() throws Exception {
     IntegerType type = IntegerType.INTEGER;
     assertNull(type.cast(null));
     assertEquals(Long.valueOf(1L), type.cast(true));
@@ -233,6 +252,22 @@ public class TypeTest extends ExpressionTest {
     assertEquals(
         Long.valueOf(1672185600L),
         type.cast(LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC)));
+
+    // The number of digits of the result is checked against the precision
+    IntegerType integer3 = IntegerType.of(3);
+    assertNull(integer3.cast(null));
+    assertEquals(Long.valueOf(999L), integer3.cast(999L));
+    assertEquals(Long.valueOf(-999L), integer3.cast(-999L));
+    assertEquals(Long.valueOf(999L), integer3.cast(new BigDecimal("999.4")));
+    assertEquals(Long.MIN_VALUE, IntegerType.INTEGER.cast(Long.MIN_VALUE));
+    for (Object value : new Object[] {1000L, -1000L, "1234", new BigDecimal("999.5")}) {
+      ExpressionException exception =
+          assertThrows(ExpressionException.class, () -> integer3.cast(value));
+      assertEquals(ErrorCode.NUMBER_CONVERSION_OVERFLOW, exception.getErrorCode());
+    }
+    evalFails("CAST(12345 AS INTEGER(3))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+    evalFails("CAST('12345' AS INTEGER(3))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+    evalNull("TRY_CAST(12345 AS INTEGER(3))");
   }
 
   @Test
@@ -267,6 +302,11 @@ public class TypeTest extends ExpressionTest {
     assertThrows(ExpressionException.class, () -> type.cast(null));
     assertThrows(ExpressionException.class, () -> type.cast(true));
     assertThrows(ExpressionException.class, () -> type.cast("Test", "MM"));
+
+    // The types without casting raise a conversion error, not an internal error
+    ExpressionException exception =
+        assertThrows(ExpressionException.class, () -> AnyType.ANY.cast(1L));
+    assertEquals(ErrorCode.UNSUPPORTED_CONVERSION, exception.getErrorCode());
   }
 
   @Test

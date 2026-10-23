@@ -243,7 +243,8 @@ public enum ErrorCode {
    */
   INTEGER_CONVERSION_OVERFLOW,
   /**
-   * A number exceeds the precision of the {@code NUMBER} data type it is converted to.
+   * A number exceeds the precision of the {@code NUMBER} or {@code INTEGER} data type it is
+   * converted to.
    *
    * <p>Message: <code>Number conversion overflow with value '{0}' to {1}</code>
    */

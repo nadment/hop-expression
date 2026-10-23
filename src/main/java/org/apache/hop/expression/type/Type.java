@@ -315,6 +315,8 @@ public abstract class Type {
   /**
    * Convert a value to the specified {@link Type} with a pattern.
    *
+   * <p>Derived classes override this method to support casting, by default no casting is supported.
+   *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when the value is date or
    *     numeric, or null if none
@@ -323,7 +325,8 @@ public abstract class Type {
    */
   public @Nullable Object cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
-    throw new ExpressionException(ErrorCode.INTERNAL_ERROR);
+    throw new ExpressionException(
+        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
   }
 
   /** Gets a string representation of this type for LITERAL string for the type. */

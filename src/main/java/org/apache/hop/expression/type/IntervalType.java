@@ -70,19 +70,16 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public @Nullable Object cast(final @Nullable Object value, final @Nullable String pattern)
+  public @Nullable Interval cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-
-    if (value instanceof String str) {
-      return Interval.of(str);
-    }
-
-    throw new ExpressionException(
-        ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    return switch (value) {
+      case null -> null;
+      case Interval interval -> interval;
+      case String str -> Interval.of(str);
+      default ->
+          throw new ExpressionException(
+              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+    };
   }
 
   @Override

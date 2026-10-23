@@ -57,25 +57,24 @@ The data type of the returned value is the type specified in the `AS` clause.
 
 == Usage
 
-* If the conversion is not possible, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format, or a format with a conversion that does not use one, like `CAST('yes' AS BOOLEAN FORMAT 'zz')`, raises an error in both cases.
-* When converting a number to a boolean, 0 is FALSE and every other value is TRUE.
-* When converting a boolean to a number, FALSE is 0 and TRUE is 1.
-* When converting a string to a boolean, the accepted values are `true`, `t`, `yes`, `y`, `on` and `1` for TRUE, and `false`, `f`, `no`, `n`, `off` and `0` for FALSE. The values are not case-sensitive and the leading and trailing spaces are ignored, like for a number; any other value raises an error.
-* When converting a boolean to a string, the result is `TRUE` or `FALSE`.
-* When converting a number or a string to an integer, the value is rounded to the nearest integer, and halfway values are rounded away from zero, for example `CAST(-1.5 AS INTEGER)` returns -2.
-* When converting a string to a number or an integer without format, the leading and trailing spaces are ignored, an optional sign and an exponent are accepted, and the underscore `_` can be used as a digit separator, for example `'1_000'::INTEGER` returns 1000.
-* When converting a value to a string with a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.
-* When converting a value to a number with a precision, the value is checked for overflow: an error is raised if its integer part has more digits than the precision minus the scale, for example `CAST(12345.6 AS NUMBER(3,1))`, `CAST(12345 AS NUMBER(3))` or `CAST('12345.6' AS NUMBER(3,1))`. `TRY_CAST` returns NULL instead.
-* When converting a string to a number or an integer, the optional format is a number format model, as in xref:to_number.adoc["TO_NUMBER",role=fun], and the result keeps all the decimals of the string.
-* When converting a number to a number, the value is truncated to the scale of the type. `NUMBER` without precision and scale has no fixed scale and keeps the decimals of the value, for example `1.23456::NUMBER` returns 1.23456. `NUMBER(p)` has a scale of 0, for example `1.23456::NUMBER(10)` returns 1.
-* When converting a string to a binary, the result is the UTF-8 encoding of the string. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
-* When converting an integer to a date, the integer is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
-* When converting a number to a date, the number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
-* When converting a date to an integer, the result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
-* When converting a date to a number, the result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
-* When converting a date to a string without format, the result uses the format `YYYY-MM-DD`, followed by the time `HH24:MI:SS` if it is not midnight and by the fractional seconds `.FF9` if they are not zero, for example `CAST(TIMESTAMP '2019-02-25 12:34:56' AS STRING)` returns '2019-02-25 12:34:56'.
-* When converting a string to an inet, an empty string raises an error.
-* When converting an interval to a string, the result uses the format `+Y-M D HH:MM:SS.FFFFFFFFF`.
+* If the conversion is not possible, or the value exceeds the precision of the type, `CAST` raises an error and `TRY_CAST` returns NULL. An invalid format, or a format with a conversion that does not use one, like `CAST('yes' AS BOOLEAN FORMAT 'zz')`, raises an error in both cases.
+* Boolean:
+** A number is FALSE if it is 0 and TRUE otherwise; FALSE is 0 and TRUE is 1.
+** A string accepts `true`, `t`, `yes`, `y`, `on` and `1` for TRUE, and `false`, `f`, `no`, `n`, `off` and `0` for FALSE, not case-sensitive and with the leading and trailing spaces ignored; any other value raises an error.
+** A boolean converts to the string `TRUE` or `FALSE`.
+* Integer and number:
+** A string without format ignores the leading and trailing spaces, accepts an optional sign and an exponent, and can use the underscore `_` as a digit separator, for example `'1_000'::INTEGER` returns 1000. With a format, it is a number format model as in xref:to_number.adoc["TO_NUMBER",role=fun].
+** To an integer, the value is rounded to the nearest integer, and halfway values are rounded away from zero, for example `CAST(-1.5 AS INTEGER)` returns -2.
+** To a number, the value is truncated to the scale of the type, except a string that keeps all its decimals. `NUMBER` without precision and scale has no fixed scale, for example `1.23456::NUMBER` returns 1.23456, and `NUMBER(p)` has a scale of 0, for example `1.23456::NUMBER(10)` returns 1.
+** With a precision, an error is raised if the integer part has more digits than the precision minus the scale, checked after rounding, for example `CAST(12345 AS INTEGER(3))`, `CAST(999.5 AS INTEGER(3))`, `CAST(12345 AS NUMBER(3))` or `CAST('12345.6' AS NUMBER(3,1))`.
+* Date:
+** An integer or a number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970), and a date converts back to it; the fractions of a number are nanoseconds.
+** A date converts to a string without format with `YYYY-MM-DD`, followed by the time `HH24:MI:SS` if it is not midnight and by the fractional seconds `.FF9` if they are not zero, for example `CAST(TIMESTAMP '2019-02-25 12:34:56' AS STRING)` returns '2019-02-25 12:34:56'.
+* String:
+** With a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.
+** An interval converts with the format `+Y-M D HH:MM:SS.FFFFFFFFF`.
+* Binary: a string converts to its UTF-8 encoding. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
+* Inet: an empty string raises an error.
 
 == Examples
 
