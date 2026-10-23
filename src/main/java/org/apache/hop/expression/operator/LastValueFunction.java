@@ -15,11 +15,15 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.Set;
 import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionParser;
+import org.apache.hop.expression.Token;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -49,10 +53,14 @@ public class LastValueFunction extends AggregateFunction {
   }
 
   @Override
-  public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    return (ignoreNulls)
-        ? new LastValueIgnoreNullsProcessor()
-        : new LastValueRespectNullsProcessor();
+  public Set<String> getKeywords() {
+    return NULL_TREATMENT_KEYWORDS;
+  }
+
+  /** Parses <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code> */
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+    return parseWithNullTreatment(parser, token, LAST_VALUE_IGNORE_NULLS, LAST_VALUE_RESPECT_NULLS);
   }
 
   @Override
@@ -61,5 +69,12 @@ public class LastValueFunction extends AggregateFunction {
     if (ignoreNulls) {
       writer.append(" IGNORE NULLS");
     }
+  }
+
+  @Override
+  public IAggregateProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
+    return (ignoreNulls)
+        ? new LastValueIgnoreNullsProcessor()
+        : new LastValueRespectNullsProcessor();
   }
 }

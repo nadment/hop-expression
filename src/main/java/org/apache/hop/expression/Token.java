@@ -53,14 +53,8 @@ public record Token(Id id, int start, int end, String text) {
     CASE,
     /** Concat operator <code>||</code>. */
     CONCAT("||"),
-    /** Used by functions: COUNT([ALL] field) */
-    ALL,
-    /** Used by function CAST(value AS type) */
-    AS,
     /** Used by operator AT TIME ZONE */
     AT,
-    /** Used by function CAST(value AS type FORMAT '9999') */
-    FORMAT,
     /** Cast operator <code>::</code>. */
     CAST("::"),
     /** DOT */
@@ -113,7 +107,7 @@ public record Token(Id id, int start, int end, String text) {
     KEYWORD,
     /** Function */
     FUNCTION,
-    /** Extract(part FROM date_time) */
+    /** IS [NOT] DISTINCT FROM operator or Extract(part FROM date_time) */
     FROM,
     /** The arithmetic division operator "/". */
     SLASH("/"),
@@ -161,20 +155,8 @@ public record Token(Id id, int start, int end, String text) {
     NOT,
     /** The literal value "NULL". */
     NULL,
-    /** For IGNORE NULLS or RESPECT NULLS */
-    NULLS,
-    /** For IGNORE NULLS or RESPECT NULLS */
-    IGNORE,
-    /** For IGNORE NULLS or RESPECT NULLS */
-    RESPECT,
-    /** For JSON_VALUE(... RETURNING) */
-    RETURNING,
     /** The "IS" operator. */
     IS,
-    /** Used by function "JSON_OBJECT" */
-    KEY,
-    /** Used by function "JSON_OBJECT" */
-    VALUE,
     /** The literal value "TRUE". */
     TRUE,
     /** The literal value "FALSE". */
@@ -188,7 +170,10 @@ public record Token(Id id, int start, int end, String text) {
     TO,
     /** The "SIMILAR TO" operator. */
     SIMILAR,
-    /** Used by functions: COUNT([DISTINCT] field), LISTAGG( [DISTINCT] string [, delimiter]) */
+    /**
+     * IS [NOT] DISTINCT FROM operator, also used by functions: COUNT([DISTINCT] field), LISTAGG(
+     * [DISTINCT] string [, delimiter])
+     */
     DISTINCT,
     /** Data type element DATE, NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,

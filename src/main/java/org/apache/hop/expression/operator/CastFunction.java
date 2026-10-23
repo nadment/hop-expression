@@ -18,6 +18,9 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -25,8 +28,12 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionParser;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
+import org.apache.hop.expression.Token;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
@@ -61,6 +68,59 @@ public class CastFunction extends Function {
         OperandTypes.CAST,
         OperatorCategory.CONVERSION,
         "/docs/cast.html");
+  }
+
+  @Override
+  public Set<String> getKeywords() {
+    return Set.of("AS", "FORMAT");
+  }
+
+  /** Parses <code>CAST(value AS type [FORMAT pattern])</code> */
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+    List<IExpression> operands = new ArrayList<>();
+
+    operands.add(parser.parseExpression());
+
+    parser.expectKeyword("AS", ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+
+    if (!parser.hasNext() || parser.isNext(Id.RPARENTHESIS)) {
+      throw new ParseExpressionException(
+          token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+    }
+
+    operands.add(parser.parseDataType(parser.next()));
+
+    if (parser.acceptKeyword("FORMAT")) {
+      if (!parser.hasNext()) {
+        throw new ParseExpressionException(
+            token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+      }
+      Token format = parser.next();
+      if (format.is(Id.LITERAL_STRING)) operands.add(parser.parseLiteralString(format));
+      else
+        throw new ParseExpressionException(
+            format.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+    }
+
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    return new Call(token.start(), this, operands);
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append(this.getName());
+    writer.append('(');
+    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    writer.append(" AS ");
+    Type type = operands[1].getType();
+    writer.append(type.getLiteral());
+    if (operands.length == 3) {
+      writer.append(" FORMAT ");
+      operands[2].unparse(writer, 0, 0);
+    }
+    writer.append(')');
   }
 
   @Override
@@ -178,20 +238,5 @@ public class CastFunction extends Function {
     } else {
       throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, format);
     }
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append(this.getName());
-    writer.append('(');
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
-    writer.append(" AS ");
-    Type type = operands[1].getType();
-    writer.append(type.getLiteral());
-    if (operands.length == 3) {
-      writer.append(" FORMAT ");
-      operands[2].unparse(writer, 0, 0);
-    }
-    writer.append(')');
   }
 }

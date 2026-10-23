@@ -21,7 +21,7 @@ Returns the position of the first character of the first occurrence of a substri
 == Syntax
 
 ----
-POSITION( substring IN string )
+POSITION( substring, string )
 ----
 
 == Returns
@@ -39,8 +39,8 @@ Integer
 == Examples
 
 ----
-POSITION('def' IN 'abcdefgh') returns 4
-POSITION('XYZ' IN 'abcdefgh') returns 0
+POSITION('def', 'abcdefgh') returns 4
+POSITION('XYZ', 'abcdefgh') returns 0
 ----
 
 == See also

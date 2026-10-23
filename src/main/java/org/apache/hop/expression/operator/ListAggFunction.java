@@ -15,13 +15,20 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionParser;
+import org.apache.hop.expression.Token;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -50,6 +57,54 @@ public class ListAggFunction extends AggregateFunction {
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         "/docs/listagg.html");
     this.option = option;
+  }
+
+  @Override
+  public Set<String> getKeywords() {
+    return Set.of("ALL", "DISTINCT");
+  }
+
+  /**
+   * Parses <code>LISTAGG([ALL | DISTINCT] expression [, delimiter] )</code>, the call uses the
+   * function of the option.
+   */
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+
+    AggregateFunction aggregator = ListAggFunction.LISTAGG_ALL;
+
+    if (parser.acceptKeyword("DISTINCT")) {
+      aggregator = ListAggFunction.LISTAGG_DISTINCT;
+    } else {
+      parser.acceptKeyword("ALL");
+    }
+
+    List<IExpression> operands = parser.parseExpressionList();
+
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    return new Call(token.start(), aggregator, operands);
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append(this.getName());
+    writer.append('(');
+    switch (option) {
+      case ALL:
+        writer.append("ALL ");
+        operands[0].unparse(writer, 0, 0);
+        break;
+      case DISTINCT:
+        writer.append("DISTINCT ");
+        operands[0].unparse(writer, 0, 0);
+        break;
+    }
+    if (operands.length == 2) {
+      writer.append(",");
+      operands[1].unparse(writer, 0, 0);
+    }
+    writer.append(')');
   }
 
   /** {@inheritDoc} The option is not an operand, it distinguishes the functions. */
@@ -81,27 +136,6 @@ public class ListAggFunction extends AggregateFunction {
       return new ListAggDistinctProcessor(delimiter);
     }
     return new ListAggAllProcessor(delimiter);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append(this.getName());
-    writer.append('(');
-    switch (option) {
-      case ALL:
-        writer.append("ALL ");
-        operands[0].unparse(writer, 0, 0);
-        break;
-      case DISTINCT:
-        writer.append("DISTINCT ");
-        operands[0].unparse(writer, 0, 0);
-        break;
-    }
-    if (operands.length == 2) {
-      writer.append(",");
-      operands[1].unparse(writer, 0, 0);
-    }
-    writer.append(')');
   }
 
   public enum ListAgg {

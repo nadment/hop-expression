@@ -33,10 +33,8 @@ import org.apache.hop.expression.operator.CaseSearchOperator;
 import org.apache.hop.expression.operator.CaseSimpleOperator;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
-import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.operator.DivOperator;
 import org.apache.hop.expression.operator.EqualOperator;
-import org.apache.hop.expression.operator.FirstValueFunction;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
 import org.apache.hop.expression.operator.ILikeOperator;
@@ -49,18 +47,15 @@ import org.apache.hop.expression.operator.IsNotNullOperator;
 import org.apache.hop.expression.operator.IsNotTrueOperator;
 import org.apache.hop.expression.operator.IsNullOperator;
 import org.apache.hop.expression.operator.IsTrueOperator;
-import org.apache.hop.expression.operator.LastValueFunction;
 import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
 import org.apache.hop.expression.operator.LikeOperator;
-import org.apache.hop.expression.operator.ListAggFunction;
 import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegativeOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NotInListOperator;
 import org.apache.hop.expression.operator.NotSimilarToOperator;
-import org.apache.hop.expression.operator.NthValueFunction;
 import org.apache.hop.expression.operator.PositiveOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
@@ -89,8 +84,8 @@ import org.jspecify.annotations.NullMarked;
  * Constant := 'NULL' | 'TRUE' | 'FALSE'
  * TermExpression := Literal | Identifier | ParenthesisExpression  | FunctionExpression | CaseExpression
  * ParenthesisExpression  := ('(' LogicalOrExpression ')') | LogicalOrExpression
- * FunctionExpression := FunctionName '(' ListExpression ')'
- * ListExpression := LogicalOrExpression ( ',' LogicalOrExpression )*
+ * FunctionExpression := FunctionName '(' ExpressionList ')', or the extended syntax parsed by the function
+ * ExpressionList := LogicalOrExpression ( ',' LogicalOrExpression )*
  * CaseExpression := SimpleCaseExpression | SearchedCaseExpression
  * SimpleCaseExpression := 'CASE' Expr ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
  * SearchedCaseExpression := 'CASE' ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
@@ -114,7 +109,7 @@ import org.jspecify.annotations.NullMarked;
  * MultiplicativeExpression  || MultiplicativeExpression
  * RelationExpression :=
  * AdditiveExpression
- * AdditiveExpression [NOT] IN '(' ListExpression ')'
+ * AdditiveExpression [NOT] IN '(' ExpressionList ')'
  * AdditiveExpression [NOT] BETWEEN [ASYMMETRIC|SYMMETRIC] LogicalOrExpression AND LogicalOrExpression
  * AdditiveExpression [NOT] LIKE AdditiveExpression [ESCAPE StringExpression]
  * AdditiveExpression [NOT] ILIKE AdditiveExpression [ESCAPE StringExpression]
@@ -139,13 +134,69 @@ import org.jspecify.annotations.NullMarked;
  * </code>
  */
 @NullMarked
-public class ExpressionParser {
+public class ExpressionParser implements IExpressionParser {
 
   private final ExpressionLexer lexer;
 
   public ExpressionParser(ExpressionLexer lexer) {
     super();
     this.lexer = lexer;
+  }
+
+  @Override
+  public int getPosition() {
+    return lexer.getPosition();
+  }
+
+  @Override
+  public boolean hasNext() throws ExpressionException {
+    return lexer.hasNext();
+  }
+
+  @Override
+  public void expectNext(ErrorCode errorCode, Object... values) throws ExpressionException {
+    lexer.expectNext(errorCode, values);
+  }
+
+  @Override
+  public Token next() throws ExpressionException {
+    return lexer.next();
+  }
+
+  @Override
+  public boolean isNext(Id id) throws ExpressionException {
+    return lexer.isNext(id);
+  }
+
+  @Override
+  public boolean accept(Id id) throws ExpressionException {
+    return lexer.accept(id);
+  }
+
+  @Override
+  public void expect(Id id, ErrorCode errorCode, Object... values) throws ExpressionException {
+    lexer.expect(id, errorCode, values);
+  }
+
+  @Override
+  public boolean isNextKeyword(String word) throws ExpressionException {
+    return lexer.isNextKeyword(word);
+  }
+
+  @Override
+  public boolean acceptKeyword(String word) throws ExpressionException {
+    return lexer.acceptKeyword(word);
+  }
+
+  @Override
+  public void expectKeyword(String word, ErrorCode errorCode, Object... values)
+      throws ExpressionException {
+    lexer.expectKeyword(word, errorCode, values);
+  }
+
+  @Override
+  public IExpression parseExpression() throws ExpressionException {
+    return this.parseLogicalOr();
   }
 
   /** Parse the expression */
@@ -177,7 +228,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalOr() throws ExpressionException {
     IExpression expression = this.parseLogicalXor();
-    while (lexer.ifThenNextAndNotEnd(Id.OR)) {
+    while (lexer.acceptAndNotEnd(Id.OR)) {
       expression =
           new Call(lexer.getPosition(), BoolOrOperator.INSTANCE, expression, parseLogicalXor());
     }
@@ -194,7 +245,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalXor() throws ExpressionException {
     IExpression expression = this.parseLogicalAnd();
-    while (lexer.ifThenNextAndNotEnd(Id.XOR)) {
+    while (lexer.acceptAndNotEnd(Id.XOR)) {
       expression =
           new Call(lexer.getPosition(), BoolXorOperator.INSTANCE, expression, parseLogicalAnd());
     }
@@ -211,7 +262,7 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalAnd() throws ExpressionException {
     IExpression expression = this.parseLogicalNot();
-    while (lexer.ifThenNextAndNotEnd(Id.AND)) {
+    while (lexer.acceptAndNotEnd(Id.AND)) {
       expression =
           new Call(lexer.getPosition(), BoolAndOperator.INSTANCE, expression, parseLogicalNot());
     }
@@ -225,7 +276,7 @@ public class ExpressionParser {
    * <p><code>[NOT] ConditionalExpression</code>
    */
   private IExpression parseLogicalNot() throws ExpressionException {
-    if (lexer.ifThenNextAndNotEnd(Id.NOT)) {
+    if (lexer.acceptAndNotEnd(Id.NOT)) {
       return new Call(lexer.getPosition(), BoolNotFunction.INSTANCE, parseLogicalNot());
     }
 
@@ -243,11 +294,11 @@ public class ExpressionParser {
    */
   private IExpression parseConditional() throws ExpressionException {
     IExpression expression = this.parseComparison();
-    if (lexer.ifThenNext(Id.IS)) {
+    if (lexer.accept(Id.IS)) {
       boolean not = false;
       int start = lexer.getPosition();
 
-      if (lexer.ifThenNext(Id.NOT)) {
+      if (lexer.accept(Id.NOT)) {
         not = true;
       }
 
@@ -263,7 +314,7 @@ public class ExpressionParser {
             new Call(
                 start, (not) ? IsNotNullOperator.INSTANCE : IsNullOperator.INSTANCE, expression);
         case DISTINCT -> {
-          if (lexer.ifThenNextAndNotEnd(Token.Id.FROM)) {
+          if (lexer.acceptAndNotEnd(Token.Id.FROM)) {
             yield new Call(
                 start,
                 (not) ? IsNotDistinctFromOperator.INSTANCE : IsDistinctFromOperator.INSTANCE,
@@ -286,14 +337,14 @@ public class ExpressionParser {
     IExpression expression = this.parseAdditive();
 
     // Special case NOT before operation: <exp> [NOT] LIKE|ILIKE|IN|BETWEEN|SIMILAR <primaryExp>
-    boolean not = lexer.ifThenNext(Id.NOT);
+    boolean not = lexer.accept(Id.NOT);
 
     int start = lexer.getPosition();
 
-    if (lexer.ifThenNext(Id.LIKE)) {
+    if (lexer.accept(Id.LIKE)) {
       IExpression pattern = this.parseAdditive();
 
-      if (lexer.ifThenNextAndNotEnd(Id.ESCAPE)) {
+      if (lexer.acceptAndNotEnd(Id.ESCAPE)) {
         IExpression escape = this.parseEscape();
         expression = new Call(start, LikeOperator.INSTANCE, expression, pattern, escape);
       } else {
@@ -304,9 +355,9 @@ public class ExpressionParser {
         return new Call(start, BoolNotFunction.INSTANCE, expression);
       }
       return expression;
-    } else if (lexer.ifThenNext(Id.ILIKE)) {
+    } else if (lexer.accept(Id.ILIKE)) {
       IExpression pattern = this.parseAdditive();
-      if (lexer.ifThenNextAndNotEnd(Id.ESCAPE)) {
+      if (lexer.acceptAndNotEnd(Id.ESCAPE)) {
         IExpression escape = this.parseEscape();
         expression = new Call(start, ILikeOperator.INSTANCE, expression, pattern, escape);
       } else {
@@ -317,13 +368,13 @@ public class ExpressionParser {
         return new Call(start, BoolNotFunction.INSTANCE, expression);
       }
       return expression;
-    } else if (lexer.ifThenNext(Id.IN)) {
+    } else if (lexer.accept(Id.IN)) {
 
-      lexer.nextOrThrows(Id.LPARENTHESIS, ErrorCode.MISSING_LEFT_PARENTHESIS);
+      lexer.expect(Id.LPARENTHESIS, ErrorCode.MISSING_LEFT_PARENTHESIS);
 
-      List<IExpression> list = this.parseListExpression();
+      List<IExpression> list = this.parseExpressionList();
 
-      lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+      lexer.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
       if (list.isEmpty()) {
         throw new ParseExpressionException(
@@ -335,11 +386,11 @@ public class ExpressionParser {
           not ? NotInListOperator.INSTANCE : InListOperator.INSTANCE,
           expression,
           new Array(list));
-    } else if (lexer.ifThenNextAndNotEnd(Id.BETWEEN)) {
+    } else if (lexer.acceptAndNotEnd(Id.BETWEEN)) {
       Operator operator;
-      if (lexer.ifThenNext(Id.ASYMMETRIC)) {
+      if (lexer.accept(Id.ASYMMETRIC)) {
         operator = BetweenAsymmetricOperator.INSTANCE;
-      } else if (lexer.ifThenNext(Id.SYMMETRIC)) {
+      } else if (lexer.accept(Id.SYMMETRIC)) {
         operator = BetweenSymmetricOperator.INSTANCE;
       } else {
         // Default is asymmetric
@@ -347,8 +398,8 @@ public class ExpressionParser {
       }
       IExpression lower = this.parseAdditive();
 
-      lexer.nextOrThrows(Id.AND, ErrorCode.SYNTAX_ERROR, Id.BETWEEN);
-      lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, Id.BETWEEN);
+      lexer.expect(Id.AND, ErrorCode.SYNTAX_ERROR, Id.BETWEEN);
+      lexer.expectNext(ErrorCode.SYNTAX_ERROR, Id.BETWEEN);
       IExpression upper = this.parseAdditive();
 
       expression = new Call(start, operator, expression, lower, upper);
@@ -357,9 +408,9 @@ public class ExpressionParser {
         return new Call(start, BoolNotFunction.INSTANCE, expression);
       }
       return expression;
-    } else if (lexer.ifThenNextAndNotEnd(Id.SIMILAR)) {
-      lexer.nextOrThrows(Id.TO, ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
-      lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
+    } else if (lexer.acceptAndNotEnd(Id.SIMILAR)) {
+      lexer.expect(Id.TO, ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
+      lexer.expectNext(ErrorCode.SYNTAX_ERROR, Id.SIMILAR);
 
       return new Call(
           start,
@@ -383,11 +434,11 @@ public class ExpressionParser {
 
       int start = lexer.getPosition();
 
-      if (lexer.ifThenNextAndNotEnd(Id.STAR)) {
+      if (lexer.acceptAndNotEnd(Id.STAR)) {
         expression = new Call(start, MultiplyOperator.INSTANCE, expression, this.parseUnary());
-      } else if (lexer.ifThenNextAndNotEnd(Id.SLASH)) {
+      } else if (lexer.acceptAndNotEnd(Id.SLASH)) {
         expression = new Call(start, DivOperator.INSTANCE, expression, this.parseUnary());
-      } else if (lexer.ifThenNextAndNotEnd(Id.PERCENT)) {
+      } else if (lexer.acceptAndNotEnd(Id.PERCENT)) {
         expression = new Call(start, ModFunction.INSTANCE, expression, this.parseUnary());
       } else break;
     }
@@ -398,11 +449,11 @@ public class ExpressionParser {
   /** <code>('+' | '-') PrimaryExpression</code> */
   private IExpression parseUnary() throws ExpressionException {
     int start = lexer.getPosition();
-    if (lexer.ifThenNextAndNotEnd(Id.MINUS)) {
+    if (lexer.acceptAndNotEnd(Id.MINUS)) {
       return new Call(start, NegativeOperator.INSTANCE, this.parsePrimary());
     }
 
-    if (lexer.ifThenNextAndNotEnd(Id.PLUS)) {
+    if (lexer.acceptAndNotEnd(Id.PLUS)) {
       return new Call(start, PositiveOperator.INSTANCE, this.parsePrimary());
     }
 
@@ -410,7 +461,8 @@ public class ExpressionParser {
   }
 
   /** Literal String */
-  private IExpression parseLiteralString(Token token) {
+  @Override
+  public IExpression parseLiteralString(Token token) {
     return Literal.of(token.text());
   }
 
@@ -438,28 +490,29 @@ public class ExpressionParser {
    * TermExpression::TypeExpression | TermExpression AT TIMEZONE TimezoneExpression | TermExpression[index]
    * </code>
    */
-  private IExpression parsePrimary() throws ExpressionException {
+  @Override
+  public IExpression parsePrimary() throws ExpressionException {
     IExpression expression = this.parseTerm();
 
     // Cast operator '::'
-    if (lexer.ifThenNextAndNotEnd(Id.CAST)) {
-      IExpression type = parseLiteralType(lexer.next());
+    if (lexer.acceptAndNotEnd(Id.CAST)) {
+      IExpression type = parseDataType(lexer.next());
       return new Call(lexer.getPosition(), CastOperator.INSTANCE, expression, type);
     }
 
     // Array element at ARRAY[index]
-    if (lexer.ifThenNext(Id.LBRACKET)) {
+    if (lexer.accept(Id.LBRACKET)) {
       IExpression term = this.parseAdditive();
       Call call = new Call(lexer.getPosition(), ArrayElementAtOperator.INSTANCE, expression, term);
 
-      lexer.nextOrThrows(Id.RBRACKET, ErrorCode.MISSING_RIGHT_BRACKET);
+      lexer.expect(Id.RBRACKET, ErrorCode.MISSING_RIGHT_BRACKET);
 
       return call;
     }
 
     //  <term> AT TIMEZONE <timezone>
-    if (lexer.ifThenNextAndNotEnd(Id.AT)) {
-      if (lexer.ifThenNextAndNotEnd(Id.TIME) && lexer.ifThenNextAndNotEnd(Id.ZONE)) {
+    if (lexer.acceptAndNotEnd(Id.AT)) {
+      if (lexer.acceptAndNotEnd(Id.TIME) && lexer.acceptAndNotEnd(Id.ZONE)) {
         return new Call(
             lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parseTerm());
       }
@@ -495,7 +548,7 @@ public class ExpressionParser {
       case LPARENTHESIS -> {
         if (lexer.hasNext()) {
           IExpression expression = this.parseLogicalOr();
-          if (lexer.ifThenNext(Id.RPARENTHESIS)) {
+          if (lexer.accept(Id.RPARENTHESIS)) {
             yield expression;
           }
         }
@@ -509,23 +562,23 @@ public class ExpressionParser {
   private IExpression parseComparison() throws ExpressionException {
     IExpression expression = this.parseRelational();
     int start = lexer.getPosition();
-    if (lexer.ifThenNextAndNotEnd(Id.EQUAL)) {
+    if (lexer.acceptAndNotEnd(Id.EQUAL)) {
       return new Call(start, EqualOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.ifThenNextAndNotEnd(Id.NOT_EQUAL)) {
+    if (lexer.acceptAndNotEnd(Id.NOT_EQUAL)) {
       return new Call(start, NotEqualOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.ifThenNextAndNotEnd(Id.GT)) {
+    if (lexer.acceptAndNotEnd(Id.GT)) {
       return new Call(start, GreaterThanOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.ifThenNextAndNotEnd(Id.GTE)) {
+    if (lexer.acceptAndNotEnd(Id.GTE)) {
       return new Call(
           start, GreaterThanOrEqualOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.ifThenNextAndNotEnd(Id.LT)) {
+    if (lexer.acceptAndNotEnd(Id.LT)) {
       return new Call(start, LessThanOperator.INSTANCE, expression, this.parseRelational());
     }
-    if (lexer.ifThenNextAndNotEnd(Id.LTE)) {
+    if (lexer.acceptAndNotEnd(Id.LTE)) {
       return new Call(start, LessThanOrEqualOperator.INSTANCE, expression, this.parseRelational());
     }
 
@@ -538,12 +591,12 @@ public class ExpressionParser {
     while (lexer.hasNext()) {
       int start = lexer.getPosition();
 
-      if (lexer.ifThenNextAndNotEnd(Id.PLUS)) {
+      if (lexer.acceptAndNotEnd(Id.PLUS)) {
         expression = new Call(start, AddOperator.INSTANCE, expression, this.parseMultiplicative());
-      } else if (lexer.ifThenNextAndNotEnd(Id.MINUS)) {
+      } else if (lexer.acceptAndNotEnd(Id.MINUS)) {
         expression =
             new Call(start, SubtractOperator.INSTANCE, expression, this.parseMultiplicative());
-      } else if (lexer.ifThenNextAndNotEnd(Id.CONCAT)) {
+      } else if (lexer.acceptAndNotEnd(Id.CONCAT)) {
         expression =
             new Call(start, ConcatFunction.INSTANCE, expression, this.parseMultiplicative());
       } else break;
@@ -562,16 +615,16 @@ public class ExpressionParser {
     List<IExpression> operands = new ArrayList<>();
 
     // Empty array
-    if (lexer.ifThenNext(Id.RBRACKET)) {
+    if (lexer.accept(Id.RBRACKET)) {
       return new Array(operands);
     }
 
     do {
-      lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR, Id.LBRACKET);
+      lexer.expectNext(ErrorCode.SYNTAX_ERROR, Id.LBRACKET);
       operands.add(this.parseLogicalOr());
-    } while (lexer.ifThenNext(Id.COMMA));
+    } while (lexer.accept(Id.COMMA));
 
-    lexer.nextOrThrows(Id.RBRACKET, ErrorCode.MISSING_RIGHT_BRACKET);
+    lexer.expect(Id.RBRACKET, ErrorCode.MISSING_RIGHT_BRACKET);
 
     return new Array(operands);
   }
@@ -672,18 +725,19 @@ public class ExpressionParser {
    *
    * <p><code>expression [,expression...]</code>
    */
-  private List<IExpression> parseListExpression() {
+  @Override
+  public List<IExpression> parseExpressionList() {
     List<IExpression> list = new ArrayList<>();
 
     // No argument function
-    if (lexer.is(Id.RPARENTHESIS)) {
+    if (lexer.isNext(Id.RPARENTHESIS)) {
       return list;
     }
 
     // <expression [, expression>]
     boolean first = true;
     do {
-      if (lexer.ifThenNext(Id.RPARENTHESIS)) {
+      if (lexer.accept(Id.RPARENTHESIS)) {
         if (!first) {
           throw new ParseExpressionException(lexer.getPosition(), ErrorCode.MISSING_ELEMENT);
         }
@@ -693,7 +747,7 @@ public class ExpressionParser {
         list.add(this.parseLogicalOr());
       }
       first = false;
-    } while (lexer.ifThenNext(Id.COMMA));
+    } while (lexer.accept(Id.COMMA));
 
     return list;
   }
@@ -709,37 +763,37 @@ public class ExpressionParser {
     boolean simple = false;
 
     // Simple case
-    if (!lexer.is(Id.WHEN)) {
+    if (!lexer.isNext(Id.WHEN)) {
       valueExpression = this.parseLogicalOr();
       simple = true;
     }
 
-    while (lexer.ifThenNext(Id.WHEN)) {
+    while (lexer.accept(Id.WHEN)) {
       IExpression expression = this.parseLogicalOr();
 
       // Simple case with multi values
-      if (simple && lexer.ifThenNext(Id.COMMA)) {
+      if (simple && lexer.accept(Id.COMMA)) {
         List<IExpression> values = new ArrayList<>();
         values.add(expression);
 
         do {
           values.add(this.parseLogicalOr());
-        } while (lexer.ifThenNext(Id.COMMA));
+        } while (lexer.accept(Id.COMMA));
 
         expression = new Array(values);
       }
       whenList.add(expression);
 
-      lexer.nextOrThrows(Id.THEN, ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
+      lexer.expect(Id.THEN, ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
       thenList.add(this.parseLogicalOr());
     }
 
-    if (lexer.ifThenNext(Id.ELSE)) {
+    if (lexer.accept(Id.ELSE)) {
       elseExpression = this.parseLogicalOr();
     }
 
-    lexer.nextOrThrows(Id.END, ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
+    lexer.expect(Id.END, ErrorCode.SYNTAX_ERROR_CASE_STATEMENT);
 
     return new Call(
         start,
@@ -748,249 +802,6 @@ public class ExpressionParser {
         new Array(whenList),
         new Array(thenList),
         elseExpression);
-  }
-
-  /** Cast function <code>CAST(value AS type [FORMAT pattern])</code> */
-  private IExpression parseFunctionCast(final Token token, final Function function)
-      throws ExpressionException {
-    List<IExpression> operands = new ArrayList<>();
-
-    operands.add(this.parseLogicalOr());
-
-    lexer.nextOrThrows(Id.AS, ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-
-    if (!lexer.hasNext() || lexer.is(Id.RPARENTHESIS)) {
-      throw new ParseExpressionException(
-          token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-    }
-
-    operands.add(this.parseLiteralType(lexer.next()));
-
-    if (lexer.ifThenNext(Id.FORMAT)) {
-      if (!lexer.hasNext()) {
-        throw new ParseExpressionException(
-            token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-      }
-      Token format = lexer.next();
-      if (format.is(Id.LITERAL_STRING)) operands.add(this.parseLiteralString(format));
-      else
-        throw new ParseExpressionException(
-            format.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-    }
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /** Parse function <code>POSITION(expression IN expression)</code> */
-  private IExpression parseFunctionPosition(final Token token, final Function function)
-      throws ExpressionException {
-    List<IExpression> operands = new ArrayList<>();
-
-    // Check argument will detect an error later
-    if (lexer.ifThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
-    }
-
-    if (!lexer.hasNext()) {
-      throw new ParseExpressionException(
-          token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-    }
-
-    operands.add(this.parseAdditive());
-
-    // Check argument will detect an error later
-    if (lexer.ifThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
-    }
-
-    lexer.nextOrThrows(Id.IN, ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
-
-    if (!lexer.hasNext()) {
-      throw new ParseExpressionException(
-          token.end(), ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-    }
-
-    operands.add(this.parseAdditive());
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /**
-   * Parse aggregate function with NULL treatment clause <code>
-   * NAME(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
-   */
-  private IExpression parseFunctionWithNullTreatment(
-      Token token, Function ignoreNulls, Function respectNulls) throws ExpressionException {
-
-    List<IExpression> operands = this.parseListExpression();
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    // NULL treatment clause
-    Function function = this.parseIgnoreOrRespectNulls(respectNulls) ? ignoreNulls : respectNulls;
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /**
-   * Parse NULL treatment clause <code>[ IGNORE NULLS | RESPECT NULLS ]</code>
-   *
-   * @return true if the function should ignore null values
-   */
-  private boolean parseIgnoreOrRespectNulls(Function function) throws ExpressionException {
-    if (lexer.ifThenNext(Id.IGNORE)) {
-      if (lexer.ifThenNext(Id.NULLS)) {
-        return true;
-      }
-      throw new ParseExpressionException(
-          lexer.getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function);
-    }
-    if (lexer.ifThenNext(Id.RESPECT)) {
-      if (lexer.ifThenNext(Id.NULLS)) {
-        return false;
-      }
-      throw new ParseExpressionException(
-          lexer.getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION, function);
-    }
-
-    return false;
-  }
-
-  /** Parse function <code>EXTRACT(part FROM expression)</code> */
-  private IExpression parseFunctionExtract(Token token, Function function)
-      throws ExpressionException {
-
-    List<IExpression> operands = new ArrayList<>();
-
-    // Check argument will detect an error later
-    if (lexer.ifThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
-    }
-    lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-
-    operands.add(this.parseLiteralTimeUnit(lexer.next()));
-
-    // Check argument will detect an error later
-    if (lexer.ifThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
-    }
-
-    lexer.nextOrThrows(Id.FROM, ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
-    lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-
-    operands.add(this.parseLogicalOr());
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /** Parse function <code>COUNT(*) | COUNT([ALL | DISTINCT] expression)</code> */
-  private IExpression parseFunctionCount(Token token) throws ExpressionException {
-
-    AggregateFunction aggregator = CountFunction.COUNT_ALL;
-    List<IExpression> operands = new ArrayList<>();
-
-    if (lexer.ifThenNext(Id.STAR)) {
-      aggregator = CountFunction.COUNT_ROW;
-      // COUNT(*)  use fictive operand
-      operands.add(Literal.NULL);
-    } else if (lexer.ifThenNext(Id.DISTINCT)) {
-      operands = this.parseListExpression();
-      aggregator = CountFunction.COUNT_DISTINCT;
-    } else {
-      lexer.ifThenNext(Id.ALL);
-      operands = this.parseListExpression();
-    }
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), aggregator, operands);
-  }
-
-  /** Parse function <code>LISTAGG([ALL | DISTINCT] expression [, delimiter] )</code> */
-  private IExpression parseFunctionListAgg(Token token) throws ExpressionException {
-
-    AggregateFunction aggregator = ListAggFunction.LISTAGG_ALL;
-
-    if (lexer.ifThenNext(Id.DISTINCT)) {
-      aggregator = ListAggFunction.LISTAGG_DISTINCT;
-    } else {
-      lexer.ifThenNext(Id.ALL);
-    }
-
-    List<IExpression> operands = this.parseListExpression();
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), aggregator, operands);
-  }
-
-  /**
-   * Parse function <code>JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...)
-   * </code>
-   */
-  private IExpression parseFunctionJsonObject(Token token, Function function)
-      throws ExpressionException {
-
-    List<IExpression> operands = new ArrayList<>();
-
-    // Check argument will detect an error later
-    if (lexer.ifThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
-    }
-    lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-
-    do {
-      // KEY is optional
-      lexer.ifThenNext(Id.KEY);
-
-      if (lexer.hasNext()) {
-        operands.add(this.parseLiteralString(lexer.next()));
-      } else {
-        throw new ParseExpressionException(
-            token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
-      }
-
-      if (lexer.ifThenNext(Id.VALUE)) {
-        operands.add(this.parsePrimary());
-      } else {
-        throw new ParseExpressionException(
-            token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, function.getName());
-      }
-
-    } while (lexer.ifThenNext(Id.COMMA));
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), function, operands);
-  }
-
-  /** Parse function <code>JSON_VALUE(json, path [RETURNING type])</code> */
-  private IExpression parseFunctionJsonValue(Token token, Function function)
-      throws ExpressionException {
-
-    List<IExpression> operands = new ArrayList<>();
-    if (lexer.ifThenNext(Id.RPARENTHESIS)) {
-      return new Call(token.start(), function, operands);
-    }
-    lexer.hasNextOrThrows(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
-
-    operands.add(this.parseLogicalOr());
-    if (lexer.ifThenNext(Id.COMMA)) {
-      operands.add(this.parseLogicalOr());
-      if (lexer.ifThenNext(Id.RETURNING)) {
-        operands.add(this.parseLiteralType(lexer.next()));
-      }
-    }
-
-    lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-
-    return new Call(token.start(), function, operands);
   }
 
   /** Parse function */
@@ -1003,41 +814,14 @@ public class ExpressionParser {
           token.start(), ErrorCode.FUNCTION_DOES_NOT_EXIST, token.text());
     }
 
-    lexer.nextOrThrows(Id.LPARENTHESIS, ErrorCode.MISSING_LEFT_PARENTHESIS);
+    lexer.expect(Id.LPARENTHESIS, ErrorCode.MISSING_LEFT_PARENTHESIS);
 
-    // Parse function with custom syntax, fallback to generic argument list
-    return switch (token.text()) {
-      case "CAST", "TRY_CAST" -> parseFunctionCast(token, function);
-      case "EXTRACT" -> parseFunctionExtract(token, function);
-      case "POSITION" -> parseFunctionPosition(token, function);
-      case "COUNT" -> parseFunctionCount(token);
-      case "FIRST_VALUE" ->
-          parseFunctionWithNullTreatment(
-              token,
-              FirstValueFunction.FIRST_VALUE_IGNORE_NULLS,
-              FirstValueFunction.FIRST_VALUE_RESPECT_NULLS);
-      case "LAST_VALUE" ->
-          parseFunctionWithNullTreatment(
-              token,
-              LastValueFunction.LAST_VALUE_IGNORE_NULLS,
-              LastValueFunction.LAST_VALUE_RESPECT_NULLS);
-      case "NTH_VALUE" ->
-          parseFunctionWithNullTreatment(
-              token,
-              NthValueFunction.NTH_VALUE_IGNORE_NULLS,
-              NthValueFunction.NTH_VALUE_RESPECT_NULLS);
-      case "LISTAGG" -> parseFunctionListAgg(token);
-      case "JSON_OBJECT" -> parseFunctionJsonObject(token, function);
-      case "JSON_VALUE" -> parseFunctionJsonValue(token, function);
-      default -> {
-        List<IExpression> operands = this.parseListExpression();
-        lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
-        yield new Call(token.start(), function, operands);
-      }
-    };
+    // The function parses its arguments, with its extended syntax if any
+    return function.parse(this, token);
   }
 
-  private IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {
+  @Override
+  public IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {
     TimeUnit unit = TimeUnit.of(token.text());
     if (unit == null) {
       throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TIME_UNIT, token.text());
@@ -1073,7 +857,7 @@ public class ExpressionParser {
     String text = token.text();
     if (token.is(Id.LITERAL_STRING)) {
       Token end;
-      if (lexer.ifThenNext(Id.TO)) {
+      if (lexer.accept(Id.TO)) {
 
         end = lexer.nextOrThrows(ErrorCode.INVALID_INTERVAL, text);
         endUnit = TimeUnit.of(end.text());
@@ -1098,7 +882,8 @@ public class ExpressionParser {
     return Literal.of(interval);
   }
 
-  private IExpression parseLiteralType(Token token) throws ExpressionException {
+  @Override
+  public IExpression parseDataType(Token token) throws ExpressionException {
 
     TypeName name = TypeName.of(token.text());
     if (name == null) {
@@ -1107,7 +892,7 @@ public class ExpressionParser {
 
     int precision = Type.PRECISION_NOT_SPECIFIED;
     int scale = Type.SCALE_NOT_SPECIFIED;
-    if (lexer.ifThenNext(Id.LPARENTHESIS)) {
+    if (lexer.accept(Id.LPARENTHESIS)) {
 
       // Precision
       try {
@@ -1122,7 +907,7 @@ public class ExpressionParser {
       }
 
       // Scale
-      if (lexer.ifThenNextAndNotEnd(Id.COMMA)) {
+      if (lexer.acceptAndNotEnd(Id.COMMA)) {
         try {
           scale = Integer.parseInt(lexer.next().text());
         } catch (NumberFormatException e) {
@@ -1135,7 +920,7 @@ public class ExpressionParser {
         }
       }
 
-      lexer.nextOrThrows(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+      lexer.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
     }
 
     Type type =

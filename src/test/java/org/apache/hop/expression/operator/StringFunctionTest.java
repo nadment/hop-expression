@@ -2044,36 +2044,39 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void Position() throws Exception {
     // Equivalent to INSTR, an empty substring is found at position 1
-    evalEquals("POSITION('def' IN 'abcdefgh')", 4L);
-    evalTrue("POSITION('def' IN 'abcdefgh') = INSTR('abcdefgh','def')");
-    evalEquals("POSITION('' IN 'abc')", 1L);
-    evalEquals("Position('abc' IN 'abcdefgh')", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
-    evalEquals("Position('XYZ' IN 'abcdefgh')", 0L).returnType(IntegerType.INTEGER_NOT_NULL);
-    evalEquals("Position('def' IN 'abcdefgh')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("POSITION('def', 'abcdefgh')", 4L);
+    evalTrue("POSITION('def', 'abcdefgh') = INSTR('abcdefgh','def')");
+    evalEquals("POSITION('', 'abc')", 1L);
+    evalEquals("Position('abc', 'abcdefgh')", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("Position('XYZ', 'abcdefgh')", 0L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("Position('def', 'abcdefgh')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
+    // The operands are complete expressions
+    evalEquals("Position('b' || 'c', 'abc')", 2L);
     // A half of a surrogate pair is not found in the pair
-    evalEquals("Position(String_Decode('\\uDE00') IN CHR(128512))", 0L);
-    evalEquals("Position(String_Decode('\\uD83D') IN CHR(128512))", 0L);
-    evalEquals("Position(String_Decode('\\uDE00') IN CHR(128512)||String_Decode('\\uDE00'))", 2L);
+    evalEquals("Position(String_Decode('\\uDE00'), CHR(128512))", 0L);
+    evalEquals("Position(String_Decode('\\uD83D'), CHR(128512))", 0L);
+    evalEquals("Position(String_Decode('\\uDE00'), CHR(128512)||String_Decode('\\uDE00'))", 2L);
     evalEquals("Instr(CHR(128512),String_Decode('\\uDE00'))", 0L);
     evalEquals("Instr(CHR(128512),String_Decode('\\uDE00'),-1)", 0L);
     evalEquals("Instr(CHR(128512),String_Decode('\\uD83D'),-1)", 0L);
 
     // Null handling
-    evalNull("Position(NULL_STRING IN 'abcdefgh')").returnType(IntegerType.INTEGER);
-    evalNull("Position('abc' IN NULL_STRING)").returnType(IntegerType.INTEGER);
+    evalNull("Position(NULL_STRING, 'abcdefgh')").returnType(IntegerType.INTEGER);
+    evalNull("Position('abc', NULL_STRING)").returnType(IntegerType.INTEGER);
 
     // Check operands
     evalFails("Position()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Position('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Position('a', 'b', 'c')", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // Check syntax
-    evalFails("Position( ", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("Position('abc' ", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("Position('abc' IN ", ErrorCode.SYNTAX_ERROR_FUNCTION);
-    evalFails("Position('abc' IN 'abcd'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
-    evalFails("Position( IN 'fsd'", ErrorCode.SYNTAX_ERROR);
+    evalFails("Position( ", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Position('abc' ", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("Position('abc', 'abcd'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    // The syntax with IN is no longer supported
+    evalFails("Position('abc' IN 'abcd')", ErrorCode.MISSING_LEFT_PARENTHESIS);
 
-    optimize("POSITION('abc' IN FIELD_STRING)");
+    optimize("POSITION('abc',FIELD_STRING)");
   }
 
   /**
@@ -2091,7 +2094,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Substring('a😀b',2,1)", "😀");
     evalEquals("Substring('a😀b',3)", "b");
     evalEquals("Substring('a😀b',-2)", "😀b");
-    evalEquals("Position('b' IN 'a😀b')", 3L);
+    evalEquals("Position('b', 'a😀b')", 3L);
     evalEquals("Instr('a😀b','b')", 3L);
     evalEquals("Instr('a😀b😀','😀',1,2)", 4L);
     evalEquals("Instr('😀a😀a','a',-1)", 4L);

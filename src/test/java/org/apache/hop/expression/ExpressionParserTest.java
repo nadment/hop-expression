@@ -24,12 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.Set;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.operator.BitAndFunction;
 import org.apache.hop.expression.operator.BitOrFunction;
 import org.apache.hop.expression.operator.BitXorFunction;
 import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
+import org.apache.hop.expression.operator.CoalesceFunction;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.GreaterThanOperator;
@@ -52,6 +55,8 @@ import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
@@ -442,6 +447,68 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("Cast('123.1' as INTEGER(4,2)", ErrorCode.SCALE_NOT_SUPPORTED);
     evalFails("Cast('TRUE' as BoolEAN(4)", ErrorCode.PRECISION_NOT_SUPPORTED);
     evalFails("Cast('2023-12-31' as DATE(10)", ErrorCode.PRECISION_NOT_SUPPORTED);
+  }
+
+  /** Test function <code>TEST_FIRST(value OTHERWISE default)</code>, like COALESCE. */
+  private static final class FirstFunction extends CoalesceFunction {
+    @Override
+    public Set<String> getKeywords() {
+      return Set.of("OTHERWISE");
+    }
+
+    @Override
+    public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+      IExpression value = parser.parseExpression();
+      parser.expectKeyword("OTHERWISE", ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+      IExpression otherwise = parser.parseExpression();
+      parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+      return new Call(token.start(), this, value, otherwise);
+    }
+  }
+
+  /**
+   * A function declares its extended syntax and its reserved words without change in the parser.
+   */
+  @Nested
+  class ExtendedSyntax {
+
+    @BeforeEach
+    void registerFunction() {
+      FunctionRegistry.register("TEST_FIRST", new FirstFunction());
+    }
+
+    @AfterEach
+    void unregisterFunction() {
+      FunctionRegistry.unregister("TEST_FIRST");
+    }
+
+    @Test
+    void parseExtendedSyntax() throws Exception {
+      assertTrue(Keyword.is("OTHERWISE"));
+      evalEquals("TEST_FIRST(NULL_STRING OTHERWISE 'default')", "default");
+      evalEquals("TEST_FIRST('value' otherwise 'default')", "value");
+      evalEquals("TEST_FIRST(FIELD_STRING || 'x' OTHERWISE 'default')", "TESTx");
+    }
+
+    @Test
+    void parseExtendedSyntaxFails() {
+      evalFails("TEST_FIRST('value', 'default')", ErrorCode.SYNTAX_ERROR_FUNCTION);
+      evalFails("TEST_FIRST('value' OTHERWISE 'default'", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+      // A quoted identifier with the text of a reserved word is not the reserved word
+      evalFails("TEST_FIRST('value' \"OTHERWISE\" 'default')", ErrorCode.SYNTAX_ERROR_FUNCTION);
+    }
+
+    @Test
+    void keywordsOfBuiltInFunctions() {
+      // The words of the extended syntax are registered with the functions
+      for (String word : Set.of("AS", "FORMAT", "ALL", "IGNORE", "RESPECT", "NULLS")) {
+        assertTrue(Keyword.is(word), word);
+        assertEquals('"' + word + '"', Identifier.quoteIfNeeded(word));
+      }
+      for (String word : Set.of("KEY", "VALUE", "RETURNING")) {
+        assertTrue(Keyword.is(word), word);
+      }
+    }
   }
 
   /**

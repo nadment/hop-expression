@@ -19,6 +19,9 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -27,9 +30,12 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionParser;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.Token;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -57,12 +63,43 @@ public class ExtractFunction extends Function {
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    Type type = call.getOperand(1).getType();
-    if (Types.isInterval(type)) {
-      return new Call(IntervalExtractFunction.INSTANCE, call.getOperands());
+  public Set<String> getKeywords() {
+    return Set.of("FROM");
+  }
+
+  /**
+   * Parses <code>EXTRACT(part FROM expression)</code>, the alias DATE_PART has the syntax of a
+   * conventional function <code>DATE_PART(part, expression)</code>.
+   */
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+    if (!"EXTRACT".equals(token.text())) {
+      return super.parse(parser, token);
     }
-    return new Call(DateExtractFunction.INSTANCE, call.getOperands());
+
+    List<IExpression> operands = new ArrayList<>();
+
+    // Check argument will detect an error later
+    if (parser.accept(Id.RPARENTHESIS)) {
+      return new Call(token.start(), this, operands);
+    }
+    parser.expectNext(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+
+    operands.add(parser.parseLiteralTimeUnit(parser.next()));
+
+    // Check argument will detect an error later
+    if (parser.accept(Id.RPARENTHESIS)) {
+      return new Call(token.start(), this, operands);
+    }
+
+    parser.expectKeyword("FROM", ErrorCode.SYNTAX_ERROR_FUNCTION, this.getName());
+    parser.expectNext(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+
+    operands.add(parser.parseExpression());
+
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    return new Call(token.start(), this, operands);
   }
 
   @Override
@@ -72,6 +109,15 @@ public class ExtractFunction extends Function {
     writer.append(" FROM ");
     operands[1].unparse(writer, 0, 0);
     writer.append(')');
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    Type type = call.getOperand(1).getType();
+    if (Types.isInterval(type)) {
+      return new Call(IntervalExtractFunction.INSTANCE, call.getOperands());
+    }
+    return new Call(DateExtractFunction.INSTANCE, call.getOperands());
   }
 
   /** Extracts the specified date or time part from a date, time, or timestamp. */

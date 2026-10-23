@@ -24,7 +24,16 @@ import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** Lazy expression lexer. */
+/**
+ * Lazy expression lexer.
+ *
+ * <p>The tokens are read from the source only when the parser needs them, and kept so that the
+ * parser can look at the next token without reading it, or go back with {@link #previous()}.
+ *
+ * <p>The methods follow the vocabulary of a recursive descent parser: {@code isNext} looks at the
+ * next token, {@code accept} reads it only if it matches, {@code expect} reads it or raises an
+ * error.
+ */
 @NullMarked
 public class ExpressionLexer {
 
@@ -37,17 +46,29 @@ public class ExpressionLexer {
   /** Index of the current token */
   private int index = 0;
 
+  /**
+   * Creates a lexer for the source of an expression.
+   *
+   * @param source the source of the expression
+   * @throws ParseExpressionException if the source is null
+   */
   public ExpressionLexer(@Nullable String source) {
     if (source == null) throw new ParseExpressionException(0, ErrorCode.NULL_SOURCE_ERROR);
     this.source = source;
     this.tokens = new ArrayList<>();
   }
 
+  /**
+   * Gets the position in the source of the next token, used to locate a syntax error.
+   *
+   * @return the start of the next token, or the length of the source if all the tokens are read
+   */
   public int getPosition() {
     if (index >= 0 && index < tokens.size()) return tokens.get(index).start();
     return source.length();
   }
 
+  /** Gets the next token without reading it, the token is created from the source if needed. */
   private @Nullable Token peek() throws ExpressionException {
     while (index >= tokens.size()) {
       Token token = nextToken();
@@ -57,17 +78,38 @@ public class ExpressionLexer {
     return tokens.get(index);
   }
 
+  /**
+   * Returns whether there is a next token.
+   *
+   * @return true if the end of the source is not reached
+   * @throws ExpressionException if the next token is not valid
+   */
   public boolean hasNext() throws ExpressionException {
     return peek() != null;
   }
 
-  public void hasNextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
+  /**
+   * Raises an error if there is no next token, the next token is not read.
+   *
+   * @param errorCode the error raised at the end of the source
+   * @param values the values of the error message
+   * @throws ExpressionException if the end of the source is reached or the next token is not valid
+   */
+  public void expectNext(ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peek();
     if (token == null) {
       throw new ParseExpressionException(position, errorCode, values);
     }
   }
 
+  /**
+   * Reads the next token.
+   *
+   * @return the next token
+   * @throws ExpressionException if the end of the source is reached, which is an internal error
+   *     because the caller checks {@link #hasNext()} first, or if the next token is not valid
+   * @see #nextOrThrows(ErrorCode, Object...)
+   */
   public Token next() throws ExpressionException {
     Token token = peek();
     if (token == null) {
@@ -79,24 +121,54 @@ public class ExpressionLexer {
     return token;
   }
 
+  /**
+   * Goes back to the token read last, it becomes the next token again.
+   *
+   * @return the token read last
+   */
   public Token previous() {
     return tokens.get(--index);
   }
 
-  public boolean is(Id id) throws ExpressionException {
+  /**
+   * Returns whether the next token is of the specified type, the next token is not read.
+   *
+   * @param id the type of token
+   * @return true if there is a next token of this type
+   * @throws ExpressionException if the next token is not valid
+   */
+  public boolean isNext(Id id) throws ExpressionException {
     Token token = peek();
     return token != null && token.is(id);
   }
 
-  public boolean ifThenNext(Id id) throws ExpressionException {
-    if (is(id)) {
+  /**
+   * Reads the next token only if it is of the specified type.
+   *
+   * @param id the type of token
+   * @return true if the token is read, false if the next token is of another type or there is no
+   *     next token
+   * @throws ExpressionException if the next token is not valid
+   */
+  public boolean accept(Id id) throws ExpressionException {
+    if (isNext(id)) {
       index++;
       return true;
     }
     return false;
   }
 
-  public boolean ifThenNextAndNotEnd(Id id) throws ExpressionException {
+  /**
+   * Reads the next token only if it is of the specified type, like {@link #accept(Id)}, for a token
+   * that must be followed by another one, like an operator before its operand.
+   *
+   * @param id the type of token
+   * @return true if the token is read, false if the next token is of another type or there is no
+   *     next token
+   * @throws ExpressionException if the token is read but is the last one of the source, the error
+   *     {@link ErrorCode#SYNTAX_ERROR} is raised at the position of the token
+   */
+  public boolean acceptAndNotEnd(Id id) throws ExpressionException {
     Token token = peek();
     if (token != null && token.is(id)) {
       index++;
@@ -108,6 +180,15 @@ public class ExpressionLexer {
     return false;
   }
 
+  /**
+   * Reads the next token whatever its type, like {@link #next()} but with the error of the caller
+   * at the end of the source.
+   *
+   * @param errorCode the error raised at the end of the source
+   * @param values the values of the error message
+   * @return the next token
+   * @throws ExpressionException if the end of the source is reached or the next token is not valid
+   */
   public Token nextOrThrows(ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peek();
     if (token == null) {
@@ -117,8 +198,17 @@ public class ExpressionLexer {
     return token;
   }
 
-  public void nextOrThrows(Id id, ErrorCode errorCode, Object... values)
-      throws ExpressionException {
+  /**
+   * Reads the next token, it must be of the specified type.
+   *
+   * @param id the type of token
+   * @param errorCode the error raised if the next token is of another type or there is no next
+   *     token
+   * @param values the values of the error message
+   * @throws ExpressionException if the next token is not of this type, the error is raised at the
+   *     position of the next token, or at the end of the source
+   */
+  public void expect(Id id, ErrorCode errorCode, Object... values) throws ExpressionException {
     Token token = peek();
     if (token != null && token.is(id)) {
       index++;
@@ -128,9 +218,67 @@ public class ExpressionLexer {
   }
 
   /**
+   * Returns whether the next token is the reserved word (ignore case), the next token is not read.
+   *
+   * <p>A word registered by a function has the generic token {@link Id#KEYWORD}, a core word of the
+   * grammar has its own token. A quoted identifier with the same text is not the reserved word.
+   *
+   * @param word the reserved word
+   * @return true if the next token is the reserved word
+   * @throws ExpressionException if the next token is not valid
+   */
+  public boolean isNextKeyword(String word) throws ExpressionException {
+    Token token = peek();
+    if (token == null) return false;
+    String upper = word.toUpperCase(Locale.ROOT);
+    if (token.is(Id.KEYWORD)) return token.text().equals(upper);
+    return Keyword.isCore(upper) && token.id().name().equals(upper);
+  }
+
+  /**
+   * Reads the next token only if it is the reserved word (ignore case).
+   *
+   * @param word the reserved word
+   * @return true if the token is read, false if the next token is another one or there is no next
+   *     token
+   * @throws ExpressionException if the next token is not valid
+   * @see #isNextKeyword(String)
+   */
+  public boolean acceptKeyword(String word) throws ExpressionException {
+    if (isNextKeyword(word)) {
+      index++;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Reads the next token, it must be the reserved word (ignore case).
+   *
+   * @param word the reserved word
+   * @param errorCode the error raised if the next token is another one or there is no next token
+   * @param values the values of the error message
+   * @throws ExpressionException if the next token is not the reserved word, the error is raised at
+   *     the position of the next token, or at the end of the source
+   * @see #isNextKeyword(String)
+   */
+  public void expectKeyword(String word, ErrorCode errorCode, Object... values)
+      throws ExpressionException {
+    if (!acceptKeyword(word)) {
+      Token token = peek();
+      throw new ParseExpressionException(
+          token != null ? token.start() : position, errorCode, values);
+    }
+  }
+
+  /**
    * Tokenize the source string.
    *
+   * <p>The tokens are read from the current position in the source, they are not kept for the other
+   * methods. Call it on a new lexer, not on a lexer used by a parser.
+   *
    * @return The list of tokens.
+   * @throws ExpressionException if a token is not valid
    */
   public List<Token> getTokens() throws ExpressionException {
     List<Token> list = new ArrayList<>();

@@ -15,7 +15,9 @@
 package org.apache.hop.expression;
 
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Set;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.jspecify.annotations.NullMarked;
@@ -39,7 +41,8 @@ public abstract class Function extends Operator {
   /**
    * Creates a function.
    *
-   * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
+   * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, see {@link
+   * #parse(IExpressionParser, Token)}.
    *
    * @param id The unique identifier of the function
    */
@@ -63,7 +66,7 @@ public abstract class Function extends Operator {
   /**
    * Creates a function.
    *
-   * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
+   * <p>Note that some function has specific syntax CAST, COUNT, EXTRACT.
    *
    * @param id The unique identifier of the function
    * @param name The name of the function
@@ -118,6 +121,32 @@ public abstract class Function extends Operator {
     return Set.of();
   }
 
+  /**
+   * Parses the arguments of a call to this function, the left parenthesis is already read.
+   *
+   * <p>By default, the arguments are a list of expressions separated by commas. A function with an
+   * extended syntax overrides this method and declares its reserved words with {@link
+   * #getKeywords()}, it also overrides {@link #unparse(StringWriter, IExpression[])} to write the
+   * same syntax. The call can use another function, like a variant of this one.
+   *
+   * @param parser the parser to read the arguments
+   * @param token the token of the function name, as written in the source
+   * @return the expression of the call
+   * @throws ExpressionException if the syntax is not valid
+   */
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+    List<IExpression> operands = parser.parseExpressionList();
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    return new Call(token.start(), this, operands);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>By default, the function is written with the conventional function-call syntax <code>
+   * NAME(operand, operand...)</code>, the reverse of {@link #parse(IExpressionParser, Token)}. A
+   * function with an extended syntax overrides both methods to write and read the same syntax.
+   */
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());

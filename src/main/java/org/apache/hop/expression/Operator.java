@@ -422,6 +422,16 @@ public abstract class Operator {
     return call;
   }
 
+  /**
+   * Writes the source of a call to this operator with its operands, the reverse of the parsing.
+   *
+   * <p>The written source must be parsed again into the same call, with the same syntax as the one
+   * read by the parser. The parentheses around the call, required by the precedence of the
+   * surrounding operators, are written by {@link Call#unparse(StringWriter, int, int)}.
+   *
+   * @param writer the target writer
+   * @param operands the operands of the call
+   */
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
   @Override

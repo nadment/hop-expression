@@ -38,7 +38,7 @@ class KeywordTest {
   @Test
   void testGet() throws Exception {
     // The registry is shared, other tests can register more words
-    assertEquals(42, Keyword.get().stream().filter(Keyword::isCore).count());
+    assertEquals(33, Keyword.get().stream().filter(Keyword::isCore).count());
     assertThrows(UnsupportedOperationException.class, () -> Keyword.get().add("XXX"));
   }
 

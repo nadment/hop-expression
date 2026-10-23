@@ -20,14 +20,21 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionParser;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
+import org.apache.hop.expression.Token;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
@@ -61,6 +68,66 @@ public class JsonObjectFunction extends Function {
   }
 
   @Override
+  public Set<String> getKeywords() {
+    return Set.of("KEY", "VALUE");
+  }
+
+  /**
+   * Parses <code>JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...)
+   * </code>
+   */
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+
+    List<IExpression> operands = new ArrayList<>();
+
+    // Check argument will detect an error later
+    if (parser.accept(Id.RPARENTHESIS)) {
+      return new Call(token.start(), this, operands);
+    }
+    parser.expectNext(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+
+    do {
+      // KEY is optional
+      parser.acceptKeyword("KEY");
+
+      if (parser.hasNext()) {
+        operands.add(parser.parseLiteralString(parser.next()));
+      } else {
+        throw new ParseExpressionException(
+            token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, this.getName());
+      }
+
+      if (parser.acceptKeyword("VALUE")) {
+        operands.add(parser.parsePrimary());
+      } else {
+        throw new ParseExpressionException(
+            token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, this.getName());
+      }
+
+    } while (parser.accept(Id.COMMA));
+
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    return new Call(token.start(), this, operands);
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append("JSON_OBJECT(");
+    for (int i = 0; i < operands.length; i += 2) {
+      if (i > 0) {
+        writer.append(',');
+      }
+      writer.append("KEY ");
+      operands[i].unparse(writer, 0, 0);
+      writer.append(" VALUE ");
+      operands[i + 1].unparse(writer, 0, 0);
+    }
+    writer.append(')');
+  }
+
+  @Override
   public @Nullable Object eval(final IExpression[] operands) {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
@@ -90,21 +157,6 @@ public class JsonObjectFunction extends Function {
     }
 
     return node;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("JSON_OBJECT(");
-    for (int i = 0; i < operands.length; i += 2) {
-      if (i > 0) {
-        writer.append(',');
-      }
-      writer.append("KEY ");
-      operands[i].unparse(writer, 0, 0);
-      writer.append(" VALUE ");
-      operands[i + 1].unparse(writer, 0, 0);
-    }
-    writer.append(')');
   }
 
   public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.io.StringWriter;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -56,18 +55,5 @@ public class PositionFunction extends Function {
     // The position is in characters, a surrogate pair is a single character
     int index = Characters.indexOf(str, substr, 0);
     return Long.valueOf((index < 0) ? 0L : Characters.position(str, index) + 1L);
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("POSITION(");
-    if (operands.length >= 1) {
-      operands[0].unparse(writer, 0, 0);
-    }
-    if (operands.length == 2) {
-      writer.append(" IN ");
-      operands[1].unparse(writer, 0, 0);
-    }
-    writer.append(')');
   }
 }

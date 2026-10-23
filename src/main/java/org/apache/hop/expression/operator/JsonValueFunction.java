@@ -29,6 +29,8 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -37,8 +39,11 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionParser;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Token;
+import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
@@ -69,6 +74,34 @@ public class JsonValueFunction extends Function {
         OperandTypes.JSON_VALUE,
         OperatorCategory.JSON,
         "/docs/json_value.html");
+  }
+
+  @Override
+  public Set<String> getKeywords() {
+    return Set.of("RETURNING");
+  }
+
+  /** Parses <code>JSON_VALUE(json, path [RETURNING type])</code> */
+  @Override
+  public IExpression parse(IExpressionParser parser, Token token) throws ExpressionException {
+
+    List<IExpression> operands = new ArrayList<>();
+    if (parser.accept(Id.RPARENTHESIS)) {
+      return new Call(token.start(), this, operands);
+    }
+    parser.expectNext(ErrorCode.SYNTAX_ERROR_FUNCTION, token.text());
+
+    operands.add(parser.parseExpression());
+    if (parser.accept(Id.COMMA)) {
+      operands.add(parser.parseExpression());
+      if (parser.acceptKeyword("RETURNING")) {
+        operands.add(parser.parseDataType(parser.next()));
+      }
+    }
+
+    parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
+
+    return new Call(token.start(), this, operands);
   }
 
   @Override

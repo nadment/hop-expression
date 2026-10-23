@@ -15,7 +15,9 @@
 package org.apache.hop.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.apache.hop.expression.Token.Id;
@@ -197,5 +199,33 @@ class ExpressionLexerTest {
     assertThrows(ParseExpressionException.class, () -> new ExpressionLexer("123_").getTokens());
     assertThrows(ParseExpressionException.class, () -> new ExpressionLexer("!").getTokens());
     assertThrows(ParseExpressionException.class, () -> new ExpressionLexer(":").getTokens());
+  }
+
+  @Test
+  void testKeyword() throws Exception {
+    Keyword.register("LEXER_TEST_KEYWORD");
+    ExpressionLexer lexer = new ExpressionLexer("from lexer_test_keyword \"FROM\" 1");
+
+    // A core word has its own token, the word is not read by isNextKeyword
+    assertTrue(lexer.isNextKeyword("FROM"));
+    assertFalse(lexer.isNextKeyword("LEXER_TEST_KEYWORD"));
+    assertTrue(lexer.acceptKeyword("from"));
+
+    // A registered word has the generic token
+    assertFalse(lexer.acceptKeyword("FROM"));
+    lexer.expectKeyword("Lexer_Test_Keyword", ErrorCode.SYNTAX_ERROR);
+
+    // A quoted identifier with the text of a reserved word is not the reserved word
+    ParseExpressionException exception =
+        assertThrows(
+            ParseExpressionException.class,
+            () -> lexer.expectKeyword("FROM", ErrorCode.SYNTAX_ERROR));
+    assertEquals(ErrorCode.SYNTAX_ERROR, exception.getErrorCode());
+    assertEquals(Id.IDENTIFIER, lexer.next().id());
+
+    // No reserved word at the end of the source
+    lexer.next();
+    assertFalse(lexer.isNextKeyword("FROM"));
+    assertFalse(lexer.acceptKeyword("FROM"));
   }
 }
