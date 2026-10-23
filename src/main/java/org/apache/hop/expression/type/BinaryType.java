@@ -83,6 +83,11 @@ public final class BinaryType extends Type {
     return super.convertValue(value, clazz);
   }
 
+  @Override
+  public byte @Nullable [] cast(final @Nullable Object value) throws ExpressionException {
+    return cast(value, null);
+  }
+
   /**
    * Convert a value to the specified type {@link BinaryType} with a pattern and adjust to
    * precision.

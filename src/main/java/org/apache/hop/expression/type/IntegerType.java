@@ -99,6 +99,11 @@ public final class IntegerType extends Type {
     return super.convertValue(value, clazz);
   }
 
+  @Override
+  public @Nullable Long cast(final @Nullable Object value) throws ExpressionException {
+    return cast(value, null);
+  }
+
   /**
    * Convert a value to the specified type {@link IntegerType} with a pattern, the number of digits
    * of the result is checked against the precision.

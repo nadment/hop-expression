@@ -63,6 +63,11 @@ public final class JsonType extends Type {
     return super.convertValue(value, clazz);
   }
 
+  @Override
+  public @Nullable JsonNode cast(final @Nullable Object value) throws ExpressionException {
+    return cast(value, null);
+  }
+
   /**
    * Convert a value to the specified type {@link JsonType} with a pattern.
    *

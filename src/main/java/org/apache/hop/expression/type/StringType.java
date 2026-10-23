@@ -113,6 +113,11 @@ public final class StringType extends Type {
     return super.convertValue(value, clazz);
   }
 
+  @Override
+  public @Nullable String cast(final @Nullable Object value) throws ExpressionException {
+    return cast(value, null);
+  }
+
   /**
    * Convert a value to the specified type {@link StringType} with optional pattern and adjust to
    * precision.

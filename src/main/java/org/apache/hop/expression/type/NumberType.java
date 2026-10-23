@@ -130,6 +130,11 @@ public final class NumberType extends Type {
     return super.convertValue(value, clazz);
   }
 
+  @Override
+  public @Nullable BigDecimal cast(final @Nullable Object value) throws ExpressionException {
+    return cast(value, null);
+  }
+
   /**
    * Convert a value to the specified type {@link NumberType} with a pattern.
    *

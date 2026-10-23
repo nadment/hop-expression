@@ -165,15 +165,14 @@ public class TypeTest extends ExpressionTest {
     BinaryType type = BinaryType.BINARY;
     assertNull(type.cast(null));
     // assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
-    assertArrayEquals(new byte[] {0x41}, (byte[]) type.cast("A"));
+    assertArrayEquals(new byte[] {0x41}, type.cast("A"));
 
     // The result is truncated to the precision without error
     BinaryType binary2 = BinaryType.of(2);
     assertNull(binary2.cast(null));
-    assertArrayEquals(new byte[] {0x41, 0x42}, (byte[]) binary2.cast("ABC"));
-    assertArrayEquals(new byte[] {0x41, 0x42}, (byte[]) binary2.cast("AB"));
-    assertArrayEquals(
-        new byte[] {0x1F, 0x2E}, (byte[]) binary2.cast(new byte[] {0x1F, 0x2E, 0x3D}));
+    assertArrayEquals(new byte[] {0x41, 0x42}, binary2.cast("ABC"));
+    assertArrayEquals(new byte[] {0x41, 0x42}, binary2.cast("AB"));
+    assertArrayEquals(new byte[] {0x1F, 0x2E}, binary2.cast(new byte[] {0x1F, 0x2E, 0x3D}));
     evalEquals("CAST('ABC' AS BINARY(2))", new byte[] {0x41, 0x42});
     evalEquals("BINARY '1F2E3D'::BINARY(1)", new byte[] {0x1F});
 
