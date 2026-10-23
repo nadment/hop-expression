@@ -3373,7 +3373,7 @@ public class OperatorTest extends ExpressionTest {
       // Number
       evalEquals("CAST(1234.456 as Number(20,9))", 1234.456D)
           .returnType(NumberType.of(20, 9, false));
-      evalEquals("CAST(1234.456 as Number(10,1))", 1234.4D);
+      evalEquals("CAST(1234.456 as Number(10,1))", 1234.5D);
       // NUMBER without precision and scale keeps the decimals, NUMBER(p) has a scale of 0
       evalEquals("1.23456::Number", 1.23456D).returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("1.23456::Number(10)", 1D).returnType(NumberType.of(10).withNullability(false));
@@ -3386,11 +3386,19 @@ public class OperatorTest extends ExpressionTest {
               "CAST(12345678901234567890123456789012345678 as Number(38,0))",
               new BigDecimal("12345678901234567890123456789012345678"))
           .returnType(NumberType.of(38).withNullability(false));
-      // The decimals are truncated to the scale, and an overflow is raised if the integer part
-      // exceeds the precision minus the scale
-      evalEquals("CAST(99.99 AS NUMBER(3,1))", 99.9D);
-      evalEquals("CAST(-99.99 AS NUMBER(3,1))", -99.9D);
+      // The decimals are rounded to the scale like a cast to INTEGER, halfway values away from
+      // zero, and an overflow is raised if the integer part exceeds the precision minus the scale
+      evalEquals("CAST(1.25 AS NUMBER(3,1))", 1.3D);
+      evalEquals("CAST(-1.25 AS NUMBER(3,1))", -1.3D);
+      evalEquals("CAST(1.24 AS NUMBER(3,1))", 1.2D);
+      evalEquals("CAST(2.5 AS NUMBER(3))", 3D);
+      evalEquals("1.56::NUMBER(10)", 2D);
+      evalEquals("CAST(99.94 AS NUMBER(3,1))", 99.9D);
+      evalEquals("CAST(-99.94 AS NUMBER(3,1))", -99.9D);
       evalEquals("CAST(0.5 AS NUMBER(1,1))", 0.5D);
+      // The rounding can add a digit to the integer part
+      evalFails("CAST(99.95 AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails("CAST(-99.99 AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
       evalFails("CAST(12345.6 AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
       evalFails("CAST(-100.1 AS NUMBER(3,1))", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
       evalFails("1.5::NUMBER(1,1)", ErrorCode.NUMBER_CONVERSION_OVERFLOW);

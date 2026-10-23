@@ -147,8 +147,9 @@ public final class NumberType extends Type {
     }
 
     if (value instanceof BigDecimal number) {
+      // Rounded to the scale like a cast to INTEGER, halfway values are rounded away from zero
       if (this.scale != SCALE_NOT_SPECIFIED) {
-        number = number.setScale(scale, RoundingMode.DOWN);
+        number = number.setScale(scale, RoundingMode.HALF_UP);
       }
       return checkOverflow(number);
     }

@@ -64,8 +64,8 @@ The data type of the returned value is the type specified in the `AS` clause.
 ** A boolean converts to the string `TRUE` or `FALSE`.
 * Integer and number:
 ** A string without format ignores the leading and trailing spaces, accepts an optional sign and an exponent, and can use the underscore `_` as a digit separator, for example `'1_000'::INTEGER` returns 1000. With a format, it is a number format model as in xref:to_number.adoc["TO_NUMBER",role=fun].
-** To an integer, the value is rounded to the nearest integer, and halfway values are rounded away from zero, for example `CAST(-1.5 AS INTEGER)` returns -2.
-** To a number, the value is truncated to the scale of the type, except a string that keeps all its decimals. `NUMBER` without precision and scale has no fixed scale, for example `1.23456::NUMBER` returns 1.23456, and `NUMBER(p)` has a scale of 0, for example `1.23456::NUMBER(10)` returns 1.
+** The value is rounded to the scale of the type, 0 for an integer, and halfway values are rounded away from zero, for example `CAST(-1.5 AS INTEGER)` returns -2 and `CAST(1.25 AS NUMBER(3,1))` returns 1.3. A string converted to a number keeps all its decimals.
+** `NUMBER` without precision and scale has no fixed scale, for example `1.23456::NUMBER` returns 1.23456, and `NUMBER(p)` has a scale of 0, for example `1.56::NUMBER(10)` returns 2.
 ** With a precision, an error is raised if the integer part has more digits than the precision minus the scale, checked after rounding, for example `CAST(12345 AS INTEGER(3))`, `CAST(999.5 AS INTEGER(3))`, `CAST(12345 AS NUMBER(3))` or `CAST('12345.6' AS NUMBER(3,1))`.
 * Date:
 ** An integer or a number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970), and a date converts back to it; the fractions of a number are nanoseconds.
