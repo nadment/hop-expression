@@ -48,15 +48,8 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+  protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
     if (clazz == String.class) {
       return clazz.cast((boolean) value ? "TRUE" : "FALSE");
     }
@@ -67,7 +60,7 @@ public final class BooleanType extends Type {
       return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
     }
 
-    return super.convert(value, clazz);
+    return super.convertValue(value, clazz);
   }
 
   /**

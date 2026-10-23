@@ -87,14 +87,8 @@ public final class StringType extends Type {
   }
 
   @Override
-  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+  protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
-    if (value == null) {
-      return null;
-    }
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
     if (clazz == Boolean.class) {
       return clazz.cast(BooleanConversion.convert((String) value));
     }
@@ -116,7 +110,7 @@ public final class StringType extends Type {
     if (clazz == InetAddress.class) {
       return clazz.cast(InetConversion.convert((String) value));
     }
-    return super.convert(value, clazz);
+    return super.convertValue(value, clazz);
   }
 
   /**

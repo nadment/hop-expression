@@ -18,7 +18,6 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
@@ -109,17 +108,11 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+  protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
     if (clazz == Boolean.class) {
-      return clazz.cast(!BigInteger.ZERO.equals(((BigDecimal) value).unscaledValue()));
+      // The sign avoids allocating the unscaled value
+      return clazz.cast(((BigDecimal) value).signum() != 0);
     }
     if (clazz == Long.class) {
       // Truncate the decimal part, a value out of the integer range raises an error instead of
@@ -134,7 +127,7 @@ public final class NumberType extends Type {
       return clazz.cast(StringConversion.convert((BigDecimal) value));
     }
 
-    return super.convert(value, clazz);
+    return super.convertValue(value, clazz);
   }
 
   /**

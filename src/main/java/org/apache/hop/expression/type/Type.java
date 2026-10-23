@@ -260,12 +260,38 @@ public abstract class Type {
   /**
    * Convert a value from this data type to the specified Java type.
    *
+   * <p>A null value or a value already of the desired Java type is returned without conversion,
+   * otherwise the conversion is delegated to {@link #convertValue(Object, Class)}.
+   *
    * @param value the value to convert
    * @param clazz Desired Java type
    * @return the converted value
    * @throws ExpressionException if the casting fail
    */
-  public @Nullable <T> T convert(final @Nullable Object value, Class<T> clazz)
+  public final @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+      throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    return convertValue(value, clazz);
+  }
+
+  /**
+   * Convert a non-null value of this data type, which is not already of the desired Java type, to
+   * the specified Java type.
+   *
+   * <p>Derived classes override this method to support conversions, by default no conversion is
+   * supported.
+   *
+   * @param value the non-null value to convert
+   * @param clazz Desired Java type
+   * @return the converted value
+   * @throws ExpressionException if the conversion is not supported or fail
+   */
+  protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
     throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION,

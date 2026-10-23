@@ -17,9 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionException;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class UnknownType extends Type {
@@ -40,15 +38,5 @@ public final class UnknownType extends Type {
   @Override
   public TypeName getName() {
     return TypeName.UNKNOWN;
-  }
-
-  @Override
-  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
-      throws ExpressionException {
-    if (value == null) return null;
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
-    return super.convert(value, clazz);
   }
 }

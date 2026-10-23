@@ -84,15 +84,8 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public @Nullable <T> T convert(final @Nullable Object value, final Class<T> clazz)
+  protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
-
-    if (value == null) {
-      return null;
-    }
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
     if (clazz == Boolean.class) {
       return clazz.cast(((Long) value) != 0);
     }
@@ -103,7 +96,7 @@ public final class IntegerType extends Type {
       return clazz.cast(String.valueOf(value));
     }
 
-    return super.convert(value, clazz);
+    return super.convertValue(value, clazz);
   }
 
   @Override

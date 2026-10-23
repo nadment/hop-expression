@@ -18,10 +18,8 @@
 package org.apache.hop.expression.type;
 
 import java.util.Objects;
-import org.apache.hop.expression.ExpressionException;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class ArrayType extends Type {
@@ -78,17 +76,5 @@ public final class ArrayType extends Type {
   @Override
   protected String generateSignature() {
     return "ARRAY<" + elementType.getSignature() + ">";
-  }
-
-  @Override
-  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
-      throws ExpressionException {
-    if (value == null) {
-      return null;
-    }
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
-    return super.convert(value, clazz);
   }
 }

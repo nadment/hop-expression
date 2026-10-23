@@ -59,14 +59,8 @@ public final class DateType extends Type {
   }
 
   @Override
-  public @Nullable <T> T convert(@Nullable Object value, Class<T> clazz)
+  protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
-    if (value == null) {
-      return null;
-    }
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
     if (clazz == String.class) {
       return clazz.cast(StringConversion.convert((ZonedDateTime) value));
     }
@@ -76,7 +70,7 @@ public final class DateType extends Type {
     if (clazz == BigDecimal.class) {
       return clazz.cast(NumberConversion.convert((ZonedDateTime) value));
     }
-    return super.convert(value, clazz);
+    return super.convertValue(value, clazz);
   }
 
   @Override
