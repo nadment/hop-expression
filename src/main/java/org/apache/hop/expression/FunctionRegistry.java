@@ -139,15 +139,22 @@ public class FunctionRegistry {
   }
 
   /**
-   * Registers a function under a name or alias (ignore case).
+   * Registers a function under a name or alias (ignore case), with the reserved words of its
+   * extended syntax.
    *
    * @param name the name or alias of the function
    * @param function the function to register
-   * @throws IllegalArgumentException if the name is null or blank
+   * @throws IllegalArgumentException if the name is null or blank, or a reserved word of the
+   *     function is invalid, see {@link Keyword#register(String)}
    */
   public static void register(String name, Function function) {
     if (name == null || name.isBlank()) {
       throw new IllegalArgumentException("The name of a function is required");
+    }
+
+    // The words are reserved before the function can be used in an expression
+    for (String keyword : function.getKeywords()) {
+      Keyword.register(keyword);
     }
 
     // Names are case-insensitive, see getFunction

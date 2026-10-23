@@ -109,6 +109,8 @@ public record Token(Id id, int start, int end, String text) {
     ZONE,
     /** Identifier */
     IDENTIFIER,
+    /** Reserved word registered by a function, the token text is the word in upper case */
+    KEYWORD,
     /** Function */
     FUNCTION,
     /** Extract(part FROM date_time) */

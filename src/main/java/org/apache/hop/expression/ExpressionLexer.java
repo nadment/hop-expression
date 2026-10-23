@@ -557,8 +557,13 @@ public class ExpressionLexer {
           }
 
           // Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR
-          if (Keyword.is(name)) {
+          if (Keyword.isCore(name)) {
             return new Token(Id.valueOf(name), start, position, name);
+          }
+
+          // Reserved words registered by the functions with an extended syntax
+          if (Keyword.is(name)) {
+            return new Token(Id.KEYWORD, start, position, name);
           }
 
           if (TypeName.of(name) != null) {

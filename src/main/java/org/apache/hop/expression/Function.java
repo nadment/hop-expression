@@ -15,6 +15,7 @@
 package org.apache.hop.expression;
 
 import java.io.StringWriter;
+import java.util.Set;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.jspecify.annotations.NullMarked;
@@ -103,6 +104,18 @@ public abstract class Function extends Operator {
         operandTypeChecker,
         category,
         documentationUrl);
+  }
+
+  /**
+   * Gets the reserved words used by the extended syntax of this function, they are registered with
+   * the function in {@link FunctionRegistry}.
+   *
+   * <p>A core word of the grammar, like FROM, can also be declared, it is already reserved.
+   *
+   * @return the words, empty for a conventional function-call syntax
+   */
+  public Set<String> getKeywords() {
+    return Set.of();
   }
 
   @Override
