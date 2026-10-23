@@ -345,7 +345,7 @@ public class ExpressionParser implements IExpressionParser {
       IExpression pattern = this.parseAdditive();
 
       if (lexer.acceptAndNotEnd(Id.ESCAPE)) {
-        IExpression escape = this.parseEscape();
+        IExpression escape = this.parseLikeEscape();
         expression = new Call(start, LikeOperator.INSTANCE, expression, pattern, escape);
       } else {
         expression = new Call(start, LikeOperator.INSTANCE, expression, pattern);
@@ -358,7 +358,7 @@ public class ExpressionParser implements IExpressionParser {
     } else if (lexer.accept(Id.ILIKE)) {
       IExpression pattern = this.parseAdditive();
       if (lexer.acceptAndNotEnd(Id.ESCAPE)) {
-        IExpression escape = this.parseEscape();
+        IExpression escape = this.parseLikeEscape();
         expression = new Call(start, ILikeOperator.INSTANCE, expression, pattern, escape);
       } else {
         expression = new Call(start, ILikeOperator.INSTANCE, expression, pattern);
@@ -467,7 +467,7 @@ public class ExpressionParser implements IExpressionParser {
   }
 
   /** Parses the escape character of LIKE and ILIKE, it must be a string literal. */
-  private IExpression parseEscape() throws ExpressionException {
+  private IExpression parseLikeEscape() throws ExpressionException {
     Token token = lexer.next();
     if (!token.is(Id.LITERAL_STRING)) {
       throw new ParseExpressionException(token.start(), ErrorCode.INVALID_ARGUMENT, token.text());
