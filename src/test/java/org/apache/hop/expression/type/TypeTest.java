@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneOffset;
@@ -33,7 +34,9 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.JsonConversion;
+import org.apache.hop.expression.util.NumberConversion;
 import org.junit.jupiter.api.Test;
 
 public class TypeTest extends ExpressionTest {
@@ -265,6 +268,18 @@ public class TypeTest extends ExpressionTest {
     assertEquals(
         Long.valueOf(1672185600L),
         type.cast(LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC)));
+
+    // The fractions of seconds of a date are rounded like the same number of seconds
+    for (long seconds = -3; seconds <= 3; seconds++) {
+      for (int nanos : new int[] {0, 1, 499_999_999, 500_000_000, 500_000_001, 999_999_999}) {
+        ZonedDateTime datetime =
+            ZonedDateTime.ofInstant(Instant.ofEpochSecond(seconds, nanos), ZoneOffset.UTC);
+        assertEquals(
+            IntegerConversion.convert(NumberConversion.convert(datetime)),
+            type.cast(datetime),
+            datetime::toString);
+      }
+    }
 
     // The number of digits of the result is checked against the precision
     IntegerType integer3 = IntegerType.of(3);

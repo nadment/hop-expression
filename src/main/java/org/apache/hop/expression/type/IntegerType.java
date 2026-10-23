@@ -122,12 +122,25 @@ public final class IntegerType extends Type {
               (pattern == null)
                   ? IntegerConversion.convert(str)
                   : IntegerConversion.convert(NumberFormat.of(pattern).parse(str));
-          case ZonedDateTime datetime -> IntegerConversion.convert(datetime);
+          case ZonedDateTime datetime -> roundEpochSecond(datetime);
           default ->
               throw new ExpressionException(
                   ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
         };
     return checkOverflow(result);
+  }
+
+  /**
+   * Gets the number of seconds since the epoch, with the fractions of seconds rounded like a
+   * number: halfway values are rounded away from zero.
+   */
+  private static long roundEpochSecond(ZonedDateTime datetime) {
+    // The epoch second is the floor of the time, the fraction of second is always positive
+    long seconds = datetime.toEpochSecond();
+    int nanos = datetime.getNano();
+    // Before the epoch, the floor is already away from zero for a halfway value like -1.5
+    boolean roundUp = (seconds < 0) ? nanos > 500_000_000 : nanos >= 500_000_000;
+    return roundUp ? seconds + 1 : seconds;
   }
 
   /** Raises an error if the number of digits of the integer exceeds the precision. */

@@ -3276,6 +3276,14 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST(DATE '1800-01-01' AS INTEGER)", -5364662400L);
       evalEquals("Date '2025-12-23'::INTEGER", 1766448000L)
           .returnType(IntegerType.INTEGER_NOT_NULL);
+      // The fractions of seconds are rounded like a number
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.4' as Integer)", 1L);
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.5' as Integer)", 2L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.5' as Integer)", -2L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.6' as Integer)", -1L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.4' as Integer)", -2L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:59.5' as Integer)", -1L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:59.6' as Integer)", 0L);
 
       // Null
       evalNull("CAST(NULL_NUMBER as Integer)").returnType(IntegerType.INTEGER);
@@ -3419,6 +3427,13 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("'1234'::Number", 1234D);
       evalEquals("' -1e-3 '::Number(10,3)", new BigDecimal("-1e-3"));
       evalEquals("CAST('1_2.3_4E1_0' as NUMBER)", 12.34E10D);
+      // A string is rounded to the scale like a number, NUMBER without scale keeps the decimals
+      evalEquals("'1.239'::NUMBER(10,2)", new BigDecimal("1.24"));
+      evalEquals("'-1.235'::NUMBER(10,2)", new BigDecimal("-1.24"));
+      evalEquals("'1.56'::NUMBER(10)", BigDecimal.valueOf(2));
+      evalEquals("'1.23456'::NUMBER", new BigDecimal("1.23456"));
+      evalEquals("CAST('1,234.567' AS NUMBER(10,2) FORMAT '9,999.999')", new BigDecimal("1234.57"));
+      evalFails("'99.95'::NUMBER(3,1)", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
 
       // Date to Unix Epoch
       evalEquals("FIELD_DATE::NUMBER", new BigDecimal("362180698.123"))
@@ -3432,6 +3447,19 @@ public class OperatorTest extends ExpressionTest {
       // Timestamp to Unix Epoch
       evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1D)
           .returnType(NumberType.NUMBER_NOT_NULL);
+      // The fractions of seconds are rounded to the scale like a number
+      evalEquals(
+          "CAST(TIMESTAMP '1970-01-01 00:00:01.123456789' as Number)",
+          new BigDecimal("1.123456789"));
+      evalEquals(
+          "CAST(TIMESTAMP '1970-01-01 00:00:01.125' as Number(15,2))", new BigDecimal("1.13"));
+      evalEquals(
+          "CAST(TIMESTAMP '1969-12-31 23:59:58.875' as Number(15,2))", new BigDecimal("-1.13"));
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.5' as Number(15))", BigDecimal.valueOf(2));
+      evalEquals("CAST(DATE '2019-02-25' AS Number(12,2))", new BigDecimal("1551052800.00"));
+      evalFails(
+          "CAST(TIMESTAMP '1970-01-01 00:00:09.95' as Number(2,1))",
+          ErrorCode.NUMBER_CONVERSION_OVERFLOW);
 
       // Null
       evalNull("CAST(NULL_INTEGER as Number)").returnType(NumberType.NUMBER);

@@ -147,11 +147,7 @@ public final class NumberType extends Type {
     }
 
     if (value instanceof BigDecimal number) {
-      // Rounded to the scale like a cast to INTEGER, halfway values are rounded away from zero
-      if (this.scale != SCALE_NOT_SPECIFIED) {
-        number = number.setScale(scale, RoundingMode.HALF_UP);
-      }
-      return checkOverflow(number);
+      return checkOverflow(round(number));
     }
     if (value instanceof Boolean bool) {
       return checkOverflow((bool) ? BigDecimal.ONE : BigDecimal.ZERO);
@@ -160,16 +156,31 @@ public final class NumberType extends Type {
       return checkOverflow(BigDecimal.valueOf(l));
     }
     if (value instanceof String str) {
-      // A string keeps its decimals, it is parsed with the format if any
+      // A string is parsed with the format if any, then rounded like a number
       return checkOverflow(
-          (pattern == null) ? NumberConversion.convert(str) : NumberFormat.of(pattern).parse(str));
+          round(
+              (pattern == null)
+                  ? NumberConversion.convert(str)
+                  : NumberFormat.of(pattern).parse(str)));
     }
     if (value instanceof ZonedDateTime dt) {
-      return checkOverflow(NumberConversion.convert(dt));
+      // The fractions of seconds are rounded like a number
+      return checkOverflow(round(NumberConversion.convert(dt)));
     }
 
     throw new ExpressionException(
         ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+  }
+
+  /**
+   * Rounds the number to the scale of this type like a cast to INTEGER, halfway values are rounded
+   * away from zero. A number without fixed scale keeps its decimals.
+   */
+  private BigDecimal round(BigDecimal number) {
+    if (scale == SCALE_NOT_SPECIFIED) {
+      return number;
+    }
+    return number.setScale(scale, RoundingMode.HALF_UP);
   }
 
   /** Raises an error if the integer part of the number exceeds the precision minus the scale. */
