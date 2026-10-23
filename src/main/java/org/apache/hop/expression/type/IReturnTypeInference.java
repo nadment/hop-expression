@@ -17,14 +17,13 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Operator;
 import org.jspecify.annotations.NullMarked;
 
 /** Strategy interface to infer the type of operator call from the type of the operands. */
 @NullMarked
 public interface IReturnTypeInference {
   /**
-   * Infers the return data type of call to an {@link Operator}.
+   * Infers the return data type of call to an {@link org.apache.hop.expression.Operator}.
    *
    * @param call the call whose return type is inferred
    * @return the inferred type, or {@link UnknownType#UNKNOWN} if it cannot be inferred
