@@ -745,25 +745,30 @@ import org.jspecify.annotations.Nullable;
    * @return the name of the date field, or null
    */
   private static @Nullable String parsedField(final Format format) {
-    if (format instanceof YearFormat
-        || format instanceof SignedYearFormat
-        || format instanceof CommaYearFormat
-        || format instanceof RoundYearFormat) return "YEAR";
-    if (format instanceof MonthFormat || format instanceof RomanMonthFormat) return "MONTH";
-    if (format instanceof DayOfMonthFormat) return "DAY";
-    if (format instanceof DayOfYearFormat) return "DAY_OF_YEAR";
-    if (format instanceof JulianDayFormat) return "JULIAN_DAY";
-    if (format instanceof AdBcFormat) return "ERA";
-    if (format instanceof MeridianFormat) return "MERIDIAN";
-    if (format instanceof Hour12Format || format instanceof Hour24Format) return "HOUR";
-    if (format instanceof MinuteFormat) return "MINUTE";
-    if (format instanceof SecondOfMinuteFormat) return "SECOND";
-    if (format instanceof NanoFormat) return "NANO";
-    if (format instanceof ZoneRegionFormat || format instanceof ZoneAbbreviatedRegionFormat)
-      return "TIME_ZONE";
-    if (format instanceof ZoneHourFormat) return "TIME_ZONE_HOUR";
-    if (format instanceof ZoneMinuteFormat) return "TIME_ZONE_MINUTE";
-    return null;
+    // A case per class, Java 21 can't group type patterns. NameOfMonthFormat is a MonthFormat.
+    return switch (format) {
+      case YearFormat f -> "YEAR";
+      case SignedYearFormat f -> "YEAR";
+      case CommaYearFormat f -> "YEAR";
+      case RoundYearFormat f -> "YEAR";
+      case MonthFormat f -> "MONTH";
+      case RomanMonthFormat f -> "MONTH";
+      case DayOfMonthFormat f -> "DAY";
+      case DayOfYearFormat f -> "DAY_OF_YEAR";
+      case JulianDayFormat f -> "JULIAN_DAY";
+      case AdBcFormat f -> "ERA";
+      case MeridianFormat f -> "MERIDIAN";
+      case Hour12Format f -> "HOUR";
+      case Hour24Format f -> "HOUR";
+      case MinuteFormat f -> "MINUTE";
+      case SecondOfMinuteFormat f -> "SECOND";
+      case NanoFormat f -> "NANO";
+      case ZoneRegionFormat f -> "TIME_ZONE";
+      case ZoneAbbreviatedRegionFormat f -> "TIME_ZONE";
+      case ZoneHourFormat f -> "TIME_ZONE_HOUR";
+      case ZoneMinuteFormat f -> "TIME_ZONE_MINUTE";
+      default -> null;
+    };
   }
 
   public ZonedDateTime parse(final String text) throws ExpressionException {
