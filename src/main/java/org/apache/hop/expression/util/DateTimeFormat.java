@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and <code>
@@ -234,6 +236,7 @@ import org.apache.hop.expression.ExpressionException;
  * </tr>
  * </table>
  */
+@NullMarked
 public abstract class DateTimeFormat extends BaseFormat {
 
   /** Default century start year for 2-digit years, used when none is specified. */
@@ -243,7 +246,7 @@ public abstract class DateTimeFormat extends BaseFormat {
 
   protected int twoDigitYearStart = DEFAULT_TWO_DIGIT_YEAR_START;
 
-  public static DateTimeFormat of(String pattern) {
+  public static DateTimeFormat of(@Nullable String pattern) {
     if (pattern == null) {
       pattern = "AUTO";
     }
@@ -263,7 +266,7 @@ public abstract class DateTimeFormat extends BaseFormat {
    * @param pattern the format pattern, or {@code null} for "AUTO"
    * @param twoDigitYearStart the century start year for 2-digit years
    */
-  public static DateTimeFormat of(String pattern, int twoDigitYearStart) {
+  public static DateTimeFormat of(@Nullable String pattern, int twoDigitYearStart) {
     if (pattern == null) {
       pattern = "AUTO";
     }

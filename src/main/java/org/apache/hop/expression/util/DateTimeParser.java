@@ -23,8 +23,10 @@ import java.time.ZonedDateTime;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+@NullMarked
 /* package */ class DateTimeParser {
 
   public final DateTimeFormat format;

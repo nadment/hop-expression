@@ -21,7 +21,10 @@ import java.math.RoundingMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 final class RomanNumberFormat extends NumberFormat {
 
   private static final BigDecimal MAX_VALUE = BigDecimal.valueOf(3999);
@@ -72,7 +75,7 @@ final class RomanNumberFormat extends NumberFormat {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (obj == null) {
       return false;
     }

@@ -25,8 +25,10 @@ import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
 import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
+import org.jspecify.annotations.NullMarked;
 
 /** Utilities for strong predicates. */
+@NullMarked
 public final class Strong {
 
   private static final Set<Operator> OPERATORS =

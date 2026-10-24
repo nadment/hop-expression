@@ -14,6 +14,9 @@
  */
 package org.apache.hop.expression.util;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public final class NumberWords {
 
   private static final String[] UNITS = {

@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Expression number format model for <code>TO_NUMBER(string, format)</code> and <code>
@@ -135,13 +137,14 @@ import org.apache.hop.expression.ExpressionException;
  * </tr>
  * </table>
  */
+@NullMarked
 final class PatternNumberFormat extends NumberFormat {
 
   // Characters always preserved as-is at their position in the format
   private static final String LITERALS = ";:-=/()";
 
   // Symbols of the default locale, never modified
-  private static final AtomicReference<DecimalFormatSymbols> CACHED_SYMBOLS =
+  private static final AtomicReference<@Nullable DecimalFormatSymbols> CACHED_SYMBOLS =
       new AtomicReference<>();
 
   // Original format
@@ -377,7 +380,7 @@ final class PatternNumberFormat extends NumberFormat {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (obj == null) {
       return false;
     }

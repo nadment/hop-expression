@@ -15,6 +15,7 @@
 package org.apache.hop.expression.util;
 
 import java.util.Objects;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Pair of objects.
@@ -22,6 +23,7 @@ import java.util.Objects;
  * @param left the left object
  * @param right the right object
  */
+@NullMarked
 public record Pair<T1, T2>(T1 left, T2 right) {
   /** Creates a Pair. */
   public Pair {

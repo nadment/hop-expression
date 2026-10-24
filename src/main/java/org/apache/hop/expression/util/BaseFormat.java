@@ -15,7 +15,9 @@
 package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract class BaseFormat {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes

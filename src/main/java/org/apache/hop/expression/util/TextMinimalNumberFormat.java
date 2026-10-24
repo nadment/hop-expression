@@ -18,8 +18,10 @@ package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+@NullMarked
 final class TextMinimalNumberFormat extends NumberFormat {
 
   // Original format

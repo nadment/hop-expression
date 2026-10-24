@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -237,6 +238,7 @@ import org.jspecify.annotations.Nullable;
  * </tr>
  * </table>
  */
+@NullMarked
 /* package */ class PatternDateTimeFormat extends DateTimeFormat {
 
   private static final String[] SHORT_MONTHS = {
@@ -808,7 +810,7 @@ import org.jspecify.annotations.Nullable;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (obj == null) {
       return false;
     }

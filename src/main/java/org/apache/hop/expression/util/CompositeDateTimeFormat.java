@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class CompositeDateTimeFormat extends DateTimeFormat {
   private final String pattern;
   private final List<DateTimeFormat> formats;

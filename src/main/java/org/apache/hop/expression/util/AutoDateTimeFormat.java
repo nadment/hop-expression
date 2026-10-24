@@ -19,6 +19,7 @@ package org.apache.hop.expression.util;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * The AUTO datetime format ISO 8601
@@ -35,6 +36,7 @@ import org.apache.hop.expression.ExpressionException;
  *   <li>The time zone offset ±HH:mm ±HHmm ±HH or Z
  * </ul>
  */
+@NullMarked
 public class AutoDateTimeFormat extends DateTimeFormat {
 
   private final DateTimeFormat defaultFormat;

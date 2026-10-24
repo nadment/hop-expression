@@ -21,8 +21,10 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class Regexp {
   private static final String JAVA_REGEXP_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
@@ -30,7 +32,7 @@ public final class Regexp {
   private Regexp() {}
 
   /** Translates a LIKE pattern to a Java regexp pattern, with an optional escape string. */
-  public static String toRegexLike(final String pattern, final CharSequence escapeStr)
+  public static String toRegexLike(final String pattern, final @Nullable CharSequence escapeStr)
       throws ExpressionException {
     final char escapeChar;
     if (escapeStr != null) {

@@ -19,7 +19,9 @@ package org.apache.hop.expression.util;
 import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 final class CompositeNumberFormat extends NumberFormat {
   private final String pattern;
   private final NumberFormat[] formats;
