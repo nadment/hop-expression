@@ -27,8 +27,11 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Gives access to the annotations of the expression editor, the errors of the expression. */
+@NullMarked
 public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotationAccessExtension {
 
   /** The type of the annotation of an error in the expression. */
@@ -45,7 +48,7 @@ public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotatio
   }
 
   @Override
-  public String getTypeLabel(Annotation annotation) {
+  public @Nullable String getTypeLabel(Annotation annotation) {
     // The label of the type, the message is the text of the annotation
     return isError(annotation) ? "Error" : null;
   }
@@ -70,7 +73,7 @@ public class ExpressionAnnotationAccess implements IAnnotationAccess, IAnnotatio
   }
 
   @Override
-  public boolean isSubtype(Object annotationType, Object potentialSupertype) {
+  public boolean isSubtype(@Nullable Object annotationType, Object potentialSupertype) {
     // A type has no super type, it is only a subtype of itself
     return annotationType != null && annotationType.equals(potentialSupertype);
   }

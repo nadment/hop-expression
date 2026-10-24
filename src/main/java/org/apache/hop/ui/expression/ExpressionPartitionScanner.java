@@ -23,7 +23,9 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ExpressionPartitionScanner extends RuleBasedPartitionScanner {
   public static final String COMMENT = "__exp_comment";
   public static final String STRING = "__exp_string";

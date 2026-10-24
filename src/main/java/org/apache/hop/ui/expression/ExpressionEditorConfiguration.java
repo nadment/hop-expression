@@ -63,19 +63,21 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private static final Class<?> PKG = ExpressionEditor.class;
   private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
   private static final int MAX_UNDO_LEVEL = 25;
 
-  private final IVariables variables;
+  private final @Nullable IVariables variables;
   private final ExpressionMode mode;
 
   /** The fields or the arguments of a user-defined function, null until they are known. */
-  private IRowMeta rowMeta;
+  private @Nullable IRowMeta rowMeta;
 
   /** The names of the fields, case-sensitive, empty until the row meta is known. */
   private Set<String> fieldNames = Set.of();
@@ -83,7 +85,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   /** Opens the documentation of a function with Ctrl+click, or null for no link. */
   private @Nullable Consumer<Function> functionDocumentationOpener;
 
-  public ExpressionEditorConfiguration(IVariables variables, ExpressionMode mode) {
+  public ExpressionEditorConfiguration(@Nullable IVariables variables, ExpressionMode mode) {
     super();
     this.variables = variables;
     this.mode = mode;
@@ -95,7 +97,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
    *
    * @param rowMeta the fields, or null if they are unknown
    */
-  public void setRowMeta(IRowMeta rowMeta) {
+  public void setRowMeta(@Nullable IRowMeta rowMeta) {
     this.rowMeta = rowMeta;
 
     Set<String> names = new HashSet<>();
@@ -301,7 +303,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   }
 
   @Override
-  public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+  public @Nullable ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
     // In a string, a word is not a function or a field, only the variables are shown
     if (ExpressionPartitionScanner.STRING.equals(contentType)) {
       return new ExpressionTextHover(variables, () -> rowMeta, true);
@@ -339,7 +341,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
    * <p>The name of a function opens its documentation, an URL opens the browser.
    */
   @Override
-  public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+  public IHyperlinkDetector @Nullable [] getHyperlinkDetectors(ISourceViewer sourceViewer) {
     if (functionDocumentationOpener == null) {
       return super.getHyperlinkDetectors(sourceViewer);
     }

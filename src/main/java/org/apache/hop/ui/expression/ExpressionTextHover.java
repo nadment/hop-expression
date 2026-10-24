@@ -41,12 +41,14 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Shows the message of an error, the description of a function, the value of a variable or the type
  * of a field under the mouse.
  */
+@NullMarked
 public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
   private final @Nullable IVariables variables;
@@ -68,7 +70,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
   }
 
   @Override
-  public String getHoverInfo(ITextViewer textViewer, IRegion region) {
+  public @Nullable String getHoverInfo(ITextViewer textViewer, IRegion region) {
     // If hover an error, display its message
     String error = findErrorMessage(textViewer, region);
     if (error != null) {
@@ -170,7 +172,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
    * @param region the hovered region
    * @return the message of the error, or null if there is no error
    */
-  private static String findErrorMessage(ITextViewer textViewer, IRegion region) {
+  private static @Nullable String findErrorMessage(ITextViewer textViewer, IRegion region) {
     if (!(textViewer instanceof ISourceViewer sourceViewer)) return null;
     IAnnotationModel model = sourceViewer.getAnnotationModel();
     if (model == null) return null;
@@ -191,7 +193,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
   }
 
   @Override
-  public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
+  public @Nullable IRegion getHoverRegion(ITextViewer textViewer, int offset) {
     try {
       IDocument document = textViewer.getDocument();
       IRegion variable = findEnclosedRegion(document, offset, "${", '}');

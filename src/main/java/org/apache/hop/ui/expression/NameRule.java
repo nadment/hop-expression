@@ -20,12 +20,14 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.Token;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A rule that returns a token for a word accepted by a predicate. Unlike {@code WordRule}, the
  * accepted words are checked when the text is scanned, so they can change after the rule is
  * created, for example the fields known later or a user-defined function created later.
  */
+@NullMarked
 public class NameRule implements IRule {
 
   private final IWordDetector detector;

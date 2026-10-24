@@ -21,12 +21,14 @@ import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A rule that returns a token for a numeric literal, with the same forms as the lexer: decimal
  * 1_000.5E-3, hexadecimal 0xFF, binary 0b0101 and octal 0o17. An invalid literal is highlighted
  * too, the error is reported by the validation of the expression.
  */
+@NullMarked
 public class LiteralNumberRule implements IRule {
   private final IToken token;
 

@@ -41,12 +41,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Editor of the {@link UserDefinedFunctionMeta} metadata: name, description, arguments and source
  * expression of a user-defined function.
  */
 @GuiPlugin(description = "This is the editor for User Defined Function (UDF) metadata")
+@NullMarked
 public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFunctionMeta> {
   private static final Class<?> PKG = UserDefinedFunctionMetaEditor.class; // For Translator
 

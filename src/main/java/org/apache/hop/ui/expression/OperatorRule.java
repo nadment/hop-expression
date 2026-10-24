@@ -20,8 +20,10 @@ import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.jspecify.annotations.NullMarked;
 
 /** A rule that returns a token for an operator, like {@code +}, {@code <=} or {@code ::}. */
+@NullMarked
 public class OperatorRule implements IRule {
   private final IToken token;
 

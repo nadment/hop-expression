@@ -15,7 +15,9 @@
 package org.apache.hop.ui.expression;
 
 import org.eclipse.jface.text.rules.IWhitespaceDetector;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class WhitespaceDetector implements IWhitespaceDetector {
   @Override
   public boolean isWhitespace(char character) {

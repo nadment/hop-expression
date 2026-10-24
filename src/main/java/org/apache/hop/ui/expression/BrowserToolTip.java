@@ -28,8 +28,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Displays HTML information in a {@link Browser} widget. */
+@NullMarked
 public class BrowserToolTip extends ToolTip {
   /** Minimal size constraints. */
   private static final int MIN_WIDTH = 800;
@@ -40,7 +43,7 @@ public class BrowserToolTip extends ToolTip {
   private static final int DEFAULT_SHIFT_Y = -3;
 
   /** HTML text to display. */
-  @Getter @Setter private String text;
+  @Getter @Setter private @Nullable String text;
 
   public BrowserToolTip(Control control) {
     super(control, ToolTip.RECREATE, true);

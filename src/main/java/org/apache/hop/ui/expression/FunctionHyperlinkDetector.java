@@ -27,6 +27,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -36,6 +37,7 @@ import org.jspecify.annotations.Nullable;
  * parenthesis, otherwise it is a field like "YEAR". A word in a string or a comment is not a
  * function.
  */
+@NullMarked
 public class FunctionHyperlinkDetector extends AbstractHyperlinkDetector {
 
   private final Consumer<Function> opener;

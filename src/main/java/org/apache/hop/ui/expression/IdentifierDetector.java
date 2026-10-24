@@ -15,7 +15,9 @@
 package org.apache.hop.ui.expression;
 
 import org.eclipse.jface.text.rules.IWordDetector;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class IdentifierDetector implements IWordDetector {
   @Override
   public boolean isWordPart(char character) {

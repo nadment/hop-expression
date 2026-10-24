@@ -16,7 +16,10 @@
  */
 package org.apache.hop.ui.expression;
 
+import org.jspecify.annotations.NullMarked;
+
 /** This enum defines different modes in which an expression can operate. */
+@NullMarked
 public enum ExpressionMode {
   /** No IRowMeta available in the context */
   NONE,

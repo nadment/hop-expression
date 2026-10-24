@@ -36,12 +36,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** This dialog allows you to edit the expression. */
+@NullMarked
 public class ExpressionEditorDialog extends Dialog {
   private static final Class<?> PKG = ExpressionEditorDialog.class;
 
-  private String expression;
+  private @Nullable String expression;
   private Shell shell;
   private ExpressionEditor wEditor;
 
@@ -49,15 +52,15 @@ public class ExpressionEditorDialog extends Dialog {
     super(parent, SWT.APPLICATION_MODAL | SWT.SHEET);
   }
 
-  public String open(String expression, IVariables variables) {
+  public @Nullable String open(@Nullable String expression, @Nullable IVariables variables) {
     return open(expression, variables, ExpressionMode.NONE, null);
   }
 
-  public String open(
-      String expression,
-      IVariables variables,
+  public @Nullable String open(
+      @Nullable String expression,
+      @Nullable IVariables variables,
       ExpressionMode mode,
-      CompletableFuture<IRowMeta> rowMetaFuture) {
+      @Nullable CompletableFuture<IRowMeta> rowMetaFuture) {
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     PropsUi.setLook(shell);
     shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));

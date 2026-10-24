@@ -39,11 +39,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A Widget that combines a Text widget with a button that opens the expression editor. The tool tip
  * of the text widget shows the content of the Text widget with expanded variables.
  */
+@NullMarked
 public class ExpressionText extends Composite {
   protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes
 
@@ -56,7 +59,7 @@ public class ExpressionText extends Composite {
   protected ToolBar wToolBar;
 
   protected ExpressionMode mode;
-  protected CompletableFuture<IRowMeta> rowMetaFuture;
+  protected @Nullable CompletableFuture<IRowMeta> rowMetaFuture;
 
   public ExpressionText(IVariables variables, Composite composite, int flags) {
     this(variables, composite, flags, ExpressionMode.NONE, null);
@@ -67,7 +70,7 @@ public class ExpressionText extends Composite {
       Composite composite,
       int flags,
       ExpressionMode mode,
-      CompletableFuture<IRowMeta> rowMetaFuture) {
+      @Nullable CompletableFuture<IRowMeta> rowMetaFuture) {
 
     super(composite, SWT.NONE);
 
@@ -203,7 +206,7 @@ public class ExpressionText extends Composite {
   }
 
   @Override
-  public void setToolTipText(String toolTipText) {
+  public void setToolTipText(@Nullable String toolTipText) {
     super.setToolTipText(toolTipText);
     wText.setToolTipText(toolTipText);
   }

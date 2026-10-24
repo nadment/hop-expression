@@ -31,10 +31,13 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IToolTipProvider;
 import org.eclipse.swt.graphics.Image;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider {
 
-  private String css;
+  private @Nullable String css;
 
   private String getCss() {
     if (css == null) {
@@ -104,7 +107,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   }
 
   @Override
-  public Image getImage(Object element) {
+  public @Nullable Image getImage(Object element) {
 
     if (element instanceof DescribedVariable) {
       return GuiResource.getInstance().getImageVariable();
@@ -139,7 +142,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   }
 
   @Override
-  public String getToolTipText(Object element) {
+  public @Nullable String getToolTipText(Object element) {
     if (element instanceof Operator operator) {
       return operator.getDocumentation();
     }

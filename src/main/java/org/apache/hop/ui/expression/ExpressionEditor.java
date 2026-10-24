@@ -133,12 +133,15 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Editor of an expression, with the syntax highlighting, the content assist, the errors underlined
  * and a tree of the fields, operators, functions and variables to insert.
  */
 @GuiPlugin
+@NullMarked
 public class ExpressionEditor extends Composite
     implements /*IFindReplaceTarget,*/ IDocumentListener {
   public static final String ID_TOOLBAR = "ExpressionEditor-Toolbar";
@@ -222,20 +225,20 @@ public class ExpressionEditor extends Composite
 
   private final ExpressionMode mode;
   private final ExpressionLabelProvider labelProvider;
-  private final IVariables variables;
+  private final @Nullable IVariables variables;
   private SourceViewer wViewer;
   private Tree wTree;
   private GuiToolbarWidgets toolbarWidgets;
   private GuiMenuWidgets contextMenuWidgets;
 
   /** The fields, set by the thread of the row meta future and read by the UI thread. */
-  private final AtomicReference<IRowMeta> rowMeta = new AtomicReference<>();
+  private final AtomicReference<@Nullable IRowMeta> rowMeta = new AtomicReference<>();
 
   private Browser wBrowser;
   private SashForm wEditorSashForm;
 
   /** The tree item of the fields or arguments, or null if the mode has no fields. */
-  private TreeItem wTreeItemFields;
+  private @Nullable TreeItem wTreeItemFields;
 
   /** The configuration of the viewer, which highlights the fields and proposes them. */
   private ExpressionEditorConfiguration configuration;
@@ -261,9 +264,9 @@ public class ExpressionEditor extends Composite
   public ExpressionEditor(
       Composite parent,
       int style,
-      IVariables variables,
+      @Nullable IVariables variables,
       ExpressionMode mode,
-      CompletableFuture<IRowMeta> rowMetaFuture) {
+      @Nullable CompletableFuture<IRowMeta> rowMetaFuture) {
     super(parent, style);
     this.variables = variables;
     this.mode = mode;
@@ -830,7 +833,7 @@ public class ExpressionEditor extends Composite
    *
    * @param expression the expression, ignored if null
    */
-  public void setText(String expression) {
+  public void setText(@Nullable String expression) {
     if (expression == null) return;
 
     wViewer.getDocument().set(expression);
@@ -1249,7 +1252,7 @@ public class ExpressionEditor extends Composite
    *
    * @param rowMeta the fields, or null if they are unknown
    */
-  public void setRowMeta(final IRowMeta rowMeta) {
+  public void setRowMeta(final @Nullable IRowMeta rowMeta) {
     this.rowMeta.set(rowMeta);
 
     // The row meta can be ready after the editor is closed, or the mode has no fields

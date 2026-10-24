@@ -49,19 +49,22 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
   /** The data types used internally, they are not written in an expression. */
   private static final Set<TypeName> INTERNAL_TYPES =
       EnumSet.of(TypeName.UNKNOWN, TypeName.ANY, TypeName.ARRAY, TypeName.ENUM);
 
-  private final Supplier<IRowMeta> rowMeta;
-  private final IVariables variables;
+  private final @Nullable Supplier<@Nullable IRowMeta> rowMeta;
+  private final @Nullable IVariables variables;
   private final ExpressionMode mode;
-  private String message;
+  private @Nullable String message;
 
-  public ExpressionCompletionProcessor(IVariables variables) {
+  public ExpressionCompletionProcessor(@Nullable IVariables variables) {
     this(variables, null, ExpressionMode.NONE);
   }
 
@@ -75,14 +78,17 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
    * @param mode the mode of the expression
    */
   public ExpressionCompletionProcessor(
-      IVariables variables, Supplier<IRowMeta> rowMeta, ExpressionMode mode) {
+      @Nullable IVariables variables,
+      @Nullable Supplier<@Nullable IRowMeta> rowMeta,
+      ExpressionMode mode) {
     this.variables = variables;
     this.rowMeta = rowMeta;
     this.mode = mode;
   }
 
   @Override
-  public ICompletionProposal[] computeCompletionProposals(ITextViewer textViewer, int offset) {
+  public ICompletionProposal @Nullable [] computeCompletionProposals(
+      ITextViewer textViewer, int offset) {
 
     // Clear the error message of a previous completion
     message = null;
@@ -404,12 +410,13 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   }
 
   @Override
-  public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
+  public IContextInformation @Nullable [] computeContextInformation(
+      ITextViewer viewer, int offset) {
     return null;
   }
 
   @Override
-  public String getErrorMessage() {
+  public @Nullable String getErrorMessage() {
     return message;
   }
 
