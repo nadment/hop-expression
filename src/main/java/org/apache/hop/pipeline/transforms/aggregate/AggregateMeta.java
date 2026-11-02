@@ -31,13 +31,11 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IRowExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
@@ -242,8 +240,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
   private static IExpression compileAggregate(
       IRowExpressionContext context, IVariables variables, String source) {
     IExpression expression = IExpression.of(context, variables.resolve(source));
-    if (!expression.isKind(Kind.CALL)
-        || !(((Call) expression).getOperator() instanceof AggregateFunction)) {
+    if (!(expression instanceof Call call) || !call.getOperator().isAggregate()) {
       throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
     }
     return expression;

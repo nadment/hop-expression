@@ -34,7 +34,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -127,12 +126,14 @@ public class BoolOrOperator extends BinaryOperator {
         }
         if (term.isOperator(EqualOperator.INSTANCE)) {
           equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-          if (term.getOperand(1).isKind(Kind.LITERAL)) {
+          if (term.getOperand(1) instanceof Literal) {
             inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
           }
         }
-        if (term.isOperator(InListOperator.INSTANCE) && term.getOperand(1).isConstant()) {
-          for (IExpression operand : array(term.getOperand(1))) {
+        if (term.isOperator(InListOperator.INSTANCE)
+            && term.getOperand(1) instanceof Array list
+            && list.isConstant()) {
+          for (IExpression operand : list) {
             inTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
@@ -204,12 +205,12 @@ public class BoolOrOperator extends BinaryOperator {
         IExpression term = pair.right();
         if (values == null) {
           values = new LinkedList<>();
-          if (term.isKind(Kind.ARRAY)) {
-            array(term).forEach(values::add);
+          if (term instanceof Array array) {
+            array.forEach(values::add);
           } else values.add(term);
         } else {
-          if (term.isKind(Kind.ARRAY)) {
-            values = CollectionUtils.intersection(values, array(term));
+          if (term instanceof Array array) {
+            values = CollectionUtils.intersection(values, array);
           } else {
             values = CollectionUtils.intersection(values, List.of(term));
           }

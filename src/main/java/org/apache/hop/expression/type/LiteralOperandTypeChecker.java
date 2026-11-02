@@ -17,7 +17,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Literal;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -34,7 +34,7 @@ public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
 
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
-    if (operand.isKind(Kind.LITERAL)) {
+    if (operand instanceof Literal) {
       Object value = operand.getValue();
       return !javaClass.isAssignableFrom((value == null) ? Void.class : value.getClass());
     }

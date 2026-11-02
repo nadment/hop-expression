@@ -38,7 +38,6 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.operator.CastOperator;
 import org.jspecify.annotations.NullMarked;
@@ -203,8 +202,8 @@ public final class Types {
     IExpression operand = call.getOperand(index);
 
     // If the operand is an array, coercion of all its elements
-    if (operand.isKind(Kind.ARRAY)) {
-      Array array = coerceOperandType((Array) operand, type);
+    if (operand instanceof Array values) {
+      Array array = coerceOperandType(values, type);
       if (!array.equals(operand)) {
         call.setOperand(index, array);
         return true;
@@ -444,7 +443,7 @@ public final class Types {
   }
 
   private static boolean isStringLiteral(IExpression expression) {
-    return expression.isKind(Kind.LITERAL) && isString(expression.getType());
+    return expression instanceof Literal && isString(expression.getType());
   }
 
   public static boolean isBinary(Type type) {
@@ -517,28 +516,19 @@ public final class Types {
    *     cannot be determined or the value's type is unsupported.
    */
   public static @Nullable Type inferTypeFromValue(@Nullable Object value) {
-    if (value == null) {
-      return StringType.STRING;
-    } else if (value instanceof Boolean) {
-      return BooleanType.BOOLEAN;
-    } else if (value instanceof Long integer) {
-      return IntegerType.from(integer);
-    } else if (value instanceof BigDecimal number) {
-      return NumberType.from(number);
-    } else if (value instanceof String string) {
-      return StringType.from(string);
-    } else if (value instanceof ZonedDateTime) {
-      return DateType.DATE;
-    } else if (value instanceof Interval) {
-      return IntervalType.INTERVAL;
-    } else if (value instanceof JsonNode) {
-      return JsonType.JSON;
-    } else if (value instanceof InetAddress) {
-      return InetType.INET;
-    } else if (value instanceof byte[] bytes) {
-      return BinaryType.from(bytes);
-    }
-    return null;
+    return switch (value) {
+      case null -> StringType.STRING;
+      case Boolean b -> BooleanType.BOOLEAN;
+      case Long integer -> IntegerType.from(integer);
+      case BigDecimal number -> NumberType.from(number);
+      case String string -> StringType.from(string);
+      case ZonedDateTime zonedDateTime -> DateType.DATE;
+      case Interval interval -> IntervalType.INTERVAL;
+      case JsonNode jsonNode -> JsonType.JSON;
+      case InetAddress inetAddress -> InetType.INET;
+      case byte[] bytes -> BinaryType.from(bytes);
+      default -> null;
+    };
   }
 
   public static IValueMeta createValueMeta(final String valueMetaName, final TypeName typeName) {

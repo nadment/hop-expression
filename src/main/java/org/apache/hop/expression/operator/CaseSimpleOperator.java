@@ -26,7 +26,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -66,8 +65,8 @@ public class CaseSimpleOperator extends Operator {
       for (IExpression whenOperand : whenTerm) {
 
         // Multi-values
-        if (whenOperand.isKind(Kind.ARRAY)) {
-          for (IExpression expression : (Array) whenOperand) {
+        if (whenOperand instanceof Array values) {
+          for (IExpression expression : values) {
             Object value = expression.getValue();
             // A null value never matches
             if (value != null && type.compareEqual(condition, value)) {
@@ -98,7 +97,7 @@ public class CaseSimpleOperator extends Operator {
       IExpression whenOperand = whenTerm.get(0);
 
       // Multi-values: CASE value WHEN x1,x2 THEN y ELSE z END → IF(value IN (x1,x2),y,z)
-      if (whenOperand.isKind(Kind.ARRAY)) {
+      if (whenOperand instanceof Array) {
         return new Call(
             IfFunction.INSTANCE,
             new Call(InListOperator.INSTANCE, call.getOperand(0), whenOperand),
@@ -151,9 +150,9 @@ public class CaseSimpleOperator extends Operator {
     // Check WHEN operands are comparable with the value, like the equal operator
     if (!valueOperand.isNull()) {
       for (IExpression operand : (Array) call.getOperand(1)) {
-        if (operand.isKind(Kind.ARRAY)) {
+        if (operand instanceof Array values) {
           // Mutli-values simple form
-          for (IExpression value : (Array) operand) {
+          for (IExpression value : values) {
             if (!(value.isNull() || Types.isComparable(valueOperand, value))) {
               return false;
             }

@@ -23,7 +23,6 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -68,7 +67,7 @@ public class ArrayAppendFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // If the operand is an array (not an operator)
-    if (call.getOperand(0).isKind(Kind.ARRAY) && eval(call.getOperands()) instanceof Array array) {
+    if (call.getOperand(0) instanceof Array && eval(call.getOperands()) instanceof Array array) {
       return array;
     }
     return call;

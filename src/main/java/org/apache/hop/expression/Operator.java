@@ -228,15 +228,6 @@ public abstract class Operator {
   }
 
   /**
-   * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
-   *
-   * @return this instance cast to a class
-   */
-  protected static Identifier identifier(IExpression expression) {
-    return (Identifier) expression;
-  }
-
-  /**
    * Casts and returns this expression as a {@link Array} if it is of kind {@code ARRAY}
    *
    * @return this instance cast to a class
@@ -456,19 +447,19 @@ public abstract class Operator {
     IExpression right = call.getOperand(1);
 
     // Nothing to normalize
-    if (left.isKind(Kind.IDENTIFIER) && (right.isKind(Kind.LITERAL) || right.isKind(Kind.CALL))) {
+    if (left instanceof Identifier && (right instanceof Literal || right instanceof Call)) {
       return call;
     }
 
     // Normalize identifier to the left
-    if (right.isKind(Kind.IDENTIFIER)) {
+    if (right instanceof Identifier rightIdentifier) {
       // Swap terms and reverse operator 1>A → A<1
-      if (left.isKind(Kind.LITERAL)) {
+      if (left instanceof Literal) {
         return call.reverse();
       }
       // Swap terms and reverse operator B>A → A<B
-      if (left.isKind(Kind.IDENTIFIER)
-          && identifier(left).getName().compareTo(identifier(right).getName()) > 0) {
+      if (left instanceof Identifier leftIdentifier
+          && leftIdentifier.getName().compareTo(rightIdentifier.getName()) > 0) {
         return call.reverse();
       }
     }
@@ -504,19 +495,19 @@ public abstract class Operator {
     IExpression right = call.getOperand(1);
 
     // Nothing to normalize
-    if (left.isKind(Kind.IDENTIFIER) && (right.isKind(Kind.LITERAL) || right.isKind(Kind.CALL))) {
+    if (left instanceof Identifier && (right instanceof Literal || right instanceof Call)) {
       return call;
     }
 
-    if (right.isKind(Kind.IDENTIFIER)) {
+    if (right instanceof Identifier rightIdentifier) {
 
       // Swap terms 1=A → A=1
-      if (left.isKind(Kind.LITERAL)) {
+      if (left instanceof Literal) {
         return call.swap();
       }
       // Swap terms B=A → A=B
-      if (left.isKind(Kind.IDENTIFIER)
-          && identifier(left).getName().compareTo(identifier(right).getName()) > 0) {
+      if (left instanceof Identifier leftIdentifier
+          && leftIdentifier.getName().compareTo(rightIdentifier.getName()) > 0) {
         return call.swap();
       }
     }

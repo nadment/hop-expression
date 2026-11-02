@@ -31,7 +31,7 @@ import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -109,26 +109,28 @@ public class BoolAndOperator extends BinaryOperator {
         if (term.isOperator(IsNullOperator.INSTANCE)) {
           nullTerms.add(term.getOperand(0));
         }
-        if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1).isKind(Kind.LITERAL)) {
+        if (term.isOperator(EqualOperator.INSTANCE) && term.getOperand(1) instanceof Literal) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(NotEqualOperator.INSTANCE) && term.getOperand(1).isKind(Kind.LITERAL)) {
+        if (term.isOperator(NotEqualOperator.INSTANCE) && term.getOperand(1) instanceof Literal) {
           notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
         // Only a list of constant values, an expression can be equal to any value
         if (term.isOperator(InListOperator.INSTANCE) && term.getOperand(1).isConstant()) {
           inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
         }
-        if (term.isOperator(NotInListOperator.INSTANCE) && term.getOperand(1).isConstant()) {
-          for (IExpression operand : array(term.getOperand(1))) {
+        if (term.isOperator(NotInListOperator.INSTANCE)
+            && term.getOperand(1) instanceof Array list
+            && list.isConstant()) {
+          for (IExpression operand : list) {
             notInTerms.put(term.getOperand(0), Pair.of(term, operand));
           }
         }
         if (Strong.isStrong(term)) {
-          if (term.getOperand(0).isKind(Kind.IDENTIFIER)) {
+          if (term.getOperand(0) instanceof Identifier) {
             strongTerms.add(term.getOperand(0));
           }
-          if (term.getOperand(1).isKind(Kind.IDENTIFIER)) {
+          if (term.getOperand(1) instanceof Identifier) {
             strongTerms.add(term.getOperand(1));
           }
         }
@@ -164,12 +166,12 @@ public class BoolAndOperator extends BinaryOperator {
       for (Pair<Call, IExpression> pair : inTerms.get(reference)) {
         IExpression term = pair.right();
         if (values.isEmpty()) {
-          if (term.isKind(Kind.ARRAY)) {
-            array(term).forEach(values::add);
+          if (term instanceof Array array) {
+            array.forEach(values::add);
           } else values.add(term);
         } else {
-          if (term.isKind(Kind.ARRAY)) {
-            values = CollectionUtils.intersection(values, array(term));
+          if (term instanceof Array array) {
+            values = CollectionUtils.intersection(values, array);
           } else {
             values = CollectionUtils.intersection(values, List.of(term));
           }

@@ -34,9 +34,12 @@ import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.CoalesceFunction;
 import org.apache.hop.expression.operator.ConcatFunction;
+import org.apache.hop.expression.operator.CountFunction;
+import org.apache.hop.expression.operator.EqualNullFunction;
 import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
+import org.apache.hop.expression.operator.GreatestFunction;
 import org.apache.hop.expression.operator.InListOperator;
 import org.apache.hop.expression.operator.IsDistinctFromOperator;
 import org.apache.hop.expression.operator.IsFalseOperator;
@@ -46,6 +49,7 @@ import org.apache.hop.expression.operator.IsNotNullOperator;
 import org.apache.hop.expression.operator.IsNotTrueOperator;
 import org.apache.hop.expression.operator.IsNullOperator;
 import org.apache.hop.expression.operator.IsTrueOperator;
+import org.apache.hop.expression.operator.LeastFunction;
 import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
 import org.apache.hop.expression.operator.MultiplyOperator;
@@ -170,11 +174,10 @@ public class ExpressionParserTest extends ExpressionTest {
     assertTrue(ConcatFunction.INSTANCE.isDeterministic());
     assertNotNull(ConcatFunction.INSTANCE.getDescription());
     assertNotEquals(ConcatFunction.INSTANCE, null);
-    // assertNotNull(ConcatFunction.INSTANCE.getDocumentation());
+    assertNotNull(ConcatFunction.INSTANCE.getDocumentation());
     assertNotNull(ConcatFunction.INSTANCE.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
-    assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
-    assertNotEquals(ConcatFunction.INSTANCE, EqualOperator.INSTANCE);
+    assertTrue(CountFunction.COUNT_ALL.isAggregate());
     assertNotEquals(InListOperator.INSTANCE, NotInListOperator.INSTANCE);
     assertNotEquals(SimilarToOperator.INSTANCE, NotSimilarToOperator.INSTANCE);
   }
@@ -229,9 +232,9 @@ public class ExpressionParserTest extends ExpressionTest {
     assertTrue(BitAndFunction.INSTANCE.isSymmetrical());
     assertTrue(BitOrFunction.INSTANCE.isSymmetrical());
     assertTrue(BitXorFunction.INSTANCE.isSymmetrical());
-    assertTrue(FunctionRegistry.getFunction("EQUAL_NULL").isSymmetrical());
-    assertTrue(FunctionRegistry.getFunction("GREATEST").isSymmetrical());
-    assertTrue(FunctionRegistry.getFunction("LEAST").isSymmetrical());
+    assertTrue(new EqualNullFunction().isSymmetrical());
+    assertTrue(new LeastFunction().isSymmetrical());
+    assertTrue(new GreatestFunction().isSymmetrical());
 
     assertFalse(GreaterThanOperator.INSTANCE.isSymmetrical());
     assertFalse(ConcatFunction.INSTANCE.isSymmetrical());

@@ -32,7 +32,6 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IAggregateProcessor;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.type.DateType;
@@ -149,19 +148,15 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           data.aggregateMeta.addValueMeta(valueMeta);
 
           IExpression expression = IExpression.of(data.context, source);
-          Call call = null;
-          AggregateFunction function = null;
-          if (expression.isKind(Kind.CALL)) {
-            call = (Call) expression;
-            if (call.getOperator() instanceof AggregateFunction operator) {
-              function = operator;
+          if (expression instanceof Call call) {
+            if (call.getOperator() instanceof AggregateFunction function) {
+              data.aggregates[index] = call;
+              data.functions[index] = function;
             }
           }
-          if (function == null) {
+          if (data.functions[index] == null) {
             throw new ExpressionException(ErrorCode.NOT_AN_AGGREGATE_EXPRESSION);
           }
-          data.aggregates[index] = call;
-          data.functions[index] = function;
         } catch (Exception e) {
           String message =
               BaseMessages.getString(

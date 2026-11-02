@@ -75,7 +75,6 @@ public class FirstDayFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
     // Validate time unit
     if (call.getOperandCount() == 2) {
       TimeUnit unit = call.getOperand(1).getValue(TimeUnit.class);
