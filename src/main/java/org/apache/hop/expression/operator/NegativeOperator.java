@@ -41,7 +41,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
     super(
         "NEGATIVE",
         "-",
-        40,
+        50,
         Associativity.RIGHT,
         ReturnTypes.ARG0,
         OperandTypes.INTEGER.or(OperandTypes.NUMBER).or(OperandTypes.INTERVAL),
@@ -91,7 +91,8 @@ public class NegativeOperator extends PrefixUnaryOperator {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append('-');
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    // Use the precedence as limit for readability, a unary operand is enclosed: -(+A)
+    unparseAfterSign(writer, operands[0], getPrecedence());
   }
 
   public static final class IntegerNegativeOperator extends NegativeOperator {

@@ -48,7 +48,7 @@ public class IsNotDistinctFromOperator extends BinaryOperator {
         "IS NOT DISTINCT FROM",
         "IS NOT DISTINCT FROM",
         100,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,
@@ -118,8 +118,8 @@ public class IsNotDistinctFromOperator extends BinaryOperator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" IS NOT DISTINCT FROM ");
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[1].unparse(writer, getRightPrecedence(), 0);
   }
 }

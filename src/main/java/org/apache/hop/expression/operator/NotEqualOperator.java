@@ -40,7 +40,7 @@ public class NotEqualOperator extends BinaryOperator {
         "NOT_EQUAL",
         name,
         90,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,

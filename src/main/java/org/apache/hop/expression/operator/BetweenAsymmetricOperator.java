@@ -38,7 +38,7 @@ public class BetweenAsymmetricOperator extends Operator {
     super(
         "BETWEEN",
         80,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.BETWEEN,
         OperatorCategory.COMPARISON,
@@ -77,10 +77,10 @@ public class BetweenAsymmetricOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" BETWEEN ");
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[1].unparse(writer, getRightPrecedence(), getLeftPrecedence());
     writer.append(" AND ");
-    operands[2].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[2].unparse(writer, getRightPrecedence(), 0);
   }
 }

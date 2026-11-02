@@ -51,6 +51,6 @@ public abstract class PrefixUnaryOperator extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(getName());
     writer.append(' ');
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, getRightPrecedence(), 0);
   }
 }

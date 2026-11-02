@@ -42,8 +42,8 @@ public class AtTimeZoneOperator extends Operator {
     super(
         "TIMEZONE",
         "AT TIME ZONE",
-        50,
-        Associativity.LEFT,
+        40,
+        Associativity.NONE,
         ReturnTypes.DATE_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.CONVERSION,
@@ -63,8 +63,8 @@ public class AtTimeZoneOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" AT TIME ZONE ");
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[1].unparse(writer, getRightPrecedence(), 0);
   }
 }

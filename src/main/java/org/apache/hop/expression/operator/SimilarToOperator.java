@@ -51,7 +51,7 @@ public class SimilarToOperator extends BinaryOperator {
         "SIMILAR TO",
         "SIMILAR TO",
         80,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.EXACT_STRING_EXACT_STRING,
         OperatorCategory.COMPARISON,
@@ -131,8 +131,8 @@ public class SimilarToOperator extends BinaryOperator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" SIMILAR TO ");
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[1].unparse(writer, getRightPrecedence(), 0);
   }
 }

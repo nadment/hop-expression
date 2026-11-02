@@ -37,8 +37,8 @@ import org.jspecify.annotations.Nullable;
  * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ...
  * END, or even internally generated constructs like implicit type conversions.
  *
- * <p>Operators have the precedence levels. An operator on higher levels is evaluated before an
- * operator on a lower level
+ * <p>Operators have the precedence levels. An operator with a lower precedence value binds more
+ * tightly and is evaluated before an operator with a higher precedence value.
  */
 @NullMarked
 public abstract class Operator {
@@ -57,17 +57,11 @@ public abstract class Operator {
    */
   @Getter private final String name;
 
-  /**
-   * The precedence with which this operator binds to the expression to the left. This is less than
-   * the right precedence if the operator is left-associative.
-   */
-  @Getter private final int leftPrec;
+  /** The precedence value of the operator, a lower value binds more tightly. */
+  @Getter private final int precedence;
 
-  /**
-   * The precedence with which this operator binds to the expression to the right. This is greater
-   * than the left precedence if the operator is left-associative.
-   */
-  @Getter private final int rightPrec;
+  /** How operators of the same precedence are grouped. */
+  @Getter private final Associativity associativity;
 
   /** Used to infer the return type of call to this operator. */
   @Getter private final IReturnTypeInference returnTypeInference;
@@ -91,7 +85,7 @@ public abstract class Operator {
    * @param id The unique identifier of operator
    * @param name The symbol of the operator or name of the function
    * @param precedence The precedence value of the operator
-   * @param associativity Set if the operator is left or right associative
+   * @param associativity Set if the operator is left, right or not associative
    * @param category The category to group operator
    */
   protected Operator(
@@ -105,8 +99,8 @@ public abstract class Operator {
       String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id");
     this.name = Objects.requireNonNull(name, "name");
-    this.leftPrec = leftPrecedence(precedence, associativity);
-    this.rightPrec = rightPrecedence(precedence, associativity);
+    this.precedence = precedence;
+    this.associativity = Objects.requireNonNull(associativity, "associativity");
     this.returnTypeInference = Objects.requireNonNull(returnTypeInference, "return type inference");
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
@@ -134,18 +128,26 @@ public abstract class Operator {
         documentationUrl);
   }
 
-  private static int leftPrecedence(int precedence, Associativity associativity) {
-    if (associativity == Associativity.LEFT) {
-      ++precedence;
-    }
-    return precedence;
+  /**
+   * Returns the precedence limit for the operand to the left of this operator: an operand with a
+   * greater or equal precedence must be enclosed in parentheses. A left-associative operator
+   * accepts an operand of the same precedence: A-B-C.
+   *
+   * @return the precedence limit for the left operand
+   */
+  public int getLeftPrecedence() {
+    return (associativity == Associativity.LEFT) ? precedence + 1 : precedence;
   }
 
-  private static int rightPrecedence(int precedence, Associativity associativity) {
-    if (associativity == Associativity.RIGHT) {
-      ++precedence;
-    }
-    return precedence;
+  /**
+   * Returns the precedence limit for the operand to the right of this operator: an operand with a
+   * greater or equal precedence must be enclosed in parentheses. A right-associative operator
+   * accepts an operand of the same precedence.
+   *
+   * @return the precedence limit for the right operand
+   */
+  public int getRightPrecedence() {
+    return (associativity == Associativity.RIGHT) ? precedence + 1 : precedence;
   }
 
   protected static MethodHandle findMethodHandle(Class<?> clazz, String methodName) {
@@ -527,10 +529,34 @@ public abstract class Operator {
   }
 
   /**
+   * Unparses an operand that immediately follows a sign. Parentheses are added if the operand
+   * starts with a minus sign, because "--" starts a single line comment and "+-" is hard to read:
+   * A-(-B), -(-1), +(-1).
+   *
+   * @param writer Target writer
+   * @param operand The operand to unparse
+   * @param leftPrec The precedence limit imposed by the operator to the left of the operand
+   */
+  protected static void unparseAfterSign(StringWriter writer, IExpression operand, int leftPrec) {
+    StringWriter buffer = new StringWriter();
+    operand.unparse(buffer, leftPrec, 0);
+    String text = buffer.toString();
+    if (text.startsWith("-")) {
+      writer.append('(').append(text).append(')');
+    } else {
+      writer.append(text);
+    }
+  }
+
+  /**
    * Associativity determines how operators of the same precedence are resolved to avoid ambiguity.
    */
   public enum Associativity {
+    /** Operators of the same precedence are grouped from the left: a-b-c → (a-b)-c */
     LEFT,
-    RIGHT
+    /** Operators of the same precedence are grouped from the right */
+    RIGHT,
+    /** Operators of the same precedence cannot be chained without parentheses: (a=b)=c */
+    NONE
   }
 }

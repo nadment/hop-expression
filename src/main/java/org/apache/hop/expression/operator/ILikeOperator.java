@@ -50,7 +50,7 @@ public class ILikeOperator extends Operator {
     super(
         "ILIKE",
         80,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.EXACT_STRING_EXACT_STRING.or(
             OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
@@ -132,12 +132,12 @@ public class ILikeOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, 0, 0);
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" ILIKE ");
-    operands[1].unparse(writer, 0, 0);
+    operands[1].unparse(writer, getRightPrecedence(), getLeftPrecedence());
     if (operands.length == 3) {
       writer.append(" ESCAPE ");
-      operands[2].unparse(writer, 0, 0);
+      operands[2].unparse(writer, getRightPrecedence(), 0);
     }
   }
 }

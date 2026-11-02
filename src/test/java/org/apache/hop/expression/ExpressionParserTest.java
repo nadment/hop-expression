@@ -165,8 +165,8 @@ public class ExpressionParserTest extends ExpressionTest {
     assertEquals("Mathematical", MultiplyOperator.INSTANCE.getCategory());
     assertEquals(IsTrueOperator.INSTANCE, new IsTrueOperator());
     assertEquals(ConcatFunction.INSTANCE, new ConcatFunction());
-    assertEquals(61, MultiplyOperator.INSTANCE.getLeftPrec());
-    assertEquals(60, MultiplyOperator.INSTANCE.getRightPrec());
+    assertEquals(61, MultiplyOperator.INSTANCE.getLeftPrecedence());
+    assertEquals(60, MultiplyOperator.INSTANCE.getRightPrecedence());
     assertEquals("CONCAT", ConcatFunction.INSTANCE.toString());
     assertTrue(ConcatFunction.INSTANCE.is(FunctionRegistry.getFunction("CONCAT")));
     assertFalse(ConcatFunction.INSTANCE.is(null));
@@ -295,8 +295,17 @@ public class ExpressionParserTest extends ExpressionTest {
 
     // The cast operator has higher precedence than the unary minus (negation) operator,
     // so the statement is interpreted as -(0.0::NUMBER::BOOLEAN)
-    evalFails("-0.0::NUMBER::BOOLEAN", ErrorCode.UNEXPECTED_CHARACTER);
+    evalFails("-0.0::NUMBER::BOOLEAN", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFalse("(-0.0::NUMBER)::BOOLEAN");
+
+    // The unary operators are right-associative, "--" starts a comment so a space is required
+    evalEquals("- -2", 2L);
+    evalEquals("+-2", -2L);
+    evalEquals("-+2", -2L);
+
+    // The cast operator and the array element selection are left-associative
+    evalTrue("1::NUMBER::BOOLEAN");
+    evalEquals("['12','34'][2]::INTEGER", 34L);
   }
 
   @Test
@@ -306,7 +315,7 @@ public class ExpressionParserTest extends ExpressionTest {
     optimize("4/2+FIELD_INTEGER", "2+FIELD_INTEGER");
     optimize("4/(2+FIELD_INTEGER)", "4/(2+FIELD_INTEGER)");
     optimize("-FIELD_INTEGER::NUMBER", "-CAST(FIELD_INTEGER AS NUMBER)");
-    optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*FIELD_INTEGER/2");
+    optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)");
     optimize("((FIELD_INTEGER > 5) AND FALSE) OR (FIELD_INTEGER < 10)", "FIELD_INTEGER<10");
   }
 

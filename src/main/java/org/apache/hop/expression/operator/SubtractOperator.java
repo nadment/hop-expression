@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
@@ -62,6 +63,13 @@ public class SubtractOperator extends BinaryOperator {
   public boolean checkOperandTypes(Call call) {
     // A boolean is not implicitly coerced to a number
     return super.checkOperandTypes(call) && !Types.hasBooleanOperand(call);
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    operands[0].unparse(writer, 0, getLeftPrecedence());
+    writer.append('-');
+    unparseAfterSign(writer, operands[1], getRightPrecedence());
   }
 
   @Override

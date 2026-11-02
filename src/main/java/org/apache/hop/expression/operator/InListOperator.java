@@ -56,7 +56,7 @@ public class InListOperator extends Operator {
     super(
         "IN",
         80,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
         OperatorCategory.COMPARISON,
@@ -200,7 +200,7 @@ public class InListOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" IN (");
     array(operands[1]).unparseValues(writer);
     writer.append(')');

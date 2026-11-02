@@ -48,8 +48,8 @@ public class NotSimilarToOperator extends BinaryOperator {
     super(
         "NOT SIMILAR TO",
         "NOT SIMILAR TO",
-        10,
-        Associativity.LEFT,
+        80,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.EXACT_STRING_EXACT_STRING,
         OperatorCategory.COMPARISON,
@@ -94,8 +94,8 @@ public class NotSimilarToOperator extends BinaryOperator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" NOT SIMILAR TO ");
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[1].unparse(writer, getRightPrecedence(), 0);
   }
 }

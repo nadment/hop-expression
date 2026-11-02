@@ -46,7 +46,7 @@ public class EqualOperator extends BinaryOperator {
         "EQUAL",
         "=",
         90,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON,

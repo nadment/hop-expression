@@ -44,7 +44,7 @@ public class IsNullOperator extends PostfixUnaryOperator {
     super(
         "IS NULL",
         100,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NOT_NULL,
         OperandTypes.ANY,
         OperatorCategory.COMPARISON,
@@ -103,7 +103,7 @@ public class IsNullOperator extends PostfixUnaryOperator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" IS NULL");
   }
 }

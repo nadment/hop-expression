@@ -279,7 +279,13 @@ NOTE: If you wish to include a double quote in an identifier, use another double
 == Operator
 
 The following table lists all operators from highest to lowest precedence, alongside their associativity.
-An operator on higher levels is evaluated before an operator on a lower level. Add parentheses to an expression with multiple operators if you want to force precedence or clarify precedence, for example `(5 + 2) * 3`.
+An operator with a lower precedence value is evaluated before an operator with a higher precedence value. Add parentheses to an expression with multiple operators if you want to force precedence or clarify precedence, for example `(5 + 2) * 3`.
+
+The associativity determines how operators of the same precedence are grouped:
+
+* left: the operators are grouped from the left, `a - b - c` is evaluated as `(a - b) - c`.
+* right: the operators are grouped from the right, `NOT NOT a` is evaluated as `NOT (NOT a)`.
+* none: the operators can't be chained without parentheses, `a = b = c` is a syntax error and must be written `(a = b) = c`.
 
 
 [cols="<5,<5,^1,^1", options="header"]
@@ -287,12 +293,12 @@ An operator on higher levels is evaluated before an operator on a lower level. A
 |Operator|Description|Precedence|Associativity
 |()|Parenthesis|0|left
 |xref:functions.adoc["function",role=fun](args...)|Function|10|left
-|xref:cast.adoc["::",role=op]|Type cast|20|right
+|xref:cast.adoc["::",role=op]|Type cast|20|left
 |xref:element_at.adoc["[\]",role=op]|Array element selection|30|left
+|xref:attimezone.adoc["AT",role=op]|AT TIME ZONE|40|none
 |xref:plus.adoc["+",role=op] +
 xref:negative.adoc["-",role=operator]|Positive +
-Negative|40|right
-|xref:attimezone.adoc["AT",role=op]|AT TIME ZONE|50|right
+Negative|50|right
 |xref:multiply.adoc["*",role=op] +
 xref:div.adoc["/",role=op] +
 xref:mod.adoc["%",role=op]|Multiplication +
@@ -303,22 +309,22 @@ xref:subtract.adoc["-",role=op] +
 xref:concat.adoc["\|\|",role=op]|Addition +
 Subtraction +
 Concatenation|70|left
-|xref:in.adoc["IN",role=op]|Membership|80|left
-|xref:between.adoc["BETWEEN",role=op]|Range containment|80|left
+|xref:in.adoc["IN",role=op]|Membership|80|none
+|xref:between.adoc["BETWEEN",role=op]|Range containment|80|none
 |xref:like.adoc["LIKE",role=op] +
 xref:ilike.adoc["ILIKE",role=op] +
-xref:similar-to.adoc["SIMILAR TO",role=op]|Pattern matching|80|left
+xref:similar-to.adoc["SIMILAR TO",role=op]|Pattern matching|80|none
 |xref:equal.adoc["=",role=op] +
 xref:greater_than.adoc[">",role=op] +
 xref:less_than.adoc["<",role=op] +
 xref:greater_than_or_equal.adoc[">=",role=op] +
 xref:less_than_or_equal.adoc["<=",role=op] +
 xref:not_equal.adoc["<>",role=op] +
-xref:not_equal.adoc["!=",role=op]|Comparison|90|left
+xref:not_equal.adoc["!=",role=op]|Comparison|90|none
 |xref:is-null.adoc["IS NULL",role=op] +
 xref:is-true.adoc["IS TRUE",role=op] +
 xref:is-false.adoc["IS FALSE",role=op] +
-xref:is-distinct-from.adoc["IS DISTINCT FROM",role=op]|Conditional|100|left
+xref:is-distinct-from.adoc["IS DISTINCT FROM",role=op]|Conditional|100|none
 |xref:boolnot.adoc["NOT",role=op]|Logical negation|110|right
 |xref:booland.adoc["AND",role=op]|Logical conjunction|120|left
 |xref:boolxor.adoc["XOR",role=op]|Logical exclusive disjunction|130|left

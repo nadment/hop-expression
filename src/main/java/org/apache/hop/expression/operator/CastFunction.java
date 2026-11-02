@@ -112,7 +112,7 @@ public class CastFunction extends Function {
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());
     writer.append('(');
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, 0);
     writer.append(" AS ");
     Type type = operands[1].getType();
     writer.append(type.getLiteral());

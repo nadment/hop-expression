@@ -69,7 +69,7 @@ public class LikeOperator extends Operator {
     super(
         "LIKE",
         80,
-        Associativity.LEFT,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.EXACT_STRING_EXACT_STRING.or(
             OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
@@ -230,12 +230,12 @@ public class LikeOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" LIKE ");
-    operands[1].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[1].unparse(writer, getRightPrecedence(), getLeftPrecedence());
     if (operands.length == 3) {
       writer.append(" ESCAPE ");
-      operands[2].unparse(writer, getLeftPrec(), getRightPrec());
+      operands[2].unparse(writer, getRightPrecedence(), 0);
     }
   }
 }

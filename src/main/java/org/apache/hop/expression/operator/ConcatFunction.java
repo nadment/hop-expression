@@ -43,10 +43,13 @@ public class ConcatFunction extends Function {
 
   public static final ConcatFunction INSTANCE = new ConcatFunction();
 
-  // Function
+  // Function, always unparsed with the operator "||" so with the same precedence
   public ConcatFunction() {
     super(
         "CONCAT",
+        "CONCAT",
+        70,
+        Associativity.LEFT,
         ReturnTypes.CONCAT_FUNCTION,
         OperandTypes.STRING_VARIADIC
             .or(OperandTypes.BINARY_VARIADIC)
@@ -123,11 +126,11 @@ public class ConcatFunction extends Function {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    boolean concatFirst = true;
-    for (IExpression operand : operands) {
-      if (concatFirst) concatFirst = false;
-      else writer.append("||");
-      operand.unparse(writer, 0, 0);
+    int last = operands.length - 1;
+    for (int i = 0; i <= last; i++) {
+      if (i > 0) writer.append("||");
+      operands[i].unparse(
+          writer, (i == 0) ? 0 : getRightPrecedence(), (i == last) ? 0 : getLeftPrecedence());
     }
   }
 

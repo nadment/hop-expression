@@ -202,8 +202,9 @@ public class Call implements IExpression {
 
   @Override
   public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
-    if ((leftPrec < operator.getLeftPrec() && (leftPrec != 0))
-        || (operator.getRightPrec() > rightPrec && (rightPrec != 0))) {
+    // Enclose in parentheses if the operator does not bind more tightly than its neighbors
+    int precedence = operator.getPrecedence();
+    if ((leftPrec != 0 && precedence >= leftPrec) || (rightPrec != 0 && precedence >= rightPrec)) {
       writer.append('(');
       operator.unparse(writer, operands);
       writer.append(')');

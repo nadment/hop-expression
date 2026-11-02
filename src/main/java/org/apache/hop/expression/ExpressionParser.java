@@ -89,14 +89,15 @@ import org.jspecify.annotations.NullMarked;
  * CaseExpression := SimpleCaseExpression | SearchedCaseExpression
  * SimpleCaseExpression := 'CASE' Expr ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
  * SearchedCaseExpression := 'CASE' ('WHEN' Expr 'THEN' Expr)+ ('ELSE' Expr)? 'END'
- * CastOperatorExpression := TermExpression '::' TypeExpression
- * ElementAtExpression := TermExpression '[' AdditiveExpression ']'
- * AtTimeZoneExpression := TermExpression AT TIME ZONE TimezoneExpression
- * PrimaryExpression := CastOperatorExpression | ElementAtExpression | AtTimeZoneExpression
+ * CastOperatorExpression := '::' TypeExpression
+ * ElementAtExpression := '[' AdditiveExpression ']'
+ * PostfixExpression := TermExpression ( CastOperatorExpression | ElementAtExpression )*
+ * AtTimeZoneExpression := PostfixExpression AT TIME ZONE PostfixExpression
+ * PrimaryExpression := PostfixExpression | AtTimeZoneExpression
  * UnaryExpression :=
  * PrimaryExpression
- * - PrimaryExpression
- * + PrimaryExpression
+ * - UnaryExpression
+ * + UnaryExpression
  * MultiplicativeExpression  :=
  * UnaryExpression
  * UnaryExpression * UnaryExpression
@@ -446,15 +447,15 @@ public class ExpressionParser implements IExpressionParser {
     return expression;
   }
 
-  /** <code>('+' | '-') PrimaryExpression</code> */
+  /** <code>('+' | '-') UnaryExpression | PrimaryExpression</code>, right-associative: +-x */
   private IExpression parseUnary() throws ExpressionException {
     int start = lexer.getPosition();
     if (lexer.acceptAndNotEnd(Id.MINUS)) {
-      return new Call(start, NegativeOperator.INSTANCE, this.parsePrimary());
+      return new Call(start, NegativeOperator.INSTANCE, this.parseUnary());
     }
 
     if (lexer.acceptAndNotEnd(Id.PLUS)) {
-      return new Call(start, PositiveOperator.INSTANCE, this.parsePrimary());
+      return new Call(start, PositiveOperator.INSTANCE, this.parseUnary());
     }
 
     return this.parsePrimary();
@@ -487,38 +488,48 @@ public class ExpressionParser implements IExpressionParser {
 
   /**
    * Parse primary <code>
-   * TermExpression::TypeExpression | TermExpression AT TIMEZONE TimezoneExpression | TermExpression[index]
+   * PostfixExpression | PostfixExpression AT TIME ZONE PostfixExpression
    * </code>
    */
   @Override
   public IExpression parsePrimary() throws ExpressionException {
-    IExpression expression = this.parseTerm();
-
-    // Cast operator '::'
-    if (lexer.acceptAndNotEnd(Id.CAST)) {
-      IExpression type = parseDataType(lexer.next());
-      return new Call(lexer.getPosition(), CastOperator.INSTANCE, expression, type);
-    }
-
-    // Array element at ARRAY[index]
-    if (lexer.accept(Id.LBRACKET)) {
-      IExpression term = this.parseAdditive();
-      Call call = new Call(lexer.getPosition(), ArrayElementAtOperator.INSTANCE, expression, term);
-
-      lexer.expect(Id.RBRACKET, ErrorCode.MISSING_RIGHT_BRACKET);
-
-      return call;
-    }
+    IExpression expression = this.parsePostfix();
 
     //  <term> AT TIMEZONE <timezone>
     if (lexer.acceptAndNotEnd(Id.AT)) {
       if (lexer.acceptAndNotEnd(Id.TIME) && lexer.acceptAndNotEnd(Id.ZONE)) {
         return new Call(
-            lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parseTerm());
+            lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parsePostfix());
       }
       throw new ParseExpressionException(lexer.getPosition(), ErrorCode.SYNTAX_ERROR, Id.AT);
     }
     return expression;
+  }
+
+  /**
+   * Parse a term followed by any number of cast operators and array element selections, grouped
+   * from the left: <code>x::STRING::INTEGER</code>, <code>array[1][2]</code>
+   */
+  private IExpression parsePostfix() throws ExpressionException {
+    IExpression expression = this.parseTerm();
+
+    while (true) {
+      // Cast operator '::'
+      if (lexer.acceptAndNotEnd(Id.CAST)) {
+        IExpression type = parseDataType(lexer.next());
+        expression = new Call(lexer.getPosition(), CastOperator.INSTANCE, expression, type);
+      }
+      // Array element at ARRAY[index]
+      else if (lexer.accept(Id.LBRACKET)) {
+        IExpression term = this.parseAdditive();
+        expression =
+            new Call(lexer.getPosition(), ArrayElementAtOperator.INSTANCE, expression, term);
+
+        lexer.expect(Id.RBRACKET, ErrorCode.MISSING_RIGHT_BRACKET);
+      } else {
+        return expression;
+      }
+    }
   }
 
   /** Parse term <code>Literal | Array | Identifier | Function | '(' Expression ')'</code> */

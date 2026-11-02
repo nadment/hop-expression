@@ -68,7 +68,7 @@ public class CastOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, 0, 0);
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append("::");
     writer.append(operands[1].toString());
   }

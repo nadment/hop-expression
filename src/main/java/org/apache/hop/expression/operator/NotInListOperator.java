@@ -55,8 +55,8 @@ public class NotInListOperator extends Operator {
   public NotInListOperator() {
     super(
         "NOT IN",
-        120,
-        Associativity.LEFT,
+        80,
+        Associativity.NONE,
         ReturnTypes.BOOLEAN_NULLABLE,
         null,
         OperatorCategory.COMPARISON,
@@ -199,7 +199,7 @@ public class NotInListOperator extends Operator {
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    operands[0].unparse(writer, getLeftPrec(), getRightPrec());
+    operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append(" NOT IN (");
     array(operands[1]).unparseValues(writer);
     writer.append(')');

@@ -161,12 +161,18 @@ public interface IExpression {
    *
    * <p>The <code>leftPrec</code> and <code>rightPrec</code> parameters give us enough context to
    * decide whether we need to enclose the expression in parentheses. For example, we need
-   * parentheses around "2 + 3" if preceded by "5 *". This is because the precedence of the "*"
-   * operator is greater than the precedence of the "+" operator.
+   * parentheses around "2 + 3" if preceded by "5 *". This is because the "*" operator binds more
+   * tightly than the "+" operator.
+   *
+   * <p>A call is enclosed in parentheses if the precedence of its operator is greater than or equal
+   * to one of these limits, see {@link Operator#getLeftPrecedence()} and {@link
+   * Operator#getRightPrecedence()}.
    *
    * @param writer Target writer
-   * @param leftPrec The precedence of the {@link IExpression} immediately preceding
-   * @param rightPrec The precedence of the {@link IExpression} immediately succeeding
+   * @param leftPrec The precedence limit imposed by the operator immediately preceding, the right
+   *     precedence of this operator, or 0 if none
+   * @param rightPrec The precedence limit imposed by the operator immediately succeeding, the left
+   *     precedence of this operator, or 0 if none
    */
   void unparse(StringWriter writer, int leftPrec, int rightPrec);
 }
