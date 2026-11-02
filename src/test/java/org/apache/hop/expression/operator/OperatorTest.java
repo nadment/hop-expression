@@ -764,8 +764,11 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testNullHandling() throws Exception {
       evalNull("NULL_INTEGER/1");
-      evalNull("NULL_INTEGER/0");
       evalNull("1/NULL_INTEGER");
+
+      // A null operand has priority over the division by zero
+      evalNull("NULL_INTEGER/0");
+      evalNull("NULL_INTEGER/0.0");
     }
 
     @Test
@@ -2349,6 +2352,13 @@ public class OperatorTest extends ExpressionTest {
     void testNullHandling() throws Exception {
       evalNull("Mod(NULL_INTEGER,2)");
       evalNull("Mod(2,NULL_INTEGER)");
+      evalNull("NULL%2");
+      evalNull("2%NULL");
+
+      // A null operand has priority over the division by zero
+      evalNull("Mod(NULL_INTEGER,0)");
+      evalNull("NULL_INTEGER%0");
+      evalNull("NULL%0");
     }
 
     @Test

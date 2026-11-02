@@ -634,8 +634,8 @@ public final class ReturnTypes {
     // Return type scale
     int s = Math.max(s1, s2);
 
-    // Return type precision
-    int p = Math.min(p1 - s1, p2 - s2) + s;
+    // Return type precision, at least 1 when an operand has no precision like the NULL literal
+    int p = Math.max(1, Math.min(p1 - s1, p2 - s2) + s);
 
     p = Math.min(TypeName.NUMBER.getMaxPrecision(), p);
 
