@@ -174,7 +174,8 @@ public class ExpressionParserTest extends ExpressionTest {
     assertTrue(ConcatFunction.INSTANCE.isDeterministic());
     assertNotNull(ConcatFunction.INSTANCE.getDescription());
     assertNotEquals(ConcatFunction.INSTANCE, null);
-    assertNotNull(ConcatFunction.INSTANCE.getDocumentation());
+    // The documentation is only generated when packaging, after the tests
+    // assertNotNull(ConcatFunction.INSTANCE.getDocumentation());
     assertNotNull(ConcatFunction.INSTANCE.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(CountFunction.COUNT_ALL.isAggregate());
