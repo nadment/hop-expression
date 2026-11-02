@@ -28,7 +28,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Regexp;
+import org.apache.hop.expression.util.LikeMatcher;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -58,14 +58,19 @@ public class LikeOperator extends Operator {
   /** The escape character used when the pattern has no ESCAPE clause. */
   static final String DEFAULT_ESCAPE = "\\";
 
-  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
-  private final @Nullable Pattern compiledPattern;
+  /**
+   * The matcher of the pattern, compiled once at compilation.
+   *
+   * <p><b>NOTE</b> It is only used when the pattern (and the escape character) is defined by a
+   * constant, otherwise it is {@code null} and the pattern is compiled at each evaluation.
+   */
+  private final @Nullable LikeMatcher matcher;
 
   public LikeOperator() {
     this(null);
   }
 
-  private LikeOperator(@Nullable Pattern compiledPattern) {
+  private LikeOperator(@Nullable LikeMatcher matcher) {
     super(
         "LIKE",
         80,
@@ -75,7 +80,7 @@ public class LikeOperator extends Operator {
             OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
         OperatorCategory.COMPARISON,
         "/docs/hop-user-manual/expression/like.html");
-    this.compiledPattern = compiledPattern;
+    this.matcher = matcher;
   }
 
   /**
@@ -85,10 +90,10 @@ public class LikeOperator extends Operator {
    * <p>An invalid pattern is not reported here, the error is raised at evaluation.
    *
    * @param call the call of a LIKE or ILIKE operator
-   * @param flags the match flags of the regular expression
-   * @return the compiled pattern, or {@code null} if it must be compiled at evaluation
+   * @param ignoreCase whether the case is ignored, for ILIKE
+   * @return the matcher of the pattern, or {@code null} if it must be compiled at evaluation
    */
-  static @Nullable Pattern createConstantPattern(Call call, int flags) {
+  static @Nullable LikeMatcher compileConstantMatcher(Call call, boolean ignoreCase) {
     if (!call.getOperand(1).isConstant()) {
       return null;
     }
@@ -107,18 +112,18 @@ public class LikeOperator extends Operator {
           return null;
         }
       }
-      return Pattern.compile(Regexp.toRegexLike(pattern, escape), flags);
+      return LikeMatcher.compile(pattern, escape, ignoreCase);
     } catch (RuntimeException e) {
       return null;
     }
   }
 
   private static IExpression precompile(Call call) {
-    Pattern pattern = createConstantPattern(call, Pattern.DOTALL);
-    if (pattern == null) {
+    LikeMatcher constantMatcher = compileConstantMatcher(call, false);
+    if (constantMatcher == null) {
       return call;
     }
-    return new Call(new LikeOperator(pattern), call.getOperands());
+    return new Call(new LikeOperator(constantMatcher), call.getOperands());
   }
 
   /**
@@ -129,7 +134,7 @@ public class LikeOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Already compiled
-    if (compiledPattern != null) return call;
+    if (matcher != null) return call;
 
     // Simplify NULL LIKE FIELD → NULL
     IExpression value = call.getOperand(0);
@@ -150,7 +155,7 @@ public class LikeOperator extends Operator {
       }
 
       // Multiple consecutive '%' in the string matched by LIKE should simplify to a single '%'
-      String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
+      String simplifiedPattern = LikeMatcher.simplify(pattern, escape);
       if (!simplifiedPattern.equals(pattern)) {
         // Keep the ESCAPE clause, the simplified pattern still depends on it
         if (call.getOperandCount() == 3) {
@@ -208,8 +213,8 @@ public class LikeOperator extends Operator {
     if (value == null) {
       return null;
     }
-    if (compiledPattern != null) {
-      return compiledPattern.matcher(value).matches();
+    if (matcher != null) {
+      return matcher.matches(value);
     }
     String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
@@ -223,9 +228,7 @@ public class LikeOperator extends Operator {
       }
     }
 
-    String regex = Regexp.toRegexLike(pattern, escape);
-    Pattern p = Pattern.compile(regex, Pattern.DOTALL);
-    return p.matcher(value).matches();
+    return LikeMatcher.compile(pattern, escape, false).matches(value);
   }
 
   @Override

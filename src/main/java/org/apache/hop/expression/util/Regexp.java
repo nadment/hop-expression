@@ -31,59 +31,6 @@ public final class Regexp {
   /** Private constructor since this is a utility class. */
   private Regexp() {}
 
-  /** Translates a LIKE pattern to a Java regexp pattern, with an optional escape string. */
-  public static String toRegexLike(final String pattern, final @Nullable CharSequence escapeStr)
-      throws ExpressionException {
-    final char escapeChar;
-    if (escapeStr != null) {
-
-      if (escapeStr.length() != 1) {
-        throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, escapeStr);
-      }
-
-      escapeChar = escapeStr.charAt(0);
-    } else {
-      escapeChar = 0;
-    }
-    return toRegexLike(pattern, escapeChar);
-  }
-
-  /** Translates a LIKE pattern to Java regex pattern. */
-  public static String toRegexLike(final String pattern, final char escapeChar)
-      throws ExpressionException {
-    int i;
-    final int len = pattern.length();
-    final StringBuilder javaPattern = new StringBuilder(len + len);
-    for (i = 0; i < len; i++) {
-      char c = pattern.charAt(i);
-      if (c == escapeChar) {
-        if (i == (pattern.length() - 1)) {
-          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
-        }
-        char nextChar = pattern.charAt(i + 1);
-        if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
-          if (JAVA_REGEXP_SPECIALS.indexOf(nextChar) >= 0) {
-            javaPattern.append('\\');
-          }
-          javaPattern.append(nextChar);
-          i++;
-        } else {
-          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
-        }
-      } else if (c == '_') {
-        javaPattern.append('.');
-      } else if (c == '%') {
-        javaPattern.append("(?s:.*)");
-      } else {
-        if (JAVA_REGEXP_SPECIALS.indexOf(c) >= 0) {
-          javaPattern.append('\\');
-        }
-        javaPattern.append(c);
-      }
-    }
-    return javaPattern.toString();
-  }
-
   public static int parseFlags(@Nullable String str) {
     int flags = Pattern.UNICODE_CASE;
     if (str != null) {
@@ -273,38 +220,5 @@ public final class Regexp {
         // Unknown character class
       default -> throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, index);
     };
-  }
-
-  /**
-   * Simplifies like string with escape. A like '%%#%%A%%' escape '#' should simplify to A like
-   * '%#%%A%' escape '#'.
-   */
-  public static String simplifyLikeString(String content, char escape, char wildcard) {
-    int escapeCount = 0;
-    int wildcardCount = 0;
-    StringBuilder builder = new StringBuilder();
-    for (int index = 0; index < content.length(); index++) {
-      char c = content.charAt(index);
-      if (c == escape) {
-        builder.append(c);
-        escapeCount++;
-        wildcardCount = 0;
-        continue;
-      }
-      if (c == wildcard) {
-        if (escapeCount % 2 != 0) {
-          builder.append(wildcard);
-        } else if (wildcardCount == 0) {
-          builder.append(wildcard);
-          wildcardCount++;
-        }
-        escapeCount = 0;
-        continue;
-      }
-      builder.append(c);
-      escapeCount = 0;
-      wildcardCount = 0;
-    }
-    return builder.toString();
   }
 }

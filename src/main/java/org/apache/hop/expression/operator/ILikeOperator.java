@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
@@ -28,7 +27,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Regexp;
+import org.apache.hop.expression.util.LikeMatcher;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -37,16 +36,19 @@ import org.jspecify.annotations.Nullable;
 public class ILikeOperator extends Operator {
   public static final ILikeOperator INSTANCE = new ILikeOperator();
 
-  private static final int FLAGS = Pattern.DOTALL | Pattern.CASE_INSENSITIVE;
-
-  /** The pattern compiled ahead of evaluation when it is constant, otherwise {@code null}. */
-  private final @Nullable Pattern compiledPattern;
+  /**
+   * The matcher of the pattern, compiled once at compilation.
+   *
+   * <p><b>NOTE</b> It is only used when the pattern (and the escape character) is defined by a
+   * constant, otherwise it is {@code null} and the pattern is compiled at each evaluation.
+   */
+  private final @Nullable LikeMatcher matcher;
 
   public ILikeOperator() {
     this(null);
   }
 
-  private ILikeOperator(@Nullable Pattern compiledPattern) {
+  private ILikeOperator(@Nullable LikeMatcher matcher) {
     super(
         "ILIKE",
         80,
@@ -56,13 +58,13 @@ public class ILikeOperator extends Operator {
             OperandTypes.EXACT_STRING_EXACT_STRING_EXACT_STRING),
         OperatorCategory.COMPARISON,
         "/docs/hop-user-manual/expression/ilike.html");
-    this.compiledPattern = compiledPattern;
+    this.matcher = matcher;
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Already compiled
-    if (compiledPattern != null) return call;
+    if (matcher != null) return call;
 
     // Optimize NULL ILIKE FIELD → NULL
     IExpression value = call.getOperand(0);
@@ -83,7 +85,7 @@ public class ILikeOperator extends Operator {
       }
 
       // Multiple consecutive '%' in the string matched by ILIKE should simplify to a single '%'
-      String simplifiedPattern = Regexp.simplifyLikeString(pattern, escape, '%');
+      String simplifiedPattern = LikeMatcher.simplify(pattern, escape);
       if (!simplifiedPattern.equals(pattern)) {
         // Keep the ESCAPE clause, the simplified pattern still depends on it
         if (call.getOperandCount() == 3) {
@@ -93,9 +95,9 @@ public class ILikeOperator extends Operator {
       }
     }
 
-    Pattern pattern = LikeOperator.createConstantPattern(call, FLAGS);
-    if (pattern != null) {
-      return new Call(new ILikeOperator(pattern), call.getOperands());
+    LikeMatcher constantMatcher = LikeOperator.compileConstantMatcher(call, true);
+    if (constantMatcher != null) {
+      return new Call(new ILikeOperator(constantMatcher), call.getOperands());
     }
 
     return call;
@@ -108,8 +110,8 @@ public class ILikeOperator extends Operator {
       return null;
     }
 
-    if (compiledPattern != null) {
-      return compiledPattern.matcher(value).matches();
+    if (matcher != null) {
+      return matcher.matches(value);
     }
 
     String pattern = operands[1].getValue(String.class);
@@ -125,9 +127,7 @@ public class ILikeOperator extends Operator {
       }
     }
 
-    String regex = Regexp.toRegexLike(pattern, escape);
-    Pattern p = Pattern.compile(regex, FLAGS);
-    return p.matcher(value).matches();
+    return LikeMatcher.compile(pattern, escape, true).matches(value);
   }
 
   @Override

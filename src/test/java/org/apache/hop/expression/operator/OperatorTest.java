@@ -1373,6 +1373,10 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("'test' ILIKE '%t%'");
       evalTrue("'test' ILIKE '%T%'");
 
+      // Not only ASCII characters
+      evalTrue("'ÉTÉ' ILIKE 'été'");
+      evalTrue("'Été 2024' ILIKE 'ÉTÉ%'");
+
       // Optimizable
       evalTrue("'ABCDEFG' ILIKE 'abcdefg'");
       evalTrue("'ABCDEFG' ILIKE 'abcde%'");
@@ -2523,6 +2527,14 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("'AA\nA' like 'AA_A'");
       evalTrue("'AA\nA' like 'AA%A'");
       evalFalse("'AA\nA' like 'AA_'");
+
+      // A character outside the Basic Multilingual Plane is one character
+      evalTrue("'😀' LIKE '_'");
+      evalTrue("'a😀b' LIKE 'a_b'");
+
+      // A pattern with many '%' doesn't backtrack, like a regular expression would
+      evalFalse("REPEAT('a',10000) LIKE '%a%a%a%a%a%a%a%a%a%a%x'");
+      evalFalse("REPEAT('a',10000) LIKE FIELD_STRING||'%a%a%a%a%a%a%a%a%a%a%x'");
 
       // Ensure regex chars are escaped
       evalTrue("'' LIKE ''");
