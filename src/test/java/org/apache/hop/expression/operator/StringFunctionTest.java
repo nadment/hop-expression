@@ -1906,26 +1906,29 @@ public class StringFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Base64_Decode()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
+    // The whitespace characters are ignored
+    evalEquals("Base64_Decode('QXBh Y2hl\tIEhv\ncA==\r')", "Apache Hop");
+
     // Invalid symbol
-    evalFails("Base64_Decode('QXBh Y2hlIEhvcA==')", ErrorCode.INVALID_DECODING_SYMBOL);
     assertDecodingSymbolMessage("Base64_Decode('QXBh&Y2hlIEhvcA==')", "&", "base64");
     assertDecodingSymbolMessage("Base64_Decode('QXBh€Y2hlIEhvcA==')", "€", "base64");
     // The URL-safe symbols are not in the standard alphabet
     assertDecodingSymbolMessage("Base64_Decode('-_==')", "-", "base64");
 
-    // The padding is only allowed at the end
-    assertDecodingSymbolMessage("Base64_Decode('QQ=A')", "=", "base64");
-    assertDecodingSymbolMessage("Base64_Decode('QQ==QQ==')", "=", "base64");
+    // The padding is only allowed at the 3rd or 4th symbol of a block
+    assertDecodingSymbolMessage("Base64_Decode('Q===')", "=", "base64");
+    assertDecodingSymbolMessage("Base64_Decode('=QQQ')", "=", "base64");
+    // The symbols after the padding are not checked
+    evalEquals("Base64_Decode('QQ=A')", "A");
+    evalEquals("Base64_Decode('QQ==QQ==')", "AA");
 
-    // Without padding
-    evalEquals("Base64_Decode('QXBhY2hlIEhvcA')", "Apache Hop");
-
-    // The unused bits of the last symbol must be zero, 'QR==' is not 'A'
+    // The unused bits of the last symbol are not checked
     evalEquals("Base64_Decode('QQ==')", "A");
-    evalFails("Base64_Decode('QR==')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
-    evalFails("Base64_Decode('QUJ=')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    evalEquals("Base64_Decode('QR==')", "A");
+    evalEquals("Base64_Decode('QUJ=')", "AB");
 
-    // Truncated value
+    // Missing padding or truncated value
+    evalFails("Base64_Decode('QXBhY2hlIEhvcA')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
     evalFails("Base64_Decode('QXBhY2hlIEhvcA=')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
     assertDecodingMessage(
         "Base64_Decode('QXBhY')", ErrorCode.TRUNCATED_DECODING_SEQUENCE.message("base64"));

@@ -57,9 +57,12 @@ public class Base32DecodeFunction extends Function {
     if (value == null) return null;
 
     // The decoder silently ignores the characters outside the alphabet and the characters after
-    // the padding, reject them
+    // the padding, reject them. The strict decoder also rejects the lowercase letters, so they are
+    // converted to uppercase in a copy, the value may be the array of a literal.
+    byte[] symbols = new byte[value.length];
     int padding = -1;
     for (int i = 0; i < value.length; i++) {
+      symbols[i] = (value[i] >= 'a' && value[i] <= 'z') ? (byte) (value[i] - 'a' + 'A') : value[i];
       if (value[i] == '=') {
         if (padding < 0) padding = i;
       } else if (padding >= 0 || !BASE32.isInAlphabet(value[i])) {
@@ -73,7 +76,7 @@ public class Base32DecodeFunction extends Function {
     }
 
     try {
-      return Characters.decodeUtf8(BASE32.decode(value), "base32");
+      return Characters.decodeUtf8(BASE32.decode(symbols), "base32");
     } catch (IllegalArgumentException e) {
       // The symbols are valid, so the last ones do not form whole bytes
       throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base32");

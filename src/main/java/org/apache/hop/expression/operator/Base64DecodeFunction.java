@@ -17,8 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import java.nio.charset.StandardCharsets;
-import org.apache.commons.codec.CodecPolicy;
-import org.apache.commons.codec.binary.Base64;
+import java.util.Arrays;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -34,13 +33,14 @@ import org.jspecify.annotations.Nullable;
 /**
  * The function decodes the input (string or binary) using Base64 encoding.
  *
+ * <p>The whitespace characters are ignored and the padding is required. The symbols after the
+ * padding and the unused bits of the last symbol are not checked.
+ *
  * @see Base64EncodeFunction
  */
 @FunctionPlugin
 @NullMarked
 public class Base64DecodeFunction extends Function {
-  // Strict decoding, rejects an encoded value whose last character is not possible
-  private static final Base64 BASE64 = Base64.builder().setDecodingPolicy(CodecPolicy.STRICT).get();
 
   public Base64DecodeFunction() {
     super(
@@ -56,45 +56,74 @@ public class Base64DecodeFunction extends Function {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) return null;
 
-    // The decoder silently ignores the characters outside the alphabet and the characters after
-    // the padding, reject them
-    int padding = -1;
-    for (int i = 0; i < value.length; i++) {
-      if (value[i] == '=') {
-        if (padding < 0) padding = i;
-      } else if (padding >= 0 || !isBase64(value[i])) {
-        // The padding is only allowed at the end, so report it rather than the next character
-        int index = (padding >= 0) ? padding : i;
-        // The previous bytes are ASCII, so the byte index is also the index of the character
-        String symbol =
-            Character.toString(new String(value, StandardCharsets.UTF_8).codePointAt(index));
-        throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, symbol, "base64");
-      }
-    }
-
-    // The decoder does not check the number of padding symbols, a padded value is made of whole
-    // blocks of 4 symbols
-    if (padding >= 0 && value.length % 4 != 0) {
-      throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base64");
-    }
-
-    try {
-      return Characters.decodeUtf8(BASE64.decode(value), "base64");
-    } catch (IllegalArgumentException e) {
-      // The symbols are valid, so the last ones do not form whole bytes
-      throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base64");
-    }
+    return Characters.decodeUtf8(decode(value), "base64");
   }
 
   /**
-   * Returns whether the byte is a symbol of the standard base64 alphabet. The decoder also accepts
-   * the URL-safe symbols '-' and '_', reject them like {@code Base64.isBase64(byte)} does not.
+   * Decodes a base64 value, by blocks of 4 symbols that give 3 bytes, or less with the padding.
+   * Also used by {@code TO_BINARY} with the format BASE64.
+   *
+   * @param value the symbols to decode
+   * @return the decoded bytes
+   * @throws ExpressionException if a symbol is invalid or the last block is not complete
    */
-  private static boolean isBase64(byte b) {
-    return (b >= 'A' && b <= 'Z')
-        || (b >= 'a' && b <= 'z')
-        || (b >= '0' && b <= '9')
-        || b == '+'
-        || b == '/';
+  static byte[] decode(byte[] value) {
+    byte[] result = new byte[value.length / 4 * 3];
+    int length = 0;
+    int buffer = 0;
+    // The position of the symbol in its block
+    int position = 0;
+    // The number of decoded bytes of the last block, set by the first padding symbol
+    int end = 0;
+
+    for (int i = 0; i < value.length; i++) {
+      byte symbol = value[i];
+      if (symbol == ' ' || symbol == '\t' || symbol == '\n' || symbol == '\r') continue;
+
+      int bits;
+      if (symbol == '=') {
+        // The padding is only allowed at the 3rd or 4th position of a block
+        if (end == 0) {
+          if (position == 2) end = 1;
+          else if (position == 3) end = 2;
+          else throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, "=", "base64");
+        }
+        bits = 0;
+      } else {
+        bits = valueOf(symbol);
+        if (bits < 0) {
+          // The previous bytes are ASCII, so the byte index is also the index of the character
+          String character =
+              Character.toString(new String(value, StandardCharsets.UTF_8).codePointAt(i));
+          throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, character, "base64");
+        }
+      }
+
+      buffer = (buffer << 6) + bits;
+      if (++position == 4) {
+        result[length++] = (byte) (buffer >> 16);
+        if (end == 0 || end > 1) result[length++] = (byte) (buffer >> 8);
+        if (end == 0 || end > 2) result[length++] = (byte) buffer;
+        buffer = 0;
+        position = 0;
+      }
+    }
+
+    // The value is missing padding or is truncated
+    if (position != 0) {
+      throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, "base64");
+    }
+
+    return Arrays.copyOf(result, length);
+  }
+
+  /** Returns the 6 bits of a symbol of the standard base64 alphabet, or -1 if it is invalid. */
+  private static int valueOf(byte symbol) {
+    if (symbol >= 'A' && symbol <= 'Z') return symbol - 'A';
+    if (symbol >= 'a' && symbol <= 'z') return symbol - 'a' + 26;
+    if (symbol >= '0' && symbol <= '9') return symbol - '0' + 52;
+    if (symbol == '+') return 62;
+    if (symbol == '/') return 63;
+    return -1;
   }
 }

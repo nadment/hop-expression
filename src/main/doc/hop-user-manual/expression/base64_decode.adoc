@@ -36,10 +36,11 @@ String
 
 * The decoded bytes are interpreted as a string in UTF-8.
 * Raises an error if the decoded bytes are not a valid UTF-8 string.
+* The whitespace characters (space, tab, line feed and carriage return) are ignored.
 * Raises an error naming the invalid symbol if the argument contains a character that is not in the Base64 alphabet.
-* Raises an error naming the padding symbol `=` if it is followed by other characters.
-* Raises an error if the argument is truncated, that is its last symbols do not form whole bytes.
-* Raises an error if the unused bits of the last symbol are not zero.
+* Raises an error naming the padding symbol `=` if it is not the 3rd or 4th symbol of a block of 4 symbols.
+* Raises an error if the padding is missing or the argument is truncated, that is its last symbols do not form a whole block of 4 symbols.
+* The symbols after the padding and the unused bits of the last symbol are not checked.
 * Returns NULL if the argument is NULL.
 
 == Examples
