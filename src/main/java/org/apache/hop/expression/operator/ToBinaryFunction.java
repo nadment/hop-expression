@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Locale;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -69,7 +68,7 @@ public class ToBinaryFunction extends Function {
           return new Call(StringHexToBinaryFunction.INSTANCE, call.getOperands());
         }
         case "BASE64" -> {
-          return new Call(StringBase6ToBinaryFunction.INSTANCE, call.getOperands());
+          return new Call(StringBase64ToBinaryFunction.INSTANCE, call.getOperands());
         }
         case "UTF8", "UTF-8" -> {
           return new Call(StringUtf8ToBinaryFunction.INSTANCE, call.getOperands());
@@ -112,8 +111,8 @@ public class ToBinaryFunction extends Function {
     }
   }
 
-  public static final class StringBase6ToBinaryFunction extends ToBinaryFunction {
-    public static final StringBase6ToBinaryFunction INSTANCE = new StringBase6ToBinaryFunction();
+  public static final class StringBase64ToBinaryFunction extends ToBinaryFunction {
+    public static final StringBase64ToBinaryFunction INSTANCE = new StringBase64ToBinaryFunction();
 
     @Override
     public @Nullable Object eval(final IExpression[] operands) {
@@ -122,9 +121,10 @@ public class ToBinaryFunction extends Function {
         return null;
       }
 
+      // Same decoding as BASE64_DECODE
       try {
-        return Base64.getDecoder().decode(value);
-      } catch (Exception e) {
+        return Base64DecodeFunction.decode(value.getBytes(StandardCharsets.UTF_8));
+      } catch (ExpressionException e) {
         throw new ExpressionException(ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT, value, "BASE64");
       }
     }

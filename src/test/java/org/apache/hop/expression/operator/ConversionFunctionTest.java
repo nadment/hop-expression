@@ -93,6 +93,14 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("TO_BINARY('Apache Hop',NULL_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     evalFails("TO_BINARY('Z4','HEX')", ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT);
+
+    // The BASE64 format is decoded like BASE64_DECODE
+    evalEquals("TO_BINARY('QXBh Y2hl\nIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    evalEquals("TO_BINARY('QR==','BASE64')", new byte[] {0x41});
+    evalEquals("TO_BINARY('/w==','BASE64')", new byte[] {(byte) 0xFF});
+    evalFails("TO_BINARY('QXBhY2hlIEhvcA','BASE64')", ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT);
+    evalFails("TO_BINARY('QXBh&Y2hlIEhvcA==','BASE64')", ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT);
+    evalFails("TO_BINARY('Q===','BASE64')", ErrorCode.UNPARSABLE_BINARY_WITH_FORMAT);
   }
 
   @Test
@@ -1311,6 +1319,7 @@ class ConversionFunctionTest extends ExpressionTest {
 
     evalEquals("TRY_TO_BINARY(BASE64_ENCODE('Apache Hop'),'BASE64')", "Apache Hop".getBytes());
     evalEquals("TRY_TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    evalNull("TRY_TO_BINARY('QXBhY2hlIEhvcA','BASE64')");
 
     evalEquals(
         "TRY_TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
