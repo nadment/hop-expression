@@ -78,11 +78,13 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
+import org.apache.hop.ui.core.dialog.FindReplaceDialog;
 import org.apache.hop.ui.core.dialog.MessageBox;
 import org.apache.hop.ui.core.gui.GuiMenuWidgets;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
 import org.apache.hop.ui.core.gui.IToolbarContainer;
+import org.apache.hop.ui.core.widget.IFindReplaceTarget;
 import org.apache.hop.ui.hopgui.ToolbarFacade;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -142,8 +144,7 @@ import org.jspecify.annotations.Nullable;
  */
 @GuiPlugin
 @NullMarked
-public class ExpressionEditor extends Composite
-    implements /*IFindReplaceTarget,*/ IDocumentListener {
+public class ExpressionEditor extends Composite implements IFindReplaceTarget, IDocumentListener {
   public static final String ID_TOOLBAR = "ExpressionEditor-Toolbar";
   public static final String ID_TOOLBAR_UNDO = "ExpressionEditor-Toolbar-10000-undo";
   public static final String ID_TOOLBAR_REDO = "ExpressionEditor-Toolbar-10010-redo";
@@ -804,9 +805,8 @@ public class ExpressionEditor extends Composite
               ID_CONTEXT_MENU_COPY, wViewer.canDoOperation(ITextOperationTarget.COPY));
           contextMenuWidgets.enableMenuItem(
               ID_CONTEXT_MENU_PASTE, wViewer.canDoOperation(ITextOperationTarget.PASTE));
-          contextMenuWidgets.enableMenuItem(ID_CONTEXT_MENU_FIND, false);
-          contextMenuWidgets.enableMenuItem(
-              ID_CONTEXT_MENU_FIND_REPLACE, false); // wViewer.isEditable());
+          contextMenuWidgets.enableMenuItem(ID_CONTEXT_MENU_FIND, true);
+          contextMenuWidgets.enableMenuItem(ID_CONTEXT_MENU_FIND_REPLACE, wViewer.isEditable());
         });
   }
 
@@ -815,6 +815,7 @@ public class ExpressionEditor extends Composite
    *
    * @return true if the expression is editable
    */
+  @Override
   public boolean isEditable() {
     return wViewer.isEditable();
   }
@@ -824,29 +825,41 @@ public class ExpressionEditor extends Composite
    *
    * @return the expression
    */
+  @Override
   public String getText() {
     return wViewer.getDocument().get();
   }
 
   /**
-   * Loads the source of the expression, which can't be undone.
+   * Sets the source of the expression.
+   *
+   * <p>On an empty editor, the expression is loaded and can't be undone. Otherwise the source is
+   * replaced as a single change that can be undone, like a "Replace all".
    *
    * @param expression the expression, ignored if null
    */
+  @Override
   public void setText(@Nullable String expression) {
     if (expression == null) return;
 
-    wViewer.getDocument().set(expression);
+    IDocument doc = wViewer.getDocument();
+    // An empty document means the expression is loaded, not edited
+    boolean isLoading = doc.getLength() == 0;
+    doc.set(expression);
 
-    // The errors of the loaded expression are shown at once, without the delay of the typing
+    // The errors of the expression are shown at once, without the delay of the typing
     getDisplay().timerExec(-1, delayedValidation);
     validate();
 
-    // The loaded expression must not be undone
+    // doc.set is an undoable insert from the empty document. The loaded expression is the floor.
     IUndoManager undoManager = wViewer.getUndoManager();
-    if (undoManager != null) {
+    if (isLoading && undoManager != null) {
       undoManager.reset();
     }
+
+    wViewer.setSelectedRange(0, 0);
+    wViewer.invalidateTextPresentation();
+
     updateToolbar();
   }
 
@@ -855,6 +868,7 @@ public class ExpressionEditor extends Composite
    *
    * @return the selected text, empty if there is no selection
    */
+  @Override
   public String getSelectionText() {
     return wViewer.getTextWidget().getSelectionText();
   }
@@ -864,8 +878,31 @@ public class ExpressionEditor extends Composite
    *
    * @return the length of the selection
    */
+  @Override
   public int getSelectionCount() {
     return wViewer.getTextWidget().getSelectionCount();
+  }
+
+  /**
+   * Gets the start offset of the selection, whatever the side of the caret.
+   *
+   * @return the inclusive start offset of the selection
+   */
+  @Override
+  public int getSelectionStart() {
+    return wViewer.getTextWidget().getSelection().x;
+  }
+
+  /**
+   * Selects a range of the expression and reveals it.
+   *
+   * @param start the start offset (inclusive)
+   * @param end the end offset (exclusive)
+   */
+  @Override
+  public void setSelection(int start, int end) {
+    wViewer.setSelectedRange(start, end - start);
+    wViewer.revealRange(start, end - start);
   }
 
   /**
@@ -873,6 +910,7 @@ public class ExpressionEditor extends Composite
    *
    * @return the offset of the caret in the expression
    */
+  @Override
   public int getCaretPosition() {
     return wViewer.getTextWidget().getCaretOffset();
   }
@@ -882,17 +920,30 @@ public class ExpressionEditor extends Composite
    *
    * @param position the offset of the caret in the expression
    */
+  @Override
   public void setCaretPosition(int position) {
     wViewer.getTextWidget().setCaretOffset(position);
   }
 
   /**
-   * Replaces the selection with the text, the caret does not move.
+   * Replaces the selection with the text, as a single change that can be undone. The caret is moved
+   * after the inserted text.
    *
    * @param text the text to insert
    */
+  @Override
   public void insert(String text) {
-    wViewer.getTextWidget().insert(text);
+    Point range = wViewer.getSelectedRange();
+    IUndoManager undoManager = wViewer.getUndoManager();
+    if (undoManager != null) undoManager.beginCompoundChange();
+    try {
+      wViewer.getDocument().replace(range.x, range.y, text);
+      wViewer.setSelectedRange(range.x + text.length(), 0);
+    } catch (BadLocationException e) {
+      // The selection is outside the document, nothing to do
+    } finally {
+      if (undoManager != null) undoManager.endCompoundChange();
+    }
   }
 
   /**
@@ -902,10 +953,12 @@ public class ExpressionEditor extends Composite
    */
   @Override
   public boolean setFocus() {
-    return wViewer.getTextWidget().setFocus();
+    StyledText textWidget = wViewer.getTextWidget();
+    return textWidget != null && !textWidget.isDisposed() && textWidget.setFocus();
   }
 
   /** Enables the items of the toolbar that apply to the state of the text. */
+  @Override
   public void updateToolbar() {
     boolean canUndo = wViewer.canDoOperation(ITextOperationTarget.UNDO);
     boolean canRedo = wViewer.canDoOperation(ITextOperationTarget.REDO);
@@ -920,9 +973,8 @@ public class ExpressionEditor extends Composite
       toolbarWidgets.enableToolbarItem(ID_TOOLBAR_CUT, canCut);
       toolbarWidgets.enableToolbarItem(ID_TOOLBAR_COPY, canCopy);
       toolbarWidgets.enableToolbarItem(ID_TOOLBAR_PASTE, canPaste);
-      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND, false);
-      toolbarWidgets.enableToolbarItem(
-          ID_TOOLBAR_FIND_REPLACE, false); // TODO in 2.20 : wViewer.isEditable());
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND, true);
+      toolbarWidgets.enableToolbarItem(ID_TOOLBAR_FIND_REPLACE, wViewer.isEditable());
     }
   }
 
@@ -1155,7 +1207,7 @@ public class ExpressionEditor extends Composite
     wViewer.doOperation(ITextOperationTarget.REDO);
   }
 
-  /** Finds a text in the expression, not available yet. */
+  /** Finds a text in the expression. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_FIND,
@@ -1171,12 +1223,11 @@ public class ExpressionEditor extends Composite
       separator = true)
   @GuiKeyboardShortcut(control = true, key = 'f')
   @GuiOsxKeyboardShortcut(command = true, key = 'f')
-  public static void find() {
-    // TODO: only available in 2.20, for now button is disabled
-    // FindReplaceDialog.open(control.getShell(), this, false);
+  public void find() {
+    FindReplaceDialog.open(this.getShell(), this, false);
   }
 
-  /** Finds and replaces a text in the expression, not available yet. */
+  /** Finds and replaces a text in the expression. */
   @GuiToolbarElement(
       root = ID_TOOLBAR,
       id = ID_TOOLBAR_FIND_REPLACE,
@@ -1190,9 +1241,8 @@ public class ExpressionEditor extends Composite
       image = "ui/images/find-replace.svg")
   @GuiKeyboardShortcut(control = true, key = 'h')
   @GuiOsxKeyboardShortcut(command = true, key = 'h')
-  public static void findReplace() {
-    // TODO: only available in 2.20, for now button is disabled
-    // FindReplaceDialog.open(control.getShell(), this, true);
+  public void findReplace() {
+    FindReplaceDialog.open(this.getShell(), this, true);
   }
 
   /** Compiles the expression and shows its optimized form, or the error if it is invalid. */
@@ -1263,7 +1313,7 @@ public class ExpressionEditor extends Composite
     getDisplay()
         .asyncExec(
             () -> {
-              if (wTreeItemFields.isDisposed()) {
+              if (wTreeItemFields == null || wTreeItemFields.isDisposed()) {
                 return;
               }
 
