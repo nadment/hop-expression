@@ -414,6 +414,16 @@ class TrigonometryFunctionTest extends ExpressionTest {
     // A base between 0 and 1
     evalEquals("Log(0.5,4)", -2D);
 
+    // A constant base with a value of a field, the logarithm of the base is computed once
+    evalEquals("Log(40,FIELD_INTEGER)", 1D);
+    evalEquals("Log(2,FIELD_INTEGER/5)", 3D);
+    evalFails("Log(10,FIELD_NUMBER)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
+    // A base of a field is evaluated for each row
+    evalEquals("Log(FIELD_INTEGER,1600)", 2D);
+    evalFails("Log(FIELD_NUMBER,10)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Log(FIELD_INTEGER-39,10)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+
     // Null handling
     evalNull("Log(10,NULL_INTEGER)").returnType(NumberType.NUMBER);
     evalNull("Log(NULL_INTEGER,1)").returnType(NumberType.NUMBER);
