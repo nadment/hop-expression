@@ -17,9 +17,11 @@
 package org.apache.hop.expression;
 
 import java.io.Serial;
+import lombok.Getter;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+@Getter
 @NullMarked
 public class ParseExpressionException extends ExpressionException {
   @Serial private static final long serialVersionUID = 1L;
@@ -36,17 +38,9 @@ public class ParseExpressionException extends ExpressionException {
    * @param error an error message
    */
   public ParseExpressionException(int position, ErrorCode error, @Nullable Object... values) {
-    super(error, values);
+    // Keep the stack trace, a parse error is raised once, not for each row
+    super(true, error, values);
 
     this.position = position;
-  }
-
-  /**
-   * Returns the position where the error was found.
-   *
-   * @return the position where the error was found
-   */
-  public int getPosition() {
-    return position;
   }
 }
