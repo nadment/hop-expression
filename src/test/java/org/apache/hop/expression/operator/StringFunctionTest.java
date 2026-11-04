@@ -1207,6 +1207,16 @@ public class StringFunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Translate(NULL_STRING,'eo','EO')");
     evalNull("Translate('Hello, world!',NULL_STRING,'EO')");
+
+    // Constant characters with a value of a field, the characters are converted once
+    evalEquals("Translate(FIELD_STRING,'ES','es')", "TesT");
+    evalEquals("Translate(FIELD_STRING,'TE','x')", "xSx");
+    evalEquals("Translate(FIELD_STRING,'T',NULL)", "ES");
+    evalNull("Translate(FIELD_STRING,NULL,'x')");
+
+    // Characters of a field are converted for each row
+    evalEquals("Translate(FIELD_STRING,NVL(NULL_STRING,'ES'),NVL(NULL_STRING,'es'))", "TesT");
+    evalEquals("Translate(FIELD_STRING,NVL(NULL_STRING,'T'),NULL_STRING)", "ES");
   }
 
   @Test

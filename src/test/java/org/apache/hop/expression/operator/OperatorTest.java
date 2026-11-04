@@ -2879,7 +2879,6 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("'abc' SIMILAR TO '_B_'");
       evalFalse("'abc' SIMILAR TO '_a_'");
 
-      // evalTrue("'Erdbeere' SIMILAR TO 'Erd[a[:SPACE:]b]eere'");
       evalTrue("'12345TEST' SIMILAR TO '123[:ALNUM:]*'");
       evalTrue("'TEST' SIMILAR TO '[:UPPER:]*'");
       evalFalse("'Test' SIMILAR TO '[:UPPER:]*'");
