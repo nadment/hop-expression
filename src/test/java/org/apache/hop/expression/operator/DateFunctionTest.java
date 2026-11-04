@@ -110,6 +110,25 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("MonthName(DATE '2019-01-01')", "January").returnType(StringType.STRING_NOT_NULL);
     evalEquals("MonthName(DATE '2019-12-28')", "December");
 
+    // Every month
+    String[] months = {
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    };
+    for (int i = 0; i < months.length; i++) {
+      evalEquals("MonthName(DATE '2024-%02d-15')".formatted(i + 1), months[i]);
+    }
+
     // Null handling
     evalNull("MonthName(NULL_DATE)");
 
@@ -123,6 +142,12 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("DayName(TIMESTAMP '2019-01-01 15:28:59')", "Tuesday");
     evalEquals("DayName(DATE '2019-01-01')", "Tuesday").returnType(StringType.STRING_NOT_NULL);
     evalEquals("DayName(DATE '2019-12-28')", "Saturday");
+
+    // Every weekday, 2024-01-01 is a Monday
+    String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    for (int i = 0; i < days.length; i++) {
+      evalEquals("DayName(DATE '2024-01-%02d')".formatted(i + 1), days[i]);
+    }
 
     // Null handling
     evalNull("DayName(NULL_DATE)");

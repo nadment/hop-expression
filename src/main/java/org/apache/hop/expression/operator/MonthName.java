@@ -34,6 +34,18 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class MonthName extends Function {
 
+  /**
+   * The names of the months indexed by ordinal, computed once: {@code getDisplayName} builds a
+   * formatter on each call.
+   */
+  private static final String[] NAMES = new String[Month.values().length];
+
+  static {
+    for (Month month : Month.values()) {
+      NAMES[month.ordinal()] = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    }
+  }
+
   public MonthName() {
     super(
         "MONTHNAME",
@@ -48,7 +60,6 @@ public class MonthName extends Function {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
 
-    Month month = value.getMonth();
-    return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    return NAMES[value.getMonth().ordinal()];
   }
 }

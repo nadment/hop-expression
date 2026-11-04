@@ -34,6 +34,18 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class DayNameFunction extends Function {
 
+  /**
+   * The names of the weekdays indexed by ordinal, computed once: {@code getDisplayName} builds a
+   * formatter on each call.
+   */
+  private static final String[] NAMES = new String[DayOfWeek.values().length];
+
+  static {
+    for (DayOfWeek weekday : DayOfWeek.values()) {
+      NAMES[weekday.ordinal()] = weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    }
+  }
+
   public DayNameFunction() {
     super(
         "DAYNAME",
@@ -47,7 +59,6 @@ public class DayNameFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
-    DayOfWeek weekday = value.getDayOfWeek();
-    return weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    return NAMES[value.getDayOfWeek().ordinal()];
   }
 }
