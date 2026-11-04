@@ -2688,6 +2688,9 @@ public class OperatorTest extends ExpressionTest {
     void testError() {
       evalFails("[1,3,5][0]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
       evalFails("[1,3,5][9]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
+      // An index out of the int range does not wrap to an index of the array
+      evalFails("[1,3,5][4294967297]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
+      evalFails("[1,3,5][-4294967295]", ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
     }
 
     @Test

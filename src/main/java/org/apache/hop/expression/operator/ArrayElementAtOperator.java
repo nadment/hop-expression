@@ -89,7 +89,8 @@ public class ArrayElementAtOperator extends Operator {
     Long index = operands[1].getValue(Long.class);
     if (index == null) return null;
 
-    int i = index.intValue();
+    // Compute on long values, the conversion to int would wrap a value out of the int range
+    long i = index;
 
     if (i < 0) i = array.size() + i + 1;
 
@@ -97,7 +98,7 @@ public class ArrayElementAtOperator extends Operator {
       throw new ExpressionException(ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS, index);
     }
 
-    return array.get(i - 1).getValue();
+    return array.get((int) i - 1).getValue();
   }
 
   @Override
