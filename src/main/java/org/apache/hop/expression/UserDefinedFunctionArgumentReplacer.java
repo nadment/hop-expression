@@ -28,16 +28,16 @@ import org.jspecify.annotations.NullMarked;
  * each identifier knows its position.
  */
 @NullMarked
-public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpression> {
+final class UserDefinedFunctionArgumentReplacer implements IExpressionVisitor<IExpression> {
 
   private final IExpression[] operands;
 
   /**
-   * Creates a resolver for a call.
+   * Creates a replacer for a call.
    *
    * @param operands the operands of the call, in the order of the arguments of the function
    */
-  public UserDefinedFunctionResolver(IExpression[] operands) {
+  UserDefinedFunctionArgumentReplacer(IExpression[] operands) {
     this.operands = operands;
   }
 

@@ -100,7 +100,7 @@ public class UserDefinedFunction extends Function {
       expression.validate(ctx);
 
       // Replace function arguments with real operands
-      expression = expression.accept(new UserDefinedFunctionResolver(call.getOperands()));
+      expression = expression.accept(new UserDefinedFunctionArgumentReplacer(call.getOperands()));
       expression.validate(context);
 
       // Compile
