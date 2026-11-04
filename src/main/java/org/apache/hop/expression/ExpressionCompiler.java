@@ -49,7 +49,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     } while (hasChanged);
 
     // Evaluate the common sub-expressions once per state of the context
-    return CommonSubexpressionEliminator.eliminate(context, expression);
+    return CommonExpressionEliminator.eliminate(context, expression);
   }
 
   @Override

@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.expression.CommonSubexpressionEliminator;
+import org.apache.hop.expression.CommonExpressionEliminator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -125,7 +125,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       for (int i = 0; i < expressions.length; i++) {
         expressions[i] = data.targets.get(i).getExpression();
       }
-      CommonSubexpressionEliminator.eliminate(data.context, expressions, new BitSet());
+      CommonExpressionEliminator.eliminate(data.context, expressions, new BitSet());
       for (int i = 0; i < expressions.length; i++) {
         RouteTarget target = data.targets.get(i);
         data.targets.set(i, new RouteTarget(target.getRoute(), expressions[i], target.getRowSet()));

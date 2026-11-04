@@ -28,7 +28,7 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.CommonSubexpressionEliminator;
+import org.apache.hop.expression.CommonExpressionEliminator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
@@ -141,7 +141,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
       // Evaluate once per row the sub-expressions common to several fields, the input row read by
       // the expressions is not modified while they are evaluated
-      CommonSubexpressionEliminator.eliminate(data.context, data.expressions, new BitSet());
+      CommonExpressionEliminator.eliminate(data.context, data.expressions, new BitSet());
     }
 
     String name = null;

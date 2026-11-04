@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
  * in the expression, an expression containing a shared sub-expression must not be evaluated by
  * several threads.
  *
- * @see CommonSubexpressionEliminator
+ * @see CommonExpressionEliminator
  */
 @NullMarked
 public final class SharedExpression implements IExpression {

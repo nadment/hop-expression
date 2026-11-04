@@ -36,11 +36,11 @@ import org.jspecify.annotations.Nullable;
  *
  * <pre>{@code
  * IExpression[] expressions = ...; // compiled with the same context
- * CommonSubexpressionEliminator.eliminate(context, expressions, new BitSet());
+ * CommonExpressionEliminator.eliminate(context, expressions, new BitSet());
  * }</pre>
  */
 @NullMarked
-public final class CommonSubexpressionEliminator {
+public final class CommonExpressionEliminator {
 
   /** The equal calls found in the expressions. */
   private static final class Group {
@@ -60,7 +60,7 @@ public final class CommonSubexpressionEliminator {
    */
   private final Map<IExpression, Group> callGroups = new IdentityHashMap<>();
 
-  private CommonSubexpressionEliminator(IExpressionContext context, BitSet modifiedOrdinals) {
+  private CommonExpressionEliminator(IExpressionContext context, BitSet modifiedOrdinals) {
     this.context = context;
     this.modifiedOrdinals = modifiedOrdinals;
   }
@@ -97,8 +97,8 @@ public final class CommonSubexpressionEliminator {
       }
     }
 
-    CommonSubexpressionEliminator eliminator =
-        new CommonSubexpressionEliminator(context, modifiedOrdinals);
+    CommonExpressionEliminator eliminator =
+        new CommonExpressionEliminator(context, modifiedOrdinals);
 
     // The calls already shared in an expression can be shared with the other expressions
     for (int i = 0; i < expressions.length; i++) {
@@ -146,7 +146,7 @@ public final class CommonSubexpressionEliminator {
     if (expression instanceof SharedExpression shared) {
       return unshare(shared.getExpression());
     }
-    return replaceChildren(expression, CommonSubexpressionEliminator::unshare);
+    return replaceChildren(expression, CommonExpressionEliminator::unshare);
   }
 
   /**

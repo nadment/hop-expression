@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.util.BitSet;
 import org.junit.jupiter.api.Test;
 
-class CommonSubexpressionEliminatorTest extends ExpressionTest {
+class CommonExpressionEliminatorTest extends ExpressionTest {
 
   /** The index of FIELD_STRING in the row. */
   private static final int FIELD_STRING = 0;
@@ -97,7 +97,7 @@ class CommonSubexpressionEliminatorTest extends ExpressionTest {
       IExpression.of(context, "UPPER(FIELD_STRING)||UPPER(FIELD_STRING)")
     };
 
-    CommonSubexpressionEliminator.eliminate(context, expressions, new BitSet());
+    CommonExpressionEliminator.eliminate(context, expressions, new BitSet());
 
     SharedExpression shared = assertInstanceOf(SharedExpression.class, expressions[0]);
     Call call = (Call) expressions[2];
@@ -117,7 +117,7 @@ class CommonSubexpressionEliminatorTest extends ExpressionTest {
     BitSet modifiedOrdinals = new BitSet();
     modifiedOrdinals.set(FIELD_STRING);
 
-    CommonSubexpressionEliminator.eliminate(context, expressions, modifiedOrdinals);
+    CommonExpressionEliminator.eliminate(context, expressions, modifiedOrdinals);
 
     // The calls shared when the second expression was compiled are no longer shared
     assertFalse(expressions[0] instanceof SharedExpression);
