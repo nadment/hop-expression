@@ -70,7 +70,12 @@ public class SubstringFunction extends Function {
       if (start > length) {
         return "";
       }
-      return string.substring(Characters.offset(string, Math.max(start, 1) - 1));
+      start = Math.max(start, 1);
+      // Without surrogate pair, the position in characters is the index in the string
+      if (length == string.length()) {
+        return string.substring((int) start - 1);
+      }
+      return string.substring(Characters.offset(string, start - 1));
     }
 
     Long count = operands[2].getValue(Long.class);
@@ -86,7 +91,13 @@ public class SubstringFunction extends Function {
       return "";
     }
 
-    return string.substring(
-        Characters.offset(string, start - 1), Characters.offset(string, end - 1));
+    // Without surrogate pair, the positions in characters are the indexes in the string
+    if (length == string.length()) {
+      return string.substring((int) start - 1, (int) end - 1);
+    }
+
+    // The end is searched from the start, not again from the beginning of the string
+    int from = Characters.offset(string, start - 1);
+    return string.substring(from, string.offsetByCodePoints(from, (int) (end - start)));
   }
 }

@@ -530,6 +530,19 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Substring('TEST',-2,9223372036854775807)", "ST");
     evalEquals("Substring('TEST',-10,9223372036854775807)", "TEST");
     evalEquals("Substring('TEST',2,-9223372036854775808)", "");
+
+    // A character outside the Basic Multilingual Plane, stored as a surrogate pair, is one
+    // character
+    evalEquals("Substring('😀ab😀cd',2)", "ab😀cd");
+    evalEquals("Substring('😀ab😀cd',4)", "😀cd");
+    evalEquals("Substring('😀ab😀cd',-2)", "cd");
+    evalEquals("Substring('😀ab😀cd',1,1)", "😀");
+    evalEquals("Substring('😀ab😀cd',2,3)", "ab😀");
+    evalEquals("Substring('😀ab😀cd',4,10)", "😀cd");
+    evalEquals("Substring('😀ab😀cd',-3,2)", "😀c");
+    // Characters of the Basic Multilingual Plane which are not Latin-1
+    evalEquals("Substring('€uro€',2,3)", "uro");
+    evalEquals("Substring('€uro€',-1)", "€");
   }
 
   @Test
