@@ -318,18 +318,22 @@ public class BoolOrOperator extends BinaryOperator {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
+    // Short-circuit: TRUE OR x is TRUE whatever x, so the right operand is not evaluated
     Boolean left = operands[0].getValue(Boolean.class);
+    if (Boolean.TRUE.equals(left)) {
+      return Boolean.TRUE;
+    }
     Boolean right = operands[1].getValue(Boolean.class);
+    if (Boolean.TRUE.equals(right)) {
+      return Boolean.TRUE;
+    }
 
-    if (left == null) {
-      if (right == null || !right) return null;
-      return Boolean.TRUE;
+    // Neither operand is TRUE, the result is NULL if one of them is NULL
+    if (left == null || right == null) {
+      return null;
     }
-    if (right == null) {
-      if (!left) return null;
-      return Boolean.TRUE;
-    }
-    return Boolean.logicalOr(left, right);
+
+    return Boolean.FALSE;
   }
 
   @Override

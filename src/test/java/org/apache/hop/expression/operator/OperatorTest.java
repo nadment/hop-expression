@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.IExpression;
@@ -1045,6 +1046,14 @@ public class OperatorTest extends ExpressionTest {
           BoolOrOperator.INSTANCE.eval(new IExpression[] {Literal.NULL_BOOLEAN, Literal.TRUE}));
       assertNull(
           BoolOrOperator.INSTANCE.eval(new IExpression[] {Literal.NULL_BOOLEAN, Literal.FALSE}));
+    }
+
+    @Test
+    void testShortCircuit() throws Exception {
+      // The right operand is not evaluated when the left operand is TRUE
+      IExpression error = new Call(new ErrorFunction(), Literal.of("Evaluated"));
+      assertEquals(
+          Boolean.TRUE, BoolOrOperator.INSTANCE.eval(new IExpression[] {Literal.TRUE, error}));
     }
 
     @Test
