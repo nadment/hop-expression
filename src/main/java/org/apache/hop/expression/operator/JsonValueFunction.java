@@ -49,6 +49,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.util.JsonConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -67,13 +68,21 @@ public class JsonValueFunction extends Function {
   private static final Set<TypeName> SUPPORTED_TYPES =
       Set.of(TypeName.STRING, TypeName.BOOLEAN, TypeName.INTEGER, TypeName.NUMBER, TypeName.BINARY);
 
+  /** The JSON path compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable JsonPath compiledPath;
+
   public JsonValueFunction() {
+    this(null);
+  }
+
+  private JsonValueFunction(@Nullable JsonPath compiledPath) {
     super(
         "JSON_VALUE",
         ReturnTypes.JSON_VALUE,
         OperandTypes.JSON_VALUE,
         OperatorCategory.JSON,
         "/docs/hop-user-manual/expression/json_value.html");
+    this.compiledPath = compiledPath;
   }
 
   @Override
@@ -122,6 +131,13 @@ public class JsonValueFunction extends Function {
       throw new ExpressionException(ErrorCode.UNEXPECTED_DATA_TYPE, type, getName());
     }
 
+    if (compiledPath == null) {
+      JsonPath path = JsonConversion.compileConstantPath(call, 1);
+      if (path != null) {
+        return new Call(new JsonValueFunction(path), call.getOperands());
+      }
+    }
+
     return call;
   }
 
@@ -136,7 +152,7 @@ public class JsonValueFunction extends Function {
 
     Object value = null;
     try {
-      JsonPath jsonPath = JsonPath.compile(path);
+      JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
       value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
 
       // A JsonPath function returns a Java value, convert it to a JSON node to apply the

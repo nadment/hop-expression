@@ -99,6 +99,12 @@ class JsonFunctionTest extends ExpressionTest {
     evalFails("Json_Value(FIELD_INTEGER,'$')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Json_Value(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
     evalFails("Json_Value(FIELD_JSON,'$.notexist' RETURNING INET)", ErrorCode.UNEXPECTED_DATA_TYPE);
+
+    // A path which is not constant is compiled at evaluation
+    evalEquals(
+        "Json_Value(FIELD_JSON, NVL(NULL_STRING,'$.store.book[0].title'))",
+        "Sayings of the Century");
+    evalFails("Json_Value(FIELD_JSON,NVL(NULL_STRING,'$$.invalid'))", ErrorCode.INVALID_JSON_PATH);
   }
 
   @Test
@@ -165,6 +171,12 @@ class JsonFunctionTest extends ExpressionTest {
     evalFails(
         "Json_Query(JSON '{\"name\":\"Smith\", \"age\":29}','$$.invalid')",
         ErrorCode.INVALID_JSON_PATH);
+
+    // A path which is not constant is compiled at evaluation
+    evalEquals(
+        "Json_Query(FIELD_JSON, NVL(NULL_STRING,'$.store.book[2].title'))",
+        JsonConversion.convert("\"Moby Dick\""));
+    evalFails("Json_Query(FIELD_JSON,NVL(NULL_STRING,'$$.invalid'))", ErrorCode.INVALID_JSON_PATH);
   }
 
   @Test
@@ -254,6 +266,13 @@ class JsonFunctionTest extends ExpressionTest {
     evalFails(
         "Json_Keys(JSON '{\"name\":\"Smith\", \"age\":29}','$$.invalid')",
         ErrorCode.INVALID_JSON_PATH);
+
+    // A path which is not constant is compiled at evaluation
+    evalEquals(
+        "Json_Keys(JSON '{\"a\": 1, \"b\": {\"c\": 30}}',NVL(NULL_STRING,'$.b'))",
+        new Array(ArrayType.of(StringType.STRING), Literal.of("c")));
+    evalFails(
+        "Json_Keys(JSON '{\"a\": 1}',NVL(NULL_STRING,'$$.invalid'))", ErrorCode.INVALID_JSON_PATH);
   }
 
   @Test

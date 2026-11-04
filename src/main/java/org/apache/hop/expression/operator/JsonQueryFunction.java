@@ -25,14 +25,17 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.JsonConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -53,7 +56,14 @@ public class JsonQueryFunction extends Function {
           .jsonProvider(new JacksonJsonNodeJsonProvider())
           .build();
 
+  /** The JSON path compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable JsonPath compiledPath;
+
   public JsonQueryFunction() {
+    this(null);
+  }
+
+  private JsonQueryFunction(@Nullable JsonPath compiledPath) {
     super(
         "JSON_QUERY",
         ReturnTypes.JSON_NULLABLE,
@@ -63,6 +73,18 @@ public class JsonQueryFunction extends Function {
             .or(OperandTypes.EXACT_STRING_STRING),
         OperatorCategory.JSON,
         "/docs/hop-user-manual/expression/json_query.html");
+    this.compiledPath = compiledPath;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPath == null) {
+      JsonPath path = JsonConversion.compileConstantPath(call, 1);
+      if (path != null) {
+        return new Call(new JsonQueryFunction(path), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -76,7 +98,7 @@ public class JsonQueryFunction extends Function {
     if (path == null) return null;
 
     try {
-      JsonPath jsonPath = JsonPath.compile(path);
+      JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
       return jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
     } catch (PathNotFoundException e) {
       // Returns NULL if the path does not locate an object

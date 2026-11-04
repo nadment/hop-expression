@@ -22,8 +22,11 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.jayway.jsonpath.JsonPath;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -60,5 +63,35 @@ public final class JsonConversion {
       // Fall through to the conversion error
     }
     throw new ExpressionException(ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.JSON, str);
+  }
+
+  /**
+   * Compiles the JSON path of a call ahead of evaluation when it is constant, so it is not compiled
+   * again for each row. A compiled {@link JsonPath} is immutable and can be shared between threads.
+   *
+   * <p>A null or invalid path is not compiled, it is handled at evaluation which raises the error.
+   *
+   * @param call the call of the JSON function
+   * @param index the index of the path operand
+   * @return the compiled path, or {@code null} if it must be compiled at evaluation
+   */
+  public static @Nullable JsonPath compileConstantPath(final Call call, int index) {
+    if (call.getOperandCount() <= index) {
+      return null;
+    }
+    IExpression operand = call.getOperand(index);
+    if (!operand.isConstant()) {
+      return null;
+    }
+
+    try {
+      String path = operand.getValue(String.class);
+      if (path == null) {
+        return null;
+      }
+      return JsonPath.compile(path);
+    } catch (RuntimeException e) {
+      return null;
+    }
   }
 }

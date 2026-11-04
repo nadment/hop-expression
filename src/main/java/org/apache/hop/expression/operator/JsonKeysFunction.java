@@ -29,17 +29,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import org.apache.hop.expression.Array;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.util.JsonConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -60,7 +63,14 @@ public class JsonKeysFunction extends Function {
           .jsonProvider(new JacksonJsonNodeJsonProvider())
           .build();
 
+  /** The JSON path compiled ahead of evaluation when it is constant, otherwise {@code null}. */
+  private final @Nullable JsonPath compiledPath;
+
   public JsonKeysFunction() {
+    this(null);
+  }
+
+  private JsonKeysFunction(@Nullable JsonPath compiledPath) {
     super(
         "JSON_KEYS",
         ReturnTypes.ARRAY_OF_STRING,
@@ -70,6 +80,18 @@ public class JsonKeysFunction extends Function {
             .or(OperandTypes.EXACT_STRING_STRING),
         OperatorCategory.JSON,
         "/docs/hop-user-manual/expression/json_keys.html");
+    this.compiledPath = compiledPath;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    if (compiledPath == null) {
+      JsonPath path = JsonConversion.compileConstantPath(call, 1);
+      if (path != null) {
+        return new Call(new JsonKeysFunction(path), call.getOperands());
+      }
+    }
+    return call;
   }
 
   @Override
@@ -81,7 +103,7 @@ public class JsonKeysFunction extends Function {
       String path = operands[1].getValue(String.class);
       if (path == null) return null;
       try {
-        JsonPath jsonPath = JsonPath.compile(path);
+        JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
         Object value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
         // Returns NULL if the path does not locate a JSON node, like the result of a function
         if (!(value instanceof JsonNode node)) return null;
