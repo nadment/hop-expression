@@ -318,424 +318,415 @@ import org.jspecify.annotations.Nullable;
     final List<Integer> positions = new ArrayList<>();
     int length = pattern.length();
     int index = 0;
-    int elementStart = 0;
     boolean fillMode = true;
     boolean exactMode = false;
-    Capitalization cap;
 
     while (index < length) {
-
-      // Keep the position of the formats added by the previous element
-      while (positions.size() < list.size()) positions.add(elementStart);
-      elementStart = index;
-
       // Fill mode modifier; toggles between compact and fill modes for any elements
       // following the modifier in the model
       if (startsWithIgnoreCase(pattern, index, "FM")) {
         fillMode = !fillMode;
         index += 2;
-        continue;
       }
-
       // Exact match modifier; toggles between lax and exact match modes for any
       // elements following the modifier in the model
-      if (startsWithIgnoreCase(pattern, index, "FX")) {
+      else if (startsWithIgnoreCase(pattern, index, "FX")) {
         exactMode = !exactMode;
         index += 2;
-        continue;
+      } else {
+        int elementLength = parseElement(list, index, fillMode, exactMode);
+        // Keep the position of the formats added by the element
+        while (positions.size() < list.size()) positions.add(index);
+        index += elementLength;
       }
-
-      // Special characters
-      char ch = pattern.charAt(index);
-      if (" =/\\\\-_:,.;()".indexOf(ch) >= 0) {
-        list.add(new CharFormat(exactMode, ch));
-        index++;
-        continue;
-      }
-
-      // Literal text
-      if (ch == '"') {
-        index++;
-        for (int start = index; index < length; index++) {
-          ch = pattern.charAt(index);
-          if (ch == '"') {
-            list.add(new StringFormat(pattern.substring(start, index)));
-            index++;
-            break;
-          }
-        }
-        continue;
-      }
-
-      // AD indicator without periods
-      if ((cap = Capitalization.match(pattern, index, "AD", "BC")) != null) {
-        list.add(new AdBcFormat(cap, "AD", "BC"));
-        index += 2;
-        continue;
-      }
-
-      // AD indicator with periods
-      if ((cap = Capitalization.match(pattern, index, "A.D.", "B.C.")) != null) {
-        list.add(new AdBcFormat(cap, "A.D.", "B.C."));
-        index += 4;
-        continue;
-      }
-
-      if ((cap = Capitalization.match(pattern, index, "AM", "PM")) != null) {
-        list.add(new MeridianFormat(cap, "AM", "PM"));
-        index += 2;
-        continue;
-      }
-
-      if ((cap = Capitalization.match(pattern, index, "A.M.", "P.M.")) != null) {
-        list.add(new MeridianFormat(cap, "A.M.", "P.M."));
-        index += 4;
-        continue;
-      }
-
-      // Fractional seconds
-      if (startsWithIgnoreCase(
-          pattern, index, "FF0", "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9")) {
-        int digit = pattern.charAt(index + 2) - '0';
-        list.add(new NanoFormat(digit));
-        index += 3;
-        continue;
-      }
-
-      // FF is equivalent to FF6
-      if (startsWithIgnoreCase(pattern, index, "FF")) {
-        list.add(new NanoFormat(6));
-        index += 2;
-        continue;
-      }
-
-      // Hour of day in 24 hour format (0-23)
-      if (startsWithIgnoreCase(pattern, index, "HH24")) {
-        list.add(new Hour24Format());
-        index += 4;
-        continue;
-      }
-      // Hour of day in 12 hour format (1-12)
-      if (startsWithIgnoreCase(pattern, index, "HH12")) {
-        list.add(new Hour12Format());
-        index += 4;
-        continue;
-      }
-
-      // Hour of day in 12 hour format (1-12)
-      if (startsWithIgnoreCase(pattern, index, "HH")) {
-        list.add(new Hour12Format());
-        index += 2;
-        continue;
-      }
-
-      // Week of year (1-52 or 1-53) based on the ISO standard
-      if (startsWithIgnoreCase(pattern, index, "IW")) {
-        list.add(new IsoWeekFormat(fillMode));
-        index += 2;
-        continue;
-      }
-
-      // 4-digit year based on the ISO standard
-      if (startsWithIgnoreCase(pattern, index, "IYYY")) {
-        list.add(new IsoYearFormat(fillMode, 4));
-        index += 4;
-        continue;
-      }
-
-      // Last 3 digits of ISO year
-      if (startsWithIgnoreCase(pattern, index, "IYY")) {
-        list.add(new IsoYearFormat(fillMode, 3));
-        index += 3;
-        continue;
-      }
-
-      // Last 2 digits of ISO year
-      if (startsWithIgnoreCase(pattern, index, "IY")) {
-        list.add(new IsoYearFormat(fillMode, 2));
-        index += 2;
-        continue;
-      }
-
-      // Last 1 digit of ISO year
-      if (startsWithIgnoreCase(pattern, index, "I")) {
-        list.add(new IsoYearFormat(fillMode, 1));
-        index += 1;
-        continue;
-      }
-
-      // Minute (0-59)
-      if (startsWithIgnoreCase(pattern, index, "MI")) {
-        list.add(new MinuteFormat());
-        index += 2;
-        continue;
-      }
-
-      // Quarter of year (1, 2, 3, 4; January - March = 1)
-      if (startsWithIgnoreCase(pattern, index, "Q")) {
-        list.add(new QuarterFormat());
-        index += 1;
-        continue;
-      }
-
-      // Month (01-12; January = 01)
-      if (startsWithIgnoreCase(pattern, index, "MM")) {
-        list.add(new MonthFormat(fillMode, exactMode));
-        index += 2;
-        continue;
-      }
-
-      // Full name of month, padded with blanks
-      if ((cap = Capitalization.match(pattern, index, "MONTH")) != null) {
-        list.add(new NameOfMonthFormat(cap, fillMode, exactMode, TextStyle.FULL));
-        index += 5;
-        continue;
-      }
-
-      // Abbreviated name of month
-      if ((cap = Capitalization.match(pattern, index, "MON")) != null) {
-        list.add(new NameOfMonthFormat(cap, false, exactMode, TextStyle.SHORT));
-        index += 3;
-        continue;
-      }
-
-      // Roman numeral month (I-XII; January = I)
-      if ((cap = Capitalization.match(pattern, index, "RM")) != null) {
-        list.add(new RomanMonthFormat(cap));
-        index += 2;
-        continue;
-      }
-
-      // Rounded 4-digit year
-      if (startsWithIgnoreCase(pattern, index, "RRRR")) {
-        list.add(new RoundYearFormat(fillMode, 4));
-        index += 4;
-        continue;
-      }
-
-      // Rounded 2-digit year
-      if (startsWithIgnoreCase(pattern, index, "RR")) {
-        list.add(new RoundYearFormat(fillMode, 2));
-        index += 2;
-        continue;
-      }
-
-      // Seconds of day (0-86399)
-      if (startsWithIgnoreCase(pattern, index, "SSSSS")) {
-        list.add(new SecondOfDayFormat());
-        index += 5;
-        continue;
-      }
-
-      // Second of minute (0-59)
-      if (startsWithIgnoreCase(pattern, index, "SS")) {
-        list.add(new SecondOfMinuteFormat());
-        index += 2;
-        continue;
-      }
-
-      // Signed century
-      if (startsWithIgnoreCase(pattern, index, "SCC")) {
-        list.add(new CenturyFormat(fillMode, true));
-        index += 3;
-        continue;
-      }
-
-      // 4-digit year; S prefixes BC dates with a minus sign.
-      if (startsWithIgnoreCase(pattern, index, "SYYYY")) {
-        list.add(new SignedYearFormat(fillMode));
-        index += 5;
-        continue;
-      }
-
-      if ((cap = Capitalization.match(pattern, index, "SYEAR")) != null) {
-        list.add(new WordYearFormat(cap, fillMode, true));
-        index += 5;
-        continue;
-      }
-
-      // Century
-      if (startsWithIgnoreCase(pattern, index, "CC")) {
-        list.add(new CenturyFormat(fillMode, false));
-        index += 2;
-        continue;
-      }
-
-      // Abbreviated name of day
-      if ((cap = Capitalization.match(pattern, index, "DY")) != null) {
-        list.add(new NameOfDayFormat(cap, false, TextStyle.SHORT));
-        index += 2;
-        continue;
-      }
-
-      // Full name of day
-      if ((cap = Capitalization.match(pattern, index, "DAY")) != null) {
-        list.add(new NameOfDayFormat(cap, fillMode, TextStyle.FULL));
-        index += 3;
-        continue;
-      }
-
-      // Long date format 'Tuesday, April 12, 1952 AD'
-      if (startsWithIgnoreCase(pattern, index, "DL")) {
-        list.add(new DateLongFormat());
-        index += 2;
-        continue;
-      }
-
-      // Short date format 'MM/DD/RRRR'.
-      if (startsWithIgnoreCase(pattern, index, "DS")) {
-        list.add(new DateShortFormat());
-        index += 2;
-        continue;
-      }
-
-      // Day of year (1-366)
-      if (startsWithIgnoreCase(pattern, index, "DDD")) {
-        list.add(new DayOfYearFormat(fillMode));
-        index += 3;
-        continue;
-      }
-
-      // Day of month (1-31)
-      if (startsWithIgnoreCase(pattern, index, "DD")) {
-        list.add(new DayOfMonthFormat(fillMode, exactMode));
-        index += 2;
-        continue;
-      }
-
-      // Day of week (1=Sunday-7)
-      if (startsWithIgnoreCase(pattern, index, "D")) {
-        list.add(new DayOfWeekFormat());
-        index += 1;
-        continue;
-      }
-
-      // Julian day; the number of days since January 1, 4712 BC
-      if (startsWithIgnoreCase(pattern, index, "J")) {
-        list.add(new JulianDayFormat());
-        index += 1;
-        continue;
-      }
-
-      // Year
-      if ((cap = Capitalization.match(pattern, index, "YEAR")) != null) {
-        list.add(new WordYearFormat(cap, fillMode, false));
-        index += 4;
-        continue;
-      }
-
-      // 4-digit year with a comma
-      if (startsWithIgnoreCase(pattern, index, "Y,YYY")) {
-        list.add(new CommaYearFormat());
-        index += 5;
-        continue;
-      }
-
-      // 4-digit year
-      if (startsWithIgnoreCase(pattern, index, "YYYY")) {
-        list.add(new YearFormat(fillMode, exactMode, 4));
-        index += 4;
-        continue;
-      }
-
-      // Last 3 digits of year.
-      if (startsWithIgnoreCase(pattern, index, "YYY")) {
-        list.add(new YearFormat(fillMode, exactMode, 3));
-        index += 3;
-        continue;
-      }
-      // Last 2 digits of year.
-      if (startsWithIgnoreCase(pattern, index, "YY", "RR")) {
-        list.add(new YearFormat(fillMode, exactMode, 2));
-        index += 2;
-        continue;
-      }
-
-      // Last 1 digit of year.
-      if (startsWithIgnoreCase(pattern, index, "Y", "R")) {
-        list.add(new YearFormat(fillMode, exactMode, 1));
-        index += 1;
-        continue;
-      }
-
-      // Aligned week of year (1-53) where week 1 starts on the first day of the year and
-      // continues to the seventh day of the year.
-      if (startsWithIgnoreCase(pattern, index, "WW")) {
-        list.add(new WeekOfYearFormat(fillMode));
-        index += 2;
-        continue;
-      }
-
-      // Aligned week of month (1-5) where week 1 starts on the first day of the month and ends on
-      // the seventh.
-      if (startsWithIgnoreCase(pattern, index, "W")) {
-        list.add(new WeekOfMonthFormat());
-        index += 1;
-        continue;
-      }
-
-      // Time format
-      if ((cap = Capitalization.match(pattern, index, "TS")) != null) {
-        list.add(new TimeFormat(cap));
-        index += 2;
-        continue;
-      }
-
-      // Time zone region
-      if (startsWithIgnoreCase(pattern, index, "TZR")) {
-        list.add(new ZoneRegionFormat());
-        index += 3;
-        continue;
-      }
-
-      // Time zone region abbreviated with Daylight Saving Time information included
-      if (startsWithIgnoreCase(pattern, index, "TZD")) {
-        list.add(new ZoneAbbreviatedRegionFormat());
-        index += 3;
-        continue;
-      }
-
-      // Time zone hour
-      if (startsWithIgnoreCase(pattern, index, "TZH")) {
-        list.add(new ZoneHourFormat());
-        index += 3;
-        continue;
-      }
-
-      // Time zone minute
-      if (startsWithIgnoreCase(pattern, index, "TZM")) {
-        list.add(new ZoneMinuteFormat());
-        index += 3;
-        continue;
-      }
-
-      // Local radix character
-      if (startsWithIgnoreCase(pattern, index, "X")) {
-        list.add(new RadixCharFormat(exactMode));
-        index += 1;
-        continue;
-      }
-
-      throw new ExpressionException(ErrorCode.INVALID_DATE_FORMAT, pattern, index);
     }
-    while (positions.size() < list.size()) positions.add(elementStart);
 
-    // An element can only appear once to parse a date
-    final List<String> fields = new ArrayList<>();
-    for (int i = 0; i < list.size() && repeatedIndex < 0; i++) {
-      String field = parsedField(list.get(i));
-      if (field == null) continue;
-      if (fields.contains(field)) {
-        repeatedIndex = positions.get(i);
-      }
-      fields.add(field);
-    }
+    repeatedIndex = findRepeatedField(list, positions);
 
     if (!exactMode) {
       list.add(new SpaceFormat());
     }
 
     return list.toArray(new Format[0]);
+  }
+
+  /**
+   * Returns the position of the first element that sets the same date field as a previous element.
+   *
+   * @param list the formats
+   * @param positions the position in the pattern of each format
+   * @return the position in the pattern, or -1 if no date field is set twice
+   */
+  private static int findRepeatedField(List<Format> list, List<Integer> positions) {
+    // An element can only appear once to parse a date
+    final List<String> fields = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      String field = parsedField(list.get(i));
+      if (field == null) continue;
+      if (fields.contains(field)) {
+        return positions.get(i);
+      }
+      fields.add(field);
+    }
+    return -1;
+  }
+
+  /**
+   * Parses the element of the pattern at the specified position and adds its formats to the list.
+   *
+   * @param list the formats
+   * @param index the position of the element in the pattern
+   * @param fillMode the fill mode
+   * @param exactMode the exact match mode
+   * @return the length of the element in the pattern
+   * @throws ExpressionException if the pattern has no valid element at this position
+   */
+  private int parseElement(List<Format> list, int index, boolean fillMode, boolean exactMode) {
+    // Special characters
+    char ch = pattern.charAt(index);
+    if (" =/\\\\-_:,.;()".indexOf(ch) >= 0) {
+      list.add(new CharFormat(exactMode, ch));
+      return 1;
+    }
+
+    // Literal text, ignored if the end double quote is missing
+    if (ch == '"') {
+      int end = pattern.indexOf('"', index + 1);
+      if (end < 0) {
+        return pattern.length() - index;
+      }
+      list.add(new StringFormat(pattern.substring(index + 1, end)));
+      return end + 1 - index;
+    }
+
+    // The elements are selected by their first letter, then the longest element is tested first.
+    // The letter is normalized like String.regionMatches(true, ...) used by startsWithIgnoreCase(),
+    // which also matches a character whose upper case has the same lower case, like 'İ' for 'I'.
+    Element element =
+        switch (Character.toUpperCase(Character.toLowerCase(ch))) {
+          case 'A', 'B', 'P' -> parseEraOrMeridian(index);
+          case 'C' -> parseC(index, fillMode);
+          case 'D' -> parseD(index, fillMode, exactMode);
+          case 'F' -> parseF(index);
+          case 'H' -> parseH(index);
+          case 'I' -> parseI(index, fillMode);
+            // Julian day; the number of days since January 1, 4712 BC
+          case 'J' -> new Element(new JulianDayFormat(), 1);
+          case 'M' -> parseM(index, fillMode, exactMode);
+            // Quarter of year (1, 2, 3, 4; January - March = 1)
+          case 'Q' -> new Element(new QuarterFormat(), 1);
+          case 'R' -> parseR(index, fillMode, exactMode);
+          case 'S' -> parseS(index, fillMode);
+          case 'T' -> parseT(index);
+          case 'W' -> parseW(index, fillMode);
+            // Local radix character
+          case 'X' -> new Element(new RadixCharFormat(exactMode), 1);
+          case 'Y' -> parseY(index, fillMode, exactMode);
+          default -> null;
+        };
+
+    if (element == null) {
+      throw new ExpressionException(ErrorCode.INVALID_DATE_FORMAT, pattern, index);
+    }
+    list.add(element.format());
+    return element.length();
+  }
+
+  /**
+   * An element of the pattern.
+   *
+   * @param format the format of the element
+   * @param length the length of the element in the pattern
+   */
+  private record Element(Format format, int length) {}
+
+  /** Parses the AD or BC indicator, or the meridian indicator AM or PM. */
+  private @Nullable Element parseEraOrMeridian(int index) {
+    Capitalization cap;
+
+    // AD indicator without periods
+    if ((cap = Capitalization.match(pattern, index, "AD", "BC")) != null) {
+      return new Element(new AdBcFormat(cap, "AD", "BC"), 2);
+    }
+
+    // AD indicator with periods
+    if ((cap = Capitalization.match(pattern, index, "A.D.", "B.C.")) != null) {
+      return new Element(new AdBcFormat(cap, "A.D.", "B.C."), 4);
+    }
+
+    if ((cap = Capitalization.match(pattern, index, "AM", "PM")) != null) {
+      return new Element(new MeridianFormat(cap, "AM", "PM"), 2);
+    }
+
+    if ((cap = Capitalization.match(pattern, index, "A.M.", "P.M.")) != null) {
+      return new Element(new MeridianFormat(cap, "A.M.", "P.M."), 4);
+    }
+
+    return null;
+  }
+
+  /** Parses the century. */
+  private @Nullable Element parseC(int index, boolean fillMode) {
+    // Century
+    if (startsWithIgnoreCase(pattern, index, "CC")) {
+      return new Element(new CenturyFormat(fillMode, false), 2);
+    }
+    return null;
+  }
+
+  /** Parses the elements of a day, the long or short date format. */
+  private @Nullable Element parseD(int index, boolean fillMode, boolean exactMode) {
+    Capitalization cap;
+
+    // Abbreviated name of day
+    if ((cap = Capitalization.match(pattern, index, "DY")) != null) {
+      return new Element(new NameOfDayFormat(cap, false, TextStyle.SHORT), 2);
+    }
+
+    // Full name of day
+    if ((cap = Capitalization.match(pattern, index, "DAY")) != null) {
+      return new Element(new NameOfDayFormat(cap, fillMode, TextStyle.FULL), 3);
+    }
+
+    // Long date format 'Tuesday, April 12, 1952 AD'
+    if (startsWithIgnoreCase(pattern, index, "DL")) {
+      return new Element(new DateLongFormat(), 2);
+    }
+
+    // Short date format 'MM/DD/RRRR'.
+    if (startsWithIgnoreCase(pattern, index, "DS")) {
+      return new Element(new DateShortFormat(), 2);
+    }
+
+    // Day of year (1-366)
+    if (startsWithIgnoreCase(pattern, index, "DDD")) {
+      return new Element(new DayOfYearFormat(fillMode), 3);
+    }
+
+    // Day of month (1-31)
+    if (startsWithIgnoreCase(pattern, index, "DD")) {
+      return new Element(new DayOfMonthFormat(fillMode, exactMode), 2);
+    }
+
+    // Day of week (1=Sunday-7)
+    return new Element(new DayOfWeekFormat(), 1);
+  }
+
+  /** Parses the fractional seconds. */
+  private @Nullable Element parseF(int index) {
+    // Fractional seconds
+    if (startsWithIgnoreCase(
+        pattern, index, "FF0", "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9")) {
+      int digit = pattern.charAt(index + 2) - '0';
+      return new Element(new NanoFormat(digit), 3);
+    }
+
+    // FF is equivalent to FF6
+    if (startsWithIgnoreCase(pattern, index, "FF")) {
+      return new Element(new NanoFormat(6), 2);
+    }
+
+    return null;
+  }
+
+  /** Parses the hour. */
+  private @Nullable Element parseH(int index) {
+    // Hour of day in 24 hour format (0-23)
+    if (startsWithIgnoreCase(pattern, index, "HH24")) {
+      return new Element(new Hour24Format(), 4);
+    }
+    // Hour of day in 12 hour format (1-12)
+    if (startsWithIgnoreCase(pattern, index, "HH12")) {
+      return new Element(new Hour12Format(), 4);
+    }
+
+    // Hour of day in 12 hour format (1-12)
+    if (startsWithIgnoreCase(pattern, index, "HH")) {
+      return new Element(new Hour12Format(), 2);
+    }
+
+    return null;
+  }
+
+  /** Parses the elements based on the ISO standard. */
+  private Element parseI(int index, boolean fillMode) {
+    // Week of year (1-52 or 1-53) based on the ISO standard
+    if (startsWithIgnoreCase(pattern, index, "IW")) {
+      return new Element(new IsoWeekFormat(fillMode), 2);
+    }
+
+    // 4-digit year based on the ISO standard
+    if (startsWithIgnoreCase(pattern, index, "IYYY")) {
+      return new Element(new IsoYearFormat(fillMode, 4), 4);
+    }
+
+    // Last 3 digits of ISO year
+    if (startsWithIgnoreCase(pattern, index, "IYY")) {
+      return new Element(new IsoYearFormat(fillMode, 3), 3);
+    }
+
+    // Last 2 digits of ISO year
+    if (startsWithIgnoreCase(pattern, index, "IY")) {
+      return new Element(new IsoYearFormat(fillMode, 2), 2);
+    }
+
+    // Last 1 digit of ISO year
+    return new Element(new IsoYearFormat(fillMode, 1), 1);
+  }
+
+  /** Parses the minute or the elements of a month. */
+  private @Nullable Element parseM(int index, boolean fillMode, boolean exactMode) {
+    Capitalization cap;
+
+    // Minute (0-59)
+    if (startsWithIgnoreCase(pattern, index, "MI")) {
+      return new Element(new MinuteFormat(), 2);
+    }
+
+    // Month (01-12; January = 01)
+    if (startsWithIgnoreCase(pattern, index, "MM")) {
+      return new Element(new MonthFormat(fillMode, exactMode), 2);
+    }
+
+    // Full name of month, padded with blanks
+    if ((cap = Capitalization.match(pattern, index, "MONTH")) != null) {
+      return new Element(new NameOfMonthFormat(cap, fillMode, exactMode, TextStyle.FULL), 5);
+    }
+
+    // Abbreviated name of month
+    if ((cap = Capitalization.match(pattern, index, "MON")) != null) {
+      return new Element(new NameOfMonthFormat(cap, false, exactMode, TextStyle.SHORT), 3);
+    }
+
+    return null;
+  }
+
+  /** Parses the Roman numeral month or the rounded year. */
+  private Element parseR(int index, boolean fillMode, boolean exactMode) {
+    Capitalization cap;
+
+    // Roman numeral month (I-XII; January = I)
+    if ((cap = Capitalization.match(pattern, index, "RM")) != null) {
+      return new Element(new RomanMonthFormat(cap), 2);
+    }
+
+    // Rounded 4-digit year
+    if (startsWithIgnoreCase(pattern, index, "RRRR")) {
+      return new Element(new RoundYearFormat(fillMode, 4), 4);
+    }
+
+    // Rounded 2-digit year
+    if (startsWithIgnoreCase(pattern, index, "RR")) {
+      return new Element(new RoundYearFormat(fillMode, 2), 2);
+    }
+
+    // Last 1 digit of year.
+    return new Element(new YearFormat(fillMode, exactMode, 1), 1);
+  }
+
+  /** Parses the seconds, the signed century or the signed year. */
+  private @Nullable Element parseS(int index, boolean fillMode) {
+    // Seconds of day (0-86399)
+    if (startsWithIgnoreCase(pattern, index, "SSSSS")) {
+      return new Element(new SecondOfDayFormat(), 5);
+    }
+
+    // Second of minute (0-59)
+    if (startsWithIgnoreCase(pattern, index, "SS")) {
+      return new Element(new SecondOfMinuteFormat(), 2);
+    }
+
+    // Signed century
+    if (startsWithIgnoreCase(pattern, index, "SCC")) {
+      return new Element(new CenturyFormat(fillMode, true), 3);
+    }
+
+    // 4-digit year; S prefixes BC dates with a minus sign.
+    if (startsWithIgnoreCase(pattern, index, "SYYYY")) {
+      return new Element(new SignedYearFormat(fillMode), 5);
+    }
+
+    Capitalization cap = Capitalization.match(pattern, index, "SYEAR");
+    if (cap != null) {
+      return new Element(new WordYearFormat(cap, fillMode, true), 5);
+    }
+
+    return null;
+  }
+
+  /** Parses the time format or the time zone. */
+  private @Nullable Element parseT(int index) {
+    // Time format
+    Capitalization cap = Capitalization.match(pattern, index, "TS");
+    if (cap != null) {
+      return new Element(new TimeFormat(cap), 2);
+    }
+
+    // Time zone region
+    if (startsWithIgnoreCase(pattern, index, "TZR")) {
+      return new Element(new ZoneRegionFormat(), 3);
+    }
+
+    // Time zone region abbreviated with Daylight Saving Time information included
+    if (startsWithIgnoreCase(pattern, index, "TZD")) {
+      return new Element(new ZoneAbbreviatedRegionFormat(), 3);
+    }
+
+    // Time zone hour
+    if (startsWithIgnoreCase(pattern, index, "TZH")) {
+      return new Element(new ZoneHourFormat(), 3);
+    }
+
+    // Time zone minute
+    if (startsWithIgnoreCase(pattern, index, "TZM")) {
+      return new Element(new ZoneMinuteFormat(), 3);
+    }
+
+    return null;
+  }
+
+  /** Parses the week. */
+  private Element parseW(int index, boolean fillMode) {
+    // Aligned week of year (1-53) where week 1 starts on the first day of the year and
+    // continues to the seventh day of the year.
+    if (startsWithIgnoreCase(pattern, index, "WW")) {
+      return new Element(new WeekOfYearFormat(fillMode), 2);
+    }
+
+    // Aligned week of month (1-5) where week 1 starts on the first day of the month and ends on
+    // the seventh.
+    return new Element(new WeekOfMonthFormat(), 1);
+  }
+
+  /** Parses the year. */
+  private Element parseY(int index, boolean fillMode, boolean exactMode) {
+    // Year
+    Capitalization cap = Capitalization.match(pattern, index, "YEAR");
+    if (cap != null) {
+      return new Element(new WordYearFormat(cap, fillMode, false), 4);
+    }
+
+    // 4-digit year with a comma
+    if (startsWithIgnoreCase(pattern, index, "Y,YYY")) {
+      return new Element(new CommaYearFormat(), 5);
+    }
+
+    // 4-digit year
+    if (startsWithIgnoreCase(pattern, index, "YYYY")) {
+      return new Element(new YearFormat(fillMode, exactMode, 4), 4);
+    }
+
+    // Last 3 digits of year.
+    if (startsWithIgnoreCase(pattern, index, "YYY")) {
+      return new Element(new YearFormat(fillMode, exactMode, 3), 3);
+    }
+    // Last 2 digits of year.
+    if (startsWithIgnoreCase(pattern, index, "YY")) {
+      return new Element(new YearFormat(fillMode, exactMode, 2), 2);
+    }
+
+    // Last 1 digit of year.
+    return new Element(new YearFormat(fillMode, exactMode, 1), 1);
   }
 
   /**
