@@ -87,18 +87,7 @@ public class BoolOrOperator extends BinaryOperator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(call.getChainedOperands(false));
 
-    final Map<IExpression, Call> notNullTerms = new HashMap<>();
-    final List<Identifier> identifiers = new ArrayList<>();
-    final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
-    final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
-    final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
-    final Map<Pair<IExpression, IExpression>, Call> lessThanTerms = new HashMap<>();
-    final Map<Pair<IExpression, IExpression>, Call> greaterThanTerms = new HashMap<>();
-    final MultiValuedMap<IExpression, Pair<Call, IExpression>> inTerms =
-        new ArrayListValuedHashMap<>();
-    final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
-        new ArrayListValuedHashMap<>();
-
+    final Disjunction disjunction = new Disjunction(predicates);
     for (IExpression predicate : predicates) {
 
       // TRUE as soon as any predicate is TRUE
@@ -111,95 +100,186 @@ public class BoolOrOperator extends BinaryOperator {
         predicates.remove(predicate);
       }
 
+      disjunction.add(predicate);
+    }
+
+    disjunction.mergeComparisons();
+    disjunction.simplifyNotIn();
+    disjunction.simplifyIn();
+    disjunction.simplifyNotNull();
+
+    // Rebuild disjunctions if more than 1 condition
+    if (predicates.size() == 1) {
+      return predicates.peek();
+    }
+    IExpression expression = predicates.poll();
+    while (!predicates.isEmpty()) {
+      call = new Call(this, expression, predicates.poll());
+      call.inferReturnType();
+      expression = call;
+    }
+
+    return expression;
+  }
+
+  /** The predicates of a disjunction, with their terms grouped by kind to simplify them. */
+  private static final class Disjunction {
+    private final PriorityQueue<IExpression> predicates;
+    private final Map<IExpression, Call> notNullTerms = new HashMap<>();
+    private final List<Identifier> identifiers = new ArrayList<>();
+    private final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
+    private final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
+    private final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
+    private final Map<Pair<IExpression, IExpression>, Call> lessThanTerms = new HashMap<>();
+    private final Map<Pair<IExpression, IExpression>, Call> greaterThanTerms = new HashMap<>();
+    private final MultiValuedMap<IExpression, Pair<Call, IExpression>> inTerms =
+        new ArrayListValuedHashMap<>();
+    private final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
+        new ArrayListValuedHashMap<>();
+
+    Disjunction(PriorityQueue<IExpression> predicates) {
+      this.predicates = predicates;
+    }
+
+    /** Registers a predicate in the groups of terms it belongs to. */
+    void add(IExpression predicate) {
       if (predicate instanceof Identifier identifier) {
         identifiers.add(identifier);
       } else if (predicate instanceof Call term) {
-        if (term.isOperator(IsNotNullOperator.INSTANCE)) {
-          notNullTerms.put(term.getOperand(0), term);
-        }
-        // NVL2(x,TRUE,NULL) is a simplified x IS NOT NULL, it also dominates the strong terms of x
-        // x IS NOT NULL OR x>5 OR x<2 → NVL2(x,TRUE,NULL) OR x<2 → NVL2(x,TRUE,NULL)
-        if (term.isOperator(Nvl2Function.INSTANCE)
-            && Literal.TRUE.equals(term.getOperand(1))
-            && term.getOperand(2).isNull()) {
-          notNullTerms.put(term.getOperand(0), term);
-        }
-        if (term.isOperator(EqualOperator.INSTANCE)) {
-          equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-          if (term.getOperand(1) instanceof Literal) {
-            inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
-          }
-        }
-        if (term.isOperator(InListOperator.INSTANCE)
-            && term.getOperand(1) instanceof Array list
-            && list.isConstant()) {
-          for (IExpression operand : list) {
-            inTerms.put(term.getOperand(0), Pair.of(term, operand));
-          }
-        }
-        if (term.isOperator(NotInListOperator.INSTANCE)) {
-          notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
-        }
-        if (term.isOperator(NotEqualOperator.INSTANCE)) {
-          notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-          notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
-        }
-        if (term.isOperator(LessThanOperator.INSTANCE)) {
-          lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-        }
-        if (term.isOperator(GreaterThanOperator.INSTANCE)) {
-          greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
-        }
+        addNotNull(term);
+        addComparison(term);
+        addList(term);
         if (Strong.isStrong(term)) {
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
       }
     }
 
-    // Merge OR comparison
-    for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : lessThanTerms.entrySet()) {
-      Pair<IExpression, IExpression> pair = entry.getKey();
-
-      // x<a OR x!=a → x!=a
-      if (notEqualTerms.containsKey(pair)) {
-        predicates.remove(entry.getValue());
+    private void addNotNull(Call term) {
+      if (term.isOperator(IsNotNullOperator.INSTANCE)) {
+        notNullTerms.put(term.getOperand(0), term);
       }
-
-      // x<a OR x=a → x<=a
-      if (equalTerms.containsKey(pair)) {
-        predicates.remove(equalTerms.get(pair));
-        predicates.remove(entry.getValue());
-        predicates.add(new Call(LessThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
-      }
-
-      // x<a OR x>a → x!=a
-      if (greaterThanTerms.containsKey(pair)) {
-        predicates.remove(entry.getValue());
-        predicates.remove(greaterThanTerms.get(pair));
-        predicates.add(new Call(NotEqualOperator.INSTANCE, pair.left(), pair.right()));
+      // NVL2(x,TRUE,NULL) is a simplified x IS NOT NULL, it also dominates the strong terms of x
+      // x IS NOT NULL OR x>5 OR x<2 → NVL2(x,TRUE,NULL) OR x<2 → NVL2(x,TRUE,NULL)
+      if (term.isOperator(Nvl2Function.INSTANCE)
+          && Literal.TRUE.equals(term.getOperand(1))
+          && term.getOperand(2).isNull()) {
+        notNullTerms.put(term.getOperand(0), term);
       }
     }
 
-    for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : greaterThanTerms.entrySet()) {
-      Pair<IExpression, IExpression> pair = entry.getKey();
-
-      // x>a OR x!=a → x!=a
-      if (notEqualTerms.containsKey(pair)) {
-        predicates.remove(entry.getValue());
+    private void addComparison(Call term) {
+      if (term.isOperator(EqualOperator.INSTANCE)) {
+        equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
+        if (term.getOperand(1) instanceof Literal) {
+          inTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
+        }
       }
-
-      // x>a OR x=a → x>=a
-      if (equalTerms.containsKey(pair)) {
-        predicates.remove(equalTerms.get(pair));
-        predicates.remove(entry.getValue());
-        predicates.add(new Call(GreaterThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
+      if (term.isOperator(NotEqualOperator.INSTANCE)) {
+        notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
+        notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
+      }
+      if (term.isOperator(LessThanOperator.INSTANCE)) {
+        lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
+      }
+      if (term.isOperator(GreaterThanOperator.INSTANCE)) {
+        greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
       }
     }
 
-    // Simplify intersection NOT IN
-    // X NOT IN (1,2,3) OR X NOT IN (2,3,4,5,6) → X NOT IN (2,3)
-    for (IExpression reference : notInTerms.keySet()) {
-      Collection<Pair<Call, IExpression>> pairs = notInTerms.get(reference);
+    private void addList(Call term) {
+      if (term.isOperator(InListOperator.INSTANCE)
+          && term.getOperand(1) instanceof Array list
+          && list.isConstant()) {
+        for (IExpression operand : list) {
+          inTerms.put(term.getOperand(0), Pair.of(term, operand));
+        }
+      }
+      if (term.isOperator(NotInListOperator.INSTANCE)) {
+        notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
+      }
+    }
+
+    /** Merges the comparisons of the same operands. */
+    void mergeComparisons() {
+      // Merge OR comparison
+      for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : lessThanTerms.entrySet()) {
+        Pair<IExpression, IExpression> pair = entry.getKey();
+
+        // x<a OR x!=a → x!=a
+        if (notEqualTerms.containsKey(pair)) {
+          predicates.remove(entry.getValue());
+        }
+
+        // x<a OR x=a → x<=a
+        if (equalTerms.containsKey(pair)) {
+          predicates.remove(equalTerms.get(pair));
+          predicates.remove(entry.getValue());
+          predicates.add(new Call(LessThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
+        }
+
+        // x<a OR x>a → x!=a
+        if (greaterThanTerms.containsKey(pair)) {
+          predicates.remove(entry.getValue());
+          predicates.remove(greaterThanTerms.get(pair));
+          predicates.add(new Call(NotEqualOperator.INSTANCE, pair.left(), pair.right()));
+        }
+      }
+
+      for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : greaterThanTerms.entrySet()) {
+        Pair<IExpression, IExpression> pair = entry.getKey();
+
+        // x>a OR x!=a → x!=a
+        if (notEqualTerms.containsKey(pair)) {
+          predicates.remove(entry.getValue());
+        }
+
+        // x>a OR x=a → x>=a
+        if (equalTerms.containsKey(pair)) {
+          predicates.remove(equalTerms.get(pair));
+          predicates.remove(entry.getValue());
+          predicates.add(new Call(GreaterThanOrEqualOperator.INSTANCE, pair.left(), pair.right()));
+        }
+      }
+    }
+
+    /** Replaces the NOT IN and != of the same value by the intersection of their values. */
+    void simplifyNotIn() {
+      // Simplify intersection NOT IN
+      // X NOT IN (1,2,3) OR X NOT IN (2,3,4,5,6) → X NOT IN (2,3)
+      for (IExpression reference : notInTerms.keySet()) {
+        Collection<Pair<Call, IExpression>> pairs = notInTerms.get(reference);
+        Collection<IExpression> values = intersection(pairs);
+
+        // No value is excluded by all predicates, nothing to simplify
+        // X NOT IN (1,2) OR X NOT IN (3,4) is TRUE for any value of X, except NULL
+        if (values == null || values.isEmpty()) {
+          continue;
+        }
+
+        for (Pair<Call, IExpression> pair : pairs) {
+          predicates.remove(pair.left());
+        }
+
+        Call predicate;
+        if (values.size() == 1) {
+          predicate = new Call(NotEqualOperator.INSTANCE, reference, values.iterator().next());
+        } else {
+          predicate = new Call(NotInListOperator.INSTANCE, reference, new Array(values));
+        }
+        predicate.inferReturnType();
+        predicates.add(predicate);
+      }
+    }
+
+    /**
+     * Returns the values common to all the terms, a term is a value or a list of values.
+     *
+     * @param pairs the predicates with their term
+     * @return the common values, or null if there is no term
+     */
+    private static @Nullable Collection<IExpression> intersection(
+        Collection<Pair<Call, IExpression>> pairs) {
       Collection<IExpression> values = null;
       for (Pair<Call, IExpression> pair : pairs) {
         IExpression term = pair.right();
@@ -216,99 +296,74 @@ public class BoolOrOperator extends BinaryOperator {
           }
         }
       }
-
-      // No value is excluded by all predicates, nothing to simplify
-      // X NOT IN (1,2) OR X NOT IN (3,4) is TRUE for any value of X, except NULL
-      if (values == null || values.isEmpty()) {
-        continue;
-      }
-
-      for (Pair<Call, IExpression> pair : pairs) {
-        predicates.remove(pair.left());
-      }
-
-      Call predicate;
-      if (values.size() == 1) {
-        predicate = new Call(NotEqualOperator.INSTANCE, reference, values.iterator().next());
-      } else {
-        predicate = new Call(NotInListOperator.INSTANCE, reference, new Array(values));
-      }
-      predicate.inferReturnType();
-      predicates.add(predicate);
+      return values;
     }
 
-    // Simplify union
-    // X=1 OR X=2 → X IN (1,2)
-    // X=1 OR X IN (2,3) → X IN (1,2,3)
-    for (IExpression reference : inTerms.keySet()) {
-      Collection<Pair<Call, IExpression>> pairs = inTerms.get(reference);
-      if (pairs.size() > 1) {
-        List<IExpression> values = new ArrayList<>();
-        for (Pair<Call, IExpression> pair : pairs) {
-          values.add(pair.right());
-          predicates.remove(pair.left());
+    /** Replaces the IN and = of the same value by the union of their values. */
+    void simplifyIn() {
+      // Simplify union
+      // X=1 OR X=2 → X IN (1,2)
+      // X=1 OR X IN (2,3) → X IN (1,2,3)
+      for (IExpression reference : inTerms.keySet()) {
+        Collection<Pair<Call, IExpression>> pairs = inTerms.get(reference);
+        if (pairs.size() > 1) {
+          List<IExpression> values = new ArrayList<>();
+          for (Pair<Call, IExpression> pair : pairs) {
+            values.add(pair.right());
+            predicates.remove(pair.left());
+          }
+          Call predicate = new Call(InListOperator.INSTANCE, reference, new Array(values));
+          predicate.inferReturnType();
+          predicates.add(predicate);
         }
-        Call predicate = new Call(InListOperator.INSTANCE, reference, new Array(values));
-        predicate.inferReturnType();
-        predicates.add(predicate);
       }
     }
 
-    // Simplify x OR NOT x → TRUE (if x is not nullable)
-    // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
-    // Simplify x OR (x AND y) → x (if x not nullable)
+    /** Removes the terms dominated by a x IS NOT NULL term. */
+    void simplifyNotNull() {
+      // Simplify x OR NOT x → TRUE (if x is not nullable)
+      // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
+      // Simplify x OR (x AND y) → x (if x not nullable)
 
-    // Simplify x OR x IS NOT NULL → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x is
-    // NULL
-    final List<IExpression> dominated = new ArrayList<>();
-    for (IExpression identifier : identifiers) {
-      if (notNullTerms.containsKey(identifier)) {
-        predicates.remove(identifier);
-        dominated.add(identifier);
+      // Simplify x OR x IS NOT NULL → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x is
+      // NULL
+      final List<IExpression> dominated = new ArrayList<>();
+      for (IExpression identifier : identifiers) {
+        if (notNullTerms.containsKey(identifier)) {
+          predicates.remove(identifier);
+          dominated.add(identifier);
+        }
+      }
+
+      // Simplify IS NOT NULL(x) OR x<5 → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x
+      // is NULL
+      for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : strongTerms.entrySet()) {
+        Pair<IExpression, IExpression> pair = entry.getKey();
+        if (notNullTerms.containsKey(pair.left())) {
+          predicates.remove(entry.getValue());
+          dominated.add(pair.left());
+        } else if (notNullTerms.containsKey(pair.right())) {
+          predicates.remove(entry.getValue());
+          dominated.add(pair.right());
+        }
+      }
+
+      // Replace x IS NOT NULL by NVL2(x,TRUE,NULL) once its dominated terms are removed. Alone, x
+      // IS NOT NULL returns FALSE if x is NULL, while the removed terms made the disjunction NULL:
+      // x IS NOT NULL OR x<5 is FALSE OR NULL → NULL. A term that is already NVL2(x,TRUE,NULL) is
+      // kept as is.
+      for (IExpression operand : dominated) {
+        Call notNullTerm = notNullTerms.get(operand);
+        if (notNullTerm != null
+            && notNullTerm.isOperator(IsNotNullOperator.INSTANCE)
+            && predicates.remove(notNullTerm)) {
+          Call predicate =
+              new Call(Nvl2Function.INSTANCE, operand, Literal.TRUE, Literal.NULL_BOOLEAN);
+          predicate.inferReturnType();
+          predicates.add(predicate);
+        }
       }
     }
-
-    // Simplify IS NOT NULL(x) OR x<5 → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x is
-    // NULL
-    for (Map.Entry<Pair<IExpression, IExpression>, Call> entry : strongTerms.entrySet()) {
-      Pair<IExpression, IExpression> pair = entry.getKey();
-      if (notNullTerms.containsKey(pair.left())) {
-        predicates.remove(entry.getValue());
-        dominated.add(pair.left());
-      } else if (notNullTerms.containsKey(pair.right())) {
-        predicates.remove(entry.getValue());
-        dominated.add(pair.right());
-      }
-    }
-
-    // Replace x IS NOT NULL by NVL2(x,TRUE,NULL) once its dominated terms are removed. Alone, x IS
-    // NOT NULL returns FALSE if x is NULL, while the removed terms made the disjunction NULL:
-    // x IS NOT NULL OR x<5 is FALSE OR NULL → NULL. A term that is already NVL2(x,TRUE,NULL) is
-    // kept as is.
-    for (IExpression operand : dominated) {
-      Call notNullTerm = notNullTerms.get(operand);
-      if (notNullTerm != null
-          && notNullTerm.isOperator(IsNotNullOperator.INSTANCE)
-          && predicates.remove(notNullTerm)) {
-        Call predicate =
-            new Call(Nvl2Function.INSTANCE, operand, Literal.TRUE, Literal.NULL_BOOLEAN);
-        predicate.inferReturnType();
-        predicates.add(predicate);
-      }
-    }
-
-    // Rebuild disjunctions if more than 1 condition
-    if (predicates.size() == 1) {
-      return predicates.peek();
-    }
-    IExpression expression = predicates.poll();
-    while (!predicates.isEmpty()) {
-      call = new Call(this, expression, predicates.poll());
-      call.inferReturnType();
-      expression = call;
-    }
-
-    return expression;
   }
 
   @Override
