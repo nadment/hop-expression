@@ -72,6 +72,24 @@ class ExpressionLexerTest {
     token = lexer.next();
     assertEquals(Id.LITERAL_STRING, token.id());
     assertEquals("it's me", token.text());
+
+    // Empty string and string of a single quote
+    List<Token> tokens = new ExpressionLexer("'' ''''").getTokens();
+    assertEquals("", tokens.getFirst().text());
+    assertEquals("'", tokens.get(1).text());
+  }
+
+  @Test
+  void testUnterminatedStrings() {
+    // A single quote alone at the end, or an escaped quote at the end is not an end quote
+    for (String source : List.of("'", "1 || '", "'abc", "'abc''", "'''''")) {
+      ParseExpressionException exception =
+          assertThrows(
+              ParseExpressionException.class,
+              () -> new ExpressionLexer(source).getTokens(),
+              source);
+      assertEquals(ErrorCode.MISSING_END_SINGLE_QUOTED_STRING, exception.getErrorCode(), source);
+    }
   }
 
   @Test
