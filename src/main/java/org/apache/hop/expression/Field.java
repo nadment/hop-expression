@@ -16,10 +16,7 @@ package org.apache.hop.expression;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -27,6 +24,7 @@ import lombok.Getter;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.util.DateTimeConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -76,18 +74,6 @@ public class Field extends Identifier {
     };
   }
 
-  /**
-   * Converts a date of the row to the local date-time it shows in the system time zone, placed in
-   * UTC like a timestamp and a date literal. Keeping the instant in UTC would shift the date to the
-   * day before in a time zone ahead of UTC, by a gap that changes with daylight saving time.
-   *
-   * @param date the date of the row
-   * @return the date-time in UTC
-   */
-  private static ZonedDateTime toZonedDateTime(Date date) {
-    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).atZone(ZoneOffset.UTC);
-  }
-
   @Override
   public @Nullable Object getValue() {
     @Nullable Object[] row = context.getRow();
@@ -120,7 +106,7 @@ public class Field extends Identifier {
         case IValueMeta.TYPE_DATE:
           Date date = valueMeta.getDate(row[ordinal]);
           if (date == null) return null;
-          return toZonedDateTime(date);
+          return DateTimeConversion.convert(date);
         case IValueMeta.TYPE_STRING:
           return valueMeta.getString(row[ordinal]);
         case IValueMeta.TYPE_INTEGER:
@@ -192,7 +178,7 @@ public class Field extends Identifier {
             if (date == null) {
               return null;
             }
-            return type.convert(toZonedDateTime(date), clazz);
+            return type.convert(DateTimeConversion.convert(date), clazz);
           }
 
         case IValueMeta.TYPE_STRING:

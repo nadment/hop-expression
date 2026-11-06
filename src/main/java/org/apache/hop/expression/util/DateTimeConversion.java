@@ -20,8 +20,11 @@ package org.apache.hop.expression.util;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
@@ -71,6 +74,18 @@ public final class DateTimeConversion {
     } catch (ArithmeticException | DateTimeException e) {
       throw createConversionError(number);
     }
+  }
+
+  /**
+   * Converts a date of the row to the local date-time it shows in the system time zone, placed in
+   * UTC like a timestamp and a date literal. Keeping the instant in UTC would shift the date to the
+   * day before in a time zone ahead of UTC, by a gap that changes with daylight saving time.
+   *
+   * @param date the date of the row
+   * @return the date-time in UTC
+   */
+  public static ZonedDateTime convert(final Date date) {
+    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).atZone(ZoneOffset.UTC);
   }
 
   private static ExpressionException createConversionError(final Object value) {
