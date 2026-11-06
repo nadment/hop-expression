@@ -78,6 +78,10 @@ public final class ReturnTypes {
   /** Type-inference strategy whereby the result type of the call is DATE NOT NULL. */
   public static final IReturnTypeInference DATE_NOT_NULL = explicit(DateType.DATE_NOT_NULL);
 
+  /** Type-inference strategy whereby the result type of the call is TIMESTAMP NOT NULL. */
+  public static final IReturnTypeInference TIMESTAMP_NOT_NULL =
+      explicit(TimestampType.TIMESTAMP_NOT_NULL);
+
   /**
    * Type-inference strategy whereby the result type of the call is TIMESTAMP, nullable if an
    * operand is nullable.

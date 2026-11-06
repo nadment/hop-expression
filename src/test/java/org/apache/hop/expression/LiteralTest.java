@@ -495,7 +495,7 @@ public class LiteralTest extends ExpressionTest {
 
     // Timestamp
     evalEquals("TimeSTAMP '2021-02-25 3'", LocalDateTime.of(2021, 2, 25, 3, 0, 0))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals("TimeSTAMP '2021-2-5 03'", LocalDateTime.of(2021, 2, 5, 3, 0, 0));
     evalEquals("TimeSTAMP '2021-2-25 03'", LocalDateTime.of(2021, 2, 25, 3, 0, 0));
     evalEquals("TimeSTAMP '2021-02-25 03'", LocalDateTime.of(2021, 2, 25, 3, 0, 0));
@@ -528,7 +528,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "TIMESTAMP '2021-01-01 5:28+02'",
             OffsetDateTime.of(2021, 1, 1, 5, 28, 0, 0, ZoneOffset.ofHours(2)))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(
         "TIMESTAMP '2021-01-01 15:28+02'",
         OffsetDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.ofHours(2)));
@@ -571,7 +571,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "TIMESTAMP '2021-01-01 5:28:59.123456789+0200'",
             OffsetDateTime.of(2021, 1, 1, 5, 28, 59, 123456789, ZoneOffset.ofHours(2)))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(
         "TIMESTAMP '2021-01-01 15:28:59.123456789+0200'",
         OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 123456789, ZoneOffset.ofHours(2)));
@@ -621,7 +621,10 @@ public class LiteralTest extends ExpressionTest {
     optimize("TIMESTAMP '2021-12-01 12:01:01.999 +02:00'");
     optimize("TIMESTAMP '2021-12-01 12:01:01.999999 +02:00'");
     optimize("TIMESTAMP '2021-12-01 12:01:01.999999999 +02:00'");
-    optimize("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'Europe/Paris'");
+    // The system time zone of the tests, Europe/Paris, is not written
+    optimize(
+        "TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'Europe/Paris'",
+        "TIMESTAMP '2021-12-01 12:01:01'");
     optimize("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'");
     optimize(
         "TIMESTAMP '2021-12-01 12:01:01.999999999Z'",

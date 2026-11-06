@@ -32,7 +32,7 @@ NOW()
 
 == Returns
 
-Date
+Timestamp
 
 == Usage
 

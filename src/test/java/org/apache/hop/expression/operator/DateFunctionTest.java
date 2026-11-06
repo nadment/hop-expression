@@ -43,6 +43,7 @@ import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -71,7 +72,7 @@ class DateFunctionTest extends ExpressionTest {
   void Current_Timestamp() throws Exception {
     IExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.getDate(context);
-    evalEquals(context, "Now()", today).returnType(DateType.DATE_NOT_NULL);
+    evalEquals(context, "Now()", today).returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(context, "Current_Timestamp()", today);
 
     // Check operands
@@ -1160,7 +1161,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(
             "CONVERT_TIMEZONE('America/Los_Angeles', 'America/New_York', TIMESTAMP '2023-01-01 14:00:00')",
             LocalDateTime.of(2023, Month.JANUARY, 1, 17, 0, 0))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(
         "CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 4, 0, 0));
@@ -1175,7 +1176,8 @@ class DateFunctionTest extends ExpressionTest {
         ZonedDateTime.of(2023, 1, 1, 22, 0, 0, 0, ZoneOffset.ofHoursMinutes(10, 0)));
 
     // Null handling
-    evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)").returnType(DateType.DATE);
+    evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)")
+        .returnType(TimestampType.TIMESTAMP);
     evalNull("CONVERT_TIMEZONE('Europe/Paris', 'America/New_York', NULL_TIMESTAMP)");
 
     // Check operands

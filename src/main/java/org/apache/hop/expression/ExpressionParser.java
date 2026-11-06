@@ -725,7 +725,8 @@ public class ExpressionParser implements IExpressionParser {
       DateTimeFormat format = DateTimeFormat.of("AUTO");
       ZonedDateTime datetime = format.parse(token.text());
 
-      return Literal.of(datetime);
+      // A timestamp without time zone is in the system time zone
+      return new Literal(datetime, TimestampType.TIMESTAMP_NOT_NULL);
     } catch (Exception e) {
       throw new ParseExpressionException(token.start(), ErrorCode.INVALID_TIMESTAMP, token.text());
     }

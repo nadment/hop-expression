@@ -330,19 +330,20 @@ public final class Literal implements IExpression {
   }
 
   /**
-   * Unparses a date literal, or a timestamp literal if it has a time, with its time zone if it is
-   * not the system time zone.
+   * Unparses a date literal, or a timestamp literal if it has a time or is a TIMESTAMP, with its
+   * time zone if it is not the system time zone.
    *
    * @param writer the writer
    * @param datetime the date-time
-   * @param withTimeZone true to always write the time zone, for a TIMESTAMP
+   * @param isTimestamp true for a TIMESTAMP, always written as a timestamp literal
    */
   private static void unparseDate(
-      final StringWriter writer, final ZonedDateTime datetime, final boolean withTimeZone) {
+      final StringWriter writer, final ZonedDateTime datetime, final boolean isTimestamp) {
     int nano = datetime.getNano();
-    // The date literals are in the system time zone, another time zone is written
-    boolean isSystemZone = !withTimeZone && datetime.getZone().equals(ZoneId.systemDefault());
-    if (isSystemZone
+    // The literals are in the system time zone, another time zone is written
+    boolean isSystemZone = datetime.getZone().equals(ZoneId.systemDefault());
+    if (!isTimestamp
+        && isSystemZone
         && nano == 0
         && datetime.getHour() == 0
         && datetime.getMinute() == 0

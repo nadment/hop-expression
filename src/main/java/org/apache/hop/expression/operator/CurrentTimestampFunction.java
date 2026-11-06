@@ -27,6 +27,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TimestampType;
 import org.jspecify.annotations.NullMarked;
 
 /** The function return the current date and time */
@@ -37,7 +38,7 @@ public class CurrentTimestampFunction extends Function {
   public CurrentTimestampFunction() {
     super(
         "CURRENT_TIMESTAMP",
-        ReturnTypes.DATE_NOT_NULL,
+        ReturnTypes.TIMESTAMP_NOT_NULL,
         OperandTypes.NILADIC,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/current_timestamp.html");
@@ -45,6 +46,8 @@ public class CurrentTimestampFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return Literal.of(Attribute.CURRENT_TIMESTAMP.getDate(context));
+    // The current date and time in the system time zone
+    return new Literal(
+        Attribute.CURRENT_TIMESTAMP.getDate(context), TimestampType.TIMESTAMP_NOT_NULL);
   }
 }

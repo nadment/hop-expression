@@ -32,7 +32,7 @@ timestamp:: The timestamp to convert.
 
 == Returns
 
-Date
+Timestamp
 
 == Usage
 

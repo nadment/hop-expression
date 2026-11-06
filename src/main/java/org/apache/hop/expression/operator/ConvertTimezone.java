@@ -39,7 +39,7 @@ public class ConvertTimezone extends Function {
   public ConvertTimezone() {
     super(
         "CONVERT_TIMEZONE",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TIMESTAMP_NULLABLE,
         OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE),
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/convert_timezone.html");
