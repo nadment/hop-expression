@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Editor of the {@link UserDefinedFunctionMeta} metadata: name, description, arguments and source
@@ -57,10 +58,10 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     "Binary", "Boolean", "Date", "Inet", "Integer", "Json", "Number", "String"
   };
 
-  private Text wName;
-  private Text wDescription;
-  private TableView wArguments;
-  private ExpressionEditor wExpression;
+  private @Nullable Text wName;
+  private @Nullable Text wDescription;
+  private @Nullable TableView wArguments;
+  private @Nullable ExpressionEditor wExpression;
 
   public UserDefinedFunctionMetaEditor(
       HopGui hopGui,
@@ -205,6 +206,9 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
   }
 
   protected void updateField() {
+    if (wExpression == null) {
+      return;
+    }
 
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     this.getWidgetsContent(meta);
@@ -214,6 +218,11 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
 
   @Override
   public void setWidgetsContent() {
+    // Nothing to set before the widgets are created
+    if (wName == null || wDescription == null || wArguments == null || wExpression == null) {
+      return;
+    }
+
     UserDefinedFunctionMeta udf = getMetadata();
 
     wName.setText(Const.NVL(udf.getName(), ""));
@@ -246,6 +255,11 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
 
   @Override
   public void getWidgetsContent(UserDefinedFunctionMeta udf) {
+    // Nothing to get before the widgets are created
+    if (wName == null || wDescription == null || wArguments == null || wExpression == null) {
+      return;
+    }
+
     udf.setName(wName.getText());
     udf.setDescription(wDescription.getText());
     udf.setSource(wExpression.getText());

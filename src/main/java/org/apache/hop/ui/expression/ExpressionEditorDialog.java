@@ -45,8 +45,8 @@ public class ExpressionEditorDialog extends Dialog {
   private static final Class<?> PKG = ExpressionEditorDialog.class;
 
   private @Nullable String expression;
-  private Shell shell;
-  private ExpressionEditor wEditor;
+  private @Nullable Shell shell;
+  private @Nullable ExpressionEditor wEditor;
 
   public ExpressionEditorDialog(Shell parent) {
     super(parent, SWT.APPLICATION_MODAL | SWT.SHEET);
@@ -61,7 +61,7 @@ public class ExpressionEditorDialog extends Dialog {
       @Nullable IVariables variables,
       ExpressionMode mode,
       @Nullable CompletableFuture<IRowMeta> rowMetaFuture) {
-    shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+    this.shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     PropsUi.setLook(shell);
     shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
     shell.setImage(
@@ -121,14 +121,19 @@ public class ExpressionEditorDialog extends Dialog {
   }
 
   public void dispose() {
+    // Nothing to dispose if the dialog is not opened
+    if (shell == null) {
+      return;
+    }
     WindowProperty winprop = new WindowProperty(shell);
     PropsUi.getInstance().setScreen(winprop);
     shell.dispose();
   }
 
   protected void onOkPressed() {
-
-    this.expression = wEditor.getText();
+    if (wEditor != null) {
+      this.expression = wEditor.getText();
+    }
 
     dispose();
   }
