@@ -140,7 +140,7 @@ public class BoolAndOperator extends BinaryOperator {
 
     /** Registers a term in the groups of terms it belongs to. */
     void add(Call term) {
-      if (term.isOperator(IsNullOperator.INSTANCE)) {
+      if (isNullTerm(term)) {
         nullTerms.add(term.getOperand(0));
       }
       addInOrNotIn(term);
@@ -234,10 +234,12 @@ public class BoolAndOperator extends BinaryOperator {
      * @return the common values
      */
     private Collection<IExpression> intersection(Collection<Pair<Call, IExpression>> pairs) {
-      Collection<IExpression> values = new LinkedList<>();
+      // Null until the first term, an empty intersection must stay empty
+      Collection<IExpression> values = null;
       for (Pair<Call, IExpression> pair : pairs) {
         IExpression term = pair.right();
-        if (values.isEmpty()) {
+        if (values == null) {
+          values = new LinkedList<>();
           if (term instanceof Array array) {
             array.forEach(values::add);
           } else values.add(term);
@@ -250,7 +252,7 @@ public class BoolAndOperator extends BinaryOperator {
         }
         predicates.remove(pair.left());
       }
-      return values;
+      return values == null ? new LinkedList<>() : values;
     }
 
     /** Replaces x IS NULL and the strong terms of x by NVL2(x,FALSE,NULL). */
@@ -273,11 +275,23 @@ public class BoolAndOperator extends BinaryOperator {
 
     /** Returns whether the condition is x IS NULL or a strong term of x. */
     private static boolean isNullOrStrongTerm(IExpression condition, IExpression operand) {
-      return (condition.isOperator(IsNullOperator.INSTANCE)
-              && call(condition).getOperand(0).equals(operand))
-          || (condition instanceof Call term
-              && Strong.isStrong(term)
-              && (term.getOperand(0).equals(operand) || term.getOperand(1).equals(operand)));
+      return condition instanceof Call term
+          && ((isNullTerm(term) && term.getOperand(0).equals(operand))
+              || (Strong.isStrong(term)
+                  && (term.getOperand(0).equals(operand) || term.getOperand(1).equals(operand))));
+    }
+
+    /**
+     * Returns whether the term is x IS NULL, or NVL2(x,FALSE,NULL) which is a simplified x IS NULL
+     * AND x<5 that also dominates the strong terms of x.
+     *
+     * <p>x=1 AND x=2 AND x=3 → NVL2(x,FALSE,NULL) AND x=3 → NVL2(x,FALSE,NULL)
+     */
+    private static boolean isNullTerm(Call term) {
+      return term.isOperator(IsNullOperator.INSTANCE)
+          || (term.isOperator(Nvl2Function.INSTANCE)
+              && Literal.FALSE.equals(term.getOperand(1))
+              && term.getOperand(2).isNull());
     }
   }
 

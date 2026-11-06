@@ -1309,7 +1309,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER IS NULL AND FIELD_INTEGER<>5", "NVL2(FIELD_INTEGER,FALSE,NULL)");
       optimize(
           "FIELD_INTEGER IS NULL AND FIELD_INTEGER>5 AND FIELD_INTEGER<10",
-          "FIELD_INTEGER<10 AND NVL2(FIELD_INTEGER,FALSE,NULL)");
+          "NVL2(FIELD_INTEGER,FALSE,NULL)");
       evalFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER>5");
       evalNull("NULL_INTEGER IS NULL AND NULL_INTEGER>5");
       // Also with the value on the right or a comparison of two fields
@@ -1355,6 +1355,20 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=2");
       evalNull("NULL_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND NULL_INTEGER=2");
       evalFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN_FALSE AND NULL_INTEGER=2");
+      // An empty intersection NVL2(x,FALSE,NULL) also dominates the next strong terms of x
+      optimize(
+          "FIELD_INTEGER=1 AND FIELD_INTEGER=2 AND FIELD_INTEGER=40",
+          "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize(
+          "FIELD_INTEGER=1 AND FIELD_INTEGER=2 AND FIELD_INTEGER>5",
+          "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      evalFalse("FIELD_INTEGER=1 AND FIELD_INTEGER=2 AND FIELD_INTEGER=40");
+      evalNull("NULL_INTEGER=1 AND NULL_INTEGER=2 AND NULL_INTEGER=40");
+      // But not the other terms, FALSE and not NULL if the other term is FALSE
+      optimize(
+          "FIELD_INTEGER=1 AND FIELD_INTEGER=2 AND FIELD_BOOLEAN_TRUE",
+          "FIELD_BOOLEAN_TRUE AND NVL2(FIELD_INTEGER,FALSE,NULL)");
+      evalFalse("NULL_INTEGER=1 AND NULL_INTEGER=2 AND FIELD_BOOLEAN_FALSE");
 
       // Simplify intersection with exclusions != and NOT IN
       optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER!=3", "FIELD_INTEGER IN (1,2)");
