@@ -25,6 +25,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -597,6 +598,32 @@ class DateFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void dateFunctionsKeepTheTypeOfTheDate() throws Exception {
+    // A date without time zone stays a date, without time zone
+    evalEquals("Add_Days(DATE '2020-03-28', 1)", LocalDateTime.of(2020, 3, 29, 0, 0))
+        .returnType(DateType.DATE_NOT_NULL);
+    evalNull("Add_Days(NULL_DATE, 1)").returnType(DateType.DATE);
+    // The hours of a date are nominal, the daylight saving time of the system is ignored
+    evalEquals("Add_Hours(DATE '2020-03-29', 24)", LocalDateTime.of(2020, 3, 30, 0, 0));
+
+    // A timestamp stays a timestamp, with its time zone
+    ZonedDateTime timestamp = ZonedDateTime.of(2020, 5, 25, 20, 48, 0, 0, ZoneOffset.ofHours(5));
+    evalEquals("Add_Days(TIMESTAMP '2020-05-25 20:48:00 +05:00', 1)", timestamp.plusDays(1))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals("Add_Months(TIMESTAMP '2020-05-25 20:48:00 +05:00', 1)", timestamp.plusMonths(1));
+    evalEquals("TIMESTAMP '2020-05-25 20:48:00 +05:00' + INTERVAL 2 HOURS", timestamp.plusHours(2))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals(
+            "Date_Trunc(DAY, TIMESTAMP '2020-05-25 20:48:00 +05:00')",
+            timestamp.truncatedTo(ChronoUnit.DAYS))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals(
+            "First_Day(TIMESTAMP '2020-05-25 20:48:00 +05:00', MONTH)", timestamp.withDayOfMonth(1))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals("Next_Day(TIMESTAMP '2020-05-25 20:48:00 +05:00', 'friday')", timestamp.plusDays(4));
+  }
+
+  @Test
   void Add_Days() throws Exception {
     evalEquals("Add_Days(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(DATE '2019-01-15', -1.9)", LocalDate.of(2019, Month.JANUARY, 14));
@@ -734,16 +761,16 @@ class DateFunctionTest extends ExpressionTest {
         "Add_Nanoseconds(TIMESTAMP '2019-01-15 10:00:00' AT TIME ZONE 'Europe/Paris', 1)",
         ZonedDateTime.of(2019, 1, 15, 10, 0, 0, 1, ZoneId.of("Europe/Paris")));
 
-    // The largest number of nanoseconds is about 292 years. The duration goes from winter to summer
-    // time in the system time zone, Europe/Paris, so the local time is one hour later.
+    // The largest number of nanoseconds is about 292 years. A date without time zone is not shifted
+    // by the daylight saving time of the system time zone.
     evalEquals(
         "Add_Nanoseconds(DATE '2019-01-15', 9223372036854775807)",
-        LocalDateTime.of(2311, Month.APRIL, 27, 0, 47, 16, 854775807));
+        LocalDateTime.of(2311, Month.APRIL, 26, 23, 47, 16, 854775807));
 
     // A result out of the range of dates raises an error
     evalFails(
         "Add_Nanoseconds(Add_Years(DATE '2019-01-15', 999997980), 9223372036854775807)",
-        ErrorCode.DATE_OVERFLOW);
+        ErrorCode.TEMPORAL_OVERFLOW);
     evalNull("TRY(Add_Nanoseconds(Add_Years(DATE '2019-01-15', 999997980), 9223372036854775807))");
     // A number out of the integer range raises an error
     evalFails("Add_Nanoseconds(DATE '2019-01-15', 1E20)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
@@ -771,16 +798,16 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Add_Days(DATE '9999-12-31',1)", LocalDate.of(10000, Month.JANUARY, 1));
 
     // A result out of the supported range raises an error
-    evalFails("Add_Years(FIELD_DATE,2000000000)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Quarters(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Months(FIELD_DATE,9000000000000)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Weeks(FIELD_DATE,900000000000)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Days(FIELD_DATE,1000000000000)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Days(FIELD_DATE,-9223372036854775807)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Hours(FIELD_DATE,9000000000000000)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Minutes(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Add_Seconds(FIELD_DATE,9223372036854775807)", ErrorCode.DATE_OVERFLOW);
-    evalFails("DATE_ADD(DAY,1000000000000,FIELD_DATE)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Add_Years(FIELD_DATE,2000000000)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Quarters(FIELD_DATE,9223372036854775807)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Months(FIELD_DATE,9000000000000)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Weeks(FIELD_DATE,900000000000)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Days(FIELD_DATE,1000000000000)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Days(FIELD_DATE,-9223372036854775807)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Hours(FIELD_DATE,9000000000000000)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Minutes(FIELD_DATE,9223372036854775807)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Add_Seconds(FIELD_DATE,9223372036854775807)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("DATE_ADD(DAY,1000000000000,FIELD_DATE)", ErrorCode.TEMPORAL_OVERFLOW);
 
     // A number out of the integer range raises an error, it must not wrap to a small value
     evalFails(
@@ -935,7 +962,7 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Date_Trunc('xxx', DATE '2020-05-25')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // A result out of the supported range raises an error
-    evalFails("Date_Trunc(DECADE, MAKE_DATE(-999999999,6,1))", ErrorCode.DATE_OVERFLOW);
+    evalFails("Date_Trunc(DECADE, MAKE_DATE(-999999999,6,1))", ErrorCode.TEMPORAL_OVERFLOW);
     evalNull("TRY(Date_Trunc(DECADE, MAKE_DATE(-999999999,6,1)))");
 
     // Truncate timestamp
@@ -1186,9 +1213,10 @@ class DateFunctionTest extends ExpressionTest {
     // A result out of the supported range raises an error
     evalFails(
         "CONVERT_TIMEZONE('+18:00', MAKE_TIMESTAMP(999999999,12,31,23,0,0))",
-        ErrorCode.DATE_OVERFLOW);
+        ErrorCode.TEMPORAL_OVERFLOW);
     evalFails(
-        "CONVERT_TIMEZONE('+18:00', '-18:00', MAKE_DATE(-999999999,1,1))", ErrorCode.DATE_OVERFLOW);
+        "CONVERT_TIMEZONE('+18:00', '-18:00', MAKE_DATE(-999999999,1,1))",
+        ErrorCode.TEMPORAL_OVERFLOW);
 
     // evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE
     // 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
@@ -1239,10 +1267,10 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_DATE(2020,1,1,1)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // A result out of the supported range raises an error, a year is never truncated
-    evalFails("MAKE_DATE(1000000000,1,1)", ErrorCode.DATE_OVERFLOW);
-    evalFails("MAKE_DATE(4294969316,1,1)", ErrorCode.DATE_OVERFLOW);
-    evalFails("MAKE_DATE(2020,9223372036854775807,1)", ErrorCode.DATE_OVERFLOW);
-    evalFails("MAKE_DATE(2020,1,-9223372036854775807-1)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_DATE(1000000000,1,1)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("MAKE_DATE(4294969316,1,1)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("MAKE_DATE(2020,9223372036854775807,1)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("MAKE_DATE(2020,1,-9223372036854775807-1)", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
   @Test
@@ -1312,10 +1340,10 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
 
     // A result out of the supported range raises an error, a year is never truncated
-    evalFails("MAKE_TIMESTAMP(1000000000,1,1,0,0,0)", ErrorCode.DATE_OVERFLOW);
-    evalFails("MAKE_TIMESTAMP(4294969316,1,1,0,0,0)", ErrorCode.DATE_OVERFLOW);
-    evalFails("MAKE_TIMESTAMP(2020,1,1,9223372036854775807,0,0)", ErrorCode.DATE_OVERFLOW);
-    evalFails("MAKE_TIMESTAMP(2020,1,1,0,0,1e30)", ErrorCode.DATE_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(1000000000,1,1,0,0,0)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(4294969316,1,1,0,0,0)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,9223372036854775807,0,0)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,0,0,1e30)", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
   @Test
@@ -1426,7 +1454,7 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("First_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
 
     // A result out of the supported range raises an error
-    evalFails("First_Day(MAKE_DATE(-999999999,6,1), DECADE)", ErrorCode.DATE_OVERFLOW);
+    evalFails("First_Day(MAKE_DATE(-999999999,6,1), DECADE)", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
   @Test
@@ -1494,10 +1522,10 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Last_Day(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
 
     // A result out of the supported range raises an error
-    evalFails("Last_Day(MAKE_DATE(999999999,6,1), MILLENNIUM)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Last_Day(MAKE_DATE(999999999,6,1), CENTURY)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Last_Day(MAKE_DATE(999999999,12,31), ISOYEAR)", ErrorCode.DATE_OVERFLOW);
-    evalFails("Last_Day(MAKE_DATE(999999999,12,31), WEEK)", ErrorCode.DATE_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,6,1), MILLENNIUM)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,6,1), CENTURY)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,12,31), ISOYEAR)", ErrorCode.TEMPORAL_OVERFLOW);
+    evalFails("Last_Day(MAKE_DATE(999999999,12,31), WEEK)", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
   @Test
@@ -1528,7 +1556,7 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Next_Day(FIELD_STRING, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // A result out of the supported range raises an error
-    evalFails("Next_Day(MAKE_DATE(999999999,12,31), 'monday')", ErrorCode.DATE_OVERFLOW);
+    evalFails("Next_Day(MAKE_DATE(999999999,12,31), 'monday')", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
   @Test
@@ -1557,7 +1585,7 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Previous_Day(FIELD_INTEGER, 'monday')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // A result out of the supported range raises an error
-    evalFails("Previous_Day(MAKE_DATE(-999999999,1,1), 'monday')", ErrorCode.DATE_OVERFLOW);
+    evalFails("Previous_Day(MAKE_DATE(-999999999,1,1), 'monday')", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
   /**

@@ -665,14 +665,15 @@ class ConversionFunctionTest extends ExpressionTest {
     // Time Zone Hour:Minute
     // The offset of the system time zone, Europe/Paris in summer
     evalEquals("To_Char(DATE '2019-07-23','TZH:TZM')", "+02:00");
+    // A timestamp keeps the parsed time zone
     evalEquals(
-        "To_Char(To_Date('2019-02-13 15:34:56 -00:30','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
+        "To_Char(CAST('2019-02-13 15:34:56 -00:30' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
         "-00:30");
     evalEquals(
-        "To_Char(To_Date('2019-02-13 15:34:56 -06:00','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
+        "To_Char(CAST('2019-02-13 15:34:56 -06:00' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
         "-06:00");
     evalEquals(
-        "To_Char(To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
+        "To_Char(CAST('2019-02-13 15:34:56 +8:00' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
         "+08:00");
 
     // Time
@@ -867,41 +868,48 @@ class ConversionFunctionTest extends ExpressionTest {
 
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4710, 1, 1));
 
-    // Time zone offset
+    // Time zone offset, a date is without time zone, it keeps the local date and time
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+            "To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+            LocalDateTime.of(2019, 2, 13, 15, 34, 56))
+        .returnType(DateType.DATE_NOT_NULL);
+    // A timestamp keeps the time zone
+    evalEquals(
+        "CAST('2019-02-13 15:34:56 +08:00' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)));
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        "CAST('2019-02-13 15:34:56 +8:00' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)));
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        "CAST('2019-02-13 15:34:56 -04:00' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(-4)));
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 -05:30','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        "CAST('2019-02-13 15:34:56 -05:30' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHoursMinutes(-5, -30)));
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 -00:30','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        "CAST('2019-02-13 15:34:56 -00:30' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHoursMinutes(0, -30)));
 
     // Time zone region
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
+        "CAST('2019-02-13 15:34:56 US/Pacific' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZR')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
     evalEquals(
-        "To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
+        "CAST('Europe/Paris 2019-02-13 15:34:56' AS TIMESTAMP FORMAT 'TZR YYYY-MM-DD HH24:MI:SS')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
     evalEquals(
-        "To_Date('2019-02-13 15:34:56 America/New_York','YYYY-MM-DD HH24:MI:SS TZR')",
+        "CAST('2019-02-13 15:34:56 America/New_York' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZR')",
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("America/New_York")));
     evalFails(
-        "To_Date('2019-02-13 Unknown/Zone','YYYY-MM-DD TZR')",
+        "CAST('2019-02-13 Unknown/Zone' AS TIMESTAMP FORMAT 'YYYY-MM-DD TZR')",
         ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
-    evalFails("To_Date('2019-02-13 XYZ','YYYY-MM-DD TZD')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails(
+        "CAST('2019-02-13 XYZ' AS TIMESTAMP FORMAT 'YYYY-MM-DD TZD')",
+        ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     // An omitted time zone hour at the end of the text
     evalEquals(
-        "To_Date('2019-02-13','YYYY-MM-DD TZH')",
+        "CAST('2019-02-13' AS TIMESTAMP FORMAT 'YYYY-MM-DD TZH')",
         ZonedDateTime.of(2019, 2, 13, 0, 0, 0, 0, ZoneOffset.UTC));
 
     // The era does not reset the day of year or the Julian day
@@ -1020,16 +1028,16 @@ class ConversionFunctionTest extends ExpressionTest {
         "TO_DATE('2024-12-01 12:05:06.123456789','AUTO')",
         LocalDateTime.of(2024, 12, 1, 12, 5, 6, 123456789));
     evalEquals(
-        "TO_DATE('2024-12-01 3:05:06.123456789+02:00','AUTO')",
+        "CAST('2024-12-01 3:05:06.123456789+02:00' AS TIMESTAMP FORMAT 'AUTO')",
         ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 123456789, ZoneOffset.ofHours(2)));
     evalEquals(
-        "TO_DATE('2024-12-01 3:05:06.123456789 +02:00','AUTO')",
+        "CAST('2024-12-01 3:05:06.123456789 +02:00' AS TIMESTAMP FORMAT 'AUTO')",
         ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 123456789, ZoneOffset.ofHours(2)));
     evalEquals(
-        "TO_DATE('2024-12-01 3:05:06-05:30','AUTO')",
+        "CAST('2024-12-01 3:05:06-05:30' AS TIMESTAMP FORMAT 'AUTO')",
         ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 0, ZoneOffset.ofHoursMinutes(-5, -30)));
     evalEquals(
-        "TO_DATE('2024-12-01 3:05:06-00:30','AUTO')",
+        "CAST('2024-12-01 3:05:06-00:30' AS TIMESTAMP FORMAT 'AUTO')",
         ZonedDateTime.of(2024, 12, 1, 3, 5, 6, 0, ZoneOffset.ofHoursMinutes(0, -30)));
     evalEquals("TO_DATE('20241201230506','AUTO')", LocalDateTime.of(2024, 12, 1, 23, 5, 6));
     evalEquals("TO_DATE('20241201T230506','AUTO')", LocalDateTime.of(2024, 12, 1, 23, 5, 6));
@@ -1064,34 +1072,35 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // AUTO format date with time part and time zone offset
     evalEquals(
-        "TO_DATE('2024-2-5 13:05+02:00')",
+        "CAST('2024-2-5 13:05+02:00' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05+0200')",
+        "CAST('2024-2-5 13:05+0200' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05+02')",
+        "CAST('2024-2-5 13:05+02' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05-02:00')",
+        "CAST('2024-2-5 13:05-02:00' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05-0200')",
+        "CAST('2024-2-5 13:05-0200' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05-02')",
+        "CAST('2024-2-5 13:05-02' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05 -4:00')",
+        "CAST('2024-2-5 13:05 -4:00' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.ofHours(-4)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:05Z')", OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.UTC));
+        "CAST('2024-2-5 13:05Z' AS TIMESTAMP)",
+        OffsetDateTime.of(2024, 2, 5, 13, 5, 0, 0, ZoneOffset.UTC));
 
     evalEquals(
-        "TO_DATE('2024-2-5 13:5:9.123456789+02:00')",
+        "CAST('2024-2-5 13:5:9.123456789+02:00' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 9, 123456789, ZoneOffset.ofHours(2)));
     evalEquals(
-        "TO_DATE('2024-2-5 13:5:9.123456789 +02:00')",
+        "CAST('2024-2-5 13:5:9.123456789 +02:00' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 9, 123456789, ZoneOffset.ofHours(2)));
 
     // AUTO format short date and time
@@ -1108,7 +1117,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals(
         "TO_DATE('20240205T130510.123456789')", LocalDateTime.of(2024, 2, 5, 13, 5, 10, 123456789));
     evalEquals(
-        "TO_DATE('20240205T130510.123456789-0200')",
+        "CAST('20240205T130510.123456789-0200' AS TIMESTAMP)",
         OffsetDateTime.of(2024, 2, 5, 13, 5, 10, 123456789, ZoneOffset.ofHours(-2)));
 
     evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
@@ -1120,7 +1129,7 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Time zones are case-sensitive
     evalFails(
-        "TO_DATE('2019-02-13 15:34:56 europe/london','YYYY-MM-DD HH24:MI:SS TZR')",
+        "CAST('2019-02-13 15:34:56 europe/london' AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZR')",
         ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
 
     // Era, meridian indicator, RR year and ; separator

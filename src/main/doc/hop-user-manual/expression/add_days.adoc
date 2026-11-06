@@ -37,7 +37,7 @@ days:: The number of days to add. A negative number subtracts days.
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 

@@ -229,7 +229,7 @@ public enum ErrorCode {
    *
    * <p>Message: <code>Date overflow in “{0}”, the result is out of the supported range</code>
    */
-  DATE_OVERFLOW,
+  TEMPORAL_OVERFLOW,
   /**
    * The result of an interval arithmetic is out of the range of the {@code INTERVAL} data type.
    *

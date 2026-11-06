@@ -31,7 +31,7 @@ minutes:: The number of minutes to add. A negative number subtracts minutes.
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 
@@ -42,6 +42,7 @@ Date
 == Examples
 
 ----
+ADD_MINUTES(DATE '2024-02-18', 4) returns DATE '2024-02-18 00:04:00'
 ADD_MINUTES(TIMESTAMP '2024-02-18 22:58:59', 4) returns TIMESTAMP '2024-02-18 23:02:59'
 ----
 

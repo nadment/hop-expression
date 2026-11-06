@@ -31,7 +31,7 @@ weekday:: The full English name of the day of the week (`'monday'`, `'tuesday'`,
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 

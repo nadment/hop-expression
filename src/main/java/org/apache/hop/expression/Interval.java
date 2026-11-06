@@ -19,7 +19,8 @@ package org.apache.hop.expression;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1045,20 +1046,22 @@ public class Interval implements Serializable, Comparable<Interval> {
    * Adds this interval to the specified temporal object. The months are added first, then the
    * calendar days, which keep the local time across a daylight saving time change, then the time.
    *
+   * <p>The result is of the same class, a date without time zone stays without time zone.
+   *
    * @param temporal the temporal object to adjust, not null
    */
-  public ZonedDateTime addTo(ZonedDateTime temporal) {
+  public Temporal addTo(Temporal temporal) {
     if (months != 0) {
-      temporal = temporal.plusMonths(months);
+      temporal = temporal.plus(months, ChronoUnit.MONTHS);
     }
     if (days != 0) {
-      temporal = temporal.plusDays(days);
+      temporal = temporal.plus(days, ChronoUnit.DAYS);
     }
     if (seconds != 0) {
-      temporal = temporal.plusSeconds(seconds);
+      temporal = temporal.plus(seconds, ChronoUnit.SECONDS);
     }
     if (nanos != 0) {
-      temporal = temporal.plusNanos(nanos);
+      temporal = temporal.plus(nanos, ChronoUnit.NANOS);
     }
     return temporal;
   }
@@ -1068,7 +1071,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    *
    * @param temporal the temporal object to adjust, not null
    */
-  public ZonedDateTime subtractFrom(ZonedDateTime temporal) {
+  public Temporal subtractFrom(Temporal temporal) {
     return negate().addTo(temporal);
   }
 }

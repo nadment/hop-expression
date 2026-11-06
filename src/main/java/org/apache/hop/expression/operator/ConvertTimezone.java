@@ -57,7 +57,7 @@ public class ConvertTimezone extends Function {
       try {
         return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
       } catch (DateTimeException e) {
-        throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+        throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
       }
     } else {
       ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
@@ -67,7 +67,7 @@ public class ConvertTimezone extends Function {
       try {
         return value.withZoneSameInstant(zoneTarget);
       } catch (DateTimeException e) {
-        throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+        throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
       }
     }
   }

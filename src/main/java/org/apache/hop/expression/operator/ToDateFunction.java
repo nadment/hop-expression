@@ -91,7 +91,8 @@ public class ToDateFunction extends Function {
     public @Nullable Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
       if (value == null) return null;
-      return format.parse(value);
+      // A date without time zone, a time zone in the string is dropped like with CAST
+      return format.parse(value).toLocalDateTime();
     }
   }
 

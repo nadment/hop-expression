@@ -31,7 +31,7 @@ weeks:: The number of weeks to add. A negative number subtracts weeks.
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 

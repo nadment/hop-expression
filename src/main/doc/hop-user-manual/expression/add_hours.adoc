@@ -31,7 +31,7 @@ hours:: The number of hours to add. A negative number subtracts hours.
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 
@@ -42,6 +42,7 @@ Date
 == Examples
 
 ----
+ADD_HOURS(DATE '2024-02-18', 4) returns DATE '2024-02-18 04:00:00'
 ADD_HOURS(TIMESTAMP '2024-02-18 22:58:59', 4) returns TIMESTAMP '2024-02-19 02:58:59'
 ----
 

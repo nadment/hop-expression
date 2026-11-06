@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
 import org.apache.hop.expression.ErrorCode;
@@ -40,7 +40,7 @@ public class NextDayFunction extends Function {
   public NextDayFunction() {
     super(
         "NEXT_DAY",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TEMPORAL_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/next_day.html");
@@ -48,7 +48,7 @@ public class NextDayFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
+    Temporal value = operands[0].getValue(Temporal.class);
     if (value == null) return null;
     String dow = operands[1].getValue(String.class);
     if (dow == null) return null;
@@ -63,7 +63,7 @@ public class NextDayFunction extends Function {
     try {
       return value.with(TemporalAdjusters.next(dayofweek));
     } catch (DateTimeException e) {
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 }

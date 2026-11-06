@@ -52,7 +52,7 @@ public class TryFunction extends Function {
     } catch (ExpressionException exception) {
       return switch (exception.getErrorCode()) {
         case ARITHMETIC_OVERFLOW,
-                DATE_OVERFLOW,
+                TEMPORAL_OVERFLOW,
                 INTERVAL_OVERFLOW,
                 ARGUMENT_OUT_OF_RANGE,
                 DIVISION_BY_ZERO,

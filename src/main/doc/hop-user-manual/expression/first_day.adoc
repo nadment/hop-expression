@@ -40,7 +40,7 @@ unit:: The optional time unit, `MONTH` by default. Supported units:
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 

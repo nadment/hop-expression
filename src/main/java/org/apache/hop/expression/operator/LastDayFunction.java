@@ -18,9 +18,9 @@ package org.apache.hop.expression.operator;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.EnumSet;
@@ -69,7 +69,7 @@ public class LastDayFunction extends Function {
   public LastDayFunction() {
     super(
         "LAST_DAY",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TEMPORAL_NULLABLE,
         OperandTypes.DATE.or(OperandTypes.DATE_TIMEUNIT),
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/last_day.html");
@@ -92,7 +92,7 @@ public class LastDayFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
+    Temporal value = operands[0].getValue(Temporal.class);
     if (value == null) return null;
 
     // Default to last day of month
@@ -100,7 +100,7 @@ public class LastDayFunction extends Function {
     if (operands.length == 2) {
       TimeUnit unit = operands[1].getValue(TimeUnit.class);
 
-      int year = value.getYear();
+      int year = value.get(ChronoField.YEAR);
       adjuster =
           switch (unit) {
               // Last year of the period starting at the same first year as DATE_TRUNC
@@ -127,7 +127,7 @@ public class LastDayFunction extends Function {
     try {
       return value.with(adjuster);
     } catch (DateTimeException e) {
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 

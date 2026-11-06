@@ -18,9 +18,9 @@ package org.apache.hop.expression.operator;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.EnumSet;
@@ -67,7 +67,7 @@ public class FirstDayFunction extends Function {
   public FirstDayFunction() {
     super(
         "FIRST_DAY",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TEMPORAL_NULLABLE,
         OperandTypes.DATE.or(OperandTypes.DATE_TIMEUNIT),
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/first_day.html");
@@ -88,8 +88,8 @@ public class FirstDayFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null) return null;
+    Temporal temporal = operands[0].getValue(Temporal.class);
+    if (temporal == null) return null;
 
     // Default to first day of month
     TemporalAdjuster adjuster = TemporalAdjusters.firstDayOfMonth();
@@ -97,7 +97,7 @@ public class FirstDayFunction extends Function {
     if (operands.length == 2) {
       TimeUnit unit = operands[1].getValue(TimeUnit.class);
 
-      int year = value.getYear();
+      int year = temporal.get(ChronoField.YEAR);
       adjuster =
           switch (unit) {
               // Same first year as DATE_TRUNC
@@ -120,9 +120,9 @@ public class FirstDayFunction extends Function {
 
     // Adjust the date, the time is kept
     try {
-      return value.with(adjuster);
+      return temporal.with(adjuster);
     } catch (DateTimeException e) {
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 

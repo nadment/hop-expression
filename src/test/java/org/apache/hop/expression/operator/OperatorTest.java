@@ -2181,10 +2181,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("DATE '2020-01-31' + INTERVAL '1 month 1 day'", LocalDate.of(2020, 3, 1));
 
       // A result out of the supported range raises an error
-      evalFails("FIELD_DATE+INTERVAL 2000000000 YEARS", ErrorCode.DATE_OVERFLOW);
-      evalFails("FIELD_DATE-INTERVAL 2000000000 YEARS", ErrorCode.DATE_OVERFLOW);
-      evalFails("DATE '2019-01-15'+1000000000000", ErrorCode.DATE_OVERFLOW);
-      evalFails("DATE '2019-01-15'-1000000000000", ErrorCode.DATE_OVERFLOW);
+      evalFails("FIELD_DATE+INTERVAL 2000000000 YEARS", ErrorCode.TEMPORAL_OVERFLOW);
+      evalFails("FIELD_DATE-INTERVAL 2000000000 YEARS", ErrorCode.TEMPORAL_OVERFLOW);
+      evalFails("DATE '2019-01-15'+1000000000000", ErrorCode.TEMPORAL_OVERFLOW);
+      evalFails("DATE '2019-01-15'-1000000000000", ErrorCode.TEMPORAL_OVERFLOW);
       evalEquals("DATE '9999-12-31'+1", LocalDate.of(10000, 1, 1));
 
       optimize(

@@ -17,7 +17,8 @@
 package org.apache.hop.expression.operator;
 
 import java.time.DateTimeException;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -41,7 +42,7 @@ public class AddNanosecondsFunction extends Function {
   public AddNanosecondsFunction() {
     super(
         "ADD_NANOSECONDS",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TEMPORAL_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/add_nanoseconds.html");
@@ -60,16 +61,16 @@ public class AddNanosecondsFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
-    if (datetime == null) return null;
+    Temporal temporal = operands[0].getValue(Temporal.class);
+    if (temporal == null) return null;
 
     Long nanos = operands[1].getValue(Long.class);
     if (nanos == null) return null;
 
     try {
-      return datetime.plusNanos(nanos);
+      return temporal.plus(nanos, ChronoUnit.NANOS);
     } catch (DateTimeException | ArithmeticException e) {
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 }

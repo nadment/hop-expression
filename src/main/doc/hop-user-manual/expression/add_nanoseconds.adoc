@@ -31,13 +31,20 @@ nanoseconds:: The number of nanoseconds to add. A negative number subtracts nano
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 
 * If nanoseconds has a decimal part, it is truncated before the addition.
 * A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+ADD_NANOSECONDS(DATE '2024-02-18', 4) returns DATE '2024-02-18 00:00:00.000000004'
+ADD_NANOSECONDS(TIMESTAMP '2024-02-18 22:58:59', 1000000) returns TIMESTAMP '2024-02-18 22:58:59.001'
+----
 
 == See also
 

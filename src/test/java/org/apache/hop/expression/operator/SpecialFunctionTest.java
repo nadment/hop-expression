@@ -134,7 +134,7 @@ class SpecialFunctionTest extends ExpressionTest {
       evalNull("TRY(9223372036854775807::INTEGER+1::INTEGER)").returnType(IntegerType.INTEGER);
       optimize("TRY(9223372036854775807::INTEGER+1::INTEGER)", "NULL");
 
-      // @code{ErrorCode.DATE_OVERFLOW}
+      // @code{ErrorCode.TEMPORAL_OVERFLOW}
       evalNull("TRY(ADD_YEARS(FIELD_DATE,2000000000))").returnType(DateType.DATE);
       evalNull("TRY(ADD_DAYS(FIELD_DATE,1000000000000))");
 

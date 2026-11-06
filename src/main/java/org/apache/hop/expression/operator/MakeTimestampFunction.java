@@ -87,7 +87,7 @@ public class MakeTimestampFunction extends Function {
       // A timestamp in the system time zone
       return datetime.atZone(ZoneId.systemDefault());
     } catch (DateTimeException | ArithmeticException e) {
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 }

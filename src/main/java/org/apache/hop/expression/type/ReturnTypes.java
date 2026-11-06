@@ -89,6 +89,22 @@ public final class ReturnTypes {
   public static final IReturnTypeInference TIMESTAMP_NULLABLE =
       explicit(TimestampType.TIMESTAMP).andThen(TypeTransforms.TO_NULLABLE);
 
+  /**
+   * Type-inference strategy of a function that adjusts a date: the result type is TIMESTAMP if an
+   * operand is a TIMESTAMP, otherwise DATE, nullable if an operand is nullable.
+   */
+  public static final IReturnTypeInference TEMPORAL_NULLABLE =
+      ((IReturnTypeInference)
+              call -> {
+                for (IExpression operand : call.getOperands()) {
+                  if (operand.getType().isName(TypeName.TIMESTAMP)) {
+                    return TimestampType.TIMESTAMP;
+                  }
+                }
+                return DateType.DATE;
+              })
+          .andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of the call is JSON. */
   public static final IReturnTypeInference JSON_NULLABLE =
       explicit(JsonType.JSON).andThen(TypeTransforms.TO_NULLABLE);

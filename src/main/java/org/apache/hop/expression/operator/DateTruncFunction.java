@@ -18,8 +18,11 @@ package org.apache.hop.expression.operator;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -41,7 +44,7 @@ public class DateTruncFunction extends Function {
   public DateTruncFunction() {
     super(
         "DATE_TRUNC",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TEMPORAL_NULLABLE,
         OperandTypes.TIMEUNIT_DATE,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/date_trunc.html");
@@ -52,43 +55,58 @@ public class DateTruncFunction extends Function {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
-    ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
-    if (datetime == null) return null;
+    Temporal temporal = operands[1].getValue(Temporal.class);
+    if (temporal == null) return null;
 
     try {
       return switch (unit) {
-        case HOUR -> datetime.truncatedTo(ChronoUnit.HOURS);
-        case MINUTE -> datetime.truncatedTo(ChronoUnit.MINUTES);
-        case SECOND -> datetime.truncatedTo(ChronoUnit.SECONDS);
-        case MILLISECOND -> datetime.truncatedTo(ChronoUnit.MILLIS);
-        case MICROSECOND -> datetime.truncatedTo(ChronoUnit.MICROS);
-        case NANOSECOND -> datetime.truncatedTo(ChronoUnit.NANOS);
-        default -> truncateToDayOrMore(unit, datetime);
+        case HOUR -> truncatedTo(temporal, ChronoUnit.HOURS);
+        case MINUTE -> truncatedTo(temporal, ChronoUnit.MINUTES);
+        case SECOND -> truncatedTo(temporal, ChronoUnit.SECONDS);
+        case MILLISECOND -> truncatedTo(temporal, ChronoUnit.MILLIS);
+        case MICROSECOND -> truncatedTo(temporal, ChronoUnit.MICROS);
+        case NANOSECOND -> truncatedTo(temporal, ChronoUnit.NANOS);
+        default -> truncateToDayOrMore(temporal, unit);
       };
     } catch (DateTimeException e) {
       // The first year of the decade can be before the first supported year
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 
+  /**
+   * Truncates a date-time, without or with time zone, to a unit. The result is of the same class.
+   */
+  private static Temporal truncatedTo(Temporal temporal, ChronoUnit unit) {
+    return switch (temporal) {
+      case LocalDateTime local -> local.truncatedTo(unit);
+      case ZonedDateTime zoned -> zoned.truncatedTo(unit);
+      default -> throw new IllegalArgumentException("Not a date-time: " + temporal);
+    };
+  }
+
   /** Truncates to a unit of a day or more, so the time is always reset to midnight. */
-  private static ZonedDateTime truncateToDayOrMore(TimeUnit unit, ZonedDateTime datetime) {
-    ZonedDateTime day = datetime.truncatedTo(ChronoUnit.DAYS);
+  private static Temporal truncateToDayOrMore(Temporal temporal, TimeUnit unit) {
+    Temporal day = truncatedTo(temporal, ChronoUnit.DAYS);
+    int year = day.get(ChronoField.YEAR);
 
     return switch (unit) {
-      case MILLENNIUM -> day.withDayOfYear(1).withYear(firstYear(day.getYear(), 1000));
-      case CENTURY -> day.withDayOfYear(1).withYear(firstYear(day.getYear(), 100));
-      case DECADE -> day.withDayOfYear(1).withYear(firstYearOfDecade(day.getYear()));
+      case MILLENNIUM ->
+          day.with(ChronoField.DAY_OF_YEAR, 1).with(ChronoField.YEAR, firstYear(year, 1000));
+      case CENTURY ->
+          day.with(ChronoField.DAY_OF_YEAR, 1).with(ChronoField.YEAR, firstYear(year, 100));
+      case DECADE ->
+          day.with(ChronoField.DAY_OF_YEAR, 1).with(ChronoField.YEAR, firstYearOfDecade(year));
       case YEAR ->
           // First day of the year
-          day.withDayOfYear(1);
+          day.with(ChronoField.DAY_OF_YEAR, 1);
       case MONTH ->
           // First day of the month
-          day.withDayOfMonth(1);
+          day.with(ChronoField.DAY_OF_MONTH, 1);
       case QUARTER -> {
         // First day of the quarter (month value is 1-based, so shift to 0-based before dividing)
-        int month = ((day.getMonthValue() - 1) / 3) * 3 + 1;
-        yield day.withMonth(month).withDayOfMonth(1);
+        int month = ((day.get(ChronoField.MONTH_OF_YEAR) - 1) / 3) * 3 + 1;
+        yield day.with(ChronoField.MONTH_OF_YEAR, month).with(ChronoField.DAY_OF_MONTH, 1);
       }
       case WEEK ->
           // First day of the week (the week starts on Monday)

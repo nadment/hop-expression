@@ -31,7 +31,7 @@ quarters:: The number of quarters to add. A negative number subtracts quarters.
 
 == Returns
 
-Date
+Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 

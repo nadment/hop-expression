@@ -64,7 +64,7 @@ public class MakeDateFunction extends Function {
 
       return date.atStartOfDay();
     } catch (DateTimeException | ArithmeticException e) {
-      throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
+      throw new ExpressionException(ErrorCode.TEMPORAL_OVERFLOW, getName());
     }
   }
 }
