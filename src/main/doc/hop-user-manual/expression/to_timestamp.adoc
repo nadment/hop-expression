@@ -1,0 +1,64 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= TO_TIMESTAMP, TRY_TO_TIMESTAMP
+
+Converts a string or an epoch time value to a timestamp, with its time zone.
+
+== Syntax
+
+----
+TO_TIMESTAMP( string [, format ] )
+TRY_TO_TIMESTAMP( string [, format ] )
+TO_TIMESTAMP( numeric )
+TRY_TO_TIMESTAMP( numeric )
+----
+
+== Arguments
+
+string:: The string to convert.
+format:: The date format model used to interpret string, as in xref:to_date.adoc["TO_DATE",role=fun].
+numeric:: The number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970). The fractional part gives the nanoseconds.
+
+== Returns
+
+Timestamp
+
+== Usage
+
+* The time zone of the string is kept, an offset like `+02:00` or a region like `Europe/Paris`. A string without time zone is in the time zone of the system.
+* If no format is specified, string is interpreted with the ISO-8601 formats, like with the format `AUTO`.
+* A numeric is the instant of the epoch time value, in the UTC time zone.
+* `TO_TIMESTAMP` raises an error if the conversion is not possible, `TRY_TO_TIMESTAMP` returns NULL.
+* Returns NULL if the string or the numeric is NULL.
+
+== Examples
+
+----
+TO_TIMESTAMP('2019-02-13 15:34:56 +08:00') returns TIMESTAMP '2019-02-13 15:34:56 +08:00'
+TO_TIMESTAMP('2019-02-13 15:34:56 -05:30','YYYY-MM-DD HH24:MI:SS TZH:TZM') returns TIMESTAMP '2019-02-13 15:34:56 -05:30'
+TO_TIMESTAMP('2019-02-13 15:34:56 Europe/Paris','YYYY-MM-DD HH24:MI:SS TZR') returns TIMESTAMP '2019-02-13 15:34:56' AT TIME ZONE 'Europe/Paris'
+TO_TIMESTAMP(0) returns TIMESTAMP '1970-01-01 00:00:00 +00:00'
+TO_TIMESTAMP(1284352323.123) returns TIMESTAMP '2010-09-13 04:32:03.123 +00:00'
+TRY_TO_TIMESTAMP('2019-02-30') returns NULL
+----
+
+== See also
+
+* xref:to_date.adoc["TO_DATE",role=fun]
+* xref:to_char.adoc["TO_CHAR",role=fun]
+* xref:cast.adoc["CAST",role=fun]
+* xref:make_timestamp.adoc["MAKE_TIMESTAMP",role=fun]

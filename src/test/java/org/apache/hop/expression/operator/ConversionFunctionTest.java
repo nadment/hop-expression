@@ -44,6 +44,7 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -1388,6 +1389,56 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_NUMBER(NULL_DATE)");
 
     optimize("TRY_TO_NUMBER(FIELD_STRING)", "TRY(TO_NUMBER(FIELD_STRING))");
+  }
+
+  @Test
+  void To_Timestamp() throws Exception {
+    // The time zone of the string is kept
+    evalEquals(
+            "TO_TIMESTAMP('2019-02-13 15:34:56 +08:00')",
+            ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals(
+        "TO_TIMESTAMP('2019-02-13 15:34:56 -05:30','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHoursMinutes(-5, -30)));
+    evalEquals(
+        "TO_TIMESTAMP('2019-02-13 15:34:56 Asia/Tokyo','YYYY-MM-DD HH24:MI:SS TZR')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Asia/Tokyo")));
+    // A string without time zone is in the system time zone
+    evalEquals(
+        "TO_TIMESTAMP('2019-02-13 15:34:56')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.systemDefault()));
+
+    // An epoch time value is the instant, in UTC
+    evalEquals("TO_TIMESTAMP(0)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals(
+        "TO_TIMESTAMP(1284352323.123)",
+        ZonedDateTime.of(2010, 9, 13, 4, 32, 3, 123000000, ZoneOffset.UTC));
+    evalEquals("EPOCH(TO_TIMESTAMP(1284352323))", 1284352323L);
+
+    // The documentation examples are written back with their time zone
+    optimize("TO_TIMESTAMP(0)", "TIMESTAMP '1970-01-01 00:00:00 +00:00'");
+    optimize(
+        "TO_TIMESTAMP('2019-02-13 15:34:56 Europe/Paris','YYYY-MM-DD HH24:MI:SS TZR')",
+        "TIMESTAMP '2019-02-13 15:34:56'");
+
+    evalNull("TO_TIMESTAMP(NULL_STRING)").returnType(TimestampType.TIMESTAMP);
+    evalNull("TO_TIMESTAMP(NULL_INTEGER)");
+    evalFails("TO_TIMESTAMP('2019-02-30')", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    evalFails("TO_TIMESTAMP(9223372036854775807)", ErrorCode.CONVERSION_ERROR);
+  }
+
+  @Test
+  void Try_To_Timestamp() throws Exception {
+    evalEquals(
+            "TRY_TO_TIMESTAMP('2019-02-13 15:34:56 +08:00')",
+            ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals("TRY_TO_TIMESTAMP(0)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalNull("TRY_TO_TIMESTAMP('2019-02-30')");
+    evalNull("TRY_TO_TIMESTAMP(9223372036854775807)");
+    evalNull("TRY_TO_TIMESTAMP(NULL_STRING)");
   }
 
   @Test

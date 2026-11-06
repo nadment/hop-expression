@@ -17,12 +17,20 @@
 
 package org.apache.hop.expression.util;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Conversions to and from a TIMESTAMP, a date-time with a time zone held by a {@link
@@ -46,6 +54,50 @@ public final class TimestampConversion {
    */
   public static ZonedDateTime convert(final String value) {
     return FORMAT.parse(value);
+  }
+
+  /**
+   * Convert the epoch time value to a timestamp at its instant, in the UTC time zone: 0 is
+   * 1970-01-01 00:00:00 +00:00.
+   *
+   * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
+   *     1970)
+   */
+  public static @Nullable ZonedDateTime convert(final @Nullable Long seconds) {
+    if (seconds == null) {
+      return null;
+    }
+    try {
+      return ZonedDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneOffset.UTC);
+    } catch (DateTimeException e) {
+      throw createConversionError(seconds);
+    }
+  }
+
+  /**
+   * Convert the epoch time value with the fractions of seconds to a timestamp at its instant, in
+   * the UTC time zone.
+   *
+   * @param number number of seconds that have elapsed since the epoch, the fractional part gives
+   *     the nanoseconds
+   */
+  public static @Nullable ZonedDateTime convert(final @Nullable BigDecimal number) {
+    if (number == null) {
+      return null;
+    }
+    try {
+      long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+      // A number out of the range of epoch seconds raises an error instead of wrapping around
+      Instant instant = Instant.ofEpochSecond(number.toBigInteger().longValueExact(), nanos);
+      return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+    } catch (ArithmeticException | DateTimeException e) {
+      throw createConversionError(number);
+    }
+  }
+
+  private static ExpressionException createConversionError(final Object value) {
+    return new ExpressionException(
+        ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.TIMESTAMP, value);
   }
 
   /**
