@@ -206,7 +206,7 @@ public class CastFunction extends Function {
 
     // Cast a date to a string without truncation with a constant format
     // CAST(date AS STRING FORMAT 'format') → TO_CHAR(date,'format'), its format is compiled once
-    else if (Types.isDate(call.getOperand(0).getType())
+    else if (Types.isTemporal(call.getOperand(0).getType())
         && call.getType().equalsIgnoreNullability(StringType.STRING)
         && call.getOperand(2).isConstant()) {
       return new Call(ToCharFunction.INSTANCE, call.getOperand(0), call.getOperand(2));
@@ -232,8 +232,8 @@ public class CastFunction extends Function {
     if (Types.isString(from) && Types.isNumeric(to)
         || Types.isNumeric(from) && Types.isString(to)) {
       NumberFormat.of(format);
-    } else if (Types.isString(from) && Types.isDate(to)
-        || Types.isDate(from) && Types.isString(to)) {
+    } else if (Types.isString(from) && Types.isTemporal(to)
+        || Types.isTemporal(from) && Types.isString(to)) {
       DateTimeFormat.of(format);
     } else {
       throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, format);

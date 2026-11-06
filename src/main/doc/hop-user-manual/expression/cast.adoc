@@ -44,6 +44,7 @@ type:: The data type to convert the value to. Supported data types:
 * Number
 * String
 * Json
+* Timestamp
 
 format:: The optional format used for the conversion:
 * a xref:numberformat.adoc[number format] to convert a string to a number or an integer, or a number or an integer to a string,
@@ -70,6 +71,10 @@ The data type of the returned value is the type specified in the `AS` clause.
 * Date:
 ** An integer or a number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970), and a date converts back to it; the fractions of a number are nanoseconds. The date is without time zone, its date and time are the ones of the epoch in UTC, for example `CAST(0 AS DATE)` returns DATE '1970-01-01', see xref:epoch.adoc["EPOCH",role=fun]. Converted to an integer or a number with a scale, the fractions of seconds are rounded like a number, for example `CAST(TIMESTAMP '1970-01-01 00:00:01.5' AS INTEGER)` returns 2.
 ** A date converts to a string without format with `YYYY-MM-DD`, followed by the time `HH24:MI:SS` if it is not midnight and by the fractional seconds `.FF9` if they are not zero, for example `CAST(TIMESTAMP '2019-02-25 12:34:56' AS STRING)` returns '2019-02-25 12:34:56'.
+* Timestamp:
+** A timestamp has a time zone. A string keeps its time zone, a string without time zone is in the time zone of the system, for example `CAST('2020-05-25 20:48:00 +05:00' AS TIMESTAMP)`.
+** A date without time zone is in the time zone of the system.
+** A timestamp is accepted where a date is expected, like in the date functions.
 * String:
 ** With a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.
 ** An interval converts with the format `+Y-M D HH:MM:SS.FFFFFFFFF`.

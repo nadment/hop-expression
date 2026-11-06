@@ -31,7 +31,7 @@ timezone:: The name of the time zone.
 
 == Returns
 
-Date
+Timestamp
 
 == Usage
 

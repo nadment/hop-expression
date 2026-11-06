@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -42,6 +43,7 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.util.JsonConversion;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -3656,6 +3658,40 @@ public class OperatorTest extends ExpressionTest {
       // Remove lossless cast
       optimize("Cast(FIELD_DATE as DATE)", "FIELD_DATE");
       optimize("'2021-02-08'::DATE", "DATE '2021-02-08'");
+    }
+
+    @Test
+    void castToTimestamp() throws Exception {
+      // A string with a time zone keeps it
+      evalEquals(
+              "CAST('2020-05-25 20:48:00 +05:00' AS TIMESTAMP)",
+              ZonedDateTime.of(2020, 5, 25, 20, 48, 0, 0, ZoneOffset.ofHours(5)))
+          .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+      // A string without time zone is in the system time zone
+      evalEquals(
+          "'2020-05-25 20:48:00'::TIMESTAMP",
+          ZonedDateTime.of(2020, 5, 25, 20, 48, 0, 0, ZoneId.systemDefault()));
+      // A date without time zone is in the system time zone
+      evalEquals(
+          "CAST(DATE '2020-05-25' AS TIMESTAMP)",
+          ZonedDateTime.of(2020, 5, 25, 0, 0, 0, 0, ZoneId.systemDefault()));
+      evalEquals(
+          "cast('2020-05-25 20:48:00 +05:00' as timestamp)",
+          ZonedDateTime.of(2020, 5, 25, 20, 48, 0, 0, ZoneOffset.ofHours(5)));
+      evalEquals("TYPEOF(CAST(FIELD_STRING AS TIMESTAMP))", "TIMESTAMP");
+
+      // A timestamp is accepted where a date is expected
+      evalEquals("YEAR(CAST('2020-05-25 20:48:00 +05:00' AS TIMESTAMP))", 2020L);
+
+      // Null handling
+      evalNull("CAST(NULL_STRING AS TIMESTAMP)").returnType(TimestampType.TIMESTAMP);
+
+      optimize("CAST(FIELD_STRING AS TIMESTAMP)");
+      optimize("FIELD_STRING::TIMESTAMP", "CAST(FIELD_STRING AS TIMESTAMP)");
+
+      // Unsupported conversion
+      evalFails("CAST(FIELD_INTEGER AS TIMESTAMP)", ErrorCode.UNSUPPORTED_CONVERSION);
+      evalFails("CAST(FIELD_BOOLEAN_TRUE AS TIMESTAMP)", ErrorCode.UNSUPPORTED_CONVERSION);
     }
 
     @Test

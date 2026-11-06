@@ -54,7 +54,7 @@ public class ToNumberFunction extends Function {
       throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (Types.isDate(type)) {
+    if (Types.isTemporal(type)) {
       return new Call(DateToNumberFunction.INSTANCE, call.getOperands());
     }
 

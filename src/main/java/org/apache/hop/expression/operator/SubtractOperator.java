@@ -77,7 +77,7 @@ public class SubtractOperator extends BinaryOperator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    if (Types.isDate(left.getType())) {
+    if (Types.isTemporal(left.getType())) {
       // Supports the basic subtraction of days to DATE values
       if (right.getType().isFamily(TypeFamily.NUMERIC)) {
         return new Call(

@@ -37,6 +37,7 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -591,11 +592,11 @@ public class LiteralTest extends ExpressionTest {
     evalEquals(
             "TIMESTAMP '2021-01-01 15:28' AT TIME ZONE 'UTC'",
             OffsetDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.UTC))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(
             "TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'America/New_York'",
             ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneId.of("America/New_York")))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(
         "TIMESTAMP '2021-01-01 15:28:59.123' AT TIME ZONE 'US/Pacific'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 123000000, ZoneId.of("US/Pacific")));

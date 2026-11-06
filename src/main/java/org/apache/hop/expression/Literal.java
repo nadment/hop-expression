@@ -275,7 +275,10 @@ public final class Literal implements IExpression {
           unparseBinary(writer, (byte[]) value);
           break;
         case DATE:
-          unparseDate(writer, (ZonedDateTime) value);
+          unparseDate(writer, (ZonedDateTime) value, false);
+          break;
+        case TIMESTAMP:
+          unparseDate(writer, (ZonedDateTime) value, true);
           break;
         case INTERVAL:
           unparseInterval(writer, (Interval) value);
@@ -328,12 +331,17 @@ public final class Literal implements IExpression {
 
   /**
    * Unparses a date literal, or a timestamp literal if it has a time, with its time zone if it is
-   * not UTC.
+   * not the system time zone.
+   *
+   * @param writer the writer
+   * @param datetime the date-time
+   * @param withTimeZone true to always write the time zone, for a TIMESTAMP
    */
-  private static void unparseDate(final StringWriter writer, final ZonedDateTime datetime) {
+  private static void unparseDate(
+      final StringWriter writer, final ZonedDateTime datetime, final boolean withTimeZone) {
     int nano = datetime.getNano();
     // The date literals are in the system time zone, another time zone is written
-    boolean isSystemZone = datetime.getZone().equals(ZoneId.systemDefault());
+    boolean isSystemZone = !withTimeZone && datetime.getZone().equals(ZoneId.systemDefault());
     if (isSystemZone
         && nano == 0
         && datetime.getHour() == 0

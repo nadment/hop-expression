@@ -92,6 +92,22 @@ public enum TypeName {
       -1,
       ZonedDateTime.class),
 
+  /**
+   * Date-time value with nanosecond precision and a time zone, offset or region. It is declared
+   * after DATE, a date-time value is a DATE by default.
+   */
+  TIMESTAMP(
+      TypeFamily.TEMPORAL,
+      TypeComparability.ALL,
+      true,
+      false,
+      false,
+      -1,
+      -1,
+      -1,
+      -1,
+      ZonedDateTime.class),
+
   /** A Json type */
   JSON(
       TypeFamily.JSON,
@@ -265,8 +281,10 @@ public enum TypeName {
 
     return switch (this) {
       case BOOLEAN -> name.is(INTEGER, NUMBER, STRING);
-      case STRING -> name.is(BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON, INET, INTERVAL);
-      case DATE -> name.is(INTEGER, NUMBER, STRING);
+      case STRING ->
+          name.is(BOOLEAN, INTEGER, NUMBER, DATE, TIMESTAMP, BINARY, JSON, INET, INTERVAL);
+      case DATE -> name.is(INTEGER, NUMBER, STRING, TIMESTAMP);
+      case TIMESTAMP -> name.is(DATE, STRING);
       case INTEGER -> name.is(NUMBER, BOOLEAN, STRING, DATE);
       case NUMBER -> name.is(INTEGER, BOOLEAN, STRING, DATE);
       case BINARY, JSON, INET, INTERVAL -> name.is(STRING);
@@ -288,7 +306,11 @@ public enum TypeName {
         // TODO: NUMBER to INTEGER can overflow, not sure it's a good choice to coerce
       case NUMBER -> name.is(INTEGER, BOOLEAN, STRING);
       case STRING -> name.is(BINARY);
-      case DATE, BINARY, JSON, INTERVAL, INET -> name.is(STRING);
+        // A date without time zone and a date with time zone are coerced to each other, a date
+        // without time zone is in the system time zone
+      case DATE -> name.is(STRING, TIMESTAMP);
+      case TIMESTAMP -> name.is(STRING, DATE);
+      case BINARY, JSON, INTERVAL, INET -> name.is(STRING);
       case UNKNOWN -> true;
       default -> false;
     };

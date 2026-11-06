@@ -256,11 +256,11 @@ public final class Types {
       return widenNumber(type2, type1);
     }
     // DATE compare STRING -> DATE
-    if (isDate(type1) && isString(type2)) {
+    if (isTemporal(type1) && isString(type2)) {
       return type1;
     }
     // STRING compare DATE -> DATE
-    if (isString(type1) && isDate(type2)) {
+    if (isString(type1) && isTemporal(type2)) {
       return type2;
     }
     // STRING compare numeric -> NUMBER
@@ -494,8 +494,9 @@ public final class Types {
     return type.isName(TypeName.STRING);
   }
 
-  public static boolean isDate(Type type) {
-    return type.isName(TypeName.DATE);
+  /** Returns whether the type is temporal, a DATE or a TIMESTAMP. */
+  public static boolean isTemporal(Type type) {
+    return type.isName(TypeName.DATE) || type.isName(TypeName.TIMESTAMP);
   }
 
   /**
@@ -541,7 +542,8 @@ public final class Types {
       case INTEGER -> new ValueMetaInteger(valueMetaName, 9, 0);
       case NUMBER -> new ValueMetaBigNumber(valueMetaName, -1, -1);
       case STRING -> new ValueMetaString(valueMetaName, -1, -1);
-      case DATE -> new ValueMetaDate(valueMetaName, -1, -1);
+        // A date with time zone is written at the same instant
+      case DATE, TIMESTAMP -> new ValueMetaDate(valueMetaName, -1, -1);
       case BINARY -> new ValueMetaBinary(valueMetaName, -1, -1);
       case JSON -> new ValueMetaJson(valueMetaName);
       case INET -> new ValueMetaInternetAddress(valueMetaName);
@@ -558,7 +560,7 @@ public final class Types {
       case INTEGER -> new ValueMetaInteger(valueMetaName);
       case NUMBER -> new ValueMetaBigNumber(valueMetaName, type.getPrecision(), type.getScale());
       case STRING -> new ValueMetaString(valueMetaName, type.getPrecision(), type.getScale());
-      case DATE -> new ValueMetaDate(valueMetaName);
+      case DATE, TIMESTAMP -> new ValueMetaDate(valueMetaName);
       case BINARY -> new ValueMetaBinary(valueMetaName, type.getPrecision(), -1);
       case JSON -> new ValueMetaJson(valueMetaName);
       case INET -> new ValueMetaInternetAddress(valueMetaName);

@@ -83,7 +83,7 @@ public class AddOperator extends BinaryOperator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    if (Types.isDate(left.getType())) {
+    if (Types.isTemporal(left.getType())) {
       // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
       // - } <integer>
       if (Types.isNumeric(right.getType())) {
@@ -92,7 +92,7 @@ public class AddOperator extends BinaryOperator {
 
       return new Call(
           call.getPosition(), IntervalToTemporalAddOperator.INSTANCE, call.getOperands());
-    } else if (Types.isDate(right.getType())) {
+    } else if (Types.isTemporal(right.getType())) {
 
       // Normalize operands order DATE+NUMERIC
       if (Types.isNumeric(left.getType())) {

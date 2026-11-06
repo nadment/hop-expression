@@ -77,7 +77,7 @@ public class ToCharFunction extends Function {
       return call.getOperand(0);
     }
 
-    if (Types.isDate(type)) {
+    if (Types.isTemporal(type)) {
       if (pattern == null) {
         pattern = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }

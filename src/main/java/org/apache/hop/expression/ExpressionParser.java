@@ -68,6 +68,7 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -942,6 +943,7 @@ public class ExpressionParser implements IExpressionParser {
           case STRING -> StringType.of(precision);
           case BINARY -> BinaryType.of(precision);
           case DATE -> DateType.DATE;
+          case TIMESTAMP -> TimestampType.TIMESTAMP;
           case INET -> InetType.INET;
           case JSON -> JsonType.JSON;
           case INTERVAL -> IntervalType.INTERVAL;

@@ -44,7 +44,7 @@ public class AtTimeZoneOperator extends Operator {
         "AT TIME ZONE",
         40,
         Associativity.NONE,
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TIMESTAMP_NULLABLE,
         OperandTypes.DATE_STRING,
         OperatorCategory.CONVERSION,
         "/docs/hop-user-manual/expression/attimezone.html");

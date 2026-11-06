@@ -78,6 +78,13 @@ public final class ReturnTypes {
   /** Type-inference strategy whereby the result type of the call is DATE NOT NULL. */
   public static final IReturnTypeInference DATE_NOT_NULL = explicit(DateType.DATE_NOT_NULL);
 
+  /**
+   * Type-inference strategy whereby the result type of the call is TIMESTAMP, nullable if an
+   * operand is nullable.
+   */
+  public static final IReturnTypeInference TIMESTAMP_NULLABLE =
+      explicit(TimestampType.TIMESTAMP).andThen(TypeTransforms.TO_NULLABLE);
+
   /** Type-inference strategy whereby the result type of the call is JSON. */
   public static final IReturnTypeInference JSON_NULLABLE =
       explicit(JsonType.JSON).andThen(TypeTransforms.TO_NULLABLE);
@@ -452,10 +459,11 @@ public final class ReturnTypes {
   public static Type deriveAdditiveType(final Type type1, final Type type2) {
     boolean nullable = type1.isNullable() || type2.isNullable();
 
-    if (type1.isName(TypeName.DATE) && type2.isName(TypeName.INTERVAL)) {
+    // A date keeps its type, with or without time zone
+    if (Types.isTemporal(type1) && type2.isName(TypeName.INTERVAL)) {
       return type1.withNullability(nullable);
     }
-    if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.DATE)) {
+    if (type1.isName(TypeName.INTERVAL) && Types.isTemporal(type2)) {
       return type2.withNullability(nullable);
     }
     if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.INTERVAL)) {
