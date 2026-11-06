@@ -70,8 +70,14 @@ public class SetVariableAction extends ActionBase implements IAction {
     this.variableDefinitions = copyOf(other.getVariableDefinitions());
   }
 
-  /** Returns a copy of the action, with copies of the variable definitions. */
+  /**
+   * Returns a copy of the action, with copies of the variable definitions.
+   *
+   * <p>Hop requires clone(): IAction declares it and ActionMeta calls it to copy an action. The
+   * shallow copy of ActionBase.clone() would share the variable definitions with the original.
+   */
   @Override
+  @SuppressWarnings("java:S2975")
   public Object clone() {
     SetVariableAction action = (SetVariableAction) super.clone();
     action.variableDefinitions = copyOf(variableDefinitions);

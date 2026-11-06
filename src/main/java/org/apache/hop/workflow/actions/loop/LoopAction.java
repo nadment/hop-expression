@@ -90,8 +90,14 @@ public class LoopAction extends ActionBase implements IAction {
     this("", "");
   }
 
-  /** Returns a copy of the action, with copies of the parameters. */
+  /**
+   * Returns a copy of the action, with copies of the parameters.
+   *
+   * <p>Hop requires clone(): IAction declares it and ActionMeta calls it to copy an action. The
+   * shallow copy of ActionBase.clone() would share the parameters with the original.
+   */
   @Override
+  @SuppressWarnings("java:S2975")
   public Object clone() {
     LoopAction action = (LoopAction) super.clone();
     action.parameters = new ArrayList<>();
