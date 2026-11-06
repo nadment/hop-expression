@@ -16,14 +16,15 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.DateConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -43,11 +44,11 @@ public class HoursBetweenFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
+    Temporal startDateTime = operands[0].getValue(Temporal.class);
     if (startDateTime == null) return null;
-    ZonedDateTime endDateTime = operands[1].getValue(ZonedDateTime.class);
+    Temporal endDateTime = operands[1].getValue(Temporal.class);
     if (endDateTime == null) return null;
 
-    return startDateTime.until(endDateTime, ChronoUnit.HOURS);
+    return DateConversion.between(startDateTime, endDateTime, ChronoUnit.HOURS);
   }
 }

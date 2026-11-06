@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Date;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -137,6 +139,26 @@ public final class DateConversion {
       case ZonedDateTime datetime -> datetime.toLocalDateTime();
       default -> throw new IllegalArgumentException("Not a date-time: " + value);
     };
+  }
+
+  /**
+   * Returns the amount of time between two date-times in a unit.
+   *
+   * <p>Between two dates without time zone, the amount is nominal, without regard to the daylight
+   * saving time of the system time zone, like the addition of hours to a date: there are 24 hours
+   * between two consecutive days. With a timestamp, the amount is between the instants, a date
+   * without time zone is then in the system time zone.
+   *
+   * @param start the start date or timestamp
+   * @param end the end date or timestamp
+   * @param unit the unit of the amount
+   * @return the amount of time, negative if the end is before the start
+   */
+  public static long between(final Temporal start, final Temporal end, final ChronoUnit unit) {
+    if (start instanceof LocalDateTime startDate && end instanceof LocalDateTime endDate) {
+      return startDate.until(endDate, unit);
+    }
+    return TimestampConversion.toZoned(start).until(TimestampConversion.toZoned(end), unit);
   }
 
   private static ExpressionException createConversionError(final Object value) {

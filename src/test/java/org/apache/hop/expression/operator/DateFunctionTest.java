@@ -598,6 +598,26 @@ class DateFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void betweenDatesIsNominal() throws Exception {
+    // On 2020-03-29, the system time zone Europe/Paris changes to summer time, the day lasts 23
+    // hours. Between two dates without time zone, the amount is nominal like ADD_HOURS.
+    evalEquals("Hours_Between(DATE '2020-03-29', DATE '2020-03-30')", 24L);
+    evalEquals("Minutes_Between(DATE '2020-03-29', DATE '2020-03-30')", 1440L);
+    evalEquals("Seconds_Between(DATE '2020-03-29', DATE '2020-03-30')", 86400L);
+    evalEquals("Date_Diff(HOUR, DATE '2020-03-29', DATE '2020-03-30')", 24L);
+    evalEquals("Days_Between(DATE '2020-03-29', DATE '2020-03-30')", 1L);
+    evalEquals("Hours_Between(DATE '2020-03-29', Add_Hours(DATE '2020-03-29', 24))", 24L);
+
+    // With a timestamp, the amount is between the instants
+    evalEquals(
+        "Hours_Between(TIMESTAMP '2020-03-29 00:00:00', TIMESTAMP '2020-03-30 00:00:00')", 23L);
+    evalEquals("Hours_Between(DATE '2020-03-29', TIMESTAMP '2020-03-30 00:00:00')", 23L);
+    evalEquals(
+        "Hours_Between(TIMESTAMP '2020-03-29 00:00:00 +00:00', TIMESTAMP '2020-03-29 02:00:00 +02:00')",
+        0L);
+  }
+
+  @Test
   void dateFunctionsKeepTheTypeOfTheDate() throws Exception {
     // A date without time zone stays a date, without time zone
     evalEquals("Add_Days(DATE '2020-03-28', 1)", LocalDateTime.of(2020, 3, 29, 0, 0))

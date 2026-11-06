@@ -16,8 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.DateConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -59,30 +60,30 @@ public class DateDiffFunction extends Function {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
-    ZonedDateTime startDateTime = operands[1].getValue(ZonedDateTime.class);
+    Temporal startDateTime = operands[1].getValue(Temporal.class);
     if (startDateTime == null) return null;
-    ZonedDateTime endDateTime = operands[2].getValue(ZonedDateTime.class);
+    Temporal endDateTime = operands[2].getValue(Temporal.class);
     if (endDateTime == null) return null;
 
     try {
       return switch (unit) {
-        case MILLENNIUM -> startDateTime.until(endDateTime, ChronoUnit.MILLENNIA);
-        case CENTURY -> startDateTime.until(endDateTime, ChronoUnit.CENTURIES);
-        case DECADE -> startDateTime.until(endDateTime, ChronoUnit.DECADES);
-        case YEAR -> startDateTime.until(endDateTime, ChronoUnit.YEARS);
-        case MONTH -> startDateTime.until(endDateTime, ChronoUnit.MONTHS);
+        case MILLENNIUM -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.MILLENNIA);
+        case CENTURY -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.CENTURIES);
+        case DECADE -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.DECADES);
+        case YEAR -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.YEARS);
+        case MONTH -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.MONTHS);
         case QUARTER -> {
-          long months = startDateTime.until(endDateTime, ChronoUnit.MONTHS);
+          long months = DateConversion.between(startDateTime, endDateTime, ChronoUnit.MONTHS);
           yield months / 3L;
         }
-        case WEEK -> startDateTime.until(endDateTime, ChronoUnit.WEEKS);
-        case DAY -> startDateTime.until(endDateTime, ChronoUnit.DAYS);
-        case HOUR -> startDateTime.until(endDateTime, ChronoUnit.HOURS);
-        case MINUTE -> startDateTime.until(endDateTime, ChronoUnit.MINUTES);
-        case SECOND -> startDateTime.until(endDateTime, ChronoUnit.SECONDS);
-        case MILLISECOND -> startDateTime.until(endDateTime, ChronoUnit.MILLIS);
-        case MICROSECOND -> startDateTime.until(endDateTime, ChronoUnit.MICROS);
-        case NANOSECOND -> startDateTime.until(endDateTime, ChronoUnit.NANOS);
+        case WEEK -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.WEEKS);
+        case DAY -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.DAYS);
+        case HOUR -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.HOURS);
+        case MINUTE -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.MINUTES);
+        case SECOND -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.SECONDS);
+        case MILLISECOND -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.MILLIS);
+        case MICROSECOND -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.MICROS);
+        case NANOSECOND -> DateConversion.between(startDateTime, endDateTime, ChronoUnit.NANOS);
         default -> throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, unit);
       };
     } catch (ArithmeticException e) {

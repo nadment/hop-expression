@@ -53,6 +53,7 @@ Integer
 
 * The result is negative if end_date is earlier than start_date.
 * Raises an arithmetic overflow error if the number of units exceeds the integer range, for example more than about 292 years in nanoseconds.
+* Between two dates without time zone, the amount is nominal, without regard to the daylight saving time of the system time zone: there are 24 hours between two consecutive days. If one of the arguments is a timestamp, the amount is between the instants.
 * The unit cannot be NULL. Returns NULL if one of the other arguments is NULL.
 
 == Examples

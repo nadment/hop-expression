@@ -32,6 +32,7 @@ Integer
 
 * Only complete hours are counted.
 * If timestamp1 is later than timestamp2, the result is negative.
+* Between two dates without time zone, the amount is nominal, without regard to the daylight saving time of the system time zone: there are 24 hours between two consecutive days. If one of the arguments is a timestamp, the amount is between the instants.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
