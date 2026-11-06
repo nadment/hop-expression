@@ -24,6 +24,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.util.DateConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -101,7 +102,7 @@ public class Field extends Identifier {
         case IValueMeta.TYPE_TIMESTAMP:
           Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
           if (timestamp == null) return null;
-          return DateConversion.convert(timestamp);
+          return TimestampConversion.convert(timestamp);
         case IValueMeta.TYPE_DATE:
           Date date = valueMeta.getDate(row[ordinal]);
           if (date == null) return null;
@@ -168,7 +169,7 @@ public class Field extends Identifier {
             if (timestamp == null) {
               return null;
             }
-            return type.convert(DateConversion.convert(timestamp), clazz);
+            return type.convert(TimestampConversion.convert(timestamp), clazz);
           }
 
         case IValueMeta.TYPE_DATE:

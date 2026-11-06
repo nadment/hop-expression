@@ -768,7 +768,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(
             "Add_Nanoseconds(FIELD_TIMESTAMP, 1000000000)",
             LocalDateTime.of(2023, Month.FEBRUARY, 28, 22, 11, 2))
-        .returnType(DateType.DATE);
+        .returnType(TimestampType.TIMESTAMP);
     evalEquals(
         "Add_Nanoseconds(FIELD_DATE, FIELD_INTEGER)",
         LocalDateTime.of(1981, Month.JUNE, 23, 21, 44, 58, 123000040));

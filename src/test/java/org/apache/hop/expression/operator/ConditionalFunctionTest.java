@@ -31,6 +31,7 @@ import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
@@ -335,7 +336,7 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals(
             "Coalesce(NULL_DATE,FIELD_TIMESTAMP,Date '2024-01-01')",
             LocalDateTime.of(2023, 2, 28, 22, 11, 1))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
 
     // Check operands
     evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

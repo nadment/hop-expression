@@ -101,6 +101,17 @@ public final class TimestampConversion {
   }
 
   /**
+   * Converts a timestamp of the row to a timestamp at the same instant, in the system time zone,
+   * with the nanoseconds.
+   *
+   * @param timestamp the timestamp of the row
+   * @return the timestamp in the system time zone
+   */
+  public static ZonedDateTime convert(final Timestamp timestamp) {
+    return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault());
+  }
+
+  /**
    * Returns a date-time with time zone: a date without time zone is in the system time zone.
    *
    * @param value a {@link LocalDateTime} or a {@link ZonedDateTime}

@@ -178,7 +178,7 @@ In some of the timestamp formats, the letter T is used as a separator between th
 
 A date or a timestamp without time zone is in the time zone of the system, like the dates read from the fields. The letter Z after the time is the UTC time zone, like `TIMESTAMP '2020-05-18 23:48:59Z'`.
 
-The data type `TIMESTAMP` is a date and time that keeps its time zone, an offset or a region. A timestamp literal is a `TIMESTAMP`, in the time zone of the system if it has none. It is also the result of xref:attimezone.adoc["AT TIME ZONE",role=op] and xref:convert_timezone.adoc["CONVERT_TIMEZONE",role=fun], and a value is converted to it with xref:cast.adoc["CAST",role=fun], for example `CAST('2020-05-18 23:48:59 +05:00' AS TIMESTAMP)`. It is accepted where a date is expected, and two values are equal if they are the same instant.
+The data type `TIMESTAMP` is a date and time that keeps its time zone, an offset or a region. A timestamp literal is a `TIMESTAMP`, in the time zone of the system if it has none. It is also the result of xref:attimezone.adoc["AT TIME ZONE",role=op] and xref:convert_timezone.adoc["CONVERT_TIMEZONE",role=fun], and a value is converted to it with xref:cast.adoc["CAST",role=fun], for example `CAST('2020-05-18 23:48:59 +05:00' AS TIMESTAMP)`. It is accepted where a date is expected, and two values are equal if they are the same instant. A field of type Date is a `DATE`, and a field of type Timestamp is a `TIMESTAMP` in the time zone of the system.
 
 The UTC offset form can be further refined to include the regional time zone, ensuring consistency of local time calculations while observing daylight saving time.
 

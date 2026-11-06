@@ -573,7 +573,8 @@ public final class Types {
   public static Type createType(final IValueMeta meta) {
     return switch (meta.getType()) {
       case IValueMeta.TYPE_BOOLEAN -> BooleanType.BOOLEAN;
-      case IValueMeta.TYPE_DATE, IValueMeta.TYPE_TIMESTAMP -> DateType.DATE;
+      case IValueMeta.TYPE_DATE -> DateType.DATE;
+      case IValueMeta.TYPE_TIMESTAMP -> TimestampType.TIMESTAMP;
       case IValueMeta.TYPE_STRING -> StringType.of(meta.getLength());
       case IValueMeta.TYPE_INTEGER -> IntegerType.of(meta.getLength());
       case IValueMeta.TYPE_NUMBER, IValueMeta.TYPE_BIGNUMBER ->

@@ -24,10 +24,10 @@ import java.time.LocalDate;
 import java.util.List;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.InListOperator;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.Test;
 
@@ -112,7 +112,8 @@ class CallTest extends ExpressionTest {
 
   @Test
   void testImplicitCoercionToDate() throws Exception {
-    evalEquals("FIRST_DAY(FIELD_TIMESTAMP)", LocalDate.of(2023, 2, 1)).returnType(DateType.DATE);
+    evalEquals("FIRST_DAY(FIELD_TIMESTAMP)", LocalDate.of(2023, 2, 1))
+        .returnType(TimestampType.TIMESTAMP);
   }
 
   @Test
