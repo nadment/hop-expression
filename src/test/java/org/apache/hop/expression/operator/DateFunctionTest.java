@@ -59,6 +59,10 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(context, "Today()", today).returnType(DateType.DATE_NOT_NULL);
     evalEquals(context, "Current_Date()", today);
 
+    // The current date is in the system time zone, like a date literal and a date field, the test
+    // time zone Europe/Paris is ahead of UTC
+    evalTrue("Current_Date() = DATE '" + LocalDate.now() + "'");
+
     // Check operands
     evalFails("Today(Null)", ErrorCode.TOO_MANY_ARGUMENTS);
   }
@@ -729,10 +733,11 @@ class DateFunctionTest extends ExpressionTest {
         "Add_Nanoseconds(TIMESTAMP '2019-01-15 10:00:00' AT TIME ZONE 'Europe/Paris', 1)",
         ZonedDateTime.of(2019, 1, 15, 10, 0, 0, 1, ZoneId.of("Europe/Paris")));
 
-    // The largest number of nanoseconds is about 292 years
+    // The largest number of nanoseconds is about 292 years. The duration goes from winter to summer
+    // time in the system time zone, Europe/Paris, so the local time is one hour later.
     evalEquals(
         "Add_Nanoseconds(DATE '2019-01-15', 9223372036854775807)",
-        LocalDateTime.of(2311, Month.APRIL, 26, 23, 47, 16, 854775807));
+        LocalDateTime.of(2311, Month.APRIL, 27, 0, 47, 16, 854775807));
 
     // A result out of the range of dates raises an error
     evalFails(
@@ -1005,8 +1010,24 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Extract(CENTURY from TIMESTAMP '2020-05-25 23:48:59')", 21L);
     evalEquals("Extract(CENTURY from Date '0001-01-01')", 1L);
     evalEquals("Extract(DECADE from TIMESTAMP '1999-02-16 20:38:40')", 199L);
-    evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-01 00:00:00')", 0L);
+
+    evalEquals("Extract(EPOCH from DATE '1970-01-01' AT TIME ZONE 'UTC')", 0L);
+    evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC')", 0L);
+    evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-02 00:00:00Z')", 86400L);
+    // A date without time zone gives the nominal number of seconds of its local date-time, without
+    // regard to the system time zone, Europe/Paris
+    evalEquals("Extract(EPOCH from DATE '1970-01-01')", 0L);
     evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-02 00:00:00')", 86400L);
+    evalEquals("Extract(EPOCH from TIMESTAMP '2019-07-23 12:00:00')", 1563883200L);
+    // A date with a time zone gives the number of seconds of its instant
+    evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-01 02:00:00 +02:00')", 0L);
+    evalEquals(
+        "Extract(EPOCH from TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'America/New_York')",
+        18000L);
+    // The epoch time value of a date without time zone is converted back to the same date
+    evalEquals("Extract(EPOCH from TO_DATE(1284352323))", 1284352323L);
+    evalEquals("TO_DATE(0)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
+
     evalEquals("Extract(YEAR from TIMESTAMP '2020-05-25 23:48:59')", 2020L);
     evalEquals("Extract(ISOYEAR from Date '2017-01-01')", 2016L);
     evalEquals("Extract(QUARTER from TIMESTAMP '2020-05-25 23:48:59')", 2L);
@@ -1027,7 +1048,8 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Extract(MILLISECOND from TIMESTAMP '2020-05-25 00:00:01.123456')", 123L);
     evalEquals("Extract(MICROSECOND from TIMESTAMP '2020-05-25 00:00:01.123456')", 123456L);
     evalEquals("Extract(NANOSECOND from TIMESTAMP '2020-05-25 00:00:01.123456')", 123456000L);
-    evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59')", 0L);
+    // The offset of the system time zone, Europe/Paris in winter
+    evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59')", 1L);
     evalEquals(
         "Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Europe/Paris')",
         1L);
@@ -1123,7 +1145,7 @@ class DateFunctionTest extends ExpressionTest {
   void ConvertTimeZone() throws Exception {
     // Documentation examples
     evalEquals(
-        "CONVERT_TIMEZONE('Europe/Paris', TIMESTAMP '2020-05-25 20:48:00')",
+        "CONVERT_TIMEZONE('Europe/Paris', TIMESTAMP '2020-05-25 20:48:00Z')",
         LocalDateTime.of(2020, Month.MAY, 25, 22, 48, 0));
     evalEquals(
         "CONVERT_TIMEZONE('Europe/Paris', 'Asia/Tokyo', TIMESTAMP '2020-05-25 20:48:00')",
@@ -1143,10 +1165,10 @@ class DateFunctionTest extends ExpressionTest {
         "CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 4, 0, 0));
     evalEquals(
-        "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')",
+        "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00Z')",
         ZonedDateTime.of(2020, 5, 25, 22, 48, 0, 0, ZoneId.of("Europe/Paris")));
     evalEquals(
-        "CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00')",
+        "CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00Z')",
         LocalDateTime.of(2023, Month.JANUARY, 1, 23, 0, 0));
     evalEquals(
         "CONVERT_TIMEZONE('+00:00','+10:00', TIMESTAMP '2023-01-01 12:00:00')",
@@ -1170,9 +1192,14 @@ class DateFunctionTest extends ExpressionTest {
     // 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
 
     optimize("CONVERT_TIMEZONE('Europe/Paris',FIELD_TIMESTAMP)");
+    // A time zone other than the system one is written
     optimize(
-        "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')",
-        "TIMESTAMP '2020-05-25 22:48:00' AT TIME ZONE 'Europe/Paris'");
+        "CONVERT_TIMEZONE('Asia/Tokyo',TIMESTAMP '2020-05-25 20:48:00Z')",
+        "TIMESTAMP '2020-05-26 05:48:00' AT TIME ZONE 'Asia/Tokyo'");
+    // The system time zone is not written
+    optimize(
+        "CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00Z')",
+        "TIMESTAMP '2020-05-25 22:48:00'");
   }
 
   @Test

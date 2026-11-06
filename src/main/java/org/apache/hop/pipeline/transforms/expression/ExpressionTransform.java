@@ -17,12 +17,9 @@ package org.apache.hop.pipeline.transforms.expression;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.sql.Timestamp;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Date;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
@@ -32,6 +29,7 @@ import org.apache.hop.expression.CommonExpressionEliminator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -208,8 +206,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           if (date == null) {
             return null;
           }
-          // The same local date-time in the system time zone, as a date field is read
-          return Date.from(date.toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant());
+          // The same instant, as a date field is read
+          return DateTimeConversion.toDate(date);
         }
       case IValueMeta.TYPE_TIMESTAMP:
         {
@@ -217,8 +215,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           if (date == null) {
             return null;
           }
-          // The same local date-time in the system time zone, as a timestamp field is read
-          return Timestamp.valueOf(date.toLocalDateTime());
+          // The same instant with the nanoseconds, as a timestamp field is read
+          return DateTimeConversion.toTimestamp(date);
         }
       case IValueMeta.TYPE_BIGNUMBER:
         return expression.getValue(BigDecimal.class);

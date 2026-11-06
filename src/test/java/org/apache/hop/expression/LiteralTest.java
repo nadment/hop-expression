@@ -621,8 +621,10 @@ public class LiteralTest extends ExpressionTest {
     optimize("TIMESTAMP '2021-12-01 12:01:01.999999 +02:00'");
     optimize("TIMESTAMP '2021-12-01 12:01:01.999999999 +02:00'");
     optimize("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'Europe/Paris'");
+    optimize("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'");
     optimize(
-        "TIMESTAMP '2021-12-01 12:01:01.999999999Z'", "TIMESTAMP '2021-12-01 12:01:01.999999999'");
+        "TIMESTAMP '2021-12-01 12:01:01.999999999Z'",
+        "TIMESTAMP '2021-12-01 12:01:01.999999999 +00:00'");
 
     evalFails("TIMESTAMP '21-02-25 23:59:59.999999999'", ErrorCode.INVALID_TIMESTAMP);
     evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'", ErrorCode.INVALID_TIMESTAMP);

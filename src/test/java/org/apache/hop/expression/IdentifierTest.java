@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.type.DateType;
 import org.junit.jupiter.api.Test;
@@ -163,7 +163,7 @@ public class IdentifierTest extends ExpressionTest {
   void coercionValueMetaTimestamp() throws Exception {
     evalEquals(
             "FIRST_DAY(FIELD_TIMESTAMP)",
-            ZonedDateTime.of(2023, 2, 1, 22, 11, 1, 0, ZoneOffset.UTC))
+            ZonedDateTime.of(2023, 2, 1, 22, 11, 1, 0, ZoneId.systemDefault()))
         .returnType(DateType.DATE);
     evalEquals("HOUR(FIELD_TIMESTAMP)", 22L);
   }

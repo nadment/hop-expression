@@ -28,11 +28,10 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
-import java.util.TimeZone;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -121,7 +120,6 @@ public class ExpressionTest {
     Calendar calendar = Calendar.getInstance();
     calendar.set(1981, Calendar.JUNE, 23, 21, 44, 58);
     calendar.set(Calendar.MILLISECOND, 123);
-    calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 
     Object[] row = new Object[40];
     row[0] = "TEST";
@@ -260,6 +258,15 @@ public class ExpressionTest {
     return evaluator;
   }
 
+  /**
+   * Returns the date of an epoch time value, a number of seconds since 1970-01-01 00:00:00 UTC: the
+   * date-time in UTC is the local date-time in the system time zone, like a date without time zone.
+   */
+  protected static ZonedDateTime epochDate(
+      int year, int month, int day, int hour, int minute, int second, int nano) {
+    return ZonedDateTime.of(year, month, day, hour, minute, second, nano, ZoneId.systemDefault());
+  }
+
   protected Evaluator evalEquals(IExpressionContext context, String source, Temporal expected)
       throws Exception {
 
@@ -270,7 +277,7 @@ public class ExpressionTest {
       if (expected instanceof LocalDate) {
         result = value.toLocalDate();
       } else if (expected instanceof ZonedDateTime) {
-        result = value.atZone(ZoneOffset.UTC);
+        result = value.atZone(ZoneId.systemDefault());
       }
     }
 

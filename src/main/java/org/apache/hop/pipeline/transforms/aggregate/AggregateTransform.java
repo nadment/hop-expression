@@ -17,7 +17,6 @@
 
 package org.apache.hop.pipeline.transforms.aggregate;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -63,7 +63,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
    * Converts the value of a date aggregate to the value of a date field.
    *
    * @param value the value of the aggregate, a ZonedDateTime or null
-   * @return the date at the same local date-time in the system time zone, or null
+   * @return the date at the same instant, or null
    * @throws IllegalArgumentException if the value is not a ZonedDateTime
    */
   private static Date convertToDate(final Object value) {
@@ -71,8 +71,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return null;
     }
     if (value instanceof ZonedDateTime dt) {
-      // The same local date-time in the system time zone, as a date field is read
-      return Date.from(dt.toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant());
+      // The same instant, as a date field is read
+      return DateTimeConversion.toDate(dt);
     }
     throw new IllegalArgumentException(
         ErrorCode.UNSUPPORTED_CONVERSION.message(value, TypeName.fromValue(value), DateType.DATE));

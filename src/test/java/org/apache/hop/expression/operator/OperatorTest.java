@@ -3318,19 +3318,19 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST('1_234' as Integer)", 1234L);
 
       // Date to Unix Epoch
-      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Integer)", 1L);
-      evalEquals("CAST(DATE '2019-02-25' AS INTEGER)", 1551052800L);
-      evalEquals("CAST(DATE '1800-01-01' AS INTEGER)", -5364662400L);
-      evalEquals("Date '2025-12-23'::INTEGER", 1766448000L)
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01Z' as Integer)", 1L);
+      evalEquals("CAST(TIMESTAMP '2019-02-25 00:00:00Z' AS INTEGER)", 1551052800L);
+      evalEquals("CAST(TIMESTAMP '1800-01-01 00:00:00Z' AS INTEGER)", -5364662400L);
+      evalEquals("TIMESTAMP '2025-12-23 00:00:00Z'::INTEGER", 1766448000L)
           .returnType(IntegerType.INTEGER_NOT_NULL);
       // The fractions of seconds are rounded like a number
-      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.4' as Integer)", 1L);
-      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.5' as Integer)", 2L);
-      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.5' as Integer)", -2L);
-      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.6' as Integer)", -1L);
-      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.4' as Integer)", -2L);
-      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:59.5' as Integer)", -1L);
-      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:59.6' as Integer)", 0L);
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.4Z' as Integer)", 1L);
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.5Z' as Integer)", 2L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.5Z' as Integer)", -2L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.6Z' as Integer)", -1L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:58.4Z' as Integer)", -2L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:59.5Z' as Integer)", -1L);
+      evalEquals("CAST(TIMESTAMP '1969-12-31 23:59:59.6Z' as Integer)", 0L);
 
       // Null
       evalNull("CAST(NULL_NUMBER as Integer)").returnType(IntegerType.INTEGER);
@@ -3485,27 +3485,31 @@ public class OperatorTest extends ExpressionTest {
       // Date to Unix Epoch
       evalEquals("FIELD_DATE::NUMBER", new BigDecimal("362180698.123"))
           .returnType(NumberType.NUMBER);
-      evalEquals("CAST(DATE '1970-01-01' as Number)", 0D).returnType(NumberType.NUMBER_NOT_NULL);
-      evalEquals("CAST(DATE '2019-02-25' AS Number)", 1551052800D)
-          .returnType(NumberType.NUMBER_NOT_NULL);
-      evalEquals("CAST(DATE '1800-01-01' AS Number)", -5364662400D)
-          .returnType(NumberType.NUMBER_NOT_NULL);
 
       // Timestamp to Unix Epoch
-      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1D)
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:00Z' as Number)", 0D)
           .returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("CAST(TIMESTAMP '2019-02-25 00:00:00Z' AS Number)", 1551052800D)
+          .returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("CAST(TIMESTAMP '1800-01-01 00:00:00Z' AS Number)", -5364662400D)
+          .returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' AT TIME ZONE 'UTC' as Number)", 1D)
+          .returnType(NumberType.NUMBER_NOT_NULL);
+
       // The fractions of seconds are rounded to the scale like a number
       evalEquals(
-          "CAST(TIMESTAMP '1970-01-01 00:00:01.123456789' as Number)",
+          "CAST(TIMESTAMP '1970-01-01 00:00:01.123456789Z' as Number)",
           new BigDecimal("1.123456789"));
       evalEquals(
-          "CAST(TIMESTAMP '1970-01-01 00:00:01.125' as Number(15,2))", new BigDecimal("1.13"));
+          "CAST(TIMESTAMP '1970-01-01 00:00:01.125Z' as Number(15,2))", new BigDecimal("1.13"));
       evalEquals(
-          "CAST(TIMESTAMP '1969-12-31 23:59:58.875' as Number(15,2))", new BigDecimal("-1.13"));
-      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.5' as Number(15))", BigDecimal.valueOf(2));
-      evalEquals("CAST(DATE '2019-02-25' AS Number(12,2))", new BigDecimal("1551052800.00"));
+          "CAST(TIMESTAMP '1969-12-31 23:59:58.875Z' as Number(15,2))", new BigDecimal("-1.13"));
+      evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01.5Z' as Number(15))", BigDecimal.valueOf(2));
+      evalEquals(
+          "CAST(TIMESTAMP '2019-02-25 00:00:00Z' AS Number(12,2))",
+          new BigDecimal("1551052800.00"));
       evalFails(
-          "CAST(TIMESTAMP '1970-01-01 00:00:09.95' as Number(2,1))",
+          "CAST(TIMESTAMP '1970-01-01 00:00:09.95Z' as Number(2,1))",
           ErrorCode.NUMBER_CONVERSION_OVERFLOW);
 
       // Null
@@ -3607,11 +3611,11 @@ public class OperatorTest extends ExpressionTest {
           .returnType(DateType.DATE_NOT_NULL);
 
       // Integer Unix Epoch
-      evalEquals("CAST(0 AS DATE)", LocalDateTime.of(1970, 1, 1, 0, 0, 0))
+      evalEquals("CAST(0 AS DATE)", epochDate(1970, 1, 1, 0, 0, 0, 0))
           .returnType(DateType.DATE_NOT_NULL);
       evalEquals("CAST(1551052800 AS DATE)", LocalDate.of(2019, 2, 25));
       evalEquals("CAST(-5364662400 AS DATE)", LocalDate.of(1800, 1, 1));
-      evalEquals("CAST(1284352323 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
+      evalEquals("CAST(1284352323 AS DATE)", epochDate(2010, 9, 13, 4, 32, 3, 0));
       evalEquals("FIRST_DAY(1766448000::DATE)", LocalDate.of(2025, 12, 1))
           .returnType(DateType.DATE_NOT_NULL);
 
@@ -3619,12 +3623,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CAST(1551052800.000000000 AS DATE)", LocalDate.of(2019, 2, 25))
           .returnType(DateType.DATE_NOT_NULL);
       evalEquals("CAST(-5364662400.000000000 AS DATE)", LocalDate.of(1800, 1, 1));
-      evalEquals("CAST(1284352323.1 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 100000000));
-      evalEquals("CAST(1284352323.12 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
-      evalEquals(
-          "CAST(1284352323.123 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
-      evalEquals(
-          "CAST(1284352323.123456789 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+      evalEquals("CAST(1284352323.1 AS DATE)", epochDate(2010, 9, 13, 4, 32, 3, 100000000));
+      evalEquals("CAST(1284352323.12 AS DATE)", epochDate(2010, 9, 13, 4, 32, 3, 120000000));
+      evalEquals("CAST(1284352323.123 AS DATE)", epochDate(2010, 9, 13, 4, 32, 3, 123000000));
+      evalEquals("CAST(1284352323.123456789 AS DATE)", epochDate(2010, 9, 13, 4, 32, 3, 123456789));
 
       // Null
       evalNull("CAST(NULL as Date)").returnType(DateType.DATE);

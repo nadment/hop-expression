@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -331,7 +332,10 @@ public final class Literal implements IExpression {
    */
   private static void unparseDate(final StringWriter writer, final ZonedDateTime datetime) {
     int nano = datetime.getNano();
-    if (nano == 0
+    // The date literals are in the system time zone, another time zone is written
+    boolean isSystemZone = datetime.getZone().equals(ZoneId.systemDefault());
+    if (isSystemZone
+        && nano == 0
         && datetime.getHour() == 0
         && datetime.getMinute() == 0
         && datetime.getSecond() == 0) {
@@ -340,11 +344,11 @@ public final class Literal implements IExpression {
     } else {
       writer.append("TIMESTAMP '");
       writer.append(DateTimeFormat.of(timestampPattern(nano)).format(datetime));
-      if (datetime.getOffset().getTotalSeconds() != 0) {
-        if (datetime.getZone() instanceof ZoneOffset) {
+      if (!isSystemZone) {
+        if (datetime.getZone() instanceof ZoneOffset offset) {
           writer.append(' ');
-          writer.append(datetime.getZone().toString());
-
+          // The offset of UTC is written +00:00 and not Z
+          writer.append(offset.getTotalSeconds() == 0 ? "+00:00" : offset.toString());
         } else {
           writer.append("' AT TIME ZONE '");
           writer.append(datetime.getZone().getId());

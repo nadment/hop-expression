@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -84,7 +84,7 @@ public class MakeTimestampFunction extends Function {
               .plusSeconds(seconds)
               .plusNanos(nanos);
 
-      return datetime.atZone(ZoneOffset.UTC);
+      return datetime.atZone(ZoneId.systemDefault());
     } catch (DateTimeException | ArithmeticException e) {
       throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
     }

@@ -80,6 +80,6 @@ public final class IntegerConversion {
   public static @Nullable Long convert(@Nullable ZonedDateTime datetime)
       throws ExpressionException {
     if (datetime == null) return null;
-    return datetime.toEpochSecond();
+    return DateTimeConversion.toEpochSecond(datetime);
   }
 }

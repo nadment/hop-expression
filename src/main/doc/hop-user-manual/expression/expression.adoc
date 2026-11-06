@@ -176,6 +176,8 @@ TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'US/Pacific'
 
 In some of the timestamp formats, the letter T is used as a separator between the date and time.
 
+A date or a timestamp without time zone is in the time zone of the system, like the dates read from the fields. The letter Z after the time is the UTC time zone, like `TIMESTAMP '2020-05-18 23:48:59Z'`.
+
 The UTC offset form can be further refined to include the regional time zone, ensuring consistency of local time calculations while observing daylight saving time.
 
 NOTE: Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC'). A time zone name is valid if recognized by Java’s ZoneId.of.

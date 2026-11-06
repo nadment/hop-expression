@@ -18,6 +18,7 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -45,7 +46,8 @@ public final class DateTimeConversion {
   }
 
   /**
-   * Convert the epoch time value to a timestamp with a UTC time zone.
+   * Convert the epoch time value to a date-time in the system time zone, see {@link
+   * #toEpochSecond(ZonedDateTime)}.
    *
    * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1,
    *     1970)
@@ -55,13 +57,19 @@ public final class DateTimeConversion {
       return null;
     }
     try {
-      Instant instant = Instant.ofEpochSecond(seconds);
-      return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+      return ofEpoch(Instant.ofEpochSecond(seconds));
     } catch (DateTimeException e) {
       throw createConversionError(seconds);
     }
   }
 
+  /**
+   * Convert the epoch time value with the fractions of seconds to a date-time in the system time
+   * zone, see {@link #toEpochSecond(ZonedDateTime)}.
+   *
+   * @param number number of seconds that have elapsed since the epoch, the fractional part gives
+   *     the nanoseconds
+   */
   public static @Nullable ZonedDateTime convert(final @Nullable BigDecimal number) {
     if (number == null) {
       return null;
@@ -69,23 +77,69 @@ public final class DateTimeConversion {
     try {
       long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
       // A number out of the range of epoch seconds raises an error instead of wrapping around
-      Instant instant = Instant.ofEpochSecond(number.toBigInteger().longValueExact(), nanos);
-      return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+      return ofEpoch(Instant.ofEpochSecond(number.toBigInteger().longValueExact(), nanos));
     } catch (ArithmeticException | DateTimeException e) {
       throw createConversionError(number);
     }
   }
 
   /**
-   * Converts a date of the row to the local date-time it shows in the system time zone, placed in
-   * UTC like a timestamp and a date literal. Keeping the instant in UTC would shift the date to the
-   * day before in a time zone ahead of UTC, by a gap that changes with daylight saving time.
+   * Returns the date-time in the system time zone with the local date-time of an epoch instant in
+   * UTC, the reverse of {@link #toEpochSecond(ZonedDateTime)}: 0 is 1970-01-01 00:00:00.
+   */
+  private static ZonedDateTime ofEpoch(final Instant instant) {
+    return LocalDateTime.ofInstant(instant, ZoneOffset.UTC).atZone(ZoneId.systemDefault());
+  }
+
+  /**
+   * Returns the number of seconds since the epoch 1970-01-01 00:00:00, the fraction of second is
+   * ignored.
    *
-   * @param date the date of the row
-   * @return the date-time in UTC
+   * <p>A date-time in the system time zone is a date without time zone, like a date literal or a
+   * date field: the number of seconds is nominal, its local date-time is read in UTC without regard
+   * to the time zone and the daylight saving time, DATE '1970-01-01' is 0. A date-time with another
+   * time zone gives the number of seconds of its instant, TIMESTAMP '1970-01-01 02:00:00 +02:00' is
+   * 0.
+   *
+   * @param datetime the date-time
+   * @return the number of seconds since the epoch
+   */
+  public static long toEpochSecond(final ZonedDateTime datetime) {
+    if (datetime.getZone().equals(ZoneId.systemDefault())) {
+      return datetime.toLocalDateTime().toEpochSecond(ZoneOffset.UTC);
+    }
+    return datetime.toEpochSecond();
+  }
+
+  /**
+   * Converts a date or a timestamp of the row to a date-time in the system time zone, like the date
+   * literals and the date functions. The instant is kept, with the nanoseconds of a timestamp.
+   *
+   * @param date the date or the timestamp of the row
+   * @return the date-time in the system time zone
    */
   public static ZonedDateTime convert(final Date date) {
-    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).atZone(ZoneOffset.UTC);
+    return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+  }
+
+  /**
+   * Converts a date-time to a date of the row, at the same instant.
+   *
+   * @param datetime the date-time
+   * @return the date of the row
+   */
+  public static Date toDate(final ZonedDateTime datetime) {
+    return Date.from(datetime.toInstant());
+  }
+
+  /**
+   * Converts a date-time to a timestamp of the row, at the same instant with the nanoseconds.
+   *
+   * @param datetime the date-time
+   * @return the timestamp of the row
+   */
+  public static Timestamp toTimestamp(final ZonedDateTime datetime) {
+    return Timestamp.from(datetime.toInstant());
   }
 
   private static ExpressionException createConversionError(final Object value) {

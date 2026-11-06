@@ -36,6 +36,7 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.TimeZoneExtension;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -270,14 +271,14 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TO_NUMBER(NULL_STRING)");
 
     // Date to number epoch
-    evalEquals("TO_NUMBER(Date '1970-01-01')", BigDecimal.ZERO);
-    evalEquals("TO_NUMBER(Date '2019-02-25')", 1551052800D);
-    evalEquals("TO_NUMBER(Date '1800-01-01')", -5364662400D);
-    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123')", new BigDecimal("1284352323.123"));
+    evalEquals("TO_NUMBER(Timestamp '1970-01-01 00:00:00Z')", BigDecimal.ZERO);
+    evalEquals("TO_NUMBER(Timestamp '2019-02-25 00:00:00Z')", 1551052800D);
+    evalEquals("TO_NUMBER(Timestamp '1800-01-01 00:00:00Z')", -5364662400D);
+    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123Z')", new BigDecimal("1284352323.123"));
     evalEquals(
-        "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123000000')", new BigDecimal("1284352323.123"));
+        "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123000000Z')", new BigDecimal("1284352323.123"));
     evalEquals(
-        "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
+        "TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789Z')",
         new BigDecimal("1284352323.123456789"));
     evalNull("TO_NUMBER(NULL_DATE)");
 
@@ -290,7 +291,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("TO_NUMBER('-0.2','999.999G99')", ErrorCode.INVALID_NUMBER_FORMAT);
     evalFails("TO_NUMBER('-0.2','999.999,99')", ErrorCode.INVALID_NUMBER_FORMAT);
 
-    evalEquals("TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03')", new BigDecimal("1284352323"));
+    evalEquals("TO_NUMBER(TIMESTAMP '2010-09-13 04:32:03Z')", new BigDecimal("1284352323"));
     evalEquals("TO_NUMBER('12','B99')", 12D);
     evalEquals("TO_NUMBER('12.5','TM')", 12.5D);
     evalEquals("TO_NUMBER('12.5','FM99.99')", 12.5D);
@@ -647,7 +648,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalEquals("To_Char(DATE '2019-07-23','dy')", "tue");
 
     // Time Zone Region
-    evalEquals("To_Char(DATE '2019-07-23','TZR')", "Z");
+    evalEquals("To_Char(DATE '2019-07-23','TZR')", TimeZoneExtension.TIME_ZONE);
     evalEquals(
         "To_Char(TIMESTAMP '2021-01-01 15:28:59.123456789' AT TIME ZONE 'Europe/Paris','TZR')",
         "Europe/Paris");
@@ -662,7 +663,8 @@ class ConversionFunctionTest extends ExpressionTest {
         "EST");
 
     // Time Zone Hour:Minute
-    evalEquals("To_Char(DATE '2019-07-23','TZH:TZM')", "+00:00");
+    // The offset of the system time zone, Europe/Paris in summer
+    evalEquals("To_Char(DATE '2019-07-23','TZH:TZM')", "+02:00");
     evalEquals(
         "To_Char(To_Date('2019-02-13 15:34:56 -00:30','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')",
         "-00:30");
@@ -991,25 +993,20 @@ class ConversionFunctionTest extends ExpressionTest {
 
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
 
-    // Integer Unix Epoch in seconds, in the UTC time zone
-    evalEquals("TO_DATE(0)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-    evalEquals("TO_DATE(1551052800)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
-    evalEquals("TO_DATE(-5364662400)", ZonedDateTime.of(1800, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-    evalEquals("TO_DATE(1284352323)", ZonedDateTime.of(2010, 9, 13, 4, 32, 3, 0, ZoneOffset.UTC));
+    // Integer Unix Epoch in seconds, the date-time in UTC in the system time zone
+    evalEquals("TO_DATE(0)", epochDate(1970, 1, 1, 0, 0, 0, 0));
+    evalEquals("TO_DATE(1551052800)", epochDate(2019, 2, 25, 0, 0, 0, 0));
+    evalEquals("TO_DATE(-5364662400)", epochDate(1800, 1, 1, 0, 0, 0, 0));
+    evalEquals("TO_DATE(1284352323)", epochDate(2010, 9, 13, 4, 32, 3, 0));
 
     // Number Unix Epoch in seconds with fractional
-    evalEquals(
-        "TO_DATE(1551052800.000000000)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
-    evalEquals(
-        "TO_DATE(-5364662400.000000000)", ZonedDateTime.of(1800, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-    evalEquals(
-        "TO_DATE(-1.5)", ZonedDateTime.of(1969, 12, 31, 23, 59, 58, 500000000, ZoneOffset.UTC));
-    evalEquals("TO_DATE(1284352323.1)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 100000000));
-    evalEquals("TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
-    evalEquals("TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
-    evalEquals(
-        "TO_DATE(1284352323.123456789)",
-        ZonedDateTime.of(2010, 9, 13, 4, 32, 3, 123456789, ZoneOffset.UTC));
+    evalEquals("TO_DATE(1551052800.000000000)", epochDate(2019, 2, 25, 0, 0, 0, 0));
+    evalEquals("TO_DATE(-5364662400.000000000)", epochDate(1800, 1, 1, 0, 0, 0, 0));
+    evalEquals("TO_DATE(-1.5)", epochDate(1969, 12, 31, 23, 59, 58, 500000000));
+    evalEquals("TO_DATE(1284352323.1)", epochDate(2010, 9, 13, 4, 32, 3, 100000000));
+    evalEquals("TO_DATE(1284352323.12)", epochDate(2010, 9, 13, 4, 32, 3, 120000000));
+    evalEquals("TO_DATE(1284352323.123)", epochDate(2010, 9, 13, 4, 32, 3, 123000000));
+    evalEquals("TO_DATE(1284352323.123456789)", epochDate(2010, 9, 13, 4, 32, 3, 123456789));
 
     // An epoch out of the range of dates raises an error instead of wrapping around
     evalFails("TO_DATE(9223372036854775807)", ErrorCode.CONVERSION_ERROR);
@@ -1119,7 +1116,7 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Documentation examples
     evalEquals("TO_DATE('1999-12', 'YYYY-MM')", LocalDate.of(1999, 12, 1));
-    evalEquals("TO_DATE(1284352323.000000123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123));
+    evalEquals("TO_DATE(1284352323.000000123)", epochDate(2010, 9, 13, 4, 32, 3, 123));
 
     // Time zones are case-sensitive
     evalFails(
@@ -1236,8 +1233,7 @@ class ConversionFunctionTest extends ExpressionTest {
     evalNull("TRY_CAST('XXXX' as DATE format 'YYYY')").returnType(DateType.DATE);
 
     // Number to Date, an epoch out of the range of dates
-    evalEquals(
-        "TRY_CAST(1551052800 AS DATE)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+    evalEquals("TRY_CAST(1551052800 AS DATE)", epochDate(2019, 2, 25, 0, 0, 0, 0));
     evalNull("TRY_CAST(9223372036854775807 AS DATE)");
 
     // String to JSON
@@ -1375,10 +1371,10 @@ class ConversionFunctionTest extends ExpressionTest {
     evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')", ErrorCode.INVALID_NUMBER_FORMAT);
 
     // Date to Epoch
-    evalEquals("TRY_TO_NUMBER(Date '1970-01-01')", 0D);
-    evalEquals("TRY_TO_NUMBER(Date '2019-02-25')", 1551052800D);
+    evalEquals("TRY_TO_NUMBER(Timestamp '1970-01-01 00:00:00Z')", 0D);
+    evalEquals("TRY_TO_NUMBER(Timestamp '2019-02-25 00:00:00Z')", 1551052800D);
     evalEquals(
-        "TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')",
+        "TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789Z')",
         new BigDecimal("1284352323.123456789"));
     evalNull("TRY_TO_NUMBER(NULL_DATE)");
 
@@ -1412,21 +1408,19 @@ class ConversionFunctionTest extends ExpressionTest {
     // An unknown time zone abbreviation
     evalNull("TRY_TO_DATE('2019-02-13 XYZ','YYYY-MM-DD TZD')");
 
-    // Integer Unix Epoch in seconds, in the UTC time zone
-    evalEquals("TRY_TO_DATE(0)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-    evalEquals(
-        "TRY_TO_DATE(1551052800)", ZonedDateTime.of(2019, 2, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+    // Integer Unix Epoch in seconds, the date-time in UTC in the system time zone
+    evalEquals("TRY_TO_DATE(0)", epochDate(1970, 1, 1, 0, 0, 0, 0));
+    evalEquals("TRY_TO_DATE(1551052800)", epochDate(2019, 2, 25, 0, 0, 0, 0));
     evalEquals("TRY_TO_DATE(-5364662400)", LocalDate.of(1800, 1, 1));
-    evalEquals("TRY_TO_DATE(1284352323)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
+    evalEquals("TRY_TO_DATE(1284352323)", epochDate(2010, 9, 13, 4, 32, 3, 0));
 
     // Number Unix Epoch in seconds with fractional
     evalEquals("TRY_TO_DATE(1551052800.000000000)", LocalDate.of(2019, 2, 25));
     evalEquals("TRY_TO_DATE(-5364662400.000000000)", LocalDate.of(1800, 1, 1));
-    evalEquals("TRY_TO_DATE(1284352323.1)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 100000000));
-    evalEquals("TRY_TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
-    evalEquals("TRY_TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123000000));
-    evalEquals(
-        "TRY_TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+    evalEquals("TRY_TO_DATE(1284352323.1)", epochDate(2010, 9, 13, 4, 32, 3, 100000000));
+    evalEquals("TRY_TO_DATE(1284352323.12)", epochDate(2010, 9, 13, 4, 32, 3, 120000000));
+    evalEquals("TRY_TO_DATE(1284352323.123)", epochDate(2010, 9, 13, 4, 32, 3, 123000000));
+    evalEquals("TRY_TO_DATE(1284352323.123456789)", epochDate(2010, 9, 13, 4, 32, 3, 123456789));
 
     optimize("TRY_TO_DATE(FIELD_STRING)", "TRY(TO_DATE(FIELD_STRING))");
   }

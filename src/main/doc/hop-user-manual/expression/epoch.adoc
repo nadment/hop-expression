@@ -31,6 +31,8 @@ Integer
 == Usage
 
 * Equivalent to xref:extract.adoc["EXTRACT",role=fun](EPOCH FROM date).
+* A date or a timestamp without time zone, in the time zone of the system, gives the nominal number of seconds of its date and time, without regard to the time zone and the daylight saving time, for example `EPOCH(DATE '1970-01-01')` returns 0.
+* A timestamp with a time zone gives the number of seconds of its instant, for example `EPOCH(TIMESTAMP '1970-01-01 02:00:00 +02:00')` returns 0.
 * Returns NULL if the argument is NULL.
 
 == See also

@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
@@ -186,18 +187,19 @@ public class TypeTest extends ExpressionTest {
   @Test
   void castToDate() {
     DateType type = DateType.DATE;
+    // A date without time zone is in the system time zone, the epoch 2022-12-28 00:00:00 UTC is the
+    // same local date-time
     ZonedDateTime date =
-        LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
+        LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay(ZoneId.systemDefault());
     assertNull(type.cast(null));
     assertEquals(date, type.cast(date));
     assertEquals(date, type.cast(1672185600L));
     assertEquals(date, type.cast(BigDecimal.valueOf(1672185600L)));
-
-    date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
     assertEquals(date, type.cast("2022-12-28"));
     assertEquals(date, type.cast("2022-12-28", "YYYY-MM-DD"));
 
-    ZonedDateTime timestamp = ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneOffset.UTC);
+    ZonedDateTime timestamp =
+        ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneId.systemDefault());
     assertEquals(
         timestamp, type.cast("2022-12-28 13:32:55.123456789", "YYYY-MM-DD HH24:MI:SS.FF9"));
 

@@ -16,7 +16,6 @@ package org.apache.hop.expression;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -102,7 +101,7 @@ public class Field extends Identifier {
         case IValueMeta.TYPE_TIMESTAMP:
           Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
           if (timestamp == null) return null;
-          return timestamp.toLocalDateTime().atZone(ZoneOffset.UTC);
+          return DateTimeConversion.convert(timestamp);
         case IValueMeta.TYPE_DATE:
           Date date = valueMeta.getDate(row[ordinal]);
           if (date == null) return null;
@@ -169,7 +168,7 @@ public class Field extends Identifier {
             if (timestamp == null) {
               return null;
             }
-            return type.convert(timestamp.toLocalDateTime().atZone(ZoneOffset.UTC), clazz);
+            return type.convert(DateTimeConversion.convert(timestamp), clazz);
           }
 
         case IValueMeta.TYPE_DATE:

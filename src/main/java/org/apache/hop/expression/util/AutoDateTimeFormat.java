@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.util;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -144,6 +145,8 @@ public class AutoDateTimeFormat extends DateTimeFormat {
     // No offset from UTC (or 0 hour offset).
     else if (parser.isChar('Z')) {
       parser.index++;
+      // Without offset, the date would be in the system time zone
+      parser.zoneId = ZoneOffset.UTC;
     }
 
     parser.skipSpace();
