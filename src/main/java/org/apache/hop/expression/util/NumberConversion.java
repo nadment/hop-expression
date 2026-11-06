@@ -18,6 +18,7 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import org.apache.hop.expression.ErrorCode;
@@ -64,17 +65,34 @@ public final class NumberConversion {
   }
 
   /**
-   * Convert String value to BigDecimal.
+   * Converts a timestamp to the number of seconds since the epoch of its instant, with the
+   * fractions of seconds.
    *
-   * @param datetime the datetime to convert
-   * @return BigDecimal
-   * @throws ExpressionException - When the conversion is not possible
+   * @param datetime the timestamp to convert
+   * @return the number of seconds
    */
   public static @Nullable BigDecimal convert(final @Nullable ZonedDateTime datetime)
       throws ExpressionException {
     if (datetime == null) return null;
-    BigDecimal result = new BigDecimal(TimestampConversion.toEpochSecond(datetime));
-    int nanos = datetime.getNano();
+    return epoch(datetime.toEpochSecond(), datetime.getNano());
+  }
+
+  /**
+   * Converts a date without time zone to the nominal number of seconds since the epoch, with the
+   * fractions of seconds, see {@link DateConversion#toEpochSecond(LocalDateTime)}.
+   *
+   * @param datetime the date to convert
+   * @return the number of seconds
+   */
+  public static @Nullable BigDecimal convert(final @Nullable LocalDateTime datetime)
+      throws ExpressionException {
+    if (datetime == null) return null;
+    return epoch(DateConversion.toEpochSecond(datetime), datetime.getNano());
+  }
+
+  /** Returns a number of seconds with the fractions of seconds. */
+  private static BigDecimal epoch(long seconds, int nanos) {
+    BigDecimal result = new BigDecimal(seconds);
     if (nanos != 0) {
       BigDecimal fraction = BigDecimal.valueOf(nanos).movePointLeft(9);
       result = result.add(fraction).stripTrailingZeros();

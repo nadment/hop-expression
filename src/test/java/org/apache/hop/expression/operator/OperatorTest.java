@@ -3699,7 +3699,15 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_STRING::TIMESTAMP", "CAST(FIELD_STRING AS TIMESTAMP)");
 
       // Unsupported conversion
-      evalFails("CAST(FIELD_INTEGER AS TIMESTAMP)", ErrorCode.UNSUPPORTED_CONVERSION);
+      // An epoch time value is the instant, in UTC, like TO_TIMESTAMP
+      evalEquals("CAST(0 AS TIMESTAMP)", ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+          .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+      evalEquals(
+          "CAST(1.5 AS TIMESTAMP)",
+          ZonedDateTime.of(1970, 1, 1, 0, 0, 1, 500000000, ZoneOffset.UTC));
+      evalEquals(
+          "CAST(FIELD_INTEGER AS TIMESTAMP)",
+          ZonedDateTime.of(1970, 1, 1, 0, 0, 40, 0, ZoneOffset.UTC));
       evalFails("CAST(FIELD_BOOLEAN_TRUE AS TIMESTAMP)", ErrorCode.UNSUPPORTED_CONVERSION);
     }
 

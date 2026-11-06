@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.type;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
@@ -92,7 +93,7 @@ public final class TimestampType extends Type {
    * Convert a value to a TIMESTAMP with a pattern. A string or a date without time zone is in the
    * system time zone.
    *
-   * @param value the value to convert, a date-time or a string
+   * @param value the value to convert, a date-time, a string or an epoch time value
    * @param pattern the optional pattern of a string, or null for the ISO formats
    * @return the converted value
    */
@@ -105,6 +106,9 @@ public final class TimestampType extends Type {
       case LocalDateTime datetime -> TimestampConversion.toZoned(datetime);
       case String str ->
           ((pattern == null) ? DEFAULT_FORMAT : DateTimeFormat.of(pattern)).parse(str);
+        // An epoch time value is the instant, in UTC
+      case Long number -> TimestampConversion.convert(number);
+      case BigDecimal number -> TimestampConversion.convert(number);
       default ->
           throw new ExpressionException(
               ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);

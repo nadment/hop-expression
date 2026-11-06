@@ -69,12 +69,13 @@ The data type of the returned value is the type specified in the `AS` clause.
 ** `NUMBER` without precision and scale has no fixed scale, for example `1.23456::NUMBER` returns 1.23456, and `NUMBER(p)` has a scale of 0, for example `1.56::NUMBER(10)` returns 2.
 ** With a precision, an error is raised if the integer part has more digits than the precision minus the scale, checked after rounding, for example `CAST(12345 AS INTEGER(3))`, `CAST(999.5 AS INTEGER(3))`, `CAST(12345 AS NUMBER(3))` or `CAST('12345.6' AS NUMBER(3,1))`.
 * Date:
-** An integer or a number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970), and a date converts back to it; the fractions of a number are nanoseconds. The date is without time zone, its date and time are the ones of the epoch in UTC, for example `CAST(0 AS DATE)` returns DATE '1970-01-01', see xref:epoch.adoc["EPOCH",role=fun]. Converted to an integer or a number with a scale, the fractions of seconds are rounded like a number, for example `CAST(TIMESTAMP '1970-01-01 00:00:01.5' AS INTEGER)` returns 2.
+** An integer or a number is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970), and a date converts back to it; the fractions of a number are nanoseconds. The date is without time zone, its date and time are the ones of the epoch in UTC, for example `CAST(0 AS DATE)` returns DATE '1970-01-01', see xref:epoch.adoc["EPOCH",role=fun]. Converted to an integer or a number with a scale, the fractions of seconds are rounded like a number, for example `CAST(DATE '1970-01-01' + INTERVAL 1.5 SECONDS AS INTEGER)` returns 2.
 ** A date converts to a string without format with `YYYY-MM-DD`, followed by the time `HH24:MI:SS` if it is not midnight and by the fractional seconds `.FF9` if they are not zero, for example `CAST(TIMESTAMP '2019-02-25 12:34:56' AS STRING)` returns '2019-02-25 12:34:56'.
 * Timestamp:
 ** A timestamp has a time zone. A string keeps its time zone, a string without time zone is in the time zone of the system, for example `CAST('2020-05-25 20:48:00 +05:00' AS TIMESTAMP)`.
 ** A date without time zone is in the time zone of the system.
 ** A timestamp converted to a date keeps its local date and time, the time zone is dropped, for example `CAST(TIMESTAMP '2020-05-25 20:48:00 +05:00' AS DATE)` returns a date at 20:48.
+** An integer or a number is the number of seconds that have elapsed since the epoch, converted to its instant in the UTC time zone like with xref:to_timestamp.adoc["TO_TIMESTAMP",role=fun], for example `CAST(0 AS TIMESTAMP)` returns TIMESTAMP '1970-01-01 00:00:00 +00:00'.
 ** A timestamp is accepted where a date is expected, like in the date functions.
 * String:
 ** With a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.

@@ -16,7 +16,9 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -90,9 +92,14 @@ public class ToNumberFunction extends Function {
 
     @Override
     public @Nullable Object eval(final IExpression[] operands) {
-      ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
+      Temporal value = operands[0].getValue(Temporal.class);
       if (value == null) return null;
-      return NumberConversion.convert(value);
+      // The epoch of a timestamp is its instant, the epoch of a date is nominal
+      return switch (value) {
+        case ZonedDateTime datetime -> NumberConversion.convert(datetime);
+        case LocalDateTime datetime -> NumberConversion.convert(datetime);
+        default -> throw new IllegalArgumentException("Not a date-time: " + value);
+      };
     }
   }
 }

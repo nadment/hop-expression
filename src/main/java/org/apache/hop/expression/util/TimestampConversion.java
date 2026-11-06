@@ -116,25 +116,6 @@ public final class TimestampConversion {
   }
 
   /**
-   * Returns the number of seconds since the epoch 1970-01-01 00:00:00, the fraction of second is
-   * ignored.
-   *
-   * <p>A date-time in the system time zone is a date without time zone, like a date returned by a
-   * date function: the number of seconds is nominal, see {@link
-   * DateConversion#toEpochSecond(LocalDateTime)}. A date-time with another time zone gives the
-   * number of seconds of its instant, TIMESTAMP '1970-01-01 02:00:00 +02:00' is 0.
-   *
-   * @param datetime the date-time
-   * @return the number of seconds since the epoch
-   */
-  public static long toEpochSecond(final ZonedDateTime datetime) {
-    if (datetime.getZone().equals(ZoneId.systemDefault())) {
-      return DateConversion.toEpochSecond(datetime.toLocalDateTime());
-    }
-    return datetime.toEpochSecond();
-  }
-
-  /**
    * Converts a date-time to a date of the row, at the same instant.
    *
    * @param datetime the date-time

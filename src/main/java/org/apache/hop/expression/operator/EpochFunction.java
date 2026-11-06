@@ -16,14 +16,16 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.TimestampConversion;
+import org.apache.hop.expression.util.DateConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -47,8 +49,13 @@ public class EpochFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
-    if (value == null) return null;
-    return Long.valueOf(TimestampConversion.toEpochSecond(value));
+    Temporal temporal = operands[0].getValue(Temporal.class);
+    if (temporal == null) return null;
+    // The epoch of a timestamp is its instant, the epoch of a date is nominal
+    return switch (temporal) {
+      case ZonedDateTime datetime -> datetime.toEpochSecond();
+      case LocalDateTime datetime -> DateConversion.toEpochSecond(datetime);
+      default -> throw new IllegalArgumentException("Not a temporal: " + temporal);
+    };
   }
 }

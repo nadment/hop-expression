@@ -288,9 +288,9 @@ public enum TypeName {
       case STRING ->
           name.is(BOOLEAN, INTEGER, NUMBER, DATE, TIMESTAMP, BINARY, JSON, INET, INTERVAL);
       case DATE -> name.is(INTEGER, NUMBER, STRING, TIMESTAMP);
-      case TIMESTAMP -> name.is(DATE, STRING);
-      case INTEGER -> name.is(NUMBER, BOOLEAN, STRING, DATE);
-      case NUMBER -> name.is(INTEGER, BOOLEAN, STRING, DATE);
+      case TIMESTAMP -> name.is(INTEGER, NUMBER, STRING, DATE);
+      case INTEGER -> name.is(NUMBER, BOOLEAN, STRING, DATE, TIMESTAMP);
+      case NUMBER -> name.is(INTEGER, BOOLEAN, STRING, DATE, TIMESTAMP);
       case BINARY, JSON, INET, INTERVAL -> name.is(STRING);
       case UNKNOWN, ANY -> true;
       default -> false;

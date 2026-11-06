@@ -19,12 +19,13 @@ package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.StringConversion;
-import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -168,9 +169,13 @@ public final class NumberType extends Type {
                   ? NumberConversion.convert(str)
                   : NumberFormat.of(pattern).parse(str)));
     }
-    if (DateType.isDateTime(value)) {
-      // The fractions of seconds are rounded like a number
-      return checkOverflow(round(NumberConversion.convert(TimestampConversion.toZoned(value))));
+    // The fractions of seconds are rounded like a number, the epoch of a timestamp is its instant,
+    // the epoch of a date is nominal
+    if (value instanceof ZonedDateTime datetime) {
+      return checkOverflow(round(NumberConversion.convert(datetime)));
+    }
+    if (value instanceof LocalDateTime datetime) {
+      return checkOverflow(round(NumberConversion.convert(datetime)));
     }
 
     throw new ExpressionException(

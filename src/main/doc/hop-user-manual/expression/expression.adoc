@@ -345,19 +345,20 @@ Explicit conversion is supported by using the xref:cast.adoc["CAST",role=fun] fu
 
 When there is no ambiguity about the data type of an expression value, it is implicitly coerced to match the expected data type.
 
-[cols="^5,^1,^1,^1,^1,^1,^1,^1,^1,^1", options="header"]
+[cols="^5,^1,^1,^1,^1,^1,^1,^1,^1,^1,^1", options="header"]
 |===
-|From / To|Binary|Boolean|Date|Integer|Number|String|Json|Inet|Interval
-|Function|xref:to_binary.adoc["TO_BINARY",role=fun]|xref:to_boolean.adoc["TO_BOOLEAN",role=fun]|xref:to_date.adoc["TO_DATE",role=fun]||xref:to_number.adoc["TO_NUMBER",role=fun]|xref:to_char.adoc["TO_CHAR",role=fun]|xref:to_json.adoc["TO_JSON",role=fun]||xref:to_interval.adoc["TO_INTERVAL",role=fun]
-|Binary|-|❌|❌|❌|❌|✅|❌|❌|❌
-|Boolean|❌|-|❌|✅|✅|✅|❌|❌|❌
-|Date|❌|❌|-|☑️|☑️|✅|❌|❌|❌
-|Integer|❌|✅|☑️|-|✅|✅|❌|❌|❌
-|Number|❌|✅|☑️|✅|-|✅|❌|❌|❌
-|String|✅|☑️|☑️|☑️|☑️|-|☑️|☑️|☑️
-|Json|❌|❌|❌|❌|❌|✅|-|❌|❌
-|Inet|❌|❌|❌|❌|❌|✅|❌|-|❌
-|Interval|❌|❌|❌|❌|❌|✅|❌|❌|-
+|From / To|Binary|Boolean|Date|Timestamp|Integer|Number|String|Json|Inet|Interval
+|Function|xref:to_binary.adoc["TO_BINARY",role=fun]|xref:to_boolean.adoc["TO_BOOLEAN",role=fun]|xref:to_date.adoc["TO_DATE",role=fun]|xref:to_timestamp.adoc["TO_TIMESTAMP",role=fun]||xref:to_number.adoc["TO_NUMBER",role=fun]|xref:to_char.adoc["TO_CHAR",role=fun]|xref:to_json.adoc["TO_JSON",role=fun]||xref:to_interval.adoc["TO_INTERVAL",role=fun]
+|Binary|-|❌|❌|❌|❌|❌|✅|❌|❌|❌
+|Boolean|❌|-|❌|❌|✅|✅|✅|❌|❌|❌
+|Date|❌|❌|-|✅|☑️|☑️|✅|❌|❌|❌
+|Timestamp|❌|❌|✅|-|☑️|☑️|✅|❌|❌|❌
+|Integer|❌|✅|☑️|☑️|-|✅|✅|❌|❌|❌
+|Number|❌|✅|☑️|☑️|✅|-|✅|❌|❌|❌
+|String|✅|☑️|☑️|☑️|☑️|☑️|-|☑️|☑️|☑️
+|Json|❌|❌|❌|❌|❌|❌|✅|-|❌|❌
+|Inet|❌|❌|❌|❌|❌|❌|✅|❌|-|❌
+|Interval|❌|❌|❌|❌|❌|❌|✅|❌|❌|-
 |===
 
 ❌ Non convertible
@@ -367,6 +368,9 @@ When there is no ambiguity about the data type of an expression value, it is imp
 * Numeric types can be coerced to a wider numeric type. For example, an INTEGER type can be coerced to a NUMBER.
 * A NUMBER is also coerced to an INTEGER when an integer is expected, an error is raised if the value is out of the integer range.
 * A STRING is coerced to a BINARY when a binary is expected, the result is the UTF-8 encoding of the string.
+* A DATE and a TIMESTAMP are coerced to each other, so a TIMESTAMP is accepted by the date functions. A DATE, without time zone, is in the time zone of the system, and a TIMESTAMP converted to a DATE keeps its local date and time, the time zone is dropped.
+* A DATE and a TIMESTAMP are compared at their instant, a DATE is in the time zone of the system.
+* A DATE converted to an INTEGER or a NUMBER is the nominal number of seconds since 1970-01-01 00:00:00 of its date and time, and an INTEGER or a NUMBER converts back to a DATE, see xref:epoch.adoc["EPOCH",role=fun]. A TIMESTAMP converts to the number of seconds of its instant, a number converts to a TIMESTAMP with xref:to_timestamp.adoc["TO_TIMESTAMP",role=fun].
 
 == Variables
 

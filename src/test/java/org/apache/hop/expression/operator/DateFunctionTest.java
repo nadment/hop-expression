@@ -1045,9 +1045,12 @@ class DateFunctionTest extends ExpressionTest {
     // A date without time zone gives the nominal number of seconds of its local date-time, without
     // regard to the system time zone, Europe/Paris
     evalEquals("Extract(EPOCH from DATE '1970-01-01')", 0L);
-    evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-02 00:00:00')", 86400L);
-    evalEquals("Extract(EPOCH from TIMESTAMP '2019-07-23 12:00:00')", 1563883200L);
-    // A date with a time zone gives the number of seconds of its instant
+    evalEquals("Extract(EPOCH from DATE '1970-01-02')", 86400L);
+    evalEquals("Extract(EPOCH from CAST(TIMESTAMP '2019-07-23 12:00:00' AS DATE))", 1563883200L);
+    // A timestamp gives the number of seconds of its instant, in the system time zone if it has no
+    // time zone: Europe/Paris is UTC+1 in winter and UTC+2 in summer
+    evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-02 00:00:00')", 86400L - 3600);
+    evalEquals("Extract(EPOCH from TIMESTAMP '2019-07-23 12:00:00')", 1563883200L - 7200);
     evalEquals("Extract(EPOCH from TIMESTAMP '1970-01-01 02:00:00 +02:00')", 0L);
     evalEquals(
         "Extract(EPOCH from TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'America/New_York')",

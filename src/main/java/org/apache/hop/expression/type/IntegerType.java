@@ -22,9 +22,9 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -129,8 +129,11 @@ public final class IntegerType extends Type {
               (pattern == null)
                   ? IntegerConversion.convert(str)
                   : IntegerConversion.convert(NumberFormat.of(pattern).parse(str));
-          case ZonedDateTime datetime -> roundEpochSecond(datetime);
-          case LocalDateTime datetime -> roundEpochSecond(TimestampConversion.toZoned(datetime));
+            // The epoch of a timestamp is its instant, the epoch of a date is nominal
+          case ZonedDateTime datetime ->
+              roundEpochSecond(datetime.toEpochSecond(), datetime.getNano());
+          case LocalDateTime datetime ->
+              roundEpochSecond(DateConversion.toEpochSecond(datetime), datetime.getNano());
           default ->
               throw new ExpressionException(
                   ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
@@ -142,10 +145,8 @@ public final class IntegerType extends Type {
    * Gets the number of seconds since the epoch, with the fractions of seconds rounded like a
    * number: halfway values are rounded away from zero.
    */
-  private static long roundEpochSecond(ZonedDateTime datetime) {
+  private static long roundEpochSecond(long seconds, int nanos) {
     // The epoch second is the floor of the time, the fraction of second is always positive
-    long seconds = TimestampConversion.toEpochSecond(datetime);
-    int nanos = datetime.getNano();
     // Before the epoch, the floor is already away from zero for a halfway value like -1.5
     boolean roundUp = (seconds < 0) ? nanos > 500_000_000 : nanos >= 500_000_000;
     return roundUp ? seconds + 1 : seconds;

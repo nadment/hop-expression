@@ -20,6 +20,7 @@ package org.apache.hop.expression.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -77,9 +78,23 @@ public final class IntegerConversion {
     return result;
   }
 
+  /**
+   * Converts a timestamp to the number of seconds since the epoch of its instant, the fraction of
+   * second is ignored.
+   */
   public static @Nullable Long convert(@Nullable ZonedDateTime datetime)
       throws ExpressionException {
     if (datetime == null) return null;
-    return TimestampConversion.toEpochSecond(datetime);
+    return datetime.toEpochSecond();
+  }
+
+  /**
+   * Converts a date without time zone to the nominal number of seconds since the epoch, see {@link
+   * DateConversion#toEpochSecond(LocalDateTime)}.
+   */
+  public static @Nullable Long convert(@Nullable LocalDateTime datetime)
+      throws ExpressionException {
+    if (datetime == null) return null;
+    return DateConversion.toEpochSecond(datetime);
   }
 }

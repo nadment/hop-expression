@@ -80,11 +80,12 @@ public final class DateType extends Type {
     if (clazz == String.class) {
       return clazz.cast(StringConversion.convert(datetime));
     }
+    // The epoch of a date without time zone is nominal
     if (clazz == Long.class) {
-      return clazz.cast(IntegerConversion.convert(datetime));
+      return clazz.cast(IntegerConversion.convert(DateConversion.toLocal(value)));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberConversion.convert(datetime));
+      return clazz.cast(NumberConversion.convert(DateConversion.toLocal(value)));
     }
     return super.convertValue(value, clazz);
   }

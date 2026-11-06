@@ -273,6 +273,13 @@ class ConversionFunctionTest extends ExpressionTest {
 
     // Date to number epoch
     evalEquals("TO_NUMBER(Timestamp '1970-01-01 00:00:00Z')", BigDecimal.ZERO);
+    // The epoch of a date is nominal, like CAST, without regard to the system time zone
+    evalEquals("TO_NUMBER(DATE '1970-01-02')", 86400D);
+    evalEquals("TRY_TO_NUMBER(DATE '1970-01-02')", 86400D);
+    evalEquals("CAST(DATE '1970-01-02' AS NUMBER)", 86400D);
+    // The epoch of a timestamp is its instant, in the system time zone Europe/Paris UTC+1
+    evalEquals("TO_NUMBER(TIMESTAMP '1970-01-02 00:00:00')", 86400D - 3600);
+    evalEquals("CAST(TIMESTAMP '1970-01-02 00:00:00' AS NUMBER)", 86400D - 3600);
     evalEquals("TO_NUMBER(Timestamp '2019-02-25 00:00:00Z')", 1551052800D);
     evalEquals("TO_NUMBER(Timestamp '1800-01-01 00:00:00Z')", -5364662400D);
     evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123Z')", new BigDecimal("1284352323.123"));

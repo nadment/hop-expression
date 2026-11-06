@@ -18,7 +18,9 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -143,10 +145,15 @@ public class ExtractFunction extends Function {
     @Override
     public @Nullable Object eval(final IExpression[] operands) {
       TimeUnit unit = operands[0].getValue(TimeUnit.class);
-      ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
-      if (datetime == null) return null;
+      Temporal temporal = operands[1].getValue(Temporal.class);
+      if (temporal == null) return null;
 
-      return unit.extract(datetime);
+      // A date without time zone has no time zone part
+      return switch (temporal) {
+        case ZonedDateTime datetime -> unit.extract(datetime);
+        case LocalDateTime datetime -> unit.extract(datetime);
+        default -> throw new IllegalArgumentException("Not a date-time: " + temporal);
+      };
     }
   }
 
