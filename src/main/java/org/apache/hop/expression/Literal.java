@@ -38,6 +38,7 @@ import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.BaseFormat;
+import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.StringConversion;
 import org.apache.hop.expression.util.TimestampConversion;
@@ -288,10 +289,10 @@ public final class Literal implements IExpression {
           unparseBinary(writer, (byte[]) value);
           break;
         case DATE:
-          unparseDate(writer, TimestampConversion.toZoned(value), false);
+          unparseDate(writer, DateConversion.toLocal(value));
           break;
         case TIMESTAMP:
-          unparseDate(writer, (ZonedDateTime) value, true);
+          unparseTimestamp(writer, (ZonedDateTime) value);
           break;
         case INTERVAL:
           unparseInterval(writer, (Interval) value);
@@ -343,38 +344,49 @@ public final class Literal implements IExpression {
   }
 
   /**
-   * Unparses a date literal, or a timestamp literal if it has a time or is a TIMESTAMP, with its
-   * time zone if it is not the system time zone.
+   * Unparses a date literal, or a timestamp literal if the date has a time. A date has no time
+   * zone.
    *
    * @param writer the writer
-   * @param datetime the date-time
-   * @param isTimestamp true for a TIMESTAMP, always written as a timestamp literal
+   * @param datetime the date without time zone
    */
-  private static void unparseDate(
-      final StringWriter writer, final ZonedDateTime datetime, final boolean isTimestamp) {
+  private static void unparseDate(final StringWriter writer, final LocalDateTime datetime) {
+    // The format of a date-time is in the system time zone, like a date without time zone
+    ZonedDateTime zoned = TimestampConversion.toZoned(datetime);
     int nano = datetime.getNano();
-    // The literals are in the system time zone, another time zone is written
-    boolean isSystemZone = datetime.getZone().equals(ZoneId.systemDefault());
-    if (!isTimestamp
-        && isSystemZone
-        && nano == 0
+    if (nano == 0
         && datetime.getHour() == 0
         && datetime.getMinute() == 0
         && datetime.getSecond() == 0) {
       writer.append("DATE '");
-      writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
+      writer.append(DateTimeFormat.of("YYYY-MM-DD").format(zoned));
     } else {
       writer.append("TIMESTAMP '");
-      writer.append(DateTimeFormat.of(timestampPattern(nano)).format(datetime));
-      if (!isSystemZone) {
-        if (datetime.getZone() instanceof ZoneOffset offset) {
-          writer.append(' ');
-          // The offset of UTC is written +00:00 and not Z
-          writer.append(offset.getTotalSeconds() == 0 ? "+00:00" : offset.toString());
-        } else {
-          writer.append("' AT TIME ZONE '");
-          writer.append(datetime.getZone().getId());
-        }
+      writer.append(DateTimeFormat.of(timestampPattern(nano)).format(zoned));
+    }
+    writer.append('\'');
+  }
+
+  /**
+   * Unparses a timestamp literal, always as a timestamp literal, also at midnight, with its time
+   * zone if it is not the system time zone.
+   *
+   * @param writer the writer
+   * @param datetime the timestamp
+   */
+  private static void unparseTimestamp(final StringWriter writer, final ZonedDateTime datetime) {
+    writer.append("TIMESTAMP '");
+    writer.append(DateTimeFormat.of(timestampPattern(datetime.getNano())).format(datetime));
+    // A timestamp literal without time zone is in the system time zone, another time zone is
+    // written
+    if (!datetime.getZone().equals(ZoneId.systemDefault())) {
+      if (datetime.getZone() instanceof ZoneOffset offset) {
+        writer.append(' ');
+        // The offset of UTC is written +00:00 and not Z
+        writer.append(offset.getTotalSeconds() == 0 ? "+00:00" : offset.toString());
+      } else {
+        writer.append("' AT TIME ZONE '");
+        writer.append(datetime.getZone().getId());
       }
     }
     writer.append('\'');
