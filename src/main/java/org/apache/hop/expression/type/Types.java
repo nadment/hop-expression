@@ -18,6 +18,7 @@ package org.apache.hop.expression.type;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -523,7 +524,8 @@ public final class Types {
       case Long integer -> IntegerType.from(integer);
       case BigDecimal number -> NumberType.from(number);
       case String string -> StringType.from(string);
-      case ZonedDateTime zonedDateTime -> DateType.DATE;
+      case LocalDateTime localDateTime -> DateType.DATE;
+      case ZonedDateTime zonedDateTime -> TimestampType.TIMESTAMP;
       case Interval interval -> IntervalType.INTERVAL;
       case JsonNode jsonNode -> JsonType.JSON;
       case InetAddress inetAddress -> InetType.INET;

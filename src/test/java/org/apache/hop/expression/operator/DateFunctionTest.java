@@ -1280,7 +1280,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(
             "MAKE_TIMESTAMP(2019,01,1,23,15,59)",
             LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59))
-        .returnType(DateType.DATE_NOT_NULL);
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(
         "MAKE_TIMESTAMP(2020,-6,1,23,15,59)", LocalDateTime.of(2019, Month.JUNE, 1, 23, 15, 59));
     evalEquals(
@@ -1301,7 +1301,7 @@ class DateFunctionTest extends ExpressionTest {
         LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456789));
 
     // Null handling
-    evalNull("MAKE_TIMESTAMP(NULL_INTEGER,-1,1,23,15,59)").returnType(DateType.DATE);
+    evalNull("MAKE_TIMESTAMP(NULL_INTEGER,-1,1,23,15,59)").returnType(TimestampType.TIMESTAMP);
     evalNull("MAKE_TIMESTAMP(2020,NULL_INTEGER,1,23,15,59)");
     evalNull("MAKE_TIMESTAMP(2020,-1,NULL_INTEGER,23,15,59)");
 

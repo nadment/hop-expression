@@ -273,11 +273,14 @@ public class ExpressionTest {
     Evaluator evaluator = new Evaluator(context, source);
     Object result = evaluator.eval(Object.class);
 
+    // A date without time zone is in the system time zone
     if (result instanceof LocalDateTime value) {
       if (expected instanceof LocalDate) {
         result = value.toLocalDate();
       } else if (expected instanceof ZonedDateTime) {
         result = value.atZone(ZoneId.systemDefault());
+      } else if (expected instanceof OffsetDateTime) {
+        result = value.atZone(ZoneId.systemDefault()).toOffsetDateTime();
       }
     }
 

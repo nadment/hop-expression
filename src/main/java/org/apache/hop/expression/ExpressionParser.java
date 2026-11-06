@@ -708,7 +708,8 @@ public class ExpressionParser implements IExpressionParser {
       DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
       ZonedDateTime datetime = format.parse(token.text());
 
-      return Literal.of(datetime);
+      // A date without time zone
+      return Literal.of(datetime.toLocalDateTime());
     } catch (Exception e) {
       throw new ParseExpressionException(token.start(), ErrorCode.INVALID_DATE, token.text());
     }

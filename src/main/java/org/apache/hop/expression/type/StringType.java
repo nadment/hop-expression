@@ -21,13 +21,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.util.BinaryConversion;
 import org.apache.hop.expression.util.BooleanConversion;
-import org.apache.hop.expression.util.DateTimeConversion;
+import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.InetConversion;
 import org.apache.hop.expression.util.IntegerConversion;
@@ -35,6 +36,7 @@ import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -102,7 +104,10 @@ public final class StringType extends Type {
       return clazz.cast(BinaryConversion.convert((String) value));
     }
     if (clazz == ZonedDateTime.class) {
-      return clazz.cast(DateTimeConversion.convert((String) value));
+      return clazz.cast(TimestampConversion.convert((String) value));
+    }
+    if (clazz == LocalDateTime.class) {
+      return clazz.cast(DateConversion.convert((String) value));
     }
     if (clazz == JsonNode.class) {
       return clazz.cast(JsonConversion.convert((String) value));
@@ -146,6 +151,11 @@ public final class StringType extends Type {
               (pattern == null)
                   ? StringConversion.convert(datetime)
                   : DateTimeFormat.of(pattern).format(datetime);
+            // A date without time zone is formatted in the system time zone
+          case LocalDateTime datetime ->
+              (pattern == null)
+                  ? StringConversion.convert(TimestampConversion.toZoned(datetime))
+                  : DateTimeFormat.of(pattern).format(TimestampConversion.toZoned(datetime));
           case byte[] bytes -> new String(bytes, StandardCharsets.UTF_8);
           case JsonNode json -> StringConversion.convert(json);
           case InetAddress inet -> StringConversion.convert(inet);

@@ -3655,6 +3655,15 @@ public class OperatorTest extends ExpressionTest {
           "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')",
           "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')");
 
+      // A timestamp keeps its local date and time, the time zone is dropped
+      evalEquals(
+              "CAST(TIMESTAMP '2020-05-25 20:48:00 +05:00' AS DATE)",
+              LocalDateTime.of(2020, 5, 25, 20, 48, 0))
+          .returnType(DateType.DATE_NOT_NULL);
+      evalEquals(
+          "CAST(TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Asia/Tokyo' AS DATE)",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0));
+
       // Remove lossless cast
       optimize("Cast(FIELD_DATE as DATE)", "FIELD_DATE");
       optimize("'2021-02-08'::DATE", "DATE '2021-02-08'");

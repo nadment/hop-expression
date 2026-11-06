@@ -19,6 +19,7 @@ package org.apache.hop.expression.type;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import lombok.Getter;
 import org.apache.hop.expression.Array;
@@ -79,7 +80,10 @@ public enum TypeName {
       -1,
       Interval.class),
 
-  /** Date-time value with nanosecond precision and time zone TODO: add precision for nanoseconds */
+  /**
+   * Date-time value with nanosecond precision and without time zone, in the system time zone. TODO:
+   * add precision for nanoseconds
+   */
   DATE(
       TypeFamily.TEMPORAL,
       TypeComparability.ALL,
@@ -90,7 +94,7 @@ public enum TypeName {
       -1,
       -1,
       -1,
-      ZonedDateTime.class),
+      LocalDateTime.class),
 
   /**
    * Date-time value with nanosecond precision and a time zone, offset or region. It is declared

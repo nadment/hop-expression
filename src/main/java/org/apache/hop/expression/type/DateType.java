@@ -18,14 +18,16 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.util.DateTimeConversion;
+import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.StringConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -58,28 +60,43 @@ public final class DateType extends Type {
     return TypeName.DATE;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A date is a {@link LocalDateTime}, a date without time zone. A {@link ZonedDateTime}
+   * returned by a date function is also accepted. A date without time zone is in the system time
+   * zone.
+   */
   @Override
   protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
+    if (clazz == LocalDateTime.class) {
+      return clazz.cast(DateConversion.toLocal(value));
+    }
+    ZonedDateTime datetime = TimestampConversion.toZoned(value);
+    if (clazz == ZonedDateTime.class) {
+      return clazz.cast(datetime);
+    }
     if (clazz == String.class) {
-      return clazz.cast(StringConversion.convert((ZonedDateTime) value));
+      return clazz.cast(StringConversion.convert(datetime));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerConversion.convert((ZonedDateTime) value));
+      return clazz.cast(IntegerConversion.convert(datetime));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberConversion.convert((ZonedDateTime) value));
+      return clazz.cast(NumberConversion.convert(datetime));
     }
     return super.convertValue(value, clazz);
   }
 
   @Override
-  public @Nullable ZonedDateTime cast(final @Nullable Object value) throws ExpressionException {
+  public @Nullable LocalDateTime cast(final @Nullable Object value) throws ExpressionException {
     return cast(value, "FXYYYY-MM-DD");
   }
 
   /**
-   * Convert a value to the specified type {@link DateType} with a pattern.
+   * Convert a value to the specified type {@link DateType} with a pattern. A date with time zone
+   * keeps its local date and time.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when the value is date or
@@ -87,36 +104,46 @@ public final class DateType extends Type {
    * @return the converted value
    */
   @Override
-  public @Nullable ZonedDateTime cast(final @Nullable Object value, final @Nullable String pattern)
+  public @Nullable LocalDateTime cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
     return switch (value) {
       case null -> null;
-      case ZonedDateTime datetime -> datetime;
+      case LocalDateTime datetime -> datetime;
+      case ZonedDateTime datetime -> datetime.toLocalDateTime();
       case String str ->
-          ((pattern == null) ? DEFAULT_FORMAT : DateTimeFormat.of(pattern)).parse(str);
-      case Long number -> DateTimeConversion.convert(number);
-      case BigDecimal number -> DateTimeConversion.convert(number);
+          ((pattern == null) ? DEFAULT_FORMAT : DateTimeFormat.of(pattern))
+              .parse(str)
+              .toLocalDateTime();
+      case Long number -> DateConversion.convert(number);
+      case BigDecimal number -> DateConversion.convert(number);
       default ->
           throw new ExpressionException(
               ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
     };
   }
 
+  /** {@inheritDoc} A date without time zone is compared in the system time zone. */
   @Override
   public boolean compareEqual(Object left, Object right) {
-    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
-      return l.isEqual(r);
+    if (isDateTime(left) && isDateTime(right)) {
+      return TimestampConversion.toZoned(left).isEqual(TimestampConversion.toZoned(right));
     }
     return super.compareEqual(left, right);
   }
 
+  /** {@inheritDoc} A date without time zone is compared in the system time zone. */
   @Override
   public int compare(Object left, Object right) {
-    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
+    if (isDateTime(left) && isDateTime(right)) {
       // Two timestamps are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
-      return l.compareTo(r);
+      return TimestampConversion.toZoned(left).compareTo(TimestampConversion.toZoned(right));
     }
     return super.compare(left, right);
+  }
+
+  /** Returns whether the value is a date-time, without or with time zone. */
+  public static boolean isDateTime(Object value) {
+    return value instanceof LocalDateTime || value instanceof ZonedDateTime;
   }
 }

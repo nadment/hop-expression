@@ -19,12 +19,12 @@ package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -168,9 +168,9 @@ public final class NumberType extends Type {
                   ? NumberConversion.convert(str)
                   : NumberFormat.of(pattern).parse(str)));
     }
-    if (value instanceof ZonedDateTime dt) {
+    if (DateType.isDateTime(value)) {
       // The fractions of seconds are rounded like a number
-      return checkOverflow(round(NumberConversion.convert(dt)));
+      return checkOverflow(round(NumberConversion.convert(TimestampConversion.toZoned(value))));
     }
 
     throw new ExpressionException(

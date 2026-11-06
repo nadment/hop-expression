@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,8 @@ class TypeNameTest {
     assertEquals(TypeName.ENUM, TypeName.fromClass(IntervalQualifier.class));
     assertEquals(TypeName.BOOLEAN, TypeName.fromClass(Boolean.class));
     assertEquals(TypeName.STRING, TypeName.fromClass(String.class));
-    assertEquals(TypeName.DATE, TypeName.fromClass(ZonedDateTime.class));
+    assertEquals(TypeName.DATE, TypeName.fromClass(LocalDateTime.class));
+    assertEquals(TypeName.TIMESTAMP, TypeName.fromClass(ZonedDateTime.class));
     assertEquals(TypeName.NUMBER, TypeName.fromClass(BigDecimal.class));
     assertEquals(TypeName.BINARY, TypeName.fromClass(byte[].class));
     assertEquals(TypeName.JSON, TypeName.fromClass(JsonNode.class));
@@ -168,7 +170,8 @@ class TypeNameTest {
     assertEquals(TypeName.NUMBER, TypeName.fromValue(123.456D));
     assertEquals(TypeName.NUMBER, TypeName.fromValue(new BigDecimal("123456789123456789")));
     assertEquals(TypeName.NUMBER, TypeName.fromValue(BigDecimal.valueOf(123456789, 3)));
-    assertEquals(TypeName.DATE, TypeName.fromValue(ZonedDateTime.now()));
+    assertEquals(TypeName.DATE, TypeName.fromValue(LocalDateTime.now()));
+    assertEquals(TypeName.TIMESTAMP, TypeName.fromValue(ZonedDateTime.now()));
     assertEquals(TypeName.INTERVAL, TypeName.fromValue(Interval.of(5)));
     assertEquals(TypeName.INET, TypeName.fromValue(InetAddress.getByName("127.0.0.1")));
     assertEquals(TypeName.JSON, TypeName.fromValue(JsonConversion.convert("{\"name\":\"Smith\"}")));
@@ -204,7 +207,8 @@ class TypeNameTest {
     assertEquals(Long.class, TypeName.INTEGER.getJavaClass());
     assertEquals(BigDecimal.class, TypeName.NUMBER.getJavaClass());
     assertEquals(String.class, TypeName.STRING.getJavaClass());
-    assertEquals(ZonedDateTime.class, TypeName.DATE.getJavaClass());
+    assertEquals(LocalDateTime.class, TypeName.DATE.getJavaClass());
+    assertEquals(ZonedDateTime.class, TypeName.TIMESTAMP.getJavaClass());
     assertEquals(JsonNode.class, TypeName.JSON.getJavaClass());
     assertEquals(InetAddress.class, TypeName.INET.getJavaClass());
     assertEquals(Void.class, TypeName.UNKNOWN.getJavaClass());

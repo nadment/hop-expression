@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.util.DateTimeConversion;
+import org.apache.hop.expression.util.DateConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -101,11 +101,11 @@ public class Field extends Identifier {
         case IValueMeta.TYPE_TIMESTAMP:
           Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
           if (timestamp == null) return null;
-          return DateTimeConversion.convert(timestamp);
+          return DateConversion.convert(timestamp);
         case IValueMeta.TYPE_DATE:
           Date date = valueMeta.getDate(row[ordinal]);
           if (date == null) return null;
-          return DateTimeConversion.convert(date);
+          return DateConversion.convert(date);
         case IValueMeta.TYPE_STRING:
           return valueMeta.getString(row[ordinal]);
         case IValueMeta.TYPE_INTEGER:
@@ -168,7 +168,7 @@ public class Field extends Identifier {
             if (timestamp == null) {
               return null;
             }
-            return type.convert(DateTimeConversion.convert(timestamp), clazz);
+            return type.convert(DateConversion.convert(timestamp), clazz);
           }
 
         case IValueMeta.TYPE_DATE:
@@ -177,7 +177,7 @@ public class Field extends Identifier {
             if (date == null) {
               return null;
             }
-            return type.convert(DateTimeConversion.convert(date), clazz);
+            return type.convert(DateConversion.convert(date), clazz);
           }
 
         case IValueMeta.TYPE_STRING:

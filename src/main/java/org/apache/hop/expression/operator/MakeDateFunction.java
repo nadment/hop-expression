@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -63,7 +62,7 @@ public class MakeDateFunction extends Function {
               .plusMonths(Math.subtractExact(v1, 1))
               .plusDays(Math.subtractExact(v2, 1));
 
-      return date.atStartOfDay(ZoneId.systemDefault());
+      return date.atStartOfDay();
     } catch (DateTimeException | ArithmeticException e) {
       throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());
     }

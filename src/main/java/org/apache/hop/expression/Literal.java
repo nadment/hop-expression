@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -33,11 +34,13 @@ import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TimestampType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.BaseFormat;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -65,6 +68,9 @@ public final class Literal implements IExpression {
 
   /** Literal null with date data type */
   public static final Literal NULL_DATE = new Literal(null, DateType.DATE);
+
+  /** Literal null with timestamp data type */
+  public static final Literal NULL_TIMESTAMP = new Literal(null, TimestampType.TIMESTAMP);
 
   /** Literal null with JSON data type */
   public static final Literal NULL_JSON = new Literal(null, JsonType.JSON);
@@ -156,9 +162,16 @@ public final class Literal implements IExpression {
     return new Literal(value, IntervalType.INTERVAL_NOT_NULL);
   }
 
-  public static Literal of(@Nullable ZonedDateTime value) {
+  /** Returns a literal of a date without time zone. */
+  public static Literal of(@Nullable LocalDateTime value) {
     if (value == null) return NULL_DATE;
     return new Literal(value, DateType.DATE_NOT_NULL);
+  }
+
+  /** Returns a literal of a timestamp with time zone. */
+  public static Literal of(@Nullable ZonedDateTime value) {
+    if (value == null) return NULL_TIMESTAMP;
+    return new Literal(value, TimestampType.TIMESTAMP_NOT_NULL);
   }
 
   public static Literal of(@Nullable JsonNode value) {
@@ -275,7 +288,7 @@ public final class Literal implements IExpression {
           unparseBinary(writer, (byte[]) value);
           break;
         case DATE:
-          unparseDate(writer, (ZonedDateTime) value, false);
+          unparseDate(writer, TimestampConversion.toZoned(value), false);
           break;
         case TIMESTAMP:
           unparseDate(writer, (ZonedDateTime) value, true);

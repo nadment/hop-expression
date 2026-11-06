@@ -73,7 +73,7 @@ public final class NumberConversion {
   public static @Nullable BigDecimal convert(final @Nullable ZonedDateTime datetime)
       throws ExpressionException {
     if (datetime == null) return null;
-    BigDecimal result = new BigDecimal(DateTimeConversion.toEpochSecond(datetime));
+    BigDecimal result = new BigDecimal(TimestampConversion.toEpochSecond(datetime));
     int nanos = datetime.getNano();
     if (nanos != 0) {
       BigDecimal fraction = BigDecimal.valueOf(nanos).movePointLeft(9);

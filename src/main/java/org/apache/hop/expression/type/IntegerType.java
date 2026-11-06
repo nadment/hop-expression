@@ -18,12 +18,13 @@
 package org.apache.hop.expression.type;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.util.DateTimeConversion;
 import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -129,6 +130,7 @@ public final class IntegerType extends Type {
                   ? IntegerConversion.convert(str)
                   : IntegerConversion.convert(NumberFormat.of(pattern).parse(str));
           case ZonedDateTime datetime -> roundEpochSecond(datetime);
+          case LocalDateTime datetime -> roundEpochSecond(TimestampConversion.toZoned(datetime));
           default ->
               throw new ExpressionException(
                   ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
@@ -142,7 +144,7 @@ public final class IntegerType extends Type {
    */
   private static long roundEpochSecond(ZonedDateTime datetime) {
     // The epoch second is the floor of the time, the fraction of second is always positive
-    long seconds = DateTimeConversion.toEpochSecond(datetime);
+    long seconds = TimestampConversion.toEpochSecond(datetime);
     int nanos = datetime.getNano();
     // Before the epoch, the floor is already away from zero for a halfway value like -1.5
     boolean roundUp = (seconds < 0) ? nanos > 500_000_000 : nanos >= 500_000_000;

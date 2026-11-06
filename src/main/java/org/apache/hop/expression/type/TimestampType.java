@@ -17,11 +17,14 @@
 
 package org.apache.hop.expression.type;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.StringConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -60,11 +63,22 @@ public final class TimestampType extends Type {
     return TypeName.TIMESTAMP;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A date without time zone keeps its local date and time.
+   */
   @Override
   protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
+    if (clazz == ZonedDateTime.class) {
+      return clazz.cast(TimestampConversion.toZoned(value));
+    }
+    if (clazz == LocalDateTime.class) {
+      return clazz.cast(DateConversion.toLocal(value));
+    }
     if (clazz == String.class) {
-      return clazz.cast(StringConversion.convert((ZonedDateTime) value));
+      return clazz.cast(StringConversion.convert(TimestampConversion.toZoned(value)));
     }
     return super.convertValue(value, clazz);
   }
@@ -75,8 +89,8 @@ public final class TimestampType extends Type {
   }
 
   /**
-   * Convert a value to a TIMESTAMP with a pattern. A string without time zone is in the system time
-   * zone.
+   * Convert a value to a TIMESTAMP with a pattern. A string or a date without time zone is in the
+   * system time zone.
    *
    * @param value the value to convert, a date-time or a string
    * @param pattern the optional pattern of a string, or null for the ISO formats
@@ -88,6 +102,7 @@ public final class TimestampType extends Type {
     return switch (value) {
       case null -> null;
       case ZonedDateTime datetime -> datetime;
+      case LocalDateTime datetime -> TimestampConversion.toZoned(datetime);
       case String str ->
           ((pattern == null) ? DEFAULT_FORMAT : DateTimeFormat.of(pattern)).parse(str);
       default ->
@@ -96,19 +111,21 @@ public final class TimestampType extends Type {
     };
   }
 
+  /** {@inheritDoc} A date without time zone is compared in the system time zone. */
   @Override
   public boolean compareEqual(Object left, Object right) {
-    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
-      return l.isEqual(r);
+    if (DateType.isDateTime(left) && DateType.isDateTime(right)) {
+      return TimestampConversion.toZoned(left).isEqual(TimestampConversion.toZoned(right));
     }
     return super.compareEqual(left, right);
   }
 
+  /** {@inheritDoc} A date without time zone is compared in the system time zone. */
   @Override
   public int compare(Object left, Object right) {
-    if (left instanceof ZonedDateTime l && right instanceof ZonedDateTime r) {
+    if (DateType.isDateTime(left) && DateType.isDateTime(right)) {
       // Two timestamps are equal if they represent the same moment in time
-      return l.compareTo(r);
+      return TimestampConversion.toZoned(left).compareTo(TimestampConversion.toZoned(right));
     }
     return super.compare(left, right);
   }

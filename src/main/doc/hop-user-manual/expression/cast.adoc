@@ -74,6 +74,7 @@ The data type of the returned value is the type specified in the `AS` clause.
 * Timestamp:
 ** A timestamp has a time zone. A string keeps its time zone, a string without time zone is in the time zone of the system, for example `CAST('2020-05-25 20:48:00 +05:00' AS TIMESTAMP)`.
 ** A date without time zone is in the time zone of the system.
+** A timestamp converted to a date keeps its local date and time, the time zone is dropped, for example `CAST(TIMESTAMP '2020-05-25 20:48:00 +05:00' AS DATE)` returns a date at 20:48.
 ** A timestamp is accepted where a date is expected, like in the date functions.
 * String:
 ** With a maximum length, like `STRING(3)`, the result is truncated to this length without error, for example `CAST('abcdef' AS STRING(3))` returns 'abc'.

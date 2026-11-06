@@ -23,7 +23,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.DateTimeConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -49,6 +49,6 @@ public class EpochFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) return null;
-    return Long.valueOf(DateTimeConversion.toEpochSecond(value));
+    return Long.valueOf(TimestampConversion.toEpochSecond(value));
   }
 }

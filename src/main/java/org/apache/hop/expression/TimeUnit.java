@@ -23,7 +23,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.hop.expression.util.DateTimeConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -53,7 +53,7 @@ public enum TimeUnit {
 
     @Override
     public long extract(final ZonedDateTime datetime) {
-      return DateTimeConversion.toEpochSecond(datetime);
+      return TimestampConversion.toEpochSecond(datetime);
     }
   },
 

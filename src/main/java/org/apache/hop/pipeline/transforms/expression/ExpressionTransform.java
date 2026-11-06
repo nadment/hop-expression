@@ -29,7 +29,7 @@ import org.apache.hop.expression.CommonExpressionEliminator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.util.DateTimeConversion;
+import org.apache.hop.expression.util.TimestampConversion;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -207,7 +207,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
             return null;
           }
           // The same instant, as a date field is read
-          return DateTimeConversion.toDate(date);
+          return TimestampConversion.toDate(date);
         }
       case IValueMeta.TYPE_TIMESTAMP:
         {
@@ -216,7 +216,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
             return null;
           }
           // The same instant with the nanoseconds, as a timestamp field is read
-          return DateTimeConversion.toTimestamp(date);
+          return TimestampConversion.toTimestamp(date);
         }
       case IValueMeta.TYPE_BIGNUMBER:
         return expression.getValue(BigDecimal.class);

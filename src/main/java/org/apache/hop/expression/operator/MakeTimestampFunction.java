@@ -42,7 +42,7 @@ public class MakeTimestampFunction extends Function {
   public MakeTimestampFunction() {
     super(
         "MAKE_TIMESTAMP",
-        ReturnTypes.DATE_NULLABLE,
+        ReturnTypes.TIMESTAMP_NULLABLE,
         OperandTypes.INTEGER_INTEGER_INTEGER_INTEGER_INTEGER_NUMBER,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/make_timestamp.html");
@@ -84,6 +84,7 @@ public class MakeTimestampFunction extends Function {
               .plusSeconds(seconds)
               .plusNanos(nanos);
 
+      // A timestamp in the system time zone
       return datetime.atZone(ZoneId.systemDefault());
     } catch (DateTimeException | ArithmeticException e) {
       throw new ExpressionException(ErrorCode.DATE_OVERFLOW, getName());

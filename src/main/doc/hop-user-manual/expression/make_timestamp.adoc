@@ -41,7 +41,7 @@ second:: The second, normally between 0 and 59, with an optional fractional part
 
 == Returns
 
-Date
+Timestamp
 
 == Usage
 
