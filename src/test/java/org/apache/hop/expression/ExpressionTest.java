@@ -87,7 +87,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
     rowMeta.addValueMeta(new ValueMetaBinary("NULL_BINARY"));
     rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
-    rowMeta.addValueMeta(new ValueMetaJson("NULL_INET"));
+    rowMeta.addValueMeta(new ValueMetaInternetAddress("NULL_INET"));
 
     // Zero values
     rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER_ZERO"));

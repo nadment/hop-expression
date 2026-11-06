@@ -14,16 +14,32 @@
  */
 package org.apache.hop.expression;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
+import org.apache.hop.core.row.value.ValueMetaBinary;
+import org.apache.hop.core.row.value.ValueMetaBoolean;
+import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaNumber;
+import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.core.row.value.ValueMetaTimestamp;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.InetType;
 import org.apache.hop.expression.type.TimestampType;
 import org.junit.jupiter.api.Test;
 
@@ -183,11 +199,27 @@ public class IdentifierTest extends ExpressionTest {
 
   @Test
   void coercionValueMetaTimestamp() throws Exception {
+    // A timestamp field is a timestamp at the same instant, in the system time zone
+    ZonedDateTime timestamp = ZonedDateTime.of(2023, 2, 28, 22, 11, 1, 0, ZoneId.systemDefault());
+    evalEquals("FIELD_TIMESTAMP", timestamp).returnType(TimestampType.TIMESTAMP);
     evalEquals(
             "FIRST_DAY(FIELD_TIMESTAMP)",
             ZonedDateTime.of(2023, 2, 1, 22, 11, 1, 0, ZoneId.systemDefault()))
         .returnType(TimestampType.TIMESTAMP);
     evalEquals("HOUR(FIELD_TIMESTAMP)", 22L);
+    evalNull("NULL_TIMESTAMP").returnType(TimestampType.TIMESTAMP);
+
+    // Converted to a date, the local date and time is kept
+    evalEquals("CAST(FIELD_TIMESTAMP AS DATE)", LocalDateTime.of(2023, 2, 28, 22, 11, 1))
+        .returnType(DateType.DATE);
+
+    // The epoch of a timestamp is its instant
+    evalEquals("EPOCH(FIELD_TIMESTAMP)", timestamp.toEpochSecond());
+
+    // A timestamp has the time zone of the system
+    evalEquals(
+        "EXTRACT(TIMEZONE_HOUR FROM FIELD_TIMESTAMP)",
+        (long) timestamp.getOffset().getTotalSeconds() / 3600);
   }
 
   @Test
@@ -201,6 +233,7 @@ public class IdentifierTest extends ExpressionTest {
   void coercionValueMetaInet() throws Exception {
 
     evalEquals("LENGTH(FIELD_INET)", 10L);
+    evalNull("NULL_INET").returnType(InetType.INET);
 
     // Unsupported value meta
     evalFails("FIELD_INET IS TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -228,5 +261,141 @@ public class IdentifierTest extends ExpressionTest {
     optimize("\"ASCII\"");
     // Contains space
     optimize("Trim(\"IDENTIFIER SPACE\")", "TRIM(\"IDENTIFIER SPACE\")");
+  }
+
+  /**
+   * Creates a context with a single field named FIELD.
+   *
+   * @param valueMeta the value meta of the field, its name is replaced
+   * @param value the value of the field in the row
+   */
+  private static RowExpressionContext createContext(IValueMeta valueMeta, Object value) {
+    valueMeta.setName("FIELD");
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta(valueMeta);
+    RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);
+    context.setRow(new Object[] {value});
+    return context;
+  }
+
+  /**
+   * Creates a context with a field stored as a binary string, like with the lazy conversion of a
+   * text file input.
+   *
+   * @param valueMeta the value meta of the field
+   * @param mask the conversion mask of the string, or null
+   * @param text the text of the value
+   */
+  private static RowExpressionContext createBinaryStringContext(
+      IValueMeta valueMeta, String mask, String text) {
+    IValueMeta storage = new ValueMetaString("FIELD");
+    storage.setConversionMask(mask);
+    valueMeta.setConversionMask(mask);
+    valueMeta.setStorageType(IValueMeta.STORAGE_TYPE_BINARY_STRING);
+    valueMeta.setStorageMetadata(storage);
+    return createContext(valueMeta, text.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @Test
+  void binaryStringStorage() throws Exception {
+    // The value is converted from the binary string, it is not read as is
+    IExpressionContext context = createBinaryStringContext(new ValueMetaString(), null, "Paris");
+    evalEquals(context, "FIELD", "Paris");
+    evalEquals(context, "UPPER(FIELD)", "PARIS");
+
+    context = createBinaryStringContext(new ValueMetaInteger(), null, "40");
+    evalEquals(context, "FIELD", 40L);
+    evalEquals(context, "FIELD::STRING", "40");
+    evalEquals(context, "FIELD + 1", 41L);
+
+    context = createBinaryStringContext(new ValueMetaBinary(), null, "TEST");
+    evalEquals(context, "FIELD::STRING", "TEST");
+    assertArrayEquals(
+        "TEST".getBytes(StandardCharsets.UTF_8), (byte[]) new Evaluator(context, "FIELD").eval());
+
+    context = createBinaryStringContext(new ValueMetaBigNumber(), null, "123.456");
+    evalEquals(context, "FIELD", 123.456D);
+    evalEquals(context, "FIELD::STRING", "123.456");
+
+    context = createBinaryStringContext(new ValueMetaNumber(), null, "-5.12");
+    evalEquals(context, "FIELD", -5.12D);
+
+    context = createBinaryStringContext(new ValueMetaBoolean(), null, "Y");
+    evalEquals(context, "UPPER(FIELD)", "TRUE");
+    assertEquals(Boolean.TRUE, new Evaluator(context, "FIELD").eval());
+
+    context =
+        createBinaryStringContext(
+            new ValueMetaDate(), "yyyy-MM-dd HH:mm:ss", "2023-02-28 22:11:01");
+    evalEquals(context, "FIELD", LocalDateTime.of(2023, 2, 28, 22, 11, 1))
+        .returnType(DateType.DATE);
+    evalEquals(context, "HOUR(FIELD)", 22L);
+
+    context =
+        createBinaryStringContext(
+            new ValueMetaTimestamp(), "yyyy-MM-dd HH:mm:ss", "2023-02-28 22:11:01");
+    evalEquals(
+            context, "FIELD", ZonedDateTime.of(2023, 2, 28, 22, 11, 1, 0, ZoneId.systemDefault()))
+        .returnType(TimestampType.TIMESTAMP);
+    evalEquals(context, "HOUR(FIELD)", 22L);
+  }
+
+  @Test
+  void stringWithTrimType() throws Exception {
+    // A string with a trim type is trimmed when read, it is not read as is
+    ValueMetaString valueMeta = new ValueMetaString();
+    valueMeta.setTrimType(IValueMeta.TRIM_TYPE_BOTH);
+    IExpressionContext context = createContext(valueMeta, "  Paris  ");
+    evalEquals(context, "FIELD", "Paris");
+    evalEquals(context, "LENGTH(FIELD)", 5L);
+  }
+
+  @Test
+  void numberField() throws Exception {
+    // A number field is read as a double, converted to the expected class
+    IExpressionContext context = createContext(new ValueMetaNumber(), 2.7D);
+    evalEquals(context, "LEFT('ABCDEF', FIELD)", "AB");
+    evalEquals(context, "CONCAT('x', FIELD)", "x2.7");
+    evalEquals(context, "UPPER(FIELD)", "2.7");
+    assertEquals(Boolean.TRUE, new Evaluator(context, "FIELD IS TRUE").eval());
+  }
+
+  @Test
+  void timestampFieldWithNanoseconds() throws Exception {
+    IExpressionContext context =
+        createContext(new ValueMetaTimestamp(), Timestamp.valueOf("2023-02-28 22:11:01.123456789"));
+    evalEquals(context, "EXTRACT(NANOSECOND FROM FIELD)", 123456789L);
+    evalEquals(
+        context,
+        "FIELD",
+        ZonedDateTime.of(2023, 2, 28, 22, 11, 1, 123456789, ZoneId.systemDefault()));
+  }
+
+  @Test
+  void errors() throws Exception {
+    // Without row, the value of a field can't be read
+    RowExpressionContext context = createContext(new ValueMetaInteger(), 1L);
+    context.setRow(null);
+    Evaluator evaluator = new Evaluator(context, "FIELD + 1");
+    ExpressionException exception = assertThrows(ExpressionException.class, evaluator::eval);
+    assertEquals(ErrorCode.CONTEXT_ERROR, exception.getErrorCode());
+    evaluator = new Evaluator(context, "FIELD");
+    exception = assertThrows(ExpressionException.class, evaluator::eval);
+    assertEquals(ErrorCode.CONTEXT_ERROR, exception.getErrorCode());
+
+    // The error of the conversion of a value read from the value meta is kept
+    context = createBinaryStringContext(new ValueMetaBigNumber(), null, "1E30");
+    evaluator = new Evaluator(context, "LEFT('ABCDEF', FIELD)");
+    exception = assertThrows(ExpressionException.class, evaluator::eval);
+    assertEquals(ErrorCode.INTEGER_CONVERSION_OVERFLOW, exception.getErrorCode());
+
+    // A value that can't be converted to the type of the field
+    context = createContext(new ValueMetaInteger(), "abc");
+    evaluator = new Evaluator(context, "FIELD");
+    exception = assertThrows(ExpressionException.class, evaluator::eval);
+    assertEquals(ErrorCode.CONVERSION_ERROR, exception.getErrorCode());
+    evaluator = new Evaluator(context, "FIELD + 1");
+    exception = assertThrows(ExpressionException.class, evaluator::eval);
+    assertEquals(ErrorCode.CONVERSION_ERROR, exception.getErrorCode());
   }
 }
