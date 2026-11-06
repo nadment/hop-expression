@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Locale;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -99,16 +99,16 @@ public enum Capitalization {
    * @param str the string to apply this strategy to
    * @return the resultant string
    */
-  public @Nullable String apply(final @Nullable String str) {
-    if (str == null || str.isEmpty()) {
+  public String apply(final String str) {
+    if (str.isEmpty()) {
       return str;
     }
     return switch (this) {
-      case UPPER -> StringUtils.upperCase(str);
-      case LOWER -> StringUtils.lowerCase(str);
+      case UPPER -> str.toUpperCase(Locale.ROOT);
+      case LOWER -> str.toLowerCase(Locale.ROOT);
       case CAPITALIZE ->
           Character.toUpperCase(str.charAt(0))
-              + (str.length() > 1 ? StringUtils.lowerCase(str).substring(1) : "");
+              + (str.length() > 1 ? str.toLowerCase(Locale.ROOT).substring(1) : "");
     };
   }
 }

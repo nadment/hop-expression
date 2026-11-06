@@ -1766,7 +1766,7 @@ import org.jspecify.annotations.Nullable;
         name = StringUtils.rightPad(name, "Wednesday".length(), ' ');
       }
 
-      output.append(cap.apply(name));
+      output.append(name);
     }
   }
 
