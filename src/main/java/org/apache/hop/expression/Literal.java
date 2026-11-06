@@ -259,16 +259,7 @@ public final class Literal implements IExpression {
     } else
       switch (type.getName()) {
         case STRING:
-          writer.append('\'');
-          String str = (String) value;
-          for (int i = 0; i < str.length(); i++) {
-            char ch = str.charAt(i);
-            writer.append(ch);
-            if (ch == '\'') {
-              writer.append(ch);
-            }
-          }
-          writer.append('\'');
+          unparseString(writer, (String) value);
           break;
         case BOOLEAN:
           writer.append(StringConversion.convert((boolean) value));
@@ -280,80 +271,14 @@ public final class Literal implements IExpression {
           writer.append(StringConversion.convert((BigDecimal) value));
           break;
         case BINARY:
-          writer.append("BINARY '");
-          for (byte b : (byte[]) value) {
-            writer.append(byteToHex((b >> 4) & 0xF));
-            writer.append(byteToHex(b & 0xF));
-          }
-          writer.append('\'');
+          unparseBinary(writer, (byte[]) value);
           break;
         case DATE:
-          {
-            ZonedDateTime datetime = (ZonedDateTime) value;
-            int nano = datetime.getNano();
-            if (nano > 0) {
-              writer.append("TIMESTAMP '");
-
-              if (nano % 1000000 == 0)
-                writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF3").format(datetime));
-              else if (nano % 1000 == 0)
-                writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF6").format(datetime));
-              else writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9").format(datetime));
-              if (datetime.getOffset().getTotalSeconds() != 0) {
-                if (datetime.getZone() instanceof ZoneOffset) {
-                  writer.append(' ');
-                  writer.append(datetime.getZone().toString());
-
-                } else {
-                  writer.append("' AT TIME ZONE '");
-                  writer.append(datetime.getZone().getId());
-                }
-              }
-
-            } else if (datetime.getHour() == 0
-                && datetime.getMinute() == 0
-                && datetime.getSecond() == 0) {
-              writer.append("DATE '");
-              writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
-            } else {
-              writer.append("TIMESTAMP '");
-              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
-              if (datetime.getOffset().getTotalSeconds() != 0) {
-                if (datetime.getZone() instanceof ZoneOffset) {
-                  writer.append(' ');
-                  writer.append(datetime.getZone().toString());
-
-                } else {
-                  writer.append("' AT TIME ZONE '");
-                  writer.append(datetime.getZone().getId());
-                }
-              }
-            }
-            writer.append('\'');
-            break;
-          }
+          unparseDate(writer, (ZonedDateTime) value);
+          break;
         case INTERVAL:
-          {
-            Interval interval = (Interval) value;
-            IntervalQualifier qualifier = IntervalQualifier.of(interval);
-
-            if (qualifier == null) {
-              writer.append("INTERVAL '");
-              writer.append(interval.toString());
-              writer.append("'");
-            } else if (qualifier.getStartUnit() == qualifier.getEndUnit()) {
-              writer.append("INTERVAL ");
-              writer.append(interval.toString(qualifier));
-              writer.append(' ');
-              writer.append(qualifier.toString());
-            } else {
-              writer.append("INTERVAL '");
-              writer.append(interval.toString(qualifier));
-              writer.append("' ");
-              writer.append(qualifier.toString());
-            }
-            break;
-          }
+          unparseInterval(writer, (Interval) value);
+          break;
         case JSON:
           writer.append("JSON '");
           writer.append(StringConversion.convert((JsonNode) value));
@@ -370,11 +295,92 @@ public final class Literal implements IExpression {
       }
   }
 
-  private char byteToHex(int digit) {
+  /** Unparses a string literal, a single quote is doubled. */
+  private static void unparseString(final StringWriter writer, final String str) {
+    writer.append('\'');
+    for (int i = 0; i < str.length(); i++) {
+      char ch = str.charAt(i);
+      writer.append(ch);
+      if (ch == '\'') {
+        writer.append(ch);
+      }
+    }
+    writer.append('\'');
+  }
+
+  /** Unparses a binary literal in hexadecimal. */
+  private static void unparseBinary(final StringWriter writer, final byte[] bytes) {
+    writer.append("BINARY '");
+    for (byte b : bytes) {
+      writer.append(byteToHex((b >> 4) & 0xF));
+      writer.append(byteToHex(b & 0xF));
+    }
+    writer.append('\'');
+  }
+
+  private static char byteToHex(int digit) {
     if (digit < 10) {
       return (char) ('0' + digit);
     }
     return (char) ('A' - 10 + digit);
+  }
+
+  /**
+   * Unparses a date literal, or a timestamp literal if it has a time, with its time zone if it is
+   * not UTC.
+   */
+  private static void unparseDate(final StringWriter writer, final ZonedDateTime datetime) {
+    int nano = datetime.getNano();
+    if (nano == 0
+        && datetime.getHour() == 0
+        && datetime.getMinute() == 0
+        && datetime.getSecond() == 0) {
+      writer.append("DATE '");
+      writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
+    } else {
+      writer.append("TIMESTAMP '");
+      writer.append(DateTimeFormat.of(timestampPattern(nano)).format(datetime));
+      if (datetime.getOffset().getTotalSeconds() != 0) {
+        if (datetime.getZone() instanceof ZoneOffset) {
+          writer.append(' ');
+          writer.append(datetime.getZone().toString());
+
+        } else {
+          writer.append("' AT TIME ZONE '");
+          writer.append(datetime.getZone().getId());
+        }
+      }
+    }
+    writer.append('\'');
+  }
+
+  /** Returns the pattern of a timestamp, with the fewest fractional digits for its nanoseconds. */
+  private static String timestampPattern(int nano) {
+    if (nano == 0) return "YYYY-MM-DD HH24:MI:SS";
+    if (nano % 1000000 == 0) return "YYYY-MM-DD HH24:MI:SS.FF3";
+    if (nano % 1000 == 0) return "YYYY-MM-DD HH24:MI:SS.FF6";
+    return "YYYY-MM-DD HH24:MI:SS.FF9";
+  }
+
+  /** Unparses an interval literal, with its qualifier if it has one. */
+  private static void unparseInterval(final StringWriter writer, final Interval interval) {
+    IntervalQualifier qualifier = IntervalQualifier.of(interval);
+
+    if (qualifier == null) {
+      writer.append("INTERVAL '");
+      writer.append(interval.toString());
+      writer.append("'");
+    } else if (qualifier.getStartUnit() == qualifier.getEndUnit()) {
+      writer.append("INTERVAL ");
+      writer.append(interval.toString(qualifier));
+      writer.append(' ');
+      writer.append(qualifier.toString());
+    } else {
+      writer.append("INTERVAL '");
+      writer.append(interval.toString(qualifier));
+      writer.append("' ");
+      writer.append(qualifier.toString());
+    }
   }
 
   /**

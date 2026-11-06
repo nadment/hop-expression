@@ -1023,29 +1023,29 @@ final class PatternNumberFormat extends NumberFormat {
    * @return the length of the symbol
    */
   private int addCurrency(StringBuilder output, DecimalFormatSymbols symbols) {
-      return switch (this.currency) {
-          case LOCAL_LEADING -> {
-              output.insert(0, symbols.getCurrencySymbol());
-              yield symbols.getCurrencySymbol().length();
-          }
-          case TRAILING_LOCAL -> {
-              output.append(symbols.getCurrencySymbol());
-              yield symbols.getCurrencySymbol().length();
-          }
-          case ISO_LEADING -> {
-              output.insert(0, symbols.getCurrency().getCurrencyCode());
-              yield symbols.getCurrency().getCurrencyCode().length();
-          }
-          case TRAILING_ISO -> {
-              output.append(symbols.getCurrency().getCurrencyCode());
-              yield symbols.getCurrency().getCurrencyCode().length();
-          }
-          case DOLLARS -> {
-              output.insert(0, '$');
-              yield 1;
-          }
-          default -> 0;
-      };
+    return switch (this.currency) {
+      case LOCAL_LEADING -> {
+        output.insert(0, symbols.getCurrencySymbol());
+        yield symbols.getCurrencySymbol().length();
+      }
+      case TRAILING_LOCAL -> {
+        output.append(symbols.getCurrencySymbol());
+        yield symbols.getCurrencySymbol().length();
+      }
+      case ISO_LEADING -> {
+        output.insert(0, symbols.getCurrency().getCurrencyCode());
+        yield symbols.getCurrency().getCurrencyCode().length();
+      }
+      case TRAILING_ISO -> {
+        output.append(symbols.getCurrency().getCurrencyCode());
+        yield symbols.getCurrency().getCurrencyCode().length();
+      }
+      case DOLLARS -> {
+        output.insert(0, '$');
+        yield 1;
+      }
+      default -> 0;
+    };
   }
 
   /**
