@@ -19,9 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.TimestampType;
 import org.junit.jupiter.api.Test;
 
@@ -157,7 +159,27 @@ public class IdentifierTest extends ExpressionTest {
   }
 
   @Test
-  void coercionValueMetaDate() throws Exception {}
+  void coercionValueMetaDate() throws Exception {
+    // A date field is a date without time zone, with the local date and time it shows
+    evalEquals("FIELD_DATE", LocalDateTime.of(1981, 6, 23, 21, 44, 58, 123000000))
+        .returnType(DateType.DATE);
+    evalEquals("FIRST_DAY(FIELD_DATE)", LocalDateTime.of(1981, 6, 1, 21, 44, 58, 123000000))
+        .returnType(DateType.DATE);
+    evalEquals("HOUR(FIELD_DATE)", 21L);
+    evalNull("NULL_DATE").returnType(DateType.DATE);
+
+    // Converted to a timestamp in the system time zone
+    evalEquals(
+            "CAST(FIELD_DATE AS TIMESTAMP)",
+            ZonedDateTime.of(1981, 6, 23, 21, 44, 58, 123000000, ZoneId.systemDefault()))
+        .returnType(TimestampType.TIMESTAMP);
+
+    // The epoch of a date is nominal, 1981-06-23 21:44:58 UTC
+    evalEquals("EPOCH(FIELD_DATE)", 362180698L);
+
+    // A date has no time zone
+    evalFails("EXTRACT(TIMEZONE_HOUR FROM FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+  }
 
   @Test
   void coercionValueMetaTimestamp() throws Exception {
