@@ -179,11 +179,15 @@ public class CastFunction extends Function {
         Type toType = call.getType();
         Type fromType = call.getOperand(0).getType();
         // The inner cast must not have a format, and must not overflow where the outer cast does
-        // not: its integer part must have at least as many digits. The fractional seconds of a
-        // date or an interval are rounded, rounded twice they can differ from rounded once.
+        // not: its integer part must have at least as many digits. A value rounded twice can
+        // differ from a value rounded once, like 0.0004996 rounded to 6 then 3 decimals gives
+        // 0.001 but 0.000 rounded to 3 decimals: the inner cast must keep all the decimals or
+        // round to the same scale. The fractional seconds of a date or an interval are rounded
+        // too.
         if (call(call.getOperand(0)).getOperandCount() == 2
             && !Types.isTemporal(toType)
             && !toType.isName(TypeName.INTERVAL)
+            && (Types.hasVariableScale(fromType) || fromType.getScale() == toType.getScale())
             && Types.isLosslessCast(toType, fromType)
             && fromType.getPrecision() - Math.max(fromType.getScale(), 0)
                 >= toType.getPrecision() - Math.max(toType.getScale(), 0)) {

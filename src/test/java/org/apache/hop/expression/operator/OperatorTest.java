@@ -3435,6 +3435,20 @@ public class OperatorTest extends ExpressionTest {
           "TO_DATE(FIELD_STRING_DATE,'YYYY-MM-DD')");
       evalEquals("CAST(CAST(FIELD_DATE AS STRING(20) FORMAT 'DD/MM/YYYY') AS STRING(5))", "23/06");
 
+      // An inner cast to the same scale, or without fixed scale, is removed
+      optimize(
+          "CAST(CAST(FIELD_NUMBER AS NUMBER(10,2)) AS NUMBER(5,2))",
+          "CAST(FIELD_NUMBER AS NUMBER(5,2))");
+      optimize(
+          "CAST(CAST(FIELD_INTEGER AS NUMBER) AS NUMBER(10,3))",
+          "CAST(FIELD_INTEGER AS NUMBER(10,3))");
+      // Don't remove an inner cast to a greater scale, a value rounded twice can differ from a
+      // value rounded once
+      optimize(
+          "CAST(CAST(FIELD_NUMBER AS NUMBER(12,6)) AS NUMBER(9,3))",
+          "CAST(CAST(FIELD_NUMBER AS NUMBER(12,6)) AS NUMBER(9,3))");
+      evalEquals("CAST(CAST(0.0004996 AS NUMBER(12,6)) AS NUMBER(9,3))", 0.001D);
+
       // Don't remove an inner cast with fewer digits in its integer part, it can overflow
       optimize(
           "CAST(CAST(FIELD_INTEGER AS NUMBER(3,2)) AS NUMBER(2))",
