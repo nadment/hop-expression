@@ -35,7 +35,7 @@ Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 
-* If weeks has a decimal part, it is truncated before the addition.
+* The argument weeks must be an integer, a number with a decimal part like 1.5 raises an error: use `CAST(weeks AS INTEGER)` to round it.
 * A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 

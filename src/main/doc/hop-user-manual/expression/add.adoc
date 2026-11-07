@@ -40,7 +40,7 @@ interval1 + interval2
 * A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 * The sum of two integers raises an arithmetic overflow error if it exceeds the integer range; use an explicit cast to NUMBER if needed.
-* Adding a number of days to a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun], the decimal part of the number of days is truncated.
+* Adding a number of days to a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun], the number of days must be an integer: `DATE '2019-02-25' + 1.5` raises an error.
 * Adding months or years to a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2019-01-31' + INTERVAL 1 MONTH` returns `DATE '2019-02-28'`.
 * The sum of two intervals is an interval, the months, the days and the time are added separately and can have opposite signs, for example `INTERVAL 1 MONTH + INTERVAL -1 DAY` returns `INTERVAL '+0-1 -1 00:00:00'`.
 * Adding an interval to a timestamp adds the months, then the days, then the time. A day is a calendar day that keeps the local time across a daylight saving time change, while 24 hours is an exact duration.
@@ -52,7 +52,6 @@ interval1 + interval2
 1+2 returns 3
 1.5+2.25 returns 3.75
 DATE '2019-01-15' + 1 returns DATE '2019-01-16'
-DATE '2019-01-15' + 1.9 returns DATE '2019-01-16'
 DATE '2019-01-31' + INTERVAL 1 MONTH returns DATE '2019-02-28'
 TIMESTAMP '2019-01-15 10:00:00' + INTERVAL 90 MINUTES returns TIMESTAMP '2019-01-15 11:30:00'
 INTERVAL 1 DAY + INTERVAL 3 HOURS returns INTERVAL '1 3' DAY TO HOUR

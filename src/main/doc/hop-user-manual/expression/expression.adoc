@@ -354,7 +354,7 @@ When there is no ambiguity about the data type of an expression value, it is imp
 |Date|❌|❌|-|✅|☑️|☑️|✅|❌|❌|❌
 |Timestamp|❌|❌|✅|-|☑️|☑️|✅|❌|❌|❌
 |Integer|❌|✅|☑️|☑️|-|✅|✅|❌|❌|❌
-|Number|❌|✅|☑️|☑️|✅|-|✅|❌|❌|❌
+|Number|❌|✅|☑️|☑️|☑️|-|✅|❌|❌|❌
 |String|✅|☑️|☑️|☑️|☑️|☑️|-|☑️|☑️|☑️
 |Json|❌|❌|❌|❌|❌|❌|✅|-|❌|❌
 |Inet|❌|❌|❌|❌|❌|❌|✅|❌|-|❌
@@ -366,7 +366,7 @@ When there is no ambiguity about the data type of an expression value, it is imp
 ☑️ Cast: Explicit conversion
 
 * Numeric types can be coerced to a wider numeric type. For example, an INTEGER type can be coerced to a NUMBER.
-* A NUMBER is also coerced to an INTEGER when an integer is expected, an error is raised if the value is out of the integer range.
+* A NUMBER is not coerced to an INTEGER, the conversion could lose the decimal part or overflow: a function that expects an integer raises an error with a number, for example `LEFT('ABCDEF', 2.7)`. Use xref:cast.adoc["CAST",role=fun] to round it, for example `LEFT('ABCDEF', CAST(2.7 AS INTEGER))` returns 'ABC'. A literal with an integer value, like `2.0`, is an INTEGER.
 * A STRING is coerced to a BINARY when a binary is expected, the result is the UTF-8 encoding of the string.
 * A DATE and a TIMESTAMP are coerced to each other, so a TIMESTAMP is accepted by the date functions. A DATE, without time zone, is in the time zone of the system, and a TIMESTAMP converted to a DATE keeps its local date and time, the time zone is dropped.
 * A DATE and a TIMESTAMP are compared at their instant, a DATE is in the time zone of the system.

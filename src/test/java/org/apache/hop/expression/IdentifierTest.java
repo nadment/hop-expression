@@ -154,8 +154,11 @@ public class IdentifierTest extends ExpressionTest {
     evalTrue("FIELD_NUMBER IS TRUE");
     evalTrue("FIELD_NUMBER_ZERO IS FALSE");
     evalEquals("CONCAT('ABC-',ABS(FIELD_NUMBER))", "ABC-5.12");
+    // A number is not coerced to an integer, ROUND returns a number
+    evalFails("ADD_YEARS(Date '2020-01-01',ROUND(FIELD_NUMBER))", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals(
-        "ADD_YEARS(Date '2020-01-01',ROUND(FIELD_NUMBER))", LocalDate.of(2015, Month.JANUARY, 1));
+        "ADD_YEARS(Date '2020-01-01',CAST(FIELD_NUMBER AS INTEGER))",
+        LocalDate.of(2015, Month.JANUARY, 1));
     evalFails("DECOMPRESS(FIELD_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
@@ -355,7 +358,12 @@ public class IdentifierTest extends ExpressionTest {
   void numberField() throws Exception {
     // A number field is read as a double, converted to the expected class
     IExpressionContext context = createContext(new ValueMetaNumber(), 2.7D);
-    evalEquals(context, "LEFT('ABCDEF', FIELD)", "AB");
+    // A number is not coerced to an integer, it is cast and rounded like a number
+    ParseExpressionException exception =
+        assertThrows(
+            ParseExpressionException.class, () -> new Evaluator(context, "LEFT('ABCDEF', FIELD)"));
+    assertEquals(ErrorCode.ILLEGAL_ARGUMENT_TYPE, exception.getErrorCode());
+    evalEquals(context, "LEFT('ABCDEF', CAST(FIELD AS INTEGER))", "ABC");
     evalEquals(context, "CONCAT('x', FIELD)", "x2.7");
     evalEquals(context, "UPPER(FIELD)", "2.7");
     assertEquals(Boolean.TRUE, new Evaluator(context, "FIELD IS TRUE").eval());
@@ -386,7 +394,7 @@ public class IdentifierTest extends ExpressionTest {
 
     // The error of the conversion of a value read from the value meta is kept
     context = createBinaryStringContext(new ValueMetaBigNumber(), null, "1E30");
-    evaluator = new Evaluator(context, "LEFT('ABCDEF', FIELD)");
+    evaluator = new Evaluator(context, "LEFT('ABCDEF', CAST(FIELD AS INTEGER))");
     exception = assertThrows(ExpressionException.class, evaluator::eval);
     assertEquals(ErrorCode.INTEGER_CONVERSION_OVERFLOW, exception.getErrorCode());
 

@@ -46,7 +46,8 @@ class TypeNameTest {
     assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.NUMBER));
     assertTrue(TypeName.INTEGER.isCoercible(TypeName.NUMBER));
 
-    assertTrue(TypeName.NUMBER.isCoercible(TypeName.INTEGER));
+    // A number is not coerced to an integer, the conversion could lose its decimal part or overflow
+    assertFalse(TypeName.NUMBER.isCoercible(TypeName.INTEGER));
     assertTrue(TypeName.NUMBER.isCoercible(TypeName.STRING));
     assertFalse(TypeName.ARRAY.isCoercible(TypeName.NUMBER));
   }

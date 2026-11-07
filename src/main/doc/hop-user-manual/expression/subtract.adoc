@@ -38,7 +38,7 @@ interval1 - interval2
 * A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 * The difference of two integers raises an arithmetic overflow error if it exceeds the integer range; use an explicit cast to NUMBER if needed.
-* Subtracting a number of days from a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun] with a negative number, the decimal part of the number of days is truncated.
+* Subtracting a number of days from a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun] with a negative number, the number of days must be an integer: `DATE '2019-02-25' - 1.5` raises an error.
 * Subtracting months or years from a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2020-03-31' - INTERVAL 1 MONTH` returns `DATE '2020-02-29'`.
 * The difference of two intervals is an interval, the months, the days and the time are subtracted separately and can have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY` returns `INTERVAL '+0-1 -1 00:00:00'`.
 * The difference of two dates is not supported, use xref:date_diff.adoc["DATE_DIFF",role=fun] or a function like xref:days_between.adoc["DAYS_BETWEEN",role=fun].
@@ -50,7 +50,6 @@ interval1 - interval2
 ----
 10-0.5 returns 9.5
 DATE '2019-01-15' - 1 returns DATE '2019-01-14'
-DATE '2019-01-15' - 1.9 returns DATE '2019-01-14'
 DATE '2020-03-31' - INTERVAL 1 MONTH returns DATE '2020-02-29'
 TIMESTAMP '2019-01-15 10:00:00' - INTERVAL '1 2:30' DAY TO MINUTE returns TIMESTAMP '2019-01-14 07:30:00'
 INTERVAL 5 HOURS - INTERVAL 1 HOUR returns INTERVAL 4 HOURS

@@ -37,7 +37,7 @@ unit:: The time unit of value. Supported units:
 * `SECOND`
 * `NANOSECOND`
 
-value:: The number of units to add. A negative value subtracts the units. If value has a decimal part, it is truncated before the addition.
+value:: The number of units to add. A negative value subtracts the units. The value must be an integer, a number with a decimal part like 1.5 raises an error: use `CAST(value AS INTEGER)` to round it.
 date:: The date or timestamp to modify.
 
 == Returns

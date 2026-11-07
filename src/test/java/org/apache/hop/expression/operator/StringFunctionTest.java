@@ -290,6 +290,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Instr()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Instr('CORPORATE FLOOR','OR',0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Instr('CORPORATE FLOOR','OR',1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Instr('CORPORATE FLOOR','OR',1,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -346,6 +348,11 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    // A number is not coerced to an integer, it could lose its decimal part
+    evalFails("RPad('x', 3.9, '*')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("RPad('x', 3.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("RPad(FIELD_BINARY, 3.9, FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals("RPad('x', CAST(3.9 AS INTEGER), '*')", "x***");
 
     // Check padding length exceeds the maximum limit
     evalFails("RPad('test',40000,'t')", ErrorCode.RESULT_SIZE_TOO_LARGE);
@@ -407,6 +414,12 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Missing arguments
     evalFails("LPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+
+    // A number is not coerced to an integer, it could lose its decimal part
+    evalFails("LPad('x', 3.9, '*')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("LPad('x', 3.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("LPad(FIELD_BINARY, 3.9, FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals("LPad('x', CAST(3.9 AS INTEGER), '*')", "***x");
 
     // Check padding length exceeds the maximum limit
     evalFails("LPad('test',40000,'t')", ErrorCode.RESULT_SIZE_TOO_LARGE);
@@ -529,7 +542,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Substring('TEST',2,9223372036854775807)", "EST");
     evalEquals("Substring('TEST',-2,9223372036854775807)", "ST");
     evalEquals("Substring('TEST',-10,9223372036854775807)", "TEST");
-    evalEquals("Substring('TEST',2,-9223372036854775808)", "");
+    // The literal 9223372036854775808 is a number, the smallest integer is cast
+    evalEquals("Substring('TEST',2,CAST(-9223372036854775808 AS INTEGER))", "");
 
     // A character outside the Basic Multilingual Plane, stored as a surrogate pair, is one
     // character
@@ -661,6 +675,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Space(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("Space(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Space('str')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Space(1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("SPACE(4)", "'    '");
@@ -1338,6 +1353,8 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Regexp_Replace()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Regexp_Replace('abab','b','x',1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Regexp_Replace('abab','b','x',1,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Parameters
     evalEquals("Regexp_Replace('Aa','a','x',1,0,'i')", "xx");
@@ -1387,6 +1404,7 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Count('aaa', 'a', 5)", 0L);
     evalFails("Regexp_Count('aaa', 'a', 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Regexp_Count('aaa', 'a', -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Count('aaa', 'a', 1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Null handling
     evalNull("Regexp_Count(NULL_STRING, 'a')").returnType(IntegerType.INTEGER);
@@ -1440,6 +1458,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Regexp_Instr('abab', 'b', 1, 4294967298)", 0L);
     evalFails("Regexp_Instr('abab', 'b', 1, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("Regexp_Instr('abab', 'b', 1, -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("Regexp_Instr('abab', 'b', 1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Regexp_Instr('abab', 'b', 1, 1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Regexp_Instr('abab', 'b', 1, 1, 0.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // An empty pattern matches nothing
     evalEquals("Regexp_Instr('email@apache.org', '')", 0L);
@@ -1499,6 +1520,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("regexp_substr('a1b2', '[a-z]', 1, 4294967298)");
     evalFails("regexp_substr('a1b2', '[a-z]', 1, 0)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("regexp_substr('a1b2', '[a-z]', 1, -1)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
+    evalFails("regexp_substr('a1b2', '[a-z]', 1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("regexp_substr('a1b2', '[a-z]', 1, 1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     // The groups do not change the result, the third argument is the position not a group
     evalEquals("regexp_substr('abc', '([a-z])(b)')", "ab");
     evalEquals("regexp_substr('abc', '([a-z])(c)', 2)", "bc");

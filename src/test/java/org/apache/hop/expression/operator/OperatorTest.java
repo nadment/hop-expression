@@ -2216,9 +2216,9 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
       evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
 
-      // Only whole days, the decimal part is truncated
-      evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
-      evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
+      // Only whole days, a number is not coerced to an integer
+      evalFails("DATE '2019-02-25'+1.8", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("DATE '2019-02-25'+5/(60*24)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Normalize operands order
       evalEquals("2+DATE '2019-01-15'", LocalDate.of(2019, 1, 17));
@@ -2326,10 +2326,7 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
       evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
       evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
-      evalEquals("DATE '2019-01-15'-1.9", LocalDate.of(2019, 1, 14));
-      // evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-      // evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
-      // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
+      evalFails("DATE '2019-01-15'-1.9", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test

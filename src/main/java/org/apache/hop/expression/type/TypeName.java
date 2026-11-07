@@ -307,8 +307,9 @@ public enum TypeName {
     return switch (this) {
       case BOOLEAN -> name.is(INTEGER, NUMBER, STRING);
       case INTEGER -> name.is(NUMBER, BOOLEAN, STRING);
-        // TODO: NUMBER to INTEGER can overflow, not sure it's a good choice to coerce
-      case NUMBER -> name.is(INTEGER, BOOLEAN, STRING);
+        // A NUMBER is not coerced to an INTEGER, the conversion could lose the decimal part or
+        // overflow: an explicit CAST is required, like LEFT(s, CAST(n AS INTEGER))
+      case NUMBER -> name.is(BOOLEAN, STRING);
       case STRING -> name.is(BINARY);
         // A date without time zone and a date with time zone are coerced to each other, a date
         // without time zone is in the system time zone

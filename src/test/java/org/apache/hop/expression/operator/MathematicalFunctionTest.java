@@ -183,9 +183,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     // The last factorial computed with an integer and the first one with a number
     evalEquals("FACTORIAL(20)", new BigDecimal("2432902008176640000"));
     evalEquals("FACTORIAL(21)", new BigDecimal("51090942171709440000"));
-    // The decimal part of a number is truncated
-    evalEquals("FACTORIAL(5.7)", 120D);
-    evalEquals("FACTORIAL(-0.5)", 1D);
+    // A number is not coerced to an integer, it could lose its decimal part
+    evalFails("FACTORIAL(5.7)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals("Factorial(0)", BigDecimal.ONE);
     evalEquals("Factorial(1)", BigDecimal.ONE);
     evalEquals("Factorial(5)", new BigDecimal("120"));
@@ -203,7 +202,7 @@ class MathematicalFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("Factorial(NULL_INTEGER)");
-    evalNull("Factorial(NULL_NUMBER)");
+    evalFails("Factorial(NULL_NUMBER)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Check operands
     evalFails("Factorial()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -587,7 +586,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Random(NULL_INTEGER)", ErrorCode.INVALID_NUMBER);
     // The seed must be an integer constant
     evalFails("Random(FIELD_INTEGER)", ErrorCode.INVALID_NUMBER);
-    evalFails("Random(1.5)", ErrorCode.INVALID_NUMBER);
+    // A number is not coerced to an integer
+    evalFails("Random(1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // A literal with an integer value is an integer
     evalEquals("Random(180.0)", new Random(180).nextDouble());
     evalEquals("Random(-1)", new Random(-1).nextDouble());
     evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);

@@ -510,9 +510,11 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Years() throws Exception {
-    // The decimal part is truncated
-    evalEquals("Add_Years(DATE '2019-01-15', 1.9)", LocalDate.of(2020, Month.JANUARY, 15));
-    evalEquals("Add_Years(DATE '2019-01-15', -1.9)", LocalDate.of(2018, Month.JANUARY, 15));
+    // A number is not coerced to an integer, it could lose its decimal part
+    evalFails("Add_Years(DATE '2019-01-15', 1.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals(
+        "Add_Years(DATE '2019-01-15', CAST(1.9 AS INTEGER))",
+        LocalDate.of(2021, Month.JANUARY, 15));
     evalEquals(
         "Add_Years(TIMESTAMP '2019-01-15 10:20:30', 1)",
         LocalDateTime.of(2020, Month.JANUARY, 15, 10, 20, 30));
@@ -536,7 +538,6 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Quarters() throws Exception {
-    evalEquals("Add_Quarters(DATE '2019-01-15', 1.7)", LocalDate.of(2019, Month.APRIL, 15));
     evalEquals("Add_Quarters(DATE '2019-11-30', 1)", LocalDate.of(2020, Month.FEBRUARY, 29));
     evalEquals("Add_Quarters(DATE '2019-01-15',1)", LocalDate.of(2019, Month.APRIL, 15));
     evalEquals("Add_Quarters(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.JULY, 15));
@@ -551,6 +552,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Quarters(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Quarters(DATE '2019-01-15', 1.7)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Quarters(FIELD_DATE,0)", "FIELD_DATE");
@@ -558,7 +560,6 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Months() throws Exception {
-    evalEquals("Add_Months(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.FEBRUARY, 15));
     evalEquals("Add_Months(DATE '2020-01-31', 1)", LocalDate.of(2020, Month.FEBRUARY, 29));
     // Otherwise the day of month is kept
     evalEquals("Add_Months(DATE '2019-02-28', 1)", LocalDate.of(2019, Month.MARCH, 28));
@@ -575,6 +576,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Months(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Months(DATE '2019-01-15', 1.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Months(FIELD_DATE,0)", "FIELD_DATE");
@@ -582,7 +584,6 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Weeks() throws Exception {
-    evalEquals("Add_Weeks(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
 
@@ -592,6 +593,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Weeks(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Weeks(DATE '2019-01-15', 1.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Weeks(FIELD_DATE,0)", "FIELD_DATE");
@@ -645,8 +647,6 @@ class DateFunctionTest extends ExpressionTest {
 
   @Test
   void Add_Days() throws Exception {
-    evalEquals("Add_Days(DATE '2019-01-15', 1.9)", LocalDate.of(2019, Month.JANUARY, 16));
-    evalEquals("Add_Days(DATE '2019-01-15', -1.9)", LocalDate.of(2019, Month.JANUARY, 14));
     evalEquals("Add_Days(DATE '2022-05-24', -4)", LocalDate.of(2022, Month.MAY, 20));
     evalEquals("DATE '2022-05-24' - 4", LocalDate.of(2022, Month.MAY, 20));
     evalEquals("Add_Days(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
@@ -661,6 +661,9 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Days(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Days(DATE '2019-01-15', 1.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DATE '2019-01-15' + 1.9", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("DATE '2019-01-15' - 1.9", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Days(FIELD_DATE,0)", "FIELD_DATE");
@@ -675,8 +678,6 @@ class DateFunctionTest extends ExpressionTest {
         "Add_Hours(TIMESTAMP '2024-02-19 02:58:59', -4)",
         LocalDateTime.of(2024, Month.FEBRUARY, 18, 22, 58, 59));
     evalEquals(
-        "Add_Hours(DATE '2019-01-15', 1.9)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0));
-    evalEquals(
         "Add_Hours(DATE '2019-01-15',1)", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
     evalEquals(
         "Add_Hours(TIMESTAMP '2021-01-01 15:28:59+02:00',2)",
@@ -688,6 +689,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Hours(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Hours(DATE '2019-01-15', 1.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Hours(FIELD_DATE,0)", "FIELD_DATE");
@@ -702,9 +704,6 @@ class DateFunctionTest extends ExpressionTest {
         "Add_Minutes(DATE '2019-01-15', -20)",
         LocalDateTime.of(2019, Month.JANUARY, 14, 23, 40, 0));
     evalEquals(
-        "Add_Minutes(DATE '2019-01-15', 20.9)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0));
-    evalEquals(
         "Add_Minutes(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
 
@@ -714,6 +713,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Minutes(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Minutes(DATE '2019-01-15', 20.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Minutes(FIELD_DATE,0)", "FIELD_DATE");
@@ -725,9 +725,6 @@ class DateFunctionTest extends ExpressionTest {
         "Add_Seconds(DATE '2019-01-15', -20)",
         LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 40));
     evalEquals(
-        "Add_Seconds(DATE '2019-01-15', 20.9)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
-    evalEquals(
         "Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
     evalEquals(
         "Add_Seconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20));
@@ -738,6 +735,7 @@ class DateFunctionTest extends ExpressionTest {
 
     // Check operands
     evalFails("Add_Seconds(DATE '2019-01-15')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("Add_Seconds(DATE '2019-01-15', 20.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify
     optimize("Add_Seconds(FIELD_DATE,0)", "FIELD_DATE");
@@ -748,9 +746,7 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals(
         "Add_Nanoseconds(DATE '2019-01-15', -1)",
         LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 59, 999999999));
-    evalEquals(
-        "Add_Nanoseconds(DATE '2019-01-15', 20.9)",
-        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
+    evalFails("Add_Nanoseconds(DATE '2019-01-15', 20.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals(
         "Add_NanoSeconds(DATE '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
@@ -758,11 +754,6 @@ class DateFunctionTest extends ExpressionTest {
             "Add_NanoSeconds(DATE '2019-01-15',140)",
             LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140))
         .returnType(DateType.DATE_NOT_NULL);
-
-    // The decimal part of a negative number is also truncated
-    evalEquals(
-        "Add_Nanoseconds(DATE '2019-01-15', -20.9)",
-        LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 59, 999999980));
 
     // Fields, one billion nanoseconds is one second
     evalEquals(
@@ -792,8 +783,10 @@ class DateFunctionTest extends ExpressionTest {
         "Add_Nanoseconds(Add_Years(DATE '2019-01-15', 999997980), 9223372036854775807)",
         ErrorCode.TEMPORAL_OVERFLOW);
     evalNull("TRY(Add_Nanoseconds(Add_Years(DATE '2019-01-15', 999997980), 9223372036854775807))");
-    // A number out of the integer range raises an error
-    evalFails("Add_Nanoseconds(DATE '2019-01-15', 1E20)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+    // A number out of the integer range raises an error when cast
+    evalFails(
+        "Add_Nanoseconds(DATE '2019-01-15', CAST(1E20 AS INTEGER))",
+        ErrorCode.INTEGER_CONVERSION_OVERFLOW);
 
     // Null handling
     evalNull("Add_NanoSeconds(NULL_DATE,140)");
@@ -829,18 +822,15 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Add_Seconds(FIELD_DATE,9223372036854775807)", ErrorCode.TEMPORAL_OVERFLOW);
     evalFails("DATE_ADD(DAY,1000000000000,FIELD_DATE)", ErrorCode.TEMPORAL_OVERFLOW);
 
-    // A number out of the integer range raises an error, it must not wrap to a small value
+    // A literal out of the integer range is a number, it is not coerced to an integer and must not
+    // wrap to a small value
+    evalFails("Add_Days(DATE '2019-01-15',18446744073709551617)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Add_Years(DATE '2019-01-15',18446744073709551617)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails(
-        "Add_Days(DATE '2019-01-15',18446744073709551617)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+        "DATE_ADD(DAY,18446744073709551617,DATE '2019-01-15')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // Cast to an integer, it raises an error
     evalFails(
-        "Add_Days(DATE '2019-01-15',18446744073709551615)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
-    evalFails(
-        "Add_Years(DATE '2019-01-15',18446744073709551617)", ErrorCode.INTEGER_CONVERSION_OVERFLOW);
-    evalFails(
-        "Add_Months(DATE '2019-01-15',18446744073709551616.5)",
-        ErrorCode.INTEGER_CONVERSION_OVERFLOW);
-    evalFails(
-        "DATE_ADD(DAY,18446744073709551617,DATE '2019-01-15')",
+        "Add_Days(DATE '2019-01-15',CAST(18446744073709551615 AS INTEGER))",
         ErrorCode.INTEGER_CONVERSION_OVERFLOW);
   }
 
@@ -1288,6 +1278,9 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_DATE(2020)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_DATE(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_DATE(2020,1,1,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("MAKE_DATE(2020.5,1,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_DATE(2020,1.5,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_DATE(2020,1,1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // A result out of the supported range raises an error, a year is never truncated
     evalFails("MAKE_DATE(1000000000,1,1)", ErrorCode.TEMPORAL_OVERFLOW);
@@ -1361,6 +1354,11 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_TIMESTAMP(2020)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_TIMESTAMP(2020,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("MAKE_TIMESTAMP(2020.5,1,1,23,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_TIMESTAMP(2020,1.5,1,23,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_TIMESTAMP(2020,1,1.5,23,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,23.5,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_TIMESTAMP(2020,1,1,23,15.5,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // A result out of the supported range raises an error, a year is never truncated
     evalFails("MAKE_TIMESTAMP(1000000000,1,1,0,0,0)", ErrorCode.TEMPORAL_OVERFLOW);
@@ -1388,6 +1386,11 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("MAKE_INTERVAL(20)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_INTERVAL(20,15)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("MAKE_INTERVAL(20.5,1,1,23,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_INTERVAL(20,1.5,1,23,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_INTERVAL(20,1,1.5,23,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_INTERVAL(20,1,1,23.5,15,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("MAKE_INTERVAL(20,1,1,23,15.5,59)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Negative values give a negative interval
     evalEquals("MAKE_INTERVAL(-1,0,0,0,0,0)", Interval.of(1).negate());

@@ -35,7 +35,7 @@ Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 
-* If seconds has a decimal part, it is truncated before the addition.
+* The argument seconds must be an integer, a number with a decimal part like 1.5 raises an error: use `CAST(seconds AS INTEGER)` to round it.
 * A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
 
@@ -46,7 +46,7 @@ ADD_SECONDS(DATE '2024-02-18', 4) returns DATE '2024-02-18 00:00:04'
 ADD_SECONDS(TIMESTAMP '2024-02-18 22:58:59', 2) returns TIMESTAMP '2024-02-18 22:59:01'
 ADD_SECONDS(TIMESTAMP '2024-02-18 23:59:30', 45) returns TIMESTAMP '2024-02-19 00:00:15'
 ADD_SECONDS(TIMESTAMP '2024-02-18 22:58:59', -60) returns TIMESTAMP '2024-02-18 22:57:59'
-ADD_SECONDS(TIMESTAMP '2024-02-18 22:58:59', 1.9) returns TIMESTAMP '2024-02-18 22:59:00'
+ADD_SECONDS(TIMESTAMP '2024-02-18 22:58:59', CAST(1.9 AS INTEGER)) returns TIMESTAMP '2024-02-18 22:59:01'
 ----
 
 == See also

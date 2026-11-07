@@ -35,7 +35,7 @@ Date, or timestamp if the date is a timestamp, with its time zone
 
 == Usage
 
-* If months has a decimal part, it is truncated before the addition.
+* The argument months must be an integer, a number with a decimal part like 1.5 raises an error: use `CAST(months AS INTEGER)` to round it.
 * If the resulting month has fewer days than the day component of date, the result is the last day of the resulting month. Otherwise, the result has the same day component as date.
 * A year beyond 9999 is supported, but a result out of the supported range of dates raises an error.
 * Returns NULL if one of the arguments is NULL.
