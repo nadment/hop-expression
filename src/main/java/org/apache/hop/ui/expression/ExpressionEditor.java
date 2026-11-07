@@ -84,6 +84,7 @@ import org.apache.hop.ui.core.gui.GuiMenuWidgets;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
 import org.apache.hop.ui.core.gui.IToolbarContainer;
+import org.apache.hop.ui.core.widget.HopTree;
 import org.apache.hop.ui.core.widget.IFindReplaceTarget;
 import org.apache.hop.ui.hopgui.ToolbarFacade;
 import org.eclipse.jface.text.BadLocationException;
@@ -556,9 +557,9 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
 
     toolbar.pack();
 
-    // Tree widget
-    // TODO: in 2.20 use HopTree
-    wTree = new Tree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
+    // Tree widget, its preferred height is capped so the long list of functions doesn't make the
+    // dialog taller than the screen
+    wTree = new HopTree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
     wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
     wTree.addListener(SWT.MouseDoubleClick, this::onTreeDoubleClick);
     PropsUi.setLook(wTree);

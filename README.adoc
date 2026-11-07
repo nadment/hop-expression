@@ -115,7 +115,7 @@ The {url-doc}/hop-user-manual/expression/expression.adoc[documentation] is a wor
 
 === System requirements
 
-* https://hop.apache.org[Apache Hop] 2.19 or above
+* https://hop.apache.org[Apache Hop] 2.20 or above
 * Hop Web is not supported, because the expression editor uses JFace
 
 === Installation
