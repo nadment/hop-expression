@@ -20,11 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
+import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
+import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
@@ -35,10 +41,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /**
  * Differential test of the simplification rules applied when an expression is compiled.
  *
- * <p>Random expressions are generated over a few fields. For each row, the expression compiled with
- * the fields, simplified by the rules that apply to a non-constant operand like {@code x AND NOT
- * x}, must give the same result as the same expression with the values of the row written as typed
- * literals, which is folded to a constant operator by operator.
+ * <p>Random expressions are generated over a few fields of type boolean, integer, number, string
+ * and date. For each row, the expression compiled with the fields, simplified by the rules that
+ * apply to a non-constant operand like {@code x AND NOT x}, must give the same result as the same
+ * expression with the values of the row written as typed literals, which is folded to a constant
+ * operator by operator.
+ *
+ * <p>A division is always by {@code NULLIF(y,0)}: an error like a division by zero may be raised or
+ * not depending on the order in which the simplified predicates are evaluated.
  *
  * <p>The seed is fixed, a failure is reproducible and reports the expression and the row.
  */
@@ -46,15 +56,42 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class SimplifierDifferentialTest {
 
   private static final long SEED = 20261107L;
-  private static final int EXPRESSIONS = 2000;
+  private static final int EXPRESSIONS = 3000;
   private static final int ROWS_PER_EXPRESSION = 20;
   private static final int MAX_DEPTH = 4;
 
-  private static final String[] FIELDS = {"B1", "B2", "I1", "I2", "S1"};
-  private static final Object[] BOOLEANS = {Boolean.TRUE, Boolean.FALSE, null};
-  private static final Object[] INTEGERS = {-1L, 0L, 1L, 2L, null};
-  private static final Object[] STRINGS = {"a", "b", "", null};
+  /** A field of the row, with the values it takes. */
+  private record Field(String name, IValueMeta valueMeta, String type, Object[] values) {}
+
+  private static final Field[] FIELDS = {
+    new Field("B1", new ValueMetaBoolean("B1"), "BOOLEAN", new Object[] {true, false, null}),
+    new Field("B2", new ValueMetaBoolean("B2"), "BOOLEAN", new Object[] {true, false, null}),
+    new Field("I1", new ValueMetaInteger("I1"), "INTEGER", new Object[] {-1L, 0L, 1L, 2L, null}),
+    new Field("I2", new ValueMetaInteger("I2"), "INTEGER", new Object[] {-1L, 0L, 1L, 2L, null}),
+    new Field(
+        "N1",
+        new ValueMetaBigNumber("N1"),
+        "NUMBER",
+        new Object[] {
+          new BigDecimal("1.5"), new BigDecimal("-0.25"), BigDecimal.ZERO, new BigDecimal("2"), null
+        }),
+    new Field("S1", new ValueMetaString("S1"), "STRING", new Object[] {"a", "b", "ab", "", null}),
+    new Field(
+        "D1",
+        new ValueMetaDate("D1"),
+        "DATE",
+        new Object[] {
+          LocalDate.of(2020, 1, 31), LocalDate.of(2024, 2, 29), LocalDate.of(1999, 12, 31), null
+        })
+  };
+
   private static final String[] INTEGER_LITERALS = {"-1", "0", "1", "2"};
+  private static final String[] NUMBER_LITERALS = {"1.5", "-0.25", "0.0", "2.75"};
+  private static final String[] STRING_LITERALS = {"'a'", "'b'", "'ab'", "''"};
+  private static final String[] DATE_LITERALS = {
+    "DATE '2020-01-31'", "DATE '2024-02-29'", "DATE '2000-01-01'"
+  };
+  private static final String[] LIKE_PATTERNS = {"'a%'", "'%b'", "'_'", "'%'", "'a_'"};
   private static final String[] COMPARISONS = {"=", "<>", "<", "<=", ">", ">="};
 
   private final Random random = new Random(SEED);
@@ -99,11 +136,9 @@ class SimplifierDifferentialTest {
   @Test
   void simplifiedExpressionGivesSameResultAsConstantFolding() {
     RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta(new ValueMetaBoolean("B1"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("B2"));
-    rowMeta.addValueMeta(new ValueMetaInteger("I1"));
-    rowMeta.addValueMeta(new ValueMetaInteger("I2"));
-    rowMeta.addValueMeta(new ValueMetaString("S1"));
+    for (Field field : FIELDS) {
+      rowMeta.addValueMeta(field.valueMeta());
+    }
     RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);
 
     int compiled = 0;
@@ -120,10 +155,11 @@ class SimplifierDifferentialTest {
       compiled++;
 
       for (int r = 0; r < ROWS_PER_EXPRESSION; r++) {
-        Object[] row = {
-          pick(BOOLEANS), pick(BOOLEANS), pick(INTEGERS), pick(INTEGERS), pick(STRINGS)
-        };
-        context.setRow(row);
+        Object[] row = new Object[FIELDS.length];
+        for (int f = 0; f < FIELDS.length; f++) {
+          row[f] = pick(FIELDS[f].values());
+        }
+        context.setRow(toHopRow(row));
 
         Outcome simplified = Outcome.of(expression);
         String constantSource = substitute(source, row);
@@ -162,51 +198,67 @@ class SimplifierDifferentialTest {
   private static String substitute(String source, Object[] row) {
     String result = source;
     for (int i = 0; i < FIELDS.length; i++) {
-      result = result.replaceAll("\\b" + FIELDS[i] + "\\b", literal(row[i], i));
+      result = result.replaceAll("\\b" + FIELDS[i].name() + "\\b", literal(row[i], FIELDS[i]));
     }
     return result;
   }
 
-  private static String literal(Object value, int field) {
-    String type =
-        switch (field) {
-          case 0, 1 -> "BOOLEAN";
-          case 2, 3 -> "INTEGER";
-          default -> "STRING";
-        };
+  private static String literal(Object value, Field field) {
     String text =
         switch (value) {
           case null -> "NULL";
           case String str -> "'" + str + "'";
+          case LocalDate date -> "DATE '" + date + "'";
           default -> value.toString();
         };
-    return "CAST(" + text + " AS " + type + ")";
+    return "CAST(" + text + " AS " + field.type() + ")";
+  }
+
+  /**
+   * Converts the values to the values stored in a Hop row. A date is converted when the row is
+   * built, at midnight in the time zone of the test, which is set before each test.
+   */
+  private static Object[] toHopRow(Object[] row) {
+    Object[] result = row.clone();
+    for (int i = 0; i < result.length; i++) {
+      if (result[i] instanceof LocalDate date) {
+        result[i] = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+      }
+    }
+    return result;
   }
 
   /** Generates a boolean expression. */
   private String bool(int depth) {
     if (depth == 0 || random.nextInt(4) == 0) {
-      return switch (random.nextInt(8)) {
+      return switch (random.nextInt(11)) {
         case 0 -> "B1";
         case 1 -> "B2";
         case 2 -> "TRUE";
         case 3 -> "FALSE";
         case 4 -> "NULL";
         case 5 -> "I1 " + pick(COMPARISONS) + " " + pick(INTEGER_LITERALS);
-        case 6 -> "S1 = 'a'";
-        default -> "S1 IS NULL";
+        case 6 -> "N1 " + pick(COMPARISONS) + " " + pick(NUMBER_LITERALS);
+        case 7 -> "S1 = 'a'";
+        case 8 -> "S1 LIKE " + pick(LIKE_PATTERNS);
+        case 9 -> "D1 " + pick(COMPARISONS) + " " + pick(DATE_LITERALS);
+        default -> pick("S1", "D1", "N1") + " IS NULL";
       };
     }
     int d = depth - 1;
-    return switch (random.nextInt(20)) {
+    return switch (random.nextInt(30)) {
       case 0, 1, 2 -> "(" + bool(d) + " AND " + bool(d) + ")";
       case 3, 4, 5 -> "(" + bool(d) + " OR " + bool(d) + ")";
       case 6 -> "NOT " + bool(d);
       case 7 -> "(" + bool(d) + " IS " + pick("TRUE", "NOT TRUE", "FALSE", "NOT FALSE") + ")";
-      case 8 -> "(" + pick(bool(d), integer(d)) + " IS " + pick("NULL", "NOT NULL") + ")";
+      case 8 -> "(" + any(d) + " IS " + pick("NULL", "NOT NULL") + ")";
       case 9 -> "(" + integer(d) + " " + pick(COMPARISONS) + " " + integer(d) + ")";
-      case 10 -> "(" + integer(d) + " IS " + pick("", "NOT ") + "DISTINCT FROM " + integer(d) + ")";
-      case 11 ->
+      case 10 -> "(" + number(d) + " " + pick(COMPARISONS) + " " + number(d) + ")";
+      case 11 -> "(" + string(d) + " " + pick(COMPARISONS) + " " + string(d) + ")";
+      case 12 -> "(" + date(d) + " " + pick(COMPARISONS) + " " + date(d) + ")";
+      case 13 -> "(" + integer(d) + " " + pick(COMPARISONS) + " " + number(d) + ")";
+      case 14 -> "(" + integer(d) + " IS " + pick("", "NOT ") + "DISTINCT FROM " + integer(d) + ")";
+      case 15 ->
           "("
               + integer(d)
               + pick(" IN (", " NOT IN (")
@@ -214,18 +266,30 @@ class SimplifierDifferentialTest {
               + ","
               + pick(INTEGER_LITERALS)
               + "))";
-      case 12 ->
+      case 16 ->
           "("
-              + integer(d)
+              + string(d)
+              + pick(" IN (", " NOT IN (")
+              + pick(STRING_LITERALS)
+              + ","
+              + pick(STRING_LITERALS)
+              + "))";
+      case 17 ->
+          "("
+              + pick(integer(d), number(d))
               + " BETWEEN "
               + pick(INTEGER_LITERALS)
               + " AND "
-              + pick(INTEGER_LITERALS)
+              + pick(NUMBER_LITERALS)
               + ")";
-      case 13 -> "COALESCE(" + bool(d) + "," + bool(d) + ")";
-      case 14 -> "NVL2(" + pick(bool(d), integer(d)) + "," + bool(d) + "," + bool(d) + ")";
-      case 15 -> "IF(" + bool(d) + "," + bool(d) + "," + bool(d) + ")";
-      case 16 ->
+      case 18 ->
+          "(" + date(d) + " BETWEEN " + pick(DATE_LITERALS) + " AND " + pick(DATE_LITERALS) + ")";
+      case 19 -> "(" + string(d) + pick(" LIKE ", " NOT LIKE ") + pick(LIKE_PATTERNS) + ")";
+      case 20 -> pick("STARTSWITH(", "ENDSWITH(", "CONTAINS(") + string(d) + "," + string(d) + ")";
+      case 21 -> "COALESCE(" + bool(d) + "," + bool(d) + ")";
+      case 22 -> "NVL2(" + any(d) + "," + bool(d) + "," + bool(d) + ")";
+      case 23 -> "IF(" + bool(d) + "," + bool(d) + "," + bool(d) + ")";
+      case 24 ->
           "CASE WHEN "
               + bool(d)
               + " THEN "
@@ -237,9 +301,22 @@ class SimplifierDifferentialTest {
               + " ELSE "
               + bool(d)
               + " END";
-      case 17 -> "(" + bool(d) + " = " + bool(d) + ")";
-      case 18 -> "NULLIF(" + bool(d) + "," + bool(d) + ")";
+      case 25 -> "(" + bool(d) + " = " + bool(d) + ")";
+      case 26 -> "NULLIF(" + bool(d) + "," + bool(d) + ")";
+      case 27 -> "(" + string(d) + " IS " + pick("", "NOT ") + "DISTINCT FROM " + string(d) + ")";
+      case 28 -> "(" + date(d) + " IS " + pick("", "NOT ") + "DISTINCT FROM " + date(d) + ")";
       default -> "(" + bool(d) + " XOR " + bool(d) + ")";
+    };
+  }
+
+  /** Generates an expression of any type. */
+  private String any(int depth) {
+    return switch (random.nextInt(5)) {
+      case 0 -> bool(depth);
+      case 1 -> integer(depth);
+      case 2 -> number(depth);
+      case 3 -> string(depth);
+      default -> date(depth);
     };
   }
 
@@ -254,7 +331,7 @@ class SimplifierDifferentialTest {
       };
     }
     int d = depth - 1;
-    return switch (random.nextInt(14)) {
+    return switch (random.nextInt(22)) {
       case 0, 1 -> "(" + integer(d) + " + " + integer(d) + ")";
       case 2 -> "(" + integer(d) + " - " + integer(d) + ")";
       case 3 -> "(" + integer(d) + " * " + integer(d) + ")";
@@ -276,7 +353,99 @@ class SimplifierDifferentialTest {
       case 10 -> pick("GREATEST(", "LEAST(") + integer(d) + "," + integer(d) + ")";
       case 11 -> "NULLIF(" + integer(d) + "," + integer(d) + ")";
       case 12 -> "ZEROIFNULL(" + integer(d) + ")";
-      default -> "NVL2(" + integer(d) + "," + integer(d) + "," + integer(d) + ")";
+      case 13 -> "NVL2(" + integer(d) + "," + integer(d) + "," + integer(d) + ")";
+      case 14 -> "LENGTH(" + string(d) + ")";
+      case 15 -> "INSTR(" + string(d) + "," + string(d) + ")";
+      case 16 -> pick("YEAR(", "MONTH(", "DAY(") + date(d) + ")";
+      case 17 -> "DAYS_BETWEEN(" + date(d) + "," + date(d) + ")";
+      case 18 -> "SIGN(" + number(d) + ")";
+      case 19 -> "CAST(" + number(d) + " AS INTEGER)";
+      case 20 -> "(" + integer(d) + " % NULLIF(" + integer(d) + ",0))";
+      default -> "MOD(" + integer(d) + ",NULLIF(" + integer(d) + ",0))";
+    };
+  }
+
+  /** Generates a number expression, with small values that can't overflow. */
+  private String number(int depth) {
+    if (depth == 0 || random.nextInt(3) == 0) {
+      return switch (random.nextInt(3)) {
+        case 0 -> "N1";
+        case 1 -> "NULL";
+        default -> pick(NUMBER_LITERALS);
+      };
+    }
+    int d = depth - 1;
+    return switch (random.nextInt(18)) {
+      case 0, 1 -> "(" + number(d) + " + " + pick(number(d), integer(d)) + ")";
+      case 2 -> "(" + pick(number(d), integer(d)) + " - " + number(d) + ")";
+      case 3 -> "(" + number(d) + " * " + pick(number(d), integer(d)) + ")";
+      case 4 -> "(" + number(d) + " / NULLIF(" + pick(number(d), integer(d)) + ",0))";
+      case 5 -> "-(" + number(d) + ")";
+      case 6 -> pick("ABS(", "CEIL(", "FLOOR(", "ROUND(", "TRUNCATE(") + number(d) + ")";
+      case 7 -> pick("ROUND(", "TRUNCATE(") + number(d) + "," + pick("0", "1") + ")";
+      case 8 -> "COALESCE(" + number(d) + "," + number(d) + ")";
+      case 9 -> "IF(" + bool(d) + "," + number(d) + "," + number(d) + ")";
+      case 10 -> "CASE WHEN " + bool(d) + " THEN " + number(d) + " ELSE " + number(d) + " END";
+      case 11 -> pick("GREATEST(", "LEAST(") + number(d) + "," + number(d) + ")";
+      case 12 -> "NULLIF(" + number(d) + "," + number(d) + ")";
+      case 13 -> "ZEROIFNULL(" + number(d) + ")";
+      case 14 -> "NVL2(" + any(d) + "," + number(d) + "," + number(d) + ")";
+      case 15 -> "CAST(" + integer(d) + " AS NUMBER)";
+      case 16 -> "(" + number(d) + " % NULLIF(" + number(d) + ",0))";
+      default -> "NULLIFZERO(" + number(d) + ")";
+    };
+  }
+
+  /** Generates a string expression. */
+  private String string(int depth) {
+    if (depth == 0 || random.nextInt(3) == 0) {
+      return switch (random.nextInt(3)) {
+        case 0 -> "S1";
+        case 1 -> "NULL";
+        default -> pick(STRING_LITERALS);
+      };
+    }
+    int d = depth - 1;
+    return switch (random.nextInt(17)) {
+      case 0, 1 -> "CONCAT(" + string(d) + "," + string(d) + ")";
+      case 2 -> "(" + string(d) + " || " + string(d) + ")";
+      case 3 -> pick("UPPER(", "LOWER(", "TRIM(", "REVERSE(") + string(d) + ")";
+      case 4 -> pick("LEFT(", "RIGHT(") + string(d) + "," + pick("0", "1", "2") + ")";
+      case 5 -> "SUBSTRING(" + string(d) + "," + pick("1", "2") + "," + pick("1", "2") + ")";
+      case 6 -> "REPLACE(" + string(d) + "," + pick(STRING_LITERALS) + "," + string(d) + ")";
+      case 7 -> "COALESCE(" + string(d) + "," + string(d) + ")";
+      case 8 -> "IF(" + bool(d) + "," + string(d) + "," + string(d) + ")";
+      case 9 -> "CASE WHEN " + bool(d) + " THEN " + string(d) + " ELSE " + string(d) + " END";
+      case 10 -> "NULLIF(" + string(d) + "," + string(d) + ")";
+      case 11 -> "NVL2(" + any(d) + "," + string(d) + "," + string(d) + ")";
+      case 12 -> "CAST(" + integer(d) + " AS STRING)";
+      case 13 -> "CAST(" + number(d) + " AS STRING)";
+      case 14 -> "TO_CHAR(" + date(d) + ",'YYYY-MM-DD')";
+      case 15 -> pick("GREATEST(", "LEAST(") + string(d) + "," + string(d) + ")";
+      default ->
+          "CASE " + string(d) + " WHEN 'a' THEN " + string(d) + " ELSE " + string(d) + " END";
+    };
+  }
+
+  /** Generates a date expression, with dates close to the present that can't overflow. */
+  private String date(int depth) {
+    if (depth == 0 || random.nextInt(3) == 0) {
+      return switch (random.nextInt(3)) {
+        case 0 -> "D1";
+        case 1 -> "CAST(NULL AS DATE)";
+        default -> pick(DATE_LITERALS);
+      };
+    }
+    int d = depth - 1;
+    return switch (random.nextInt(9)) {
+      case 0, 1 -> pick("ADD_DAYS(", "ADD_MONTHS(") + date(d) + "," + integer(d) + ")";
+      case 2 -> pick("FIRST_DAY(", "LAST_DAY(") + date(d) + ")";
+      case 3 -> "COALESCE(" + date(d) + "," + date(d) + ")";
+      case 4 -> "IF(" + bool(d) + "," + date(d) + "," + date(d) + ")";
+      case 5 -> "CASE WHEN " + bool(d) + " THEN " + date(d) + " ELSE " + date(d) + " END";
+      case 6 -> pick("GREATEST(", "LEAST(") + date(d) + "," + date(d) + ")";
+      case 7 -> "NULLIF(" + date(d) + "," + date(d) + ")";
+      default -> "NVL2(" + any(d) + "," + date(d) + "," + date(d) + ")";
     };
   }
 
