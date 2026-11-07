@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -39,7 +40,8 @@ public class NullIfZeroFunction extends Function {
   public NullIfZeroFunction() {
     super(
         "NULLIFZERO",
-        ReturnTypes.ARG0,
+        // The result is NULL when the value is zero, even if the value is not nullable
+        ReturnTypes.ARG0.andThen(TypeTransforms.FORCE_NULLABLE),
         OperandTypes.INTEGER.or(OperandTypes.NUMBER),
         OperatorCategory.CONDITIONAL,
         "/docs/hop-user-manual/expression/nullifzero.html");

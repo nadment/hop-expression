@@ -140,9 +140,10 @@ public class CastFunction extends Function {
   public IExpression compile(final IExpressionContext context, Call call)
       throws ExpressionException {
 
-    // Cast null value
+    // Cast null value, nullable even if the type of the call was inferred before its operand was
+    // simplified to NULL, like CAST(NULLIFZERO(0) AS STRING)
     if (call.getOperand(0).isNull()) {
-      return new Literal(null, call.getType());
+      return new Literal(null, call.getType().withNullability(true));
     }
 
     // Check the format, instead of ignoring it when the conversion does not use it

@@ -199,9 +199,14 @@ class ConditionalFunctionTest extends ExpressionTest {
 
   @Test
   void NullIfZero() throws Exception {
-    evalEquals("NULLIFZERO(0.1)", 0.1D).returnType(NumberType.of(2, 1, false));
-    evalEquals("NullIfZero(1)", 1L).returnType(IntegerType.of(1, false));
+    // The result is always nullable, NULL when the value is zero
+    evalEquals("NULLIFZERO(0.1)", 0.1D).returnType(NumberType.of(2, 1));
+    evalEquals("NullIfZero(1)", 1L).returnType(IntegerType.of(1));
     evalNull("NullIfZero(0)");
+    // A cast of NULL is nullable, NULL = NULL is not simplified to TRUE
+    evalNull("CAST(NULLIFZERO(0) AS STRING) = NULL_STRING");
+    // Nullable even if the value is not nullable, IS NULL must not be simplified to FALSE
+    evalTrue("NULLIFZERO(ZEROIFNULL(NULL_INTEGER)) IS NULL");
     evalNull("NullIfZero(0.000)");
     evalNull("NullIfZero(-0.0)");
 
