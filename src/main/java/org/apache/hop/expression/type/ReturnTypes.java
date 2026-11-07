@@ -496,15 +496,16 @@ public final class ReturnTypes {
 
     boolean nullable = type1.isNullable() || type2.isNullable();
 
-    // A date keeps its type, with or without time zone
+    // A date keeps its type, with or without time zone, the fractional seconds of the interval can
+    // add digits: the result has the greater precision
     if (Types.isTemporal(type1) && type2.isName(TypeName.INTERVAL)) {
-      return type1.withNullability(nullable);
+      return Types.withGreaterFractionalPrecision(type1, type2, nullable);
     }
     if (type1.isName(TypeName.INTERVAL) && Types.isTemporal(type2)) {
-      return type2.withNullability(nullable);
+      return Types.withGreaterFractionalPrecision(type2, type1, nullable);
     }
     if (type1.isName(TypeName.INTERVAL) && type2.isName(TypeName.INTERVAL)) {
-      return type1.withNullability(nullable);
+      return Types.withGreaterFractionalPrecision(type1, type2, nullable);
     }
     if (type1.isName(TypeName.STRING) || type2.isName(TypeName.STRING)) {
       return NumberType.NUMBER.withNullability(nullable);

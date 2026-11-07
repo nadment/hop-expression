@@ -57,6 +57,24 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
+  void leastRestrictiveOfDatesAndIntervals() {
+    // A date and a timestamp give a timestamp with the greater precision of the fractional seconds
+    assertEquals(
+        TimestampType.TIMESTAMP, Types.getLeastRestrictive(DateType.DATE, TimestampType.of(3)));
+    assertEquals(
+        TimestampType.of(6), Types.getLeastRestrictive(TimestampType.of(6), DateType.of(3)));
+    assertEquals(DateType.of(3), Types.getLeastRestrictive(DateType.of(0), DateType.of(3)));
+    assertEquals(DateType.of(3), Types.getLeastRestrictive(DateType.of(3), DateType.of(0)));
+    // Two intervals give an interval with the greater precision
+    assertEquals(
+        IntervalType.of(6), Types.getLeastRestrictive(IntervalType.of(6), IntervalType.of(0)));
+    // A type keeps its nullability
+    assertEquals(
+        TimestampType.of(3, false),
+        Types.getLeastRestrictive(DateType.of(0), TimestampType.of(3, false)));
+  }
+
+  @Test
   void integerTypeFrom() {
     // Regression: from(0) must not throw PRECISION_OUT_OF_RANGE
     assertEquals(1, IntegerType.from(0L).getPrecision());

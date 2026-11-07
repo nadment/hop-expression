@@ -2156,6 +2156,24 @@ public class OperatorTest extends ExpressionTest {
       // Addition of an interval to a temporal
       evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0))
           .returnType(DateType.DATE_NOT_NULL);
+
+      // The fractional seconds of the interval can add digits, the result has the greater
+      // precision: a cast to a smaller precision is not removed
+      evalEquals(
+              "CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)) + INTERVAL '00:00:01.5' HOUR TO SECOND",
+              LocalDateTime.of(2023, 2, 28, 22, 11, 2, 500_000_000))
+          .returnType(TimestampType.TIMESTAMP);
+      evalEquals(
+              "CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)) + CAST(INTERVAL 2 HOURS AS INTERVAL(3))",
+              LocalDateTime.of(2023, 3, 1, 0, 11, 1))
+          .returnType(TimestampType.of(3));
+      evalEquals(
+              "CAST(INTERVAL 2 HOURS AS INTERVAL(3)) + CAST(DATE '2019-02-25' AS DATE(0))",
+              LocalDateTime.of(2019, 2, 25, 2, 0, 0))
+          .returnType(DateType.of(3, false));
+      optimize(
+          "CAST(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)) + INTERVAL 1 HOUR AS TIMESTAMP(0))",
+          "CAST(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0))+INTERVAL 1 HOUR AS TIMESTAMP(0))");
       evalEquals(
           "INTERVAL 2 YEARS+DATE '2019-02-25'+INTERVAL 1 YEARS",
           LocalDateTime.of(2022, 2, 25, 0, 0, 0));

@@ -121,6 +121,15 @@ public final class Types {
       return type2;
     }
 
+    // A date and a timestamp give a timestamp, two intervals an interval, with the greater
+    // precision of the fractional seconds. The precision is not a length, it must not choose the
+    // type: a DATE(9) and a TIMESTAMP(3) give a TIMESTAMP(9), not a DATE.
+    if ((isTemporal(type1) && isTemporal(type2)) || (isInterval(type1) && isInterval(type2))) {
+      Type type = (type1.getName().ordinal() > type2.getName().ordinal()) ? type1 : type2;
+      return withGreaterFractionalPrecision(
+          type, (type == type1) ? type2 : type1, type.isNullable());
+    }
+
     if (type1.getName().ordinal() > type2.getName().ordinal()
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
@@ -508,6 +517,27 @@ public final class Types {
    */
   public static boolean isInterval(Type type) {
     return type.isName(TypeName.INTERVAL);
+  }
+
+  /**
+   * Returns a DATE, TIMESTAMP or INTERVAL type, the type of a value with fractional seconds, with
+   * the greater precision of the fractional seconds of two types.
+   *
+   * <p>For example, a TIMESTAMP(0) plus an INTERVAL(6) gives a TIMESTAMP(6).
+   *
+   * @param type the DATE, TIMESTAMP or INTERVAL type of the result
+   * @param other the other type with fractional seconds
+   * @param nullable whether the result allows null values
+   * @return the type with the greater precision
+   */
+  public static Type withGreaterFractionalPrecision(Type type, Type other, boolean nullable) {
+    int precision = Math.max(type.getPrecision(), other.getPrecision());
+    return switch (type.getName()) {
+      case DATE -> DateType.of(precision, nullable);
+      case TIMESTAMP -> TimestampType.of(precision, nullable);
+      case INTERVAL -> IntervalType.of(precision, nullable);
+      default -> throw new IllegalArgumentException("No fractional seconds: " + type);
+    };
   }
 
   /**

@@ -327,6 +327,17 @@ class ConditionalFunctionTest extends ExpressionTest {
 
   @Test
   void Coalesce() throws Exception {
+    // A date and a timestamp give a timestamp, with the greater precision of the fractional seconds
+    optimize(
+            "COALESCE(FIELD_DATE, CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)))",
+            "IFNULL(CAST(FIELD_DATE AS TIMESTAMP),CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)))")
+        .returnType(TimestampType.TIMESTAMP);
+    optimize(
+            "COALESCE(CAST(FIELD_DATE AS DATE(0)), CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)))",
+            "IFNULL(CAST(CAST(FIELD_DATE AS DATE(0)) AS TIMESTAMP(3)),"
+                + "CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)))")
+        .returnType(TimestampType.of(3));
+
     // Coalesce string
     evalEquals("Coalesce(NULL_STRING,'TEST','BIDON')", "TEST")
         .returnType(StringType.STRING_NOT_NULL);
