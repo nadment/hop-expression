@@ -102,6 +102,16 @@ class CloneRowTest {
   }
 
   @Test
+  void failsWithAnInvalidNumberOfClones() throws Exception {
+    // The message gives the expression that can't be compiled
+    TestCloneRow transform = createTransform("COUNT +");
+    HopException exception = assertThrows(HopException.class, transform::processRow);
+    assertTrue(
+        exception.getMessage().contains("Unable to compile expression 'COUNT +'"),
+        exception.getMessage());
+  }
+
+  @Test
   void failsWithANumberOfClonesOfTypeNumber() throws Exception {
     // A number is not coerced to an integer, 2.7 would be truncated to 2 clones
     TestCloneRow transform = createTransform("AMOUNT");
