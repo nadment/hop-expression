@@ -69,10 +69,27 @@ public final class StringConversion {
   }
 
   public static String convert(final ZonedDateTime value) {
-    if (value.getNano() > 0) {
-      return TIMESTAMP_NANO_FORMAT.format(value);
+    return convert(value, FractionalSeconds.MAX_PRECISION);
+  }
+
+  /**
+   * Converts a date-time to a string, with the time if it is not midnight and the fractional
+   * seconds if they are not zero.
+   *
+   * @param value the date-time
+   * @param precision the number of digits of the fractional seconds, from 0 to 9
+   * @return the string, for example {@code 2019-02-25 12:34:56.123} with the precision 3
+   */
+  public static String convert(final ZonedDateTime value, final int precision) {
+    if (value.getNano() > 0 && precision > 0) {
+      return (precision == FractionalSeconds.MAX_PRECISION)
+          ? TIMESTAMP_NANO_FORMAT.format(value)
+          : DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF" + precision).format(value);
     }
-    if (value.getHour() > 0 || value.getMinute() > 0 || value.getSecond() > 0) {
+    if (value.getHour() > 0
+        || value.getMinute() > 0
+        || value.getSecond() > 0
+        || value.getNano() > 0) {
       return TIMESTAMP_FORMAT.format(value);
     }
 

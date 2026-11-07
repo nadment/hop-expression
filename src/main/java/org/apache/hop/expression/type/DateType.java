@@ -104,7 +104,8 @@ public final class DateType extends Type {
       return clazz.cast(datetime);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringConversion.convert(datetime));
+      // The fractional seconds have the digits of the precision of the type
+      return clazz.cast(StringConversion.convert(datetime, precision));
     }
     // The epoch of a date without time zone is nominal
     if (clazz == Long.class) {

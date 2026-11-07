@@ -109,7 +109,8 @@ public final class TimestampType extends Type {
       return clazz.cast(DateConversion.toLocal(value));
     }
     if (clazz == String.class) {
-      return clazz.cast(StringConversion.convert(TimestampConversion.toZoned(value)));
+      // The fractional seconds have the digits of the precision of the type
+      return clazz.cast(StringConversion.convert(TimestampConversion.toZoned(value), precision));
     }
     return super.convertValue(value, clazz);
   }

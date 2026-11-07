@@ -127,12 +127,21 @@ public class CastFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
     Type type = operands[1].getType();
     String format = null;
     if (operands.length == 3) {
       format = operands[2].getValue(String.class);
     }
+
+    // Without format, a date or an interval converted to a string writes its fractional seconds
+    // with the digits of the precision of its type, known by the operand and not by the value
+    Type operandType = operands[0].getType();
+    Object value =
+        (format == null
+                && Types.isString(type)
+                && (Types.isTemporal(operandType) || Types.isInterval(operandType)))
+            ? operands[0].getValue(String.class)
+            : operands[0].getValue();
 
     return type.cast(value, format);
   }

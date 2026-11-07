@@ -849,6 +849,18 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   @Override
   public final String toString() {
+    return toString(FractionalSeconds.MAX_PRECISION);
+  }
+
+  /**
+   * Returns the format <code>[+|-]Y-M [+|-]D [+|-]HH:MM:SS.F</code>, with the digits of the
+   * precision for the fractional seconds, none for the precision 0. For example, the precision 3
+   * gives <code>+0-0 0 00:00:01.500</code>.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9
+   * @return the format
+   */
+  public final String toString(final int precision) {
     long timeSign = Long.signum(seconds != 0 ? seconds : nanos);
     long leadSign = Long.signum(months);
     if (leadSign == 0) leadSign = Long.signum(days);
@@ -878,8 +890,7 @@ public class Interval implements Serializable, Comparable<Interval> {
       sb.append('0');
     }
     sb.append(s);
-    sb.append('.');
-    sb.append(StringUtils.leftPad("" + Math.abs(nanos), 9, "0"));
+    appendFraction(sb, precision);
 
     return sb.toString();
   }
@@ -889,6 +900,18 @@ public class Interval implements Serializable, Comparable<Interval> {
    * different signs.
    */
   public final String toString(final IntervalQualifier qualifier) {
+    return toString(qualifier, FractionalSeconds.MAX_PRECISION);
+  }
+
+  /**
+   * Returns the format of a qualifier, with a single sign and the fractional seconds, if not zero,
+   * with the digits of the precision. The interval must not have parts with different signs.
+   *
+   * @param qualifier the qualifier of the format
+   * @param precision the number of digits of the fractional seconds, from 0 to 9
+   * @return the format
+   */
+  public final String toString(final IntervalQualifier qualifier, final int precision) {
     StringBuilder sb = new StringBuilder();
     boolean negative = getSign() < 0;
 
@@ -947,7 +970,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         sb.append(':');
         toStringMinute(sb);
         sb.append(':');
-        toStringSecond(sb);
+        toStringSecond(sb, precision);
         break;
 
       case HOUR_TO_SECOND:
@@ -956,19 +979,19 @@ public class Interval implements Serializable, Comparable<Interval> {
         sb.append(':');
         toStringMinute(sb);
         sb.append(':');
-        toStringSecond(sb);
+        toStringSecond(sb, precision);
         break;
 
       case MINUTE_TO_SECOND:
         sb.append(negative ? '-' : '+');
         toStringMinute(sb);
         sb.append(':');
-        toStringSecond(sb);
+        toStringSecond(sb, precision);
         break;
 
       case SECOND:
         if (negative) sb.append('-');
-        toStringSecond(sb);
+        toStringSecond(sb, precision);
         break;
 
       default:
@@ -1003,17 +1026,24 @@ public class Interval implements Serializable, Comparable<Interval> {
     sb.append(m);
   }
 
-  private void toStringSecond(final StringBuilder sb) {
+  private void toStringSecond(final StringBuilder sb, final int precision) {
     long s = Math.abs(getSeconds());
     if (s < 10) {
       sb.append('0');
     }
     sb.append(s);
 
-    // TODO: Use precision for nanoseconds
+    // The fractional seconds, if not zero, with the digits of the precision
     if (nanos != 0) {
+      appendFraction(sb, precision);
+    }
+  }
+
+  /** Appends the fractional seconds with the digits of the precision, none for the precision 0. */
+  private void appendFraction(final StringBuilder sb, final int precision) {
+    if (precision > 0) {
       sb.append('.');
-      sb.append(StringUtils.leftPad("" + Math.abs(nanos), 9, "0"));
+      sb.append(StringUtils.leftPad("" + Math.abs(nanos), 9, "0"), 0, precision);
     }
   }
 

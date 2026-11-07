@@ -92,7 +92,8 @@ public final class IntervalType extends Type {
   protected <T> T convertValue(final Object value, final Class<T> clazz)
       throws ExpressionException {
     if (clazz == String.class) {
-      return clazz.cast(value.toString());
+      // The fractional seconds have the digits of the precision of the type
+      return clazz.cast(((Interval) value).toString(precision));
     }
 
     return super.convertValue(value, clazz);

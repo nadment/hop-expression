@@ -295,7 +295,7 @@ public final class Literal implements IExpression {
           unparseTimestamp(writer, (ZonedDateTime) value);
           break;
         case INTERVAL:
-          unparseInterval(writer, (Interval) value);
+          unparseInterval(writer, (Interval) value, type.getPrecision());
           break;
         case JSON:
           writer.append("JSON '");
@@ -400,22 +400,26 @@ public final class Literal implements IExpression {
     return "YYYY-MM-DD HH24:MI:SS.FF9";
   }
 
-  /** Unparses an interval literal, with its qualifier if it has one. */
-  private static void unparseInterval(final StringWriter writer, final Interval interval) {
+  /**
+   * Unparses an interval literal, with its qualifier if it has one, and the fractional seconds with
+   * the digits of the precision of its type.
+   */
+  private static void unparseInterval(
+      final StringWriter writer, final Interval interval, final int precision) {
     IntervalQualifier qualifier = IntervalQualifier.of(interval);
 
     if (qualifier == null) {
       writer.append("INTERVAL '");
-      writer.append(interval.toString());
+      writer.append(interval.toString(precision));
       writer.append("'");
     } else if (qualifier.getStartUnit() == qualifier.getEndUnit()) {
       writer.append("INTERVAL ");
-      writer.append(interval.toString(qualifier));
+      writer.append(interval.toString(qualifier, precision));
       writer.append(' ');
       writer.append(qualifier.toString());
     } else {
       writer.append("INTERVAL '");
-      writer.append(interval.toString(qualifier));
+      writer.append(interval.toString(qualifier, precision));
       writer.append("' ");
       writer.append(qualifier.toString());
     }

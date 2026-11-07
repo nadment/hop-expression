@@ -3573,6 +3573,41 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void castToString() throws Exception {
+      // The fractional seconds of a date, a timestamp or an interval, if not zero, are written with
+      // the digits of the precision of its type
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2019-02-25 12:34:56.123456789' AS TIMESTAMP(3)) AS STRING)",
+          "2019-02-25 12:34:56.123");
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2019-02-25 12:34:56.123456789' AS DATE(6)) AS STRING)",
+          "2019-02-25 12:34:56.123457");
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2019-02-25 12:34:56.6' AS TIMESTAMP(0)) AS STRING)",
+          "2019-02-25 12:34:57");
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2019-02-25 12:34:56' AS TIMESTAMP(3)) AS STRING)",
+          "2019-02-25 12:34:56");
+      evalEquals(
+          "CAST(TIMESTAMP '2019-02-25 12:34:56.123456789' AS STRING)",
+          "2019-02-25 12:34:56.123456789");
+      // Evaluated with a field, explicitly or implicitly converted
+      evalEquals(
+          "CAST(CAST(FIELD_TIMESTAMP + INTERVAL '00:00:00.123456' HOUR TO SECOND AS TIMESTAMP(3))"
+              + " AS STRING)",
+          "2023-02-28 22:11:01.123");
+      evalEquals(
+          "CONCAT('x', CAST(FIELD_TIMESTAMP + INTERVAL '00:00:00.123456' HOUR TO SECOND"
+              + " AS TIMESTAMP(3)))",
+          "x2023-02-28 22:11:01.123");
+      evalEquals(
+          "CAST(CAST(INTERVAL '00:00:01.123456' HOUR TO SECOND AS INTERVAL(3)) AS STRING)",
+          "+0-0 0 00:00:01.123");
+      evalEquals(
+          "CAST(CAST(INTERVAL '00:00:01.123456' HOUR TO SECOND AS INTERVAL(0)) AS STRING)",
+          "+0-0 0 00:00:01");
+      evalEquals(
+          "CAST(INTERVAL '00:00:01.123456' HOUR TO SECOND AS STRING)", "+0-0 0 00:00:01.123456000");
+
       // Boolean
       evalEquals("CAST(true as String)", "TRUE").returnType(StringType.STRING_NOT_NULL);
       evalEquals("CAST(false as String)", "FALSE");
@@ -3869,6 +3904,13 @@ public class OperatorTest extends ExpressionTest {
       evalEquals(
           "CAST(INTERVAL '00:00:01.123456789' HOUR TO SECOND AS INTERVAL(9))",
           Interval.of(0, 0, 0, 0, 0, 1, 123_456_789));
+      // A constant is written with the digits of the precision of its type
+      optimize(
+          "CAST(INTERVAL '00:01:01.123456' HOUR TO SECOND AS INTERVAL(3))",
+          "INTERVAL '+01:01.123' MINUTE TO SECOND");
+      optimize(
+          "INTERVAL '00:01:01.123456' HOUR TO SECOND",
+          "INTERVAL '+01:01.123456000' MINUTE TO SECOND");
     }
 
     @Test
