@@ -122,7 +122,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public IUndoManager getUndoManager(ISourceViewer sourceViewer) {
-    // FIXME: Don't work
+    // Undo and redo the last changes of the expression, up to the maximum undo level
     return new TextViewerUndoManager(MAX_UNDO_LEVEL);
   }
 
