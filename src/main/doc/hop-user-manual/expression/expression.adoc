@@ -381,5 +381,5 @@ The following variables change the default behavior of expressions.
 |Variable|Default|Description
 |EXPRESSION_BINARY_FORMAT|HEX|The default binary format used by xref:to_binary.adoc["TO_BINARY",role=fun] and xref:to_char.adoc["TO_CHAR",role=fun] for conversions between binaries and strings when no format is specified: HEX, BASE64 or UTF-8.
 |EXPRESSION_DATE_FORMAT|YYYY-MM-DD|The default date format used by xref:to_char.adoc["TO_CHAR",role=fun] for the conversion of a date to a string when no format is specified.
-|EXPRESSION_TWO_DIGIT_YEAR_START|1970|Controls the two-digit year format `YY` used by xref:to_date.adoc["TO_DATE",role=fun] and xref:is_date.adoc["IS_DATE",role=fun]. When set to 1980, values of 79 and 80 are parsed as 2079 and 1980 respectively.
+|EXPRESSION_TWO_DIGIT_YEAR_START|1970|Controls the two-digit year format `YY` used by xref:to_date.adoc["TO_DATE",role=fun], xref:to_timestamp.adoc["TO_TIMESTAMP",role=fun], xref:is_date.adoc["IS_DATE",role=fun] and xref:cast.adoc["CAST",role=fun] with a format. When set to 1980, values of 79 and 80 are parsed as 2079 and 1980 respectively.
 |===

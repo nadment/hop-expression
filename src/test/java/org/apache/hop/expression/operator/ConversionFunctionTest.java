@@ -873,6 +873,17 @@ class ConversionFunctionTest extends ExpressionTest {
     variables.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     context = createExpressionContext(variables);
     evalEquals(context, "To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1));
+    // A cast with a format uses the same century start year as the conversion functions
+    evalEquals(context, "CAST('01/02/80' AS DATE FORMAT 'DD/MM/YY')", LocalDate.of(2080, 2, 1));
+    evalEquals(context, "TRY_CAST('01/02/80' AS DATE FORMAT 'DD/MM/YY')", LocalDate.of(2080, 2, 1));
+    evalEquals(
+        context,
+        "CAST('01/02/80' AS TIMESTAMP FORMAT 'DD/MM/YY')",
+        ZonedDateTime.of(2080, 2, 1, 0, 0, 0, 0, ZoneId.systemDefault()));
+    evalEquals(
+        context,
+        "To_Timestamp('01/02/80','DD/MM/YY')",
+        ZonedDateTime.of(2080, 2, 1, 0, 0, 0, 0, ZoneId.systemDefault()));
 
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4710, 1, 1));
 
@@ -1319,7 +1330,7 @@ class ConversionFunctionTest extends ExpressionTest {
     optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)", "TRY(CAST(FIELD_INTEGER AS NUMBER))");
     optimize(
         "TRY_CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')",
-        "TRY(CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD'))");
+        "TRY(TO_DATE(FIELD_STRING,'YYYY-MM-DD'))");
   }
 
   @Test

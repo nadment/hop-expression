@@ -38,6 +38,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -212,9 +213,41 @@ public class CastFunction extends Function {
       return new Call(ToCharFunction.INSTANCE, call.getOperand(0), call.getOperand(2));
     }
 
-    // TODO: the CAST function and the :: operator should call the appropriate conversion function.
+    // CAST(str AS DATE FORMAT 'format') → TO_DATE(str,'format')
+    // CAST(str AS TIMESTAMP FORMAT 'format') → TO_TIMESTAMP(str,'format')
+    Function conversion = findConversionFunction(call);
+    if (conversion != null) {
+      return new Call(conversion, call.getOperand(0), call.getOperand(2));
+    }
 
     return call;
+  }
+
+  /**
+   * Finds the conversion function equivalent to a cast of a string to a date or a timestamp with a
+   * constant format. The format is then compiled once and a two-digit year uses the century start
+   * year of the context, like with the conversion functions.
+   *
+   * <p>A cast to a number is not replaced by TO_NUMBER, which does not round the value to the scale
+   * nor check the precision of the type.
+   *
+   * @param call the call to CAST or TRY_CAST
+   * @return {@link ToDateFunction} or {@link ToTimestampFunction}, or {@code null} if the cast has
+   *     no equivalent conversion function
+   */
+  static @Nullable Function findConversionFunction(final Call call) {
+    if (call.getOperandCount() != 3
+        || !Types.isString(call.getOperand(0).getType())
+        || !call.getOperand(2).isConstant()) {
+      return null;
+    }
+    if (call.getType().isName(TypeName.DATE)) {
+      return ToDateFunction.INSTANCE;
+    }
+    if (call.getType().isName(TypeName.TIMESTAMP)) {
+      return ToTimestampFunction.INSTANCE;
+    }
+    return null;
   }
 
   /**

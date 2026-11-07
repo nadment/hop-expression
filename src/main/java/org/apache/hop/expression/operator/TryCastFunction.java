@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -46,6 +47,14 @@ public class TryCastFunction extends CastFunction {
     if (call.getOperandCount() == 3 && !call.getOperand(0).isNull()) {
       checkFormat(call.getOperand(0).getType(), call.getType(), call.getOperand(2));
     }
+
+    // Converted directly, a constant TRY(CAST(...)) would be evaluated before the cast is compiled
+    Function conversion = findConversionFunction(call);
+    if (conversion != null) {
+      return new Call(
+          TryFunction.INSTANCE, new Call(conversion, call.getOperand(0), call.getOperand(2)));
+    }
+
     return new Call(TryFunction.INSTANCE, new Call(CastFunction.INSTANCE, call.getOperands()));
   }
 }

@@ -1923,7 +1923,9 @@ public class OperatorTest extends ExpressionTest {
       evalFails("CAST(FIELD_STRING AS INTEGER) IS NULL", ErrorCode.CONVERSION_ERROR);
       optimize("CAST(FIELD_INTEGER AS NUMBER(1)) IS NULL");
       evalFails("CAST(FIELD_INTEGER AS NUMBER(1)) IS NULL", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
-      optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NULL");
+      optimize(
+          "CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NULL",
+          "TO_DATE(FIELD_STRING,'YYYY') IS NULL");
       optimize(
           "CAST(FIELD_DATE AS STRING FORMAT 'YYYY') IS NULL", "TO_CHAR(FIELD_DATE,'YYYY') IS NULL");
       // TRY_CAST returns NULL if the cast fails
@@ -1970,7 +1972,9 @@ public class OperatorTest extends ExpressionTest {
       // Not with a cast that can fail, the error must be raised
       optimize("CAST(FIELD_STRING AS INTEGER) IS NOT NULL");
       evalFails("CAST(FIELD_STRING AS INTEGER) IS NOT NULL", ErrorCode.CONVERSION_ERROR);
-      optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NOT NULL");
+      optimize(
+          "CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NOT NULL",
+          "TO_DATE(FIELD_STRING,'YYYY') IS NOT NULL");
     }
   }
 
@@ -3357,10 +3361,8 @@ public class OperatorTest extends ExpressionTest {
       optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
       optimize("CAST(FIELD_DATE AS DATE)", "FIELD_DATE");
 
-      // But don't remove with format
-      optimize(
-          "CAST(FIELD_STRING AS DATE FORMAT 'YYYYMM')",
-          "CAST(FIELD_STRING AS DATE FORMAT 'YYYYMM')");
+      // But don't remove with format, the conversion with the format is kept
+      optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYYMM')", "TO_DATE(FIELD_STRING,'YYYYMM')");
 
       // Remove an inner cast made useless by a narrower outer cast, or a loss-less cast
       optimize(
@@ -3392,10 +3394,11 @@ public class OperatorTest extends ExpressionTest {
           "CAST(CAST(FIELD_STRING AS STRING(10)) AS STRING(100))",
           "CAST(CAST(FIELD_STRING AS STRING(10)) AS STRING(100))");
 
-      // Don't remove an inner cast with a format
+      // Don't remove an inner cast with a format, it is a conversion with the format and the outer
+      // cast to the same type is removed
       optimize(
           "CAST(CAST(FIELD_STRING_DATE AS DATE FORMAT 'YYYY-MM-DD') AS DATE)",
-          "CAST(CAST(FIELD_STRING_DATE AS DATE FORMAT 'YYYY-MM-DD') AS DATE)");
+          "TO_DATE(FIELD_STRING_DATE,'YYYY-MM-DD')");
       evalEquals("CAST(CAST(FIELD_DATE AS STRING(20) FORMAT 'DD/MM/YYYY') AS STRING(5))", "23/06");
 
       // Don't remove an inner cast with fewer digits in its integer part, it can overflow
@@ -3649,11 +3652,12 @@ public class OperatorTest extends ExpressionTest {
       evalFails("CAST(FIELD_INET AS DATE)", ErrorCode.UNSUPPORTED_CONVERSION);
 
       // optimize("CAST(FIELD_STRING AS DATE)", "TO_DATE(FIELD_STRING)");
-      // optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')",
-      // "TO_DATE(FIELD_STRING,'YYYY-MM-DD')");
+      // A cast of a string with a format is a conversion with the format compiled once
+      optimize(
+          "CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')", "TO_DATE(FIELD_STRING,'YYYY-MM-DD')");
       optimize(
           "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')",
-          "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')");
+          "TO_DATE(TO_CHAR(FIELD_DATE,'YYYYMMDD'),'YYYYMMDD')");
 
       // A timestamp keeps its local date and time, the time zone is dropped
       evalEquals(
@@ -3697,6 +3701,10 @@ public class OperatorTest extends ExpressionTest {
 
       optimize("CAST(FIELD_STRING AS TIMESTAMP)");
       optimize("FIELD_STRING::TIMESTAMP", "CAST(FIELD_STRING AS TIMESTAMP)");
+      // A cast of a string with a format is a conversion with the format compiled once
+      optimize(
+          "CAST(FIELD_STRING AS TIMESTAMP FORMAT 'YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+          "TO_TIMESTAMP(FIELD_STRING,'YYYY-MM-DD HH24:MI:SS TZH:TZM')");
 
       // Unsupported conversion
       // An epoch time value is the instant, in UTC, like TO_TIMESTAMP
