@@ -28,6 +28,7 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -113,6 +114,14 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
         throw new HopException(
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),
             e);
+      }
+
+      // A number is not coerced to an integer, it could lose its decimal part, like when checking
+      // the transform
+      TypeName typeName = data.numberOfClones.getType().getName();
+      if (!typeName.isCoercible(TypeName.INTEGER)) {
+        throw new HopException(
+            BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesNotInteger", typeName));
       }
       if (isDebug()) {
         logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones", "" + data.numberOfClones));
