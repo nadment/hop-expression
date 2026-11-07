@@ -91,6 +91,9 @@ public class IsDistinctFromOperator extends BinaryOperator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Normalize like a comparison, 1 IS DISTINCT FROM A → A IS DISTINCT FROM 1
+    call = normalizeSymmetricalPredicate(call);
+
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 

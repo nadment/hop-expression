@@ -17,6 +17,7 @@
 package org.apache.hop.expression;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.type.ArrayType;
@@ -80,8 +81,9 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       original.setOperand(i, original.getOperand(i).accept(this));
     }
 
-    // Compile with operator
-    IExpression expression = original.getOperator().compile(context, original);
+    // Compile with operator, the operands of a symmetrical operator in a normal order
+    IExpression expression =
+        original.getOperator().compile(context, normalizeSymmetrical(original));
 
     if (expression instanceof Call call) {
 
@@ -122,6 +124,30 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     }
 
     return expression;
+  }
+
+  /**
+   * Puts the operands of a call to a symmetrical operator in a normal order, so the same
+   * expressions are recognized whatever the order of their operands, like {@code A IS DISTINCT FROM
+   * B AND B IS DISTINCT FROM A}. The operands are ordered like the operands of a chain of {@code
+   * AND}, the simplification rules of the symmetrical operators expect this order.
+   *
+   * @param call the call
+   * @return the call with its operands in a normal order, or the call itself
+   */
+  private static Call normalizeSymmetrical(Call call) {
+    Operator operator = call.getOperator();
+    if (!operator.isSymmetrical()) {
+      return call;
+    }
+    IExpression[] operands = call.getOperands().clone();
+    Arrays.sort(operands, new ExpressionComparator());
+    if (Arrays.equals(operands, call.getOperands())) {
+      return call;
+    }
+    Call normalized = new Call(call.getPosition(), operator, operands);
+    normalized.inferReturnType();
+    return normalized;
   }
 
   @Override

@@ -272,6 +272,16 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     // Compare unordered type
     evalFails("Greatest(NULL_JSON, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // The operands of a symmetrical function are in a normal order, the same calls are recognized
+    optimize(
+        "GREATEST(FIELD_INTEGER_ZERO,FIELD_INTEGER)", "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO)");
+    optimize(
+        "GREATEST(FIELD_INTEGER_ZERO,1,FIELD_INTEGER)",
+        "GREATEST(1,FIELD_INTEGER,FIELD_INTEGER_ZERO)");
+    optimize(
+        "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO) = GREATEST(FIELD_INTEGER_ZERO,FIELD_INTEGER)",
+        "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO)=GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO)");
   }
 
   @Test
@@ -323,6 +333,9 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     // Compare unordered type
     evalFails("Least(FIELD_STRING, FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // The operands of a symmetrical function are in a normal order, the same calls are recognized
+    optimize("LEAST(1,FIELD_INTEGER) = LEAST(FIELD_INTEGER,1)", "TRUE");
   }
 
   @Test

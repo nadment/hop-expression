@@ -982,7 +982,13 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testOptimize() throws Exception {
-      optimize("FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_FALSE");
+      // The operands of a symmetrical operator are in a normal order, a duplicate is recognized
+      optimize(
+          "FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_FALSE",
+          "FIELD_BOOLEAN_FALSE XOR FIELD_BOOLEAN_TRUE");
+      optimize(
+          "(FIELD_BOOLEAN_TRUE XOR FIELD_BOOLEAN_FALSE) AND (FIELD_BOOLEAN_FALSE XOR FIELD_BOOLEAN_TRUE)",
+          "FIELD_BOOLEAN_FALSE XOR FIELD_BOOLEAN_TRUE");
 
       // Simplify x XOR NULL → NULL
       optimizeNull("FIELD_BOOLEAN_TRUE XOR NULL");
@@ -2029,6 +2035,16 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testOptimize() throws Exception {
       optimize("FIELD_BOOLEAN_TRUE IS DISTINCT FROM TRUE");
+      // The operands of a symmetrical operator are in a normal order, a duplicate is recognized
+      optimize(
+          "TRUE IS DISTINCT FROM FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS DISTINCT FROM TRUE");
+      optimize(
+          "FIELD_INTEGER_ZERO IS DISTINCT FROM FIELD_INTEGER",
+          "FIELD_INTEGER IS DISTINCT FROM FIELD_INTEGER_ZERO");
+      optimize(
+          "FIELD_INTEGER IS DISTINCT FROM FIELD_INTEGER_ZERO"
+              + " AND FIELD_INTEGER_ZERO IS DISTINCT FROM FIELD_INTEGER",
+          "FIELD_INTEGER IS DISTINCT FROM FIELD_INTEGER_ZERO");
       optimizeFalse("NULL IS DISTINCT FROM NULL");
       optimizeTrue("NULL IS DISTINCT FROM TRUE");
       optimizeTrue("NULL IS DISTINCT FROM 3");
@@ -2079,6 +2095,10 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testOptimize() throws Exception {
       optimize("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE");
+      // The operands of a symmetrical operator are in a normal order, a duplicate is recognized
+      optimize(
+          "FIELD_INTEGER IS NOT DISTINCT FROM 1 OR 1 IS NOT DISTINCT FROM FIELD_INTEGER",
+          "FIELD_INTEGER IS NOT DISTINCT FROM 1");
       optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
       optimizeFalse("NULL IS NOT DISTINCT FROM TRUE");
       optimizeFalse("10151082135029368 IS NOT DISTINCT FROM 10151082135029369");
