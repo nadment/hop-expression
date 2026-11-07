@@ -150,6 +150,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("NullIf(1,2)", 1L);
     evalEquals("NullIf('TEST','XXX')", "TEST");
     evalEquals("NullIf(DATE '2019-01-01',DATE '2018-12-31')", LocalDate.of(2019, Month.JANUARY, 1));
+    // Nullable even if no operand is nullable, IS NULL must not be simplified to FALSE
+    evalTrue("NullIf(FIELD_INTEGER IS NULL, FIELD_STRING IS NULL) IS NULL");
 
     // Check operands
     evalFails("NullIf()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

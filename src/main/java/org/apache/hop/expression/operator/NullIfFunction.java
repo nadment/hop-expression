@@ -41,8 +41,8 @@ public class NullIfFunction extends Function {
   public NullIfFunction() {
     super(
         "NULLIF",
-        // The result is NULL when the two expressions are equal
-        ReturnTypes.ARG0.andThen(TypeTransforms.TO_NULLABLE),
+        // The result is NULL when the two expressions are equal, even if neither is nullable
+        ReturnTypes.ARG0.andThen(TypeTransforms.FORCE_NULLABLE),
         OperandTypes.SAME_SAME,
         OperatorCategory.CONDITIONAL,
         "/docs/hop-user-manual/expression/nullif.html");
