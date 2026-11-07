@@ -108,8 +108,9 @@ public class SubtractOperator extends BinaryOperator {
       return new Call(AddOperator.INSTANCE, left, call(right).getOperand(0));
     }
 
-    // Optimize data type
-    if (Types.isInteger(call.getType())) {
+    // Optimize data type, derived from the compiled operands: the type of the call was inferred
+    // before its operands were simplified, like CASE ... THEN 1%NULL ELSE 3 END to the integer 3
+    if (Types.isInteger(ReturnTypes.deriveAdditiveType(left.getType(), right.getType()))) {
       return new Call(IntegerSubtractOperator.INSTANCE, call.getOperands());
     }
 

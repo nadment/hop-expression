@@ -2270,6 +2270,8 @@ public class OperatorTest extends ExpressionTest {
       evalNull("5-NULL_INTEGER").returnType(IntegerType.of(19));
       evalNull("NULL_INTEGER-5");
       evalNull("NULL-NULL");
+      // The data type is derived from the compiled operands, the CASE is simplified to an integer
+      evalEquals("CASE CAST(1.5 AS INTEGER) WHEN 0 THEN 1%NULL ELSE 2+1 END - 2", 1L);
 
       // Arithmetic overflow Long.MIN_VALUE-2
       evalFails("-9223372036854775807::INTEGER-2::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
