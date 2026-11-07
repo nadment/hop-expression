@@ -79,11 +79,8 @@ public class NotEqualOperator extends BinaryOperator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Normalize
+    // Normalize, the operands are swapped but the operator is kept
     call = normalizeSymmetricalPredicate(call);
-
-    // If the operator has been changed
-    if (!call.getOperator().equals(this)) return call;
 
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);

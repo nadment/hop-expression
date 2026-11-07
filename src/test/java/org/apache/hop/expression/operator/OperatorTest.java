@@ -535,6 +535,8 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FIELD_BOOLEAN_TRUE<=FALSE");
       optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
       optimize("FALSE <= FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE IS NOT NULL");
+      // A boolean expression is not moved to the left, like a field
+      optimize("FALSE <= (NOT FIELD_BOOLEAN_TRUE)", "NOT(FIELD_BOOLEAN_TRUE) IS NOT NULL");
 
       // Simplify arithmetic comparisons
       optimize("3<=FIELD_INTEGER+1", "FIELD_INTEGER>=2");
