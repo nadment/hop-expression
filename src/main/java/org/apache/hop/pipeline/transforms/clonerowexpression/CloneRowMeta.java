@@ -162,121 +162,71 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
       IRowMeta info,
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
-    CheckResult cr;
 
+    // Only the errors and the warnings are reported, a valid setting gives no remark
     if (Utils.isEmpty(nrClones)) {
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing"),
-              transformMeta);
+      remarks.add(error(transformMeta, "CloneRowMeta.CheckResult.NrClonesdMissing"));
     } else {
-      cr = checkNrClones(transformMeta, prev, variables);
-    }
-    remarks.add(cr);
-
-    if (addCloneFlag) {
-      if (Utils.isEmpty(cloneFlagField)) {
-        cr =
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_ERROR,
-                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"),
-                transformMeta);
-      } else {
-        // The name of an output field, not an expression
-        cr =
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_OK,
-                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"),
-                transformMeta);
-      }
-      remarks.add(cr);
+      checkNrClones(remarks, transformMeta, prev, variables);
     }
 
-    if (addCloneNum) {
-      if (Utils.isEmpty(cloneNumField)) {
-        cr =
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_ERROR,
-                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"),
-                transformMeta);
-      } else {
-        // The name of an output field, not an expression
-        cr =
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_OK,
-                BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"),
-                transformMeta);
-      }
-      remarks.add(cr);
+    // The names of the output fields, not expressions
+    if (addCloneFlag && Utils.isEmpty(cloneFlagField)) {
+      remarks.add(error(transformMeta, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"));
+    }
+    if (addCloneNum && Utils.isEmpty(cloneNumField)) {
+      remarks.add(error(transformMeta, "CloneRowMeta.CheckResult.CloneNumFieldMissing"));
     }
 
     if (prev == null || prev.isEmpty()) {
-      cr =
+      remarks.add(
           new CheckResult(
               ICheckResult.TYPE_RESULT_WARNING,
               BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NotReceivingFields"),
-              transformMeta);
-    } else {
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG, "CloneRowMeta.CheckResult.TransformRecevingData", prev.size() + ""),
-              transformMeta);
+              transformMeta));
     }
-    remarks.add(cr);
 
     // See if we have input streams leading to this transform!
-    if (input.length > 0) {
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.TransformRecevingData2"),
-              transformMeta);
-    } else {
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(
-                  PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
-              transformMeta);
+    if (input.length == 0) {
+      remarks.add(
+          error(transformMeta, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherTransforms"));
     }
-    remarks.add(cr);
+  }
+
+  /** Returns an error of the check with a message of this transform. */
+  private static CheckResult error(TransformMeta transformMeta, String key, Object... values) {
+    return new CheckResult(
+        ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, key, values), transformMeta);
   }
 
   /**
    * Checks that the expression of the number of clones is valid and gives an integer. The fields of
    * the input stream are required to compile the expression, without them it is not checked.
    *
+   * @param remarks the remarks to add an error to
    * @param transformMeta the transform to check
    * @param prev the fields of the input stream, or {@code null} if unknown
    * @param variables the variables to resolve in the expression
-   * @return the result of the check
    */
-  private CheckResult checkNrClones(
-      TransformMeta transformMeta, IRowMeta prev, IVariables variables) {
-    if (prev != null) {
-      try {
-        RowExpressionContext context = new RowExpressionContext(variables, prev);
-        IExpression expression = IExpression.of(context, variables.resolve(nrClones));
-
-        // A number is not coerced to an integer, it could lose its decimal part
-        TypeName typeName = expression.getType().getName();
-        if (!typeName.isCoercible(TypeName.INTEGER)) {
-          return new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesNotInteger", typeName),
-              transformMeta);
-        }
-      } catch (ExpressionException e) {
-        return new CheckResult(ICheckResult.TYPE_RESULT_ERROR, e.getMessage(), transformMeta);
-      }
+  private void checkNrClones(
+      List<ICheckResult> remarks,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      IVariables variables) {
+    if (prev == null) {
+      return;
     }
+    try {
+      RowExpressionContext context = new RowExpressionContext(variables, prev);
+      IExpression expression = IExpression.of(context, variables.resolve(nrClones));
 
-    return new CheckResult(
-        ICheckResult.TYPE_RESULT_OK,
-        BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"),
-        transformMeta);
+      // A number is not coerced to an integer, it could lose its decimal part
+      TypeName typeName = expression.getType().getName();
+      if (!typeName.isCoercible(TypeName.INTEGER)) {
+        remarks.add(error(transformMeta, "CloneRowMeta.CheckResult.NrClonesNotInteger", typeName));
+      }
+    } catch (ExpressionException e) {
+      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR, e.getMessage(), transformMeta));
+    }
   }
 }

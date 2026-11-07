@@ -92,6 +92,30 @@ class CloneRowMetaTest {
   }
 
   @Test
+  void checkValidSettingGivesNoRemark() {
+    // Only the errors and the warnings are reported
+    CloneRowMeta meta = new CloneRowMeta();
+    meta.setNrClones("COUNT");
+    meta.setAddCloneFlag(true);
+    meta.setCloneFlagField("FLAG");
+    meta.setAddCloneNum(true);
+    meta.setCloneNumField("NUM");
+
+    List<ICheckResult> remarks = new ArrayList<>();
+    meta.check(
+        remarks,
+        null,
+        null,
+        inputFields(),
+        new String[] {"input"},
+        null,
+        null,
+        new Variables(),
+        null);
+    assertEquals(List.of(), remarks);
+  }
+
+  @Test
   void checkNrClonesWithoutInputFields() {
     // Without the fields of the input stream, the expression is not checked
     assertEquals(List.of(), checkErrors("UNKNOWN_FIELD", null));
