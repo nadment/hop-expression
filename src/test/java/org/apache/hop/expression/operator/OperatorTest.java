@@ -1028,6 +1028,14 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("true OR FIELD_BOOLEAN_TRUE");
       evalTrue("NULL_BOOLEAN OR true");
       evalTrue("FIELD_BOOLEAN_TRUE OR false");
+      // FALSE is removed among more than two predicates without changing the queue while iterating,
+      // here FALSE joins the chain of an inner OR already compiled
+      optimize(
+          "FALSE OR (FIELD_BOOLEAN_FALSE OR FIELD_BOOLEAN_TRUE)",
+          "FIELD_BOOLEAN_FALSE OR FIELD_BOOLEAN_TRUE");
+      optimize(
+          "(FIELD_BOOLEAN_FALSE OR FIELD_BOOLEAN_TRUE) OR 1=2",
+          "FIELD_BOOLEAN_FALSE OR FIELD_BOOLEAN_TRUE");
     }
 
     @Test

@@ -87,17 +87,18 @@ public class BoolOrOperator extends BinaryOperator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(call.getChainedOperands(false));
 
+    // Simplify x OR FALSE → x, removed before the loop to not change the queue while iterating it
+    predicates.removeIf(Literal.FALSE::equals);
+    if (predicates.isEmpty()) {
+      return Literal.FALSE;
+    }
+
     final Disjunction disjunction = new Disjunction(predicates);
     for (IExpression predicate : predicates) {
 
       // TRUE as soon as any predicate is TRUE
       if (predicate == Literal.TRUE) {
         return Literal.TRUE;
-      }
-
-      // Simplify x OR FALSE → x
-      if (predicate == Literal.FALSE && predicates.size() > 1) {
-        predicates.remove(predicate);
       }
 
       disjunction.add(predicate);
