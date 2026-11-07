@@ -24,6 +24,8 @@ Returns the population variance of the non-null values over a group of rows.
 VARIANCE_POP( expression )
 ----
 
+The `VAR_POP` function is an alias.
+
 == Returns
 
 Number

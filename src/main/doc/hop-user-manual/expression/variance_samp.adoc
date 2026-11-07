@@ -24,6 +24,8 @@ Returns the sample variance of the non-null values over a group of rows.
 VARIANCE_SAMP( expression )
 ----
 
+The `VAR_SAMP` function is an alias.
+
 == Returns
 
 Number

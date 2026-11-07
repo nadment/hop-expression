@@ -24,6 +24,8 @@ Returns the sample standard deviation (square root of the sample variance) of th
 STDDEV_SAMP( expression )
 ----
 
+The `STDDEV` function is an alias.
+
 == Returns
 
 Number
