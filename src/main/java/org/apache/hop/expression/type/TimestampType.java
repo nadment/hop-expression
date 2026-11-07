@@ -24,6 +24,7 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.FractionalSeconds;
 import org.apache.hop.expression.util.StringConversion;
 import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
@@ -120,7 +121,7 @@ public final class TimestampType extends Type {
 
   /**
    * Convert a value to a TIMESTAMP with a pattern. A string or a date without time zone is in the
-   * system time zone.
+   * system time zone. The fractional seconds are rounded to the precision of the type.
    *
    * @param value the value to convert, a date-time, a string or an epoch time value
    * @param pattern the optional pattern of a string, or null for the ISO formats
@@ -129,6 +130,11 @@ public final class TimestampType extends Type {
   @Override
   public @Nullable ZonedDateTime cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
+    return FractionalSeconds.round(convert(value, pattern), precision);
+  }
+
+  private @Nullable ZonedDateTime convert(
+      final @Nullable Object value, final @Nullable String pattern) throws ExpressionException {
     return switch (value) {
       case null -> null;
       case ZonedDateTime datetime -> datetime;

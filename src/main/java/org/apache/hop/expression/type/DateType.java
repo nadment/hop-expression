@@ -24,6 +24,7 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.FractionalSeconds;
 import org.apache.hop.expression.util.IntegerConversion;
 import org.apache.hop.expression.util.NumberConversion;
 import org.apache.hop.expression.util.StringConversion;
@@ -122,7 +123,7 @@ public final class DateType extends Type {
 
   /**
    * Convert a value to the specified type {@link DateType} with a pattern. A date with time zone
-   * keeps its local date and time.
+   * keeps its local date and time. The fractional seconds are rounded to the precision of the type.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when the value is date or
@@ -132,6 +133,11 @@ public final class DateType extends Type {
   @Override
   public @Nullable LocalDateTime cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
+    return FractionalSeconds.round(convert(value, pattern), precision);
+  }
+
+  private @Nullable LocalDateTime convert(
+      final @Nullable Object value, final @Nullable String pattern) throws ExpressionException {
     return switch (value) {
       case null -> null;
       case LocalDateTime datetime -> datetime;

@@ -3686,6 +3686,18 @@ public class OperatorTest extends ExpressionTest {
 
       // Remove lossless cast
       optimize("Cast(FIELD_DATE as DATE)", "FIELD_DATE");
+
+      // The fractional seconds are rounded to the precision, halfway values away from zero
+      evalEquals(
+              "CAST(DATE '2020-05-25' + INTERVAL '00:00:01.5' HOUR TO SECOND AS DATE(0))",
+              LocalDateTime.of(2020, 5, 25, 0, 0, 2))
+          .returnType(DateType.of(0, false));
+      evalEquals(
+          "CAST(TIMESTAMP '2020-05-25 23:59:59.9996 +05:00' AS DATE(3))",
+          LocalDateTime.of(2020, 5, 26, 0, 0, 0));
+      evalEquals(
+          "CAST('2020-05-25 20:48:00.123456' AS DATE(3) FORMAT 'YYYY-MM-DD HH24:MI:SS.FF6')",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0, 123_000_000));
       optimize("'2021-02-08'::DATE", "DATE '2021-02-08'");
     }
 
@@ -3733,6 +3745,49 @@ public class OperatorTest extends ExpressionTest {
           "CAST(FIELD_INTEGER AS TIMESTAMP)",
           ZonedDateTime.of(1970, 1, 1, 0, 0, 40, 0, ZoneOffset.UTC));
       evalFails("CAST(FIELD_BOOLEAN_TRUE AS TIMESTAMP)", ErrorCode.UNSUPPORTED_CONVERSION);
+
+      // The fractional seconds are rounded to the precision, halfway values away from zero
+      evalEquals(
+              "CAST(TIMESTAMP '2020-05-25 20:48:00.123456789' AS TIMESTAMP(3))",
+              LocalDateTime.of(2020, 5, 25, 20, 48, 0, 123_000_000))
+          .returnType(TimestampType.of(3, false));
+      evalEquals(
+          "CAST(TIMESTAMP '2020-05-25 20:48:00.6' AS TIMESTAMP(0))",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 1));
+      evalEquals(
+          "CAST(TIMESTAMP '2020-05-25 20:48:00.0005' AS TIMESTAMP(3))",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0, 1_000_000));
+      // The rounding can give the next day, the time zone is kept
+      evalEquals(
+          "CAST(TIMESTAMP '2020-05-25 23:59:59.5 +05:00' AS TIMESTAMP(0))",
+          ZonedDateTime.of(2020, 5, 26, 0, 0, 0, 0, ZoneOffset.ofHours(5)));
+      // From a string, a date or a number
+      evalEquals(
+          "CAST('2020-05-25 20:48:00.123456' AS TIMESTAMP(3))",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0, 123_000_000));
+      evalEquals(
+          "CAST(DATE '2020-05-25' + INTERVAL '00:00:01.5' HOUR TO SECOND AS TIMESTAMP(0))",
+          LocalDateTime.of(2020, 5, 25, 0, 0, 2));
+      evalEquals(
+          "CAST(1.5 AS TIMESTAMP(0))", ZonedDateTime.of(1970, 1, 1, 0, 0, 2, 0, ZoneOffset.UTC));
+      // With a format, the precision is applied after the conversion
+      evalEquals(
+          "CAST('2020-05-25 20:48:00.123456' AS TIMESTAMP(3) FORMAT 'YYYY-MM-DD HH24:MI:SS.FF6')",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0, 123_000_000));
+      optimize(
+          "CAST(FIELD_STRING AS TIMESTAMP(3) FORMAT 'YYYY-MM-DD HH24:MI:SS.FF6')",
+          "CAST(FIELD_STRING AS TIMESTAMP(3) FORMAT 'YYYY-MM-DD HH24:MI:SS.FF6')");
+      // The default precision keeps the nanoseconds
+      evalEquals(
+          "CAST(TIMESTAMP '2020-05-25 20:48:00.123456789' AS TIMESTAMP(9))",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0, 123_456_789));
+      // A smaller precision is kept, and rounded twice a value can differ from rounded once: a
+      // chained cast is kept
+      optimize("CAST(FIELD_TIMESTAMP AS TIMESTAMP(3))");
+      optimize("CAST(CAST(FIELD_TIMESTAMP AS TIMESTAMP(6)) AS TIMESTAMP(3))");
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2020-05-25 20:48:00.0004996' AS TIMESTAMP(6)) AS TIMESTAMP(3))",
+          LocalDateTime.of(2020, 5, 25, 20, 48, 0, 1_000_000));
     }
 
     @Test
@@ -3776,6 +3831,26 @@ public class OperatorTest extends ExpressionTest {
       evalFails("CAST('5 yea' as INTERVAL)", ErrorCode.INVALID_INTERVAL);
       evalFails("CAST(3 as INTERVAL)", ErrorCode.UNSUPPORTED_CONVERSION);
       evalFails("CAST(TRUE as INTERVAL)", ErrorCode.UNSUPPORTED_CONVERSION);
+
+      // The fractional seconds are rounded to the precision, halfway values away from zero
+      evalEquals(
+              "CAST(INTERVAL '00:00:01.123456789' HOUR TO SECOND AS INTERVAL(3))",
+              Interval.of(0, 0, 0, 0, 0, 1, 123_000_000))
+          .returnType(IntervalType.of(3, false));
+      evalEquals(
+          "CAST(INTERVAL '00:00:01.5' HOUR TO SECOND AS INTERVAL(0))",
+          Interval.of(0, 0, 0, 0, 0, 2));
+      evalEquals(
+          "CAST(-INTERVAL '00:00:01.5' HOUR TO SECOND AS INTERVAL(0))",
+          Interval.of(0, 0, 0, 0, 0, 2).negate());
+      // The rounding carries to the next second and minute
+      evalEquals(
+          "CAST(INTERVAL '00:00:59.9996' HOUR TO SECOND AS INTERVAL(3))",
+          Interval.of(0, 0, 0, 0, 1, 0));
+      // The default precision keeps the nanoseconds
+      evalEquals(
+          "CAST(INTERVAL '00:00:01.123456789' HOUR TO SECOND AS INTERVAL(9))",
+          Interval.of(0, 0, 0, 0, 0, 1, 123_456_789));
     }
 
     @Test

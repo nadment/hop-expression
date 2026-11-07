@@ -41,6 +41,7 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.FractionalSeconds;
 import org.apache.hop.expression.util.NumberFormat;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -169,8 +170,11 @@ public class CastFunction extends Function {
         Type toType = call.getType();
         Type fromType = call.getOperand(0).getType();
         // The inner cast must not have a format, and must not overflow where the outer cast does
-        // not: its integer part must have at least as many digits
+        // not: its integer part must have at least as many digits. The fractional seconds of a
+        // date or an interval are rounded, rounded twice they can differ from rounded once.
         if (call(call.getOperand(0)).getOperandCount() == 2
+            && !Types.isTemporal(toType)
+            && !toType.isName(TypeName.INTERVAL)
             && Types.isLosslessCast(toType, fromType)
             && fromType.getPrecision() - Math.max(fromType.getScale(), 0)
                 >= toType.getPrecision() - Math.max(toType.getScale(), 0)) {
@@ -230,7 +234,8 @@ public class CastFunction extends Function {
    * year of the context, like with the conversion functions.
    *
    * <p>A cast to a number is not replaced by TO_NUMBER, which does not round the value to the scale
-   * nor check the precision of the type.
+   * nor check the precision of the type. Neither is a cast to a date or a timestamp with a
+   * precision of the fractional seconds, the conversion functions keep the 9 digits.
    *
    * @param call the call to CAST or TRY_CAST
    * @return {@link ToDateFunction} or {@link ToTimestampFunction}, or {@code null} if the cast has
@@ -239,7 +244,8 @@ public class CastFunction extends Function {
   static @Nullable Function findConversionFunction(final Call call) {
     if (call.getOperandCount() != 3
         || !Types.isString(call.getOperand(0).getType())
-        || !call.getOperand(2).isConstant()) {
+        || !call.getOperand(2).isConstant()
+        || call.getType().getPrecision() != FractionalSeconds.MAX_PRECISION) {
       return null;
     }
     if (call.getType().isName(TypeName.DATE)) {

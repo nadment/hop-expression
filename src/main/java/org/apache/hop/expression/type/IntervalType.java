@@ -103,17 +103,27 @@ public final class IntervalType extends Type {
     return cast(value, null);
   }
 
+  /** {@inheritDoc} The fractional seconds are rounded to the precision of the type. */
   @Override
   public @Nullable Interval cast(final @Nullable Object value, final @Nullable String pattern)
       throws ExpressionException {
-    return switch (value) {
-      case null -> null;
-      case Interval interval -> interval;
-      case String str -> Interval.of(str);
-      default ->
-          throw new ExpressionException(
-              ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
-    };
+    Interval interval =
+        switch (value) {
+          case null -> null;
+          case Interval i -> i;
+          case String str -> Interval.of(str);
+          default ->
+              throw new ExpressionException(
+                  ErrorCode.UNSUPPORTED_CONVERSION, value, TypeName.fromValue(value), this);
+        };
+    if (interval == null) {
+      return null;
+    }
+    try {
+      return interval.round(precision);
+    } catch (ArithmeticException e) {
+      throw new ExpressionException(ErrorCode.INTERVAL_OVERFLOW, "CAST");
+    }
   }
 
   @Override

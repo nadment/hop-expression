@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.util.Characters;
+import org.apache.hop.expression.util.FractionalSeconds;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -1025,6 +1026,23 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public Interval subtract(final Interval interval) {
     return add(interval.negate());
+  }
+
+  /**
+   * Rounds the fractional seconds of this interval to a precision, halfway values away from zero. A
+   * rounded value can carry to the next second, for example {@code 59.9996} seconds to the
+   * precision 3 gives 1 minute.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9
+   * @return the rounded interval
+   * @throws ArithmeticException if the seconds overflow
+   */
+  public Interval round(final int precision) {
+    long rounded = FractionalSeconds.round(nanos, precision);
+    if (rounded == nanos) {
+      return this;
+    }
+    return ofSigned(months, days, seconds, rounded);
   }
 
   /**
