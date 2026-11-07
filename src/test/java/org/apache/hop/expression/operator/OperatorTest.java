@@ -3419,14 +3419,18 @@ public class OperatorTest extends ExpressionTest {
           "CAST(FIELD_STRING AS STRING(20))");
       optimize("CAST(FIELD_STRING AS STRING(1000))", "FIELD_STRING");
 
-      // Don't remove a lossy cast, a narrower inner cast or a cast that reduces the scale
+      // Don't remove a lossy cast, a narrower inner cast or a cast that reduces the scale, but the
+      // loss-less outer cast of a narrower inner cast is removed
       optimize(
           "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))",
-          "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))");
+          "CAST(FIELD_INTEGER AS INTEGER(5))");
       optimize("CAST(FIELD_NUMBER AS NUMBER(12,5))", "CAST(FIELD_NUMBER AS NUMBER(12,5))");
       optimize(
           "CAST(CAST(FIELD_STRING AS STRING(10)) AS STRING(100))",
-          "CAST(CAST(FIELD_STRING AS STRING(10)) AS STRING(100))");
+          "CAST(FIELD_STRING AS STRING(10))");
+      optimize(
+          "CAST(CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)) AS TIMESTAMP)",
+          "CAST(FIELD_TIMESTAMP AS TIMESTAMP(3))");
 
       // Don't remove an inner cast with a format, it is a conversion with the format and the outer
       // cast to the same type is removed

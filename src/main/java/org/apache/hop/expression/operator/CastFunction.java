@@ -196,8 +196,9 @@ public class CastFunction extends Function {
         }
       }
 
-      // Remove loss-less cast
-      else if (Types.isLosslessCast(call.getOperand(0).getType(), call.getType())) {
+      // Remove loss-less cast, also of an inner cast that is not removed:
+      // CAST(CAST(x AS INTEGER(5)) AS INTEGER(10)) → CAST(x AS INTEGER(5))
+      if (Types.isLosslessCast(call.getOperand(0).getType(), call.getType())) {
         return call.getOperand(0);
       }
 
