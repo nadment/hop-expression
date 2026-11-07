@@ -17,12 +17,17 @@
 package org.apache.hop.expression.operator;
 
 import java.math.BigDecimal;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
@@ -39,6 +44,15 @@ public class ZeroIfNullFunction extends Function {
         OperandTypes.NUMERIC,
         OperatorCategory.CONDITIONAL,
         "/docs/hop-user-manual/expression/zeroifnull.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Simplify ZEROIFNULL(NULL) → 0, an integer, the NULL literal has no numeric type to keep
+    if (call.getOperand(0).getType().isName(TypeName.UNKNOWN)) {
+      return Literal.ZERO;
+    }
+    return call;
   }
 
   @Override

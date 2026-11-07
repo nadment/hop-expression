@@ -179,6 +179,9 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("ZeroIfNull(1)", 1L);
     evalEquals("ZeroIfNull(1.1)", 1.1D);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
+    // The NULL literal has no numeric type, the result is an integer
+    evalEquals("ZeroIfNull(NULL)", 0L).returnType(IntegerType.of(1, false));
+    evalEquals("ZeroIfNull(NULL) * FIELD_INTEGER", 0L);
 
     // The result has the data type of the argument and is never null
     evalEquals("ZeroIfNull(FIELD_INTEGER)", 40L).returnType(IntegerType.of(12, false));
