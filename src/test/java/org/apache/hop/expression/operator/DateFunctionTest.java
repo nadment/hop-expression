@@ -643,6 +643,39 @@ class DateFunctionTest extends ExpressionTest {
             "First_Day(TIMESTAMP '2020-05-25 20:48:00 +05:00', MONTH)", timestamp.withDayOfMonth(1))
         .returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals("Next_Day(TIMESTAMP '2020-05-25 20:48:00 +05:00', 'friday')", timestamp.plusDays(4));
+
+    // A function that adds whole units or truncates keeps the precision of the fractional seconds
+    evalEquals(
+            "Add_Days(CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)), 1)",
+            LocalDateTime.of(2023, 3, 1, 22, 11, 1))
+        .returnType(TimestampType.of(3));
+    evalEquals(
+            "Add_Hours(CAST(FIELD_TIMESTAMP AS DATE(0)), 2)",
+            LocalDateTime.of(2023, 3, 1, 0, 11, 1))
+        .returnType(DateType.of(0));
+    evalEquals(
+            "Date_Add(MINUTE, 1, CAST(FIELD_TIMESTAMP AS DATE(0)))",
+            LocalDateTime.of(2023, 2, 28, 22, 12, 1))
+        .returnType(DateType.of(0));
+    evalEquals(
+            "Date_Trunc(HOUR, CAST(FIELD_TIMESTAMP AS TIMESTAMP(3)))",
+            LocalDateTime.of(2023, 2, 28, 22, 0, 0))
+        .returnType(TimestampType.of(3));
+    evalEquals(
+            "First_Day(CAST(FIELD_TIMESTAMP AS DATE(0)))", LocalDateTime.of(2023, 2, 1, 22, 11, 1))
+        .returnType(DateType.of(0));
+    // Added nanoseconds can have more digits than the date, the result has 9 digits
+    evalEquals(
+            "Add_Nanoseconds(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)), 5)",
+            LocalDateTime.of(2023, 2, 28, 22, 11, 1, 5))
+        .returnType(TimestampType.TIMESTAMP);
+    // A cast to the same precision is loss-less and removed, not after nanoseconds are added
+    optimize(
+        "CAST(Add_Days(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)), 1) AS TIMESTAMP(0))",
+        "ADD_DAYS(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)),1)");
+    optimize(
+        "CAST(Add_Nanoseconds(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)), 5) AS TIMESTAMP(0))",
+        "CAST(ADD_NANOSECONDS(CAST(FIELD_TIMESTAMP AS TIMESTAMP(0)),5) AS TIMESTAMP(0))");
   }
 
   @Test

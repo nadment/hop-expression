@@ -42,7 +42,7 @@ public class AddNanosecondsFunction extends Function {
   public AddNanosecondsFunction() {
     super(
         "ADD_NANOSECONDS",
-        ReturnTypes.TEMPORAL_NULLABLE,
+        ReturnTypes.TEMPORAL_NANOSECONDS_NULLABLE,
         OperandTypes.DATE_INTEGER,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/add_nanoseconds.html");

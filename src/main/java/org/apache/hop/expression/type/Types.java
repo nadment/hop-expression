@@ -531,7 +531,20 @@ public final class Types {
    * @return the type with the greater precision
    */
   public static Type withGreaterFractionalPrecision(Type type, Type other, boolean nullable) {
-    int precision = Math.max(type.getPrecision(), other.getPrecision());
+    return withFractionalPrecision(
+        type, Math.max(type.getPrecision(), other.getPrecision()), nullable);
+  }
+
+  /**
+   * Returns a DATE, TIMESTAMP or INTERVAL type, the type of a value with fractional seconds, with a
+   * precision of the fractional seconds.
+   *
+   * @param type the DATE, TIMESTAMP or INTERVAL type of the result
+   * @param precision the number of digits of the fractional seconds, from 0 to 9
+   * @param nullable whether the result allows null values
+   * @return the type with the precision
+   */
+  public static Type withFractionalPrecision(Type type, int precision, boolean nullable) {
     return switch (type.getName()) {
       case DATE -> DateType.of(precision, nullable);
       case TIMESTAMP -> TimestampType.of(precision, nullable);

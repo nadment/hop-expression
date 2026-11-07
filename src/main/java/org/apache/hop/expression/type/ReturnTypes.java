@@ -92,19 +92,32 @@ public final class ReturnTypes {
 
   /**
    * Type-inference strategy of a function that adjusts a date: the result type is TIMESTAMP if an
-   * operand is a TIMESTAMP, otherwise DATE, nullable if an operand is nullable.
+   * operand is a TIMESTAMP, otherwise DATE, nullable if an operand is nullable. The function adds
+   * whole units or truncates, it keeps the precision of the fractional seconds of the date.
    */
   public static final IReturnTypeInference TEMPORAL_NULLABLE =
       ((IReturnTypeInference)
               call -> {
+                Type result = null;
                 for (IExpression operand : call.getOperands()) {
-                  if (operand.getType().isName(TypeName.TIMESTAMP)) {
-                    return TimestampType.TIMESTAMP;
+                  if (Types.isTemporal(operand.getType())) {
+                    result = Types.getLeastRestrictive(result, operand.getType());
                   }
                 }
-                return DateType.DATE;
+                return (result == null) ? DateType.DATE : result;
               })
           .andThen(TypeTransforms.TO_NULLABLE);
+
+  /**
+   * Type-inference strategy of a function that adds nanoseconds to a date, like {@link
+   * #TEMPORAL_NULLABLE} but the fractional seconds have 9 digits, the added nanoseconds can have
+   * more digits than the date.
+   */
+  public static final IReturnTypeInference TEMPORAL_NANOSECONDS_NULLABLE =
+      TEMPORAL_NULLABLE.andThen(
+          (call, type) ->
+              Types.withFractionalPrecision(
+                  type, TypeName.TIMESTAMP.getMaxPrecision(), type.isNullable()));
 
   /** Type-inference strategy whereby the result type of the call is JSON. */
   public static final IReturnTypeInference JSON_NULLABLE =
