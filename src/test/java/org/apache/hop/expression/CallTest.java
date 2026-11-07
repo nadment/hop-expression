@@ -23,7 +23,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import org.apache.hop.expression.operator.AddOperator;
+import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.InListOperator;
+import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -32,6 +34,24 @@ import org.apache.hop.expression.type.UnknownType;
 import org.junit.jupiter.api.Test;
 
 class CallTest extends ExpressionTest {
+
+  @Test
+  void swapAndReverseKeepTheTypeAndThePosition() {
+    // A comparison with a nullable number is a nullable boolean once its type is inferred
+    Call call = new Call(7, GreaterThanOperator.INSTANCE, Literal.of(3), Literal.NULL_NUMBER);
+    call.inferReturnType();
+
+    Call swapped = call.swap();
+    assertEquals(call.getType(), swapped.getType());
+    assertEquals(7, swapped.getPosition());
+    assertEquals(call.getOperand(0), swapped.getOperand(1));
+
+    // 3 > x → x < 3
+    Call reversed = call.reverse();
+    assertEquals(LessThanOperator.INSTANCE, reversed.getOperator());
+    assertEquals(call.getType(), reversed.getType());
+    assertEquals(7, reversed.getPosition());
+  }
 
   @Test
   void testCall() {

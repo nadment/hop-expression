@@ -236,7 +236,7 @@ public class Call implements IExpression {
     if (reversedOperator == null) {
       throw new ExpressionException(ErrorCode.INTERNAL_ERROR, "Operator is not reversible");
     }
-    return new Call(reversedOperator, getOperand(1), getOperand(0));
+    return withSameType(new Call(position, reversedOperator, getOperand(1), getOperand(0)));
   }
 
   /**
@@ -245,7 +245,13 @@ public class Call implements IExpression {
    * @return call
    */
   protected Call swap() {
-    return new Call(operator, getOperand(1), getOperand(0));
+    return withSameType(new Call(position, operator, getOperand(1), getOperand(0)));
+  }
+
+  /** Gives the type of this call to a call with the same operands in another order. */
+  private Call withSameType(Call call) {
+    call.type = type;
+    return call;
   }
 
   public Deque<IExpression> getChainedOperands(boolean allowDuplicate) {
