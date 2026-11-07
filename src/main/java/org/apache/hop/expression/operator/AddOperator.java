@@ -134,8 +134,8 @@ public class AddOperator extends BinaryOperator {
       return new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0));
     }
 
-    // Optimize data type
-    if (Types.isInteger(call.getType())) {
+    // Optimize data type, derived from the compiled operands like SUBTRACT and MULTIPLY
+    if (Types.isInteger(ReturnTypes.deriveAdditiveType(left.getType(), right.getType()))) {
       return new Call(IntegerAddOperator.INSTANCE, call.getOperands());
     }
 
