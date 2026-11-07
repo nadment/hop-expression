@@ -772,6 +772,7 @@ public class OperatorTest extends ExpressionTest {
       // A null operand has priority over the division by zero
       evalNull("NULL_INTEGER/0");
       evalNull("NULL_INTEGER/0.0");
+      evalNull("NULL/NULL");
     }
 
     @Test
@@ -2117,6 +2118,9 @@ public class OperatorTest extends ExpressionTest {
       evalNull("5+NULL_INTEGER+5");
       evalNull("+NULL_INTEGER+5");
       evalNull("NULL_INTEGER+NULL_NUMBER");
+      // The NULL literal has no precision, the result has the type of the other operand
+      evalNull("NULL+NULL");
+      evalNull("NULL+1").returnType(IntegerType.of(1));
 
       // Arithmetic overflow Long.MAX_VALUE+1
       evalFails("9223372036854775807::INTEGER+1::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -2265,6 +2269,7 @@ public class OperatorTest extends ExpressionTest {
 
       evalNull("5-NULL_INTEGER").returnType(IntegerType.of(19));
       evalNull("NULL_INTEGER-5");
+      evalNull("NULL-NULL");
 
       // Arithmetic overflow Long.MIN_VALUE-2
       evalFails("-9223372036854775807::INTEGER-2::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -2479,6 +2484,10 @@ public class OperatorTest extends ExpressionTest {
       evalNull("FIELD_STRING_INTEGER::INTEGER*NULL_INTEGER");
       evalNull("NULL_NUMBER*3.12");
       evalNull("3.12*NULL_NUMBER");
+      // The NULL literal has no precision, the result has the type of the other operand
+      evalNull("NULL*5");
+      evalNull("NULL*NULL");
+      evalNull("(NULL*5)-0");
     }
 
     @Test

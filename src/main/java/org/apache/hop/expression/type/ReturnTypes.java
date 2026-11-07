@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A collection of reusable strategies to infer the return type of an operator call.
@@ -477,6 +478,11 @@ public final class ReturnTypes {
    * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveAdditiveType(final Type type1, final Type type2) {
+    Type typeWithNull = deriveTypeWithNull(type1, type2);
+    if (typeWithNull != null) {
+      return typeWithNull;
+    }
+
     boolean nullable = type1.isNullable() || type2.isNullable();
 
     // A date keeps its type, with or without time zone
@@ -522,6 +528,25 @@ public final class ReturnTypes {
   }
 
   /**
+   * Derives the type of an arithmetic operation with the NULL literal, which has no precision and
+   * would give an invalid precision: the result is NULL, with the type of the other operand.
+   *
+   * @param type1 the type of the first operand
+   * @param type2 the type of the second operand
+   * @return the type of the other operand made nullable, or {@code null} if no operand is the NULL
+   *     literal
+   */
+  private static @Nullable Type deriveTypeWithNull(final Type type1, final Type type2) {
+    if (type1.isName(TypeName.UNKNOWN)) {
+      return type2.withNullability(true);
+    }
+    if (type2.isName(TypeName.UNKNOWN)) {
+      return type1.withNullability(true);
+    }
+    return null;
+  }
+
+  /**
    * Calculate return type precision and scale for x * y
    *
    * <ul>
@@ -543,6 +568,11 @@ public final class ReturnTypes {
    * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveMultiplyType(final Type type1, final Type type2) {
+    Type typeWithNull = deriveTypeWithNull(type1, type2);
+    if (typeWithNull != null) {
+      return typeWithNull;
+    }
+
     boolean nullable = type1.isNullable() || type2.isNullable();
 
     if (Types.isString(type1) || Types.isString(type2)) {
@@ -598,8 +628,11 @@ public final class ReturnTypes {
   public static Type deriveDivideType(final Type type1, final Type type2) {
     boolean nullable = type1.isNullable() || type2.isNullable();
 
-    // A NUMBER without fixed scale gives a NUMBER without fixed scale
-    if (Types.isString(type1)
+    // A NUMBER without fixed scale gives a NUMBER without fixed scale, also with NULL which has no
+    // precision, NULL / NULL would otherwise have a scale greater than the precision
+    if (type1.isName(TypeName.UNKNOWN)
+        || type2.isName(TypeName.UNKNOWN)
+        || Types.isString(type1)
         || Types.isString(type2)
         || Types.hasVariableScale(type1)
         || Types.hasVariableScale(type2)) {
