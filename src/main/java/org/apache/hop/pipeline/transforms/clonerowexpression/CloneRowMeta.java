@@ -40,6 +40,8 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -169,12 +171,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
               BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing"),
               transformMeta);
     } else {
-      // TODO: validate expression
-      cr =
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"),
-              transformMeta);
+      cr = checkNrClones(transformMeta, prev, variables);
     }
     remarks.add(cr);
 
@@ -186,7 +183,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
                 BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"),
                 transformMeta);
       } else {
-        // TODO: validate expression
+        // The name of an output field, not an expression
         cr =
             new CheckResult(
                 ICheckResult.TYPE_RESULT_OK,
@@ -204,7 +201,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
                 BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"),
                 transformMeta);
       } else {
-        // TODO: validate expression
+        // The name of an output field, not an expression
         cr =
             new CheckResult(
                 ICheckResult.TYPE_RESULT_OK,
@@ -246,5 +243,40 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
               transformMeta);
     }
     remarks.add(cr);
+  }
+
+  /**
+   * Checks that the expression of the number of clones is valid and gives an integer. The fields of
+   * the input stream are required to compile the expression, without them it is not checked.
+   *
+   * @param transformMeta the transform to check
+   * @param prev the fields of the input stream, or {@code null} if unknown
+   * @param variables the variables to resolve in the expression
+   * @return the result of the check
+   */
+  private CheckResult checkNrClones(
+      TransformMeta transformMeta, IRowMeta prev, IVariables variables) {
+    if (prev != null) {
+      try {
+        RowExpressionContext context = new RowExpressionContext(variables, prev);
+        IExpression expression = IExpression.of(context, variables.resolve(nrClones));
+
+        // A number is not coerced to an integer, it could lose its decimal part
+        TypeName typeName = expression.getType().getName();
+        if (!typeName.isCoercible(TypeName.INTEGER)) {
+          return new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesNotInteger", typeName),
+              transformMeta);
+        }
+      } catch (ExpressionException e) {
+        return new CheckResult(ICheckResult.TYPE_RESULT_ERROR, e.getMessage(), transformMeta);
+      }
+    }
+
+    return new CheckResult(
+        ICheckResult.TYPE_RESULT_OK,
+        BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"),
+        transformMeta);
   }
 }
