@@ -217,6 +217,17 @@ public final class ReturnTypes {
       };
 
   /**
+   * Returns whether the length of a value of the type is unknown once converted to a string. The
+   * precision of a date or an interval is the number of digits of its fractional seconds, not a
+   * length.
+   */
+  private static boolean hasUnknownLength(Type type) {
+    return type.getPrecision() == Type.PRECISION_NOT_SPECIFIED
+        || Types.isTemporal(type)
+        || type.isName(TypeName.INTERVAL);
+  }
+
+  /**
    * Type-inference strategy for concatenation. For example,
    *
    * <p>concat(cast('a' as string(2)), cast('b' as string(3)),cast('c' as string(2))) returns
@@ -230,8 +241,8 @@ public final class ReturnTypes {
 
         for (IExpression operand : call.getOperands()) {
           Type type = operand.getType();
-          // A type without precision, like a date, has an unknown length once converted
-          if (type.getPrecision() == Type.PRECISION_NOT_SPECIFIED) {
+          // A type without length, like a date, has an unknown length once converted
+          if (hasUnknownLength(type)) {
             precision = Integer.MAX_VALUE;
           } else if (precision != Integer.MAX_VALUE) {
             precision += type.getPrecision();
@@ -289,8 +300,8 @@ public final class ReturnTypes {
           for (int i = 1; i < call.getOperandCount(); i++) {
             Type type = call.getOperand(i).getType();
 
-            // A type without precision, like a date, has an unknown length once converted
-            if (type.getPrecision() == Type.PRECISION_NOT_SPECIFIED) {
+            // A type without length, like a date, has an unknown length once converted
+            if (hasUnknownLength(type)) {
               precision = typeName.getMaxPrecision();
             }
 

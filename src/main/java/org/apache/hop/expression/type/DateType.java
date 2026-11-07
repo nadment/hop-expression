@@ -34,17 +34,42 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class DateType extends Type {
 
-  /** Default DATE type with default parameters. */
-  public static final DateType DATE = new DateType(true);
+  /** Default DATE type with default parameters, the fractional seconds have 9 digits. */
+  public static final DateType DATE = new DateType(TypeName.DATE.getMaxPrecision(), true);
 
   /** Default DATE NOT NULL type with default parameters. */
-  public static final DateType DATE_NOT_NULL = new DateType(false);
+  public static final DateType DATE_NOT_NULL = new DateType(TypeName.DATE.getMaxPrecision(), false);
 
   /** The format used to cast a string to a date without pattern. */
   private static final DateTimeFormat DEFAULT_FORMAT = DateTimeFormat.of("AUTO");
 
-  DateType(boolean nullable) {
-    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  DateType(int precision, boolean nullable) {
+    super(precision, SCALE_NOT_SPECIFIED, nullable);
+  }
+
+  /**
+   * Returns a nullable DATE type.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9, or {@link
+   *     #PRECISION_NOT_SPECIFIED} for 9
+   * @return the type
+   */
+  public static DateType of(int precision) {
+    return of(precision, true);
+  }
+
+  /**
+   * Returns a DATE type.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9, or {@link
+   *     #PRECISION_NOT_SPECIFIED} for 9
+   * @param nullable whether the type allows null values
+   * @return the type
+   */
+  public static DateType of(int precision, boolean nullable) {
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.DATE.getMaxPrecision();
+    if (precision == TypeName.DATE.getMaxPrecision()) return nullable ? DATE : DATE_NOT_NULL;
+    return new DateType(precision, nullable);
   }
 
   @Override
@@ -52,7 +77,7 @@ public final class DateType extends Type {
     if (nullable == this.isNullable()) {
       return this;
     }
-    return new DateType(nullable);
+    return new DateType(precision, nullable);
   }
 
   @Override

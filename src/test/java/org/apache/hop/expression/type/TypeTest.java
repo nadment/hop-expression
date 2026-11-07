@@ -78,12 +78,30 @@ public class TypeTest extends ExpressionTest {
     assertThrows(ExpressionException.class, () -> StringType.of(0));
     assertThrows(ExpressionException.class, () -> BinaryType.of(0));
     assertThrows(ExpressionException.class, () -> NumberType.of(10, 20));
+    // The fractional seconds of a date, a timestamp or an interval have from 0 to 9 digits
+    assertThrows(ExpressionException.class, () -> DateType.of(10));
+    assertThrows(ExpressionException.class, () -> TimestampType.of(10));
+    assertThrows(ExpressionException.class, () -> IntervalType.of(10));
+    assertThrows(ExpressionException.class, () -> DateType.of(-2));
   }
 
   @Test
   void typeSignature() {
     assertEquals("BOOLEAN", String.valueOf(BooleanType.BOOLEAN));
     assertEquals("DATE", String.valueOf(DateType.DATE));
+    // The precision of the fractional seconds is written if it is not the maximum, 9 digits
+    assertEquals(DateType.DATE, DateType.of(-1));
+    assertEquals(DateType.DATE, DateType.of(9));
+    assertEquals(DateType.DATE_NOT_NULL, DateType.of(9, false));
+    assertEquals("DATE(0)", String.valueOf(DateType.of(0)));
+    assertEquals("DATE(3) NOT NULL", String.valueOf(DateType.of(3, false)));
+    assertEquals("DATE(3)", String.valueOf(DateType.of(3, false).withNullability(true)));
+    assertEquals(TimestampType.TIMESTAMP, TimestampType.of(-1));
+    assertEquals("TIMESTAMP", String.valueOf(TimestampType.of(9)));
+    assertEquals("TIMESTAMP(6)", String.valueOf(TimestampType.of(6)));
+    assertEquals(IntervalType.INTERVAL, IntervalType.of(-1));
+    assertEquals("INTERVAL", String.valueOf(IntervalType.of(9)));
+    assertEquals("INTERVAL(3)", String.valueOf(IntervalType.of(3)));
     assertEquals("JSON", String.valueOf(JsonType.JSON));
     assertEquals("INET", String.valueOf(InetType.INET));
     assertEquals("INTEGER", String.valueOf(IntegerType.INTEGER));

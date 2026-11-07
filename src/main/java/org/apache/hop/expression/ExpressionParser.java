@@ -944,11 +944,11 @@ public class ExpressionParser implements IExpressionParser {
           case NUMBER -> NumberType.of(precision, scale);
           case STRING -> StringType.of(precision);
           case BINARY -> BinaryType.of(precision);
-          case DATE -> DateType.DATE;
-          case TIMESTAMP -> TimestampType.TIMESTAMP;
+          case DATE -> DateType.of(precision);
+          case TIMESTAMP -> TimestampType.of(precision);
           case INET -> InetType.INET;
           case JSON -> JsonType.JSON;
-          case INTERVAL -> IntervalType.INTERVAL;
+          case INTERVAL -> IntervalType.of(precision);
           default ->
               throw new ParseExpressionException(
                   token.start(), ErrorCode.INVALID_DATA_TYPE, token.text());

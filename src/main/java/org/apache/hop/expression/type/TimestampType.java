@@ -38,17 +38,46 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class TimestampType extends Type {
 
-  /** Default TIMESTAMP type. */
-  public static final TimestampType TIMESTAMP = new TimestampType(true);
+  /** Default TIMESTAMP type, the fractional seconds have 9 digits. */
+  public static final TimestampType TIMESTAMP =
+      new TimestampType(TypeName.TIMESTAMP.getMaxPrecision(), true);
 
   /** Default TIMESTAMP NOT NULL type. */
-  public static final TimestampType TIMESTAMP_NOT_NULL = new TimestampType(false);
+  public static final TimestampType TIMESTAMP_NOT_NULL =
+      new TimestampType(TypeName.TIMESTAMP.getMaxPrecision(), false);
 
   /** The format used to cast a string without pattern, a time zone is optional. */
   private static final DateTimeFormat DEFAULT_FORMAT = DateTimeFormat.of("AUTO");
 
-  TimestampType(boolean nullable) {
-    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  TimestampType(int precision, boolean nullable) {
+    super(precision, SCALE_NOT_SPECIFIED, nullable);
+  }
+
+  /**
+   * Returns a nullable TIMESTAMP type.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9, or {@link
+   *     #PRECISION_NOT_SPECIFIED} for 9
+   * @return the type
+   */
+  public static TimestampType of(int precision) {
+    return of(precision, true);
+  }
+
+  /**
+   * Returns a TIMESTAMP type.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9, or {@link
+   *     #PRECISION_NOT_SPECIFIED} for 9
+   * @param nullable whether the type allows null values
+   * @return the type
+   */
+  public static TimestampType of(int precision, boolean nullable) {
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.TIMESTAMP.getMaxPrecision();
+    if (precision == TypeName.TIMESTAMP.getMaxPrecision()) {
+      return nullable ? TIMESTAMP : TIMESTAMP_NOT_NULL;
+    }
+    return new TimestampType(precision, nullable);
   }
 
   @Override
@@ -56,7 +85,7 @@ public final class TimestampType extends Type {
     if (nullable == this.isNullable()) {
       return this;
     }
-    return new TimestampType(nullable);
+    return new TimestampType(precision, nullable);
   }
 
   @Override

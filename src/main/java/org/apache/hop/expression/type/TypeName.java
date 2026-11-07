@@ -67,47 +67,42 @@ public enum TypeName {
   NUMBER(
       TypeFamily.NUMERIC, TypeComparability.ALL, true, true, true, 38, 1, 37, 0, BigDecimal.class),
 
-  /** A interval type TODO: add precision for nanoseconds */
+  /**
+   * An interval type, its precision is the number of digits of the fractional seconds, from 0 to 9
+   * for the nanoseconds.
+   */
   INTERVAL(
-      TypeFamily.INTERVAL,
-      TypeComparability.ALL,
-      false,
-      false,
-      false,
-      -1,
-      -1,
-      -1,
-      -1,
-      Interval.class),
+      TypeFamily.INTERVAL, TypeComparability.ALL, false, true, false, 9, 0, -1, -1, Interval.class),
 
   /**
-   * Date-time value with nanosecond precision and without time zone, in the system time zone. TODO:
-   * add precision for nanoseconds
+   * Date-time value without time zone, in the system time zone. Its precision is the number of
+   * digits of the fractional seconds, from 0 to 9 for the nanoseconds.
    */
   DATE(
       TypeFamily.TEMPORAL,
       TypeComparability.ALL,
       true,
+      true,
       false,
-      false,
-      -1,
-      -1,
+      9,
+      0,
       -1,
       -1,
       LocalDateTime.class),
 
   /**
-   * Date-time value with nanosecond precision and a time zone, offset or region. It is declared
-   * after DATE, a date-time value is a DATE by default.
+   * Date-time value with a time zone, offset or region. Its precision is the number of digits of
+   * the fractional seconds, from 0 to 9 for the nanoseconds. It is declared after DATE, a date-time
+   * value is a DATE by default.
    */
   TIMESTAMP(
       TypeFamily.TEMPORAL,
       TypeComparability.ALL,
       true,
+      true,
       false,
-      false,
-      -1,
-      -1,
+      9,
+      0,
       -1,
       -1,
       ZonedDateTime.class),

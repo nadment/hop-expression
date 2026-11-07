@@ -459,7 +459,16 @@ public class ExpressionParserTest extends ExpressionTest {
     evalFails("Cast('123.1' as NUMBER(3,))", ErrorCode.EXPECTED_INTEGER_CONSTANT_AS_SCALE);
     evalFails("Cast('123.1' as INTEGER(4,2)", ErrorCode.SCALE_NOT_SUPPORTED);
     evalFails("Cast('TRUE' as BoolEAN(4)", ErrorCode.PRECISION_NOT_SUPPORTED);
-    evalFails("Cast('2023-12-31' as DATE(10)", ErrorCode.PRECISION_NOT_SUPPORTED);
+    // The precision of the fractional seconds of a date, a timestamp or an interval, from 0 to 9
+    optimize("CAST(FIELD_STRING AS DATE(0))");
+    optimize("CAST(FIELD_STRING AS TIMESTAMP(3))");
+    optimize("FIELD_STRING::TIMESTAMP(3)", "CAST(FIELD_STRING AS TIMESTAMP(3))");
+    optimize("CAST(FIELD_STRING AS INTERVAL(6))");
+    optimize("CAST(FIELD_STRING AS TIMESTAMP(9))", "CAST(FIELD_STRING AS TIMESTAMP)");
+    evalFails("Cast('2023-12-31' as DATE(10))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("Cast('2023-12-31' as TIMESTAMP(10))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("Cast('1 day' as INTERVAL(10))", ErrorCode.PRECISION_OUT_OF_RANGE);
+    evalFails("Cast('2023-12-31' as DATE(3,1))", ErrorCode.SCALE_NOT_SUPPORTED);
   }
 
   /** Test function <code>TEST_FIRST(value OTHERWISE default)</code>, like COALESCE. */

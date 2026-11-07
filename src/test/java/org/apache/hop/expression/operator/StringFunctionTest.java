@@ -1589,6 +1589,11 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("CONCAT('TES','T')", "TEST").returnType(StringType.of(4, false));
     evalEquals("FIELD_STRING||'t'", "TESTt").returnType(StringType.of(1001, false));
     evalTrue("FIELD_STRING='TES'||'T'");
+    // The precision of a date is its fractional seconds, its length is unknown once converted
+    evalEquals("CONCAT('x', CAST(DATE '2024-01-01' AS DATE(0)))", "x2024-01-01")
+        .returnType(StringType.STRING_NOT_NULL);
+    evalEquals("CONCAT_WS(',', 'x', CAST(DATE '2024-01-01' AS DATE(0)))", "x,2024-01-01")
+        .returnType(StringType.STRING_NOT_NULL);
     evalTrue("FIELD_STRING='TES'||NULL_STRING||'T'");
     evalEquals("Concat(NULL_STRING,'a')", "a").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Concat('a',NULL_STRING)", "a").returnType(StringType.STRING_NOT_NULL);

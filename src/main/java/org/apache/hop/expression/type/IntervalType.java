@@ -25,14 +25,43 @@ import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class IntervalType extends Type {
-  /** Default INTERVAL type with default parameters. */
-  public static final IntervalType INTERVAL = new IntervalType(true);
+  /** Default INTERVAL type with default parameters, the fractional seconds have 9 digits. */
+  public static final IntervalType INTERVAL =
+      new IntervalType(TypeName.INTERVAL.getMaxPrecision(), true);
 
   /** Default INTERVAL NOT NULL type with default parameters. */
-  public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
+  public static final IntervalType INTERVAL_NOT_NULL =
+      new IntervalType(TypeName.INTERVAL.getMaxPrecision(), false);
 
-  IntervalType(boolean nullable) {
-    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  IntervalType(int precision, boolean nullable) {
+    super(precision, SCALE_NOT_SPECIFIED, nullable);
+  }
+
+  /**
+   * Returns a nullable INTERVAL type.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9, or {@link
+   *     #PRECISION_NOT_SPECIFIED} for 9
+   * @return the type
+   */
+  public static IntervalType of(int precision) {
+    return of(precision, true);
+  }
+
+  /**
+   * Returns an INTERVAL type.
+   *
+   * @param precision the number of digits of the fractional seconds, from 0 to 9, or {@link
+   *     #PRECISION_NOT_SPECIFIED} for 9
+   * @param nullable whether the type allows null values
+   * @return the type
+   */
+  public static IntervalType of(int precision, boolean nullable) {
+    if (precision == PRECISION_NOT_SPECIFIED) precision = TypeName.INTERVAL.getMaxPrecision();
+    if (precision == TypeName.INTERVAL.getMaxPrecision()) {
+      return nullable ? INTERVAL : INTERVAL_NOT_NULL;
+    }
+    return new IntervalType(precision, nullable);
   }
 
   /**
@@ -51,7 +80,7 @@ public final class IntervalType extends Type {
     if (nullable == this.isNullable()) {
       return this;
     }
-    return new IntervalType(nullable);
+    return new IntervalType(precision, nullable);
   }
 
   @Override
