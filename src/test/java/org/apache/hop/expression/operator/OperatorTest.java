@@ -3607,6 +3607,15 @@ public class OperatorTest extends ExpressionTest {
           "+0-0 0 00:00:01");
       evalEquals(
           "CAST(INTERVAL '00:00:01.123456' HOUR TO SECOND AS STRING)", "+0-0 0 00:00:01.123456000");
+      // Documentation examples
+      evalEquals(
+          "CAST(CAST(INTERVAL '00:00:01.5' HOUR TO SECOND AS INTERVAL(0)) AS STRING)",
+          "+0-0 0 00:00:02");
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2020-05-25 23:59:59.5' AS TIMESTAMP(0)) AS STRING)", "2020-05-26");
+      evalEquals(
+          "CAST(CAST(TIMESTAMP '2020-05-25 20:48:00.123456' AS TIMESTAMP(3)) AS STRING)",
+          "2020-05-25 20:48:00.123");
 
       // Boolean
       evalEquals("CAST(true as String)", "TRUE").returnType(StringType.STRING_NOT_NULL);

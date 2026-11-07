@@ -253,6 +253,21 @@ The following subtracts 4 months from March 31, 2023 and the result is November 
 DATE '2023-03-31' - INTERVAL 4 MONTHS
 ----
 
+[#fractional_seconds]
+=== Fractional seconds
+
+The data types `DATE`, `TIMESTAMP` and `INTERVAL` have a precision, the number of digits of the fractional seconds, from 0 to 9. Without precision, the fractional seconds have 9 digits, the nanoseconds: this is the precision of a literal, of a field and of the result of a date function.
+
+----
+CAST(value AS TIMESTAMP(3))
+value::DATE(0)
+CAST(value AS INTERVAL(6))
+----
+
+* A cast rounds the fractional seconds to the precision, halfway values are rounded away from zero like a number: `CAST(TIMESTAMP '2020-05-25 20:48:00.6' AS TIMESTAMP(0))` returns TIMESTAMP '2020-05-25 20:48:01'. The rounding can give the next second, minute or day, for example `CAST(TIMESTAMP '2020-05-25 23:59:59.5' AS TIMESTAMP(0))` returns TIMESTAMP '2020-05-26 00:00:00'.
+* Converted to a string, the fractional seconds, if they are not zero, are written with the digits of the precision: `CAST(CAST(TIMESTAMP '2019-02-25 12:34:56.123456789' AS TIMESTAMP(3)) AS STRING)` returns '2019-02-25 12:34:56.123', and `CAST(CAST(INTERVAL '00:00:01.5' HOUR TO SECOND AS INTERVAL(0)) AS STRING)` returns '+0-0 0 00:00:02'.
+* The result of an operation keeps all the digits of its operands: a date plus an interval has the greater precision of the two, and a `CASE` or a `COALESCE` that mixes a date and a timestamp gives a timestamp with the greater precision.
+
 === Array
 
 Array values can be constructed using square brackets `[<value> [, <value> , ...]]`
