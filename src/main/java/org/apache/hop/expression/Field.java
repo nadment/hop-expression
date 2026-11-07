@@ -122,12 +122,19 @@ public class Field extends Identifier {
             return valueMeta.getNativeDataType(row[ordinal]);
           }
         default:
-          // Internal error
+          break;
       }
     } catch (Exception e) {
-      // Ignore
+      // Keep the reason given by the value meta
+      throw new ExpressionException(
+          e,
+          ErrorCode.CONVERSION_ERROR,
+          valueMeta.getTypeDesc().toUpperCase(Locale.ROOT),
+          AnyType.ANY,
+          row[ordinal]);
     }
 
+    // Internal error, the type of the value meta is not supported
     throw new ExpressionException(
         ErrorCode.CONVERSION_ERROR,
         valueMeta.getTypeDesc().toUpperCase(Locale.ROOT),
@@ -135,116 +142,13 @@ public class Field extends Identifier {
         row[ordinal]);
   }
 
+  /**
+   * Reads the value from the row, then converts it from the data type of the field to the specified
+   * Java type.
+   */
   @Override
   public @Nullable <T> T getValue(Class<T> clazz) {
-    @Nullable Object[] row = context.getRow();
-    if (row == null) {
-      throw new ExpressionException(ErrorCode.CONTEXT_ERROR);
-    }
-
-    // Fast path, the value is read without conversion
-    if (nativeClass != null) {
-      Object value = row[ordinal];
-      if (value == null || nativeClass.isInstance(value)) {
-        return type.convert(value, clazz);
-      }
-    }
-
-    return convertValue(row, clazz);
-  }
-
-  /** Reads the value from the row with the conversion defined by the value meta. */
-  private @Nullable <T> T convertValue(@Nullable Object[] row, Class<T> clazz) {
-    try {
-      switch (valueMeta.getType()) {
-        case IValueMeta.TYPE_BOOLEAN:
-          {
-            Boolean value = valueMeta.getBoolean(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_TIMESTAMP:
-          {
-            Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
-            if (timestamp == null) {
-              return null;
-            }
-            return type.convert(TimestampConversion.convert(timestamp), clazz);
-          }
-
-        case IValueMeta.TYPE_DATE:
-          {
-            Date date = valueMeta.getDate(row[ordinal]);
-            if (date == null) {
-              return null;
-            }
-            return type.convert(DateConversion.convert(date), clazz);
-          }
-
-        case IValueMeta.TYPE_STRING:
-          {
-            String value = valueMeta.getString(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_INTEGER:
-          {
-            Long value = valueMeta.getInteger(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_NUMBER:
-          {
-            Double value = valueMeta.getNumber(row[ordinal]);
-            if (value == null) {
-              return null;
-            }
-            if (clazz == Long.class) {
-              return clazz.cast(value.longValue());
-            }
-            if (clazz == BigDecimal.class) {
-              return clazz.cast(BigDecimal.valueOf(value));
-            }
-            if (clazz == Boolean.class) {
-              return clazz.cast(value != 0);
-            }
-            if (clazz == String.class) {
-              return clazz.cast(String.valueOf(value));
-            }
-            break;
-          }
-
-        case IValueMeta.TYPE_BIGNUMBER:
-          {
-            BigDecimal value = valueMeta.getBigNumber(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_BINARY:
-          {
-            byte[] value = valueMeta.getBinary(row[ordinal]);
-            return type.convert(value, clazz);
-          }
-
-        case IValueMeta.TYPE_JSON, IValueMeta.TYPE_INET:
-          {
-            Object value = row[ordinal];
-            return type.convert(value, clazz);
-          }
-
-        default:
-          // Internal error
-      }
-    } catch (ExpressionException e) {
-      throw e;
-    } catch (Exception e) {
-      // Ignore
-    }
-    throw new ExpressionException(
-        ErrorCode.CONVERSION_ERROR,
-        valueMeta.getTypeDesc().toUpperCase(Locale.ROOT),
-        clazz,
-        row[ordinal]);
+    return type.convert(getValue(), clazz);
   }
 
   @Override

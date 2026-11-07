@@ -68,6 +68,21 @@ public class ExpressionException extends RuntimeException {
   }
 
   /**
+   * Create a new expression exception caused by another exception, like a conversion error raised
+   * by a value meta, keeping its reason.
+   *
+   * @param cause the exception that caused this error
+   * @param error an error message
+   * @param values the immutable values that replace the placeholders of the message
+   */
+  public ExpressionException(Throwable cause, ErrorCode error, @Nullable Object... values) {
+    // No message yet, suppression enabled, no stack trace
+    super(null, cause, true, false);
+    this.error = error;
+    this.values = values;
+  }
+
+  /**
    * Create a new expression exception, with or without the stack trace.
    *
    * <p>For an exception raised once, like a parse error, the stack trace can be captured without

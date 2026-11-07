@@ -118,24 +118,16 @@ public class Call implements IExpression {
           (operator instanceof Function)
               ? ErrorCode.CALL_FUNCTION_ERROR
               : ErrorCode.CALL_OPERATOR_ERROR;
-      throw new ExpressionException(error, operator, e.getMessage());
+      throw new ExpressionException(e, error, operator, e.getMessage());
     }
   }
 
+  /**
+   * Evaluates the call, then converts the result from the return type to the specified Java type.
+   */
   @Override
   public @Nullable <T> T getValue(final Class<T> clazz) {
-    try {
-      Object value = operator.eval(operands);
-      return type.convert(value, clazz);
-    } catch (ExpressionException e) {
-      throw e;
-    } catch (Exception e) {
-      ErrorCode error =
-          (operator instanceof Function)
-              ? ErrorCode.CALL_FUNCTION_ERROR
-              : ErrorCode.CALL_OPERATOR_ERROR;
-      throw new ExpressionException(error, operator, e.getMessage());
-    }
+    return type.convert(getValue(), clazz);
   }
 
   /**
