@@ -395,4 +395,50 @@ http://www.apache.org/licenses/LICENSE-2.0
         </plugins>
     </build>
 
+    <profiles>
+        <!--
+          Mutation testing of the simplification rules, the report is in target/pit-reports:
+          mvn -Ppitest test-compile org.pitest:pitest-maven:mutationCoverage
+          The classes and the tests can be changed, for example -Dpit.classes=org.apache.hop.expression.operator.Case*
+        -->
+        <profile>
+            <id>pitest</id>
+            <properties>
+                <pit.classes>org.apache.hop.expression.operator.Bool*</pit.classes>
+                <pit.tests>org.apache.hop.expression.operator.OperatorTest*</pit.tests>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>1.19.1</version>
+                        <configuration>
+                            <targetClasses>
+                                <param>${pit.classes}</param>
+                            </targetClasses>
+                            <targetTests>
+                                <param>${pit.tests}</param>
+                                <param>org.apache.hop.expression.SimplifierDifferentialTest</param>
+                            </targetTests>
+                            <threads>4</threads>
+                            <outputFormats>
+                                <param>CSV</param>
+                                <param>HTML</param>
+                            </outputFormats>
+                            <timestampedReports>false</timestampedReports>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>1.2.2</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
