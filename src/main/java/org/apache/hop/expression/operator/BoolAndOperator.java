@@ -204,12 +204,11 @@ public class BoolAndOperator extends BinaryOperator {
       for (IExpression reference : inTerms.keySet()) {
         Collection<IExpression> values = intersection(inTerms.get(reference));
 
-        // Remove exclusions NOT IN
+        // Remove exclusions NOT IN, their condition is then implied by the remaining values, also
+        // for a value not in the list: X IN (1,2,3) AND X<>4 → X IN (1,2,3)
         for (Pair<Call, IExpression> pair : notInTerms.get(reference)) {
-          IExpression term = pair.right();
-          if (values.remove(term)) {
-            predicates.remove(pair.left());
-          }
+          values.remove(pair.right());
+          predicates.remove(pair.left());
         }
 
         if (values.isEmpty()) {

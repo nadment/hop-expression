@@ -1268,6 +1268,19 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testOptimize() throws Exception {
+      // A value excluded from the list is removed, with its condition, also a value not in the
+      // list: the condition is implied by the remaining values
+      optimize("FIELD_INTEGER IN (1,2) AND FIELD_INTEGER<>1", "FIELD_INTEGER=2");
+      optimize("FIELD_INTEGER IN (1,2,3) AND FIELD_INTEGER<>4", "FIELD_INTEGER IN (1,2,3)");
+      optimize("FIELD_INTEGER IN (1,2) AND FIELD_INTEGER NOT IN (2,5)", "FIELD_INTEGER=1");
+      evalNull("NULL_INTEGER IN (1,2,3) AND NULL_INTEGER<>4");
+      // A comparison of two fields is strong in both, whatever the field on the right
+      optimize(
+          "FIELD_INTEGER IS NULL AND FIELD_INTEGER<FIELD_INTEGER_ZERO",
+          "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize(
+          "FIELD_INTEGER_ZERO IS NULL AND FIELD_INTEGER<FIELD_INTEGER_ZERO",
+          "NVL2(FIELD_INTEGER_ZERO,FALSE,NULL)");
       optimize("FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN");
       optimizeTrue("25>=12 and 14<15");
       optimizeTrue("true and true");
