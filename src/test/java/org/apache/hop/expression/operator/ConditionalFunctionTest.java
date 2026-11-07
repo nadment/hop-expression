@@ -334,6 +334,8 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     // Coalesce numeric
     evalEquals("Coalesce(1,2,3)", 1L).returnType(IntegerType.of(1, false));
+    // A constant first value is not returned before it is evaluated, it can be NULL
+    evalEquals("Coalesce(IF('' LIKE 'a%', 1, NULL), 2, 3)", 2L);
     evalEquals("Coalesce(1,2,FIELD_INTEGER)", 1L).returnType(IntegerType.of(1, false));
 
     // Check NOT NULL return type

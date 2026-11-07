@@ -89,8 +89,9 @@ public class IfNullFunction extends Function {
       case 2 -> // COALESCE(X,Y) → IFNULL(X,Y)
           new Call(IfNullFunction.INSTANCE, operands);
       default -> {
-        // The first is literal COALESCE(1, a, b) → 1
-        if (operands.getFirst().isConstant()) {
+        // The first is literal COALESCE(1, a, b) → 1, a literal is not NULL as NULL are removed but
+        // a constant expression not evaluated yet can be NULL, like IF('' LIKE 'a%', 1, NULL)
+        if (operands.getFirst() instanceof Literal) {
           yield operands.getFirst();
         }
 
