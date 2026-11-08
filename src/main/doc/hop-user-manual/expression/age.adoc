@@ -1,0 +1,59 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= AGE
+
+Returns the interval between two dates, in years, months and days rather than in days only.
+
+== Syntax
+
+----
+AGE( date1, date2 )
+AGE( date )
+----
+
+== Arguments
+
+date1:: The date or timestamp to subtract from.
+date2:: The date or timestamp to subtract.
+date:: The date or timestamp to subtract from the current date at midnight.
+
+== Returns
+
+Interval
+
+== Usage
+
+* The result is computed field by field: the years, months, days, hours, minutes and seconds of date2 are subtracted from those of date1. A negative field borrows from the next field, a borrowed month has the number of days of the month of the earlier date.
+* `AGE(date)` subtracts the date from the current date at midnight, `AGE(CURRENT_DATE, date)`, so the age of a birth date has no time part.
+* The result is negative if date1 is earlier than date2.
+* The fields of a timestamp are in its time zone, date2 is converted to the time zone of date1. A date without time zone is in the time zone of the system.
+* Returns NULL if one of the arguments is NULL.
+
+== Examples
+
+----
+AGE(DATE '2024-03-15', DATE '1980-06-23') returns INTERVAL '+43-8 22 00:00:00'
+AGE(TIMESTAMP '2024-01-01 08:00:00', TIMESTAMP '2023-12-31 20:30:00') returns INTERVAL '+0-0 0 11:30:00'
+AGE(DATE '1980-06-23', DATE '2024-03-15') returns INTERVAL '-43-8 22 00:00:00'
+AGE(DATE '1980-06-23') returns the age at the current date
+----
+
+== See also
+
+* xref:date_diff.adoc["DATE_DIFF",role=fun]
+* xref:years_between.adoc["YEARS_BETWEEN",role=fun]
+* xref:make_interval.adoc["MAKE_INTERVAL",role=fun]

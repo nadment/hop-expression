@@ -31,6 +31,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:add_seconds.adoc["ADD_SECONDS",role=fun]
 * xref:add_weeks.adoc["ADD_WEEKS",role=fun]
 * xref:add_years.adoc["ADD_YEARS",role=fun]
+* xref:age.adoc["AGE",role=fun]
 * xref:any_value.adoc["ANY_VALUE",role=fun] aggregate
 * xref:array.adoc["ARRAY",role=fun]
 * xref:array_append.adoc["ARRAY_APPEND",role=fun]

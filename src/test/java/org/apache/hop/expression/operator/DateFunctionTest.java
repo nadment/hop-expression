@@ -282,6 +282,47 @@ class DateFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Age() throws Exception {
+    evalEquals("Age(DATE '2024-03-15', DATE '1980-06-23')", Interval.of(43, 8, 22))
+        .returnType(IntervalType.INTERVAL_NOT_NULL);
+    // Negative if the first date is earlier
+    evalEquals("Age(DATE '1980-06-23', DATE '2024-03-15')", Interval.of(43, 8, 22).negate());
+    evalEquals("Age(DATE '2024-03-15', DATE '2024-03-15')", Interval.of(0));
+
+    // A borrowed month has the number of days of the month of the earlier date, January
+    evalEquals("Age(DATE '2023-03-01', DATE '2023-01-30')", Interval.of(0, 1, 2));
+    evalEquals("Age(DATE '2023-01-30', DATE '2023-03-01')", Interval.of(0, 1, 2).negate());
+    // February of a leap year
+    evalEquals("Age(DATE '2024-03-01', DATE '2024-02-15')", Interval.of(0, 0, 15));
+
+    // The time is borrowed from the days
+    evalEquals(
+        "Age(TIMESTAMP '2024-01-01 08:00:00', TIMESTAMP '2023-12-31 20:30:00')",
+        Interval.of(0, 0, 0, 11, 30, 0));
+    evalEquals(
+        "Age(TIMESTAMP '2024-01-01 00:00:00.5', TIMESTAMP '2023-12-31 23:59:59.75')",
+        Interval.of(0, 0, 0, 0, 0, 0, 750_000_000));
+    // A date and a timestamp
+    evalEquals("Age(TIMESTAMP '2024-03-15 12:00:00', DATE '2024-03-14')", Interval.of(0, 0, 1, 12));
+
+    // With one argument, from the current date at midnight
+    evalTrue("Age(DATE '1980-06-23') = Age(Current_Date(), DATE '1980-06-23')");
+    evalTrue("Age(FIELD_DATE) = Age(Current_Date(), FIELD_DATE)");
+
+    // Null handling
+    evalNull("Age(DATE '2007-11-09', NULL_DATE)").returnType(IntervalType.INTERVAL);
+    evalNull("Age(NULL_DATE, DATE '2007-11-09')");
+    evalNull("Age(NULL_DATE)");
+
+    // Check operands
+    evalFails("Age()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails(
+        "Age(DATE '2007-11-09', DATE '2007-11-09', DATE '2007-11-09')",
+        ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Age(TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
   void Days_Between() throws Exception {
     // Only complete days are counted
     evalEquals(
