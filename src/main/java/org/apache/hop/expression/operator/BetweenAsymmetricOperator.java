@@ -17,14 +17,11 @@
 
 package org.apache.hop.expression.operator;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.StringWriter;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -61,33 +58,17 @@ public class BetweenAsymmetricOperator extends Operator {
       return new Call(EqualOperator.INSTANCE, value, start);
     }
 
-    // x BETWEEN 5 AND 3 → NVL2(x,FALSE,NULL), no value is in the range, but NULL if x is NULL
-    if (isEmptyRange(value.getType(), start, end)) {
-      if (!value.getType().isNullable()) {
-        return Literal.FALSE;
-      }
-      return new Call(Nvl2Function.INSTANCE, value, Literal.FALSE, Literal.NULL_BOOLEAN);
+    // x BETWEEN a AND b → x>=a AND x<=b, equivalent also with a NULL bound. The comparisons are
+    // then simplified with the other comparisons, like x BETWEEN 5 AND 3 → NVL2(x,FALSE,NULL).
+    // Not if x is non-deterministic, like RANDOM(), it would be evaluated twice.
+    if (isDeterministic(value)) {
+      return new Call(
+          BoolAndOperator.INSTANCE,
+          new Call(GreaterThanOrEqualOperator.INSTANCE, value, start),
+          new Call(LessThanOrEqualOperator.INSTANCE, value, end));
     }
 
     return call;
-  }
-
-  /**
-   * Returns whether the start of a range is a constant greater than its end, only for constants of
-   * the type of the value, before a coercion 5 is not ordered like '5'.
-   */
-  private static boolean isEmptyRange(Type type, IExpression start, IExpression end) {
-    if (!(start instanceof Literal startLiteral && end instanceof Literal endLiteral)
-        || start.isNull()
-        || end.isNull()
-        || !startLiteral.getType().isName(type.getName())
-        || !endLiteral.getType().isName(type.getName())
-        || !(Types.isNumeric(type) || Types.isString(type) || Types.isTemporal(type))) {
-      return false;
-    }
-    Object startValue = requireNonNull(startLiteral.getValue());
-    Object endValue = requireNonNull(endLiteral.getValue());
-    return type.compare(startValue, endValue) > 0;
   }
 
   @Override

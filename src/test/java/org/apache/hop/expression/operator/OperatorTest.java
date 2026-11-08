@@ -1513,6 +1513,22 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER>=5 AND FIELD_INTEGER<=5", "FIELD_INTEGER<=5 AND FIELD_INTEGER>=5");
       // Not with a non-deterministic expression
       optimize("RANDOM()>0.5 AND RANDOM()>0.3", "0.3<RANDOM() AND 0.5<RANDOM()");
+
+      // BETWEEN is expanded into comparisons, simplified with the other comparisons
+      optimize(
+          "FIELD_INTEGER BETWEEN 1 AND 5 AND FIELD_INTEGER>3",
+          "FIELD_INTEGER<=5 AND FIELD_INTEGER>3");
+      optimize(
+          "FIELD_INTEGER BETWEEN 1 AND 5 AND FIELD_INTEGER BETWEEN 3 AND 10",
+          "FIELD_INTEGER<=5 AND FIELD_INTEGER>=3");
+      optimize(
+          "FIELD_INTEGER BETWEEN 1 AND 5 AND FIELD_INTEGER>7", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      evalFalse("FIELD_INTEGER BETWEEN 1 AND 50 AND FIELD_INTEGER<40");
+      evalTrue("FIELD_INTEGER BETWEEN 1 AND 50 AND FIELD_INTEGER>=40");
+      // Not with a non-deterministic expression
+      optimize(
+          "RANDOM() BETWEEN 0.1 AND 0.5 AND RANDOM()>0.3",
+          "0.3<RANDOM() AND RANDOM() BETWEEN 0.1 AND 0.5");
     }
   }
 
@@ -3326,13 +3342,23 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testOptimize() throws Exception {
-      optimize("FIELD_INTEGER BETWEEN 10 AND 20");
-      optimize("FIELD_NUMBER BETWEEN 10.5 AND 20.12");
-      optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
-      optimize("FIELD_DATE BETWEEN DATE '2019-01-01' AND DATE '2019-12-31'");
+      // BETWEEN is expanded into two comparisons
+      optimize("FIELD_INTEGER BETWEEN 10 AND 20", "FIELD_INTEGER<=20 AND FIELD_INTEGER>=10");
+      optimize("FIELD_NUMBER BETWEEN 10.5 AND 20.12", "FIELD_NUMBER<=20.12 AND FIELD_NUMBER>=10.5");
+      optimize(
+          "FIELD_STRING BETWEEN 'AZE' AND 'KLM'", "FIELD_STRING<='KLM' AND FIELD_STRING>='AZE'");
+      optimize(
+          "FIELD_DATE BETWEEN DATE '2019-01-01' AND DATE '2019-12-31'",
+          "FIELD_DATE<=DATE '2019-12-31' AND FIELD_DATE>=DATE '2019-01-01'");
+      // Also with a NULL bound
+      evalFalse("FIELD_INTEGER BETWEEN NULL_INTEGER AND 20");
+      evalNull("FIELD_INTEGER BETWEEN NULL_INTEGER AND 50");
+      // Not with a non-deterministic expression, it would be evaluated twice
+      optimize("RANDOM() BETWEEN 0.1 AND 0.5");
 
       // By default, BETWEEN is ASYMMETRIC
-      optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
+      optimize(
+          "FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER<=50 AND FIELD_NUMBER>=20");
       // No value is between bounds in the reverse order
       optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 50 AND 20", "NVL2(FIELD_NUMBER,FALSE,NULL)");
       optimize("FIELD_INTEGER BETWEEN 5 AND 3", "NVL2(FIELD_INTEGER,FALSE,NULL)");
@@ -3346,13 +3372,17 @@ public class OperatorTest extends ExpressionTest {
           "FIELD_INTEGER BETWEEN FIELD_INTEGER_ZERO AND FIELD_INTEGER_ZERO",
           "FIELD_INTEGER=FIELD_INTEGER_ZERO");
       // Not with a non-deterministic bound
-      optimize("FIELD_NUMBER BETWEEN RANDOM() AND RANDOM()");
+      optimize(
+          "FIELD_NUMBER BETWEEN RANDOM() AND RANDOM()",
+          "FIELD_NUMBER<=RANDOM() AND FIELD_NUMBER>=RANDOM()");
 
       // Remove SYMMETRIC if operands are constant, and swap bound if necessary
-      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
-      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
+      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER<=50 AND FIELD_NUMBER>=20");
+      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER<=50 AND FIELD_NUMBER>=20");
+      // Not with bounds that are not constant
+      optimize("FIELD_INTEGER BETWEEN SYMMETRIC FIELD_INTEGER_ZERO AND 5");
 
-      optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
+      optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER<=6 AND FIELD_INTEGER>=3");
       optimizeFalse("2 between 3 and (5+1)");
       optimizeTrue("25.8 between 18 and 32");
       optimizeTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
