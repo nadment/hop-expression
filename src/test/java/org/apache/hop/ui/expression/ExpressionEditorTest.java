@@ -15,6 +15,8 @@
 package org.apache.hop.ui.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -54,5 +56,26 @@ class ExpressionEditorTest {
 
     // A selection that ends at the start of a line does not include this line
     assertEquals("// 1\n2", toggle("1\n2", 0, 2));
+  }
+
+  @Test
+  void treeFilter() {
+    // The tree is filtered from three characters, in lower case and without the spaces around
+    assertEquals("", ExpressionEditor.toTreeFilter(""));
+    assertEquals("", ExpressionEditor.toTreeFilter("ab"));
+    assertEquals("", ExpressionEditor.toTreeFilter("  ab  "));
+    assertEquals("abc", ExpressionEditor.toTreeFilter("abc"));
+    assertEquals("date", ExpressionEditor.toTreeFilter(" Date "));
+  }
+
+  @Test
+  void treeMatch() {
+    // Without filter, all the elements are shown
+    assertTrue(ExpressionEditor.isTreeMatch("UPPER", ""));
+    // The label contains the filter, ignoring case
+    assertTrue(ExpressionEditor.isTreeMatch("ADD_DAYS", "day"));
+    assertTrue(ExpressionEditor.isTreeMatch("NOW, CURRENT_TIMESTAMP", "now"));
+    assertTrue(ExpressionEditor.isTreeMatch("Customer name", "name"));
+    assertFalse(ExpressionEditor.isTreeMatch("UPPER", "low"));
   }
 }

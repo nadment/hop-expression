@@ -17,7 +17,9 @@ package org.apache.hop.ui.expression;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -78,14 +80,17 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
+import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.dialog.FindReplaceDialog;
 import org.apache.hop.ui.core.dialog.MessageBox;
 import org.apache.hop.ui.core.gui.GuiMenuWidgets;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
 import org.apache.hop.ui.core.gui.IToolbarContainer;
+import org.apache.hop.ui.core.widget.FolderTreeIcons;
 import org.apache.hop.ui.core.widget.HopTree;
 import org.apache.hop.ui.core.widget.IFindReplaceTarget;
+import org.apache.hop.ui.core.widget.TreeMemory;
 import org.apache.hop.ui.hopgui.ToolbarFacade;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -128,10 +133,12 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -185,6 +192,15 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
   /** The prefix of a line comment written by {@link #toggleComment()}. */
   private static final String LINE_COMMENT = "//";
 
+  /** The minimum number of characters of the filter to filter the tree. */
+  private static final int TREE_FILTER_MIN_LENGTH = 3;
+
+  /** The delay in milliseconds before filtering the tree, to not filter while typing fast. */
+  private static final int TREE_FILTER_DELAY_MS = 300;
+
+  /** The name of the tree in the memory of the expanded items. */
+  private static final String TREE_MEMORY_NAME = "ExpressionEditor";
+
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> OPERATORS =
       Set.of(
@@ -237,10 +253,32 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
   private final AtomicReference<@Nullable IRowMeta> rowMeta = new AtomicReference<>();
 
   private Browser wBrowser;
+  private SashForm wSashForm;
   private SashForm wEditorSashForm;
 
-  /** The tree item of the fields or arguments, or null if the mode has no fields. */
-  private @Nullable TreeItem wTreeItemFields;
+  /** The panel of the editor, alone in its sash when the help is hidden. */
+  private Composite wEditorPanel;
+
+  /** The panel of the help, alone in its sash when the help is maximized. */
+  private Composite wHelpPanel;
+
+  /** The button to maximize or minimize the help panel. */
+  private ToolItem wHelpMaxItem;
+
+  /** The text to filter the fields, the operators and the variables of the tree. */
+  private Text wTreeFilter;
+
+  /** The filter of the tree in lower case, empty if the tree is not filtered. */
+  private String treeFilter = "";
+
+  /** Filters the tree once the delay after the last character typed has elapsed. */
+  private final Runnable treeFilterRunnable = this::applyTreeFilter;
+
+  /** The operators and functions of the tree, with their label of names and aliases. */
+  private final Map<Operator, String> treeOperators = new LinkedHashMap<>();
+
+  /** The categories of the operators and functions of the tree. */
+  private final Set<String> treeCategories = new TreeSet<>();
 
   /** The configuration of the viewer, which highlights the fields and proposes them. */
   private ExpressionEditorConfiguration configuration;
@@ -277,7 +315,7 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     PropsUi.setLook(this);
 
     this.setLayout(new FormLayout());
-    SashForm wSashForm = new SashForm(this, SWT.HORIZONTAL);
+    wSashForm = new SashForm(this, SWT.HORIZONTAL);
     wSashForm.setLayoutData(new FormDataBuilder().fullSize().result());
     this.createTree(wSashForm);
     this.createSash(wSashForm);
@@ -300,7 +338,9 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     this.createEditor(wEditorSashForm);
     this.createHelp(wEditorSashForm);
 
-    wEditorSashForm.setWeights(100, 0);
+    // Size of the help panel when it is shown the first time
+    wEditorSashForm.setWeights(40, 60);
+    hideHelp();
   }
 
   protected void createHelp(final Composite parent) {
@@ -313,9 +353,15 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     PropsUi.setLook(toolbar, Props.WIDGET_STYLE_TOOLBAR);
 
     ToolItem toolbarItem = new ToolItem(toolbar, SWT.PUSH);
-    toolbarItem.setToolTipText("Close");
+    toolbarItem.setToolTipText(BaseMessages.getString(PKG, "ExpressionEditor.Help.Close.ToolTip"));
     toolbarItem.setImage(GuiResource.getInstance().getImageClose());
     toolbarItem.addListener(SWT.Selection, e -> hideHelp());
+
+    // The toolbar is right to left, the button is on the left of the close button
+    wHelpMaxItem = new ToolItem(toolbar, SWT.PUSH);
+    wHelpMaxItem.addListener(SWT.Selection, e -> onHelpMaximizeMinimize());
+    wHelpPanel = composite;
+    updateHelpMaxItem();
 
     // Create the widget browser
     wBrowser = new Browser(composite, SWT.NONE);
@@ -333,6 +379,7 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
 
     Composite composite = new Composite(parent, SWT.BORDER);
     composite.setLayout(new FormLayout());
+    wEditorPanel = composite;
 
     IToolbarContainer toolbarContainer =
         ToolbarFacade.createToolbarContainer(composite, SWT.FLAT | SWT.HORIZONTAL);
@@ -538,10 +585,29 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
 
   protected void createTree(final Composite parent) {
 
-    Composite composite = new Composite(parent, SWT.BORDER);
+    Composite composite = new Composite(parent, SWT.NONE);
     composite.setLayout(new FormLayout());
 
-    ToolBar toolbar = new ToolBar(composite, SWT.FLAT | SWT.HORIZONTAL);
+    // Filter of the tree, applied from a few characters to not rebuild the tree on each character
+    wTreeFilter = new Text(composite, SWT.SINGLE | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+    wTreeFilter.setMessage(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Filter.Message"));
+    wTreeFilter.setLayoutData(new FormDataBuilder().top().fullWidth().result());
+    wTreeFilter.addListener(SWT.Modify, e -> onTreeFilterModified());
+    // The cancel icon and Enter send a default selection, which must not close the dialog
+    wTreeFilter.setData(BaseDialog.NO_DEFAULT_HANDLER, Boolean.TRUE);
+    PropsUi.setLook(wTreeFilter);
+
+    // Bordered composite below the filter, with the toolbar and the tree
+    Composite treeComposite = new Composite(composite, SWT.BORDER);
+    treeComposite.setLayout(new FormLayout());
+    treeComposite.setLayoutData(
+        new FormDataBuilder()
+            .top(wTreeFilter, wSashForm.getSashWidth())
+            .fullWidth()
+            .bottom()
+            .result());
+
+    ToolBar toolbar = new ToolBar(treeComposite, SWT.FLAT | SWT.HORIZONTAL);
     toolbar.setLayoutData(new FormDataBuilder().top().fullWidth().result());
     PropsUi.setLook(toolbar, Props.WIDGET_STYLE_TOOLBAR);
 
@@ -559,9 +625,13 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
 
     // Tree widget, its preferred height is capped so the long list of functions doesn't make the
     // dialog taller than the screen
-    wTree = new HopTree(composite, SWT.H_SCROLL | SWT.V_SCROLL);
+    wTree = new HopTree(treeComposite, SWT.H_SCROLL | SWT.V_SCROLL);
     wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
     wTree.addListener(SWT.MouseDoubleClick, this::onTreeDoubleClick);
+    // Open folder icon on the expanded folders
+    FolderTreeIcons.install(wTree);
+    wTree.addListener(SWT.Expand, e -> storeTreeExpanded((TreeItem) e.item, true));
+    wTree.addListener(SWT.Collapse, e -> storeTreeExpanded((TreeItem) e.item, false));
     PropsUi.setLook(wTree);
 
     // Create the drag source on the tree
@@ -598,21 +668,6 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
           }
         });
 
-    if (mode == ExpressionMode.ROW || mode == ExpressionMode.COLUMN || mode == ExpressionMode.UDF) {
-      wTreeItemFields = new TreeItem(wTree, SWT.NULL);
-      wTreeItemFields.setImage(GuiResource.getInstance().getImageFolder());
-      String text =
-          (mode == ExpressionMode.UDF)
-              ? "ExpressionEditor.Tree.Arguments.Label"
-              : "ExpressionEditor.Tree.Fields.Label";
-      wTreeItemFields.setText(BaseMessages.getString(PKG, text));
-    }
-
-    TreeItem treeItemOperator = new TreeItem(wTree, SWT.NULL);
-    treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
-    treeItemOperator.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Operators.Label"));
-
-    Set<String> categories = new TreeSet<>();
     List<Operator> primaryOperators = new ArrayList<>();
     HashMap<String, String> mapDisplay = new HashMap<>();
 
@@ -632,7 +687,7 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
         continue;
       }
 
-      categories.add(operator.getCategory());
+      treeCategories.add(operator.getCategory());
 
       if (operator.getId().equals(operator.getName())) {
         primaryOperators.add(operator);
@@ -653,54 +708,12 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
       }
     }
 
-    // Create tree item category
-    Map<String, TreeItem> items = new HashMap<>();
-    for (String category : categories) {
-      TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
-      item.setImage(GuiResource.getInstance().getImageFolder());
-      item.setText(category);
-      items.put(category, item);
-    }
-
-    // Create tree item for operators
+    // The label of an operator lists its name and its aliases
     for (Operator operator : primaryOperators) {
-
-      TreeItem parentItem = items.get(operator.getCategory());
-
-      TreeItem item;
-      if (parentItem == null) item = new TreeItem(wTree, SWT.NULL);
-      else item = new TreeItem(parentItem, SWT.NULL);
-      item.setImage(labelProvider.getImage(operator));
-      item.setText(mapDisplay.get(operator.getId()));
-      item.setData(operator);
+      treeOperators.put(operator, mapDisplay.get(operator.getId()));
     }
 
-    // Create tree item for variables
-    TreeItem treeItemVariable = new TreeItem(wTree, SWT.NULL);
-    treeItemVariable.setImage(GuiResource.getInstance().getImageFolder());
-    treeItemVariable.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Variables.Label"));
-
-    if (variables != null) {
-      String[] names = this.variables.getVariableNames();
-      Arrays.sort(names);
-
-      VariableRegistry variableRegistry = VariableRegistry.getInstance();
-      for (String name : names) {
-        boolean isDeprecated = variableRegistry.getDeprecatedVariableNames().contains(name);
-
-        // The described variable is shared by Hop, it must not be modified
-        DescribedVariable variable = variableRegistry.findDescribedVariable(name);
-        if (variable == null) {
-          variable = new DescribedVariable(name, null, null);
-        }
-
-        TreeItem item = new TreeItem(treeItemVariable, SWT.NULL);
-        item.setImage(GuiResource.getInstance().getImageVariable());
-        item.setText(name);
-        item.setGrayed(isDeprecated);
-        item.setData(variable);
-      }
-    }
+    populateTree();
 
     // Context menu to display help, created once and shown only for an element
     Menu menu = new Menu(wTree);
@@ -731,8 +744,214 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     showHelp(item.getData());
   }
 
+  /** Schedules the filter of the tree, the delay restarts on each character typed. */
+  protected void onTreeFilterModified() {
+    Display display = wTreeFilter.getDisplay();
+    display.timerExec(-1, treeFilterRunnable);
+    display.timerExec(TREE_FILTER_DELAY_MS, treeFilterRunnable);
+  }
+
+  /** Filters the tree when the effective filter changes, not on each character typed. */
+  private void applyTreeFilter() {
+    // The editor may be closed before the delay has elapsed
+    if (wTreeFilter.isDisposed() || wTree.isDisposed()) {
+      return;
+    }
+    String filter = toTreeFilter(wTreeFilter.getText());
+    if (!filter.equals(treeFilter)) {
+      treeFilter = filter;
+      populateTree();
+    }
+  }
+
+  /**
+   * Returns the filter of the tree for a text typed, in lower case, or empty if the text has less
+   * than {@value #TREE_FILTER_MIN_LENGTH} characters.
+   *
+   * @param text the text typed
+   * @return the filter, empty if the tree is not filtered
+   */
+  static String toTreeFilter(String text) {
+    String filter = text.strip();
+    return (filter.length() < TREE_FILTER_MIN_LENGTH) ? "" : filter.toLowerCase(Locale.ROOT);
+  }
+
+  /**
+   * Returns whether the label of an element of the tree contains the filter, ignoring case.
+   *
+   * @param label the label of the element
+   * @param filter the filter in lower case, empty if the tree is not filtered
+   * @return true if the element is shown
+   */
+  static boolean isTreeMatch(String label, String filter) {
+    return filter.isEmpty() || label.toLowerCase(Locale.ROOT).contains(filter);
+  }
+
+  /**
+   * Fills the tree with the fields, the operators and the variables that match the filter. When
+   * filtered, only the folders with a matching element are shown, expanded.
+   */
+  protected void populateTree() {
+    wTree.setRedraw(false);
+    wTree.removeAll();
+
+    // Fields or arguments
+    if (hasFields()) {
+      String text =
+          (mode == ExpressionMode.UDF)
+              ? "ExpressionEditor.Tree.Arguments.Label"
+              : "ExpressionEditor.Tree.Fields.Label";
+      TreeItem folder = createTreeFolder(null, BaseMessages.getString(PKG, text));
+      IRowMeta fields = rowMeta.get();
+      if (fields != null) {
+        for (IValueMeta valueMeta : fields.getValueMetaList()) {
+          if (isTreeMatch(valueMeta.getName(), treeFilter)) {
+            TreeItem item = new TreeItem(folder, SWT.NULL);
+            item.setImage(GuiResource.getInstance().getImage(valueMeta));
+            item.setText(valueMeta.getName());
+            item.setData(valueMeta);
+          }
+        }
+      }
+    }
+
+    // Operators and functions by category
+    TreeItem operatorFolder =
+        createTreeFolder(
+            null, BaseMessages.getString(PKG, "ExpressionEditor.Tree.Operators.Label"));
+    Map<String, TreeItem> categoryFolders = new HashMap<>();
+    for (String category : treeCategories) {
+      categoryFolders.put(category, createTreeFolder(operatorFolder, category));
+    }
+    for (Map.Entry<Operator, String> entry : treeOperators.entrySet()) {
+      if (isTreeMatch(entry.getValue(), treeFilter)) {
+        Operator operator = entry.getKey();
+        TreeItem parentItem = categoryFolders.get(operator.getCategory());
+        TreeItem item =
+            (parentItem == null)
+                ? new TreeItem(wTree, SWT.NULL)
+                : new TreeItem(parentItem, SWT.NULL);
+        item.setImage(labelProvider.getImage(operator));
+        item.setText(entry.getValue());
+        item.setData(operator);
+      }
+    }
+
+    // Variables
+    TreeItem variableFolder =
+        createTreeFolder(
+            null, BaseMessages.getString(PKG, "ExpressionEditor.Tree.Variables.Label"));
+    if (variables != null) {
+      String[] names = this.variables.getVariableNames();
+      Arrays.sort(names);
+
+      VariableRegistry variableRegistry = VariableRegistry.getInstance();
+      for (String name : names) {
+        if (!isTreeMatch(name, treeFilter)) {
+          continue;
+        }
+        boolean isDeprecated = variableRegistry.getDeprecatedVariableNames().contains(name);
+
+        // The described variable is shared by Hop, it must not be modified
+        DescribedVariable variable = variableRegistry.findDescribedVariable(name);
+        if (variable == null) {
+          variable = new DescribedVariable(name, null, null);
+        }
+
+        TreeItem item = new TreeItem(variableFolder, SWT.NULL);
+        item.setImage(GuiResource.getInstance().getImageVariable());
+        item.setText(name);
+        item.setGrayed(isDeprecated);
+        item.setData(variable);
+      }
+    }
+
+    if (treeFilter.isEmpty()) {
+      // Restore the folders expanded by the user before the search
+      TreeMemory.setExpandedFromMemory(wTree, TREE_MEMORY_NAME);
+    } else {
+      for (TreeItem item : wTree.getItems()) {
+        expandOrDisposeTreeFolder(item);
+      }
+    }
+
+    wTree.setRedraw(true);
+  }
+
+  /**
+   * Stores the expanded state of a folder of the tree, only when the tree is not filtered, so the
+   * tree is restored as it was when the search is cancelled.
+   */
+  private void storeTreeExpanded(TreeItem item, boolean expanded) {
+    if (treeFilter.isEmpty()) {
+      TreeMemory.getInstance().storeExpanded(TREE_MEMORY_NAME, item, expanded);
+    }
+  }
+
+  /** Creates a folder of the tree, at the root if the parent is null. */
+  private TreeItem createTreeFolder(@Nullable TreeItem parent, String text) {
+    TreeItem item =
+        (parent == null) ? new TreeItem(wTree, SWT.NULL) : new TreeItem(parent, SWT.NULL);
+    item.setImage(GuiResource.getInstance().getImageFolder());
+    item.setText(text);
+    return item;
+  }
+
+  /**
+   * Expands a folder with a matching element and disposes a folder without any, an element has a
+   * data.
+   *
+   * @param item the item of the tree
+   * @return true if the item is an element or a folder with an element
+   */
+  private static boolean expandOrDisposeTreeFolder(TreeItem item) {
+    if (item.getData() != null) {
+      return true;
+    }
+    boolean hasElement = false;
+    for (TreeItem child : item.getItems()) {
+      hasElement |= expandOrDisposeTreeFolder(child);
+    }
+    if (hasElement) {
+      FolderTreeIcons.setExpanded(item, true);
+    } else {
+      item.dispose();
+    }
+    return hasElement;
+  }
+
+  /** Returns whether the mode lists the fields, or the arguments of a user-defined function. */
+  private boolean hasFields() {
+    return mode == ExpressionMode.ROW
+        || mode == ExpressionMode.COLUMN
+        || mode == ExpressionMode.UDF;
+  }
+
+  /** Hides the help panel, the editor fills the sash without the separation line. */
   protected void hideHelp() {
-    wEditorSashForm.setWeights(100, 0);
+    wEditorSashForm.setMaximizedControl(wEditorPanel);
+    updateHelpMaxItem();
+  }
+
+  /** Maximizes the help panel over the editor, or restores both panels if it is maximized. */
+  protected void onHelpMaximizeMinimize() {
+    boolean maximized = wEditorSashForm.getMaximizedControl() == wHelpPanel;
+    wEditorSashForm.setMaximizedControl(maximized ? null : wHelpPanel);
+    updateHelpMaxItem();
+  }
+
+  /** Updates the image and the tooltip of the button to maximize or minimize the help panel. */
+  private void updateHelpMaxItem() {
+    boolean maximized = wEditorSashForm.getMaximizedControl() == wHelpPanel;
+    GuiResource resource = GuiResource.getInstance();
+    wHelpMaxItem.setImage(
+        maximized ? resource.getImageMinimizePanel() : resource.getImageMaximizePanel());
+    wHelpMaxItem.setToolTipText(
+        BaseMessages.getString(
+            PKG,
+            maximized
+                ? "ExpressionEditor.Help.Minimize.ToolTip"
+                : "ExpressionEditor.Help.Maximize.ToolTip"));
   }
 
   /** Display help of the element. */
@@ -740,6 +959,12 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     String text = labelProvider.getToolTipText(element);
     if (text != null) {
       this.wBrowser.setText(text);
+
+      // Show the help panel with its previous size, it stays maximized if it is
+      if (this.wEditorSashForm.getMaximizedControl() == wEditorPanel) {
+        this.wEditorSashForm.setMaximizedControl(null);
+        updateHelpMaxItem();
+      }
 
       // If the help panel is too small (less than 20%), reset to 60%.
       int[] weights = this.wEditorSashForm.getWeights();
@@ -1289,9 +1514,11 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     // Stop redraw until operation complete
     wTree.setRedraw(false);
     for (TreeItem item : wTree.getItems()) {
-      item.setExpanded(expanded);
+      FolderTreeIcons.setExpanded(item, expanded);
+      storeTreeExpanded(item, expanded);
       for (TreeItem i : item.getItems()) {
-        i.setExpanded(expanded);
+        FolderTreeIcons.setExpanded(i, expanded);
+        storeTreeExpanded(i, expanded);
       }
     }
     wTree.setRedraw(true);
@@ -1307,14 +1534,14 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     this.rowMeta.set(rowMeta);
 
     // The row meta can be ready after the editor is closed, or the mode has no fields
-    if (isDisposed() || wTreeItemFields == null) {
+    if (isDisposed() || !hasFields()) {
       return;
     }
 
     getDisplay()
         .asyncExec(
             () -> {
-              if (wTreeItemFields == null || wTreeItemFields.isDisposed()) {
+              if (wTree.isDisposed()) {
                 return;
               }
 
@@ -1325,19 +1552,8 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
               // Validate again, the fields were unresolved identifiers before
               validate();
 
-              // Remove existing fields
-              wTreeItemFields.removeAll();
-
-              if (rowMeta != null) {
-                for (int i = 0; i < rowMeta.size(); i++) {
-                  IValueMeta valueMeta = rowMeta.getValueMeta(i);
-
-                  TreeItem item = new TreeItem(wTreeItemFields, SWT.NULL);
-                  item.setImage(GuiResource.getInstance().getImage(valueMeta));
-                  item.setText(valueMeta.getName());
-                  item.setData(valueMeta);
-                }
-              }
+              // List the fields in the tree, with the filter
+              populateTree();
             });
   }
 
