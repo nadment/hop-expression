@@ -114,14 +114,10 @@ public class EqualOperator extends BinaryOperator {
       return Literal.NULL_BOOLEAN;
     }
 
-    // Simplify 3=X+1 → 3-1=X
-    if (left.isConstant()
-        && right.isOperator(AddOperator.INSTANCE)
-        && call(right).getOperand(0).isConstant()) {
-      return new Call(
-          call.getOperator(),
-          new Call(SubtractOperator.INSTANCE, left, call(right).getOperand(0)),
-          call(right).getOperand(1));
+    // Simplify 3=X+1 → 3-1=X, 3=X-1 → 3+1=X, 3=-X → -3=X
+    Call moved = moveConstant(call);
+    if (moved != null) {
+      return moved;
     }
 
     return call;

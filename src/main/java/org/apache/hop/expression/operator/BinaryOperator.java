@@ -17,11 +17,14 @@
 package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** Binary operator, as in "x + y". */
 @NullMarked
@@ -45,6 +48,51 @@ public abstract class BinaryOperator extends Operator {
         operandTypeChecker,
         category,
         documentationUrl);
+  }
+
+  /**
+   * Moves the constant of an addition, a subtraction or a negation to the constant side of a
+   * comparison, the constants are then computed once.
+   *
+   * <p>3=X+1 → 3-1=X, 3=X-1 → 3+1=X, 3&gt;-X → -3&lt;X
+   *
+   * @param call the comparison, with the constant on the left like a normalized comparison
+   * @return the simplified comparison, or null if the constant can't be moved
+   */
+  protected static @Nullable Call moveConstant(Call call) {
+    IExpression left = call.getOperand(0);
+    if (!left.isConstant() || !(call.getOperand(1) instanceof Call operation)) {
+      return null;
+    }
+
+    // 3=X+1 → 3-1=X
+    if (operation.isOperator(AddOperator.INSTANCE) && operation.getOperand(0).isConstant()) {
+      return new Call(
+          call.getOperator(),
+          new Call(SubtractOperator.INSTANCE, left, operation.getOperand(0)),
+          operation.getOperand(1));
+    }
+
+    // Only for numbers, adding a month to a date is not the reverse of subtracting it
+    if (!Types.isNumeric(operation.getType())) {
+      return null;
+    }
+
+    // 3=X-1 → 3+1=X
+    if (operation.isOperator(SubtractOperator.INSTANCE) && operation.getOperand(1).isConstant()) {
+      return new Call(
+          call.getOperator(),
+          new Call(AddOperator.INSTANCE, left, operation.getOperand(1)),
+          operation.getOperand(0));
+    }
+
+    // 3>-X → -3<X, the comparison is reversed like the sign
+    Operator reverse = call.getOperator().reverse();
+    if (operation.isOperator(NegativeOperator.INSTANCE) && reverse != null) {
+      return new Call(reverse, new Call(NegativeOperator.INSTANCE, left), operation.getOperand(0));
+    }
+
+    return null;
   }
 
   @Override

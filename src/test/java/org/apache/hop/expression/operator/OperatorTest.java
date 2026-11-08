@@ -249,6 +249,12 @@ public class OperatorTest extends ExpressionTest {
       // Simplify arithmetic comparisons
       optimize("3>FIELD_INTEGER+1", "FIELD_INTEGER<2");
       optimize("FIELD_INTEGER+1>3", "FIELD_INTEGER>2");
+      optimize("FIELD_INTEGER-1>3", "FIELD_INTEGER>4");
+      // The comparison is reversed with the sign
+      optimize("-FIELD_INTEGER>3", "FIELD_INTEGER<-3");
+      optimize("-FIELD_INTEGER>=3", "FIELD_INTEGER<=-3");
+      evalTrue("-FIELD_INTEGER<-3");
+      evalFalse("-FIELD_INTEGER>-3");
 
       // Simplify comparison with the same term
       optimize("FIELD_STRING>FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
@@ -3122,6 +3128,16 @@ public class OperatorTest extends ExpressionTest {
       // Simplify comparison with arithmetic
       optimize("FIELD_INTEGER+1=3", "FIELD_INTEGER=2");
       optimize("3=FIELD_INTEGER+1", "FIELD_INTEGER=2");
+      optimize("FIELD_INTEGER-1=3", "FIELD_INTEGER=4");
+      optimize("FIELD_NUMBER-0.5=3", "FIELD_NUMBER=3.5");
+      optimize("-FIELD_INTEGER=3", "FIELD_INTEGER=-3");
+      optimize("-FIELD_INTEGER<>3", "FIELD_INTEGER!=-3");
+      evalTrue("FIELD_INTEGER-1=39");
+      evalTrue("-FIELD_INTEGER=-40");
+      // Not with a date, adding a month is not the reverse of subtracting it
+      optimize(
+          "FIELD_DATE-INTERVAL 1 MONTH=DATE '2020-02-29'",
+          "DATE '2020-02-29'=FIELD_DATE-INTERVAL 1 MONTH");
 
       // Simplify comparison with the same term when it is not nullable
       optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
@@ -3317,7 +3333,20 @@ public class OperatorTest extends ExpressionTest {
 
       // By default, BETWEEN is ASYMMETRIC
       optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
-      optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 50 AND 20");
+      // No value is between bounds in the reverse order
+      optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 50 AND 20", "NVL2(FIELD_NUMBER,FALSE,NULL)");
+      optimize("FIELD_INTEGER BETWEEN 5 AND 3", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize("FIELD_STRING BETWEEN 'B' AND 'A'", "NVL2(FIELD_STRING,FALSE,NULL)");
+      optimize("ZEROIFNULL(FIELD_INTEGER) BETWEEN 5 AND 3", "FALSE");
+      evalNull("NULL_INTEGER BETWEEN 5 AND 3");
+
+      // Bounds equal, BETWEEN is an equality
+      optimize("FIELD_INTEGER BETWEEN 3 AND 3", "FIELD_INTEGER=3");
+      optimize(
+          "FIELD_INTEGER BETWEEN FIELD_INTEGER_ZERO AND FIELD_INTEGER_ZERO",
+          "FIELD_INTEGER=FIELD_INTEGER_ZERO");
+      // Not with a non-deterministic bound
+      optimize("FIELD_NUMBER BETWEEN RANDOM() AND RANDOM()");
 
       // Remove SYMMETRIC if operands are constant, and swap bound if necessary
       optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
