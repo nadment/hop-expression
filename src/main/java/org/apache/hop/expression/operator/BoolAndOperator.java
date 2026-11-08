@@ -38,6 +38,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.ComparisonBound;
 import org.apache.hop.expression.util.Pair;
 import org.apache.hop.expression.util.Strong;
 import org.jspecify.annotations.NullMarked;
@@ -93,7 +94,6 @@ public class BoolAndOperator extends BinaryOperator {
 
     final Conjunction conjunction = new Conjunction(predicates);
     for (IExpression predicate : predicates) {
-
       // FALSE as soon as any predicate is FALSE
       if (predicate == Literal.FALSE) {
         return Literal.FALSE;
@@ -104,8 +104,9 @@ public class BoolAndOperator extends BinaryOperator {
       }
     }
 
-    // Don't simplify IS NOT NULL(x) AND x<5 → x<5, the result is FALSE and not NULL if x is NULL
-
+    conjunction.simplifyAbsorption();
+    conjunction.simplifyComplement();
+    conjunction.simplifyRange();
     conjunction.simplifyNotIn();
     conjunction.simplifyIn();
     conjunction.simplifyNull();
@@ -133,6 +134,8 @@ public class BoolAndOperator extends BinaryOperator {
         new ArrayListValuedHashMap<>();
     private final MultiValuedMap<IExpression, Pair<Call, IExpression>> inTerms =
         new ArrayListValuedHashMap<>();
+    private final MultiValuedMap<IExpression, ComparisonBound> bounds =
+        new ArrayListValuedHashMap<>();
 
     Conjunction(PriorityQueue<IExpression> predicates) {
       this.predicates = predicates;
@@ -142,6 +145,10 @@ public class BoolAndOperator extends BinaryOperator {
     void add(Call term) {
       if (isNullTerm(term)) {
         nullTerms.add(term.getOperand(0));
+      }
+      ComparisonBound bound = ComparisonBound.of(term);
+      if (bound != null && isDeterministic(bound.reference())) {
+        bounds.put(bound.reference(), bound);
       }
       addInOrNotIn(term);
       if (Strong.isStrong(term)) {
@@ -172,6 +179,74 @@ public class BoolAndOperator extends BinaryOperator {
           notInTerms.put(term.getOperand(0), Pair.of(term, operand));
         }
       }
+    }
+
+    /** Removes the disjunctions absorbed by another predicate of the conjunction. */
+    void simplifyAbsorption() {
+      // x AND (x OR y) → x, also if x is NULL: NULL AND (NULL OR y) is NULL
+      List<IExpression> absorbed = new ArrayList<>();
+      for (IExpression predicate : predicates) {
+        if (predicate instanceof Call disjunction
+            && disjunction.isOperator(BoolOrOperator.INSTANCE)
+            && disjunction.getChainedOperands(false).stream().anyMatch(this::contains)) {
+          absorbed.add(predicate);
+        }
+      }
+      absorbed.forEach(predicates::remove);
+    }
+
+    /** Replaces a predicate and its negation by NVL2(x,FALSE,NULL). */
+    void simplifyComplement() {
+      // x AND NOT x → NVL2(x,FALSE,NULL), FALSE if x is not NULL, but NULL if x is NULL
+      for (IExpression predicate : List.copyOf(predicates)) {
+        if (predicate instanceof Call negation
+            && negation.isOperator(BoolNotFunction.INSTANCE)
+            && contains(negation.getOperand(0))) {
+          predicates.remove(predicate);
+          predicates.remove(negation.getOperand(0));
+          predicates.add(nullIfNull(negation.getOperand(0)));
+        }
+      }
+    }
+
+    /** Returns whether the conjunction contains a predicate that always evaluates the same. */
+    private boolean contains(IExpression expression) {
+      return predicates.stream().anyMatch(predicate -> isSameExpression(predicate, expression));
+    }
+
+    /** Keeps the most restrictive lower and upper bounds of the range of each expression. */
+    void simplifyRange() {
+      // x>5 AND x>=3 → x>5
+      // x<1 AND x>5 → NVL2(x,FALSE,NULL), no value is in the range
+      for (IExpression reference : bounds.keySet()) {
+        ComparisonBound lower = mostRestrictive(bounds.get(reference), true);
+        ComparisonBound upper = mostRestrictive(bounds.get(reference), false);
+        if (lower != null && upper != null && lower.isEmptyRange(upper)) {
+          predicates.remove(lower.term());
+          predicates.remove(upper.term());
+          predicates.add(nullIfNull(reference));
+        }
+      }
+    }
+
+    /** Returns the most restrictive bound of a side, the other bounds of this side are removed. */
+    private @Nullable ComparisonBound mostRestrictive(
+        Collection<ComparisonBound> bounds, boolean lower) {
+      ComparisonBound result = null;
+      for (ComparisonBound bound : bounds) {
+        if (bound.lower() != lower) {
+          continue;
+        }
+        if (result == null || bound.isMoreRestrictive(result)) {
+          if (result != null) {
+            predicates.remove(result.term());
+          }
+          result = bound;
+        } else {
+          predicates.remove(bound.term());
+        }
+      }
+      return result;
     }
 
     /** Replaces the NOT IN and != of the same value by the union of their values. */
@@ -258,6 +333,7 @@ public class BoolAndOperator extends BinaryOperator {
     void simplifyNull() {
       // Simplify IS NULL(x) AND x<5 → NVL2(x,FALSE,NULL), FALSE if x is not NULL, but NULL and not
       // FALSE if x is NULL
+      // Don't simplify IS NOT NULL(x) AND x<5 → x<5, the result is FALSE and not NULL if x is NULL
       for (IExpression operand : nullTerms) {
         if (strongTerms.contains(operand)) {
           List<IExpression> unnecessary = new ArrayList<>();
@@ -296,9 +372,12 @@ public class BoolAndOperator extends BinaryOperator {
 
   /**
    * Returns {@code NVL2(x,FALSE,NULL)}, the value of a conjunction that is FALSE if x is not NULL
-   * and NULL if x is NULL, like {@code x=1 AND x=2}.
+   * and NULL if x is NULL, like {@code x=1 AND x=2}, or FALSE if x is never NULL.
    */
   private static IExpression nullIfNull(IExpression operand) {
+    if (!operand.getType().isNullable()) {
+      return Literal.FALSE;
+    }
     Call predicate = new Call(Nvl2Function.INSTANCE, operand, Literal.FALSE, Literal.NULL_BOOLEAN);
     predicate.inferReturnType();
     return predicate;

@@ -40,6 +40,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
+import org.apache.hop.expression.util.ComparisonBound;
 import org.apache.hop.expression.util.Pair;
 import org.apache.hop.expression.util.Strong;
 import org.jspecify.annotations.NullMarked;
@@ -104,6 +105,9 @@ public class BoolOrOperator extends BinaryOperator {
       disjunction.add(predicate);
     }
 
+    disjunction.simplifyAbsorption();
+    disjunction.simplifyComplement();
+    disjunction.simplifyRange();
     disjunction.mergeComparisons();
     disjunction.simplifyNotIn();
     disjunction.simplifyIn();
@@ -137,6 +141,8 @@ public class BoolOrOperator extends BinaryOperator {
         new ArrayListValuedHashMap<>();
     private final MultiValuedMap<IExpression, Pair<Call, IExpression>> notInTerms =
         new ArrayListValuedHashMap<>();
+    private final MultiValuedMap<IExpression, ComparisonBound> bounds =
+        new ArrayListValuedHashMap<>();
 
     Disjunction(PriorityQueue<IExpression> predicates) {
       this.predicates = predicates;
@@ -149,6 +155,10 @@ public class BoolOrOperator extends BinaryOperator {
       } else if (predicate instanceof Call term) {
         addNotNull(term);
         addComparison(term);
+        ComparisonBound bound = ComparisonBound.of(term);
+        if (bound != null && isDeterministic(bound.reference())) {
+          bounds.put(bound.reference(), bound);
+        }
         addList(term);
         if (Strong.isStrong(term)) {
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
@@ -199,6 +209,74 @@ public class BoolOrOperator extends BinaryOperator {
       if (term.isOperator(NotInListOperator.INSTANCE)) {
         notInTerms.put(term.getOperand(0), Pair.of(term, term.getOperand(1)));
       }
+    }
+
+    /** Removes the conjunctions absorbed by another predicate of the disjunction. */
+    void simplifyAbsorption() {
+      // x OR (x AND y) → x, also if x is NULL: NULL OR (NULL AND y) is NULL
+      List<IExpression> absorbed = new ArrayList<>();
+      for (IExpression predicate : predicates) {
+        if (predicate instanceof Call conjunction
+            && conjunction.isOperator(BoolAndOperator.INSTANCE)
+            && conjunction.getChainedOperands(false).stream().anyMatch(this::contains)) {
+          absorbed.add(predicate);
+        }
+      }
+      absorbed.forEach(predicates::remove);
+    }
+
+    /** Replaces a predicate and its negation by NVL2(x,TRUE,NULL). */
+    void simplifyComplement() {
+      // x OR NOT x → NVL2(x,TRUE,NULL), TRUE if x is not NULL, but NULL if x is NULL
+      for (IExpression predicate : List.copyOf(predicates)) {
+        if (predicate instanceof Call negation
+            && negation.isOperator(BoolNotFunction.INSTANCE)
+            && contains(negation.getOperand(0))) {
+          predicates.remove(predicate);
+          predicates.remove(negation.getOperand(0));
+          predicates.add(trueIfNotNull(negation.getOperand(0)));
+        }
+      }
+    }
+
+    /** Returns whether the disjunction contains a predicate that always evaluates the same. */
+    private boolean contains(IExpression expression) {
+      return predicates.stream().anyMatch(predicate -> isSameExpression(predicate, expression));
+    }
+
+    /** Keeps the least restrictive lower and upper bounds of the range of each expression. */
+    void simplifyRange() {
+      // x>5 OR x>=3 → x>=3
+      // x>1 OR x<5 → NVL2(x,TRUE,NULL), every value is in the range
+      for (IExpression reference : bounds.keySet()) {
+        ComparisonBound lower = leastRestrictive(bounds.get(reference), true);
+        ComparisonBound upper = leastRestrictive(bounds.get(reference), false);
+        if (lower != null && upper != null && lower.isFullRange(upper)) {
+          predicates.remove(lower.term());
+          predicates.remove(upper.term());
+          predicates.add(trueIfNotNull(reference));
+        }
+      }
+    }
+
+    /** Returns the least restrictive bound of a side, the other bounds of this side are removed. */
+    private @Nullable ComparisonBound leastRestrictive(
+        Collection<ComparisonBound> bounds, boolean lower) {
+      ComparisonBound result = null;
+      for (ComparisonBound bound : bounds) {
+        if (bound.lower() != lower) {
+          continue;
+        }
+        if (result == null || result.isMoreRestrictive(bound)) {
+          if (result != null) {
+            predicates.remove(result.term());
+          }
+          result = bound;
+        } else {
+          predicates.remove(bound.term());
+        }
+      }
+      return result;
     }
 
     /** Merges the comparisons of the same operands. */
@@ -322,10 +400,6 @@ public class BoolOrOperator extends BinaryOperator {
 
     /** Removes the terms dominated by a x IS NOT NULL term. */
     void simplifyNotNull() {
-      // Simplify x OR NOT x → TRUE (if x is not nullable)
-      // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
-      // Simplify x OR (x AND y) → x (if x not nullable)
-
       // Simplify x OR x IS NOT NULL → NVL2(x,TRUE,NULL), the result is NULL and not FALSE if x is
       // NULL
       final List<IExpression> dominated = new ArrayList<>();
@@ -365,6 +439,19 @@ public class BoolOrOperator extends BinaryOperator {
         }
       }
     }
+  }
+
+  /**
+   * Returns {@code NVL2(x,TRUE,NULL)}, the value of a disjunction that is TRUE if x is not NULL and
+   * NULL if x is NULL, like {@code x OR NOT x}, or TRUE if x is never NULL.
+   */
+  private static IExpression trueIfNotNull(IExpression operand) {
+    if (!operand.getType().isNullable()) {
+      return Literal.TRUE;
+    }
+    Call predicate = new Call(Nvl2Function.INSTANCE, operand, Literal.TRUE, Literal.NULL_BOOLEAN);
+    predicate.inferReturnType();
+    return predicate;
   }
 
   @Override

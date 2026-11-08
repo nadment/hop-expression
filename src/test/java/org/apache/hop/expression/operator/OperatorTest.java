@@ -1232,6 +1232,40 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("FIELD_INTEGER!=1 OR FIELD_INTEGER!=2");
       evalTrue("FIELD_INTEGER NOT IN (1,2) OR FIELD_INTEGER NOT IN (3,4)");
       evalNull("NULL_INTEGER!=1 OR NULL_INTEGER!=2");
+
+      // Absorption x OR (x AND y) → x, also if x is NULL
+      optimize(
+          "FIELD_BOOLEAN_TRUE OR (FIELD_BOOLEAN_TRUE AND FIELD_BOOLEAN_FALSE)",
+          "FIELD_BOOLEAN_TRUE");
+      optimize(
+          "FIELD_INTEGER>5 OR (FIELD_STRING='A' AND FIELD_INTEGER>5 AND FIELD_BOOLEAN_TRUE)",
+          "FIELD_INTEGER>5");
+      evalNull("NULL_BOOLEAN OR (NULL_BOOLEAN AND FIELD_BOOLEAN_FALSE)");
+
+      // Complement x OR NOT x → NVL2(x,TRUE,NULL)
+      optimize(
+          "FIELD_BOOLEAN_TRUE OR NOT FIELD_BOOLEAN_TRUE", "NVL2(FIELD_BOOLEAN_TRUE,TRUE,NULL)");
+      evalNull("NULL_BOOLEAN OR NOT NULL_BOOLEAN");
+
+      // The least restrictive bound of each side
+      optimize("FIELD_INTEGER>5 OR FIELD_INTEGER>=3", "FIELD_INTEGER>=3");
+      optimize("FIELD_INTEGER<5 OR FIELD_INTEGER<=5", "FIELD_INTEGER<=5");
+      optimize("FIELD_INTEGER<5 OR 7>FIELD_INTEGER", "FIELD_INTEGER<7");
+      optimize("FIELD_NUMBER>5 OR FIELD_NUMBER>1.5", "FIELD_NUMBER>1.5");
+      optimize("FIELD_STRING>'B' OR FIELD_STRING>'A'", "FIELD_STRING>'A'");
+      optimize(
+          "FIELD_DATE>DATE '2023-01-01' OR FIELD_DATE>DATE '2020-01-01'",
+          "FIELD_DATE>DATE '2020-01-01'");
+      // Every value is in the range
+      optimize("FIELD_INTEGER>1 OR FIELD_INTEGER<5", "NVL2(FIELD_INTEGER,TRUE,NULL)");
+      optimize("FIELD_INTEGER>=5 OR FIELD_INTEGER<5", "NVL2(FIELD_INTEGER,TRUE,NULL)");
+      optimize("ZEROIFNULL(FIELD_INTEGER)>1 OR ZEROIFNULL(FIELD_INTEGER)<5", "TRUE");
+      evalNull("NULL_INTEGER>1 OR NULL_INTEGER<5");
+      // Not if a value is out of the range
+      optimize("FIELD_INTEGER>5 OR FIELD_INTEGER<5", "FIELD_INTEGER!=5");
+      optimize("FIELD_INTEGER>5 OR FIELD_INTEGER<1", "FIELD_INTEGER<1 OR FIELD_INTEGER>5");
+      // Not with a non-deterministic expression
+      optimize("RANDOM()>0.5 OR RANDOM()>0.3", "0.3<RANDOM() OR 0.5<RANDOM()");
     }
   }
 
@@ -1434,6 +1468,45 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "FIELD_INTEGER<>\"CENTURY\" AND FIELD_INTEGER<>1",
           "FIELD_INTEGER!=1 AND \"CENTURY\"!=FIELD_INTEGER");
+
+      // Absorption x AND (x OR y) → x, also if x is NULL
+      optimize(
+          "FIELD_BOOLEAN_TRUE AND (FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_FALSE)",
+          "FIELD_BOOLEAN_TRUE");
+      optimize(
+          "FIELD_INTEGER>5 AND (FIELD_STRING='A' OR FIELD_INTEGER>5 OR FIELD_BOOLEAN_TRUE)",
+          "FIELD_INTEGER>5");
+      evalNull("NULL_BOOLEAN AND (NULL_BOOLEAN OR FIELD_BOOLEAN_TRUE)");
+      // Not with a non-deterministic expression
+      optimize(
+          "RANDOM()>0.5 AND (RANDOM()>0.5 OR FIELD_BOOLEAN_TRUE)",
+          "0.5<RANDOM() AND (FIELD_BOOLEAN_TRUE OR 0.5<RANDOM())");
+
+      // Complement x AND NOT x → NVL2(x,FALSE,NULL)
+      optimize(
+          "FIELD_BOOLEAN_TRUE AND NOT FIELD_BOOLEAN_TRUE", "NVL2(FIELD_BOOLEAN_TRUE,FALSE,NULL)");
+      evalNull("NULL_BOOLEAN AND NOT NULL_BOOLEAN");
+
+      // The most restrictive bound of each side
+      optimize("FIELD_INTEGER>5 AND FIELD_INTEGER>=3", "FIELD_INTEGER>5");
+      optimize("FIELD_INTEGER<5 AND FIELD_INTEGER<=5", "FIELD_INTEGER<5");
+      optimize("FIELD_INTEGER<5 AND 3>FIELD_INTEGER", "FIELD_INTEGER<3");
+      optimize(
+          "FIELD_INTEGER>=1 AND FIELD_INTEGER<=5 AND FIELD_INTEGER>2 AND FIELD_INTEGER<10",
+          "FIELD_INTEGER<=5 AND FIELD_INTEGER>2");
+      optimize("FIELD_NUMBER>5 AND FIELD_NUMBER>1.5", "FIELD_NUMBER>5");
+      // No value is in the range
+      optimize("FIELD_INTEGER<1 AND FIELD_INTEGER>5", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize("FIELD_INTEGER>5 AND FIELD_INTEGER<=5", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize(
+          "FIELD_INTEGER>5 AND FIELD_INTEGER<1 AND FIELD_STRING='A'",
+          "FIELD_STRING='A' AND NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize("ZEROIFNULL(FIELD_INTEGER)<1 AND ZEROIFNULL(FIELD_INTEGER)>5", "FALSE");
+      evalNull("NULL_INTEGER<1 AND NULL_INTEGER>5");
+      // Not if a value is in the range
+      optimize("FIELD_INTEGER>=5 AND FIELD_INTEGER<=5", "FIELD_INTEGER<=5 AND FIELD_INTEGER>=5");
+      // Not with a non-deterministic expression
+      optimize("RANDOM()>0.5 AND RANDOM()>0.3", "0.3<RANDOM() AND 0.5<RANDOM()");
     }
   }
 

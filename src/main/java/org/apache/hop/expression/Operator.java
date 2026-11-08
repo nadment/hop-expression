@@ -202,7 +202,14 @@ public abstract class Operator {
     return left.equals(right) && isDeterministic(left);
   }
 
-  private static boolean isDeterministic(IExpression expression) {
+  /**
+   * Checks if an expression always evaluates to the same value for a row, it doesn't call a
+   * non-deterministic function like {@code RANDOM()}.
+   *
+   * @param expression the expression to check
+   * @return {@code true} if the expression and all its operands are deterministic
+   */
+  protected static boolean isDeterministic(IExpression expression) {
     if (expression instanceof Call call) {
       if (!call.getOperator().isDeterministic()) {
         return false;
