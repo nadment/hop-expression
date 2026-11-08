@@ -45,7 +45,7 @@ public enum ErrorCode {
   /**
    * Unexpected state that reveals a defect of the expression engine rather than a user mistake.
    *
-   * <p>Message: <code>Internal error {0}</code>
+   * <p>Message: <code>Internal error: {0}</code>
    */
   INTERNAL_ERROR,
   /**
@@ -70,7 +70,7 @@ public enum ErrorCode {
   /**
    * A {@code CASE} expression is malformed.
    *
-   * <p>Message: <code>Syntax error at or near CASE when using a case statement</code>
+   * <p>Message: <code>Incorrect syntax of the CASE expression</code>
    */
   SYNTAX_ERROR_CASE_STATEMENT,
   /**
@@ -88,7 +88,7 @@ public enum ErrorCode {
   /**
    * The evaluation context has no current row to read the value of a field from.
    *
-   * <p>Message: <code>Context error</code>
+   * <p>Message: <code>No row available to read the value of a field</code>
    */
   CONTEXT_ERROR,
   /**
@@ -106,13 +106,13 @@ public enum ErrorCode {
   /**
    * The precision of a data type is not an integer literal.
    *
-   * <p>Message: <code>Expected an integer constant as precision</code>
+   * <p>Message: <code>Expected an integer constant as the precision</code>
    */
   EXPECTED_INTEGER_CONSTANT_AS_PRECISION,
   /**
    * The scale of a data type is not an integer literal.
    *
-   * <p>Message: <code>Expected an integer constant as a scale</code>
+   * <p>Message: <code>Expected an integer constant as the scale</code>
    */
   EXPECTED_INTEGER_CONSTANT_AS_SCALE,
   /**
@@ -145,7 +145,7 @@ public enum ErrorCode {
   /**
    * An identifier does not match any field of the row.
    *
-   * <p>Message: <code>Field not found “{0}”</code>
+   * <p>Message: <code>Field “{0}” not found</code>
    */
   UNRESOLVED_IDENTIFIER,
   /**
@@ -157,7 +157,7 @@ public enum ErrorCode {
   /**
    * An aggregate function is required but the expression is not one.
    *
-   * <p>Message: <code>Not an aggregation expression</code>
+   * <p>Message: <code>Not an aggregate expression</code>
    */
   NOT_AN_AGGREGATE_EXPRESSION,
   /**
@@ -175,25 +175,25 @@ public enum ErrorCode {
   /**
    * An element is missing in a list of expressions, as after a trailing comma.
    *
-   * <p>Message: <code>Missing element</code>
+   * <p>Message: <code>Missing element after a comma</code>
    */
   MISSING_ELEMENT,
   /**
    * A block comment is opened but never closed.
    *
-   * <p>Message: <code>Missing end block comment</code>
+   * <p>Message: <code>Missing end of block comment “*&#47;”</code>
    */
   MISSING_END_BLOCK_COMMENT,
   /**
    * A single-quoted string literal is not terminated.
    *
-   * <p>Message: <code>Missing end of the single-quotes string</code>
+   * <p>Message: <code>Missing closing single quote of a string</code>
    */
   MISSING_END_SINGLE_QUOTED_STRING,
   /**
    * A double-quoted identifier is not terminated.
    *
-   * <p>Message: <code>Missing end of the double-quotes string</code>
+   * <p>Message: <code>Missing closing double quote of an identifier</code>
    */
   MISSING_END_DOUBLE_QUOTED_STRING,
   /**
@@ -248,14 +248,14 @@ public enum ErrorCode {
   /**
    * A number is too large or too small to be converted to the {@code INTEGER} data type.
    *
-   * <p>Message: <code>Integer conversion overflow with value '{0}'</code>
+   * <p>Message: <code>Integer conversion overflow with value “{0}”</code>
    */
   INTEGER_CONVERSION_OVERFLOW,
   /**
    * A number exceeds the precision of the {@code NUMBER} or {@code INTEGER} data type it is
    * converted to.
    *
-   * <p>Message: <code>Number conversion overflow with value '{0}' to {1}</code>
+   * <p>Message: <code>Number conversion overflow with value “{0}” to {1}</code>
    */
   NUMBER_CONVERSION_OVERFLOW,
   /**
@@ -374,7 +374,7 @@ public enum ErrorCode {
    * A value to decode contains a symbol outside the alphabet of its encoding, such as base32 or
    * base64.
    *
-   * <p>Message: <code>Invalid symbol '{0}' found while decoding the {1} sequence</code>
+   * <p>Message: <code>Invalid symbol “{0}” found while decoding the {1} sequence</code>
    */
   INVALID_DECODING_SYMBOL,
   /**
@@ -393,13 +393,13 @@ public enum ErrorCode {
   /**
    * A JSON path is malformed.
    *
-   * <p>Message: <code>Invalid json path “{0}”</code>
+   * <p>Message: <code>Invalid JSON path “{0}”</code>
    */
   INVALID_JSON_PATH,
   /**
    * A regular expression pattern is malformed.
    *
-   * <p>Message: <code>Invalid regexp pattern “{0}”</code>
+   * <p>Message: <code>Invalid regular expression “{0}”</code>
    */
   INVALID_REGEXP_PATTERN,
   /**
@@ -431,13 +431,13 @@ public enum ErrorCode {
   /**
    * The Hop value type of a field has no equivalent expression data type.
    *
-   * <p>Message: <code>Field “{0}” of type “{1}” not supported</code>
+   * <p>Message: <code>Field “{0}” of type “{1}” is not supported</code>
    */
   UNSUPPORTED_FIELD_TYPE,
   /**
    * A JSON node type cannot be handled.
    *
-   * <p>Message: <code>Unsupported json type “{0}”</code>
+   * <p>Message: <code>Unsupported JSON type “{0}”</code>
    */
   UNSUPPORTED_JSON_TYPE,
   /**
@@ -466,13 +466,13 @@ public enum ErrorCode {
   /**
    * The compression of a binary value failed.
    *
-   * <p>Message: <code>Compression error</code>
+   * <p>Message: <code>Could not compress the value</code>
    */
   COMPRESSION_ERROR,
   /**
    * The decompression of a binary value failed.
    *
-   * <p>Message: <code>Decompression error</code>
+   * <p>Message: <code>Could not decompress the value, the data is not valid GZIP</code>
    */
   DECOMPRESSION_ERROR,
   /**
