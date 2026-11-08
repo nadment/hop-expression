@@ -64,20 +64,40 @@ NOTE: The `WHEN` clauses are evaluated in order. For better performance, list th
 
 == Examples
 
+A simple `CASE` expression translates a code into a label, a `WHEN` clause can list several values:
+
 ----
-CASE expression
-  WHEN 0, 1, 2 THEN 'good'
-  WHEN 3, 7 THEN 'bad'
-  WHEN 9 THEN 'unknown'
-  ELSE 'error'
+CASE status
+  WHEN 'N' THEN 'New'
+  WHEN 'P', 'S' THEN 'In progress'
+  WHEN 'C' THEN 'Closed'
+  ELSE 'Unknown'
+END
+----
+
+A searched `CASE` expression classifies a value by ranges. The clauses are evaluated in order, so each clause only needs the lower bound of its range:
+
+----
+CASE
+  WHEN amount >= 1000 THEN 'High'
+  WHEN amount >= 100 THEN 'Medium'
+  ELSE 'Low'
+END
+----
+
+A NULL never matches a `WHEN` clause of a simple `CASE` expression, a searched `CASE` expression with `IS NULL` handles it:
+
+----
+CASE
+  WHEN country IS NULL THEN 'Not specified'
+  WHEN country IN ('FR', 'DE', 'IT') THEN 'Europe'
+  ELSE 'Other'
 END
 ----
 
 ----
-CASE WHEN FIELD > 100 THEN 'high' WHEN FIELD > 10 THEN 'medium' ELSE 'low' END
-CASE 2 WHEN 1 THEN 'one' WHEN 2, 3 THEN 'two or three' END returns 'two or three'
-CASE CAST(NULL AS INTEGER) WHEN 1 THEN 'one' ELSE 'other' END returns 'other'
-CASE WHEN TRUE THEN 1 ELSE 2.5 END returns 1 as a Number
+CASE 4 WHEN 1 THEN 'one' WHEN 2, 3 THEN 'two or three' END returns NULL
+CASE WHEN TRUE THEN 1 ELSE 1/0 END returns 1 without error
 ----
 
 == See also
