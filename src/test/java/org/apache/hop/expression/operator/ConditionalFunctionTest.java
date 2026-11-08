@@ -42,18 +42,17 @@ class ConditionalFunctionTest extends ExpressionTest {
 
   @Test
   void If() throws Exception {
-    evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True")
-        .returnType(StringType.STRING_NOT_NULL);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True").returnType(StringType.of(5, false));
     evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
-    evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)", 1L).returnType(IntegerType.of(1, false));
     evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)", new BigDecimal("2"))
-        .returnType(NumberType.NUMBER_NOT_NULL);
+        .returnType(NumberType.of(2, 1, false));
     evalEquals(
             "If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1))
         .returnType(DateType.DATE_NOT_NULL);
 
     // If condition is NULL then return false value
-    evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(StringType.of(1, false));
 
     // The result is nullable if one of the values is nullable
     optimize("IF(FIELD_BOOLEAN_TRUE,FIELD_INTEGER IS NULL,FIELD_STRING IS NULL)")
@@ -93,6 +92,20 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     // Simplify IF(x=y,NULL,y) → NULLIF(y, x)
     optimize("IF(0=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,0)");
+
+    // Simplify nested IF(a,x,IF(b,y,z)) → CASE WHEN a THEN x WHEN b THEN y ELSE z END
+    optimize(
+        "IF(FIELD_INTEGER>40,'A',IF(FIELD_INTEGER>20,'B','C'))",
+        "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' ELSE 'C' END");
+    optimize(
+        "IF(FIELD_INTEGER>40,'A',IF(FIELD_INTEGER>20,'B',IF(FIELD_INTEGER>10,'C','D')))",
+        "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN FIELD_INTEGER>10 THEN 'C' ELSE 'D' END");
+    optimize(
+        "IF(FIELD_INTEGER>40,'A',CASE WHEN FIELD_INTEGER>20 THEN 'B' WHEN FIELD_INTEGER>10 THEN 'C' END)",
+        "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN FIELD_INTEGER>10 THEN 'C' END");
+    evalEquals("IF(FIELD_INTEGER>40,'A',IF(FIELD_INTEGER>20,'B','C'))", "B")
+        .returnType(StringType.of(1, false));
+    evalEquals("IF(NULL_BOOLEAN,'A',IF(FIELD_BOOLEAN_TRUE,'B','C'))", "B");
 
     // No simplify
     optimize("IF(FIELD_INTEGER=10,NULL,FIELD_NUMBER)");

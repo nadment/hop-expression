@@ -102,53 +102,35 @@ public class CaseSearchOperator extends Operator {
           call(elseTerm).getOperand(3));
     }
 
-    // Search CASE expressions with one condition can be turned into COALESCE, NULLIF, NVL2 or
-    // simple case
+    // A nested CASE expression with one condition is already turned into IF, the operands being
+    // compiled first: CASE WHEN a THEN x ELSE IF(b,y,z) END → CASE WHEN a THEN x WHEN b THEN y ELSE
+    // z
+    // END
+    if (elseTerm.isOperator(IfFunction.INSTANCE) && call(elseTerm).getOperandCount() == 3) {
+      List<IExpression> whenOperands = new ArrayList<>();
+      whenTerm.forEach(whenOperands::add);
+      whenOperands.add(call(elseTerm).getOperand(0));
+
+      List<IExpression> thenOperands = new ArrayList<>();
+      thenTerm.forEach(thenOperands::add);
+      thenOperands.add(call(elseTerm).getOperand(1));
+
+      return new Call(
+          CaseSearchOperator.INSTANCE,
+          Literal.NULL,
+          new Array(whenOperands),
+          new Array(thenOperands),
+          call(elseTerm).getOperand(2));
+    }
+
+    // Search CASE expressions with one condition are turned into IF, which is then turned into
+    // IFNULL, NULLIF or NVL2 if possible
     //
     if (whenTerm.size() == 1) {
       IExpression whenTerm0 = whenTerm.get(0);
-      IExpression thenTerm0 = thenTerm.get(0);
 
-      // CASE WHEN x IS NULL THEN y ELSE x END → IFNULL(x,y)
-      if (whenTerm0.isOperator(IsNullOperator.INSTANCE)
-          && call(whenTerm0).getOperand(0).equals(elseTerm)) {
-        return new Call(IfNullFunction.INSTANCE, call(whenTerm0).getOperand(0), thenTerm0);
-      }
-
-      // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
-      if (whenTerm0.isOperator(EqualOperator.INSTANCE) && thenTerm0.isNull()) {
-
-        if (call(whenTerm0).getOperand(0).equals(elseTerm)) {
-          return new Call(
-              NullIfFunction.INSTANCE,
-              call(whenTerm0).getOperand(0),
-              call(whenTerm0).getOperand(1));
-        }
-
-        if (call(whenTerm0).getOperand(1).equals(elseTerm)) {
-          return new Call(
-              NullIfFunction.INSTANCE,
-              call(whenTerm0).getOperand(1),
-              call(whenTerm0).getOperand(0));
-        }
-      }
-
-      // CASE WHEN x IS NOT NULL THEN y ELSE z END → NVL2(x,y,z)
-      if (whenTerm0.isOperator(IsNotNullOperator.INSTANCE)) {
-        return new Call(Nvl2Function.INSTANCE, call(whenTerm0).getOperand(0), thenTerm0, elseTerm);
-      }
-
-      // CASE WHEN x IS NULL THEN y ELSE z END → NVL2(x,z,y)
-      if (whenTerm0.isOperator(IsNullOperator.INSTANCE)) {
-        return new Call(Nvl2Function.INSTANCE, call(whenTerm0).getOperand(0), elseTerm, thenTerm0);
-      }
-
-      // CASE WHEN a=b THEN 1 END to CASE a WHEN b THEN 1 END
-      // Not always compatible with flatten search case
-      // if (whenTerm0.is(Operators.EQUAL)) {
-      // return new Call(Operators.CASE, whenTerm0.asCall().getOperand(0), new
-      // Array(whenTerm0.asCall().getOperand(1)), thenTerm, elseTerm);
-      // }
+      // CASE WHEN x THEN y ELSE z END → IF(x,y,z)
+      return new Call(IfFunction.INSTANCE, whenTerm0, thenTerm.get(0), elseTerm);
     }
 
     return call;

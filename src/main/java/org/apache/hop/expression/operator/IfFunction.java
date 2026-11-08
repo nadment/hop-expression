@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import static org.apache.hop.expression.type.Types.coerceOperandType;
 import static org.apache.hop.expression.type.Types.getLeastRestrictive;
 
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -63,6 +64,19 @@ public class IfFunction extends Function {
     }
 
     IExpression condition = call.getOperand(0);
+
+    // Nested IF or searched CASE in the false value, flattened by the CASE operator:
+    // IF(a,x,IF(b,y,z)) → CASE WHEN a THEN x WHEN b THEN y ELSE z END
+    IExpression falseValue = call.getOperand(2);
+    if (falseValue.isOperator(IfFunction.INSTANCE)
+        || falseValue.isOperator(CaseSearchOperator.INSTANCE)) {
+      return new Call(
+          CaseSearchOperator.INSTANCE,
+          Literal.NULL,
+          new Array(condition),
+          new Array(call.getOperand(1)),
+          falseValue);
+    }
 
     if (condition.isOperator(IsNullOperator.INSTANCE)) {
       // IF(x IS NULL,y,x) → IFNULL(x, y)

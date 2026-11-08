@@ -391,27 +391,21 @@ public final class ReturnTypes {
   // -------------------------------------------------------------
 
   /**
-   * Type-inference strategy for IF function: the most general type of the operands #1 and #2 with
-   * its maximum precision, nullable if one of them is nullable or if the operand #2 is omitted.
+   * Type-inference strategy for IF function: the least restrictive type of the operands #1 and #2,
+   * like the CASE operator, nullable if one of them is nullable or if the operand #2 is omitted.
    */
   public static final IReturnTypeInference IF_FUNCTION =
       call -> {
         if (call.getOperandCount() < 2) return UnknownType.UNKNOWN;
 
-        ITypeTransform transform = TypeTransforms.TO_MAX_PRECISION;
-
         Type type1 = call.getOperand(1).getType();
         if (call.getOperandCount() == 2) {
           // Without else value, the function returns NULL when the condition is false
-          return transform.transformType(call, type1).withNullability(true);
+          return type1.withNullability(true);
         }
         Type type2 = call.getOperand(2).getType();
         boolean nullable = type1.isNullable() || type2.isNullable();
-        if (type1.getName().ordinal() < type2.getName().ordinal()) {
-          return transform.transformType(call, type2).withNullability(nullable);
-        }
-
-        return transform.transformType(call, type1).withNullability(nullable);
+        return Types.getLeastRestrictive(type1, type2).withNullability(nullable);
       };
 
   /**

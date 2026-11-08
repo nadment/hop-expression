@@ -1547,9 +1547,12 @@ public class OperatorTest extends ExpressionTest {
       evalNull("case when NULL_INTEGER is NULL then NULL else 1 end").returnType(IntegerType.of(1));
 
       // The result is nullable if one of the THEN or ELSE expressions is nullable
-      optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN FIELD_INTEGER ELSE ZEROIFNULL(FIELD_INTEGER) END")
+      // (two clauses, a CASE with one clause is turned into IF)
+      optimize(
+              "CASE WHEN FIELD_BOOLEAN_FALSE THEN 0 WHEN FIELD_BOOLEAN_TRUE THEN FIELD_INTEGER ELSE ZEROIFNULL(FIELD_INTEGER) END")
           .returnType(IntegerType.of(12));
-      optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN ZEROIFNULL(FIELD_INTEGER) ELSE 0 END")
+      optimize(
+              "CASE WHEN FIELD_BOOLEAN_FALSE THEN 0 WHEN FIELD_BOOLEAN_TRUE THEN ZEROIFNULL(FIELD_INTEGER) ELSE 0 END")
           .returnType(IntegerType.of(12, false));
 
       // The return type is the common type of the THEN and ELSE expressions
@@ -1615,7 +1618,14 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 ELSE NULL END",
           "CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 END");
-      optimize("CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END");
+
+      // "CASE WHEN x THEN y ELSE z END" to "IF(x, y, z)"
+      optimize(
+          "CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END", "IF(FIELD_INTEGER=40,TRUE,FALSE)");
+      optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN 'A' END", "IF(FIELD_BOOLEAN_TRUE,'A',NULL)");
+
+      // A number condition is TRUE if it is not 0, like in the IF function
+      optimize("CASE WHEN FIELD_INTEGER THEN 'A' ELSE 'B' END", "IF(FIELD_INTEGER,'A','B')");
 
       // Flatten search case
       optimize(
@@ -1666,14 +1676,14 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("CASE NULL_INTEGER WHEN 1 THEN TRUE ELSE FALSE END")
           .returnType(BooleanType.BOOLEAN_NOT_NULL);
       evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L)
-          .returnType(IntegerType.INTEGER_NOT_NULL);
+          .returnType(IntegerType.of(1, false));
       evalEquals("CASE NULL_NUMBER WHEN 0 THEN 1.023 ELSE 1 END", BigDecimal.ONE)
-          .returnType(NumberType.NUMBER_NOT_NULL);
+          .returnType(NumberType.of(4, 3, false));
       evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B")
-          .returnType(StringType.STRING_NOT_NULL);
+          .returnType(StringType.of(1, false));
 
       // Check null data type returned
-      evalNull("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE NULL END").returnType(StringType.STRING);
+      evalNull("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE NULL END").returnType(StringType.of(1));
 
       // Ignore division by zero in THEN term, should not evaluate
       evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0/0 ELSE 1 END", 1D);
