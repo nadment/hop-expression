@@ -1272,6 +1272,24 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER>5 OR FIELD_INTEGER<1", "FIELD_INTEGER<1 OR FIELD_INTEGER>5");
       // Not with a non-deterministic expression
       optimize("RANDOM()>0.5 OR RANDOM()>0.3", "0.3<RANDOM() OR 0.5<RANDOM()");
+
+      // The equalities in the range of a comparison are removed
+      optimize("FIELD_INTEGER=3 OR FIELD_INTEGER>1", "FIELD_INTEGER>1");
+      optimize("FIELD_INTEGER=3 OR FIELD_INTEGER>=3", "FIELD_INTEGER>=3");
+      optimize("FIELD_INTEGER IN (1,5,8) OR FIELD_INTEGER>3", "FIELD_INTEGER=1 OR FIELD_INTEGER>3");
+      optimize(
+          "FIELD_INTEGER IN (1,2,5,8) OR FIELD_INTEGER>3",
+          "FIELD_INTEGER>3 OR FIELD_INTEGER IN (1,2)");
+      optimize(
+          "FIELD_INTEGER IN (1,5) OR FIELD_INTEGER<2 OR FIELD_INTEGER>4",
+          "FIELD_INTEGER<2 OR FIELD_INTEGER>4");
+      optimize("FIELD_STRING='B' OR FIELD_STRING>'A'", "FIELD_STRING>'A'");
+      // Not out of the range
+      optimize("FIELD_INTEGER=3 OR FIELD_INTEGER>3", "FIELD_INTEGER>=3");
+      optimize("FIELD_INTEGER=1 OR FIELD_INTEGER>3", "FIELD_INTEGER=1 OR FIELD_INTEGER>3");
+      evalTrue("FIELD_INTEGER IN (1,40) OR FIELD_INTEGER>50");
+      evalFalse("FIELD_INTEGER IN (1,30) OR FIELD_INTEGER>50");
+      evalNull("NULL_INTEGER=3 OR NULL_INTEGER>1");
     }
   }
 

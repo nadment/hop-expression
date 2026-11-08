@@ -383,14 +383,31 @@ public class BoolOrOperator extends BinaryOperator {
       // Simplify union
       // X=1 OR X=2 → X IN (1,2)
       // X=1 OR X IN (2,3) → X IN (1,2,3)
+      // Remove the values in the range of a comparison, the disjunction is already TRUE for them
+      // X=3 OR X>1 → X>1
+      // X IN (1,5) OR X>3 → X=1 OR X>3
       for (IExpression reference : inTerms.keySet()) {
         Collection<Pair<Call, IExpression>> pairs = inTerms.get(reference);
-        if (pairs.size() > 1) {
-          List<IExpression> values = new ArrayList<>();
-          for (Pair<Call, IExpression> pair : pairs) {
+        Collection<ComparisonBound> range = bounds.get(reference);
+        List<IExpression> values = new ArrayList<>();
+        boolean changed = pairs.size() > 1;
+        for (Pair<Call, IExpression> pair : pairs) {
+          if (range.stream().anyMatch(bound -> Boolean.TRUE.equals(bound.includes(pair.right())))) {
+            changed = true;
+          } else {
             values.add(pair.right());
-            predicates.remove(pair.left());
           }
+        }
+        if (!changed) {
+          continue;
+        }
+
+        pairs.forEach(pair -> predicates.remove(pair.left()));
+        if (values.size() == 1) {
+          Call predicate = new Call(EqualOperator.INSTANCE, reference, values.getFirst());
+          predicate.inferReturnType();
+          predicates.add(predicate);
+        } else if (values.size() > 1) {
           Call predicate = new Call(InListOperator.INSTANCE, reference, new Array(values));
           predicate.inferReturnType();
           predicates.add(predicate);
