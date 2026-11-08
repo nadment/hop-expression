@@ -71,6 +71,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("If()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("If(true)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    // The type of the result can't be inferred from untyped NULL, like a CASE
+    evalFails("If(FIELD_BOOLEAN_TRUE,NULL,NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
@@ -158,16 +160,18 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("NullIf(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("NullIf(1,true)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-    optimizeNull("NULLIF(NULL, NULL)");
+    // The type of the result can't be inferred from untyped NULL
+    evalFails("NULLIF(NULL, NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     optimizeNull("NULLIF(true, true)").returnType(BooleanType.BOOLEAN);
     optimizeTrue("NULLIF(true, false)");
-    optimizeNull("NULLIF(NULL, false)");
+    optimizeNull("NULLIF(NULL::BOOLEAN, false)");
+    evalFails("NULLIF(NULL, false)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     // Simplify NULLIF(x, NULL) → x
     optimizeTrue("NULLIF(true, NULL)");
     optimize("NULLIF(FIELD_STRING, NULL)", "FIELD_STRING");
-    optimizeNull("NULLIF(NULL, FIELD_STRING)");
+    optimizeNull("NULLIF(NULL::STRING, FIELD_STRING)");
     optimizeNull("NULLIF('a', 'a')");
-    optimizeNull("NULLIF(NULL, 'b')");
+    optimizeNull("NULLIF(NULL::STRING, 'b')");
     optimize("NULLIF('a', NULL)", "'a'");
     optimizeNull("NULLIF(1, 1)");
     optimize("NULLIF('a', 'b')", "'a'");
@@ -179,9 +183,10 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("ZeroIfNull(1)", 1L);
     evalEquals("ZeroIfNull(1.1)", 1.1D);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
-    // The NULL literal has no numeric type, the result is an integer
-    evalEquals("ZeroIfNull(NULL)", 0L).returnType(IntegerType.of(1, false));
-    evalEquals("ZeroIfNull(NULL) * FIELD_INTEGER", 0L);
+    // The NULL literal has no numeric type to infer the type of the result
+    evalFails("ZeroIfNull(NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals("ZeroIfNull(NULL::INTEGER)", 0L)
+        .returnType(IntegerType.INTEGER.withNullability(false));
 
     // The result has the data type of the argument and is never null
     evalEquals("ZeroIfNull(FIELD_INTEGER)", 40L).returnType(IntegerType.of(12, false));
@@ -377,7 +382,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Coalesce()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
-    optimize("COALESCE(NULL)", "NULL");
+    // The type of the result can't be inferred from an untyped NULL
+    evalFails("COALESCE(NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     optimize("COALESCE(NULL::INTEGER)", "NULL");
     optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
 

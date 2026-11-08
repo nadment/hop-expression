@@ -102,6 +102,10 @@ public class ConcatFunction extends Function {
       case 0: // Nothing to concat
         return new Literal(null, call.getType());
       case 1: // Concat(X) → X
+        // Cast X to the type of the concatenation, like NULL||1 → CAST(1 AS STRING)
+        if (operands.getFirst().getType().getName() != call.getType().getName()) {
+          return Types.cast(operands.getFirst(), call.getType());
+        }
         return operands.getFirst();
       default:
         Operator operator = StringConcatFunction.INSTANCE;

@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import lombok.Getter;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -151,6 +152,12 @@ public class Call implements IExpression {
 
     // Inferring the return type
     type = operator.inferReturnType(this);
+
+    // The return type can't be inferred from untyped NULL operands, like NULL+NULL or
+    // IF(c,NULL,NULL), a NULL must be cast to a type.
+    if (type.isName(TypeName.UNKNOWN)) {
+      throw new ParseExpressionException(getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, operator);
+    }
   }
 
   /** Inferring the return type. */

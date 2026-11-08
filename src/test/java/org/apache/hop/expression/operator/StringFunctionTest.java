@@ -1655,6 +1655,11 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("'A'||'B'", "'AB'");
     optimize("12||'34'", "'1234'");
 
+    // Remove NULL and keep the string type of the concatenation
+    optimize("NULL||1", "'1'").returnType(StringType.STRING.withNullability(false));
+    optimize("FIELD_INTEGER||NULL", "CAST(FIELD_INTEGER AS STRING)").returnType(StringType.STRING);
+    optimizeNull("NULL||NULL").returnType(StringType.STRING);
+
     // Combine and flatten concats (Same syntax but cost reduced)
     optimize("'A'||FIELD_STRING||FIELD_STRING||'C'", "'A'||FIELD_STRING||FIELD_STRING||'C'");
     optimize("'A'||FIELD_STRING||NULL_STRING||'C'", "'A'||FIELD_STRING||NULL_STRING||'C'");

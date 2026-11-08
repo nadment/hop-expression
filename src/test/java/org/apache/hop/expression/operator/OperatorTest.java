@@ -712,6 +712,8 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testNullHandling() throws Exception {
       evalNull("-NULL_INTEGER").returnType(IntegerType.INTEGER);
+      // The type of the result can't be inferred from an untyped NULL
+      evalFails("-NULL", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -807,6 +809,9 @@ public class OperatorTest extends ExpressionTest {
       // Simplify arithmetic with NULL
       optimizeNull("NULL::INTEGER/FIELD_INTEGER");
       optimizeNull("FIELD_INTEGER/NULL::INTEGER");
+      // The NULL keeps the type of the division
+      optimizeNull("NULL/1").returnType(NumberType.NUMBER);
+      optimizeNull("NULL/NULL").returnType(NumberType.NUMBER);
 
       // Simplify arithmetic A / 1 → A
       optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
@@ -1252,6 +1257,9 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("NULL_BOOLEAN AND FIELD_BOOLEAN_FALSE");
       evalFalse("FIELD_BOOLEAN_FALSE AND NULL_BOOLEAN");
       evalNull("NULL_BOOLEAN AND NULL_BOOLEAN");
+
+      // The NULL keeps the boolean type of the conjunction
+      optimizeNull("NULL AND NULL").returnType(BooleanType.BOOLEAN);
 
       // The operands are sorted at compile time, evaluate a NULL left operand directly
       assertEquals(
@@ -2162,8 +2170,9 @@ public class OperatorTest extends ExpressionTest {
       evalNull("+NULL_INTEGER+5");
       evalNull("NULL_INTEGER+NULL_NUMBER");
       // The NULL literal has no precision, the result has the type of the other operand
-      evalNull("NULL+NULL");
       evalNull("NULL+1").returnType(IntegerType.of(1));
+      // The type of the result can't be inferred from untyped NULL
+      evalFails("NULL+NULL", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Arithmetic overflow Long.MAX_VALUE+1
       evalFails("9223372036854775807::INTEGER+1::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -2330,9 +2339,11 @@ public class OperatorTest extends ExpressionTest {
 
       evalNull("5-NULL_INTEGER").returnType(IntegerType.of(19));
       evalNull("NULL_INTEGER-5");
-      evalNull("NULL-NULL");
+      // The type of the result can't be inferred from untyped NULL
+      evalFails("NULL-NULL", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       // The data type is derived from the compiled operands, the CASE is simplified to an integer
-      evalEquals("CASE CAST(1.5 AS INTEGER) WHEN 0 THEN 1%NULL ELSE 2+1 END - 2", 1L);
+      // The CASE has the number type of the modulo, even when the modulo is simplified to NULL
+      evalEquals("CASE CAST(1.5 AS INTEGER) WHEN 0 THEN 1%NULL ELSE 2+1 END - 2", BigDecimal.ONE);
 
       // Arithmetic overflow Long.MIN_VALUE-2
       evalFails("-9223372036854775807::INTEGER-2::INTEGER", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -2476,6 +2487,8 @@ public class OperatorTest extends ExpressionTest {
       // Simplify arithmetic with NULL
       optimizeNull("NULL::INTEGER%FIELD_INTEGER");
       optimizeNull("FIELD_INTEGER%NULL::INTEGER");
+      // The NULL keeps the type of the modulo
+      optimizeNull("NULL%1").returnType(NumberType.of(1));
 
       // Simplify arithmetic A % 1 → 0 (if A is not nullable)
       optimize("FIELD_INTEGER%1", "FIELD_INTEGER%1");
@@ -2546,7 +2559,8 @@ public class OperatorTest extends ExpressionTest {
       evalNull("3.12*NULL_NUMBER");
       // The NULL literal has no precision, the result has the type of the other operand
       evalNull("NULL*5");
-      evalNull("NULL*NULL");
+      // The type of the result can't be inferred from untyped NULL
+      evalFails("NULL*NULL", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalNull("(NULL*5)-0");
     }
 
@@ -2565,6 +2579,8 @@ public class OperatorTest extends ExpressionTest {
       // Simplify arithmetic with NULL
       optimizeNull("NULL::INTEGER*FIELD_INTEGER");
       optimizeNull("FIELD_INTEGER*NULL::INTEGER");
+      // The NULL keeps the type of the multiplication
+      optimizeNull("NULL*1").returnType(IntegerType.of(1));
 
       // Simplify arithmetic 0 * A → 0
       optimize("PI()*0", "0");
@@ -2705,6 +2721,10 @@ public class OperatorTest extends ExpressionTest {
       evalNull("NULL_STRING like 'NULL'").returnType(BooleanType.BOOLEAN);
       evalNull("NULL_STRING LIKE '%'").returnType(BooleanType.BOOLEAN);
       evalNull("'test' LIKE NULL_STRING").returnType(BooleanType.BOOLEAN);
+
+      // The NULL keeps the boolean type of the predicate, not the type of the value
+      optimizeNull("NULL LIKE NULL").returnType(BooleanType.BOOLEAN);
+      optimizeNull("NULL::STRING LIKE FIELD_STRING").returnType(BooleanType.BOOLEAN);
     }
 
     @Test

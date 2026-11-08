@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 
@@ -84,6 +85,17 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     // Compile with operator, the operands of a symmetrical operator in a normal order
     IExpression expression =
         original.getOperator().compile(context, normalizeSymmetrical(original));
+
+    // A call simplified to NULL, like "x / NULL" or "NULL LIKE x", keeps the type of the call
+    // rather than the type of the NULL operand it returns. Not when the type of the call is not
+    // known, like a user defined function whose replacing expression gives the type.
+    if (expression.isNull()
+        && !original.getType().isName(TypeName.UNKNOWN)
+        && !original.getType().isName(TypeName.ANY)
+        && !expression.getType().equals(original.getType().withNullability(true))) {
+      hasChanged = true;
+      return new Literal(null, original.getType().withNullability(true));
+    }
 
     if (expression instanceof Call call) {
 

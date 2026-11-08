@@ -285,6 +285,19 @@ Literal json.
 JSON '{"name":"John","age":30}'
 ----
 
+=== Null
+
+The `NULL` literal has no data type, it takes the data type of its context.
+
+----
+NULL + 1 <1>
+CASE WHEN FIELD > 0 THEN FIELD ELSE NULL END <2>
+CAST(NULL AS INTEGER) <3>
+----
+<1> An INTEGER, the type of the other operand.
+<2> The type of `FIELD`, the type of the other branch.
+<3> Use xref:cast.adoc["CAST",role=fun] when the data type can't be inferred from the context, for example `NULL + NULL` or `COALESCE(NULL)` raise an error.
+
 
 == Identifier
 
