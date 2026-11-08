@@ -34,8 +34,9 @@ import org.jspecify.annotations.Nullable;
  * @param term the comparison
  * @param reference the compared expression
  * @param value the constant value
- * @param lower {@code true} for a lower bound (x>v or x>=v), {@code false} for an upper bound
- * @param inclusive {@code true} if the value is included (x>=v or x<=v)
+ * @param lower {@code true} for a lower bound ({@code x>v} or {@code x>=v}), {@code false} for an
+ *     upper bound
+ * @param inclusive {@code true} if the value is included ({@code x>=v} or {@code x<=v})
  */
 @NullMarked
 public record ComparisonBound(
@@ -85,8 +86,8 @@ public record ComparisonBound(
   }
 
   /**
-   * Returns whether this bound excludes more values than another bound of the same side, x>5 is
-   * more restrictive than x>3, and x>5 than x>=5.
+   * Returns whether this bound excludes more values than another bound of the same side, {@code
+   * x>5} is more restrictive than {@code x>3}, and {@code x>5} than {@code x>=5}.
    *
    * @param other another lower bound if this one is a lower bound, or upper bound otherwise
    * @return true if this bound is more restrictive
@@ -100,8 +101,8 @@ public record ComparisonBound(
   }
 
   /**
-   * Returns whether no value is both above this lower bound and below an upper bound, like x>5 and
-   * x<1, or x>5 and x<=5.
+   * Returns whether no value is both above this lower bound and below an upper bound, like {@code
+   * x>5} and {@code x<1}, or {@code x>5} and {@code x<=5}.
    *
    * @param upper the upper bound
    * @return true if the range is empty
@@ -112,8 +113,8 @@ public record ComparisonBound(
   }
 
   /**
-   * Returns whether every value is above this lower bound or below an upper bound, like x>1 or x<5,
-   * or x>=5 or x<5.
+   * Returns whether every value is above this lower bound or below an upper bound, like {@code x>1}
+   * or {@code x<5}, or {@code x>=5} or {@code x<5}.
    *
    * @param upper the upper bound
    * @return true if the bounds include every value
