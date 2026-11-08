@@ -2504,6 +2504,11 @@ public class OperatorTest extends ExpressionTest {
       optimize("10-FIELD_INTEGER");
       optimize("FIELD_INTEGER-0", "FIELD_INTEGER");
       optimize("0-FIELD_INTEGER", "-FIELD_INTEGER");
+      // A-A → 0 if A is not nullable
+      optimize("ZEROIFNULL(FIELD_INTEGER)-ZEROIFNULL(FIELD_INTEGER)", "0");
+      optimize("ZEROIFNULL(FIELD_NUMBER)-ZEROIFNULL(FIELD_NUMBER)", "0");
+      optimize("FIELD_INTEGER-FIELD_INTEGER");
+      evalNull("NULL_INTEGER-NULL_INTEGER");
       optimize("FIELD_INTEGER-(0-FIELD_INTEGER)", "FIELD_INTEGER+FIELD_INTEGER");
       optimize("FIELD_INTEGER-(-FIELD_NUMBER)", "FIELD_INTEGER+FIELD_NUMBER");
     }

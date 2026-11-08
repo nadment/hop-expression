@@ -557,6 +557,11 @@ public class StringFunctionTest extends ExpressionTest {
     // Characters of the Basic Multilingual Plane which are not Latin-1
     evalEquals("Substring('€uro€',2,3)", "uro");
     evalEquals("Substring('€uro€',-1)", "€");
+
+    // From the first character, the whole string
+    optimize("SUBSTRING(FIELD_STRING,1)", "FIELD_STRING");
+    optimize("SUBSTRING(FIELD_STRING,2)");
+    optimize("SUBSTRING(FIELD_STRING,1,2)");
   }
 
   @Test
@@ -1108,6 +1113,10 @@ public class StringFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Reverse()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Reverse('str','bad')", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    // Reversed twice, the value is unchanged
+    optimize("REVERSE(REVERSE(FIELD_STRING))", "FIELD_STRING");
+    optimize("REVERSE(REVERSE(FIELD_BINARY))", "FIELD_BINARY");
   }
 
   @Test

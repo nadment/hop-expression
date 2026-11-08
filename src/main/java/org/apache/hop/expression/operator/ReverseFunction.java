@@ -49,6 +49,11 @@ public class ReverseFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // REVERSE(REVERSE(x)) → x
+    if (call.getOperand(0).isOperator(call.getOperator())) {
+      return ((Call) call.getOperand(0)).getOperand(0);
+    }
+
     Type type = call.getOperand(0).getType();
     if (Types.isBinary(type)) {
       return new Call(BinaryReverseFunction.INSTANCE, call.getOperand(0));

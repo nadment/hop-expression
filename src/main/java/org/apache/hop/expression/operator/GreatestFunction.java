@@ -16,10 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -49,6 +53,37 @@ public class GreatestFunction extends Function {
   @Override
   public boolean isSymmetrical() {
     return true;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    return removeDuplicateOperands(call);
+  }
+
+  /**
+   * Removes the operands repeated in a call of GREATEST or LEAST, the result is the same without
+   * them, and returns the operand alone if it is the only one.
+   *
+   * <p>GREATEST(x,y,x) → GREATEST(x,y), GREATEST(x) → x
+   *
+   * @param call the call of GREATEST or LEAST
+   * @return the simplified expression, or the call if nothing changed
+   */
+  static IExpression removeDuplicateOperands(Call call) {
+    List<IExpression> operands = new ArrayList<>();
+    for (IExpression operand : call.getOperands()) {
+      if (operands.stream().noneMatch(previous -> isSameExpression(previous, operand))) {
+        operands.add(operand);
+      }
+    }
+
+    if (operands.size() == 1) {
+      return operands.getFirst();
+    }
+    if (operands.size() < call.getOperandCount()) {
+      return new Call(call.getOperator(), operands);
+    }
+    return call;
   }
 
   @Override

@@ -59,6 +59,11 @@ public class AbsFunction extends Function {
       return call.getOperand(0);
     }
 
+    // ABS(-x) → ABS(x)
+    if (call.getOperand(0).isOperator(NegativeOperator.INSTANCE)) {
+      return new Call(call.getOperator(), ((Call) call.getOperand(0)).getOperand(0));
+    }
+
     Type type = call.getOperand(0).getType();
 
     if (Types.isInterval(type)) {

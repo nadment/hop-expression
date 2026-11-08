@@ -108,6 +108,13 @@ public class SubtractOperator extends BinaryOperator {
       return new Call(AddOperator.INSTANCE, left, call(right).getOperand(0));
     }
 
+    // Simplify arithmetic A-A → 0 (if A is not nullable), an integer or a number like A
+    if (isSameExpression(left, right)
+        && !left.getType().isNullable()
+        && Types.isNumeric(left.getType())) {
+      return Types.isInteger(left.getType()) ? Literal.ZERO : Literal.of(BigDecimal.ZERO);
+    }
+
     // Optimize data type, derived from the compiled operands: the type of the call was inferred
     // before its operands were simplified, like CASE ... THEN 1%NULL ELSE 3 END to the integer 3
     if (Types.isInteger(ReturnTypes.deriveAdditiveType(left.getType(), right.getType()))) {

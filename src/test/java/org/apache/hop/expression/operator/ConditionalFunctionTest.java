@@ -198,6 +198,12 @@ class ConditionalFunctionTest extends ExpressionTest {
     optimizeNull("NULLIF(1, 1)");
     optimize("NULLIF('a', 'b')", "'a'");
     optimize("NULLIF(1, 2)", "1");
+
+    // A value equal to itself, or NULL
+    optimizeNull("NULLIF(FIELD_INTEGER,FIELD_INTEGER)").returnType(IntegerType.of(12));
+    evalNull("NULLIF(FIELD_STRING,FIELD_STRING)");
+    // Not with a non-deterministic expression
+    optimize("NULLIF(RANDOM(),RANDOM())");
   }
 
   @Test
@@ -309,6 +315,15 @@ class ConditionalFunctionTest extends ExpressionTest {
     optimize(
         "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO) = GREATEST(FIELD_INTEGER_ZERO,FIELD_INTEGER)",
         "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO)=GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO)");
+
+    // The repeated operands are removed, an operand alone is the result
+    optimize(
+        "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO,FIELD_INTEGER)",
+        "GREATEST(FIELD_INTEGER,FIELD_INTEGER_ZERO)");
+    optimize("GREATEST(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
+    optimize("GREATEST(FIELD_INTEGER)", "FIELD_INTEGER");
+    // Not with a non-deterministic expression
+    optimize("GREATEST(RANDOM(),RANDOM())");
   }
 
   @Test
@@ -363,6 +378,13 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     // The operands of a symmetrical function are in a normal order, the same calls are recognized
     optimize("LEAST(1,FIELD_INTEGER) = LEAST(FIELD_INTEGER,1)", "TRUE");
+
+    // The repeated operands are removed, an operand alone is the result
+    optimize(
+        "LEAST(FIELD_INTEGER,FIELD_INTEGER_ZERO,FIELD_INTEGER)",
+        "LEAST(FIELD_INTEGER,FIELD_INTEGER_ZERO)");
+    optimize("LEAST(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
+    optimize("LEAST(FIELD_INTEGER)", "FIELD_INTEGER");
   }
 
   @Test

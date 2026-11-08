@@ -92,7 +92,10 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Abs(FIELD_JSON)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Abs(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
-    optimize("ABS(-FIELD_INTEGER)");
+    // The sign of the operand is ignored
+    optimize("ABS(-FIELD_INTEGER)", "ABS(FIELD_INTEGER)");
+    optimize("ABS(-FIELD_NUMBER)", "ABS(FIELD_NUMBER)");
+    evalEquals("ABS(-FIELD_INTEGER)", 40L);
 
     // Function repetition
     optimize("ABS(ABS(FIELD_INTEGER))", "ABS(FIELD_INTEGER)");

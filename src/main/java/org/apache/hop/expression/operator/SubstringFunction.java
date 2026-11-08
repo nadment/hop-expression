@@ -16,12 +16,17 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Characters;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -41,6 +46,17 @@ public class SubstringFunction extends Function {
         OperandTypes.STRING_INTEGER.or(OperandTypes.STRING_INTEGER_INTEGER),
         OperatorCategory.STRING,
         "/docs/hop-user-manual/expression/substring.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // SUBSTRING(x,1) → x, only a string, another value is converted to a string
+    if (call.getOperandCount() == 2
+        && Literal.ONE.equals(call.getOperand(1))
+        && Types.isString(call.getOperand(0).getType())) {
+      return call.getOperand(0);
+    }
+    return call;
   }
 
   @Override
