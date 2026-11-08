@@ -64,8 +64,7 @@ public class AgeFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // AGE(date) → AGE(CURRENT_DATE, date), the current date at midnight, always set by the context
     if (call.getOperandCount() == 1) {
-      ZonedDateTime today = requireNonNull(Attribute.CURRENT_DATE.getDate(context));
-      IExpression currentDate = Literal.of(today.toLocalDateTime());
+      IExpression currentDate = Literal.of(requireNonNull(Attribute.CURRENT_DATE.getDate(context)));
       return new Call(call.getPosition(), this, currentDate, call.getOperand(0));
     }
     return call;

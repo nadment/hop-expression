@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -32,8 +33,19 @@ public enum Attribute {
     return (String) context.getAttribute(name());
   }
 
-  /** Returns the value of the attribute as date in a given context. */
-  public @Nullable ZonedDateTime getDate(IExpressionContext context) {
+  /**
+   * Returns the value of the attribute as a date, a date-time without time zone, in a given
+   * context.
+   */
+  public @Nullable LocalDateTime getDate(IExpressionContext context) {
+    return (LocalDateTime) context.getAttribute(name());
+  }
+
+  /**
+   * Returns the value of the attribute as a timestamp, a date-time with time zone, in a given
+   * context.
+   */
+  public @Nullable ZonedDateTime getTimestamp(IExpressionContext context) {
     return (ZonedDateTime) context.getAttribute(name());
   }
 }

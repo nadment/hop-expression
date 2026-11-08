@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
@@ -57,7 +58,9 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Current_Date() throws Exception {
     IExpressionContext context = createExpressionContext();
-    ZonedDateTime today = Attribute.CURRENT_DATE.getDate(context);
+    // A date without time zone at midnight
+    LocalDateTime today = Attribute.CURRENT_DATE.getDate(context);
+    assertEquals(LocalDate.now().atStartOfDay(), today);
     evalEquals(context, "Today()", today).returnType(DateType.DATE_NOT_NULL);
     evalEquals(context, "Current_Date()", today);
 
@@ -72,7 +75,7 @@ class DateFunctionTest extends ExpressionTest {
   @Test
   void Current_Timestamp() throws Exception {
     IExpressionContext context = createExpressionContext();
-    ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.getDate(context);
+    ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.getTimestamp(context);
     evalEquals(context, "Now()", today).returnType(TimestampType.TIMESTAMP_NOT_NULL);
     evalEquals(context, "Current_Timestamp()", today);
 

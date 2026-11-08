@@ -16,7 +16,6 @@ package org.apache.hop.expression;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.hop.core.variables.IVariables;
@@ -82,7 +81,8 @@ public class ExpressionContext implements IExpressionContext {
     ZonedDateTime now = ZonedDateTime.now(zoneId);
     this.setAttribute(Attribute.CURRENT_TIMEZONE.name(), zoneId.getId());
     this.setAttribute(Attribute.CURRENT_TIMESTAMP.name(), now);
-    this.setAttribute(Attribute.CURRENT_DATE.name(), now.truncatedTo(ChronoUnit.DAYS));
+    // The current date at midnight, a date without time zone
+    this.setAttribute(Attribute.CURRENT_DATE.name(), now.toLocalDate().atStartOfDay());
     this.setAttribute(variables, EXPRESSION_TWO_DIGIT_YEAR_START, 1970);
     this.setAttribute(variables, EXPRESSION_DATE_FORMAT, "YYYY-MM-DD");
     this.setAttribute(variables, EXPRESSION_TIMESTAMP_FORMAT, "YYYY-MM-DD H24:MI:SS");

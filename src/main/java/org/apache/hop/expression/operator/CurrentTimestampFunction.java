@@ -48,6 +48,6 @@ public class CurrentTimestampFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // The current date and time in the system time zone
     return new Literal(
-        Attribute.CURRENT_TIMESTAMP.getDate(context), TimestampType.TIMESTAMP_NOT_NULL);
+        Attribute.CURRENT_TIMESTAMP.getTimestamp(context), TimestampType.TIMESTAMP_NOT_NULL);
   }
 }

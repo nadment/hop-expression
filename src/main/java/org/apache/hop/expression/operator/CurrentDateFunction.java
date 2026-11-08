@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.ZonedDateTime;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
@@ -49,7 +48,6 @@ public class CurrentDateFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // The current date in the system time zone, a date without time zone, always set by the context
-    ZonedDateTime today = requireNonNull(Attribute.CURRENT_DATE.getDate(context));
-    return Literal.of(today.toLocalDateTime());
+    return Literal.of(requireNonNull(Attribute.CURRENT_DATE.getDate(context)));
   }
 }
