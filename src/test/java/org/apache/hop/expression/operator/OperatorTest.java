@@ -1514,6 +1514,20 @@ public class OperatorTest extends ExpressionTest {
       // Not with a non-deterministic expression
       optimize("RANDOM()>0.5 AND RANDOM()>0.3", "0.3<RANDOM() AND 0.5<RANDOM()");
 
+      // The equalities in the range imply the comparisons, the others are removed
+      optimize("FIELD_INTEGER=3 AND FIELD_INTEGER>1", "FIELD_INTEGER=3");
+      optimize("FIELD_INTEGER=3 AND FIELD_INTEGER>=3 AND FIELD_INTEGER<10", "FIELD_INTEGER=3");
+      optimize("FIELD_INTEGER IN (1,5,8) AND FIELD_INTEGER>3", "FIELD_INTEGER IN (5,8)");
+      optimize("FIELD_INTEGER IN (1,5,8) AND FIELD_INTEGER BETWEEN 2 AND 6", "FIELD_INTEGER=5");
+      optimize("FIELD_STRING='B' AND FIELD_STRING>'A'", "FIELD_STRING='B'");
+      // No equality in the range
+      optimize("FIELD_INTEGER=3 AND FIELD_INTEGER>5", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize("FIELD_INTEGER=3 AND FIELD_INTEGER>3", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      optimize("FIELD_INTEGER IN (1,2) AND FIELD_INTEGER>3", "NVL2(FIELD_INTEGER,FALSE,NULL)");
+      evalTrue("FIELD_INTEGER IN (1,40,80) AND FIELD_INTEGER BETWEEN 20 AND 60");
+      evalFalse("FIELD_INTEGER IN (1,80) AND FIELD_INTEGER BETWEEN 20 AND 60");
+      evalNull("NULL_INTEGER=3 AND NULL_INTEGER>5");
+
       // BETWEEN is expanded into comparisons, simplified with the other comparisons
       optimize(
           "FIELD_INTEGER BETWEEN 1 AND 5 AND FIELD_INTEGER>3",

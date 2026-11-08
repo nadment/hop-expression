@@ -286,6 +286,20 @@ public class BoolAndOperator extends BinaryOperator {
           predicates.remove(pair.left());
         }
 
+        // Remove the values out of the range of the comparisons, the comparisons are then implied
+        // by the remaining values: X=3 AND X>1 → X=3, X IN (1,5) AND X>3 → X=5,
+        // X=3 AND X>5 → NVL2(X,FALSE,NULL). Only if all the values can be compared.
+        Collection<ComparisonBound> range = bounds.get(reference);
+        if (!range.isEmpty()
+            && values.stream()
+                .allMatch(
+                    value -> range.stream().allMatch(bound -> bound.includes(value) != null))) {
+          values.removeIf(
+              value ->
+                  range.stream().anyMatch(bound -> Boolean.FALSE.equals(bound.includes(value))));
+          range.forEach(bound -> predicates.remove(bound.term()));
+        }
+
         if (values.isEmpty()) {
           predicates.add(nullIfNull(reference));
         } else if (values.size() == 1) {

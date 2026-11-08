@@ -14,6 +14,8 @@
  */
 package org.apache.hop.expression.util;
 
+import static java.util.Objects.requireNonNull;
+
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Literal;
@@ -122,6 +124,26 @@ public record ComparisonBound(
   public boolean isFullRange(ComparisonBound upper) {
     int compare = compare(upper);
     return compare < 0 || (compare == 0 && (inclusive || upper.inclusive));
+  }
+
+  /**
+   * Returns whether a constant satisfies this bound, {@code 3} satisfies {@code x>1} but not {@code
+   * x>5}, or null if the constant can't be compared with the bound.
+   *
+   * @param expression the constant, like a value of {@code x=3} or {@code x IN (1,3)}
+   * @return true if the constant is in the range of this bound, or null if unknown
+   */
+  public @Nullable Boolean includes(IExpression expression) {
+    if (!(expression instanceof Literal literal)
+        || literal.getValue() == null
+        || !literal.getType().isName(reference.getType().getName())) {
+      return null;
+    }
+    int compare = reference.getType().compare(requireNonNull(literal.getValue()), value);
+    if (compare == 0) {
+      return inclusive;
+    }
+    return lower ? compare > 0 : compare < 0;
   }
 
   private int compare(ComparisonBound other) {
