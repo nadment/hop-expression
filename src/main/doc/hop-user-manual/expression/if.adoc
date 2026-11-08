@@ -26,7 +26,7 @@ IF( condition, true_value [, false_value ] )
 
 == Arguments
 
-condition:: Boolean expression to evaluate.
+condition:: Boolean expression to evaluate, a number is TRUE if it is not 0.
 true_value:: Value returned if condition is TRUE.
 false_value:: Value returned if condition is FALSE or NULL.
 
@@ -50,6 +50,20 @@ IF(totalprice >= 150000, 'High Value', 'Low Value')
 ----
 CASE
     WHEN totalprice >= 150000 THEN 'High Value'
+    ELSE 'Low Value'
+END
+----
+
+Nested `IF` functions in the false value are equivalent to a `CASE` expression with several `WHEN` clauses, which is easier to read:
+
+----
+IF(totalprice >= 150000, 'High Value', IF(totalprice >= 50000, 'Medium Value', 'Low Value'))
+----
+
+----
+CASE
+    WHEN totalprice >= 150000 THEN 'High Value'
+    WHEN totalprice >= 50000 THEN 'Medium Value'
     ELSE 'Low Value'
 END
 ----

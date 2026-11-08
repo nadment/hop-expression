@@ -58,6 +58,7 @@ The result is nullable if one of the result expressions is nullable or if the `E
 * A NULL never matches: in a simple `CASE` expression, a NULL expression or a NULL value of a `WHEN` clause never matches, and in a searched `CASE` expression, a NULL condition is not TRUE.
 * The conditions of a searched `CASE` expression must be booleans or numbers, a number condition is TRUE if it is not 0, like with the xref:is-true.adoc["IS TRUE",role=op] operator.
 * The result expressions must be of the same data type family, like with the xref:if.adoc["IF",role=fun] function, for example a number and a string or a number and a boolean are incompatible. An error is raised if the result expressions are of incompatible types, or if they are all NULL because the data type can't be determined; use an explicit cast like `CAST(NULL AS STRING)` if needed.
+* A searched `CASE` expression with one `WHEN` clause is equivalent to the xref:if.adoc["IF",role=fun] function, `CASE WHEN condition THEN x ELSE y END` is `IF(condition, x, y)`, and a `CASE` expression with several `WHEN` clauses is equivalent to nested `IF` functions.
 * Only the result expression of the matching clause is evaluated, and the `WHEN` clauses that follow a matching clause are not evaluated, so `CASE WHEN TRUE THEN 1 ELSE 1/0 END` returns 1 without error.
 
 NOTE: The `WHEN` clauses are evaluated in order. For better performance, list the most likely clauses first and the clauses with expensive expressions (e.g., requiring lots of CPU and memory) last, to minimize the chances that they are evaluated.
