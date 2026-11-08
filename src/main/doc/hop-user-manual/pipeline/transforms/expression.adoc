@@ -109,6 +109,7 @@ For example, with these lines, `UPPER(TRIM(NAME))` is evaluated once per row for
 A field with the name of an input field replaces it.
 A line without name is ignored, and a field can be calculated by only one expression; the names are not case-sensitive.
 |Expression|The expression that calculates the value of the field.
+An empty expression gives a null value.
 |Type|The type of the field, the result of the expression is converted to this type.
 With the type None, the expression is ignored and the field is null.
 |Length|The length of the field.

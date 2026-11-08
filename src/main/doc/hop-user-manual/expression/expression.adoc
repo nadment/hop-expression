@@ -296,7 +296,9 @@ CAST(NULL AS INTEGER) <3>
 ----
 <1> An INTEGER, the type of the other operand.
 <2> The type of `FIELD`, the type of the other branch.
-<3> Use xref:cast.adoc["CAST",role=fun] when the data type can't be inferred from the context, for example `NULL + NULL` or `COALESCE(NULL)` raise an error.
+<3> Use xref:cast.adoc["CAST",role=fun] when the data type can't be inferred from the context, for example `NULL`, `NULL + NULL` or `COALESCE(NULL)` raise an error.
+
+An empty expression returns a NULL of type STRING.
 
 
 == Identifier

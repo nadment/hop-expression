@@ -204,9 +204,9 @@ public class ExpressionParser implements IExpressionParser {
   /** Parse the expression */
   public IExpression parse() throws ExpressionException {
 
-    // Empty source return literal NULL
+    // Empty source return literal NULL, typed as a string
     if (!lexer.hasNext()) {
-      return Literal.NULL;
+      return Literal.NULL_STRING;
     }
 
     IExpression expression = this.parseLogicalOr();

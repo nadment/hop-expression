@@ -69,13 +69,18 @@ public class ExpressionParserTest extends ExpressionTest {
 
   @Test
   void sourceEmptyOrNull() throws Exception {
-    // Empty source return NULL
-    evalNull("");
+    // Empty source return NULL, typed as a string
+    evalNull("").returnType(StringType.STRING);
     evalNull(" ");
     evalNull("\t");
     evalNull("\n");
+    evalNull("// Comment only").returnType(StringType.STRING);
 
     evalFails(null, ErrorCode.NULL_SOURCE_ERROR);
+
+    // An untyped NULL alone, its type can't be inferred
+    evalFails("NULL", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalNull("NULL::INTEGER").returnType(IntegerType.INTEGER);
   }
 
   @Test

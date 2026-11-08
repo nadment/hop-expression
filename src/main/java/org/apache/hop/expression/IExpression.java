@@ -48,7 +48,11 @@ public interface IExpression {
 
     // Check return type, Unknown or Enum are not expected here
     Type type = expression.getType();
-    if (!expression.isNull() && (type.isName(TypeName.UNKNOWN) || type.isName(TypeName.ENUM))) {
+    // An untyped NULL alone, its type can't be inferred, a NULL must be cast to a type
+    if (type.isName(TypeName.UNKNOWN)) {
+      throw new ParseExpressionException(0, ErrorCode.ILLEGAL_ARGUMENT_TYPE, expression);
+    }
+    if (type.isName(TypeName.ENUM)) {
       throw new ParseExpressionException(0, ErrorCode.SYNTAX_ERROR, expression);
     }
 
