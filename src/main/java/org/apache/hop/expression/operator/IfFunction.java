@@ -65,6 +65,21 @@ public class IfFunction extends Function {
 
     IExpression condition = call.getOperand(0);
 
+    // IF(c,x,x) → x, only one of the values is evaluated
+    if (call.getOperand(1).equals(call.getOperand(2))) {
+      return call.getOperand(1);
+    }
+
+    // IF(c,TRUE,FALSE) → c IS TRUE, FALSE if the condition is NULL
+    if (call.getOperand(1).equals(Literal.TRUE) && call.getOperand(2).equals(Literal.FALSE)) {
+      return new Call(IsTrueOperator.INSTANCE, condition);
+    }
+
+    // IF(c,FALSE,TRUE) → c IS NOT TRUE, TRUE if the condition is NULL
+    if (call.getOperand(1).equals(Literal.FALSE) && call.getOperand(2).equals(Literal.TRUE)) {
+      return new Call(IsNotTrueOperator.INSTANCE, condition);
+    }
+
     // Nested IF or searched CASE in the false value, flattened by the CASE operator:
     // IF(a,x,IF(b,y,z)) → CASE WHEN a THEN x WHEN b THEN y ELSE z END
     IExpression falseValue = call.getOperand(2);

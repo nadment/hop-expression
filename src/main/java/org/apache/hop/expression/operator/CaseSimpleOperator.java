@@ -21,6 +21,8 @@ import static org.apache.hop.expression.type.Types.coerceOperandType;
 import static org.apache.hop.expression.type.Types.getLeastRestrictive;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
@@ -92,6 +94,64 @@ public class CaseSimpleOperator extends Operator {
     Array whenTerm = (Array) call.getOperand(1);
     Array thenTerm = (Array) call.getOperand(2);
     IExpression elseTerm = call.getOperand(3);
+
+    // Remove the values that never match, and the clauses without any value left
+    List<IExpression> whenOperands = new ArrayList<>();
+    List<IExpression> thenOperands = new ArrayList<>();
+    List<IExpression> previousValues = new ArrayList<>();
+    boolean changed = false;
+    for (int i = 0; i < whenTerm.size(); i++) {
+      IExpression whenOperand = whenTerm.get(i);
+      List<IExpression> values = new ArrayList<>();
+      if (whenOperand instanceof Array array) {
+        array.forEach(values::add);
+      } else {
+        values.add(whenOperand);
+      }
+
+      // CASE v WHEN 1 THEN x WHEN 1, 2 THEN y END → CASE v WHEN 1 THEN x WHEN 2 THEN y END
+      // A NULL value never matches, and a value already tested never matches
+      List<IExpression> newValues = new ArrayList<>();
+      for (IExpression value : values) {
+        if (value.isNull()
+            || previousValues.stream().anyMatch(previous -> isSameExpression(previous, value))) {
+          changed = true;
+        } else {
+          newValues.add(value);
+          previousValues.add(value);
+        }
+      }
+
+      if (!newValues.isEmpty()) {
+        whenOperands.add(newValues.size() == 1 ? newValues.getFirst() : new Array(newValues));
+        thenOperands.add(thenTerm.get(i));
+      }
+    }
+
+    // CASE v WHEN 1 THEN x WHEN 2 THEN y ELSE y END → CASE v WHEN 1 THEN x ELSE y END
+    while (!thenOperands.isEmpty() && thenOperands.getLast().equals(elseTerm)) {
+      whenOperands.removeLast();
+      thenOperands.removeLast();
+      changed = true;
+    }
+
+    // The removed results don't change the data type
+    Type type = ReturnTypes.CASE_OPERATOR.inferReturnType(call);
+    if (whenOperands.isEmpty()) {
+      return CaseSearchOperator.castResult(elseTerm, type);
+    }
+
+    if (changed) {
+      return new Call(
+          CaseSimpleOperator.INSTANCE,
+          call.getOperand(0),
+          new Array(whenOperands),
+          new Array(
+              thenOperands.stream()
+                  .map(result -> CaseSearchOperator.castResult(result, type))
+                  .toList()),
+          CaseSearchOperator.castResult(elseTerm, type));
+    }
 
     if (whenTerm.size() == 1) {
       IExpression whenOperand = whenTerm.get(0);

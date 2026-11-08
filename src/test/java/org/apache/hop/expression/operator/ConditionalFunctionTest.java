@@ -93,6 +93,15 @@ class ConditionalFunctionTest extends ExpressionTest {
     // Simplify IF(x=y,NULL,y) → NULLIF(y, x)
     optimize("IF(0=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,0)");
 
+    // Simplify IF(c,x,x) → x
+    optimize("IF(FIELD_BOOLEAN_TRUE,FIELD_STRING,FIELD_STRING)", "FIELD_STRING");
+
+    // Simplify IF(c,TRUE,FALSE) → c IS TRUE and IF(c,FALSE,TRUE) → c IS NOT TRUE
+    optimize("IF(FIELD_INTEGER>10,TRUE,FALSE)", "FIELD_INTEGER>10 IS TRUE");
+    optimize("IF(FIELD_INTEGER>10,FALSE,TRUE)", "FIELD_INTEGER>10 IS NOT TRUE");
+    evalFalse("IF(NULL_BOOLEAN,TRUE,FALSE)");
+    evalTrue("IF(NULL_BOOLEAN,FALSE,TRUE)");
+
     // Simplify nested IF(a,x,IF(b,y,z)) → CASE WHEN a THEN x WHEN b THEN y ELSE z END
     optimize(
         "IF(FIELD_INTEGER>40,'A',IF(FIELD_INTEGER>20,'B','C'))",

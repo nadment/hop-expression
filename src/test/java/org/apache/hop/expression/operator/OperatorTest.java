@@ -1620,8 +1620,7 @@ public class OperatorTest extends ExpressionTest {
           "CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 END");
 
       // "CASE WHEN x THEN y ELSE z END" to "IF(x, y, z)"
-      optimize(
-          "CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END", "IF(FIELD_INTEGER=40,TRUE,FALSE)");
+      optimize("CASE WHEN FIELD_INTEGER=40 THEN 'A' ELSE 'B' END", "IF(FIELD_INTEGER=40,'A','B')");
       optimize("CASE WHEN FIELD_BOOLEAN_TRUE THEN 'A' END", "IF(FIELD_BOOLEAN_TRUE,'A',NULL)");
 
       // A number condition is TRUE if it is not 0, like in the IF function
@@ -1653,6 +1652,41 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "CASE WHEN FIELD_INTEGER IS NULL THEN FIELD_STRING ELSE 'TEST' END",
           "NVL2(FIELD_INTEGER,'TEST',FIELD_STRING)");
+
+      // A clause with a FALSE or NULL condition never matches
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FALSE THEN 'B' WHEN FIELD_INTEGER>20 THEN 'C' END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'C' END");
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN CAST(NULL AS BOOLEAN) THEN 'B' WHEN FIELD_INTEGER>20 THEN 'C' END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'C' END");
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN 0 THEN 'B' WHEN FIELD_INTEGER>20 THEN 'C' END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'C' END");
+
+      // A clause with a TRUE condition becomes the ELSE clause, the following clauses are removed
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN TRUE THEN 'C' WHEN FIELD_INTEGER>10 THEN 'D' ELSE 'E' END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' ELSE 'C' END");
+      optimize("CASE WHEN TRUE THEN FIELD_STRING ELSE 'B' END", "FIELD_STRING");
+
+      // A condition already tested never matches
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN FIELD_INTEGER>40 THEN 'C' END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' END");
+      // but not a non-deterministic condition
+      optimize(
+          "CASE WHEN 0.5<RANDOM() THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN 0.5<RANDOM() THEN 'C' END");
+
+      // The last clause returns the same result as the ELSE clause
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN FIELD_INTEGER>10 THEN 'C' ELSE 'C' END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' ELSE 'C' END");
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' WHEN FIELD_INTEGER>10 THEN NULL END",
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'B' END");
+      optimize(
+          "CASE WHEN FIELD_INTEGER>40 THEN 'A' WHEN FIELD_INTEGER>20 THEN 'A' ELSE 'A' END", "'A'");
 
       // Search case to simple case: CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
       // optimize("CASE WHEN FIELD_INTEGER=1 THEN 2 END", "CASE 1 WHEN FIELD_INTEGER THEN 2 END");
@@ -1764,6 +1798,23 @@ public class OperatorTest extends ExpressionTest {
       optimize("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
       // Multi values
       optimize("CASE FIELD_INTEGER WHEN 1,2,3 THEN 'A' WHEN 4,5,6,7 THEN 'B' ELSE 'C' END");
+
+      // A value already tested or a NULL value never matches
+      optimize(
+          "CASE FIELD_INTEGER WHEN 1 THEN 'A' WHEN 2 THEN 'B' WHEN 1 THEN 'C' ELSE 'D' END",
+          "CASE FIELD_INTEGER WHEN 1 THEN 'A' WHEN 2 THEN 'B' ELSE 'D' END");
+      optimize(
+          "CASE FIELD_INTEGER WHEN 1,2 THEN 'A' WHEN 2,3,NULL,4 THEN 'B' WHEN 5 THEN 'C' END",
+          "CASE FIELD_INTEGER WHEN 1,2 THEN 'A' WHEN 3,4 THEN 'B' WHEN 5 THEN 'C' END");
+      optimize(
+          "CASE FIELD_INTEGER WHEN 1,2 THEN 'A' WHEN 2,3 THEN 'B' WHEN 4 THEN 'C' END",
+          "CASE FIELD_INTEGER WHEN 1,2 THEN 'A' WHEN 3 THEN 'B' WHEN 4 THEN 'C' END");
+
+      // The last clause returns the same result as the ELSE clause
+      optimize(
+          "CASE FIELD_INTEGER WHEN 1 THEN 'A' WHEN 2 THEN 'B' WHEN 3 THEN 'C' ELSE 'C' END",
+          "CASE FIELD_INTEGER WHEN 1 THEN 'A' WHEN 2 THEN 'B' ELSE 'C' END");
+      optimize("CASE FIELD_INTEGER WHEN 1 THEN 'A' WHEN 2 THEN 'A' ELSE 'A' END", "'A'");
     }
   }
 

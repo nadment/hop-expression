@@ -103,9 +103,8 @@ public class CaseSearchOperator extends Operator {
     }
 
     // A nested CASE expression with one condition is already turned into IF, the operands being
-    // compiled first: CASE WHEN a THEN x ELSE IF(b,y,z) END → CASE WHEN a THEN x WHEN b THEN y ELSE
-    // z
-    // END
+    // compiled first:
+    // CASE WHEN a THEN x ELSE IF(b,y,z) END → CASE WHEN a THEN x WHEN b THEN y ELSE z END
     if (elseTerm.isOperator(IfFunction.INSTANCE) && call(elseTerm).getOperandCount() == 3) {
       List<IExpression> whenOperands = new ArrayList<>();
       whenTerm.forEach(whenOperands::add);
@@ -121,6 +120,59 @@ public class CaseSearchOperator extends Operator {
           new Array(whenOperands),
           new Array(thenOperands),
           call(elseTerm).getOperand(2));
+    }
+
+    // Remove the clauses that never match, and the clauses after a clause that always matches
+    List<IExpression> whenOperands = new ArrayList<>();
+    List<IExpression> thenOperands = new ArrayList<>();
+    IExpression elseOperand = elseTerm;
+    boolean changed = false;
+    for (int i = 0; i < whenTerm.size(); i++) {
+      IExpression whenOperand = whenTerm.get(i);
+      if (whenOperand instanceof Literal) {
+        Boolean value = whenOperand.getValue(Boolean.class);
+        // CASE WHEN a THEN x WHEN FALSE THEN y ELSE z END → CASE WHEN a THEN x ELSE z END
+        // A NULL condition is not TRUE and never matches either
+        if (value == null || !value) {
+          changed = true;
+          continue;
+        }
+        // CASE WHEN a THEN x WHEN TRUE THEN y WHEN b THEN z END → CASE WHEN a THEN x ELSE y END
+        elseOperand = thenTerm.get(i);
+        changed = true;
+        break;
+      }
+      // CASE WHEN a THEN x WHEN a THEN y ELSE z END → CASE WHEN a THEN x ELSE z END
+      // A condition already tested never matches, if it always evaluates to the same value
+      if (whenOperands.stream().anyMatch(operand -> isSameExpression(operand, whenOperand))) {
+        changed = true;
+        continue;
+      }
+      whenOperands.add(whenOperand);
+      thenOperands.add(thenTerm.get(i));
+    }
+
+    // CASE WHEN a THEN x WHEN b THEN y ELSE y END → CASE WHEN a THEN x ELSE y END
+    while (!thenOperands.isEmpty() && thenOperands.getLast().equals(elseOperand)) {
+      whenOperands.removeLast();
+      thenOperands.removeLast();
+      changed = true;
+    }
+
+    // The removed results don't change the data type, CASE WHEN TRUE THEN 1 ELSE 2.5 END is a
+    // number
+    Type type = ReturnTypes.CASE_OPERATOR.inferReturnType(call);
+    if (whenOperands.isEmpty()) {
+      return castResult(elseOperand, type);
+    }
+
+    if (changed) {
+      return new Call(
+          CaseSearchOperator.INSTANCE,
+          Literal.NULL,
+          new Array(whenOperands),
+          new Array(thenOperands.stream().map(result -> castResult(result, type)).toList()),
+          castResult(elseOperand, type));
     }
 
     // Search CASE expressions with one condition are turned into IF, which is then turned into
@@ -184,6 +236,21 @@ public class CaseSearchOperator extends Operator {
    * @param call the call of a CASE operator
    * @return true if the result types are compatible
    */
+  /**
+   * Casts a result of a CASE call to the data type of the call if needed, when a simplification
+   * removes the results that gave this data type.
+   *
+   * @param result the result expression kept by the simplification
+   * @param type the data type of the CASE call before the simplification
+   * @return the result expression, cast if its data type is lower
+   */
+  static IExpression castResult(IExpression result, Type type) {
+    if (result.isNull() || !Types.needToCast(result, type)) {
+      return result;
+    }
+    return Types.cast(result, type);
+  }
+
   static boolean checkResultTypes(Call call) {
     Array thenTerm = (Array) call.getOperand(2);
     IExpression elseTerm = call.getOperand(3);
