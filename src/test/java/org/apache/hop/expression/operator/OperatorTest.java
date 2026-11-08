@@ -536,7 +536,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
       optimize("FALSE <= FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE IS NOT NULL");
       // A boolean expression is not moved to the left, like a field
-      optimize("FALSE <= (NOT FIELD_BOOLEAN_TRUE)", "NOT(FIELD_BOOLEAN_TRUE) IS NOT NULL");
+      optimize("FALSE <= (NOT FIELD_BOOLEAN_TRUE)", "FIELD_BOOLEAN_TRUE IS NOT NULL");
 
       // Simplify arithmetic comparisons
       optimize("3<=FIELD_INTEGER+1", "FIELD_INTEGER>=2");
@@ -1956,6 +1956,10 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NULL",
           "TO_DATE(FIELD_STRING,'YYYY') IS NULL");
+      // NOT(x) is NULL only if x is NULL, also for a number converted to a boolean
+      optimize("(NOT FIELD_BOOLEAN_TRUE) IS NULL", "FIELD_BOOLEAN_TRUE IS NULL");
+      optimize("(NOT FIELD_INTEGER) IS NULL", "FIELD_INTEGER IS NULL");
+      evalTrue("(NOT NULL_BOOLEAN) IS NULL");
       optimize(
           "CAST(FIELD_DATE AS STRING FORMAT 'YYYY') IS NULL", "TO_CHAR(FIELD_DATE,'YYYY') IS NULL");
       // TRY_CAST returns NULL if the cast fails
@@ -2005,6 +2009,10 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "CAST(FIELD_STRING AS DATE FORMAT 'YYYY') IS NOT NULL",
           "TO_DATE(FIELD_STRING,'YYYY') IS NOT NULL");
+      // NOT(x) is NULL only if x is NULL, also for a number converted to a boolean
+      optimize("(NOT FIELD_BOOLEAN_TRUE) IS NOT NULL", "FIELD_BOOLEAN_TRUE IS NOT NULL");
+      optimize("(NOT FIELD_INTEGER) IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
+      evalFalse("(NOT NULL_BOOLEAN) IS NOT NULL");
     }
   }
 

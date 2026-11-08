@@ -65,8 +65,8 @@ public class IsNullOperator extends PostfixUnaryOperator {
       return Literal.FALSE;
     }
 
-    // Simplify CAST(x AS type) IS NULL → x IS NULL
-    if (isSafeCast(operand)) {
+    // Simplify CAST(x AS type) IS NULL → x IS NULL, NOT(x) IS NULL → x IS NULL
+    if (isNullOnlyIfOperandIsNull(operand)) {
       return new Call(call.getOperator(), call(operand).getOperand(0));
     }
 
@@ -74,10 +74,23 @@ public class IsNullOperator extends PostfixUnaryOperator {
   }
 
   /**
+   * Returns whether the expression is NULL only if its operand is NULL, and can't fail, so that it
+   * can be removed when checking if the value is NULL, like NOT(x) or CAST(x AS STRING).
+   *
+   * @param operand the operand of IS NULL or IS NOT NULL
+   * @return true if the expression can be replaced by its operand
+   */
+  static boolean isNullOnlyIfOperandIsNull(IExpression operand) {
+    // NOT(x) is NULL only if x is NULL, its operand is a boolean or a number that can't fail to be
+    // converted to a boolean
+    return operand.isOperator(BoolNotFunction.INSTANCE) || isSafeCast(operand);
+  }
+
+  /**
    * Returns whether the expression is a cast that can neither fail nor return NULL for a value that
    * is not NULL, so that the cast can be removed when checking if the value is NULL. A cast to a
-   * string without format of an atomic value never fails, nor does a loss-less cast, but a cast
-   * like CAST('abc' AS INTEGER) raises an error.
+   * string without format of an atomic value never fails, nor does a cast of a number to a boolean
+   * or a loss-less cast, but a cast like CAST('abc' AS INTEGER) raises an error.
    *
    * @param operand the operand of IS NULL or IS NOT NULL
    * @return true if the cast can be removed
@@ -93,7 +106,10 @@ public class IsNullOperator extends PostfixUnaryOperator {
     }
     Type source = cast.getOperand(0).getType();
     Type target = cast.getType();
-    return (Types.isString(target) && source.isAtomic()) || Types.isLosslessCast(source, target);
+    // A number is converted to a boolean without error, 0 is FALSE and any other value is TRUE
+    return (Types.isString(target) && source.isAtomic())
+        || (Types.isBoolean(target) && Types.isNumeric(source))
+        || Types.isLosslessCast(source, target);
   }
 
   @Override
