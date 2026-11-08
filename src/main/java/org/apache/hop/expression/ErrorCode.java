@@ -134,6 +134,15 @@ public enum ErrorCode {
    */
   ILLEGAL_ARGUMENT_TYPE,
   /**
+   * A comparison operator, like {@code =} or {@code <}, has an untyped {@code NULL} operand; the
+   * comparison is always {@code NULL}.
+   *
+   * <p>Message: <code>Comparison with NULL is always NULL, use IS NULL or IS NOT NULL</code>
+   *
+   * @see #ILLEGAL_ARGUMENT_TYPE
+   */
+  COMPARISON_WITH_NULL,
+  /**
    * An identifier does not match any field of the row.
    *
    * <p>Message: <code>Field not found “{0}”</code>

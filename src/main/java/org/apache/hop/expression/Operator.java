@@ -21,9 +21,11 @@ import java.lang.invoke.MethodType;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Objects;
 import lombok.Getter;
 import org.apache.hop.core.util.TranslateUtil;
+import org.apache.hop.expression.type.ComparableOperandTypeChecker;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
@@ -374,6 +376,12 @@ public abstract class Operator {
     }
 
     if (throwOnFailure) {
+      // A comparison like x = NULL is always NULL, the user most likely meant x IS NULL
+      if (operandTypeChecker instanceof ComparableOperandTypeChecker
+          && Arrays.stream(call.getOperands())
+              .anyMatch(operand -> operand.getType().isName(TypeName.UNKNOWN))) {
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.COMPARISON_WITH_NULL);
+      }
       throw new ParseExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
     }
 

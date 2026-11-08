@@ -124,6 +124,10 @@ public class OperatorTest extends ExpressionTest {
       evalNull("NULL_INTEGER <> FIELD_INTEGER");
       evalNull("NULL_INTEGER <> FIELD_NUMBER");
       evalNull("NULL_INTEGER <> NULL_NUMBER");
+
+      // A comparison with an untyped NULL, IS NOT NULL is expected
+      evalFails("FIELD_STRING <> NULL", ErrorCode.COMPARISON_WITH_NULL);
+      evalFails("NULL != FIELD_INTEGER", ErrorCode.COMPARISON_WITH_NULL);
     }
 
     @Test
@@ -193,6 +197,8 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testNullHandling() throws Exception {
       evalNull("NULL_BOOLEAN > 0");
+      // A comparison with an untyped NULL
+      evalFails("FIELD_INTEGER > NULL", ErrorCode.COMPARISON_WITH_NULL);
       evalNull("NULL_INTEGER > 0");
       evalNull("NULL_NUMBER > NULL_INTEGER");
       evalNull("1 > NULL_BOOLEAN");
@@ -285,6 +291,8 @@ public class OperatorTest extends ExpressionTest {
     @Test
     void testNullHandling() throws Exception {
       evalNull("NULL_BOOLEAN >= 0");
+      // A comparison with an untyped NULL
+      evalFails("NULL >= FIELD_INTEGER", ErrorCode.COMPARISON_WITH_NULL);
       evalNull("1 >= NULL_BOOLEAN");
       evalNull("NULL_BOOLEAN >= NULL_INTEGER");
       evalNull("FIELD_STRING >= NULL_STRING");
@@ -2865,6 +2873,9 @@ public class OperatorTest extends ExpressionTest {
     void testNullHandling() throws Exception {
       // NULL is not equal to anything, not even to another NULL.
       // x=NULL is always null
+      evalFails("FIELD_INTEGER = NULL", ErrorCode.COMPARISON_WITH_NULL);
+      evalFails("NULL = 1", ErrorCode.COMPARISON_WITH_NULL);
+      evalFails("NULL = NULL", ErrorCode.COMPARISON_WITH_NULL);
       evalNull("1 = NULL_INTEGER").returnType(BooleanType.BOOLEAN);
       evalNull("1 = NULL_NUMBER").returnType(BooleanType.BOOLEAN);
       evalNull("NULL_BOOLEAN = true").returnType(BooleanType.BOOLEAN);
