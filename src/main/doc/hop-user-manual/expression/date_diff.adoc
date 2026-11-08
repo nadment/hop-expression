@@ -70,3 +70,4 @@ DATE_DIFF(YEAR, DATE '2022-12-31',DATE '2024-06-01') returns 1
 * xref:days_between.adoc["DAYS_BETWEEN",role=fun]
 * xref:months_between.adoc["MONTHS_BETWEEN",role=fun]
 * xref:years_between.adoc["YEARS_BETWEEN",role=fun]
+* xref:age.adoc["AGE",role=fun]

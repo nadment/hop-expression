@@ -45,3 +45,4 @@ MONTHS_BETWEEN(DATE '2007-11-09',DATE '2007-12-09') returns 0.967741935483871
 
 * xref:days_between.adoc["DAYS_BETWEEN",role=fun]
 * xref:years_between.adoc["YEARS_BETWEEN",role=fun]
+* xref:age.adoc["AGE",role=fun]

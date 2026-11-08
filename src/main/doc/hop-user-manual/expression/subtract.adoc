@@ -41,7 +41,7 @@ interval1 - interval2
 * Subtracting a number of days from a date is equivalent to xref:add_days.adoc["ADD_DAYS",role=fun] with a negative number, the number of days must be an integer: `DATE '2019-02-25' - 1.5` raises an error.
 * Subtracting months or years from a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2020-03-31' - INTERVAL 1 MONTH` returns `DATE '2020-02-29'`.
 * The difference of two intervals is an interval, the months, the days and the time are subtracted separately and can have opposite signs, for example `INTERVAL 1 MONTH - INTERVAL 1 DAY` returns `INTERVAL '+0-1 -1 00:00:00'`.
-* The difference of two dates is not supported, use xref:date_diff.adoc["DATE_DIFF",role=fun] or a function like xref:days_between.adoc["DAYS_BETWEEN",role=fun].
+* The difference of two dates is not supported, use xref:age.adoc["AGE",role=fun] for an interval, or xref:date_diff.adoc["DATE_DIFF",role=fun] or a function like xref:days_between.adoc["DAYS_BETWEEN",role=fun] for a number of units.
 * A date can't be subtracted from a number or an interval.
 * A boolean or a string is not implicitly converted to a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) + 1`.
 
@@ -62,4 +62,5 @@ INTERVAL 2 YEARS - INTERVAL 3 MONTHS returns INTERVAL '+1-9' YEAR TO MONTH
 * xref:negative.adoc["Unary negative operator -",role=op]
 * xref:add_days.adoc["ADD_DAYS",role=fun]
 * xref:add_months.adoc["ADD_MONTHS",role=fun]
+* xref:age.adoc["AGE",role=fun]
 * xref:date_diff.adoc["DATE_DIFF",role=fun]

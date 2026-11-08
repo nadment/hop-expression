@@ -55,5 +55,8 @@ AGE(DATE '1980-06-23') returns the age at the current date
 == See also
 
 * xref:date_diff.adoc["DATE_DIFF",role=fun]
+* xref:days_between.adoc["DAYS_BETWEEN",role=fun]
+* xref:weeks_between.adoc["WEEKS_BETWEEN",role=fun]
+* xref:months_between.adoc["MONTHS_BETWEEN",role=fun]
 * xref:years_between.adoc["YEARS_BETWEEN",role=fun]
 * xref:make_interval.adoc["MAKE_INTERVAL",role=fun]

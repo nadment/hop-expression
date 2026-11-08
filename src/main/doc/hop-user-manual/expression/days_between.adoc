@@ -45,3 +45,4 @@ DAYS_BETWEEN(DATE '2021-11-09',DATE '2020-12-28') returns -316
 * xref:date_diff.adoc["DATE_DIFF",role=fun]
 * xref:months_between.adoc["MONTHS_BETWEEN",role=fun]
 * xref:years_between.adoc["YEARS_BETWEEN",role=fun]
+* xref:age.adoc["AGE",role=fun]
