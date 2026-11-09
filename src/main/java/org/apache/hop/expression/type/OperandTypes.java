@@ -235,6 +235,8 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ARRAY_INTEGER_INTEGER =
       explicit(TypeName.ARRAY, TypeName.INTEGER, TypeName.INTEGER);
   public static final IOperandTypeChecker ARRAY_ANY = explicit(TypeName.ARRAY, TypeName.ANY);
+  public static final IOperandTypeChecker ARRAY_BOOLEAN =
+      explicit(TypeName.ARRAY, TypeName.BOOLEAN);
   public static final IOperandTypeChecker ARRAY_ANY_INTEGER =
       explicit(TypeName.ARRAY, TypeName.ANY, TypeName.INTEGER);
   public static final IOperandTypeChecker ARRAY_STRING = explicit(TypeName.ARRAY, TypeName.STRING);

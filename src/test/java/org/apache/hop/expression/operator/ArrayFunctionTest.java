@@ -174,6 +174,90 @@ class ArrayFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Array_Distinct() throws Exception {
+    optimize("ARRAY_DISTINCT([1,2,1,3,2])", "[1,2,3]");
+    optimize("ARRAY_DISTINCT(['b','a','b'])", "['b','a']");
+    optimize("ARRAY_DISTINCT([1,2.5,1.0])", "[1,2.5]");
+    optimize("ARRAY_DISTINCT([])", "[]");
+
+    // Elements are compared by value
+    evalEquals("ARRAY_TO_STRING(ARRAY_DISTINCT([40,FIELD_INTEGER,2]),',')", "40,2");
+    evalEquals("ARRAY_TO_STRING(ARRAY_DISTINCT(STRING_TO_ARRAY('b,a,b,c,a',',')),',')", "b,a,c");
+
+    // The NULL elements are duplicates of each other
+    evalEquals("CARDINALITY(ARRAY_DISTINCT([1,NULL_INTEGER,1,NULL_INTEGER]))", 2L);
+
+    // Null handling
+    evalNull("ARRAY_DISTINCT(STRING_TO_ARRAY(NULL_STRING,','))");
+
+    // Check operands
+    evalFails("ARRAY_DISTINCT()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_DISTINCT([1,2],[3])", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("ARRAY_DISTINCT('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
+  void Array_Sort() throws Exception {
+    optimize("ARRAY_SORT([3,1,2])", "[1,2,3]");
+    optimize("ARRAY_SORT([3,1,2],FALSE)", "[3,2,1]");
+    optimize("ARRAY_SORT(['mon','tue','fri'])", "['fri','mon','tue']");
+    optimize("ARRAY_SORT([2.5,1,2])", "[1,2,2.5]");
+    optimize("ARRAY_SORT([])", "[]");
+
+    // Elements are compared by value
+    evalEquals("ARRAY_TO_STRING(ARRAY_SORT([50,FIELD_INTEGER,2]),',')", "2,40,50");
+    evalEquals("ARRAY_TO_STRING(ARRAY_SORT(STRING_TO_ARRAY('b,c,a',',')),',')", "a,b,c");
+
+    // The NULL elements are placed at the end, whatever the order
+    evalEquals("ARRAY_POSITION(ARRAY_SORT([NULL_INTEGER,2,1]),1)", 1L);
+    evalEquals("ARRAY_POSITION(ARRAY_SORT([NULL_INTEGER,1,2],FALSE),2)", 1L);
+    evalEquals("ARRAY_POSITION(ARRAY_SORT([NULL_INTEGER,1,2],FALSE),1)", 2L);
+
+    // Null handling
+    evalNull("ARRAY_SORT(STRING_TO_ARRAY(NULL_STRING,','))");
+    evalNull("ARRAY_SORT([1,2],NULL_BOOLEAN)");
+
+    // Check operands
+    evalFails("ARRAY_SORT()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_SORT([1,2],TRUE,TRUE)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("ARRAY_SORT('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_SORT([1,2],'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
+  void Array_Remove() throws Exception {
+    optimize("ARRAY_REMOVE([1,2,1,3],1)", "[2,3]");
+    optimize("ARRAY_REMOVE(['a','b','a'],'a')", "['b']");
+    optimize("ARRAY_REMOVE([1,2,3],4)", "[1,2,3]");
+    optimize("ARRAY_REMOVE([1,2,3],2.0)", "[1,3]");
+    optimize("ARRAY_REMOVE([1,1],1)", "[]");
+    optimize("ARRAY_REMOVE([],1)", "[]");
+
+    // Values of different numeric types
+    optimize("ARRAY_REMOVE([1,2.5,3],2.5)", "[1,3]");
+    optimize("ARRAY_REMOVE([1.5,2,3],2)", "[1.5,3]");
+
+    // Elements are compared by value
+    evalEquals("ARRAY_TO_STRING(ARRAY_REMOVE([40,FIELD_INTEGER,2],40),',')", "2");
+    evalEquals("ARRAY_TO_STRING(ARRAY_REMOVE(STRING_TO_ARRAY('a,,b,',','),''),',')", "a,b");
+
+    // A NULL element never matches and is kept
+    evalEquals("CARDINALITY(ARRAY_REMOVE([1,NULL_INTEGER,2],1))", 2L);
+
+    // Null handling
+    evalNull("ARRAY_REMOVE([1,2,3],NULL_INTEGER)");
+    evalNull("ARRAY_REMOVE([],NULL_INTEGER)");
+    evalNull("ARRAY_REMOVE(STRING_TO_ARRAY(NULL_STRING,','),'a')");
+
+    // Check operands
+    evalFails("ARRAY_REMOVE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_REMOVE([1,2,3])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_REMOVE([1,2,3],1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("ARRAY_REMOVE('test',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_REMOVE([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
   void Array_To_String() throws Exception {
     evalEquals("ARRAY_TO_STRING(['Hello','world'],' ')", "Hello world")
         .returnType(StringType.STRING);
