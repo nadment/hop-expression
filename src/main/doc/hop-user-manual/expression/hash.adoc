@@ -1,0 +1,56 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= HASH
+
+Returns a 64-bit hash of one or more values, computed with the non-cryptographic MurmurHash3 algorithm.
+
+== Syntax
+
+----
+HASH( value [, value ...] )
+----
+
+== Arguments
+
+value:: An expression of any data type.
+
+== Returns
+
+Integer
+
+== Usage
+
+* The function is fast and suitable to detect the changes of the rows, to build surrogate keys or to partition the data. Use a cryptographic function like SHA256 when the hash must resist attacks.
+* Several values are hashed together, their order matters: HASH(a,b) differs from HASH(b,a).
+* The values don't overlap: HASH('ab','c') differs from HASH('a','bc').
+* A string is hashed in UTF-8, and a value of another data type, such as a number or a date, is hashed as its text.
+* A NULL value is hashed and differs from an empty string, the result is never NULL.
+* The result is the first 64 bits of the 128-bit MurmurHash3 (x64 variant) with a seed of 0, of the values each preceded by its length. It is stable from one execution to another, but not comparable with the hash functions of other systems.
+
+== Examples
+
+----
+HASH('Apache Hop') returns -1224799903144666599
+HASH('Apache','Hop') returns -8383346386686554127
+HASH(NULL) returns 4889297221962843713
+----
+
+== See also
+
+* xref:crc32.adoc["CRC32",role=fun]
+* xref:md5.adoc["MD5",role=fun]
+* xref:sha256.adoc["SHA256",role=fun]

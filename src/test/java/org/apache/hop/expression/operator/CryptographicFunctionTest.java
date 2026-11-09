@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -59,6 +60,45 @@ class CryptographicFunctionTest extends ExpressionTest {
     evalTrue("CRC32(FIELD_INTEGER) = CRC32('40')");
     evalTrue("CRC32(TRUE) = CRC32('TRUE')");
     evalTrue("CRC32(FIELD_DATE) = CRC32(CAST(FIELD_DATE AS STRING))");
+  }
+
+  @Test
+  void Hash() throws Exception {
+    // The value is stable, it is used to detect the changes of the rows
+    evalEquals("HASH('Apache Hop')", -1224799903144666599L)
+        .returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("HASH('Apache','Hop')", -8383346386686554127L);
+
+    // Several values are hashed together, with their order
+    evalFalse("HASH('a','b') = HASH('b','a')");
+    evalTrue("HASH(FIELD_STRING,FIELD_INTEGER) = HASH('TEST',40)");
+
+    // The values are separated, a value doesn't overlap its neighbour
+    evalFalse("HASH('ab','c') = HASH('a','bc')");
+    evalFalse("HASH('a','') = HASH('a')");
+
+    // NULL is hashed and differs from an empty string, the result is never NULL
+    evalEquals("HASH(NULL_STRING)", 4889297221962843713L).returnType(IntegerType.INTEGER_NOT_NULL);
+    evalFalse("HASH(NULL_STRING) = HASH('')");
+    evalFalse("HASH('a',NULL_STRING) = HASH(NULL_STRING,'a')");
+    evalTrue("HASH(NULL_STRING) = HASH(NULL_INTEGER)");
+    evalTrue("HASH(NULL) = HASH(NULL_STRING)");
+
+    // Binary value and characters encoded in UTF-8
+    evalTrue("HASH('Test') = HASH(BINARY '54657374')");
+    evalTrue("HASH('é') = HASH(BINARY 'C3A9')");
+
+    // A value which is not a string or a binary is hashed as its text
+    evalTrue("HASH(123) = HASH('123')");
+    evalTrue("HASH(FIELD_INTEGER) = HASH('40')");
+    evalTrue("HASH(TRUE) = HASH('TRUE')");
+    evalTrue("HASH(FIELD_DATE) = HASH(CAST(FIELD_DATE AS STRING))");
+
+    // Constant folding
+    optimize("HASH('Apache Hop')", "-1224799903144666599");
+
+    // Check operands
+    evalFails("HASH()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test

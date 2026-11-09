@@ -113,6 +113,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:floor.adoc["FLOOR",role=fun]
 * xref:gamma.adoc["GAMMA",role=fun]
 * xref:greatest.adoc["GREATEST",role=fun]
+* xref:hash.adoc["HASH",role=fun]
 * xref:hex_decode.adoc["HEX_DECODE",role=fun]
 * xref:hex_encode.adoc["HEX_ENCODE",role=fun]
 * xref:hour.adoc["HOUR",role=fun]

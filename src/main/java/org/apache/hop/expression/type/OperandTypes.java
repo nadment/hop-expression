@@ -35,6 +35,8 @@ public final class OperandTypes {
   public static final IOperandTypeChecker TEXT = literal(String.class);
 
   public static final ISingleOperandTypeChecker ANY = explicit(TypeName.ANY);
+  public static final IOperandTypeChecker ANY_VARIADIC =
+      repeat(OperandCountRange.between(1, -1), ANY);
   public static final IOperandTypeChecker ANY_BOOLEAN = explicit(TypeName.ANY, TypeName.BOOLEAN);
   public static final IOperandTypeChecker ANY_INTEGER = explicit(TypeName.ANY, TypeName.INTEGER);
   public static final IOperandTypeChecker ANY_ANY = explicit(TypeName.ANY, TypeName.ANY);
