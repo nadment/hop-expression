@@ -233,6 +233,20 @@ public class Call implements IExpression {
     return false;
   }
 
+  @Override
+  public boolean isDeterministic() {
+    // A call is deterministic if the operator and all operands are deterministic
+    if (!operator.isDeterministic()) {
+      return false;
+    }
+    for (IExpression operand : operands) {
+      if (!operand.isDeterministic()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Swap the first and second operands, reverse the operator, and preserve the type.
    *

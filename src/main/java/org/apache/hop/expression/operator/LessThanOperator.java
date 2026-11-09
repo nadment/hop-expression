@@ -92,7 +92,7 @@ public class LessThanOperator extends BinaryOperator {
     }
 
     // Simplify x<x → NULL AND x IS NULL
-    if (isSameExpression(left, right)) {
+    if (left.isSameExpression(right)) {
       return new Call(
           BoolAndOperator.INSTANCE, Literal.NULL_BOOLEAN, new Call(IsNullOperator.INSTANCE, left));
     }

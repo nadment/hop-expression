@@ -54,14 +54,14 @@ public class BetweenAsymmetricOperator extends Operator {
     IExpression end = call.getOperand(2);
 
     // x BETWEEN a AND a → x=a
-    if (isSameExpression(start, end)) {
+    if (start.isSameExpression(end)) {
       return new Call(EqualOperator.INSTANCE, value, start);
     }
 
     // x BETWEEN a AND b → x>=a AND x<=b, equivalent also with a NULL bound. The comparisons are
     // then simplified with the other comparisons, like x BETWEEN 5 AND 3 → NVL2(x,FALSE,NULL).
     // Not if x is non-deterministic, like RANDOM(), it would be evaluated twice.
-    if (isDeterministic(value)) {
+    if (value.isDeterministic()) {
       return new Call(
           BoolAndOperator.INSTANCE,
           new Call(GreaterThanOrEqualOperator.INSTANCE, value, start),

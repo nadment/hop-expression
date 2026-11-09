@@ -144,7 +144,7 @@ public class CaseSearchOperator extends Operator {
       }
       // CASE WHEN a THEN x WHEN a THEN y ELSE z END → CASE WHEN a THEN x ELSE z END
       // A condition already tested never matches, if it always evaluates to the same value
-      if (whenOperands.stream().anyMatch(operand -> isSameExpression(operand, whenOperand))) {
+      if (whenOperands.stream().anyMatch(operand -> operand.isSameExpression(whenOperand))) {
         changed = true;
         continue;
       }

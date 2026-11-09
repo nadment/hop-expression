@@ -179,4 +179,26 @@ public interface IExpression {
    *     precedence of this operator, or 0 if none
    */
   void unparse(StringWriter writer, int leftPrec, int rightPrec);
+
+  /**
+   * Checks if this expression always evaluates to the same value as another expression for a row,
+   * which allows the simplification of predicates like x=x. Two calls to a non-deterministic
+   * function like {@code RANDOM()} are equal but return different values.
+   *
+   * @param other the expression to compare with
+   * @return {@code true} if both expressions are equal and deterministic
+   */
+  default boolean isSameExpression(IExpression other) {
+    return equals(other) && isDeterministic();
+  }
+
+  /**
+   * Checks if this expression always evaluates to the same value for a row, it doesn't call a
+   * non-deterministic function like {@code RANDOM()}.
+   *
+   * @return {@code true} if the expression and all its operands are deterministic
+   */
+  default boolean isDeterministic() {
+    return true;
+  }
 }

@@ -215,6 +215,16 @@ public final class Array implements IExpression, Iterable<IExpression> {
     return true;
   }
 
+  @Override
+  public boolean isDeterministic() {
+    for (IExpression expression : values) {
+      if (!expression.isDeterministic()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /** Returns {@code true} if this array contains the specified elements. */
   public boolean contains(IExpression element) {
     for (IExpression expression : values) {

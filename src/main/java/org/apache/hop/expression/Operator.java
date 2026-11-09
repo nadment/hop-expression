@@ -190,46 +190,6 @@ public abstract class Operator {
   }
 
   /**
-   * Checks if two expressions always evaluate to the same value for a row, which allows the
-   * simplification of predicates like x=x. Two calls to a non-deterministic function like {@code
-   * RANDOM()} are equal but return different values.
-   *
-   * @param left the left operand
-   * @param right the right operand
-   * @return {@code true} if both operands are equal and deterministic
-   */
-  protected static boolean isSameExpression(IExpression left, IExpression right) {
-    return left.equals(right) && isDeterministic(left);
-  }
-
-  /**
-   * Checks if an expression always evaluates to the same value for a row, it doesn't call a
-   * non-deterministic function like {@code RANDOM()}.
-   *
-   * @param expression the expression to check
-   * @return {@code true} if the expression and all its operands are deterministic
-   */
-  protected static boolean isDeterministic(IExpression expression) {
-    if (expression instanceof Call call) {
-      if (!call.getOperator().isDeterministic()) {
-        return false;
-      }
-      for (IExpression operand : call.getOperands()) {
-        if (!isDeterministic(operand)) {
-          return false;
-        }
-      }
-    } else if (expression instanceof Array array) {
-      for (IExpression element : array) {
-        if (!isDeterministic(element)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
    * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
    *
    * @return this instance cast to a class

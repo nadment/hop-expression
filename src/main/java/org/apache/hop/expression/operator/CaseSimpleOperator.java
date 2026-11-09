@@ -114,7 +114,7 @@ public class CaseSimpleOperator extends Operator {
       List<IExpression> newValues = new ArrayList<>();
       for (IExpression value : values) {
         if (value.isNull()
-            || previousValues.stream().anyMatch(previous -> isSameExpression(previous, value))) {
+            || previousValues.stream().anyMatch(previous -> previous.isSameExpression(value))) {
           changed = true;
         } else {
           newValues.add(value);

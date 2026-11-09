@@ -105,7 +105,7 @@ public class EqualOperator extends BinaryOperator {
     }
 
     // Simplify x=x → TRUE (if x is not nullable)
-    if (isSameExpression(left, right) && !left.getType().isNullable()) {
+    if (left.isSameExpression(right) && !left.getType().isNullable()) {
       return Literal.TRUE;
     }
 

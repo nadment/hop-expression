@@ -109,7 +109,7 @@ public class SubtractOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A-A → 0 (if A is not nullable), an integer or a number like A
-    if (isSameExpression(left, right)
+    if (left.isSameExpression(right)
         && !left.getType().isNullable()
         && Types.isNumeric(left.getType())) {
       return Types.isInteger(left.getType()) ? Literal.ZERO : Literal.of(BigDecimal.ZERO);

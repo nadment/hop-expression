@@ -72,7 +72,7 @@ public class GreatestFunction extends Function {
   static IExpression removeDuplicateOperands(Call call) {
     List<IExpression> operands = new ArrayList<>();
     for (IExpression operand : call.getOperands()) {
-      if (operands.stream().noneMatch(previous -> isSameExpression(previous, operand))) {
+      if (operands.stream().noneMatch(previous -> previous.isSameExpression(operand))) {
         operands.add(operand);
       }
     }

@@ -74,7 +74,7 @@ public class NullIfFunction extends Function {
     }
 
     // Simplify NullIf(x,x) → NULL, NULL if x is equal to itself or if x is NULL
-    if (isSameExpression(call.getOperand(0), call.getOperand(1))) {
+    if (call.getOperand(0).isSameExpression(call.getOperand(1))) {
       return new Literal(null, call.getType());
     }
 
