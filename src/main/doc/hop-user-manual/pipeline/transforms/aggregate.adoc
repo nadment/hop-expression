@@ -65,6 +65,7 @@ The aggregate functions are:
 * xref:../../expression/max.adoc["MAX",role=fun]
 * xref:../../expression/median.adoc["MEDIAN",role=fun]
 * xref:../../expression/min.adoc["MIN",role=fun]
+* xref:../../expression/mode.adoc["MODE",role=fun]
 * xref:../../expression/nth_value.adoc["NTH_VALUE",role=fun]
 * xref:../../expression/percentile.adoc["PERCENTILE",role=fun]
 * xref:../../expression/stddev_pop.adoc["STDDEV_POP",role=fun]

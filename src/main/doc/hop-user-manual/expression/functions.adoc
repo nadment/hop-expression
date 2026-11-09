@@ -160,6 +160,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:minute.adoc["MINUTE",role=fun]
 * xref:minutes_between.adoc["MINUTES_BETWEEN",role=fun]
 * xref:mod.adoc["MOD",role=fun]
+* xref:mode.adoc["MODE",role=fun] aggregate
 * xref:month.adoc["MONTH",role=fun]
 * xref:monthname.adoc["MONTHNAME",role=fun]
 * xref:months_between.adoc["MONTHS_BETWEEN",role=fun]

@@ -215,6 +215,35 @@ class AggregateFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Mode() throws Exception {
+    evalFails("MODE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("MODE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+    evalFails("MODE(FIELD_INTEGER,FIELD_INTEGER)", ErrorCode.TOO_MANY_ARGUMENTS);
+
+    optimize("MODE(FIELD_STRING)").returnType(StringType.of(1000));
+    optimize("MODE(FIELD_INTEGER)").returnType(IntegerType.of(12));
+    optimize("MODE(FIELD_DATE)").returnType(DateType.DATE);
+
+    assertEquals(2L, evalAggregate("MODE(FIELD_INTEGER)", 1L, 2L, 3L, 2L));
+    assertEquals(5L, evalAggregate("MODE(FIELD_INTEGER)", 5L));
+
+    // Null values are ignored, even if they are the most frequent
+    assertEquals(3L, evalAggregate("MODE(FIELD_INTEGER)", null, 3L, null, 1L, 3L, null));
+
+    // If several values have the same highest frequency, the first one met is returned
+    assertEquals(1L, evalAggregate("MODE(FIELD_INTEGER)", 1L, 2L, 2L, 1L));
+    assertEquals(2L, evalAggregate("MODE(FIELD_INTEGER)", 2L, 1L, 1L, 2L));
+
+    // Values of any data type
+    assertEquals("4", evalAggregate("MODE(TO_CHAR(FIELD_INTEGER))", 4L, 6L, 4L));
+    assertEquals(BigDecimal.valueOf(2), evalAggregate("MODE(FIELD_INTEGER/2)", 1L, 4L, 4L, 3L));
+
+    // The mode of an empty group is NULL
+    assertNull(evalAggregate("MODE(FIELD_INTEGER)"));
+    assertNull(evalAggregate("MODE(FIELD_INTEGER)", (Long) null));
+  }
+
+  @Test
   void AnyValue() throws Exception {
     evalFails("ANY_VALUE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ANY_VALUE(", ErrorCode.MISSING_RIGHT_PARENTHESIS);

@@ -1,0 +1,53 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= MODE [aggregate]
+
+Returns the most frequent value over a group of rows.
+
+== Syntax
+
+----
+MODE( expression )
+----
+
+== Arguments
+
+expression:: An expression of any data type.
+
+== Returns
+
+The data type of the expression.
+
+== Usage
+
+* NULL values are ignored, even if they are the most frequent.
+* If several values have the same highest frequency, the first one met in the group is returned.
+* Returns NULL if the group has no value other than NULL.
+* All the distinct values of the group are kept in memory to count their occurrences.
+
+NOTE: This is an aggregate function that should only be used in the Aggregate transform.
+
+== Examples
+
+----
+MODE( Country )
+----
+
+== See also
+
+* xref:median.adoc["MEDIAN",role=fun]
+* xref:count.adoc["COUNT",role=fun]
