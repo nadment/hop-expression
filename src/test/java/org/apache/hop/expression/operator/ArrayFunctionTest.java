@@ -19,11 +19,13 @@ package org.apache.hop.expression.operator;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
+import java.math.BigDecimal;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -458,6 +460,61 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("EXISTS([1,2],x->DATE '2020-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("EXISTS('test',x->TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("EXISTS([1,2],(x,y)->x>y)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+  }
+
+  @Test
+  void Reduce() throws Exception {
+    evalEquals("REDUCE([1,2,3],(acc,x)->acc+x)", 6L).returnType(IntegerType.INTEGER);
+    evalEquals("REDUCE([3,7,5],(acc,x)->GREATEST(acc,x))", 7L);
+    evalEquals("REDUCE(['a','b','c'],(acc,s)->acc||'-'||s)", "a-b-c").returnType(StringType.STRING);
+    optimize("REDUCE([1,2,3],(acc,x)->acc+x)", "6");
+    optimize("REDUCE(STRING_TO_ARRAY(FIELD_STRING,','),(acc,x)->acc||x)");
+
+    // A single element is returned without evaluating the lambda
+    evalEquals("REDUCE([5],(acc,x)->acc+x)", 5L);
+
+    // With an initial value, the lambda is evaluated for each element
+    evalEquals("REDUCE([1,2,3],(acc,x)->acc+x,100)", 106L);
+    evalEquals("REDUCE([5],(acc,x)->acc+x,100)", 105L);
+
+    // The initial value gives the type of the accumulator
+    evalEquals("REDUCE([1,2,3],(acc,x)->acc||x,'')", "123");
+    evalEquals("REDUCE([1,2,3],(acc,x)->acc+x*0.5,0.5)", new BigDecimal("3.5"))
+        .returnType(NumberType.NUMBER);
+    evalEquals("REDUCE([1,2,3],(acc,x)->acc+x*0.5,CAST(0 AS NUMBER))", new BigDecimal("3.0"));
+    evalEquals("REDUCE(['a','bb','ccc'],(acc,s)->acc+LENGTH(s),0)", 6L);
+
+    // The body can reference the fields of the row
+    evalEquals("REDUCE([1,2],(acc,x)->acc+x,FIELD_INTEGER)", 43L);
+    evalEquals("REDUCE([1,2],(acc,x)->acc+x*FIELD_INTEGER,0)", 120L);
+
+    // A NULL element is passed to the lambda
+    evalNull("REDUCE([1,NULL_INTEGER,3],(acc,x)->acc+x)");
+    evalEquals("REDUCE([1,NULL_INTEGER,3],(acc,x)->acc+COALESCE(x,0))", 4L);
+    evalEquals("REDUCE([NULL_INTEGER,2,3],(acc,x)->COALESCE(acc,0)+x)", 5L);
+    evalEquals("REDUCE([1,2],(acc,x)->IF(acc IS NULL,x,acc+x),NULL_INTEGER)", 3L);
+
+    // An empty array returns the initial value, or NULL
+    evalEquals("REDUCE(FILTER([1,2],x->x>5),(acc,x)->acc+x,10)", 10L);
+    evalNull("REDUCE(FILTER([1,2],x->x>5),(acc,x)->acc+x)");
+
+    // Combined with TRANSFORM
+    evalEquals("REDUCE(TRANSFORM([1,2,3],x->x*x),(acc,x)->acc+x)", 14L);
+
+    // Null handling
+    evalNull("REDUCE(STRING_TO_ARRAY(NULL_STRING,','),(acc,x)->acc||x)");
+
+    // The lambda must return a value of the type of the accumulator
+    evalFails("REDUCE([1,2,3],(acc,x)->acc+x*0.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("REDUCE([1,2,3],(acc,x)->DATE '2020-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Check operands
+    evalFails("REDUCE([1,2])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("REDUCE([1,2],(acc,x)->acc+x,0,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("REDUCE([1,2],3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("REDUCE('test',(acc,x)->acc)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("REDUCE([1,2],x->x)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    evalFails("REDUCE([1,2],(acc,x)->y)", ErrorCode.UNRESOLVED_IDENTIFIER);
   }
 
   @Test

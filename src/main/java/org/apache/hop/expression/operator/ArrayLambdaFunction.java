@@ -81,7 +81,8 @@ public abstract class ArrayLambdaFunction extends Function {
 
   /**
    * Validates the array, then the lambda with the type of the elements of the array as the type of
-   * its parameters. An operand that is not a lambda is validated as usual.
+   * its parameters. An operand that is not a lambda is validated as usual, before the lambda: the
+   * type of a parameter can depend on an operand that follows the lambda.
    *
    * <p>A lambda that follows an operand that is not an array is not validated: the operand type
    * checker rejects the call, see {@link
@@ -94,25 +95,40 @@ public abstract class ArrayLambdaFunction extends Function {
   protected void validateOperands(IExpressionContext context, Call call)
       throws ExpressionException {
     IExpression[] operands = call.getOperands();
-    for (int i = 0; i < operands.length; i++) {
-      if (i == 1 && operands[i] instanceof Lambda lambda) {
-        if (lambda.getParameterCount() != lambdaParameterCount) {
-          throw new ParseExpressionException(
-              lambda.getPosition(),
-              ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT,
-              this,
-              lambda,
-              lambdaParameterCount);
-        }
-        if (operands[0].getType() instanceof ArrayType arrayType) {
-          Type[] types = new Type[lambdaParameterCount];
-          Arrays.fill(types, arrayType.getElementType());
-          lambda.validate(context, types);
-        }
-      } else {
-        operands[i].validate(context);
+    Lambda lambda = (operands.length > 1 && operands[1] instanceof Lambda l) ? l : null;
+    for (IExpression operand : operands) {
+      if (operand != lambda) {
+        operand.validate(context);
       }
     }
+
+    if (lambda != null) {
+      if (lambda.getParameterCount() != lambdaParameterCount) {
+        throw new ParseExpressionException(
+            lambda.getPosition(),
+            ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT,
+            this,
+            lambda,
+            lambdaParameterCount);
+      }
+      if (operands[0].getType() instanceof ArrayType arrayType) {
+        lambda.validate(context, lambdaParameterTypes(call, arrayType));
+      }
+    }
+  }
+
+  /**
+   * Returns the types of the parameters of the lambda, by default the type of the elements of the
+   * array for each parameter.
+   *
+   * @param call the call, whose operands other than the lambda are validated
+   * @param arrayType the type of the array
+   * @return the types of the parameters, in order
+   */
+  protected Type[] lambdaParameterTypes(Call call, ArrayType arrayType) {
+    Type[] types = new Type[lambdaParameterCount];
+    Arrays.fill(types, arrayType.getElementType());
+    return types;
   }
 
   /**

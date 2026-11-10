@@ -1,0 +1,62 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= REDUCE
+
+Reduces the elements of an array to a single value, with a lambda evaluated for each element with the result of the previous element.
+
+== Syntax
+
+----
+REDUCE( array, (accumulator, element) -> expression [, initial_value] )
+----
+
+== Arguments
+
+array:: The source array.
+(accumulator, element) -> expression:: A xref:expression.adoc#lambda[lambda] evaluated for each element of the array, the first parameter is the result of the expression for the previous element, the second parameter is the element.
+initial_value:: The value of the accumulator for the first element (optional).
+
+== Returns
+
+The data type of the initial value if specified, otherwise the data type of the elements of the array.
+
+== Usage
+
+* The elements are processed in their order.
+* With an initial value, the lambda is evaluated for each element and the accumulator has the data type of the initial value.
+* Without initial value, the accumulator starts with the first element and the lambda is evaluated from the second element.
+* The expression must return a value of the data type of the accumulator: use an initial value to return another data type than the elements.
+* A NULL element is passed to the lambda like any other element.
+* Returns the initial value if the array is empty, or NULL without initial value.
+* Returns NULL if the array is NULL.
+
+== Examples
+
+----
+REDUCE([1,2,3], (acc, x) -> acc + x) returns 6
+REDUCE([1,2,3], (acc, x) -> acc + x, 100) returns 106
+REDUCE([1,2,3], (acc, x) -> acc + x * 0.5, CAST(0 AS NUMBER)) returns 3
+REDUCE([3,7,5], (acc, x) -> GREATEST(acc, x)) returns 7
+REDUCE(['a','b','c'], (acc, s) -> acc || '-' || s) returns 'a-b-c'
+REDUCE([1,2,3], (acc, x) -> acc || x, '') returns '123'
+REDUCE([1,NULL,3], (acc, x) -> acc + COALESCE(x, 0)) returns 4
+----
+
+== See also
+
+* xref:transform.adoc["TRANSFORM",role=fun]
+* xref:filter.adoc["FILTER",role=fun]

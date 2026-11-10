@@ -53,4 +53,5 @@ TRANSFORM([100,250], p -> p * VAT_RATE) returns [120,300] if the field VAT_RATE 
 == See also
 
 * xref:filter.adoc["FILTER",role=fun]
+* xref:reduce.adoc["REDUCE",role=fun]
 * xref:array_sort.adoc["ARRAY_SORT",role=fun]
