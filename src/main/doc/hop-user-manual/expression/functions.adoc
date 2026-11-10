@@ -105,6 +105,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:epoch.adoc["EPOCH",role=fun]
 * xref:equal_null.adoc["EQUAL_NULL",role=fun]
 * xref:error.adoc["ERROR",role=fun]
+* xref:exists.adoc["EXISTS",role=fun]
 * xref:exp.adoc["EXP",role=fun]
 * xref:extract.adoc["EXTRACT",role=fun]
 * xref:factorial.adoc["FACTORIAL",role=fun]

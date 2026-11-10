@@ -1,0 +1,56 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= EXISTS
+
+Returns whether a lambda condition is TRUE for at least one element of an array.
+
+== Syntax
+
+----
+EXISTS( array, parameter -> condition )
+----
+
+== Arguments
+
+array:: The source array.
+parameter -> condition:: A xref:expression.adoc#lambda[lambda] evaluated for each element of the array, the parameter is the element.
+
+== Returns
+
+Boolean.
+
+== Usage
+
+* Returns TRUE if the condition is TRUE for at least one element.
+* Otherwise, returns NULL if the condition is NULL for at least one element.
+* Otherwise, returns FALSE, also if the array is empty.
+* Returns NULL if the array is NULL.
+
+== Examples
+
+----
+EXISTS([1,2,3], x -> x > 2) returns TRUE
+EXISTS([1,2,3], x -> x > 5) returns FALSE
+EXISTS([0,NULL,2,3,NULL], x -> x IS NULL) returns TRUE
+EXISTS([1,NULL,3], x -> x > 5) returns NULL
+EXISTS(STRING_TO_ARRAY('a,,b',','), s -> s = '') returns TRUE
+----
+
+== See also
+
+* xref:filter.adoc["FILTER",role=fun]
+* xref:array_contains.adoc["ARRAY_CONTAINS",role=fun]

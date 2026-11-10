@@ -51,4 +51,5 @@ ARRAY_TO_STRING(FILTER(STRING_TO_ARRAY('a,,b',','), s -> s <> ''), ',') returns 
 == See also
 
 * xref:transform.adoc["TRANSFORM",role=fun]
+* xref:exists.adoc["EXISTS",role=fun]
 * xref:array_remove.adoc["ARRAY_REMOVE",role=fun]

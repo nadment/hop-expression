@@ -215,7 +215,7 @@ public final class Lambda implements IExpression {
   public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
     // A single parameter is written without parentheses
     if (parameters.size() == 1) {
-      parameters.get(0).unparse(writer, 0, 0);
+      parameters.getFirst().unparse(writer, 0, 0);
     } else {
       writer.append('(');
       for (int i = 0; i < parameters.size(); i++) {

@@ -114,6 +114,16 @@ public interface IExpression {
   }
 
   /**
+   * Checks if this expression always evaluates to the same value for a row, it doesn't call a
+   * non-deterministic function like {@code RANDOM()}.
+   *
+   * @return {@code true} if the expression and all its operands are deterministic
+   */
+  default boolean isDeterministic() {
+    return true;
+  }
+
+  /**
    * Estimate the cost to process the expression, used when optimizing the expression.
    *
    * @return the estimated cost
@@ -190,15 +200,5 @@ public interface IExpression {
    */
   default boolean isSameExpression(IExpression other) {
     return equals(other) && isDeterministic();
-  }
-
-  /**
-   * Checks if this expression always evaluates to the same value for a row, it doesn't call a
-   * non-deterministic function like {@code RANDOM()}.
-   *
-   * @return {@code true} if the expression and all its operands are deterministic
-   */
-  default boolean isDeterministic() {
-    return true;
   }
 }

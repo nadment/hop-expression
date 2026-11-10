@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
@@ -56,6 +57,15 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_PREPEND('sun',['mon','tue'])", "['sun','mon','tue']");
     optimize("ARRAY_PREPEND(0,[])", "[0]");
 
+    // The result is an array of the most general type of the elements and the prepended element
+    optimize("ARRAY_PREPEND(0,[1,2,3])", "[0,1,2,3]")
+        .returnType(ArrayType.of(IntegerType.of(1, false)));
+    optimize("ARRAY_PREPEND(40,[1,2,3])", "[40,1,2,3]")
+        .returnType(ArrayType.of(IntegerType.of(2, false)));
+    evalEquals(
+        "ARRAY_TO_STRING(TRANSFORM(ARRAY_PREPEND(FIELD_INTEGER,[1,2]),x->x+1),',')", "41,2,3");
+    evalTrue("EXISTS(ARRAY_PREPEND(NULL_INTEGER,[1,2]),x->x IS NULL)");
+
     // Check operands
     evalFails("ARRAY_PREPEND()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ARRAY_PREPEND('test',3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -69,6 +79,15 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_APPEND([1,2,3],4)", "[1,2,3,4]");
     optimize("ARRAY_APPEND(['sun','mon'],'tue')", "['sun','mon','tue']");
     optimize("ARRAY_APPEND([],0)", "[0]");
+
+    // The result is an array of the most general type of the elements and the appended element
+    optimize("ARRAY_APPEND([1,2,3],4)", "[1,2,3,4]")
+        .returnType(ArrayType.of(IntegerType.of(1, false)));
+    optimize("ARRAY_APPEND([1,2,3],40)", "[1,2,3,40]")
+        .returnType(ArrayType.of(IntegerType.of(2, false)));
+    evalEquals(
+        "ARRAY_TO_STRING(TRANSFORM(ARRAY_APPEND([1,2],FIELD_INTEGER),x->x+1),',')", "2,3,41");
+    evalTrue("EXISTS(ARRAY_APPEND([1,2],NULL_INTEGER),x->x IS NULL)");
 
     // Check operands
     evalFails("ARRAY_APPEND()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -163,6 +182,11 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SLICE([1,2,3], 4294967296, 4294967298)", "[]");
     optimize("ARRAY_SLICE([1,2,3], 0, 4294967298)", "[1,2,3]");
     optimize("ARRAY_SLICE([1,2,3], -4294967296, 2)", "[1,2]");
+
+    // The result is an array of the type of the source array
+    optimize("ARRAY_SLICE([1,2,3],0,2)", "[1,2]")
+        .returnType(ArrayType.of(IntegerType.of(1, false)));
+    evalEquals("ARRAY_TO_STRING(TRANSFORM(ARRAY_SLICE([1,2,3],0,2),x->x+1),',')", "2,3");
 
     // Null handling
     evalNull("ARRAY_SLICE(NULL, 2, 3)");
@@ -378,6 +402,10 @@ class ArrayFunctionTest extends ExpressionTest {
     evalEquals("ARRAY_TO_STRING(FILTER([1,NULL_INTEGER,3],x->x>1),',')", "3");
     optimize("FILTER([1,NULL,3], x -> x > 1)", "[3]");
 
+    // An element can be NULL
+    evalEquals("CARDINALITY(FILTER([1,NULL,3],x->x IS NULL))", 1L);
+    evalEquals("CARDINALITY(FILTER([1,NULL,3],x->x IS NOT NULL))", 2L);
+
     // A number is a condition, TRUE if not zero
     evalEquals("ARRAY_TO_STRING(FILTER([0,1,2],x->x),',')", "1,2");
 
@@ -394,6 +422,42 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("FILTER([1,2],TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("FILTER([1,2],x->DATE '2020-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("FILTER('test',x->TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
+  void Exists() throws Exception {
+    evalTrue("EXISTS([1,2,3],x->x>2)").returnType(BooleanType.BOOLEAN);
+    evalFalse("EXISTS([1,2,3],x->x>5)");
+    evalTrue("EXISTS(ARRAY(0,NULL,2,3,NULL),x->x IS NULL)");
+    evalTrue("EXISTS(['a','bb','ccc'],s->LENGTH(s)>2)");
+    optimize("EXISTS([1,2,3],x->x>2)", "TRUE");
+    optimize("EXISTS(STRING_TO_ARRAY(FIELD_STRING,','),x->x>'A')");
+
+    // The body can reference the fields of the row
+    evalTrue("EXISTS([10,50,60],x->x>FIELD_INTEGER)");
+
+    // An empty array has no element
+    evalFalse("EXISTS(FILTER([1,2],x->x>5),x->TRUE)");
+
+    // A number is a condition, TRUE if not zero
+    evalTrue("EXISTS([0,1],x->x)");
+    evalFalse("EXISTS([0,0],x->x)");
+
+    // Three-valued logic: TRUE wins over NULL, NULL wins over FALSE
+    evalTrue("EXISTS([1,NULL_INTEGER,3],x->x>2)");
+    evalTrue("EXISTS([3,NULL_INTEGER,1],x->x>2)");
+    evalNull("EXISTS([1,NULL_INTEGER,3],x->x>5)");
+
+    // Null handling
+    evalNull("EXISTS(STRING_TO_ARRAY(NULL_STRING,','),x->x='a')");
+
+    // Check operands
+    evalFails("EXISTS([1,2])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("EXISTS([1,2],x->x>1,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("EXISTS([1,2],TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EXISTS([1,2],x->DATE '2020-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EXISTS('test',x->TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("EXISTS([1,2],(x,y)->x>y)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
   }
 
   @Test
