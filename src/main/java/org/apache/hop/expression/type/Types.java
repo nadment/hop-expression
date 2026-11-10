@@ -80,17 +80,16 @@ public final class Types {
     return expression.getType();
   }
 
-  /** Returns the most general type of the elements of an array, or null if it has no element. */
+  /**
+   * Returns the most general type of the elements of an array, or null if it has no element.
+   *
+   * <p>A nested array keeps its own array type, so {@code [[1,2],[3]]} has elements of type {@code
+   * ARRAY<INTEGER>}.
+   */
   private static @Nullable Type getLeastRestrictiveElement(Array array) {
     Type result = null;
     for (IExpression operand : array) {
-      Type type = operand.getType();
-      if (operand instanceof Array child) {
-        type = getLeastRestrictiveElement(child);
-      }
-      if (type != null) {
-        result = getLeastRestrictive(result, type);
-      }
+      result = getLeastRestrictive(result, operand.getType());
     }
     return result;
   }
@@ -104,6 +103,11 @@ public final class Types {
    */
   public static Type getLeastRestrictive(@Nullable Type type1, Type type2) {
     if (type1 == null) return type2;
+
+    // Two arrays give an array of the most general type of their elements
+    if (type1 instanceof ArrayType array1 && type2 instanceof ArrayType array2) {
+      return ArrayType.of(getLeastRestrictive(array1.getElementType(), array2.getElementType()));
+    }
 
     // INTEGER and NUMBER -> NUMBER, whatever the precision
     if (isInteger(type1) && isNumber(type2)) {
@@ -452,7 +456,14 @@ public final class Types {
         || (isStringLiteral(expression2) && !type1.isFamily(TypeFamily.ARRAY));
   }
 
-  private static boolean isStringLiteral(IExpression expression) {
+  /**
+   * Returns whether an expression is a string literal, it can be converted to the type of another
+   * expression.
+   *
+   * @param expression the expression
+   * @return true if the expression is a literal of type STRING
+   */
+  public static boolean isStringLiteral(IExpression expression) {
     return expression instanceof Literal && isString(expression.getType());
   }
 

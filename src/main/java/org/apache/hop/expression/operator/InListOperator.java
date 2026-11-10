@@ -69,6 +69,11 @@ public class InListOperator extends Operator {
   }
 
   @Override
+  public void validateOperands(IExpressionContext context, Call call) throws ExpressionException {
+    validateValueListOperands(context, call);
+  }
+
+  @Override
   public boolean checkOperandTypes(final Call call) {
     IExpression reference = call.getOperand(0);
     if (reference.isNull()) return true;

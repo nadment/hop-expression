@@ -314,6 +314,29 @@ public abstract class Operator {
   }
 
   /**
+   * Validates the operands of an operator with a list of values, like {@code IN} or {@code CASE}.
+   * The list is held in an {@link Array} but is not an array literal: a value of another type is
+   * reported as an illegal argument of this operator, not as an array element type mismatch.
+   *
+   * @param context the context against which the operands are validated
+   * @param call the call to validate
+   * @throws ExpressionException if an operand is not valid
+   */
+  protected final void validateValueListOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    try {
+      for (IExpression operand : call.getOperands()) {
+        operand.validate(context);
+      }
+    } catch (ExpressionException e) {
+      if (e.getErrorCode() != ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH) {
+        throw e;
+      }
+      throw new ParseExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
+    }
+  }
+
+  /**
    * Check the number of operands expected.
    *
    * @param call The call to check

@@ -57,7 +57,9 @@ import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NotInListOperator;
 import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,6 +148,15 @@ public class ExpressionParserTest extends ExpressionTest {
 
     // Multi-dimensional array values
     optimize("[[1,2],[3,4]]");
+    optimize("[[1,2,3],[1]]").returnType(ArrayType.of(ArrayType.of(IntegerType.of(1, false))));
+    optimize("[[1,22],[3.5]]").returnType(ArrayType.of(ArrayType.of(NumberType.of(3, 1, false))));
+    optimize("[[1],[]]").returnType(ArrayType.of(ArrayType.of(IntegerType.of(1, false))));
+    optimize("[[[1]]]")
+        .returnType(ArrayType.of(ArrayType.of(ArrayType.of(IntegerType.of(1, false)))));
+
+    // Elements not coercible to the element type
+    evalFails("[1,DATE '2020-01-01']", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);
+    evalFails("[FIELD_STRING,1]", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);
 
     evalFails("[1", ErrorCode.MISSING_RIGHT_BRACKET);
     evalFails("[1,", ErrorCode.SYNTAX_ERROR);
@@ -156,6 +167,7 @@ public class ExpressionParserTest extends ExpressionTest {
   void arrayElementAt() throws Exception {
     evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1, false));
     evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1, false));
+    optimize("[[1,2,3],[1]][2]", "[1]").returnType(ArrayType.of(IntegerType.of(1, false)));
   }
 
   @Test

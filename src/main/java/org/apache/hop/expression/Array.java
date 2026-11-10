@@ -184,14 +184,16 @@ public final class Array implements IExpression, Iterable<IExpression> {
     type = ArrayType.of(elementType);
 
     // Don't validate multi-dimensional array
-    if (type.isName(TypeName.ARRAY)) {
+    if (elementType.isName(TypeName.ARRAY)) {
       return;
     }
 
-    // All elements of an array should be coercible
+    // All elements of an array should be coercible to the element type, a string literal is
+    // converted to the element type like in a comparison
     for (IExpression expression : this) {
-      if (!elementType.isCoercible(expression.getType())) {
-        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT_TYPE, expression);
+      if (!expression.getType().isCoercible(elementType) && !Types.isStringLiteral(expression)) {
+        throw new ExpressionException(
+            ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH, expression, elementType.getName());
       }
     }
   }

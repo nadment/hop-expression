@@ -203,6 +203,11 @@ public class CaseSimpleOperator extends Operator {
   }
 
   @Override
+  public void validateOperands(IExpressionContext context, Call call) throws ExpressionException {
+    validateValueListOperands(context, call);
+  }
+
+  @Override
   public boolean checkOperandTypes(Call call) {
 
     IExpression valueOperand = call.getOperand(0);
@@ -234,8 +239,11 @@ public class CaseSimpleOperator extends Operator {
   public boolean coerceOperandsType(Call call) {
     boolean coerced = false;
 
-    Type type = getLeastRestrictive(call.getOperand(1));
-    type = getLeastRestrictive(type, call.getOperand(0).getType());
+    // A WHEN operand is a single value or a list of values, compare their types to the value type
+    Type type = call.getOperand(0).getType();
+    for (IExpression whenOperand : (Array) call.getOperand(1)) {
+      type = getLeastRestrictive(type, getLeastRestrictive(whenOperand));
+    }
 
     // Coerce value operand
     coerced |= coerceOperandType(call, type, 0);

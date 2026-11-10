@@ -326,6 +326,14 @@ public enum ErrorCode {
    */
   SCALE_GREATER_THAN_PRECISION,
   /**
+   * An element of an array is not of the same type as the other elements and cannot be coerced to
+   * it.
+   *
+   * <p>Message: <code>The elements of an array must be of the same type, {0} is not of type {1}
+   * </code>
+   */
+  ARRAY_ELEMENT_TYPE_MISMATCH,
+  /**
    * The index used to access an array element is outside the bounds of the array.
    *
    * <p>Message: <code>The index {0} is out of bounds</code>
