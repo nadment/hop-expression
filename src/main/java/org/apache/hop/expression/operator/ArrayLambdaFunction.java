@@ -91,7 +91,8 @@ public abstract class ArrayLambdaFunction extends Function {
    *     has not the number of parameters expected
    */
   @Override
-  public void validateOperands(IExpressionContext context, Call call) throws ExpressionException {
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
     IExpression[] operands = call.getOperands();
     for (int i = 0; i < operands.length; i++) {
       if (i == 1 && operands[i] instanceof Lambda lambda) {

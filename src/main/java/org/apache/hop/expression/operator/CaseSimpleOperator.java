@@ -203,12 +203,13 @@ public class CaseSimpleOperator extends Operator {
   }
 
   @Override
-  public void validateOperands(IExpressionContext context, Call call) throws ExpressionException {
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
     validateValueListOperands(context, call);
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
 
     IExpression valueOperand = call.getOperand(0);
 

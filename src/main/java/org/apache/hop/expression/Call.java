@@ -139,14 +139,8 @@ public class Call implements IExpression {
   @Override
   public void validate(IExpressionContext context) throws ExpressionException {
 
-    // Validates the operands of a call
-    operator.validateOperands(context, this);
-
-    // Check the number of operands expected
-    operator.checkOperandCount(this);
-
-    // Check operand types expected
-    operator.checkOperandTypes(this, true);
+    // Validates the operands, then check their number and their types
+    operator.validate(context, this);
 
     // Inferring the return type
     type = operator.inferReturnType(this);

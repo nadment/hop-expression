@@ -54,7 +54,7 @@ public class ArrayDistinctFunction extends Function {
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
     if (!super.checkOperandTypes(call)) {
       return false;
     }

@@ -297,6 +297,34 @@ public abstract class Operator {
   }
 
   /**
+   * Validates a call to this operator: the operands are validated, then their number and their
+   * types are checked.
+   *
+   * @param context the context against which the operands are validated
+   * @param call the call to validate
+   * @throws ExpressionException if an operand is not valid, or if the number or the types of the
+   *     operands are not the ones expected
+   */
+  public final void validate(IExpressionContext context, Call call) throws ExpressionException {
+    // Validates the operands of a call
+    validateOperands(context, call);
+
+    // Check the number of operands expected
+    checkOperandCount(call);
+
+    // Check operand types expected
+    if (!checkOperandTypes(call)) {
+      // A comparison like x = NULL is always NULL, the user most likely meant x IS NULL
+      if (operandTypeChecker instanceof ComparableOperandTypeChecker
+          && Arrays.stream(call.getOperands())
+              .anyMatch(operand -> operand.getType().isName(TypeName.UNKNOWN))) {
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.COMPARISON_WITH_NULL);
+      }
+      throw new ParseExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
+    }
+  }
+
+  /**
    * Validates the operands of a call to this operator, before the number and the types of the
    * operands are checked.
    *
@@ -307,7 +335,8 @@ public abstract class Operator {
    * @param call the call to validate
    * @throws ExpressionException if an operand is not valid
    */
-  public void validateOperands(IExpressionContext context, Call call) throws ExpressionException {
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
     for (IExpression operand : call.getOperands()) {
       operand.validate(context);
     }
@@ -341,7 +370,7 @@ public abstract class Operator {
    *
    * @param call The call to check
    */
-  public void checkOperandCount(Call call) {
+  private void checkOperandCount(Call call) {
     if (operandTypeChecker == null) return;
 
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
@@ -362,37 +391,9 @@ public abstract class Operator {
    * @param call The call to check
    * @return whether check succeeded
    */
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
     if (operandTypeChecker == null) return true;
     return operandTypeChecker.checkOperandTypes(call);
-  }
-
-  /**
-   * Check operand types expected
-   *
-   * @param call The call to check
-   * @param throwOnFailure whether to throw an exception if the check fails (otherwise returns false
-   *     in that case)
-   * @return whether check succeeded
-   */
-  public boolean checkOperandTypes(Call call, boolean throwOnFailure) {
-
-    boolean success = checkOperandTypes(call);
-    if (success) {
-      return true;
-    }
-
-    if (throwOnFailure) {
-      // A comparison like x = NULL is always NULL, the user most likely meant x IS NULL
-      if (operandTypeChecker instanceof ComparableOperandTypeChecker
-          && Arrays.stream(call.getOperands())
-              .anyMatch(operand -> operand.getType().isName(TypeName.UNKNOWN))) {
-        throw new ParseExpressionException(call.getPosition(), ErrorCode.COMPARISON_WITH_NULL);
-      }
-      throw new ParseExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
-    }
-
-    return false;
   }
 
   /**

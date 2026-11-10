@@ -71,7 +71,7 @@ public class IsDistinctFromOperator extends BinaryOperator {
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
     // An untyped NULL is comparable to any data type
     if (call.getOperand(0).getType().isName(TypeName.UNKNOWN)
         || call.getOperand(1).getType().isName(TypeName.UNKNOWN)) {

@@ -56,7 +56,7 @@ public class ArraySortFunction extends ArrayLambdaFunction {
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
     // A comparator orders any type of elements. Checked first, as a lambda returning a BOOLEAN or a
     // number is also accepted by the check of the boolean operand.
     if (call.getOperandCount() == 2 && call.getOperand(1) instanceof Lambda) {

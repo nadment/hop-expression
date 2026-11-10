@@ -50,7 +50,7 @@ public class NegativeOperator extends PrefixUnaryOperator {
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
     // A boolean is not implicitly coerced to a number
     return super.checkOperandTypes(call) && !Types.isBoolean(call.getOperand(0).getType());
   }

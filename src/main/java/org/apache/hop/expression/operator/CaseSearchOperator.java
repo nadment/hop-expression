@@ -215,7 +215,7 @@ public class CaseSearchOperator extends Operator {
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
 
     // Search case should be a predicate, a number is coerced to a boolean
     for (IExpression operand : (Array) call.getOperand(1)) {

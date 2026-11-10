@@ -51,7 +51,7 @@ public class ArrayAppendFunction extends Function {
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
+  protected boolean checkOperandTypes(Call call) {
     boolean success = super.checkOperandTypes(call);
     if (success) {
       Type arrayType = call.getOperand(0).getType().getElementType();
