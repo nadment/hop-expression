@@ -19,6 +19,8 @@ under the License.
 The expression editor helps to write an expression.
 Open it with the button next to an expression in the dialog of a transform or an action; the xref:../pipeline/transforms/where.adoc[Where] transform shows it directly.
 
+image::../images/editor.png[Expression editor with syntax highlighting and completion]
+
 == Tree of the elements
 
 * Lists the *Fields* (or the *Arguments* of a xref:udf.adoc[user-defined function]), the *Operators* and functions by category, and the *Variables*.

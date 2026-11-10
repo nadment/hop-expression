@@ -27,6 +27,10 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 A plugin for https://hop.apache.org[Apache Hop] that brings a SQL-like expression language to pipelines and workflows.
 
+Documentation: {url-doc}/hop-user-manual/expression/expression.adoc[expression language] | {url-doc}/hop-user-manual/expression/editor.adoc[expression editor] | {url-doc}/hop-user-manual/expression/functions.adoc[functions]
+
+image::src/main/doc/hop-user-manual/images/editor.png[Expression editor with syntax highlighting and completion]
+
 == Features
 
 The plugin provides 4 transforms and 2 actions that use the power of the expression language.
@@ -76,13 +80,25 @@ An expression is a combination of one or more literal values, resolvable identif
 case
   when REGION_ID<0 then Upper(Left(LABEL,5))
   when REGION_ID between 0 and 100 then InitCap(Substr("LABEL FR",8,50))
-  else To_Char([YEAR]+1,'FM9999') || ' XXX '
+  else To_Char("YEAR"+1,'FM9999') || ' XXX '
 end
+----
+
+A few more examples:
+
+----
+LAST_DAY(ORDER_DATE + INTERVAL 1 MONTH)                 -- Date arithmetic
+TO_CHAR(ORDER_DATE, 'YYYY-MM-DD')                       -- Formatting
+AMOUNT::NUMBER(10,2)                                    -- Cast
+COALESCE(NULLIF(TRIM(NAME), ''), 'Unknown')             -- Null handling
+JSON_VALUE(CUSTOMER, '$.address.city')                  -- JSON path
+FILTER(STRING_TO_ARRAY(TAGS, ','), t -> t <> '')        -- Array and lambda
+REDUCE(TRANSFORM(STRING_TO_ARRAY(PRICES, ','), p -> TO_NUMBER(p)), (acc, p) -> acc + p)
 ----
 
 === Data types and literals
 
-* 9 data types: `Boolean` `Integer` `Number` `String` `Date` `Interval` `Binary` `Json` `Inet`
+* 11 data types: `Boolean` `Integer` `Number` `String` `Date` `Timestamp` `Interval` `Binary` `Json` `Inet` `Array`
 * Literal values: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `DATE` '2022-04-25', `TIMESTAMP` '2022-04-25 05:28:59', `BINARY` 'FA6CB', `JSON` '{"name":"John"}', `INTERVAL` 3 `YEAR`
 * Arrays `[1,4,8]` and access to an element with `<array>[1]`
 
@@ -95,12 +111,14 @@ end
 * Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST`
 * Pattern matching operators `LIKE` `ILIKE` `SIMILAR TO`
 * Cast operator `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
+* Time zone operator `AT TIME ZONE`
+* Array element operator `<array>[<index>]`
 
 === Functions
 
-* Over 200 scalar and aggregate {url-doc}/hop-user-manual/expression/functions.adoc[functions]: conditional, mathematical, trigonometry, conversion, bitwise, string, date, JSON, array...
+* Over 240 scalar and aggregate {url-doc}/hop-user-manual/expression/functions.adoc[functions]: conditional, mathematical, trigonometry, conversion, bitwise, string, date, JSON, array...
 * {url-doc}/hop-user-manual/expression/udf.adoc[User-defined functions] (UDF), stored as metadata of the project and written as expressions
-* {url-doc}/hop-user-manual/expression/expression.adoc#lambda[Lambda expressions] to process the elements of an array: `TRANSFORM(STRING_TO_ARRAY(PRICES, ','), p -> TO_NUMBER(p) * 1.2)`, `FILTER(STRING_TO_ARRAY(TAGS, ','), t -> t <> '')`, `ARRAY_SORT(STRING_TO_ARRAY(NAMES, ','), (p1, p2) -> LENGTH(p1) - LENGTH(p2))`
+* {url-doc}/hop-user-manual/expression/expression.adoc#lambda[Lambda expressions] to process the elements of an array with `TRANSFORM`, `FILTER`, `EXISTS`, `REDUCE` and `ARRAY_SORT`, like `TRANSFORM(STRING_TO_ARRAY(PRICES, ','), p -> TO_NUMBER(p) * 1.2)`
 
 === Good to know
 
@@ -109,8 +127,6 @@ end
 * The {url-doc}/hop-user-manual/expression/editor.adoc[expression editor] highlights the syntax, completes the names, explains the elements and underlines the errors
 * Parentheses control the order of evaluation
 * An expression is optimized right after parsing: `5+XYZ+4*2+5` becomes `XYZ+18`, so readability has no cost at runtime
-
-The {url-doc}/hop-user-manual/expression/expression.adoc[documentation] is a work in progress.
 
 == Getting started
 
@@ -144,35 +160,9 @@ NOTE: `mvn install` also unzips the archive into the `custom` directory of the H
 
 == Extending with plugins
 
-Use the `@FunctionPlugin` annotation to add your own function from another plugin.
-The {url-doc}/hop-dev-manual/function-plugin.adoc[developer guide] explains the setup, the aggregate functions, the functions with an extended syntax, the documentation, the deployment and the tests.
+Add your own function from another plugin with a class that extends `Function`, annotated with `@FunctionPlugin`: it declares the name, the return type and the operand types of the function, and implements its evaluation.
 
-[source,java]
-----
-/** The function computes the Levenshtein distance between two strings. */
-@FunctionPlugin
-public class LevenshteinFunction extends Function {
-
-  public LevenshteinFunction() {
-    super(
-        "LEVENSHTEIN",
-        ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.STRING_STRING,
-        OperatorCategory.STRING,
-        "/docs/levenshtein.html");
-  }
-
-  @Override
-  public @Nullable Object eval(final IExpression[] operands) {
-    String str1 = operands[0].getValue(String.class);
-    if (str1 == null) return null;
-    String str2 = operands[1].getValue(String.class);
-    if (str2 == null) return null;
-
-    return Long.valueOf(LevenshteinDistance.getDefaultInstance().apply(str1, str2));
-  }
-}
-----
+The {url-doc}/hop-dev-manual/function-plugin.adoc[developer guide] gives a complete example and explains the setup, the aggregate functions, the functions with an extended syntax, the documentation, the deployment and the tests.
 
 == Support
 
