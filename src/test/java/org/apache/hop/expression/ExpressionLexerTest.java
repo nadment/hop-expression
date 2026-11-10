@@ -32,7 +32,7 @@ class ExpressionLexerTest {
   @Test
   void testOperators() throws Exception {
     ExpressionLexer lexer =
-        new ExpressionLexer(", ( ) [ ] = + - * % < > <= <> >= != = = :: / ~ & ^ || |");
+        new ExpressionLexer(", ( ) [ ] = + - * % < > <= <> >= != = = :: / ~ & ^ || | -> - >");
 
     assertEquals(Id.COMMA, lexer.next().id());
     assertEquals(Id.LPARENTHESIS, lexer.next().id());
@@ -59,6 +59,9 @@ class ExpressionLexerTest {
     assertEquals(Id.CARET, lexer.next().id());
     assertEquals(Id.CONCAT, lexer.next().id());
     assertEquals(Id.PIPE, lexer.next().id());
+    assertEquals(Id.ARROW, lexer.next().id());
+    assertEquals(Id.MINUS, lexer.next().id());
+    assertEquals(Id.GT, lexer.next().id());
   }
 
   @Test

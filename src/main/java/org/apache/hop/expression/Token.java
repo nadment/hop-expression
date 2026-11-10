@@ -57,6 +57,8 @@ public record Token(Id id, int start, int end, String text) {
     AT,
     /** Cast operator <code>::</code>. */
     CAST("::"),
+    /** Arrow of a lambda expression <code>-&gt;</code>. */
+    ARROW("->"),
     /** DOT */
     DOT("."),
     /** Comma separator */

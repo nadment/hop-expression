@@ -16,18 +16,20 @@ under the License.
 ////
 = ARRAY_SORT
 
-Returns an array with the elements of an array sorted in ascending or descending order.
+Returns an array with the elements of an array sorted in ascending or descending order, or in an order defined by a comparator.
 
 == Syntax
 
 ----
 ARRAY_SORT( array [, ascending ] )
+ARRAY_SORT( array, (p1, p2) -> comparator )
 ----
 
 == Arguments
 
 array:: The source array.
 ascending:: Optional boolean, TRUE to sort in ascending order (default), FALSE to sort in descending order.
+(p1, p2) -> comparator:: A xref:expression.adoc#lambda[lambda] with two parameters, two elements of the array, that defines a custom order. It returns a negative number if `p1` is placed before `p2`, zero if they are equal, or a positive number if `p1` is placed after `p2`.
 
 == Returns
 
@@ -35,8 +37,11 @@ Array
 
 == Usage
 
-* The elements of the array must be of a type that can be ordered.
-* The NULL elements are placed at the end of the array, whatever the order.
+* Without comparator, the elements of the array must be of a type that can be ordered.
+* The comparator must return a number, only its sign matters. A NULL result means equal elements.
+* The comparator must define a consistent order, if `p1` is placed before `p2` then `p2` is placed after `p1`.
+* The sort is stable, the elements considered as equal keep their order.
+* The NULL elements are not passed to the comparator, they are placed at the end of the array, whatever the order.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
@@ -45,8 +50,11 @@ Array
 ARRAY_SORT([3,1,2]) returns [1,2,3]
 ARRAY_SORT([3,1,2],FALSE) returns [3,2,1]
 ARRAY_SORT(['mon','tue','fri']) returns ['fri','mon','tue']
+ARRAY_SORT([3,1,2], (p1, p2) -> p2 - p1) returns [3,2,1]
+ARRAY_SORT(['ccc','a','bb'], (p1, p2) -> LENGTH(p1) - LENGTH(p2)) returns ['a','bb','ccc']
 ----
 
 == See also
 
 * xref:array_distinct.adoc["ARRAY_DISTINCT",role=fun]
+* xref:transform.adoc["TRANSFORM",role=fun]

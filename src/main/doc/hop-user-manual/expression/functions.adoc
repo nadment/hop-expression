@@ -108,6 +108,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:exp.adoc["EXP",role=fun]
 * xref:extract.adoc["EXTRACT",role=fun]
 * xref:factorial.adoc["FACTORIAL",role=fun]
+* xref:filter.adoc["FILTER",role=fun]
 * xref:first_day.adoc["FIRST_DAY",role=fun]
 * xref:first_value.adoc["FIRST_VALUE",role=fun] aggregate
 * xref:floor.adoc["FLOOR",role=fun]
@@ -230,6 +231,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:to_json.adoc["TO_JSON",role=fun]
 * xref:to_number.adoc["TO_NUMBER",role=fun]
 * xref:to_timestamp.adoc["TO_TIMESTAMP",role=fun]
+* xref:transform.adoc["TRANSFORM",role=fun]
 * xref:translate.adoc["TRANSLATE",role=fun]
 * xref:trim.adoc["TRIM",role=fun]
 * xref:truncate.adoc["TRUNCATE",role=fun]

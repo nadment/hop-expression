@@ -311,6 +311,30 @@ For example, `YEAR` cannot be used whereas `"YEAR"` can be accepted.
 
 NOTE: If you wish to include a double quote in an identifier, use another double quote to escape it.
 
+[#lambda]
+== Lambda
+
+A lambda is an anonymous function with one or more parameters, the argument of a function that evaluates the expression with the elements of an array, like xref:transform.adoc["TRANSFORM",role=fun], xref:filter.adoc["FILTER",role=fun] or xref:array_sort.adoc["ARRAY_SORT",role=fun].
+
+* With one parameter: `parameter -> expression`. The parameter can also be enclosed in parentheses, `(x) -> x * 2` is the same as `x -> x * 2`.
+* With several parameters, enclosed in parentheses and separated by commas: `(parameter1, parameter2) -> expression`.
+
+----
+TRANSFORM([1,2,3], x -> x * 2) <1>
+TRANSFORM(STRING_TO_ARRAY(PRICES, ','), p -> TO_NUMBER(p) * RATE) <3>
+FILTER(STRING_TO_ARRAY(FIELD, ','), s -> s <> '') <2>
+ARRAY_SORT(['ccc','a','bb'], (p1, p2) -> LENGTH(p1) - LENGTH(p2)) <4>
+----
+<1> Returns `[2,4,6]`.
+<2> Returns the non-empty values of a list.
+<3> The expression can use the fields of the row, like `RATE`.
+<4> A lambda with two parameters, sorts the strings by length and returns `['a','bb','ccc']`.
+
+* The function gives the data type of each parameter, the data type of the elements of the array for xref:transform.adoc["TRANSFORM",role=fun] and xref:filter.adoc["FILTER",role=fun].
+* The parameters of a lambda must have distinct names.
+* A parameter is only visible in the expression of the lambda, it hides a field or a parameter of an enclosing lambda with the same name.
+* A lambda is only allowed as the argument of a function that accepts one.
+
 == Operator
 
 The following table lists all operators from highest to lowest precedence, alongside their associativity.

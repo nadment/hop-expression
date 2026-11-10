@@ -245,6 +245,21 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ARRAY_VARIADIC =
       repeat(OperandCountRange.between(1, -1), ARRAY);
 
+  /** An array and a lambda with one parameter returning any type, like {@code TRANSFORM}. */
+  public static final IOperandTypeChecker ARRAY_LAMBDA_ANY =
+      sequence(ARRAY, lambda(1, TypeName.ANY));
+
+  /** An array and a lambda with one parameter returning a condition, like {@code FILTER}. */
+  public static final IOperandTypeChecker ARRAY_LAMBDA_BOOLEAN =
+      sequence(ARRAY, lambda(1, TypeName.BOOLEAN));
+
+  /**
+   * An array and a comparator lambda with two parameters returning a number, negative, zero or
+   * positive, like {@code ARRAY_SORT}.
+   */
+  public static final IOperandTypeChecker ARRAY_COMPARATOR =
+      sequence(ARRAY, lambda(2, TypeFamily.NUMERIC));
+
   /**
    * Operand type-checking strategy for BETWEEN operator where operand types must allow ordered
    * comparisons.
@@ -305,5 +320,30 @@ public final class OperandTypes {
 
   public static ISingleOperandTypeChecker literal(Class<?> javaClass) {
     return new LiteralOperandTypeChecker(javaClass);
+  }
+
+  /**
+   * Creates a checker that passes if the operand is a lambda with a number of parameters, whose
+   * expression returns a type coercible to the specified type.
+   *
+   * @param parameterCount the number of parameters expected
+   * @param returnType the type to which the expression of the lambda must be coercible
+   * @return the checker
+   */
+  public static ISingleOperandTypeChecker lambda(int parameterCount, TypeName returnType) {
+    return new LambdaOperandTypeChecker(parameterCount, name -> name.isCoercible(returnType));
+  }
+
+  /**
+   * Creates a checker that passes if the operand is a lambda with a number of parameters, whose
+   * expression returns a type of the specified family, without coercion: a BOOLEAN is not a
+   * NUMERIC.
+   *
+   * @param parameterCount the number of parameters expected
+   * @param returnFamily the family of the type returned by the expression of the lambda
+   * @return the checker
+   */
+  public static ISingleOperandTypeChecker lambda(int parameterCount, TypeFamily returnFamily) {
+    return new LambdaOperandTypeChecker(parameterCount, name -> name.isFamily(returnFamily));
   }
 }

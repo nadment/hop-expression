@@ -140,9 +140,7 @@ public class Call implements IExpression {
   public void validate(IExpressionContext context) throws ExpressionException {
 
     // Validates the operands of a call
-    for (IExpression operand : operands) {
-      operand.validate(context);
-    }
+    operator.validateOperands(context, this);
 
     // Check the number of operands expected
     operator.checkOperandCount(this);

@@ -149,6 +149,21 @@ public enum ErrorCode {
    */
   UNRESOLVED_IDENTIFIER,
   /**
+   * A lambda expression, like {@code x -> x + 1}, is used elsewhere than as the argument of a
+   * function that accepts one.
+   *
+   * <p>Message: <code>Lambda expression “{0}” is not allowed here</code>
+   */
+  LAMBDA_NOT_ALLOWED,
+  /**
+   * Several parameters of a lambda expression have the same name, like {@code (x, x) -> x}.
+   *
+   * <p>Message: <code>
+   * Duplicate parameter “{0}” in a lambda expression, the parameters must have distinct names
+   * </code>
+   */
+  DUPLICATE_LAMBDA_PARAMETER,
+  /**
    * No function is registered with the given name.
    *
    * <p>Message: <code>Function “{0}” does not exist</code>
@@ -173,6 +188,15 @@ public enum ErrorCode {
    */
   TOO_MANY_ARGUMENTS,
   /**
+   * The function is called with a lambda expression that has not the number of parameters expected
+   * by the function, like {@code TRANSFORM(array, (x, y) -> x + y)}.
+   *
+   * <p>Message: <code>
+   * Wrong number of parameters in the lambda expression “{1}” to call function {0}, expected {2}
+   * </code>
+   */
+  ILLEGAL_LAMBDA_PARAMETER_COUNT,
+  /**
    * An element is missing in a list of expressions, as after a trailing comma.
    *
    * <p>Message: <code>Missing element after a comma</code>
@@ -196,6 +220,13 @@ public enum ErrorCode {
    * <p>Message: <code>Missing closing double quote of an identifier</code>
    */
   MISSING_END_DOUBLE_QUOTED_STRING,
+  /**
+   * The expression of a lambda is missing after the arrow, like {@code (x, y) ->}. The value is the
+   * parameters of the lambda followed by the arrow.
+   *
+   * <p>Message: <code>Missing expression after “{0}” in a lambda expression</code>
+   */
+  MISSING_LAMBDA_EXPRESSION,
   /**
    * A left parenthesis {@code (} is expected.
    *

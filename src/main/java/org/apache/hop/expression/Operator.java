@@ -297,6 +297,23 @@ public abstract class Operator {
   }
 
   /**
+   * Validates the operands of a call to this operator, before the number and the types of the
+   * operands are checked.
+   *
+   * <p>By default, each operand is validated in the context. A function with a {@link Lambda}
+   * operand overrides this method to give the type of the lambda parameter.
+   *
+   * @param context the context against which the operands are validated
+   * @param call the call to validate
+   * @throws ExpressionException if an operand is not valid
+   */
+  public void validateOperands(IExpressionContext context, Call call) throws ExpressionException {
+    for (IExpression operand : call.getOperands()) {
+      operand.validate(context);
+    }
+  }
+
+  /**
    * Check the number of operands expected.
    *
    * @param call The call to check

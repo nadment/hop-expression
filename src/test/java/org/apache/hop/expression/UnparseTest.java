@@ -30,12 +30,16 @@ import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegativeOperator;
 import org.apache.hop.expression.operator.PositiveOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
+import org.apache.hop.junit.rules.RestoreHopEnvironmentExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Checks that unparsing adds parentheses only where the precedence or the associativity of the
  * operators requires it, so that the unparsed expression is parsed back to the same tree.
  */
+// The functions are registered to parse the calls to functions
+@ExtendWith({RestoreHopEnvironmentExtension.class, ExpressionExtension.class})
 class UnparseTest {
   private static final IExpression A = new Identifier("A");
   private static final IExpression B = new Identifier("B");
@@ -191,5 +195,29 @@ class UnparseTest {
     assertRoundTrip("A+1 IN (1,2)", "(A+1) IN (1,2)");
     assertRoundTrip("A IS DISTINCT FROM B OR C", "(A IS DISTINCT FROM B) OR C");
     assertRoundTrip("A OR B AND C XOR D", "A OR ((B AND C) XOR D)");
+  }
+
+  @Test
+  void lambda() {
+    // The body extends as far as possible, no parentheses are needed
+    assertRoundTrip("TRANSFORM(A,x->x*2+B)", "TRANSFORM(A, x -> (x*2)+B)");
+    assertRoundTrip("FILTER(A,x->x>0 AND x<B)", "FILTER(A, x -> (x > 0) AND (x < B))");
+    // Nested lambdas, the inner parameter hides the outer one
+    assertRoundTrip("TRANSFORM(A,x->FILTER(B,y->x=y))", "TRANSFORM(A, x -> FILTER(B, y -> x = y))");
+    assertRoundTrip("TRANSFORM(A,x->FILTER(x,x->x>0))", "TRANSFORM(A, x -> FILTER(x, x -> x > 0))");
+    // A parameter named like a reserved word is quoted
+    assertRoundTrip("TRANSFORM(A,\"YEAR\"->\"YEAR\"+1)", "TRANSFORM(A, \"YEAR\" -> \"YEAR\" + 1)");
+
+    // Several parameters are enclosed in parentheses, a single one is not
+    assertRoundTrip("TRANSFORM(A,(x,y)->x*y+B)", "TRANSFORM(A, (x, y) -> x * y + B)");
+    assertRoundTrip("TRANSFORM(A,x->x+1)", "TRANSFORM(A, (x) -> x + 1)");
+    assertRoundTrip(
+        "TRANSFORM(A,(x,y)->FILTER(B,z->x=z OR y=z))",
+        "TRANSFORM(A, (x, y) -> FILTER(B, z -> x = z OR y = z))");
+
+    // A parenthesis that doesn't start the parameters of a lambda
+    assertRoundTrip("A*2", "(A)*2");
+    assertRoundTrip("TRANSFORM(A,x->(x+1)*2)", "TRANSFORM(A, x -> (x + 1) * 2)");
+    assertRoundTrip("TRANSFORM(A,x->x IN (B,C))", "TRANSFORM(A, x -> x IN (B, C))");
   }
 }

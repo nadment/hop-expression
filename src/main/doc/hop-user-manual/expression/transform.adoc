@@ -1,0 +1,56 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= TRANSFORM
+
+Returns an array of the results of a lambda applied to each element of an array.
+
+== Syntax
+
+----
+TRANSFORM( array, parameter -> expression )
+----
+
+== Arguments
+
+array:: The source array.
+parameter -> expression:: A xref:expression.adoc#lambda[lambda] evaluated for each element of the array, the parameter is the element.
+
+== Returns
+
+Array of the data type of the expression.
+
+== Usage
+
+* The elements keep their order.
+* A NULL element is passed to the lambda like any other element.
+* The expression can use the fields of the row, read for the current row.
+* Returns NULL if the array is NULL.
+
+== Examples
+
+----
+TRANSFORM([1,2,3], x -> x * 2) returns [2,4,6]
+TRANSFORM(['a','b'], s -> UPPER(s)) returns ['A','B']
+TRANSFORM([1,NULL,3], x -> COALESCE(x,0)) returns [1,0,3]
+ARRAY_TO_STRING(TRANSFORM(STRING_TO_ARRAY('a,b',','), s -> TRIM(s)), ';') returns 'a;b'
+TRANSFORM([100,250], p -> p * VAT_RATE) returns [120,300] if the field VAT_RATE is 1.2
+----
+
+== See also
+
+* xref:filter.adoc["FILTER",role=fun]
+* xref:array_sort.adoc["ARRAY_SORT",role=fun]

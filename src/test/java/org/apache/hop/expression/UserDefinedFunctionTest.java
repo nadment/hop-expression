@@ -104,4 +104,20 @@ public class UserDefinedFunctionTest extends ExpressionTest {
     assertEquals("add_one", FunctionRegistry.unregister("Add_One").getName());
     evalFails("ADD_ONE(1)", ErrorCode.FUNCTION_DOES_NOT_EXIST);
   }
+
+  @Test
+  void testLambda() throws Exception {
+    UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+    meta.setName("SUFFIX_ALL");
+    // The lambda parameter is not an argument, the argument v1 is used in the body
+    meta.setSource("ARRAY_TO_STRING(TRANSFORM(STRING_TO_ARRAY(v0,','),x->UPPER(x)||v1),',')");
+    meta.getArguments().add(new FunctionArgument("v0", TypeName.STRING));
+    meta.getArguments().add(new FunctionArgument("v1", TypeName.STRING));
+    FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
+
+    evalEquals("SUFFIX_ALL('a,b','!')", "A!,B!");
+    evalEquals("SUFFIX_ALL(FIELD_STRING,'!')", "TEST!");
+
+    FunctionRegistry.unregister(meta.getName());
+  }
 }

@@ -43,6 +43,10 @@ final class UserDefinedFunctionArgumentReplacer implements IExpressionVisitor<IE
 
   @Override
   public IExpression visitIdentifier(final Identifier identifier) {
+    // The parameter of a lambda is not an argument of the function
+    if (identifier instanceof LambdaParameter) {
+      return identifier;
+    }
     return operands[identifier.getOrdinal()];
   }
 
@@ -73,5 +77,11 @@ final class UserDefinedFunctionArgumentReplacer implements IExpressionVisitor<IE
   @Override
   public IExpression visitLiteral(final Literal literal) {
     return literal;
+  }
+
+  @Override
+  public IExpression visitLambda(final Lambda lambda) {
+    return new Lambda(
+        lambda.getPosition(), lambda.getParameters(), lambda.getExpression().accept(this));
   }
 }

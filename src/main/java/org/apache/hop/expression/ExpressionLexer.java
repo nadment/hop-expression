@@ -131,6 +131,24 @@ public class ExpressionLexer {
   }
 
   /**
+   * Marks the next token, to read the following tokens ahead and go back with {@link #reset(int)}.
+   *
+   * @return the mark of the next token
+   */
+  public int mark() {
+    return index;
+  }
+
+  /**
+   * Goes back to a marked token, it becomes the next token again.
+   *
+   * @param mark the mark returned by {@link #mark()}
+   */
+  public void reset(int mark) {
+    index = mark;
+  }
+
+  /**
    * Returns whether the next token is of the specified type, the next token is not read.
    *
    * @param id the type of token
@@ -307,8 +325,8 @@ public class ExpressionLexer {
       case ']' -> new Token(Id.RBRACKET, position++);
       case '=' -> new Token(Id.EQUAL, position++);
       case '+' -> new Token(Id.PLUS, position++);
-        // Minus sign, a comment -- is already skipped
-      case '-' -> new Token(Id.MINUS, position++);
+        // Minus sign or lambda arrow, a comment -- is already skipped
+      case '-' -> scanOperator(Id.MINUS, '>', Id.ARROW);
       case '*' -> new Token(Id.STAR, position++);
       case '%' -> new Token(Id.PERCENT, position++);
       case '~' -> new Token(Id.TILDE, position++);

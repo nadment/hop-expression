@@ -17,8 +17,11 @@ package org.apache.hop.expression;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.StringJoiner;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.ArrayElementAtOperator;
@@ -76,6 +79,7 @@ import org.apache.hop.expression.util.InetConversion;
 import org.apache.hop.expression.util.JsonConversion;
 import org.apache.hop.expression.util.NumberFormat;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Expression parser.
@@ -83,7 +87,8 @@ import org.jspecify.annotations.NullMarked;
  * <p>EBNF Syntax: <code>
  * Literal := BooleanLiteral | StringLiteral | IntegerLiteral | NumberLiteral | BinaryLiteral | JsonLiteral
  * Constant := 'NULL' | 'TRUE' | 'FALSE'
- * TermExpression := Literal | Identifier | ParenthesisExpression  | FunctionExpression | CaseExpression
+ * TermExpression := Literal | Identifier | ParenthesisExpression  | FunctionExpression | CaseExpression | LambdaExpression
+ * LambdaExpression := (Identifier | '(' Identifier (',' Identifier)* ')') '-&gt;' LogicalOrExpression
  * ParenthesisExpression  := ('(' LogicalOrExpression ')') | LogicalOrExpression
  * FunctionExpression := FunctionName '(' ExpressionList ')', or the extended syntax parsed by the function
  * ExpressionList := LogicalOrExpression ( ',' LogicalOrExpression )*
@@ -139,6 +144,9 @@ import org.jspecify.annotations.NullMarked;
 public class ExpressionParser implements IExpressionParser {
 
   private final ExpressionLexer lexer;
+
+  /** The parameters of the lambdas being parsed, the innermost first. */
+  private final Deque<LambdaParameter> lambdaParameters = new ArrayDeque<>();
 
   public ExpressionParser(ExpressionLexer lexer) {
     super();
@@ -540,7 +548,7 @@ public class ExpressionParser implements IExpressionParser {
       case TRUE -> Literal.TRUE;
       case FALSE -> Literal.FALSE;
       case NULL -> Literal.NULL;
-      case IDENTIFIER -> new Identifier(token.start(), token.text());
+      case IDENTIFIER -> parseIdentifier(token);
       case LITERAL_STRING -> parseLiteralString(token);
       case LITERAL_NUMERIC_DECIMAL -> parseLiteralNumericDecimal(token);
       case LITERAL_NUMERIC_HEXA -> parseLiteralNumericHexa(token);
@@ -558,6 +566,11 @@ public class ExpressionParser implements IExpressionParser {
       case FUNCTION -> parseFunction(token);
       case LBRACKET -> parseArray(token);
       case LPARENTHESIS -> {
+        // The parameters of a lambda (x, y) -> expression
+        List<Token> parameters = parseLambdaParameters();
+        if (parameters != null) {
+          yield parseLambda(token, parameters);
+        }
         if (lexer.hasNext()) {
           IExpression expression = this.parseLogicalOr();
           if (lexer.accept(Id.RPARENTHESIS)) {
@@ -568,6 +581,101 @@ public class ExpressionParser implements IExpressionParser {
       }
       default -> throw new ParseExpressionException(token.start(), ErrorCode.SYNTAX_ERROR, token);
     };
+  }
+
+  /**
+   * Parse an identifier, which is the parameter of a lambda <code>x -&gt; expression</code> if
+   * followed by an arrow, a reference to the parameter of an enclosing lambda, or a field.
+   */
+  private IExpression parseIdentifier(Token token) throws ExpressionException {
+    if (lexer.accept(Id.ARROW)) {
+      return parseLambda(token, List.of(token));
+    }
+
+    // The parameter of a lambda hides a field with the same name, the innermost lambda first
+    for (LambdaParameter parameter : lambdaParameters) {
+      if (parameter.getName().equals(token.text())) {
+        return parameter;
+      }
+    }
+
+    return new Identifier(token.start(), token.text());
+  }
+
+  /**
+   * Reads the parameters of a lambda <code>(x, y) -&gt;</code> after a left parenthesis, up to the
+   * arrow. If the parenthesis doesn't start the parameters of a lambda, like <code>(x + 1)</code>,
+   * no token is read.
+   *
+   * @return the tokens of the parameters, or {@code null} if not the parameters of a lambda
+   */
+  private @Nullable List<Token> parseLambdaParameters() throws ExpressionException {
+    int mark = lexer.mark();
+    List<Token> parameters = new ArrayList<>();
+    do {
+      if (!lexer.isNext(Id.IDENTIFIER)) {
+        lexer.reset(mark);
+        return null;
+      }
+      parameters.add(lexer.next());
+    } while (lexer.accept(Id.COMMA));
+
+    if (lexer.accept(Id.RPARENTHESIS) && lexer.accept(Id.ARROW)) {
+      return parameters;
+    }
+    lexer.reset(mark);
+    return null;
+  }
+
+  /**
+   * Parse a lambda <code>parameter -&gt; expression</code> or <code>(parameter1, parameter2)
+   * -&gt; expression</code>, the arrow is already read.
+   *
+   * @param token the first token of the lambda, used as its position
+   * @param tokens the tokens of the parameters
+   * @throws ExpressionException with {@link ErrorCode#DUPLICATE_LAMBDA_PARAMETER} if two parameters
+   *     have the same name, or {@link ErrorCode#MISSING_LAMBDA_EXPRESSION} if the expression is
+   *     missing
+   */
+  private IExpression parseLambda(Token token, List<Token> tokens) throws ExpressionException {
+    List<LambdaParameter> parameters = new ArrayList<>(tokens.size());
+    for (Token parameterToken : tokens) {
+      for (LambdaParameter parameter : parameters) {
+        if (parameter.getName().equals(parameterToken.text())) {
+          throw new ParseExpressionException(
+              parameterToken.start(), ErrorCode.DUPLICATE_LAMBDA_PARAMETER, parameterToken.text());
+        }
+      }
+      parameters.add(new LambdaParameter(parameterToken.start(), parameterToken.text()));
+    }
+
+    // The expression is missing at the end of the source or before the end of the arguments
+    if (!lexer.hasNext() || lexer.isNext(Id.RPARENTHESIS) || lexer.isNext(Id.COMMA)) {
+      throw new ParseExpressionException(
+          lexer.getPosition(), ErrorCode.MISSING_LAMBDA_EXPRESSION, unparseHead(parameters));
+    }
+
+    parameters.forEach(lambdaParameters::push);
+    try {
+      return new Lambda(token.start(), parameters, this.parseLogicalOr());
+    } finally {
+      parameters.forEach(parameter -> lambdaParameters.pop());
+    }
+  }
+
+  /**
+   * Writes the parameters of a lambda followed by the arrow, like <code>(x,y)-&gt;</code>, to
+   * locate an error in a lambda.
+   */
+  private static String unparseHead(List<LambdaParameter> parameters) {
+    StringJoiner joiner =
+        parameters.size() == 1
+            ? new StringJoiner(",", "", "->")
+            : new StringJoiner(",", "(", ")->");
+    for (LambdaParameter parameter : parameters) {
+      joiner.add(Identifier.quoteIfNeeded(parameter.getName()));
+    }
+    return joiner.toString();
   }
 
   /** <code>RelationalExpression ( Operator RelationalExpression )</code> */

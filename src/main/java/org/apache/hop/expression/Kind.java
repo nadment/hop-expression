@@ -26,5 +26,7 @@ public enum Kind {
   /** An object of a type {@link Identifier} */
   IDENTIFIER,
   /** An object of a type {@link Call} */
-  CALL
+  CALL,
+  /** An object of a type {@link Lambda} */
+  LAMBDA
 }

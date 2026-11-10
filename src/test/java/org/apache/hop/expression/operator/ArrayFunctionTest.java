@@ -225,6 +225,44 @@ class ArrayFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Array_Sort_Comparator() throws Exception {
+    optimize("ARRAY_SORT([3,1,2],(a,b)->a-b)", "[1,2,3]");
+    optimize("ARRAY_SORT([3,1,2], (p1, p2) -> p2 - p1)", "[3,2,1]");
+    optimize("ARRAY_SORT(['ccc','a','bb'],(a,b)->LENGTH(a)-LENGTH(b))", "['a','bb','ccc']");
+    optimize("ARRAY_SORT([],(a,b)->0)", "[]");
+    optimize("ARRAY_SORT(STRING_TO_ARRAY(FIELD_STRING,','),(a,b)->LENGTH(a)-LENGTH(b))");
+
+    // Only the sign of a number matters, not its decimal part
+    optimize("ARRAY_SORT([1.5,0.2,1.2],(a,b)->a-b)", "[0.2,1.2,1.5]");
+
+    // The sort is stable, the elements considered as equal keep their order
+    optimize("ARRAY_SORT(['bb','a','cc'],(a,b)->LENGTH(a)-LENGTH(b))", "['a','bb','cc']");
+
+    // The expression can reference the fields of the row, sorted by distance to 40
+    evalEquals(
+        "ARRAY_TO_STRING(ARRAY_SORT([10,50,30],(a,b)->ABS(a-FIELD_INTEGER)-ABS(b-FIELD_INTEGER)),',')",
+        "50,30,10");
+
+    // The NULL elements are not compared and placed at the end
+    evalEquals("ARRAY_POSITION(ARRAY_SORT([NULL_INTEGER,1,2],(a,b)->b-a),1)", 2L);
+
+    // A NULL result means equal elements
+    evalEquals("ARRAY_TO_STRING(ARRAY_SORT([3,1,2],(a,b)->NULL_INTEGER),',')", "3,1,2");
+
+    // Null handling
+    evalNull("ARRAY_SORT(STRING_TO_ARRAY(NULL_STRING,','),(a,b)->LENGTH(a)-LENGTH(b))");
+
+    // The comparator must return a number, not a BOOLEAN
+    evalFails("ARRAY_SORT([3,1,2],(a,b)->a<b)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_SORT([3,1,2],(a,b)->'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // The comparator must have two parameters
+    evalFails("ARRAY_SORT([3,1,2],a->a)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    evalFails("ARRAY_SORT([3,1,2],(a,b,c)->a-b)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    evalFails("ARRAY_SORT([3,1,2],(a,b)->a-b,TRUE)", ErrorCode.TOO_MANY_ARGUMENTS);
+  }
+
+  @Test
   void Array_Remove() throws Exception {
     optimize("ARRAY_REMOVE([1,2,1,3],1)", "[2,3]");
     optimize("ARRAY_REMOVE(['a','b','a'],'a')", "['b']");
@@ -255,6 +293,107 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("ARRAY_REMOVE([1,2,3],1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
     evalFails("ARRAY_REMOVE('test',1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_REMOVE([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
+  void Transform() throws Exception {
+    optimize("TRANSFORM([1,2,3],x->x*2)", "[2,4,6]");
+    optimize("TRANSFORM([1,2,3], x -> x + 1)", "[2,3,4]");
+    optimize("TRANSFORM(['a','b'],s->UPPER(s))", "['A','B']");
+    optimize("TRANSFORM([],x->x)", "[]");
+    optimize("TRANSFORM(STRING_TO_ARRAY(FIELD_STRING,','),x->LOWER(x))");
+
+    // The type of the elements can change
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],x->'#'||x),',')", "#1,#2");
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1.5,2],x->CEIL(x)),',')", "2,2");
+
+    // The body can reference the fields of the row
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],x->x+FIELD_INTEGER),',')", "41,42");
+    evalEquals(
+        "ARRAY_TO_STRING(TRANSFORM(STRING_TO_ARRAY('100,250',','),p->TO_NUMBER(p)*FIELD_INTEGER),',')",
+        "4000,10000");
+
+    // The parameter hides a field with the same name
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],FIELD_INTEGER->FIELD_INTEGER*10),',')", "10,20");
+
+    // Nested lambdas
+    evalEquals(
+        "ARRAY_TO_STRING(TRANSFORM([1,2],x->ARRAY_TO_STRING(TRANSFORM([10,20],y->x+y),'+')),',')",
+        "11+21,12+22");
+
+    // A NULL element is passed to the lambda
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,NULL_INTEGER,3],x->COALESCE(x,0)),',')", "1,0,3");
+    optimize("TRANSFORM([1,NULL,3], x -> COALESCE(x,0))", "[1,0,3]");
+
+    // Null handling
+    evalNull("TRANSFORM(STRING_TO_ARRAY(NULL_STRING,','),x->x)");
+
+    // Check operands
+    evalFails("TRANSFORM()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("TRANSFORM([1,2])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("TRANSFORM([1,2],x->x,1)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("TRANSFORM([1,2],3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TRANSFORM('test',x->x)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TRANSFORM([1,2],x->y)", ErrorCode.UNRESOLVED_IDENTIFIER);
+    evalFails("TRANSFORM([1,2],x->)", ErrorCode.MISSING_LAMBDA_EXPRESSION);
+    evalFails("TRANSFORM([1,2],x->,1)", ErrorCode.MISSING_LAMBDA_EXPRESSION);
+    evalFails("TRANSFORM([1,2],x->", ErrorCode.MISSING_LAMBDA_EXPRESSION);
+
+    // The parameter can be enclosed in parentheses
+    optimize("TRANSFORM([1,2],(x)->x+1)", "[2,3]");
+
+    // The lambda must have a single parameter
+    evalFails("TRANSFORM([1,2],(x,y)->x+y)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    evalFails("FILTER([1,2],(x,y,z)->x>y)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    // The number of parameters is checked before the expression, which is not validated
+    evalFails("TRANSFORM([1,2],(x,y)->z)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    evalFails("TRANSFORM('test',(x,y)->x)", ErrorCode.ILLEGAL_LAMBDA_PARAMETER_COUNT);
+    // The expression of a lambda that can't be called with an element is not validated
+    evalFails("TRANSFORM('test',x->z)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("TRANSFORM([1,2],(x,x)->x)", ErrorCode.DUPLICATE_LAMBDA_PARAMETER);
+    evalFails("TRANSFORM([1,2],(x,y,x)->x)", ErrorCode.DUPLICATE_LAMBDA_PARAMETER);
+    evalFails("TRANSFORM([1,2],(x,y)->)", ErrorCode.MISSING_LAMBDA_EXPRESSION);
+    evalFails("TRANSFORM([1,2],()->1)", ErrorCode.SYNTAX_ERROR);
+
+    // The parameter is only visible in the body
+    evalFails("CARDINALITY(TRANSFORM([1,2],x->x))+x", ErrorCode.UNRESOLVED_IDENTIFIER);
+
+    // A lambda is only allowed as the argument of a higher-order function
+    evalFails("x->x", ErrorCode.LAMBDA_NOT_ALLOWED);
+    evalFails("UPPER(x->x)", ErrorCode.LAMBDA_NOT_ALLOWED);
+    evalFails("TRANSFORM(x->x,[1,2])", ErrorCode.LAMBDA_NOT_ALLOWED);
+  }
+
+  @Test
+  void Filter() throws Exception {
+    optimize("FILTER([1,-2,3],x->x>0)", "[1,3]");
+    optimize("FILTER(['a','bb','ccc'],s->LENGTH(s)>1)", "['bb','ccc']");
+    optimize("FILTER([1,2],x->x>5)", "[]");
+    optimize("FILTER(STRING_TO_ARRAY(FIELD_STRING,','),x->x>'A')");
+
+    // The body can reference the fields of the row
+    evalEquals("CARDINALITY(FILTER([10,50,60],x->x>FIELD_INTEGER))", 2L);
+
+    // An element is kept only if the condition is TRUE
+    evalEquals("ARRAY_TO_STRING(FILTER([1,NULL_INTEGER,3],x->x>1),',')", "3");
+    optimize("FILTER([1,NULL,3], x -> x > 1)", "[3]");
+
+    // A number is a condition, TRUE if not zero
+    evalEquals("ARRAY_TO_STRING(FILTER([0,1,2],x->x),',')", "1,2");
+
+    // Combined with TRANSFORM
+    evalEquals(
+        "ARRAY_TO_STRING(TRANSFORM(FILTER(STRING_TO_ARRAY('a,,b',','),x->x<>''),x->UPPER(x)),',')",
+        "A,B");
+
+    // Null handling
+    evalNull("FILTER(STRING_TO_ARRAY(NULL_STRING,','),x->x='a')");
+
+    // Check operands
+    evalFails("FILTER([1,2])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("FILTER([1,2],TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FILTER([1,2],x->DATE '2020-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FILTER('test',x->TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test

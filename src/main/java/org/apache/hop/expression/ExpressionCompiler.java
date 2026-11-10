@@ -56,8 +56,8 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
   @Override
   public IExpression visitIdentifier(Identifier identifier) {
-    // Check if already compiled
-    if (identifier instanceof Field) {
+    // Check if already compiled, a lambda parameter is not read from the row
+    if (identifier instanceof Field || identifier instanceof LambdaParameter) {
       return identifier;
     }
 
@@ -196,5 +196,15 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   @Override
   public IExpression visitLiteral(Literal literal) {
     return literal;
+  }
+
+  /** Compiles the body of a lambda, the parameter is kept. */
+  @Override
+  public IExpression visitLambda(Lambda lambda) {
+    IExpression expression = lambda.getExpression().accept(this);
+    if (expression == lambda.getExpression()) {
+      return lambda;
+    }
+    return new Lambda(lambda.getPosition(), lambda.getParameters(), expression);
   }
 }

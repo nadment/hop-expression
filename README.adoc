@@ -100,6 +100,7 @@ end
 
 * Over 200 scalar and aggregate {url-doc}/hop-user-manual/expression/functions.adoc[functions]: conditional, mathematical, trigonometry, conversion, bitwise, string, date, JSON, array...
 * {url-doc}/hop-user-manual/expression/udf.adoc[User-defined functions] (UDF), stored as metadata of the project and written as expressions
+* {url-doc}/hop-user-manual/expression/expression.adoc#lambda[Lambda expressions] to process the elements of an array: `TRANSFORM(STRING_TO_ARRAY(PRICES, ','), p -> TO_NUMBER(p) * 1.2)`, `FILTER(STRING_TO_ARRAY(TAGS, ','), t -> t <> '')`, `ARRAY_SORT(STRING_TO_ARRAY(NAMES, ','), (p1, p2) -> LENGTH(p1) - LENGTH(p2))`
 
 === Good to know
 

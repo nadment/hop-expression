@@ -26,4 +26,6 @@ public interface IExpressionVisitor<E> {
   E visitArray(Array array);
 
   E visitLiteral(Literal literal);
+
+  E visitLambda(Lambda lambda);
 }
