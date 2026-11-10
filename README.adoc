@@ -27,6 +27,8 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 A plugin for https://hop.apache.org[Apache Hop] that brings a SQL-like expression language to pipelines and workflows.
 
+Calculate, filter, route and aggregate with one language instead of a different syntax for each transform: the expressions read like SQL, are checked and optimized before the pipeline runs, and can be extended with your own functions.
+
 Documentation: {url-doc}/hop-user-manual/expression/expression.adoc[expression language] | {url-doc}/hop-user-manual/expression/editor.adoc[expression editor] | {url-doc}/hop-user-manual/expression/functions.adoc[functions]
 
 image::src/main/doc/hop-user-manual/images/editor.png[Expression editor with syntax highlighting and completion]
@@ -163,6 +165,18 @@ NOTE: `mvn install` also unzips the archive into the `custom` directory of the H
 Add your own function from another plugin with a class that extends `Function`, annotated with `@FunctionPlugin`: it declares the name, the return type and the operand types of the function, and implements its evaluation.
 
 The {url-doc}/hop-dev-manual/function-plugin.adoc[developer guide] gives a complete example and explains the setup, the aggregate functions, the functions with an extended syntax, the documentation, the deployment and the tests.
+
+== Contributing
+
+Bug reports, ideas and pull requests are welcome on the {url-repo}/issues[issue tracker].
+
+Before submitting a pull request, run the tests and the quality checks:
+
+----
+mvn test checkstyle:check spotbugs:check javadoc:javadoc
+----
+
+A new function comes with its documentation page in `src/main/doc/hop-user-manual/expression`, listed in `functions.adoc`, and with its tests.
 
 == Support
 
