@@ -106,7 +106,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
     IExpression[] expressions = new IExpression[size + 1];
     System.arraycopy(values, 0, expressions, 1, size);
     expressions[0] = element;
-    return new Array(type, expressions);
+    return new Array(typeWith(element), expressions);
   }
 
   /** Appends an element to the end of an array. */
@@ -115,7 +115,12 @@ public final class Array implements IExpression, Iterable<IExpression> {
     IExpression[] expressions = new IExpression[size + 1];
     System.arraycopy(values, 0, expressions, 0, size);
     expressions[size] = element;
-    return new Array(type, expressions);
+    return new Array(typeWith(element), expressions);
+  }
+
+  /** The type of this array with one more element, which can widen the type of the elements. */
+  private Type typeWith(IExpression element) {
+    return ArrayType.of(Types.getLeastRestrictive(type.getElementType(), element.getType()));
   }
 
   @Override

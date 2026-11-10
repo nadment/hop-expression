@@ -44,7 +44,7 @@ public class ArrayPrependFunction extends Function {
   public ArrayPrependFunction() {
     super(
         "ARRAY_PREPEND",
-        ReturnTypes.ARRAY,
+        ReturnTypes.ARRAY_PREPEND,
         OperandTypes.ANY_ARRAY,
         OperatorCategory.ARRAY,
         "/docs/hop-user-manual/expression/array_prepend.html");

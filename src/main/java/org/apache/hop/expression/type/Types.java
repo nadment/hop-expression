@@ -95,7 +95,7 @@ public final class Types {
   }
 
   /**
-   * Returns the most general of two types.
+   * Returns the most general of two types, nullable if one of the two types is nullable.
    *
    * @param type1 the first type, or {@code null} if there is no type yet
    * @param type2 the second type
@@ -103,6 +103,21 @@ public final class Types {
    */
   public static Type getLeastRestrictive(@Nullable Type type1, Type type2) {
     if (type1 == null) return type2;
+
+    // A nullable type is less restrictive: INTEGER NOT NULL and NULL give a nullable INTEGER
+    Type type = getLeastRestrictiveIgnoringNullability(type1, type2);
+    if (!type.isNullable() && (isNullableValue(type1) || isNullableValue(type2))) {
+      return type.withNullability(true);
+    }
+    return type;
+  }
+
+  /** ANY is the element type of an empty array, it has no value so no NULL value. */
+  private static boolean isNullableValue(Type type) {
+    return type.isNullable() && !type.isName(TypeName.ANY);
+  }
+
+  private static Type getLeastRestrictiveIgnoringNullability(Type type1, Type type2) {
 
     // Two arrays give an array of the most general type of their elements
     if (type1 instanceof ArrayType array1 && type2 instanceof ArrayType array2) {

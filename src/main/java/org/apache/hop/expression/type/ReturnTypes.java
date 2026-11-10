@@ -186,6 +186,35 @@ public final class ReturnTypes {
       };
 
   /**
+   * Type-inference strategy whereby the result type of the call is an array of the most general
+   * type of the elements of the array, the first operand, and the appended element, the second
+   * operand.
+   */
+  public static final IReturnTypeInference ARRAY_APPEND = arrayWithElement(0, 1);
+
+  /**
+   * Type-inference strategy whereby the result type of the call is an array of the most general
+   * type of the prepended element, the first operand, and the elements of the array, the second
+   * operand.
+   */
+  public static final IReturnTypeInference ARRAY_PREPEND = arrayWithElement(1, 0);
+
+  /**
+   * Type-inference strategy whereby the result type of the call is the type of the source array,
+   * the first operand, which is not an array if it is a NULL literal.
+   */
+  public static final IReturnTypeInference ARRAY_SLICE =
+      call -> call.getOperand(0).getType() instanceof ArrayType type ? type : ArrayType.ARRAY;
+
+  private static IReturnTypeInference arrayWithElement(int arrayOrdinal, int elementOrdinal) {
+    return call ->
+        ArrayType.of(
+            Types.getLeastRestrictive(
+                call.getOperand(arrayOrdinal).getType().getElementType(),
+                call.getOperand(elementOrdinal).getType()));
+  }
+
+  /**
    * Type-inference strategy whereby the result type of the call is a number with scale 0, with the
    * number of whole digits of the operand #0, plus one if it has a fraction, and its nullability.
    *

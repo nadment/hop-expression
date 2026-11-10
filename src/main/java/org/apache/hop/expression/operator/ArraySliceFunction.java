@@ -36,7 +36,7 @@ public class ArraySliceFunction extends Function {
   public ArraySliceFunction() {
     super(
         "ARRAY_SLICE",
-        ReturnTypes.ARRAY,
+        ReturnTypes.ARRAY_SLICE,
         OperandTypes.ARRAY_INTEGER_INTEGER,
         OperatorCategory.ARRAY,
         "/docs/hop-user-manual/expression/array_slice.html");

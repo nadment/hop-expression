@@ -44,7 +44,7 @@ public class ArrayAppendFunction extends Function {
   public ArrayAppendFunction() {
     super(
         "ARRAY_APPEND",
-        ReturnTypes.ARRAY,
+        ReturnTypes.ARRAY_APPEND,
         OperandTypes.ARRAY_ANY,
         OperatorCategory.ARRAY,
         "/docs/hop-user-manual/expression/array_append.html");

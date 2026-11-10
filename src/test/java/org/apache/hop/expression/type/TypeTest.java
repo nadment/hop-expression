@@ -68,10 +68,20 @@ public class TypeTest extends ExpressionTest {
     // Two intervals give an interval with the greater precision
     assertEquals(
         IntervalType.of(6), Types.getLeastRestrictive(IntervalType.of(6), IntervalType.of(0)));
-    // A type keeps its nullability
+    // The type is nullable if one of the two types is nullable
+    assertEquals(
+        TimestampType.of(3), Types.getLeastRestrictive(DateType.of(0), TimestampType.of(3, false)));
     assertEquals(
         TimestampType.of(3, false),
-        Types.getLeastRestrictive(DateType.of(0), TimestampType.of(3, false)));
+        Types.getLeastRestrictive(DateType.of(0, false), TimestampType.of(3, false)));
+    assertEquals(
+        IntegerType.of(1),
+        Types.getLeastRestrictive(IntegerType.of(1, false), UnknownType.UNKNOWN));
+    // An empty array has no element, so no NULL element
+    assertEquals(
+        ArrayType.of(IntegerType.of(1, false)),
+        Types.getLeastRestrictive(
+            ArrayType.of(IntegerType.of(1, false)), ArrayType.of(AnyType.ANY)));
   }
 
   @Test
