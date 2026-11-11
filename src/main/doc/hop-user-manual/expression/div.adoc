@@ -31,6 +31,7 @@ Number
 == Usage
 
 * Raises a division-by-zero error if divisor is 0.
+* When one operand is an integer and the other a number, the integer is implicitly converted to a number, for example `5 / 2.5` returns 2.
 * A boolean or a string is not implicitly converted to a number, use an explicit cast if needed.
 * Returns NULL if one of the arguments is NULL.
 

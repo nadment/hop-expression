@@ -43,6 +43,7 @@ Number
 
 * The result has the same sign as dividend.
 * Fails with a division by zero error if divisor is 0.
+* When one argument is an integer and the other a number, the integer is implicitly converted to a number, for example `MOD(11.3,4)` returns 3.3.
 * A boolean or a string is not implicitly converted to a number, use an explicit cast if needed.
 * Returns NULL if one of the arguments is NULL.
 

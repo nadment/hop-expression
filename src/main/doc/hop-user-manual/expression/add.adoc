@@ -44,6 +44,7 @@ interval1 + interval2
 * Adding months or years to a date keeps the day of month, or uses the last day of the month if it does not exist, for example `DATE '2019-01-31' + INTERVAL 1 MONTH` returns `DATE '2019-02-28'`.
 * The sum of two intervals is an interval, the months, the days and the time are added separately and can have opposite signs, for example `INTERVAL 1 MONTH + INTERVAL -1 DAY` returns `INTERVAL '+0-1 -1 00:00:00'`.
 * Adding an interval to a timestamp adds the months, then the days, then the time. A day is a calendar day that keeps the local time across a daylight saving time change, while 24 hours is an exact duration.
+* When one operand is an integer and the other a number, the integer is implicitly converted to a number, for example `2 + 1.5` returns 3.5.
 * A boolean or a string is not implicitly converted to a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) + 1`.
 
 == Examples
