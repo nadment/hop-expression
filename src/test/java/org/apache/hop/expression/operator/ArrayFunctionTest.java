@@ -58,6 +58,30 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_PREPEND(0,[1,2,3])", "[0,1,2,3]");
     optimize("ARRAY_PREPEND('sun',['mon','tue'])", "['sun','mon','tue']");
     optimize("ARRAY_PREPEND(0,[])", "[0]");
+    optimize("ARRAY_PREPEND(FIELD_STRING,['A','B','C'])", "[FIELD_STRING,'A','B','C']");
+    optimize(
+        "ARRAY_PREPEND('A',STRING_TO_ARRAY(FIELD_STRING,','))",
+        "ARRAY_PREPEND('A',STRING_TO_ARRAY(FIELD_STRING,','))");
+
+    // The elements of the array are converted to the type of the prepended element
+    optimize("ARRAY_PREPEND(2.5,[1,2])", "[2.5,1,2]");
+    optimize(
+            "ARRAY_PREPEND(FIELD_NUMBER,[FIELD_INTEGER,2])",
+            "[FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER),2]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+
+    // An INTEGER prepended to an array of NUMBER is coerced to NUMBER
+    optimize("ARRAY_PREPEND(3,[1.5,2.5])", "[3,1.5,2.5]")
+        .returnType(ArrayType.of(NumberType.of(2, 1, false)));
+    optimize(
+            "ARRAY_PREPEND(FIELD_INTEGER,[1.5,FIELD_NUMBER])",
+            "[CAST(FIELD_INTEGER AS NUMBER),1.5,FIELD_NUMBER]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    // The element prepended to an array returned by a function is coerced when it is prepended
+    optimize(
+            "ARRAY_PREPEND(FIELD_INTEGER,TRANSFORM([FIELD_NUMBER],x->x))",
+            "ARRAY_PREPEND(FIELD_INTEGER,TRANSFORM([FIELD_NUMBER],x->x))")
+        .returnType(ArrayType.of(NumberType.NUMBER));
 
     // The result is an array of the most general type of the elements and the prepended element
     optimize("ARRAY_PREPEND(0,[1,2,3])", "[0,1,2,3]")
@@ -74,6 +98,72 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("ARRAY_PREPEND(1,NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_PREPEND([1,2,3],4)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_PREPEND('test',[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_PREPEND(FIELD_STRING,[1])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
+  void Array_Concat() throws Exception {
+    optimize("ARRAY_CONCAT([1,2,3],[4,5])", "[1,2,3,4,5]");
+    optimize("ARRAY_CONCAT(['sun','mon'],['tue'],['wed'])", "['sun','mon','tue','wed']");
+    optimize("ARRAY_CONCAT([1,2,3])", "[1,2,3]");
+    optimize("ARRAY_CONCAT([],[1])", "[1]");
+    optimize("ARRAY_CONCAT([[1]],[[2]])", "[[1],[2]]");
+    evalEquals("CARDINALITY(ARRAY_CONCAT([1,2,3],[4,5]))", 5L);
+
+    // The result is an array of the most general type of the elements
+    optimize("ARRAY_CONCAT([1,2],[40])", "[1,2,40]")
+        .returnType(ArrayType.of(IntegerType.of(2, false)));
+    optimize("ARRAY_CONCAT([1,2],[2.5])", "[1,2,2.5]");
+    optimize("ARRAY_CONCAT([FIELD_INTEGER],[1])", "[FIELD_INTEGER,1]");
+    // The elements are converted to the most general type of the elements
+    optimize(
+        "ARRAY_CONCAT([1,FIELD_INTEGER],[2.5])", "[1,CAST(FIELD_INTEGER AS NUMBER(13,1)),2.5]");
+
+    // An array of INTEGER with an array of NUMBER, the integers are coerced to NUMBER
+    optimize("ARRAY_CONCAT([1,2],[1.5,2.5])", "[1,2,1.5,2.5]")
+        .returnType(ArrayType.of(NumberType.of(2, 1, false)));
+    optimize(
+            "ARRAY_CONCAT([1,FIELD_INTEGER],[1.5,FIELD_NUMBER])",
+            "[1,CAST(FIELD_INTEGER AS NUMBER),1.5,FIELD_NUMBER]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    optimize(
+            "ARRAY_CONCAT([FIELD_NUMBER],[FIELD_INTEGER])",
+            "[FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER)]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    optimize(
+            "ARRAY_CONCAT([FIELD_INTEGER],[1.5],[FIELD_NUMBER])",
+            "[CAST(FIELD_INTEGER AS NUMBER),1.5,FIELD_NUMBER]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    // The elements of an array constructor are coerced at compile time, the elements of an array
+    // returned by a function when the arrays are joined
+    optimize(
+            "ARRAY_CONCAT(TRANSFORM([FIELD_NUMBER],x->x),[1,FIELD_INTEGER])",
+            "ARRAY_CONCAT(TRANSFORM([FIELD_NUMBER],x->x),[1,CAST(FIELD_INTEGER AS NUMBER)])")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    optimize(
+            "ARRAY_CONCAT(TRANSFORM([FIELD_INTEGER],x->x),[1.5,FIELD_NUMBER])",
+            "ARRAY_CONCAT(TRANSFORM([FIELD_INTEGER],x->x),[1.5,FIELD_NUMBER])")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    evalTrue("ARRAY_CONCAT(TRANSFORM([1,FIELD_INTEGER],x->x*2),[2.5])[1] = 2");
+    evalTrue("ARRAY_APPEND(TRANSFORM([1,FIELD_INTEGER],x->x*2),2.5)[2] = 80");
+
+    // Chained calls are combined
+    optimize(
+        "ARRAY_CONCAT(ARRAY_CONCAT(STRING_TO_ARRAY(FIELD_STRING,','),['A']),['B'])",
+        "ARRAY_CONCAT(STRING_TO_ARRAY(FIELD_STRING,','),['A'],['B'])");
+    evalEquals("ARRAY_TO_STRING(ARRAY_CONCAT(STRING_TO_ARRAY('a,b',','),['c']),',')", "a,b,c");
+
+    // NULL values are ignored
+    optimize("ARRAY_CONCAT([1,2],NULL)", "[1,2]");
+    optimize("ARRAY_CONCAT(NULL,[1,2],NULL,[3])", "[1,2,3]");
+    evalEquals("ARRAY_TO_STRING(ARRAY_CONCAT(STRING_TO_ARRAY(NULL_STRING,','),['c']),',')", "c");
+    evalNull("ARRAY_CONCAT(STRING_TO_ARRAY(NULL_STRING,','),STRING_TO_ARRAY(NULL_STRING,','))");
+
+    // Check operands
+    evalFails("ARRAY_CONCAT()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("ARRAY_CONCAT([1,2,3],4)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_CONCAT('test',[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_CONCAT([DATE '2020-01-01'],[1])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
@@ -81,6 +171,34 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_APPEND([1,2,3],4)", "[1,2,3,4]");
     optimize("ARRAY_APPEND(['sun','mon'],'tue')", "['sun','mon','tue']");
     optimize("ARRAY_APPEND([],0)", "[0]");
+    optimize("ARRAY_APPEND(['A','B','C'],FIELD_STRING)", "['A','B','C',FIELD_STRING]");
+    optimize(
+        "ARRAY_APPEND(STRING_TO_ARRAY(FIELD_STRING,','),'A')",
+        "ARRAY_APPEND(STRING_TO_ARRAY(FIELD_STRING,','),'A')");
+
+    // The elements of the array are converted to the type of the appended element
+    optimize("ARRAY_APPEND([1,2],2.5)", "[1,2,2.5]");
+    optimize(
+            "ARRAY_APPEND([FIELD_INTEGER,2],FIELD_NUMBER)",
+            "[CAST(FIELD_INTEGER AS NUMBER),2,FIELD_NUMBER]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+
+    // An INTEGER appended to an array of NUMBER is coerced to NUMBER
+    optimize("ARRAY_APPEND([1.5,2.5],3)", "[1.5,2.5,3]")
+        .returnType(ArrayType.of(NumberType.of(2, 1, false)));
+    optimize(
+            "ARRAY_APPEND([1.5,2.5],FIELD_INTEGER)",
+            "[1.5,2.5,CAST(FIELD_INTEGER AS NUMBER(13,1))]")
+        .returnType(ArrayType.of(NumberType.of(13, 1)));
+    optimize(
+            "ARRAY_APPEND([1.5,FIELD_NUMBER],FIELD_INTEGER)",
+            "[1.5,FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER)]")
+        .returnType(ArrayType.of(NumberType.NUMBER));
+    // The element appended to an array returned by a function is coerced when it is appended
+    optimize(
+            "ARRAY_APPEND(TRANSFORM([FIELD_NUMBER],x->x),FIELD_INTEGER)",
+            "ARRAY_APPEND(TRANSFORM([FIELD_NUMBER],x->x),FIELD_INTEGER)")
+        .returnType(ArrayType.of(NumberType.NUMBER));
 
     // The result is an array of the most general type of the elements and the appended element
     optimize("ARRAY_APPEND([1,2,3],4)", "[1,2,3,4]")
@@ -97,6 +215,7 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("ARRAY_APPEND(NULL,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_APPEND(0,[1,2,3])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_APPEND([1,2,3],'test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ARRAY_APPEND([DATE '2020-01-01'],1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test

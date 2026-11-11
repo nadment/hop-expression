@@ -24,12 +24,6 @@ Returns a new array with an element added at the beginning of an array.
 ARRAY_PREPEND( element, array )
 ----
 
-The xref:concat.adoc["||",role=op] operator provides an alternative syntax.
-
-----
-element || array
-----
-
 == Arguments
 
 element:: The element to prepend to the array.
@@ -41,7 +35,7 @@ Array
 
 == Usage
 
-* The data type of element must be compatible with the data type of the elements of array.
+* The data type of element must be compatible with the data type of the elements of array, the result is an array of their most general data type: `ARRAY_PREPEND(2.5,[1,2])` returns `[2.5,1,2]`.
 * Returns NULL if the array is NULL.
 
 == Examples
@@ -54,4 +48,4 @@ ARRAY_PREPEND('sun',['mon','tue']) returns ['sun','mon','tue']
 == See also
 
 * xref:array_append.adoc["ARRAY_APPEND",role=fun]
-* xref:concat.adoc["CONCAT",role=fun]
+* xref:array_concat.adoc["ARRAY_CONCAT",role=fun]

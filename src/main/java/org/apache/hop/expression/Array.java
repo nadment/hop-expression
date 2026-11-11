@@ -118,6 +118,22 @@ public final class Array implements IExpression, Iterable<IExpression> {
     return new Array(typeWith(element), expressions).coerce();
   }
 
+  /**
+   * Appends the elements of an array to the end of an array, the elements are converted to the most
+   * general type of the elements of the two arrays.
+   *
+   * @param array the array to append
+   * @return a new array
+   */
+  public Array concat(Array array) {
+    int size = size();
+    IExpression[] expressions = Arrays.copyOf(values, size + array.size());
+    System.arraycopy(array.values, 0, expressions, size, array.size());
+    Type elementType =
+        Types.getLeastRestrictive(type.getElementType(), array.type.getElementType());
+    return new Array(elementType == null ? type : ArrayType.of(elementType), expressions).coerce();
+  }
+
   /** Converts the elements of this new array to its element type. */
   private Array coerce() {
     Type elementType = type.getElementType();

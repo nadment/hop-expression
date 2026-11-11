@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -57,8 +58,11 @@ public class ArrayPrependFunction extends Function {
       Type elementType = call.getOperand(0).getType();
       Type arrayType = call.getOperand(1).getType().getElementType();
 
-      // Check if the appended element is coercible to an array element type
-      success = arrayType != null && elementType.isCoercible(arrayType);
+      // Check if the prepended element and the elements of the array are coercible to their most
+      // general type, like ARRAY_PREPEND(2.5,[1,2])
+      if (arrayType == null) return false;
+      Type type = Types.getLeastRestrictive(arrayType, elementType);
+      success = type != null && elementType.isCoercible(type) && arrayType.isCoercible(type);
     }
 
     return success;

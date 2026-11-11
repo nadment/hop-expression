@@ -214,6 +214,28 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARRAY_PREPEND = arrayWithElement(1, 0);
 
   /**
+   * Type-inference strategy whereby the result type of the call is an array of the most general
+   * type of the elements of the arrays, nullable only if all the arrays are nullable.
+   */
+  public static final IReturnTypeInference ARRAY_CONCAT =
+      call -> {
+        Type elementType = null;
+        boolean nullable = true;
+        for (IExpression operand : call.getOperands()) {
+          Type type = operand.getType();
+          // A NULL literal is not an array
+          if (type.getElementType() != null) {
+            elementType = Types.getLeastRestrictive(elementType, type.getElementType());
+          }
+          if (!type.isNullable()) {
+            nullable = false;
+          }
+        }
+        return ArrayType.of(elementType == null ? UnknownType.UNKNOWN : elementType)
+            .withNullability(nullable);
+      };
+
+  /**
    * Type-inference strategy whereby the result type of the call is the type of the source array,
    * the first operand, which is not an array if it is a NULL literal.
    */
@@ -305,30 +327,12 @@ public final class ReturnTypes {
           } else if (precision != Integer.MAX_VALUE) {
             precision += length;
           }
-          if (type.isName(TypeName.ARRAY)) {
-            name = TypeName.ARRAY;
-            // } else if (type.isName(TypeName.BINARY) && name != TypeName.ARRAY) {
-          } else if (type.isName(TypeName.BINARY)) {
+          if (type.isName(TypeName.BINARY)) {
             name = TypeName.BINARY;
           }
           if (!type.isNullable()) {
             nullable = false;
           }
-        }
-
-        if (name == TypeName.ARRAY) {
-          Type elementType = null;
-          for (IExpression operand : call.getOperands()) {
-            Type type = operand.getType();
-            if (type.isName(TypeName.ARRAY)) {
-              elementType =
-                  Types.getLeastRestrictive(elementType, ((ArrayType) type).getElementType());
-            } else {
-              elementType = Types.getLeastRestrictive(elementType, type);
-            }
-          }
-          return ArrayType.of(elementType == null ? UnknownType.UNKNOWN : elementType)
-              .withNullability(nullable);
         }
 
         if (precision > name.getMaxPrecision() || precision < 0) {

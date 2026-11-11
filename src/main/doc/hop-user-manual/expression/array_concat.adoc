@@ -1,0 +1,52 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= ARRAY_CONCAT
+
+Returns a new array with the elements of two or more arrays.
+
+== Syntax
+
+----
+ARRAY_CONCAT( array1 [, array2... ] )
+----
+
+== Arguments
+
+array1, array2:: The arrays to concatenate.
+
+== Returns
+
+Array
+
+== Usage
+
+* The data types of the elements of the arrays must be compatible, the result is an array of their most general data type.
+* With a single argument, the function returns the argument.
+* NULL values are ignored.
+* Returns NULL only if all arguments are NULL.
+
+== Examples
+
+----
+ARRAY_CONCAT([1,2,3],[4,5]) returns [1,2,3,4,5]
+ARRAY_CONCAT(['sun','mon'],['tue'],['wed']) returns ['sun','mon','tue','wed']
+----
+
+== See also
+
+* xref:array_append.adoc["ARRAY_APPEND",role=fun]
+* xref:array_prepend.adoc["ARRAY_PREPEND",role=fun]

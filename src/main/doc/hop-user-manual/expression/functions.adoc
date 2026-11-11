@@ -35,6 +35,7 @@ Expression support most of the standard scalar and aggregate functions.
 * xref:any_value.adoc["ANY_VALUE",role=fun] aggregate
 * xref:array.adoc["ARRAY",role=fun]
 * xref:array_append.adoc["ARRAY_APPEND",role=fun]
+* xref:array_concat.adoc["ARRAY_CONCAT",role=fun]
 * xref:array_contains.adoc["ARRAY_CONTAINS",role=fun]
 * xref:array_distinct.adoc["ARRAY_DISTINCT",role=fun]
 * xref:array_position.adoc["ARRAY_POSITION",role=fun]

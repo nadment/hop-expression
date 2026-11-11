@@ -1616,11 +1616,14 @@ public class StringFunctionTest extends ExpressionTest {
     // With a binary the result is a binary, the other values must be a binary or a string
     evalFails("CONCAT(FIELD_BINARY,1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals("FIELD_BINARY||'a'", "TESTa".getBytes());
-    // With an array, the other values must be coercible to the type of the elements
+    // An array is not concatenated, see ARRAY_CONCAT, ARRAY_APPEND and ARRAY_PREPEND
     evalFails("CONCAT('a',FIELD_BINARY,[1])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("FIELD_STRING||[1]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    evalFails("[DATE '2020-01-01']||1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    optimize("[[1]]||[[2]]", "[[1],[2]]");
+    evalFails("CONCAT([1,2,3],[4,5])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("[1,2,3] || [4,5]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("[1,2,3] || 4", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("1 || [2,3,4]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("FIELD_STRING || ['A','B','C']", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("STRING_TO_ARRAY(FIELD_STRING,',') || 'A'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     // String
     evalEquals("CONCAT('TES','T')", "TEST").returnType(StringType.of(4, false));
     evalEquals("FIELD_STRING||'t'", "TESTt").returnType(StringType.of(1001, false));
@@ -1672,20 +1675,6 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Concat('A', TIMESTAMP '2024-01-02 10:11:12')", "A2024-01-02 10:11:12");
 
     // TODO:Mix String and Binary
-
-    // Array to array concatenation
-    evalEquals("CARDINALITY([1,2,3] || [4,5])", 5L);
-    optimize("[1,2,3] || [4,5] || [6,7]", "[1,2,3,4,5,6,7]");
-
-    // optimize("[1,2,3] || [[4,5,6],[7,8,9]]", "[[1,2,3],[4,5,6],[7,8,9]]");
-
-    // Element to array concatenation
-    optimize("1 || [2,3,4]", "[1,2,3,4]");
-    optimize("FIELD_STRING || ['A','B','C']", "[FIELD_STRING,'A','B','C']");
-
-    // Array to element concatenation
-    optimize("[1,2,3] || 4", "[1,2,3,4]");
-    optimize("['A','B','C'] || FIELD_STRING", "['A','B','C',FIELD_STRING]");
 
     // Check syntax
     evalFails("||'text'", ErrorCode.SYNTAX_ERROR);

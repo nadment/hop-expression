@@ -24,12 +24,6 @@ Returns a new array with an element added at the end of an array.
 ARRAY_APPEND( array, element )
 ----
 
-The xref:concat.adoc["||",role=op] operator provides an alternative syntax.
-
-----
-array || element
-----
-
 == Arguments
 
 array:: The array to append to.
@@ -41,7 +35,7 @@ Array
 
 == Usage
 
-* The data type of element must be compatible with the data type of the elements of array.
+* The data type of element must be compatible with the data type of the elements of array, the result is an array of their most general data type: `ARRAY_APPEND([1,2],2.5)` returns `[1,2,2.5]`.
 * Returns NULL if the array is NULL.
 
 == Examples
@@ -54,4 +48,4 @@ ARRAY_APPEND(['sun','mon'],'tue') returns ['sun','mon','tue']
 == See also
 
 * xref:array_prepend.adoc["ARRAY_PREPEND",role=fun]
-* xref:concat.adoc["CONCAT",role=fun]
+* xref:array_concat.adoc["ARRAY_CONCAT",role=fun]

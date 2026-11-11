@@ -27,7 +27,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -51,9 +50,7 @@ public class ConcatFunction extends Function {
         70,
         Associativity.LEFT,
         ReturnTypes.CONCAT_FUNCTION,
-        OperandTypes.STRING_VARIADIC
-            .or(OperandTypes.BINARY_VARIADIC)
-            .or(OperandTypes.ARRAY_VARIADIC),
+        OperandTypes.STRING_VARIADIC.or(OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING,
         "/docs/hop-user-manual/expression/concat.html");
   }
@@ -66,52 +63,20 @@ public class ConcatFunction extends Function {
         70,
         Associativity.LEFT,
         ReturnTypes.CONCAT_FUNCTION,
-        OperandTypes.or(
-            OperandTypes.STRING_VARIADIC,
-            OperandTypes.BINARY_VARIADIC,
-            OperandTypes.ARRAY_VARIADIC),
+        OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING,
         "/docs/hop-user-manual/expression/concat.html");
   }
 
   @Override
   protected boolean checkOperandTypes(Call call) {
-    // If an argument is an array, the other arguments are added as elements to the array
+    // An array is not concatenated, see ARRAY_CONCAT, ARRAY_APPEND and ARRAY_PREPEND
     for (IExpression operand : call.getOperands()) {
       if (operand.getType().isName(TypeName.ARRAY)) {
-        return checkArrayOperands(call);
-      }
-    }
-    return super.checkOperandTypes(call) && checkBinaryOperands(call);
-  }
-
-  /**
-   * Checks that every operand of an array concatenation is coercible to the most general type of
-   * the elements, a string literal is converted to that type like an element of an array.
-   */
-  private static boolean checkArrayOperands(Call call) {
-    Type elementType = null;
-    for (IExpression operand : call.getOperands()) {
-      elementType = Types.getLeastRestrictive(elementType, getElementType(operand));
-    }
-
-    // Don't check multi-dimensional array
-    if (elementType == null || elementType.isName(TypeName.ARRAY)) {
-      return true;
-    }
-
-    for (IExpression operand : call.getOperands()) {
-      if (!getElementType(operand).isCoercible(elementType) && !Types.isStringLiteral(operand)) {
         return false;
       }
     }
-    return true;
-  }
-
-  /** The type of the elements of an array operand, or the type of an operand added as element. */
-  private static Type getElementType(IExpression operand) {
-    Type elementType = operand.getType().getElementType();
-    return elementType == null ? operand.getType() : elementType;
+    return super.checkOperandTypes(call) && checkBinaryOperands(call);
   }
 
   /**
@@ -137,14 +102,7 @@ public class ConcatFunction extends Function {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-
-    // The elements of a multi-dimensional array are coerced, not its nested arrays
-    Type type = call.getType();
-    while (type instanceof ArrayType arrayType) {
-      type = arrayType.getElementType();
-    }
-
-    return Types.coerceOperandsType(call, type);
+    return Types.coerceOperandsType(call, call.getType());
   }
 
   @Override
@@ -171,19 +129,7 @@ public class ConcatFunction extends Function {
         return operands.getFirst();
       default:
         Operator operator = StringConcatFunction.INSTANCE;
-        if (call.getType().isName(TypeName.ARRAY)) {
-          if (operands.size() == 2) {
-            IExpression left = operands.getFirst();
-            IExpression right = operands.get(1);
-            if (left.getType().isName(TypeName.ARRAY) && !right.getType().isName(TypeName.ARRAY)) {
-              return new Call(ArrayAppendFunction.INSTANCE, left, right);
-            }
-            if (!left.getType().isName(TypeName.ARRAY) && right.getType().isName(TypeName.ARRAY)) {
-              return new Call(ArrayPrependFunction.INSTANCE, left, right);
-            }
-          }
-          operator = ArrayConcatFunction.INSTANCE;
-        } else if (call.getType().isName(TypeName.BINARY)) {
+        if (call.getType().isName(TypeName.BINARY)) {
           operator = BinaryConcatFunction.INSTANCE;
         }
         return new Call(operator, operands);

@@ -158,10 +158,8 @@ public class ExpressionParserTest extends ExpressionTest {
     evalTrue("[1,2.5][1] = 1.0");
     evalEquals("[1,2.5][1] || 'x'", "1x");
     evalEquals("[FIELD_INTEGER,'2'][2] + 1", 3L);
-    evalEquals("ARRAY_TO_STRING([FIELD_INTEGER,2.5] || 1, ',')", "40,2.5,1");
+    evalEquals("ARRAY_TO_STRING(ARRAY_APPEND([FIELD_INTEGER,2.5],1), ',')", "40,2.5,1");
     evalFails("[1,'a']", ErrorCode.CONVERSION_ERROR);
-    evalFails("'a' || [1]", ErrorCode.CONVERSION_ERROR);
-    evalFails("[1] || 'a'", ErrorCode.CONVERSION_ERROR);
 
     // Elements not coercible to the element type
     evalFails("[1,DATE '2020-01-01']", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);

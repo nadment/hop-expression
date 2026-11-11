@@ -16,7 +16,7 @@ under the License.
 ////
 = CONCAT, ||
 
-Concatenates two or more strings, binaries or arrays into one.
+Concatenates two or more strings or binaries into one.
 
 == Syntax
 
@@ -32,13 +32,13 @@ string1 || string2 [ || ... ]
 
 == Returns
 
-String, Binary or Array
+String or Binary
 
 == Usage
 
 * The arguments of another data type, such as a number, a boolean or a date, are converted to string.
 * With a single argument, the function returns the argument.
-* If an argument is an array, the other arguments are added as elements to the array. Two arrays are joined: `[1,2,3] || [4,5]` returns `[1,2,3,4,5]`.
+* If an argument is a binary, the result is a binary and the other arguments must be binaries or strings.
 * NULL values are ignored.
 * Returns NULL only if all arguments are NULL.
 
@@ -52,3 +52,4 @@ CONCAT('AB','CD','12') returns 'ABCD12'
 == See also
 
 * xref:concat_ws.adoc["CONCAT_WS",role=fun]
+* xref:array_concat.adoc["ARRAY_CONCAT",role=fun]
