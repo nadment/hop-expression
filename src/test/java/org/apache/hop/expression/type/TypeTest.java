@@ -19,9 +19,11 @@ package org.apache.hop.expression.type;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -165,6 +167,28 @@ public class TypeTest extends ExpressionTest {
     assertEquals(
         "ARRAY<ARRAY<INTEGER(10)> NOT NULL>",
         String.valueOf(ArrayType.of(ArrayType.of(IntegerType.of(10), false))));
+  }
+
+  @Test
+  void equalsIgnoreNullability() {
+    assertTrue(StringType.STRING.equalsIgnoreNullability(StringType.STRING));
+    assertTrue(StringType.STRING.equalsIgnoreNullability(StringType.STRING.withNullability(false)));
+    assertTrue(StringType.STRING.withNullability(false).equalsIgnoreNullability(StringType.STRING));
+    assertTrue(IntegerType.of(10, false).equalsIgnoreNullability(IntegerType.of(10)));
+    assertTrue(
+        ArrayType.of(IntegerType.of(10), false)
+            .equalsIgnoreNullability(ArrayType.of(IntegerType.of(10))));
+
+    // The precision and the scale are compared
+    assertFalse(StringType.STRING.equalsIgnoreNullability(StringType.of(10)));
+    assertFalse(NumberType.of(10, 2, false).equalsIgnoreNullability(NumberType.of(10, 3)));
+    assertFalse(IntegerType.INTEGER.equalsIgnoreNullability(NumberType.NUMBER));
+    assertFalse(IntegerType.INTEGER.equalsIgnoreNullability(null));
+
+    // Only the nullability of the array is ignored, not the nullability of its elements
+    assertFalse(
+        ArrayType.of(IntegerType.of(10, false))
+            .equalsIgnoreNullability(ArrayType.of(IntegerType.of(10))));
   }
 
   @Test

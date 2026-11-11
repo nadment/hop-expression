@@ -57,6 +57,9 @@ public abstract class Type {
   /** Queries whether this type allows null values. */
   @Getter protected final boolean nullable;
 
+  /** The suffix that ends the signature of a type that is not nullable. */
+  static final String NOT_NULL_SUFFIX = " NOT NULL";
+
   private @Nullable String signature;
 
   protected Type(int precision, int scale, boolean nullable) {
@@ -90,7 +93,7 @@ public abstract class Type {
     StringBuilder builder = new StringBuilder();
     this.generateLiteral(builder);
     if (!this.isNullable()) {
-      builder.append(" NOT NULL");
+      builder.append(NOT_NULL_SUFFIX);
     }
     return builder.toString();
   }
@@ -238,10 +241,26 @@ public abstract class Type {
     return null;
   }
 
-  /** Indicates whether that type is equal with each other by ignoring the nullability. */
+  /**
+   * Indicates whether that type is equal with each other by ignoring the nullability, so {@code
+   * INTEGER NOT NULL} is equal to {@code INTEGER}.
+   *
+   * <p>Only the nullability of the type itself is ignored, the nullability of the elements of an
+   * array is compared.
+   *
+   * @param type the type to compare
+   * @return {@code true} if the types differ at most by their nullability
+   */
   public boolean equalsIgnoreNullability(final @Nullable Type type) {
     if (type == null) return false;
-    return this.getSignature().equals(type.getSignature());
+    if (this == type) return true;
+    // The signature of a type that is not nullable ends with the NOT NULL suffix, so compare the
+    // signatures without their suffix
+    String signature1 = this.getSignature();
+    String signature2 = type.getSignature();
+    int length1 = signature1.length() - (nullable ? 0 : NOT_NULL_SUFFIX.length());
+    int length2 = signature2.length() - (type.nullable ? 0 : NOT_NULL_SUFFIX.length());
+    return length1 == length2 && signature1.regionMatches(0, signature2, 0, length1);
   }
 
   @Override

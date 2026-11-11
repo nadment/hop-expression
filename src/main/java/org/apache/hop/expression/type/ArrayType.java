@@ -176,6 +176,6 @@ public final class ArrayType extends Type {
     // The nullability of the array follows the nullability of its elements, like
     // ARRAY<INTEGER NOT NULL> NOT NULL
     String signature = "ARRAY<" + elementType.getSignature() + ">";
-    return isNullable() ? signature : signature + " NOT NULL";
+    return isNullable() ? signature : signature + NOT_NULL_SUFFIX;
   }
 }
