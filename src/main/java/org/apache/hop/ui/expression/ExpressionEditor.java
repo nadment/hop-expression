@@ -419,10 +419,16 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
           if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
             wViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
           }
-          // F1 shows the documentation of the function at the caret in the help panel
+          // F1 shows the documentation of the function or the operator at the caret in the help
+          // panel
           if (event.keyCode == SWT.F1 && (event.stateMask & SWT.MODIFIER_MASK) == 0) {
-            new FunctionHyperlinkDetector(this::showHelp)
-                .openDocumentation(wViewer, wViewer.getSelectedRange().x);
+            int offset = wViewer.getSelectedRange().x;
+            if (!new FunctionHyperlinkDetector(this::showHelp).openDocumentation(wViewer, offset)) {
+              Operator operator = OperatorFinder.find(OPERATORS, wViewer.getDocument(), offset);
+              if (operator != null) {
+                showHelp(operator);
+              }
+            }
             event.doit = false;
             return;
           }
