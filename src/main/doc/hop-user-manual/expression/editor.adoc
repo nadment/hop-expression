@@ -34,7 +34,7 @@ image::../images/editor.png[Expression editor with syntax highlighting and compl
 * Box around the bracket matching the one next to the caret.
 * Double-click selects a word, a quoted identifier or a variable `${NAME}`.
 * kbd:[Ctrl+/] comments or uncomments the lines with `//`.
-* kbd:[F1] shows the documentation of the function or the operator at the caret, like `UPPER`, `<=`, `BETWEEN` or `IS NULL`.
+* kbd:[F1] shows the documentation of the function or the operator at the caret.
 
 == Completion
 

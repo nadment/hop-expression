@@ -14,8 +14,11 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,6 +47,10 @@ final class OperatorFinder {
   /** A character of a symbol, a symbol next to it is a part of another symbol like {@code ->}. */
   private static final String SYMBOL = "[+\\-*/%|=!<>:]";
 
+  /** The other keywords of an operator, by the name of the operator. */
+  private static final Map<String, List<String>> KEYWORDS =
+      Map.of("CASE", List.of("WHEN", "THEN", "ELSE", "END"));
+
   private OperatorFinder() {
     // Utility class
   }
@@ -55,7 +62,8 @@ final class OperatorFinder {
    *
    * <p>The name of an operator is not case-sensitive, its words are separated by spaces with an
    * optional {@code NOT}, so {@code IS NOT NULL} is the operator {@code IS NULL}. An operator in a
-   * string or a comment is not found.
+   * string or a comment is not found. The keywords {@code WHEN}, {@code THEN}, {@code ELSE} and
+   * {@code END} are the operator {@code CASE}.
    *
    * @param operators the operators to find, by their name
    * @param document the document of the expression
@@ -80,13 +88,18 @@ final class OperatorFinder {
     Operator found = null;
     int length = 0;
     for (Operator operator : operators) {
-      Matcher matcher = pattern(operator.getName()).matcher(text);
-      while (matcher.find()) {
-        if (matcher.start() <= offset
-            && offset <= matcher.end()
-            && matcher.end() - matcher.start() > length) {
-          found = operator;
-          length = matcher.end() - matcher.start();
+      List<String> names = new ArrayList<>();
+      names.add(operator.getName());
+      names.addAll(KEYWORDS.getOrDefault(operator.getName(), List.of()));
+      for (String name : names) {
+        Matcher matcher = pattern(name).matcher(text);
+        while (matcher.find()) {
+          if (matcher.start() <= offset
+              && offset <= matcher.end()
+              && matcher.end() - matcher.start() > length) {
+            found = operator;
+            length = matcher.end() - matcher.start();
+          }
         }
       }
     }

@@ -84,6 +84,14 @@ class OperatorFinderTest {
     assertSame(CaseSearchOperator.INSTANCE, find("CASE WHEN A THEN 1 END", 0));
     assertSame(NOT, find("NOT A", 1));
 
+    // The other keywords of CASE
+    assertSame(CaseSearchOperator.INSTANCE, find("CASE WHEN A THEN 1 ELSE 2 END", 6));
+    assertSame(CaseSearchOperator.INSTANCE, find("CASE WHEN A THEN 1 ELSE 2 END", 13));
+    assertSame(CaseSearchOperator.INSTANCE, find("CASE WHEN A THEN 1 ELSE 2 END", 20));
+    assertSame(CaseSearchOperator.INSTANCE, find("case when A then 1 else 2 end", 29));
+    assertNull(find("WHENEVER", 1));
+    assertNull(find("ENDS", 1));
+
     // A keyword in a longer word is not an operator
     assertNull(find("BEGIN", 4));
     assertNull(find("INDEX", 1));
