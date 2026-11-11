@@ -419,6 +419,13 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
           if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
             wViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
           }
+          // F1 shows the documentation of the function at the caret in the help panel
+          if (event.keyCode == SWT.F1 && (event.stateMask & SWT.MODIFIER_MASK) == 0) {
+            new FunctionHyperlinkDetector(this::showHelp)
+                .openDocumentation(wViewer, wViewer.getSelectedRange().x);
+            event.doit = false;
+            return;
+          }
           if ((event.stateMask & SWT.MOD1) == 0) {
             return;
           }
@@ -456,9 +463,6 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
             } else {
               find();
             }
-            event.doit = false;
-          } else if (event.keyCode == SWT.F1) {
-            // TODO: Help
             event.doit = false;
           }
         });
@@ -628,6 +632,17 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     wTree = new HopTree(treeComposite, SWT.H_SCROLL | SWT.V_SCROLL);
     wTree.setLayoutData(new FormDataBuilder().top(toolbar).fullWidth().bottom().result());
     wTree.addListener(SWT.MouseDoubleClick, this::onTreeDoubleClick);
+    // F1 shows the documentation of the selected element in the help panel
+    wTree.addListener(
+        SWT.KeyDown,
+        event -> {
+          if (event.keyCode == SWT.F1
+              && (event.stateMask & SWT.MODIFIER_MASK) == 0
+              && wTree.getSelectionCount() > 0
+              && wTree.getSelection()[0].getData() != null) {
+            showHelp(wTree.getSelection()[0].getData());
+          }
+        });
     // Open folder icon on the expanded folders
     FolderTreeIcons.install(wTree);
     wTree.addListener(SWT.Expand, e -> storeTreeExpanded((TreeItem) e.item, true));
@@ -718,7 +733,7 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
     // Context menu to display help, created once and shown only for an element
     Menu menu = new Menu(wTree);
     MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
-    menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label"));
+    menuItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Menu.Help.Label") + "\tF1");
     menuItem.setImage(GuiResource.getInstance().getImageHelp());
     menuItem.addListener(
         SWT.Selection,

@@ -24,7 +24,7 @@ image::../images/editor.png[Expression editor with syntax highlighting and compl
 == Tree of the elements
 
 * Lists the *Fields* (or the *Arguments* of a xref:udf.adoc[user-defined function]), the *Operators* and functions by category, and the *Variables*.
-* Double-click an element, or right-click it and choose *Help*, to show its documentation.
+* Double-click an element, press kbd:[F1] or right-click it and choose *Help*, to show its documentation.
 * Drag an element into the text to insert it, like `"MY FIELD"`, `UPPER()` or `${PATH}`.
 
 == Writing
@@ -34,6 +34,7 @@ image::../images/editor.png[Expression editor with syntax highlighting and compl
 * Box around the bracket matching the one next to the caret.
 * Double-click selects a word, a quoted identifier or a variable `${NAME}`.
 * kbd:[Ctrl+/] comments or uncomments the lines with `//`.
+* kbd:[F1] shows the documentation of the function at the caret.
 
 == Completion
 

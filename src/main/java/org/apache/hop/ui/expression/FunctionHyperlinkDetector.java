@@ -24,6 +24,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
@@ -83,6 +84,26 @@ public class FunctionHyperlinkDetector extends AbstractHyperlinkDetector {
       // The document changed, no link
       return null;
     }
+  }
+
+  /**
+   * Opens the documentation of the function whose name is at an offset, or just before the offset
+   * when the caret is at the end of the name, like with F1.
+   *
+   * @param textViewer the viewer of the expression
+   * @param offset the offset in the document, the position of the caret
+   * @return {@code true} if a function is found and its documentation opened
+   */
+  public boolean openDocumentation(ITextViewer textViewer, int offset) {
+    IHyperlink[] links = detectHyperlinks(textViewer, new Region(offset, 0), false);
+    if (links == null && offset > 0) {
+      links = detectHyperlinks(textViewer, new Region(offset - 1, 0), false);
+    }
+    if (links == null) {
+      return false;
+    }
+    links[0].open();
+    return true;
   }
 
   /** The link of a function name, it opens the documentation of the function. */

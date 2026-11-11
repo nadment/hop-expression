@@ -15,7 +15,9 @@
 package org.apache.hop.ui.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -92,6 +94,23 @@ class FunctionHyperlinkDetectorTest {
 
     // The name of a function is not case-sensitive
     assertEquals(1, detect("upper(NAME)", 0).length);
+  }
+
+  @Test
+  void openDocumentation() {
+    ITextViewer viewer = viewer(new Document("1 + UPPER(NAME)"));
+
+    // The caret in the name, at its start or at its end before the parenthesis
+    assertTrue(detector.openDocumentation(viewer, 6));
+    assertTrue(detector.openDocumentation(viewer, 4));
+    assertTrue(detector.openDocumentation(viewer, 9));
+    assertEquals(3, opened.size());
+    assertEquals("UPPER", opened.get(2).getName());
+
+    // Not on a function, nothing is opened
+    assertFalse(detector.openDocumentation(viewer, 0));
+    assertFalse(detector.openDocumentation(viewer, 12));
+    assertEquals(3, opened.size());
   }
 
   @Test
