@@ -17,7 +17,6 @@ package org.apache.hop.expression;
 import static java.util.Objects.requireNonNull;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
@@ -158,17 +157,7 @@ public final class Lambda implements IExpression {
    * @return the value, an array is replaced by an array of evaluated elements
    */
   private static @Nullable Object evaluateElements(final @Nullable Object value) {
-    if (!(value instanceof Array array) || array.isConstant()) {
-      return value;
-    }
-    List<IExpression> elements = new ArrayList<>(array.size());
-    for (IExpression element : array) {
-      // A nested array is an expression, not a literal value
-      Object result = evaluateElements(element.getValue());
-      elements.add(
-          result instanceof Array nested ? nested : new Literal(result, element.getType()));
-    }
-    return new Array(array.getType(), elements);
+    return value instanceof Array array ? array.evaluate() : value;
   }
 
   private void bind(final @Nullable Object[] arguments) {

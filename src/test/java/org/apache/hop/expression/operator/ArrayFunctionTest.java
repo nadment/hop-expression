@@ -428,6 +428,12 @@ class ArrayFunctionTest extends ExpressionTest {
     evalEquals("ARRAY_TO_STRING(ARRAY_SORT([50,FIELD_INTEGER,2]),',')", "2,40,50");
     evalEquals("ARRAY_TO_STRING(ARRAY_SORT(STRING_TO_ARRAY('b,c,a',',')),',')", "a,b,c");
 
+    // The elements returned are the elements sorted, an element is evaluated once
+    evalTrue(
+        "REDUCE(ARRAY_SORT([RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM()]),(a,b)->IF(a<=b,b,NULL)) IS NOT NULL");
+    evalTrue(
+        "REDUCE(ARRAY_SORT([RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM()],(a,b)->a-b),(a,b)->IF(a<=b,b,NULL)) IS NOT NULL");
+
     // The NULL elements are placed at the end, whatever the order
     evalEquals("ARRAY_POSITION(ARRAY_SORT([NULL_INTEGER,2,1]),1)", 1L);
     evalEquals("ARRAY_POSITION(ARRAY_SORT([NULL_INTEGER,1,2],FALSE),2)", 1L);
@@ -629,6 +635,10 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // The body can reference the fields of the row
     evalEquals("CARDINALITY(FILTER([10,50,60],x->x>FIELD_INTEGER))", 2L);
+
+    // The elements kept are the elements tested, an element is evaluated once
+    evalFalse(
+        "EXISTS(FILTER([RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM(),RANDOM()],x->x>0.5),y->y<=0.5)");
 
     // An element is kept only if the condition is TRUE
     evalEquals("ARRAY_TO_STRING(FILTER([1,NULL_INTEGER,3],x->x>1),',')", "3");

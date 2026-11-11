@@ -79,6 +79,9 @@ public class ArraySortFunction extends ArrayLambdaFunction {
     Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
 
+    // The elements returned are the elements sorted, evaluated once
+    array = array.evaluate();
+
     boolean ascending = true;
     Lambda lambda = null;
     if (operands.length == 2) {

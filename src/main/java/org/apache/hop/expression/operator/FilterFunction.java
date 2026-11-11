@@ -52,6 +52,9 @@ public class FilterFunction extends ArrayLambdaFunction {
     Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
 
+    // The elements kept are the elements tested, evaluated once
+    array = array.evaluate();
+
     Lambda lambda = (Lambda) operands[1];
 
     List<IExpression> elements = new ArrayList<>();

@@ -71,6 +71,9 @@ public class ArrayDistinctFunction extends Function {
     Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
 
+    // The elements kept are the elements compared, evaluated once
+    array = array.evaluate();
+
     // The values are converted to the element type of the array to compare the values of elements
     // of different types, like INTEGER and NUMBER
     Type type = array.getType().getElementType();

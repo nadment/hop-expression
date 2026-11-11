@@ -138,6 +138,28 @@ public final class Array implements IExpression, Iterable<IExpression> {
         .coerce();
   }
 
+  /**
+   * Returns an array with the evaluated elements of this array. The elements of an array are
+   * expressions evaluated each time they are read, so a function that tests the value of an element
+   * and returns it, like a filter or a sort, must evaluate the elements once: the value of an
+   * element like {@code RANDOM()} or the parameter of a lambda changes between two evaluations.
+   *
+   * @return this array if its elements are constant, otherwise a new array of constant elements
+   */
+  public Array evaluate() {
+    if (isConstant()) {
+      return this;
+    }
+    IExpression[] elements = new IExpression[values.length];
+    for (int i = 0; i < values.length; i++) {
+      Object value = values[i].getValue();
+      // A nested array is an expression, not a literal value
+      elements[i] =
+          value instanceof Array array ? array.evaluate() : new Literal(value, values[i].getType());
+    }
+    return new Array(type, elements);
+  }
+
   /** Converts the elements of this new array to its element type. */
   private Array coerce() {
     Type elementType = type.getElementType();

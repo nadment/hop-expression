@@ -70,6 +70,9 @@ public class ArrayRemoveFunction extends Function {
   public @Nullable Object eval(IExpression[] operands) {
     Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
+
+    // The elements kept are the elements compared, evaluated once
+    array = array.evaluate();
     // An empty array has no element type to convert the value
     if (array.isEmpty()) return operands[1].getValue() == null ? null : array;
 
