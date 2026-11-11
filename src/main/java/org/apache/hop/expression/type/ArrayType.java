@@ -173,6 +173,9 @@ public final class ArrayType extends Type {
 
   @Override
   protected String generateSignature() {
-    return "ARRAY<" + elementType.getSignature() + ">";
+    // The nullability of the array follows the nullability of its elements, like
+    // ARRAY<INTEGER NOT NULL> NOT NULL
+    String signature = "ARRAY<" + elementType.getSignature() + ">";
+    return isNullable() ? signature : signature + " NOT NULL";
   }
 }

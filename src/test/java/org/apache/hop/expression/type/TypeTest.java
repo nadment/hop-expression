@@ -154,6 +154,17 @@ public class TypeTest extends ExpressionTest {
     assertEquals("BINARY NOT NULL", String.valueOf(BinaryType.of(-1, false)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
     assertEquals("ARRAY<INTEGER(10)>", String.valueOf(ArrayType.of(IntegerType.of(10))));
+    // The nullability of the array is written after the type of its elements
+    assertEquals(
+        "ARRAY<INTEGER(10)> NOT NULL", String.valueOf(ArrayType.of(IntegerType.of(10), false)));
+    assertEquals(
+        "ARRAY<INTEGER(10) NOT NULL>", String.valueOf(ArrayType.of(IntegerType.of(10, false))));
+    assertEquals(
+        "ARRAY<INTEGER(10) NOT NULL> NOT NULL",
+        String.valueOf(ArrayType.of(IntegerType.of(10, false), false)));
+    assertEquals(
+        "ARRAY<ARRAY<INTEGER(10)> NOT NULL>",
+        String.valueOf(ArrayType.of(ArrayType.of(IntegerType.of(10), false))));
   }
 
   @Test
