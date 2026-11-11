@@ -554,6 +554,10 @@ class ArrayFunctionTest extends ExpressionTest {
     // The parameter hides a field with the same name
     evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],FIELD_INTEGER->FIELD_INTEGER*10),',')", "10,20");
 
+    // The name of the parameter is case-sensitive
+    evalFails("TRANSFORM([1,2],Val->VAL*10)", ErrorCode.UNRESOLVED_IDENTIFIER);
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],x->TRANSFORM([10],X->x+X)[1]),',')", "11,12");
+
     // Nested lambdas
     evalEquals(
         "ARRAY_TO_STRING(TRANSFORM([1,2],x->ARRAY_TO_STRING(TRANSFORM([10,20],y->x+y),'+')),',')",
