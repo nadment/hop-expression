@@ -120,4 +120,25 @@ public class UserDefinedFunctionTest extends ExpressionTest {
 
     FunctionRegistry.unregister(meta.getName());
   }
+
+  @Test
+  void testArray() throws Exception {
+    UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+    meta.setName("ADD_ALL");
+    meta.setSource("TRANSFORM([1,2],x->x+v0)");
+    meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
+    FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
+
+    // A function returning an array is the operand of an array function or operator
+    evalEquals("ADD_ALL(1)[1]", 2L);
+    evalEquals("ADD_ALL(FIELD_INTEGER)[2]", 42L);
+    evalEquals("CARDINALITY(ADD_ALL(FIELD_INTEGER))", 2L);
+    evalEquals("ARRAY_TO_STRING(TRANSFORM(ADD_ALL(FIELD_INTEGER),x->x*2),',')", "82,84");
+    evalEquals("ARRAY_TO_STRING(ARRAY_APPEND(ADD_ALL(FIELD_INTEGER),5),',')", "41,42,5");
+    evalEquals("ARRAY_TO_STRING(ARRAY_SORT(ADD_ALL(FIELD_INTEGER),FALSE),',')", "42,41");
+    evalEquals("ARRAY_TO_STRING(ADD_ALL(ADD_ALL(FIELD_INTEGER)[2]),',')", "43,44");
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([10,FIELD_INTEGER],y->ADD_ALL(y)[1]),',')", "11,41");
+
+    FunctionRegistry.unregister(meta.getName());
+  }
 }

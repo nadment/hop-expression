@@ -21,10 +21,10 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
+import org.apache.hop.expression.type.UserDefinedFunctionReturnTypeInference;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -49,7 +49,7 @@ public class UserDefinedFunction extends Function {
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
     super(
         meta.getName(),
-        ReturnTypes.ANY,
+        new UserDefinedFunctionReturnTypeInference(meta),
         new UserDefinedFunctionOperandTypeChecker(meta),
         OperatorCategory.UDF,
         "/docs/hop-user-manual/expression/udf.html");
@@ -78,6 +78,28 @@ public class UserDefinedFunction extends Function {
   }
 
   /**
+   * Parses the source expression of a function and validates it against its arguments, so each
+   * argument is typed by its declaration.
+   *
+   * @param meta the metadata that defines the arguments and the source of the function
+   * @return the source expression, whose type is the type returned by the function for arguments of
+   *     the declared types
+   * @throws ExpressionException if the source of the function is invalid
+   */
+  public static IExpression parseSource(UserDefinedFunctionMeta meta) throws ExpressionException {
+    // Create a context for arguments
+    IRowExpressionContext context =
+        new RowExpressionContext(new Variables(), createRowMetaFromArguments(meta.getArguments()));
+
+    // Parse function source
+    ExpressionLexer lexer = new ExpressionLexer(meta.getSource());
+    ExpressionParser parser = new ExpressionParser(lexer);
+    IExpression expression = parser.parse();
+    expression.validate(context);
+    return expression;
+  }
+
+  /**
    * Replaces the call by the source expression of the function, in which the arguments are
    * substituted by the operands of the call.
    *
@@ -88,16 +110,7 @@ public class UserDefinedFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     try {
-      // Create a context for arguments
-      IRowExpressionContext ctx =
-          new RowExpressionContext(
-              new Variables(), createRowMetaFromArguments(meta.getArguments()));
-
-      // Parse function source
-      ExpressionLexer lexer = new ExpressionLexer(getSource());
-      ExpressionParser parser = new ExpressionParser(lexer);
-      IExpression expression = parser.parse();
-      expression.validate(ctx);
+      IExpression expression = parseSource(meta);
 
       // Replace function arguments with real operands
       expression = expression.accept(new UserDefinedFunctionArgumentReplacer(call.getOperands()));
