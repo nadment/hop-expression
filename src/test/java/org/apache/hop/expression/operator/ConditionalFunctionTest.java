@@ -187,6 +187,20 @@ class ConditionalFunctionTest extends ExpressionTest {
     // Nullable even if no operand is nullable, IS NULL must not be simplified to FALSE
     evalTrue("NullIf(FIELD_INTEGER IS NULL, FIELD_STRING IS NULL) IS NULL");
 
+    // An INTEGER is coerced to a NUMBER if one of the operands is a NUMBER
+    evalEquals("NullIf(FIELD_INTEGER,2.5)", new BigDecimal("40")).returnType(NumberType.of(13, 1));
+    evalEquals("NullIf(FIELD_INTEGER,FIELD_NUMBER)", new BigDecimal("40"))
+        .returnType(NumberType.NUMBER);
+    evalEquals("NullIf(FIELD_NUMBER,FIELD_INTEGER)", -5.12D).returnType(NumberType.NUMBER);
+    evalNull("NullIf(FIELD_INTEGER,FIELD_INTEGER::NUMBER)").returnType(NumberType.NUMBER);
+    optimize(
+        "NULLIF(FIELD_INTEGER,FIELD_NUMBER)", "NULLIF(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)");
+
+    // The compared value must be coercible, a string literal is not converted
+    evalFails("NullIf(FIELD_INTEGER,'40')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("NullIf(FIELD_DATE,'2020-01-01')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("NullIf(FIELD_INTEGER,FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
     // Check operands
     evalFails("NullIf()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("NullIf(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
@@ -208,6 +222,12 @@ class ConditionalFunctionTest extends ExpressionTest {
     optimizeNull("NULLIF(1, 1)");
     optimize("NULLIF('a', 'b')", "'a'");
     optimize("NULLIF(1, 2)", "1");
+
+    // Coerce mixed numeric type
+    optimize(
+        "NULLIF(FIELD_INTEGER,FIELD_NUMBER)", "NULLIF(CAST(FIELD_INTEGER AS NUMBER),FIELD_NUMBER)");
+    optimize(
+        "NULLIF(FIELD_NUMBER,FIELD_INTEGER)", "NULLIF(FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER))");
 
     // A value equal to itself, or NULL
     optimizeNull("NULLIF(FIELD_INTEGER,FIELD_INTEGER)").returnType(IntegerType.of(12));

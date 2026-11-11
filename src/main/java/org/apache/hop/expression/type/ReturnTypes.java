@@ -669,55 +669,16 @@ public final class ReturnTypes {
   }
 
   /**
-   * Calculate return type precision and scale for x / y
-   *
-   * <ul>
-   *   <li>Let p1, s1 be the precision and scale of the first operand
-   *   <li>Let p2, s2 be the precision and scale of the second operand
-   *   <li>Let p, s be the precision and scale of the result
-   *   <li>Let d be the number of whole digits in the result
-   *   <li>Then the result type is a decimal with:
-   *       <ul>
-   *         <li>d = p1 - s1 + s2
-   *         <li>s = max(6, s1 + p2 + 1)
-   *         <li>p = d + s
-   *       </ul>
-   *   <li>p and s are capped at their maximum values
-   * </ul>
+   * Returns the type of x / y: a NUMBER without fixed scale. The quotient is rounded to the
+   * significant digits of the calculation, not to a scale derived from the operands, so a type with
+   * a fixed scale would not describe the value.
    *
    * @param type1 the type of the first operand
    * @param type2 the type of the second operand
    * @return the type of the result, nullable if one of the operands is nullable
    */
   public static Type deriveDivideType(final Type type1, final Type type2) {
-    boolean nullable = type1.isNullable() || type2.isNullable();
-
-    // A NUMBER without fixed scale gives a NUMBER without fixed scale, also with NULL which has no
-    // precision, NULL / NULL would otherwise have a scale greater than the precision
-    if (type1.isName(TypeName.UNKNOWN)
-        || type2.isName(TypeName.UNKNOWN)
-        || Types.isString(type1)
-        || Types.isString(type2)
-        || Types.hasVariableScale(type1)
-        || Types.hasVariableScale(type2)) {
-      return NumberType.NUMBER.withNullability(nullable);
-    }
-
-    int p1 = type1.getPrecision();
-    int p2 = type2.getPrecision();
-    int s1 = type1.getScale();
-    int s2 = type2.getScale();
-
-    int d = p1 - s1 + s2;
-
-    // Return type scale
-    int s = Math.max(6, s1 + p2 + 1);
-    s = Math.min(TypeName.NUMBER.getMaxScale(), s);
-
-    // Return type precision
-    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), d + s);
-
-    return NumberType.of(p, s, nullable);
+    return NumberType.NUMBER.withNullability(type1.isNullable() || type2.isNullable());
   }
 
   /**

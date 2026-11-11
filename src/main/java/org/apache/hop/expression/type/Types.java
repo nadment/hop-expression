@@ -349,62 +349,38 @@ public final class Types {
     return expression.getType().getName().ordinal() < toType.getName().ordinal();
   }
 
-  /** Coerces the operands of an addition or subtract expression into a numeric type. */
+  /**
+   * Coerces the operands of an arithmetic expression into the same numeric type: when one operand
+   * is a NUMBER and the other an INTEGER, the INTEGER is cast to a NUMBER with the same precision
+   * and no decimals, so the return type of the expression is unchanged.
+   *
+   * <p>For example, {@code FIELD_INTEGER+FIELD_NUMBER} gives {@code CAST(FIELD_INTEGER AS
+   * NUMBER(12))+FIELD_NUMBER}.
+   *
+   * @param call the call with two operands
+   * @return whether an operand was coerced
+   */
   public static boolean coercionArithmeticOperator(Call call) {
-
     Type left = call.getOperand(0).getType();
     Type right = call.getOperand(1).getType();
 
-    if (left.getName() == right.getName()) return false;
-
-    // STRING <operator> numeric -> NUMBER
-    if (isString(left) && isNumeric(right)) {
-      return coerceOperandsType(call, NumberType.NUMBER);
-    }
-    // Numeric <operator> STRING -> NUMBER
-    if (isNumeric(left) && isString(right)) {
-      return coerceOperandsType(call, NumberType.NUMBER);
-    }
+    boolean coerced = false;
 
     // NUMBER <operator> INTEGER -> NUMBER
-    //    if (Types.isNumber(left) && Types.isInteger(right)) {
-    //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
-    //    }
-    //    // INTEGER <operator> NUMBER -> NUMBER
-    //    if (Types.isInteger(left) && Types.isNumber(right)) {
-    //      return Types.coerceOperandType(call, NumberType.of(left.getPrecision(), 0), 0);
-    //    }
-
-    return false;
-  }
-
-  /** Coerces the operands of a multiplication, division or modulo expression into numeric type. */
-  public static boolean coercionMultiplyOperator(Call call) {
-
-    Type left = call.getOperand(0).getType();
-    Type right = call.getOperand(1).getType();
-
-    if (left.getName() == right.getName()) return false;
-
-    // STRING <operator> numeric -> NUMBER
-    if (isString(left) && isNumeric(right)) {
-      return Types.coerceOperandType(call, NumberType.NUMBER, 0);
+    if (isNumber(left) && isInteger(right)) {
+      coerced =
+          coerceOperandType(call, NumberType.of(right.getPrecision(), 0, right.isNullable()), 1);
     }
-    // Numeric <operator> STRING -> NUMBER
-    if (isNumeric(left) && isString(right)) {
-      return Types.coerceOperandType(call, NumberType.NUMBER, 1);
-    }
-
-    // NUMBER <operator> INTEGER -> NUMBER
-    //    if (Types.isNumber(left) && Types.isInteger(right)) {
-    //      return Types.coerceOperandType(call, NumberType.of(right.getPrecision(), 0), 1);
-    //    }
     // INTEGER <operator> NUMBER -> NUMBER
-    //    if (Types.isInteger(left) && Types.isNumber(right)) {
-    //      return Types.coerceOperandType(call, NumberType.of(left.getPrecision(), 0), 0);
-    //    }
+    else if (isInteger(left) && isNumber(right)) {
+      coerced =
+          coerceOperandType(call, NumberType.of(left.getPrecision(), 0, left.isNullable()), 0);
+    }
 
-    return false;
+    // Inferring the return type
+    call.inferReturnType();
+
+    return coerced;
   }
 
   /** Coerces operands in comparison expressions. */

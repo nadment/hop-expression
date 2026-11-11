@@ -42,25 +42,10 @@ public class ExplicitOperandTypeChecker implements IOperandTypeChecker, ISingleO
   @Override
   public boolean checkOperandTypes(final Call call) {
 
-    IOperandCountRange range = this.getOperandCountRange();
-
-    // Variadic
-    if (names.size() != range.getMax()) {
-      for (IExpression operand : call.getOperands()) {
-        if (!operand.getType().getName().isCoercible(names.getFirst())) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-    // List
-    else {
-      for (int i = 0; i < call.getOperandCount(); i++) {
-        if (i == names.size()
-            || !call.getOperand(i).getType().getName().isCoercible(names.get(i))) {
-          return false;
-        }
+    // Each operand is checked against the type at the same position
+    for (int i = 0; i < call.getOperandCount(); i++) {
+      if (i == names.size() || !call.getOperand(i).getType().getName().isCoercible(names.get(i))) {
+        return false;
       }
     }
 

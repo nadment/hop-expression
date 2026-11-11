@@ -110,11 +110,11 @@ class MathematicalFunctionTest extends ExpressionTest {
   @Test
   void Div0() throws Exception {
     // Documentation example
-    evalEquals("DIV0(6,0)", 0D).returnType(NumberType.of(7, 6, false));
-    evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6, false));
+    evalEquals("DIV0(6,0)", 0D).returnType(NumberType.NUMBER_NOT_NULL);
+    evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.NUMBER_NOT_NULL);
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
     evalEquals("Div0(FIELD_INTEGER,0)", 0D);
-    evalEquals("Div0(FIELD_INTEGER,2)", 20D).returnType(NumberType.of(18, 6));
+    evalEquals("Div0(FIELD_INTEGER,2)", 20D).returnType(NumberType.NUMBER);
 
     // Null handling
     evalNull("Div0(NULL_INTEGER,1)");
@@ -145,10 +145,17 @@ class MathematicalFunctionTest extends ExpressionTest {
     optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
 
     // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
-    optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
-    optimize("DIV0(-FIELD_NUMBER,FIELD_INTEGER)", "DIV0(-FIELD_NUMBER,FIELD_INTEGER)");
-    optimize("DIV0(FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,-FIELD_INTEGER)");
-    optimize("DIV0(FIELD_NUMBER,FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
+    optimize(
+        "DIV0(-FIELD_NUMBER,-FIELD_INTEGER)",
+        "DIV0(FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER(12)))");
+    optimize(
+        "DIV0(-FIELD_NUMBER,FIELD_INTEGER)",
+        "DIV0(-FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER(12)))");
+    optimize(
+        "DIV0(FIELD_NUMBER,-FIELD_INTEGER)",
+        "DIV0(FIELD_NUMBER,CAST(-FIELD_INTEGER AS NUMBER(12)))");
+    optimize(
+        "DIV0(FIELD_NUMBER,FIELD_INTEGER)", "DIV0(FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER(12)))");
   }
 
   @Test

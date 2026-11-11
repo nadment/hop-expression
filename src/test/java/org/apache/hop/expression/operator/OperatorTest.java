@@ -758,7 +758,7 @@ public class OperatorTest extends ExpressionTest {
 
       // Negative
       optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
-      optimize("-(FIELD_INTEGER-FIELD_NUMBER)", "FIELD_NUMBER-FIELD_INTEGER");
+      optimize("-(FIELD_INTEGER-FIELD_NUMBER)", "FIELD_NUMBER-CAST(FIELD_INTEGER AS NUMBER(12))");
 
       // The negation of an interval with the smallest value is out of range
       evalEquals("-INTERVAL 5 YEAR", Interval.of(-5));
@@ -771,16 +771,19 @@ public class OperatorTest extends ExpressionTest {
   class Div {
     @Test
     void testArithmetic() throws Exception {
-      evalEquals("FIELD_INTEGER/4", 10D).returnType(NumberType.of(18, 6));
-      evalEquals("10/4", 2.5D).returnType(NumberType.of(8, 6, false));
-      evalEquals("40/-10", -4D).returnType(NumberType.of(8, 6, false));
-      evalEquals("-40/-10", 4D).returnType(NumberType.of(8, 6, false));
-      evalEquals("5/2", 2.5D).returnType(NumberType.of(7, 6, false));
+      // The quotient is a NUMBER without fixed scale, it keeps its decimals
+      evalEquals("FIELD_INTEGER/4", 10D).returnType(NumberType.NUMBER);
+      evalEquals("10/4", 2.5D).returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("40/-10", -4D).returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("-40/-10", 4D).returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("5/2", 2.5D).returnType(NumberType.NUMBER_NOT_NULL);
       evalEquals("10.1/2.1", new BigDecimal("4.8095238095238095238095238095238"))
-          .returnType(NumberType.of(9, 6, false));
-      evalEquals("0.1/0.0000000000001", 1000000000000D).returnType(NumberType.of(30, 16, false));
-      evalEquals("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", -1.7D)
-          .returnType(NumberType.of(11, 6));
+          .returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("0.1/0.0000000000001", 1000000000000D).returnType(NumberType.NUMBER_NOT_NULL);
+      evalEquals("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", -1.7D).returnType(NumberType.NUMBER);
+      // A cast of the quotient to a fixed scale is not removed
+      evalEquals("CAST(FIELD_INTEGER/3 AS NUMBER(20,8))", new BigDecimal("13.33333333"))
+          .returnType(NumberType.of(20, 8));
     }
 
     @Test
@@ -819,7 +822,7 @@ public class OperatorTest extends ExpressionTest {
       // Normalize
       optimize("0/0");
       optimize("FIELD_INTEGER/4");
-      optimize("FIELD_NUMBER/FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
+      optimize("FIELD_NUMBER/FIELD_INTEGER", "FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))");
 
       // Simplify arithmetic with NULL
       optimizeNull("NULL::INTEGER/FIELD_INTEGER");
@@ -833,9 +836,9 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
 
       // Simplify arithmetic (-A) / (-B) → A / B
-      optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
-      optimize("-FIELD_NUMBER/FIELD_INTEGER", "-FIELD_NUMBER/FIELD_INTEGER");
-      optimize("FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/-FIELD_INTEGER");
+      optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("-FIELD_NUMBER/FIELD_INTEGER", "-FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/CAST(-FIELD_INTEGER AS NUMBER(12))");
 
       // Simplify arithmetic (A * B) / C → (A / C) * B (if A and C are constants)
       optimize("(4*FIELD_NUMBER)/2", "2*FIELD_NUMBER");
@@ -844,7 +847,8 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
       optimize("(FIELD_NUMBER/4)/2", "FIELD_NUMBER/8");
-      optimize("((FIELD_NUMBER/4)/FIELD_INTEGER)/2", "FIELD_NUMBER/FIELD_INTEGER/8");
+      optimize(
+          "((FIELD_NUMBER/4)/FIELD_INTEGER)/2", "FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))/8");
     }
   }
 
@@ -2397,7 +2401,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
       optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
       optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
-      optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
+      optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "CAST(FIELD_INTEGER AS NUMBER(12))-FIELD_NUMBER");
       optimize("FIELD_DATE+INTERVAL 0 YEAR", "FIELD_DATE");
     }
 
@@ -2567,7 +2571,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER-FIELD_INTEGER");
       evalNull("NULL_INTEGER-NULL_INTEGER");
       optimize("FIELD_INTEGER-(0-FIELD_INTEGER)", "FIELD_INTEGER+FIELD_INTEGER");
-      optimize("FIELD_INTEGER-(-FIELD_NUMBER)", "FIELD_INTEGER+FIELD_NUMBER");
+      optimize("FIELD_INTEGER-(-FIELD_NUMBER)", "FIELD_NUMBER+CAST(FIELD_INTEGER AS NUMBER(12))");
     }
 
     @Test
@@ -2773,7 +2777,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER*4", "4*FIELD_INTEGER");
       optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
       optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
-      optimize("4*FIELD_INTEGER*0.5", "2*FIELD_INTEGER");
+      optimize("4*FIELD_INTEGER*0.5", "2*CAST(FIELD_INTEGER AS NUMBER(12))");
 
       // Normalize
       optimize("0*FIELD_INTEGER");
@@ -2795,9 +2799,9 @@ public class OperatorTest extends ExpressionTest {
       optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
 
       // Simplify arithmetic (-A) * (-B) → A*B
-      optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
-      optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
-      optimize("-FIELD_INTEGER*FIELD_NUMBER", "FIELD_NUMBER*-FIELD_INTEGER");
+      optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_NUMBER*CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_NUMBER*CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("-FIELD_INTEGER*FIELD_NUMBER", "FIELD_NUMBER*CAST(-FIELD_INTEGER AS NUMBER(12))");
 
       // Simplify arithmetic only if one negating const * (-A) → -const * A
       optimize("-FIELD_INTEGER*(-2)", "2*FIELD_INTEGER");

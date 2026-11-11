@@ -46,6 +46,16 @@ public class ConcatWsFunction extends Function {
         "/docs/hop-user-manual/expression/concat_ws.html");
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>With a binary operand the result is a binary, so every operand must be a binary or a string.
+   */
+  @Override
+  protected boolean checkOperandTypes(Call call) {
+    return super.checkOperandTypes(call) && ConcatFunction.checkBinaryOperands(call);
+  }
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 

@@ -102,7 +102,7 @@ public class ModFunction extends Function {
 
   @Override
   public boolean coerceOperandsType(Call call) {
-    return Types.coercionMultiplyOperator(call);
+    return Types.coercionArithmeticOperator(call);
   }
 
   @Override

@@ -118,13 +118,13 @@ public class SubtractOperator extends BinaryOperator {
     return new Call(NumberSubtractOperator.INSTANCE, call.getOperands());
   }
 
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coercionArithmeticOperator(call);
+  }
+
   public static final class IntegerSubtractOperator extends SubtractOperator {
     public static final IntegerSubtractOperator INSTANCE = new IntegerSubtractOperator();
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
-    }
 
     @Override
     public @Nullable Object eval(final IExpression[] operands) {
@@ -145,11 +145,6 @@ public class SubtractOperator extends BinaryOperator {
     public static final NumberSubtractOperator INSTANCE = new NumberSubtractOperator();
 
     @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
-    }
-
-    @Override
     public @Nullable Object eval(final IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);
       if (left == null) return null;
@@ -164,11 +159,6 @@ public class SubtractOperator extends BinaryOperator {
   public static final class IntervalFromTemporalSubtractOperator extends SubtractOperator {
     private static final IntervalFromTemporalSubtractOperator INSTANCE =
         new IntervalFromTemporalSubtractOperator();
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
-    }
 
     @Override
     public @Nullable Object eval(final IExpression[] operands) {

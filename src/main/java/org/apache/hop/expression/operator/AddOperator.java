@@ -136,6 +136,11 @@ public class AddOperator extends BinaryOperator {
     return new Call(call.getPosition(), NumberAddOperator.INSTANCE, call.getOperands());
   }
 
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coercionArithmeticOperator(call);
+  }
+
   public static final class IntegerAddOperator extends AddOperator {
     public static final IntegerAddOperator INSTANCE = new IntegerAddOperator();
 
@@ -146,11 +151,6 @@ public class AddOperator extends BinaryOperator {
     @Override
     public boolean isSymmetrical() {
       return true;
-    }
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
     }
 
     @Override
@@ -175,11 +175,6 @@ public class AddOperator extends BinaryOperator {
     @Override
     public boolean isSymmetrical() {
       return true;
-    }
-
-    @Override
-    public boolean coerceOperandsType(Call call) {
-      return Types.coercionArithmeticOperator(call);
     }
 
     @Override

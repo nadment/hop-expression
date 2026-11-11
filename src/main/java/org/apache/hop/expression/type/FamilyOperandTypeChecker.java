@@ -42,25 +42,11 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
   @Override
   public boolean checkOperandTypes(final Call call) {
 
-    IOperandCountRange range = this.getOperandCountRange();
-
-    // Variadic
-    if (families.size() != range.getMax()) {
-      for (IExpression operand : call.getOperands()) {
-        if (!operand.getType().getName().isFamily(families.getFirst())) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-    // List
-    else {
-      for (int i = 0; i < call.getOperandCount(); i++) {
-        if (i == families.size()
-            || !call.getOperand(i).getType().getName().isFamily(families.get(i))) {
-          return false;
-        }
+    // Each operand is checked against the family at the same position
+    for (int i = 0; i < call.getOperandCount(); i++) {
+      if (i == families.size()
+          || !call.getOperand(i).getType().getName().isFamily(families.get(i))) {
+        return false;
       }
     }
 

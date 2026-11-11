@@ -339,10 +339,12 @@ public class ExpressionParserTest extends ExpressionTest {
   void unparse() throws Exception {
     optimize("(2+FIELD_INTEGER)*4", "4*(2+FIELD_INTEGER)");
     optimize("4*(2+FIELD_INTEGER)", "4*(2+FIELD_INTEGER)");
-    optimize("4/2+FIELD_INTEGER", "2+FIELD_INTEGER");
+    optimize("4/2+FIELD_INTEGER", "2+CAST(FIELD_INTEGER AS NUMBER(12))");
     optimize("4/(2+FIELD_INTEGER)", "4/(2+FIELD_INTEGER)");
     optimize("-FIELD_INTEGER::NUMBER", "-CAST(FIELD_INTEGER AS NUMBER)");
-    optimize("-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)", "-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)");
+    optimize(
+        "-2*(FIELD_INTEGER-4)*(FIELD_INTEGER/2)",
+        "FIELD_INTEGER/2*CAST(-2*(FIELD_INTEGER-4) AS NUMBER(14))");
     optimize("((FIELD_INTEGER > 5) AND FALSE) OR (FIELD_INTEGER < 10)", "FIELD_INTEGER<10");
   }
 

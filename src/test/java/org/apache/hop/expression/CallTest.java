@@ -26,6 +26,7 @@ import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.InListOperator;
 import org.apache.hop.expression.operator.LessThanOperator;
+import org.apache.hop.expression.operator.RandomFunction;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -80,7 +81,7 @@ class CallTest extends ExpressionTest {
             InListOperator.INSTANCE,
             new Identifier("Field"),
             new Array(Literal.of(1), Literal.of(2)));
-    Call call8 = new Call(FunctionRegistry.getFunction("RANDOM"));
+    Call call8 = new Call(new RandomFunction());
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
     assertTrue(call1.isKind(Kind.CALL));
@@ -168,7 +169,13 @@ class CallTest extends ExpressionTest {
   void normalizeSymmetricalOperator() throws Exception {
 
     // Normalize identifiers by name
-    optimize("FIELD_NUMBER+FIELD_INTEGER", "FIELD_INTEGER+FIELD_NUMBER");
+    // The INTEGER operand is coerced to NUMBER, whatever the order of the operands
+    optimize("FIELD_NUMBER+FIELD_INTEGER", "FIELD_NUMBER+CAST(FIELD_INTEGER AS NUMBER(12))");
+    optimize("FIELD_INTEGER+FIELD_NUMBER", "FIELD_NUMBER+CAST(FIELD_INTEGER AS NUMBER(12))");
+    optimize("FIELD_NUMBER*FIELD_INTEGER", "FIELD_NUMBER*CAST(FIELD_INTEGER AS NUMBER(12))");
+    optimize("FIELD_NUMBER+1", "1+FIELD_NUMBER");
+    optimize("FIELD_INTEGER+1.5", "1.5+CAST(FIELD_INTEGER AS NUMBER(12))");
+    optimize("MOD(FIELD_NUMBER,FIELD_INTEGER)", "FIELD_NUMBER%(CAST(FIELD_INTEGER AS NUMBER(12)))");
     optimize(
         "FIELD_BOOLEAN_TRUE AND FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE AND FIELD_BOOLEAN_TRUE");
     optimize(

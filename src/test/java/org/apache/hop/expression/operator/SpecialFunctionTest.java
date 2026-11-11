@@ -151,8 +151,8 @@ class SpecialFunctionTest extends ExpressionTest {
       optimize("TRY('ABC'::Boolean)", "NULL");
 
       // @code{ErrorCode.DIVISION_BY_ZERO}
-      evalEquals("TRY(5.2/2)", 2.6D).returnType(NumberType.of(7, 6, false));
-      evalNull("TRY(5.2/0)").returnType(NumberType.of(7, 6));
+      evalEquals("TRY(5.2/2)", 2.6D).returnType(NumberType.NUMBER_NOT_NULL);
+      evalNull("TRY(5.2/0)").returnType(NumberType.NUMBER);
       optimize("TRY(5.2/0)", "NULL");
 
       // @code{ErrorCode.ARGUMENT_OUT_OF_RANGE}

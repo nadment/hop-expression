@@ -79,17 +79,68 @@ public class ConcatFunction extends Function {
     // If an argument is an array, the other arguments are added as elements to the array
     for (IExpression operand : call.getOperands()) {
       if (operand.getType().isName(TypeName.ARRAY)) {
-        return true;
+        return checkArrayOperands(call);
       }
     }
-    return super.checkOperandTypes(call);
+    return super.checkOperandTypes(call) && checkBinaryOperands(call);
+  }
+
+  /**
+   * Checks that every operand of an array concatenation is coercible to the most general type of
+   * the elements, a string literal is converted to that type like an element of an array.
+   */
+  private static boolean checkArrayOperands(Call call) {
+    Type elementType = null;
+    for (IExpression operand : call.getOperands()) {
+      elementType = Types.getLeastRestrictive(elementType, getElementType(operand));
+    }
+
+    // Don't check multi-dimensional array
+    if (elementType == null || elementType.isName(TypeName.ARRAY)) {
+      return true;
+    }
+
+    for (IExpression operand : call.getOperands()) {
+      if (!getElementType(operand).isCoercible(elementType) && !Types.isStringLiteral(operand)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** The type of the elements of an array operand, or the type of an operand added as element. */
+  private static Type getElementType(IExpression operand) {
+    Type elementType = operand.getType().getElementType();
+    return elementType == null ? operand.getType() : elementType;
+  }
+
+  /**
+   * Checks the operands of a concatenation with a binary operand: the result is a binary, so every
+   * operand must be a binary or a string.
+   *
+   * @param call the call to check
+   * @return false if a binary operand is mixed with an operand that is not a binary or a string
+   */
+  static boolean checkBinaryOperands(Call call) {
+    boolean binary = false;
+    boolean other = false;
+    for (IExpression operand : call.getOperands()) {
+      Type type = operand.getType();
+      if (type.isName(TypeName.BINARY)) {
+        binary = true;
+      } else if (!type.isName(TypeName.STRING) && !operand.isNull()) {
+        other = true;
+      }
+    }
+    return !(binary && other);
   }
 
   @Override
   public boolean coerceOperandsType(Call call) {
 
+    // The elements of a multi-dimensional array are coerced, not its nested arrays
     Type type = call.getType();
-    if (type instanceof ArrayType arrayType) {
+    while (type instanceof ArrayType arrayType) {
       type = arrayType.getElementType();
     }
 
