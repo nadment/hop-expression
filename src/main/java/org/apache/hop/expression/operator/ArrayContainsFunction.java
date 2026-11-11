@@ -76,7 +76,7 @@ public class ArrayContainsFunction extends Function {
     for (IExpression expression : array) {
       // A null element never matches
       Object element = expression.getValue(clazz);
-      if (element != null && type.compare(element, value) == 0) {
+      if (element != null && type.compareEqual(element, value)) {
         return Boolean.TRUE;
       }
     }

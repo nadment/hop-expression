@@ -94,7 +94,7 @@ public class ArrayDistinctFunction extends Function {
         continue;
       }
 
-      if (values.stream().noneMatch(kept -> type.compare(kept, value) == 0)) {
+      if (values.stream().noneMatch(kept -> type.compareEqual(kept, value))) {
         values.add(value);
         elements.add(element);
       }

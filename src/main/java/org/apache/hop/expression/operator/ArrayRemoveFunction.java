@@ -87,7 +87,7 @@ public class ArrayRemoveFunction extends Function {
     for (IExpression element : array) {
       // A NULL element never matches and is kept
       Object item = element.getValue(clazz);
-      if (item == null || type.compare(item, value) != 0) {
+      if (item == null || !type.compareEqual(item, value)) {
         elements.add(element);
       }
     }

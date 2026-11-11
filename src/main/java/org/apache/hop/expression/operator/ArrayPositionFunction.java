@@ -109,7 +109,7 @@ public class ArrayPositionFunction extends Function {
     for (int index = start; index < size; index++) {
       // A null element never matches
       Object element = array.get(index).getValue(clazz);
-      if (element != null && type.compare(element, value) == 0) {
+      if (element != null && type.compareEqual(element, value)) {
         return Long.valueOf(index + 1L);
       }
     }

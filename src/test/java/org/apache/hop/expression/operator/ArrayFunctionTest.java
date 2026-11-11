@@ -283,6 +283,11 @@ class ArrayFunctionTest extends ExpressionTest {
     evalTrue("ARRAY_CONTAINS([40,2],FIELD_INTEGER)");
     evalTrue("ARRAY_CONTAINS([FIELD_INTEGER,2],40)");
     evalFalse("ARRAY_CONTAINS([FIELD_INTEGER,2],3)");
+
+    // Elements of a type that is only comparable for equality
+    evalTrue("ARRAY_CONTAINS([FIELD_JSON],FIELD_JSON)");
+    evalFalse("ARRAY_CONTAINS([FIELD_JSON],JSON '{\"a\":1}')");
+    evalTrue("ARRAY_CONTAINS([FIELD_INET],FIELD_INET)");
     evalTrue("ARRAY_CONTAINS(STRING_TO_ARRAY(FIELD_STRING,','),'TEST')");
 
     // Elements and value of different numeric types
@@ -314,6 +319,9 @@ class ArrayFunctionTest extends ExpressionTest {
     // An array element of a multi-dimensional array
     evalEquals("ARRAY_POSITION([[1,2],[3.5]],[3.5])", 2L);
     evalEquals("ARRAY_POSITION([[1,2],[3.5]],[4])", 0L);
+    // Elements of a type that is only comparable for equality
+    evalEquals("ARRAY_POSITION([JSON '{\"a\":1}',FIELD_JSON],FIELD_JSON)", 2L);
+    evalEquals("ARRAY_POSITION([FIELD_INET],FIELD_INET)", 1L);
     // Elements and value of different numeric types
     evalEquals("ARRAY_POSITION([1.5,2],2)", 2L);
     evalEquals("ARRAY_POSITION([FIELD_NUMBER,2],2)", 2L);
@@ -402,6 +410,10 @@ class ArrayFunctionTest extends ExpressionTest {
     // Elements are compared by value
     evalEquals("ARRAY_TO_STRING(ARRAY_DISTINCT([40,FIELD_INTEGER,2]),',')", "40,2");
     evalEquals("ARRAY_TO_STRING(ARRAY_DISTINCT(STRING_TO_ARRAY('b,a,b,c,a',',')),',')", "b,a,c");
+
+    // Elements of a type that is only comparable for equality
+    evalEquals("CARDINALITY(ARRAY_DISTINCT([FIELD_JSON,JSON '{\"a\":1}',FIELD_JSON]))", 2L);
+    evalEquals("CARDINALITY(ARRAY_DISTINCT([FIELD_INET,FIELD_INET]))", 1L);
 
     // The NULL elements are duplicates of each other
     evalEquals("CARDINALITY(ARRAY_DISTINCT([1,NULL_INTEGER,1,NULL_INTEGER]))", 2L);
@@ -515,6 +527,10 @@ class ArrayFunctionTest extends ExpressionTest {
     // Elements are compared by value
     evalEquals("ARRAY_TO_STRING(ARRAY_REMOVE([40,FIELD_INTEGER,2],40),',')", "2");
     evalEquals("ARRAY_TO_STRING(ARRAY_REMOVE(STRING_TO_ARRAY('a,,b,',','),''),',')", "a,b");
+
+    // Elements of a type that is only comparable for equality
+    evalEquals("CARDINALITY(ARRAY_REMOVE([FIELD_JSON,JSON '{\"a\":1}'],FIELD_JSON))", 1L);
+    evalEquals("CARDINALITY(ARRAY_REMOVE([FIELD_INET,FIELD_INET],FIELD_INET))", 0L);
 
     // A NULL element never matches and is kept
     evalEquals("CARDINALITY(ARRAY_REMOVE([1,NULL_INTEGER,2],1))", 2L);
