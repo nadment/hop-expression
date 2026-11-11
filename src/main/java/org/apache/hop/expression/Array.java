@@ -129,8 +129,11 @@ public final class Array implements IExpression, Iterable<IExpression> {
     int size = size();
     IExpression[] expressions = Arrays.copyOf(values, size + array.size());
     System.arraycopy(array.values, 0, expressions, size, array.size());
-    Type elementType =
-        Types.getLeastRestrictive(type.getElementType(), array.type.getElementType());
+    Type elementType = type.getElementType();
+    Type otherElementType = array.type.getElementType();
+    if (otherElementType != null) {
+      elementType = Types.getLeastRestrictive(elementType, otherElementType);
+    }
     return new Array(elementType == null ? type : ArrayType.of(elementType, false), expressions)
         .coerce();
   }
