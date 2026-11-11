@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Lambda;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -238,10 +239,30 @@ public final class ReturnTypes {
 
   /**
    * Type-inference strategy whereby the result type of the call is the type of the source array,
-   * the first operand, which is not an array if it is a NULL literal.
+   * the first operand, which is not an array if it is a NULL literal. The result is NULL if the
+   * array or a bound of the slice is NULL.
    */
   public static final IReturnTypeInference ARRAY_SLICE =
-      call -> call.getOperand(0).getType() instanceof ArrayType type ? type : ArrayType.ARRAY;
+      ((IReturnTypeInference)
+              call ->
+                  call.getOperand(0).getType() instanceof ArrayType type ? type : ArrayType.ARRAY)
+          .andThen(TypeTransforms.TO_NULLABLE);
+
+  /**
+   * Type-inference strategy whereby the result type of the call is the type of the array, the first
+   * operand. The result is NULL if the array or the sort order is NULL, a comparator lambda never
+   * makes the result NULL.
+   */
+  public static final IReturnTypeInference ARRAY_SORT =
+      call -> {
+        Type type = call.getOperand(0).getType();
+        if (call.getOperandCount() == 2
+            && !(call.getOperand(1) instanceof Lambda)
+            && call.getOperand(1).getType().isNullable()) {
+          return type.withNullability(true);
+        }
+        return type;
+      };
 
   private static IReturnTypeInference arrayWithElement(int arrayOrdinal, int elementOrdinal) {
     // The result is NULL only if the array is NULL

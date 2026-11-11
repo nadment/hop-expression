@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeTransforms;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -45,7 +46,7 @@ public class ArrayRemoveFunction extends Function {
   public ArrayRemoveFunction() {
     super(
         "ARRAY_REMOVE",
-        ReturnTypes.ARG0,
+        ReturnTypes.ARG0.andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.ARRAY_ANY,
         OperatorCategory.ARRAY,
         "/docs/hop-user-manual/expression/array_remove.html");

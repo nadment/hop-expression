@@ -379,6 +379,14 @@ class ArrayFunctionTest extends ExpressionTest {
     evalNull("ARRAY_SLICE([1,2,3,4,5,6],NULL,3)");
     evalNull("ARRAY_SLICE([1,2,3,4,5,6],1,NULL)");
 
+    // The result is nullable if the array or a bound is nullable
+    evalNull("ARRAY_SLICE([1,2,3],NULL_INTEGER,2)")
+        .returnType(ArrayType.of(IntegerType.of(1, false)));
+    evalNull("ARRAY_SLICE([1,2,3],1,NULL_INTEGER)")
+        .returnType(ArrayType.of(IntegerType.of(1, false)));
+    evalTrue("ARRAY_SLICE([1,2,3],NULL_INTEGER,2) IS NULL");
+    evalTrue("COALESCE(ARRAY_SLICE([1,2,3],1,NULL_INTEGER),[9]) = [9]");
+
     // Check operands
     evalFails("ARRAY_SLICE([1,2,3,4,5,6],1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
@@ -429,6 +437,12 @@ class ArrayFunctionTest extends ExpressionTest {
     evalNull("ARRAY_SORT(STRING_TO_ARRAY(NULL_STRING,','))");
     evalNull("ARRAY_SORT([1,2],NULL_BOOLEAN)");
 
+    // The result is nullable if the array or the sort order is nullable
+    evalNull("ARRAY_SORT([1,2],NULL_BOOLEAN)").returnType(ArrayType.of(IntegerType.of(1, false)));
+    optimize("ARRAY_SORT([FIELD_INTEGER,2],TRUE)").returnType(arrayOf(IntegerType.of(12)));
+    evalTrue("ARRAY_SORT([1,2],NULL_BOOLEAN) IS NULL");
+    evalTrue("COALESCE(ARRAY_SORT([1,2],NULL_BOOLEAN),[9]) = [9]");
+
     // Check operands
     evalFails("ARRAY_SORT()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ARRAY_SORT([1,2],TRUE,TRUE)", ErrorCode.TOO_MANY_ARGUMENTS);
@@ -463,6 +477,9 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("ARRAY_SORT(STRING_TO_ARRAY(NULL_STRING,','),(a,b)->LENGTH(a)-LENGTH(b))");
+
+    // A comparator returning a nullable number does not make the result nullable
+    optimize("ARRAY_SORT([FIELD_INTEGER,2],(a,b)->a-b)").returnType(arrayOf(IntegerType.of(12)));
 
     // The comparator must return a number, not a BOOLEAN
     evalFails("ARRAY_SORT([3,1,2],(a,b)->a<b)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -500,6 +517,13 @@ class ArrayFunctionTest extends ExpressionTest {
     evalNull("ARRAY_REMOVE([1,2,3],NULL_INTEGER)");
     evalNull("ARRAY_REMOVE([],NULL_INTEGER)");
     evalNull("ARRAY_REMOVE(STRING_TO_ARRAY(NULL_STRING,','),'a')");
+
+    // The result is nullable if the array or the value to remove is nullable
+    evalNull("ARRAY_REMOVE([1,2,3],NULL_INTEGER)")
+        .returnType(ArrayType.of(IntegerType.of(1, false)));
+    optimize("ARRAY_REMOVE([FIELD_INTEGER,2],2)").returnType(arrayOf(IntegerType.of(12)));
+    evalTrue("ARRAY_REMOVE([1,2,3],NULL_INTEGER) IS NULL");
+    evalTrue("COALESCE(ARRAY_REMOVE([1,2,3],NULL_INTEGER),[9]) = [9]");
 
     // Check operands
     evalFails("ARRAY_REMOVE()", ErrorCode.NOT_ENOUGH_ARGUMENTS);

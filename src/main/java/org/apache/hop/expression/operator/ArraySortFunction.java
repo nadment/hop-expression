@@ -49,7 +49,7 @@ public class ArraySortFunction extends ArrayLambdaFunction {
   public ArraySortFunction() {
     super(
         "ARRAY_SORT",
-        ReturnTypes.ARG0,
+        ReturnTypes.ARRAY_SORT,
         OperandTypes.ARRAY.or(OperandTypes.ARRAY_BOOLEAN).or(OperandTypes.ARRAY_COMPARATOR),
         "/docs/hop-user-manual/expression/array_sort.html",
         2);
