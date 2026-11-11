@@ -106,12 +106,64 @@ public class OperatorTest extends ExpressionTest {
       evalFails("FIELD_DATE <> 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("FIELD_STRING <> 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("FIELD_JSON <> FIELD_STRING", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-      evalFails("[1,2] <> [1,2]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails("<> FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER <>", ErrorCode.SYNTAX_ERROR);
       evalFails("FIELD_INTEGER != ", ErrorCode.SYNTAX_ERROR);
+    }
+
+    @Test
+    void testArray() throws Exception {
+      // Two arrays are different if an element is different
+      evalFalse("[1,2] <> [1,2]");
+      evalTrue("[1,2] <> [2,1]").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalTrue("[1,2] != [1,3]");
+      evalFalse("['a','b'] <> ['a','b']");
+      evalTrue("['a','b'] <> ['a','B']");
+      evalFalse("[TRUE,FALSE] <> [TRUE,FALSE]");
+      evalFalse("[DATE '2020-01-01'] <> [DATE '2020-01-01']");
+      evalTrue("[DATE '2020-01-01'] <> [DATE '2020-01-02']");
+
+      // Arrays with a different number of elements are different
+      evalTrue("[1,2] <> [1,2,3]");
+      evalTrue("[1,2,3] <> [1,2]");
+      evalTrue("[] <> [1]");
+      evalFalse("[] <> []");
+
+      // The elements are coerced to their most general type
+      evalFalse("[1,2] <> [1.0,2.0]");
+      evalFalse("[FIELD_INTEGER,2.5] <> [40,2.5]");
+      evalTrue("[FIELD_INTEGER,2] <> [2.5,2]");
+      optimize(
+          "[FIELD_INTEGER] <> [FIELD_NUMBER]", "[FIELD_NUMBER]!=[CAST(FIELD_INTEGER AS NUMBER)]");
+
+      // Multi-dimensional arrays
+      evalFalse("[[1,2],[3]] <> [[1,2],[3]]");
+      evalFalse("[[1,2],[3]] <> [[1,2],[3.0]]");
+      evalTrue("[[1,2],[3]] <> [[1,2],[4]]");
+      evalTrue("[[1,2],[3]] <> [[1,2]]");
+
+      // Arrays returned by a function
+      evalFalse("STRING_TO_ARRAY('a,b',',') <> ['a','b']");
+      evalTrue("STRING_TO_ARRAY('a,b',',') <> ['a']");
+      evalFalse("TRANSFORM([1,2],x->x*2) <> [2.0,4.0]");
+      evalTrue("ARRAY_SORT([3,1,2]) <> [3,1,2]");
+
+      // Two NULL elements are equal
+      evalFalse("[1,NULL_INTEGER] <> [1,NULL_INTEGER]");
+      evalTrue("[1,NULL_INTEGER] <> [1,2]");
+
+      // A NULL array is not different from anything
+      evalNull("STRING_TO_ARRAY(NULL_STRING,',') <> ['a']").returnType(BooleanType.BOOLEAN);
+      evalNull("['a'] <> STRING_TO_ARRAY(NULL_STRING,',')");
+
+      // An array is only comparable with an array of the same dimension with comparable elements
+      evalFails("[1,2] <> 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1 <> [1,2]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] <> ['a','b']", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] <> [DATE '2020-01-01']", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] <> [[1,2]]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test
@@ -437,8 +489,21 @@ public class OperatorTest extends ExpressionTest {
       // A date is not comparable with a number
       evalFails("FIELD_DATE < 5", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
-      // Arrays are not comparable
-      evalFails("[1,2] < [1,3]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      // Arrays are compared element by element, then by number of elements
+      evalTrue("[1,2] < [1,3]");
+      evalFalse("[1,3] < [1,2]");
+      evalFalse("[1,2] < [1,2]");
+      evalTrue("[1,2] < [1,2,0]");
+      evalTrue("[] < [1]");
+      evalTrue("[1,2,3] < [2]");
+      evalTrue("[1,2.5] < [FIELD_INTEGER,1]");
+      evalTrue("[[1,2],[3]] < [[1,2],[3.5]]");
+      evalTrue("['a','b'] < ['a','c']");
+      // A NULL element is greater than any other element
+      evalTrue("[1,5] < [1,NULL_INTEGER]");
+      evalFails("[1,2] < 3", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] < ['a']", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] < [[1]]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // Syntax error
       evalFails("< FIELD_INTEGER", ErrorCode.SYNTAX_ERROR);
@@ -3064,9 +3129,65 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("INTERVAL 1 DAY = '1 DAY'");
       evalFails("'abc' = 1", ErrorCode.CONVERSION_ERROR);
       evalFails("FIELD_DATE = 'abc'", ErrorCode.UNPARSABLE_DATE_WITH_FORMAT);
+    }
 
-      // The comparison of arrays is not supported
-      evalFails("[1,2] = [1,2]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    @Test
+    void testArray() throws Exception {
+      // Two arrays are equal if they have the same elements in the same order
+      evalTrue("[1,2] = [1,2]").returnType(BooleanType.BOOLEAN_NOT_NULL);
+      evalFalse("[1,2] = [2,1]");
+      evalFalse("[1,2] = [1,3]");
+      evalTrue("['a','b'] = ['a','b']");
+      evalFalse("['a','b'] = ['a','B']");
+      evalTrue("[TRUE,FALSE] = [TRUE,FALSE]");
+      evalTrue("[DATE '2020-01-01'] = [DATE '2020-01-01']");
+      evalFalse("[DATE '2020-01-01'] = [DATE '2020-01-02']");
+
+      // Arrays with a different number of elements are not equal
+      evalFalse("[1,2] = [1,2,3]");
+      evalFalse("[1,2,3] = [1,2]");
+      evalFalse("[] = [1]");
+      evalTrue("[] = []");
+
+      // The elements are coerced to their most general type
+      evalTrue("[1,2] = [1.0,2.0]");
+      evalTrue("[1,2.5] = [1.0,2.5]");
+      evalTrue("[FIELD_INTEGER,2.5] = [40,2.5]");
+      evalFalse("[FIELD_INTEGER,2.5] = [41,2.5]");
+      optimize(
+          "[FIELD_INTEGER] = [FIELD_NUMBER]", "[FIELD_NUMBER]=[CAST(FIELD_INTEGER AS NUMBER)]");
+
+      // Multi-dimensional arrays
+      evalTrue("[[1,2],[3]] = [[1,2],[3]]");
+      evalTrue("[[1,2],[3]] = [[1,2],[3.0]]");
+      evalFalse("[[1,2],[3]] = [[1,2],[4]]");
+      evalFalse("[[1,2],[3]] = [[1,2]]");
+
+      // Arrays returned by a function
+      evalTrue("STRING_TO_ARRAY('a,b',',') = ['a','b']");
+      evalFalse("STRING_TO_ARRAY('a,b',',') = ['a']");
+      evalTrue("TRANSFORM([1,2],x->x*2) = [2,4]");
+      evalTrue("TRANSFORM([1,2],x->x*2) = [2.0,4.0]");
+      evalTrue("ARRAY_CONCAT([1],[2]) = ARRAY_APPEND([1],2)");
+      evalTrue("ARRAY_SORT([3,1,2]) = [1,2,3]");
+
+      // Two NULL elements are equal
+      evalTrue("[1,NULL_INTEGER] = [1,NULL_INTEGER]");
+      evalFalse("[1,NULL_INTEGER] = [1,2]");
+      evalFalse("[1,2] = [1,NULL_INTEGER]");
+
+      // A NULL array is not equal to anything
+      evalNull("STRING_TO_ARRAY(NULL_STRING,',') = ['a']").returnType(BooleanType.BOOLEAN);
+      evalNull("['a'] = STRING_TO_ARRAY(NULL_STRING,',')");
+
+      // An array is only comparable with an array of the same dimension with comparable elements
+      evalFails("[1,2] = 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1 = [1,2]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] = '[1,2]'", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] = ['a','b']", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] = [DATE '2020-01-01']", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] = [TRUE]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2] = [[1,2]]", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     }
 
     @Test

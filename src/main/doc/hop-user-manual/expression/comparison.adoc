@@ -27,4 +27,7 @@ under the License.
 ** JSON and INET values can only be compared with the `=` and `<>` operators.
 * A string literal is converted to the data type of the other expression, whatever the order of the expressions, for example `FIELD_DATE >= '2020-01-01'` or `1 = '1'`. An error is raised if the literal can't be converted, for example `'abc' = 1`.
 * Other combinations raise an error, a string expression that is not a literal is not implicitly converted to a number or a date, use an explicit cast if needed, for example `FIELD_STRING::INTEGER = 1`.
-* Arrays can't be compared.
+* Two arrays are comparable if their elements are comparable, an array is not comparable with a value of another data type:
+** Two arrays are equal if they have the same number of elements and their elements are equal in the same order, for example `[1,2] = [1.0,2.0]` returns TRUE and `[1,2] = [2,1]` returns FALSE. Two NULL elements are equal.
+** Two arrays are ordered element by element, the first different element gives the result, for example `[1,2,3] < [1,3]` returns TRUE. A NULL element is greater than any other element.
+** If all the elements are equal, the array with fewer elements is the lesser, for example `[1,2] < [1,2,0]` returns TRUE.

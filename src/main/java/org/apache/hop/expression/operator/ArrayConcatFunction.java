@@ -31,7 +31,6 @@ import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -73,8 +72,7 @@ public class ArrayConcatFunction extends Function {
       }
     }
 
-    // Don't check multi-dimensional array
-    if (elementType == null || elementType.isName(TypeName.ARRAY)) {
+    if (elementType == null) {
       return true;
     }
 
@@ -146,7 +144,7 @@ public class ArrayConcatFunction extends Function {
     if (arrays.size() == 1 || elementType == null) return arrays.getFirst();
 
     // Every element is converted to the most general type of the elements of all the arrays
-    Array result = new Array(ArrayType.of(elementType));
+    Array result = new Array(ArrayType.of(elementType, false));
     for (Array array : arrays) {
       result = result.concat(array);
     }

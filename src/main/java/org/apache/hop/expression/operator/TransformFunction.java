@@ -44,7 +44,9 @@ public class TransformFunction extends ArrayLambdaFunction {
   public TransformFunction() {
     super(
         "TRANSFORM",
-        call -> ArrayType.of(call.getOperand(1).getType()),
+        // The result is NULL only if the array is NULL
+        call ->
+            ArrayType.of(call.getOperand(1).getType(), call.getOperand(0).getType().isNullable()),
         OperandTypes.ARRAY_LAMBDA_ANY,
         "/docs/hop-user-manual/expression/transform.html");
   }
@@ -65,6 +67,6 @@ public class TransformFunction extends ArrayLambdaFunction {
       elements.add(value instanceof Array result ? result : new Literal(value, type));
     }
 
-    return new Array(ArrayType.of(type), elements);
+    return new Array(ArrayType.of(type, false), elements);
   }
 }

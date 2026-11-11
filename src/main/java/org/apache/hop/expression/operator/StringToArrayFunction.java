@@ -27,6 +27,7 @@ import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TypeTransforms;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -42,7 +43,8 @@ public class StringToArrayFunction extends Function {
   public StringToArrayFunction() {
     super(
         "STRING_TO_ARRAY",
-        ReturnTypes.ARRAY,
+        // The result is NULL if the string is NULL
+        ReturnTypes.ARRAY.andThen(TypeTransforms.FORCE_NULLABLE),
         OperandTypes.STRING_STRING,
         OperatorCategory.ARRAY,
         "/docs/hop-user-manual/expression/string_to_array.html");

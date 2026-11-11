@@ -121,7 +121,9 @@ public final class Types {
 
     // Two arrays give an array of the most general type of their elements
     if (type1 instanceof ArrayType array1 && type2 instanceof ArrayType array2) {
-      return ArrayType.of(getLeastRestrictive(array1.getElementType(), array2.getElementType()));
+      return ArrayType.of(
+          getLeastRestrictive(array1.getElementType(), array2.getElementType()),
+          array1.isNullable() || array2.isNullable());
     }
 
     // BOOLEAN and numeric -> BOOLEAN, a number is coerced to a boolean but not a boolean to a
@@ -272,6 +274,11 @@ public final class Types {
 
     // If the operand is an array, coercion of all its elements
     if (operand instanceof Array values) {
+      // The elements are coerced to the type of the elements of a target array type, like the
+      // operands of a comparison of two arrays
+      while (type instanceof ArrayType arrayType) {
+        type = arrayType.getElementType();
+      }
       Array array = coerceOperandType(values, type);
       if (!array.equals(operand)) {
         call.setOperand(index, array);
@@ -291,18 +298,29 @@ public final class Types {
     return true;
   }
 
+  /**
+   * Coerces the elements of an array to the target type, the elements of a multi-dimensional array
+   * are the elements of its nested arrays.
+   *
+   * @param array the array
+   * @param type the type to coerce the elements to
+   * @return an array of the target type, or an array of arrays for a multi-dimensional array
+   */
   public static Array coerceOperandType(Array array, Type type) {
     List<IExpression> list = new ArrayList<>();
+    // The elements of a multi-dimensional array are arrays of the target type
+    Type elementType = type;
     for (IExpression operand : array) {
       if (operand instanceof Array child) {
         operand = coerceOperandType(child, type);
+        elementType = operand.getType();
       } else if (needToCast(operand, type)) {
         operand = cast(operand, type);
       }
       list.add(operand);
     }
 
-    return new Array(new ArrayType(type, type.isNullable()), list);
+    return new Array(new ArrayType(elementType, array.getType().isNullable()), list);
   }
 
   public static Call cast(IExpression expression, Type type) {
@@ -440,7 +458,11 @@ public final class Types {
       return true;
     }
 
-    // The comparison of arrays is not supported
+    // Two arrays are comparable if their elements are comparable, an array is not comparable with
+    // another type
+    if (type1 instanceof ArrayType array1 && type2 instanceof ArrayType array2) {
+      return isComparable(array1.getElementType(), array2.getElementType());
+    }
     if (family1 == TypeFamily.ARRAY || family2 == TypeFamily.ARRAY) {
       return false;
     }

@@ -75,7 +75,7 @@ public class ArrayElementAtOperator extends Operator {
     }
 
     if (coerced) {
-      call.setOperand(0, new Array(ArrayType.of(type), list));
+      call.setOperand(0, new Array(ArrayType.of(type, array.getType().isNullable()), list));
       call.inferReturnType();
     }
 

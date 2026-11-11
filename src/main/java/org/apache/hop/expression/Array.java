@@ -131,7 +131,8 @@ public final class Array implements IExpression, Iterable<IExpression> {
     System.arraycopy(array.values, 0, expressions, size, array.size());
     Type elementType =
         Types.getLeastRestrictive(type.getElementType(), array.type.getElementType());
-    return new Array(elementType == null ? type : ArrayType.of(elementType), expressions).coerce();
+    return new Array(elementType == null ? type : ArrayType.of(elementType, false), expressions)
+        .coerce();
   }
 
   /** Converts the elements of this new array to its element type. */
@@ -145,7 +146,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   /** The type of this array with one more element, which can widen the type of the elements. */
   private Type typeWith(IExpression element) {
-    return ArrayType.of(Types.getLeastRestrictive(type.getElementType(), element.getType()));
+    return ArrayType.of(Types.getLeastRestrictive(type.getElementType(), element.getType()), false);
   }
 
   @Override
@@ -201,7 +202,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
     // Empty array
     if (values.length == 0) {
-      type = ArrayType.of(AnyType.ANY);
+      type = ArrayType.of(AnyType.ANY, false);
       return;
     }
 
@@ -211,15 +212,12 @@ public final class Array implements IExpression, Iterable<IExpression> {
     }
 
     Type elementType = Types.getLeastRestrictive(this);
-    type = ArrayType.of(elementType);
-
-    // Don't validate multi-dimensional array
-    if (elementType.isName(TypeName.ARRAY)) {
-      return;
-    }
+    // An array constructor is never NULL
+    type = ArrayType.of(elementType, false);
 
     // All elements of an array should be coercible to the element type, a string literal is
-    // converted to the element type like in a comparison
+    // converted to the element type like in a comparison. The elements of a multi-dimensional array
+    // are arrays, with elements coercible to the same type.
     for (IExpression expression : this) {
       if (!expression.getType().isCoercible(elementType) && !Types.isStringLiteral(expression)) {
         throw new ExpressionException(
@@ -233,7 +231,8 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   /**
    * Converts an element to the element type of the array if it is of another type, a literal
-   * element is converted immediately.
+   * element is converted immediately. The elements of a nested array constructor are converted to
+   * the element type of the nested array, so {@code [[1],[2.5]]} holds two arrays of numbers.
    *
    * @param element the element
    * @param elementType the element type of the array
@@ -241,6 +240,15 @@ public final class Array implements IExpression, Iterable<IExpression> {
    * @throws ExpressionException if a literal element can't be converted
    */
   private static IExpression coerce(IExpression element, @Nullable Type elementType) {
+    // The elements of a nested array constructor are converted, an array returned by a function is
+    // converted when its elements are read
+    if (element instanceof Array array && elementType instanceof ArrayType) {
+      if (array.type.equals(elementType)) {
+        return array;
+      }
+      return new Array(elementType, array.values.clone()).coerce();
+    }
+
     if (elementType == null
         || elementType.isName(TypeName.ANY)
         || elementType.isName(TypeName.UNKNOWN)

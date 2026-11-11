@@ -61,6 +61,7 @@ import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -68,6 +69,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
 public class ExpressionParserTest extends ExpressionTest {
+
+  /** The type of an array that is never NULL, like an array constructor. */
+  private static ArrayType arrayOf(Type elementType) {
+    return ArrayType.of(elementType, false);
+  }
 
   @Test
   void sourceEmptyOrNull() throws Exception {
@@ -148,11 +154,29 @@ public class ExpressionParserTest extends ExpressionTest {
 
     // Multi-dimensional array values
     optimize("[[1,2],[3,4]]");
-    optimize("[[1,2,3],[1]]").returnType(ArrayType.of(ArrayType.of(IntegerType.of(1, false))));
-    optimize("[[1,22],[3.5]]").returnType(ArrayType.of(ArrayType.of(NumberType.of(3, 1, false))));
-    optimize("[[1],[]]").returnType(ArrayType.of(ArrayType.of(IntegerType.of(1, false))));
-    optimize("[[[1]]]")
-        .returnType(ArrayType.of(ArrayType.of(ArrayType.of(IntegerType.of(1, false)))));
+    optimize("[[1,2,3],[1]]").returnType(arrayOf(arrayOf(IntegerType.of(1, false))));
+    optimize("[[1,22],[3.5]]").returnType(arrayOf(arrayOf(NumberType.of(3, 1, false))));
+    optimize("[[1],[]]").returnType(arrayOf(arrayOf(IntegerType.of(1, false))));
+    optimize("[[[1]]]").returnType(arrayOf(arrayOf(arrayOf(IntegerType.of(1, false)))));
+
+    // The elements of the nested arrays are converted to the element type
+    optimize("[[1,22],[3.5]]", "[[1,22],[3.5]]");
+    optimize("[[1,FIELD_INTEGER],[3.5]]", "[[1,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
+        .returnType(arrayOf(arrayOf(NumberType.of(13, 1))));
+    optimize("[[FIELD_INTEGER],[FIELD_NUMBER]]", "[[CAST(FIELD_INTEGER AS NUMBER)],[FIELD_NUMBER]]")
+        .returnType(arrayOf(arrayOf(NumberType.NUMBER)));
+    optimize(
+            "[[[FIELD_INTEGER]],[[FIELD_NUMBER]]]",
+            "[[[CAST(FIELD_INTEGER AS NUMBER)]],[[FIELD_NUMBER]]]")
+        .returnType(arrayOf(arrayOf(arrayOf(NumberType.NUMBER))));
+    evalTrue("[[1,FIELD_INTEGER],[3.5]][1][2] = 40");
+    evalTrue("[[1,2],[3.5]][1][1] = 1");
+
+    // The nested arrays must have elements coercible to the same type and the same dimensions
+    evalFails("[[1],[DATE '2020-01-01']]", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);
+    evalFails("[[1],2]", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);
+    evalFails("[1,[2]]", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);
+    evalFails("[[1],[[2]]]", ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH);
 
     // Elements are converted to the element type
     evalTrue("[1,2.5][1] = 1.0");
@@ -174,7 +198,7 @@ public class ExpressionParserTest extends ExpressionTest {
   void arrayElementAt() throws Exception {
     evalEquals("['A','B','C'][1]", "A").returnType(StringType.of(1, false));
     evalEquals("[1,4,8][2]", 4L).returnType(IntegerType.of(1, false));
-    optimize("[[1,2,3],[1]][2]", "[1]").returnType(ArrayType.of(IntegerType.of(1, false)));
+    optimize("[[1,2,3],[1]][2]", "[1]").returnType(arrayOf(IntegerType.of(1, false)));
   }
 
   @Test

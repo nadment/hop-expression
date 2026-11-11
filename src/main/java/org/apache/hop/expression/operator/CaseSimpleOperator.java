@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
@@ -205,7 +207,22 @@ public class CaseSimpleOperator extends Operator {
   @Override
   protected void validateOperands(IExpressionContext context, Call call)
       throws ExpressionException {
-    validateValueListOperands(context, call);
+    try {
+      call.getOperand(0).validate(context);
+      // The WHEN operand holds values and lists of values, like WHEN 1 ... WHEN 2,3: it is not a
+      // multi-dimensional array, its elements are validated one by one
+      for (IExpression operand : (Array) call.getOperand(1)) {
+        operand.validate(context);
+      }
+      call.getOperand(2).validate(context);
+      call.getOperand(3).validate(context);
+    } catch (ExpressionException e) {
+      // A value of another type in a list is an illegal argument, not an array element mismatch
+      if (e.getErrorCode() != ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH) {
+        throw e;
+      }
+      throw new ParseExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
+    }
   }
 
   @Override

@@ -187,7 +187,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     if (replaced) {
       hasChanged |= changed;
       Type elementType = Types.getLeastRestrictive(types);
-      return new Array(ArrayType.of(elementType), expressions);
+      return new Array(ArrayType.of(elementType, array.getType().isNullable()), expressions);
     }
 
     return array;

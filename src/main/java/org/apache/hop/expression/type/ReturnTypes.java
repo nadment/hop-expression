@@ -186,7 +186,7 @@ public final class ReturnTypes {
 
   /**
    * Type-inference strategy whereby the result type of the call is an array of the most general
-   * type of the operands.
+   * type of the operands, never NULL.
    */
   public static final IReturnTypeInference ARRAY =
       call -> {
@@ -196,7 +196,8 @@ public final class ReturnTypes {
         }
 
         Type type = Types.getLeastRestrictive(types);
-        return ArrayType.of(type);
+        // An array constructor is never NULL
+        return ArrayType.of(type, false);
       };
 
   /**
@@ -243,11 +244,13 @@ public final class ReturnTypes {
       call -> call.getOperand(0).getType() instanceof ArrayType type ? type : ArrayType.ARRAY;
 
   private static IReturnTypeInference arrayWithElement(int arrayOrdinal, int elementOrdinal) {
+    // The result is NULL only if the array is NULL
     return call ->
         ArrayType.of(
             Types.getLeastRestrictive(
                 call.getOperand(arrayOrdinal).getType().getElementType(),
-                call.getOperand(elementOrdinal).getType()));
+                call.getOperand(elementOrdinal).getType()),
+            call.getOperand(arrayOrdinal).getType().isNullable());
   }
 
   /**
