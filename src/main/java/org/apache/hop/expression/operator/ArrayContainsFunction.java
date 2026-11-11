@@ -25,6 +25,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -62,13 +63,19 @@ public class ArrayContainsFunction extends Function {
   public @Nullable Object eval(final IExpression[] operands) {
     Array array = operands[0].getValue(Array.class);
     if (array == null) return null;
-    Object value = operands[1].getValue();
+    // An empty array has no element type to convert the value
+    if (array.isEmpty()) return operands[1].getValue() == null ? null : Boolean.FALSE;
+
+    // The values are converted to the most general type of the elements and the searched value,
+    // to compare values of different types like INTEGER and NUMBER
+    Type type = Types.getLeastRestrictive(array.getType().getElementType(), operands[1].getType());
+    Class<?> clazz = type.getName().getJavaClass();
+    Object value = operands[1].getValue(clazz);
     if (value == null) return null;
 
-    Type type = operands[1].getType();
     for (IExpression expression : array) {
       // A null element never matches
-      Object element = expression.getValue();
+      Object element = expression.getValue(clazz);
       if (element != null && type.compare(element, value) == 0) {
         return Boolean.TRUE;
       }

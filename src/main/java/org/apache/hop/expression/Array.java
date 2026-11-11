@@ -106,7 +106,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
     IExpression[] expressions = new IExpression[size + 1];
     System.arraycopy(values, 0, expressions, 1, size);
     expressions[0] = element;
-    return new Array(typeWith(element), expressions);
+    return new Array(typeWith(element), expressions).coerce();
   }
 
   /** Appends an element to the end of an array. */
@@ -115,7 +115,16 @@ public final class Array implements IExpression, Iterable<IExpression> {
     IExpression[] expressions = new IExpression[size + 1];
     System.arraycopy(values, 0, expressions, 0, size);
     expressions[size] = element;
-    return new Array(typeWith(element), expressions);
+    return new Array(typeWith(element), expressions).coerce();
+  }
+
+  /** Converts the elements of this new array to its element type. */
+  private Array coerce() {
+    Type elementType = type.getElementType();
+    for (int i = 0; i < values.length; i++) {
+      values[i] = coerce(values[i], elementType);
+    }
+    return this;
   }
 
   /** The type of this array with one more element, which can widen the type of the elements. */
@@ -201,6 +210,37 @@ public final class Array implements IExpression, Iterable<IExpression> {
             ErrorCode.ARRAY_ELEMENT_TYPE_MISMATCH, expression, elementType.getName());
       }
     }
+
+    // Convert the elements to the element type, so [1,2.5] holds two numbers
+    coerce();
+  }
+
+  /**
+   * Converts an element to the element type of the array if it is of another type, a literal
+   * element is converted immediately.
+   *
+   * @param element the element
+   * @param elementType the element type of the array
+   * @return the element of the element type
+   * @throws ExpressionException if a literal element can't be converted
+   */
+  private static IExpression coerce(IExpression element, @Nullable Type elementType) {
+    if (elementType == null
+        || elementType.isName(TypeName.ANY)
+        || elementType.isName(TypeName.UNKNOWN)
+        || elementType.isName(TypeName.ARRAY)
+        || element.getType().isName(TypeName.ARRAY)
+        || element.getType().isName(elementType.getName())
+        || element.isNull()) {
+      return element;
+    }
+
+    Call cast = Types.cast(element, elementType);
+    // Another constant like 1+2 is not compiled yet, its cast is evaluated by the compiler
+    if (element instanceof Literal) {
+      return new Literal(cast.getValue(), elementType);
+    }
+    return cast;
   }
 
   public Stream<IExpression> stream() {

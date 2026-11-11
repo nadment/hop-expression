@@ -149,6 +149,12 @@ public final class Types {
       return type2;
     }
 
+    // Two NUMBER with a fixed scale give a NUMBER with enough integer digits and decimals to hold
+    // the values of both: NUMBER(10,2) and NUMBER(9,3) give NUMBER(11,3)
+    if (isNumber(type1) && isNumber(type2)) {
+      return widenNumbers(type1, type2);
+    }
+
     // A date and a timestamp give a timestamp, two intervals an interval, with the greater
     // precision of the fractional seconds. The precision is not a length, it must not choose the
     // type: a DATE(9) and a TIMESTAMP(3) give a TIMESTAMP(9), not a DATE.
@@ -189,6 +195,31 @@ public final class Types {
       return number;
     }
     return NumberType.of(precision, scale, number.isNullable());
+  }
+
+  /**
+   * Returns a NUMBER type with enough integer digits and decimals to hold the values of two NUMBER
+   * types with a fixed scale.
+   *
+   * <p>For example, NUMBER(10,2) and NUMBER(9,3) give NUMBER(11,3). A NUMBER without fixed scale is
+   * returned if the precision would exceed the maximum precision.
+   */
+  private static Type widenNumbers(Type type1, Type type2) {
+    int scale = Math.max(type1.getScale(), type2.getScale());
+    int integerDigits =
+        Math.max(type1.getPrecision() - type1.getScale(), type2.getPrecision() - type2.getScale());
+    int precision = integerDigits + scale;
+    boolean nullable = type1.isNullable() || type2.isNullable();
+    if (precision > TypeName.NUMBER.getMaxPrecision()) {
+      return NumberType.NUMBER.withNullability(nullable);
+    }
+    if (precision == type1.getPrecision() && scale == type1.getScale()) {
+      return type1;
+    }
+    if (precision == type2.getPrecision() && scale == type2.getScale()) {
+      return type2;
+    }
+    return NumberType.of(precision, scale, nullable);
   }
 
   /**

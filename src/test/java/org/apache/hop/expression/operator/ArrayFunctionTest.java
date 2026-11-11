@@ -113,6 +113,13 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFalse("ARRAY_CONTAINS([FIELD_INTEGER,2],3)");
     evalTrue("ARRAY_CONTAINS(STRING_TO_ARRAY(FIELD_STRING,','),'TEST')");
 
+    // Elements and value of different numeric types
+    evalTrue("ARRAY_CONTAINS([1,2],2.0)");
+    evalTrue("ARRAY_CONTAINS([1.5,2],2)");
+    evalFalse("ARRAY_CONTAINS([1.5,2],3)");
+    evalTrue("ARRAY_CONTAINS([FIELD_NUMBER,40.0],FIELD_INTEGER)");
+    evalFalse("ARRAY_CONTAINS([],1)");
+
     // A null element never matches
     evalTrue("ARRAY_CONTAINS(['A',NULL_STRING],'A')");
     evalFalse("ARRAY_CONTAINS(['A',NULL_STRING],'B')");
@@ -132,6 +139,9 @@ class ArrayFunctionTest extends ExpressionTest {
     evalEquals("ARRAY_POSITION(['sun','mon','tue','wed','thu','fri','sat'],'mon')", 2L)
         .returnType(IntegerType.INTEGER);
     evalEquals("ARRAY_POSITION([1,2,3],2.0)", 2L).returnType(IntegerType.INTEGER);
+    // Elements and value of different numeric types
+    evalEquals("ARRAY_POSITION([1.5,2],2)", 2L);
+    evalEquals("ARRAY_POSITION([FIELD_NUMBER,2],2)", 2L);
 
     // Element is not found in the array
     evalEquals("ARRAY_POSITION([1,2,3],4)", 0L);

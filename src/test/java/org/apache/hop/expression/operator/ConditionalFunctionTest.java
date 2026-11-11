@@ -51,6 +51,16 @@ class ConditionalFunctionTest extends ExpressionTest {
             "If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1))
         .returnType(DateType.DATE_NOT_NULL);
 
+    // Two numbers give a number with the integer digits and the decimals to hold both values
+    evalEquals(
+            "If(FIELD_BOOLEAN_FALSE,FIELD_BIGNUMBER::NUMBER(10,2),FIELD_BIGNUMBER::NUMBER(9,3))",
+            new BigDecimal("123456.789"))
+        .returnType(NumberType.of(11, 3, true));
+    evalEquals(
+            "If(FIELD_BOOLEAN_FALSE,FIELD_BIGNUMBER::NUMBER(38,2),FIELD_BIGNUMBER::NUMBER(38,10))",
+            new BigDecimal("123456.789"))
+        .returnType(NumberType.NUMBER);
+
     // If condition is NULL then return false value
     evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(StringType.of(1, false));
 

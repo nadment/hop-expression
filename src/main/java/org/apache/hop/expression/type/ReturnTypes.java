@@ -269,14 +269,19 @@ public final class ReturnTypes {
       };
 
   /**
-   * Returns whether the length of a value of the type is unknown once converted to a string. The
-   * precision of a date or an interval is the number of digits of its fractional seconds, not a
-   * length.
+   * Returns the maximum length of a value of the type once converted to a string by a
+   * concatenation, or {@link Type#PRECISION_NOT_SPECIFIED} if the length is unknown. The precision
+   * of a date or an interval is the number of digits of its fractional seconds, not a length.
    */
-  private static boolean hasUnknownLength(Type type) {
-    return type.getPrecision() == Type.PRECISION_NOT_SPECIFIED
-        || Types.isTemporal(type)
-        || type.isName(TypeName.INTERVAL);
+  private static int getConcatLength(Type type) {
+    return switch (type.getName()) {
+      case STRING, BINARY -> type.getPrecision();
+        // The longest value is FALSE
+      case BOOLEAN -> 5;
+        // The digits and the sign
+      case INTEGER -> type.getPrecision() + 1;
+      default -> Type.PRECISION_NOT_SPECIFIED;
+    };
   }
 
   /**
@@ -294,10 +299,11 @@ public final class ReturnTypes {
         for (IExpression operand : call.getOperands()) {
           Type type = operand.getType();
           // A type without length, like a date, has an unknown length once converted
-          if (hasUnknownLength(type)) {
+          int length = getConcatLength(type);
+          if (length == Type.PRECISION_NOT_SPECIFIED) {
             precision = Integer.MAX_VALUE;
           } else if (precision != Integer.MAX_VALUE) {
-            precision += type.getPrecision();
+            precision += length;
           }
           if (type.isName(TypeName.ARRAY)) {
             name = TypeName.ARRAY;
@@ -347,37 +353,37 @@ public final class ReturnTypes {
         TypeName typeName = separatorType.getName();
         int precision = 0;
         boolean nullable = separatorType.isNullable();
+        boolean unknown = separatorType.getPrecision() == Type.PRECISION_NOT_SPECIFIED;
 
-        if (separatorType.getPrecision() != -1) {
-          for (int i = 1; i < call.getOperandCount(); i++) {
-            Type type = call.getOperand(i).getType();
+        for (int i = 1; i < call.getOperandCount(); i++) {
+          Type type = call.getOperand(i).getType();
 
-            // A type without length, like a date, has an unknown length once converted
-            if (hasUnknownLength(type)) {
-              precision = typeName.getMaxPrecision();
-            }
+          // A type without length, like a date, has an unknown length once converted
+          int length = getConcatLength(type);
+          if (length == Type.PRECISION_NOT_SPECIFIED) {
+            unknown = true;
+          }
 
-            // Add separator's precision except when encountering null value or for the last
-            // argument
-            if (type.getPrecision() > 0) {
-              precision += type.getPrecision();
+          // Add separator's precision except when encountering null value or for the last
+          // argument
+          if (length > 0 && !unknown) {
+            precision += length;
 
-              if (i < call.getOperandCount() - 1) {
-                precision += separatorType.getPrecision();
-              }
-            }
-
-            if (type.isName(TypeName.BINARY)) {
-              typeName = TypeName.BINARY;
-            }
-
-            if (type.isNullable()) {
-              nullable = true;
+            if (i < call.getOperandCount() - 1) {
+              precision += separatorType.getPrecision();
             }
           }
-        } else precision = typeName.getMaxPrecision();
 
-        if (precision > typeName.getMaxPrecision()) {
+          if (type.isName(TypeName.BINARY)) {
+            typeName = TypeName.BINARY;
+          }
+
+          if (type.isNullable()) {
+            nullable = true;
+          }
+        }
+
+        if (unknown || precision > typeName.getMaxPrecision()) {
           precision = typeName.getMaxPrecision();
         }
         if (typeName == TypeName.BINARY) {

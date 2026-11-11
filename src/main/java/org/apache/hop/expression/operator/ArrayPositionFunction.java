@@ -29,6 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeComparability;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -95,11 +96,19 @@ public class ArrayPositionFunction extends Function {
       start = (int) Math.min(v2 - 1, array.size());
     }
 
+    // An empty array has no element type to convert the value
+    if (array.isEmpty()) return 0L;
+
+    // The values are converted to the most general type of the elements and the searched value,
+    // to compare values of different types like INTEGER and NUMBER
+    Type type = Types.getLeastRestrictive(array.getType().getElementType(), operands[1].getType());
+    Class<?> clazz = type.getName().getJavaClass();
+    value = operands[1].getValue(clazz);
+
     int size = array.size();
-    Type type = operands[1].getType();
     for (int index = start; index < size; index++) {
       // A null element never matches
-      Object element = array.get(index).getValue();
+      Object element = array.get(index).getValue(clazz);
       if (element != null && type.compare(element, value) == 0) {
         return Long.valueOf(index + 1L);
       }

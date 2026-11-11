@@ -1649,8 +1649,13 @@ public class StringFunctionTest extends ExpressionTest {
     evalFails("Concat()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
 
     // Coercion to string
-    evalEquals("4 || 2", "42").returnType(StringType.of(2, false));
-    evalEquals("4 || '2'", "42").returnType(StringType.of(2, false));
+    // The length of an integer converted to a string is its digits and the sign
+    evalEquals("4 || 2", "42").returnType(StringType.of(4, false));
+    evalEquals("4 || '2'", "42").returnType(StringType.of(3, false));
+    evalEquals("FIELD_BOOLEAN_TRUE || 'x'", "TRUEx").returnType(StringType.of(6, false));
+    evalEquals("CAST(FIELD_BOOLEAN_TRUE || 'x' AS STRING(3))", "TRU");
+    evalEquals("FIELD_DATE::DATE(0) || 'x'", "1981-06-23 21:44:58x")
+        .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Concat(FIELD_STRING, FIELD_INTEGER)", "TEST40");
     evalEquals("Concat(FIELD_INET, FIELD_STRING)", "10.10.10.1TEST");
     // Date, a type without precision
@@ -1725,7 +1730,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("CONCAT_WS(BINARY '1F',BINARY '')", new byte[] {});
 
     // Number
-    evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(3, false));
+    evalEquals("CONCAT_WS(':',4,2)", "4:2").returnType(StringType.of(5, false));
+    evalEquals("CONCAT_WS(',',FIELD_BOOLEAN_TRUE,FIELD_BOOLEAN_FALSE)", "TRUE,FALSE")
+        .returnType(StringType.of(11, true));
 
     // Date, a type without precision
     evalEquals("CONCAT_WS(',',DATE '2024-01-02')", "2024-01-02")
@@ -2086,7 +2093,7 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Uuid() throws Exception {
-    assertFalse(FunctionRegistry.getFunction("UUID").isDeterministic());
+    assertFalse(new UuidFunction().isDeterministic());
 
     evalEquals("Length(Uuid())", 36L);
     evalEquals("Substr(Uuid(),15,1)", "7");
