@@ -298,6 +298,7 @@ public class StringFunctionTest extends ExpressionTest {
   void RPad() throws Exception {
     // Documentation example
     evalEquals("RPAD('123',5,'*')", "123**");
+
     // A NULL pad is the default pad
     evalEquals("RPAD('test',6,NULL_STRING)", "test  ");
     // The maximum length is 32672
@@ -346,8 +347,12 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("RPad('test',NULL_INTEGER,'*')");
     evalNull("RPad(BINARY '1A2B3C',NULL_INTEGER,BINARY '4D5E6F')");
 
+    // A value coerced to a string returns a string
+    evalEquals("RPAD(FIELD_INTEGER,5,'0')", "40000").returnType(StringType.STRING);
+
     // Check operands
     evalFails("RPad('test')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+
     // A number is not coerced to an integer, it could lose its decimal part
     evalFails("RPad('x', 3.9, '*')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("RPad('x', 3.9)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -371,6 +376,8 @@ public class StringFunctionTest extends ExpressionTest {
   void LPad() throws Exception {
     // Documentation example
     evalEquals("LPAD('123',5,'*')", "**123");
+    // A value coerced to a string returns a string
+    evalEquals("LPAD(1,3,0)", "001").returnType(StringType.STRING_NOT_NULL);
     // A NULL pad is the default pad
     evalEquals("LPAD('test',6,NULL_STRING)", "  test");
     evalEquals("LPad('test',6)", "  test").returnType(StringType.STRING_NOT_NULL);
@@ -843,7 +850,9 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Left(NULL_BINARY,4)");
     evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
 
-    // Coercion to String
+    // A value coerced to a string returns a string
+    evalEquals("Left(123456,2)", "12").returnType(StringType.STRING_NOT_NULL);
+    evalEquals("Left(FIELD_INTEGER,1)", "4").returnType(StringType.STRING);
     evalEquals("Left(FIELD_BOOLEAN_TRUE,1)", "T");
     evalEquals("Left(FIELD_DATE,4)", "1981");
 
@@ -854,6 +863,9 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void Insert() throws Exception {
+    // A value coerced to a string returns a string
+    evalEquals("INSERT(FIELD_INTEGER,1,0,'x')", "x40").returnType(StringType.STRING);
+
     // A negative length or a position out of the string raises an error
     evalFails("INSERT('abcd',2,-1,'QW')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
     evalFails("INSERT('abcd',0,0,'QW')", ErrorCode.ARGUMENT_OUT_OF_RANGE);
@@ -906,6 +918,7 @@ public class StringFunctionTest extends ExpressionTest {
     // Documentation example
     evalEquals("RIGHT('ABCDEF',3)", "DEF");
     evalEquals("Right('TEST',0)", "");
+
     // String
     evalEquals("Right('TEST FROM',4)", "FROM").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Right('',1)", "");
@@ -929,7 +942,8 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Right(NULL_BINARY,4)");
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
 
-    // Coercion to String
+    // A value coerced to a string returns a string
+    evalEquals("Right(FIELD_INTEGER,1)", "0").returnType(StringType.STRING);
     evalEquals("Right(FIELD_BOOLEAN_TRUE,1)", "E");
     evalEquals("Right(FIELD_TIMESTAMP,8)", "22:11:01");
 
@@ -942,6 +956,8 @@ public class StringFunctionTest extends ExpressionTest {
     // String
     evalEquals("Repeat('ABC',0)", "").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Repeat('ABC',1)", "ABC").returnType(StringType.STRING_NOT_NULL);
+    // A value coerced to a string returns a string
+    evalEquals("Repeat(FIELD_INTEGER,2)", "4040").returnType(StringType.STRING);
     evalEquals("Repeat('ABC',2)", "ABCABC").returnType(StringType.STRING_NOT_NULL);
     evalEquals("Repeat('ABC',3)", "ABCABCABC").returnType(StringType.STRING_NOT_NULL);
 
@@ -1109,6 +1125,10 @@ public class StringFunctionTest extends ExpressionTest {
     // Null handling
     evalNull("Reverse(NULL_STRING)").returnType(StringType.STRING);
     evalNull("Reverse(NULL_BINARY)").returnType(BinaryType.BINARY);
+
+    // A value coerced to a string returns a string
+    evalEquals("Reverse(FIELD_INTEGER)", "04").returnType(StringType.STRING);
+    evalEquals("Reverse(FIELD_BOOLEAN_TRUE)", "EURT").returnType(StringType.STRING);
 
     // Check operands
     evalFails("Reverse()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -1679,6 +1699,9 @@ public class StringFunctionTest extends ExpressionTest {
 
   @Test
   void ConcatWs() throws Exception {
+    // All the values are checked, not only the first one
+    evalFails("CONCAT_WS(',','a',[1])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("CONCAT_WS(',',[1],'b')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // String
     evalEquals("CONCAT_WS(',','ONE','TWO','THREE')", "ONE,TWO,THREE");

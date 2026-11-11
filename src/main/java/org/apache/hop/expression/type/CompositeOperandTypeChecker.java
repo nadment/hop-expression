@@ -20,6 +20,7 @@ import java.util.AbstractList;
 import java.util.List;
 import java.util.Objects;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -53,11 +54,14 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
   public boolean checkOperandTypes(Call call) {
     switch (composition) {
       case REPEAT:
-        for (IOperandTypeChecker rule : rules) {
-          ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
+        // Each operand must be valid for all the rules
+        for (IExpression operand : call.getOperands()) {
+          for (IOperandTypeChecker rule : rules) {
+            ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
 
-          if (checker.checkSingleOperandType(call.getOperand(0))) {
-            return false;
+            if (checker.checkSingleOperandType(operand)) {
+              return false;
+            }
           }
         }
         return true;

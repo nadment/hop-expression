@@ -42,8 +42,12 @@ class TypeNameTest {
   @Test
   void isCoercible() {
     assertFalse(TypeName.NUMBER.isCoercible(null));
-    assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.INTEGER));
-    assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.NUMBER));
+    // A boolean is not coerced to a number, but a number is coerced to a boolean
+    assertFalse(TypeName.BOOLEAN.isCoercible(TypeName.INTEGER));
+    assertFalse(TypeName.BOOLEAN.isCoercible(TypeName.NUMBER));
+    assertTrue(TypeName.BOOLEAN.isCoercible(TypeName.STRING));
+    assertTrue(TypeName.INTEGER.isCoercible(TypeName.BOOLEAN));
+    assertTrue(TypeName.NUMBER.isCoercible(TypeName.BOOLEAN));
     assertTrue(TypeName.INTEGER.isCoercible(TypeName.NUMBER));
 
     // A number is not coerced to an integer, the conversion could lose its decimal part or overflow

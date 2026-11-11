@@ -27,7 +27,6 @@ import java.util.Random;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Evaluator;
 import org.apache.hop.expression.ExpressionTest;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.IntegerType;
@@ -43,10 +42,6 @@ import org.junit.jupiter.api.parallel.Execution;
 class MathematicalFunctionTest extends ExpressionTest {
   @Test
   void Abs() throws Exception {
-    // A boolean returns an integer
-    evalEquals("ABS(TRUE)", 1L).returnType(IntegerType.INTEGER_NOT_NULL);
-    evalEquals("ABS(FIELD_BOOLEAN_TRUE)", 1L).returnType(IntegerType.INTEGER);
-
     // The absolute value of the smallest integer is out of the integer range
     evalFails("ABS(-9223372036854775807-1)", ErrorCode.ARITHMETIC_OVERFLOW);
     evalNull("TRY(ABS(-9223372036854775807-1))");
@@ -84,6 +79,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Abs()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Abs(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("ABS(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Abs(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Abs(FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Abs(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -313,6 +309,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Sign()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Sign(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sign(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Sign(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify function repetition
@@ -337,6 +334,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Cbrt()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Cbrt(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Cbrt(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Cbrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
@@ -350,6 +348,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Sqrt()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Sqrt(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Sqrt(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Sqrt(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Sqrt(-5)", ErrorCode.ARGUMENT_OUT_OF_RANGE);
   }
@@ -366,6 +365,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Square()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Square(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Square(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("Square(FIELD_DATE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
@@ -400,7 +400,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Ceil()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Ceil(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("Ceil('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Ceil(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Ceil(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Arithmetic overflow when rounding up adds a 39th integer digit
     evalFails("Ceil(99999999999999999999999999999999999999.5)", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -437,7 +438,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Floor()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Floor(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("Floor('12x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Floor(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Floor(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Arithmetic overflow when rounding down adds a 39th integer digit
     evalFails("Floor(-99999999999999999999999999999999999999.5)", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -487,7 +489,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Round()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Round(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("Round('x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Round(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Round(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Function repetition
     optimize("ROUND(ROUND(FIELD_NUMBER))", "ROUND(FIELD_NUMBER)");
@@ -526,7 +529,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Truncate()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Truncate(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("Truncate('x')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Truncate(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Alias
     evalEquals("Trunc(123.456, -2)", 100D);
@@ -546,6 +549,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Degrees()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Degrees(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Degrees(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Degrees(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Arithmetic overflow when the integer part of a NUMBER exceeds 38 digits
     evalFails("Degrees(1e37)", ErrorCode.ARITHMETIC_OVERFLOW);
@@ -561,13 +566,15 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("Radians()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Radians(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("Radians(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Radians(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
   void Random() throws Exception {
     // A seed with the alias gives the same value
     evalEquals("Rand(180)", new Random(180).nextDouble());
-    Assertions.assertFalse(FunctionRegistry.getFunction("RANDOM").isDeterministic());
+    Assertions.assertFalse(new RandomFunction().isDeterministic());
 
     evalTrue("Random() between 0 and 1");
 

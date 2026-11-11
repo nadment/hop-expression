@@ -62,12 +62,6 @@ public class AddOperator extends BinaryOperator {
   }
 
   @Override
-  protected boolean checkOperandTypes(Call call) {
-    // A boolean is not implicitly coerced to a number
-    return super.checkOperandTypes(call) && !Types.hasBooleanOperand(call);
-  }
-
-  @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Rebuild chained operator

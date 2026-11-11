@@ -124,6 +124,15 @@ public final class Types {
       return ArrayType.of(getLeastRestrictive(array1.getElementType(), array2.getElementType()));
     }
 
+    // BOOLEAN and numeric -> BOOLEAN, a number is coerced to a boolean but not a boolean to a
+    // number
+    if (isBoolean(type1) && isNumeric(type2)) {
+      return type1;
+    }
+    if (isNumeric(type1) && isBoolean(type2)) {
+      return type2;
+    }
+
     // INTEGER and NUMBER -> NUMBER, whatever the precision
     if (isInteger(type1) && isNumber(type2)) {
       return widenNumber(type2, type1);
@@ -300,14 +309,6 @@ public final class Types {
     if (isNumeric(type1) && isString(type2)) {
       return NumberType.NUMBER;
     }
-    // BOOLEAN compare numeric -> NUMBER
-    if (isBoolean(type1) && isNumeric(type2)) {
-      return isInteger(type2) ? IntegerType.of(1) : NumberType.of(1);
-    }
-    // Numeric compare BOOLEAN -> NUMBER
-    if (isNumeric(type1) && isBoolean(type2)) {
-      return isInteger(type1) ? IntegerType.of(1) : NumberType.of(1);
-    }
 
     return getLeastRestrictive(type1, type2);
   }
@@ -408,13 +409,15 @@ public final class Types {
       return false;
     }
 
-    return source.getScale() <= target.getScale();
+    // The integer part must not overflow: NUMBER(5,0) holds 12345 but NUMBER(5,2) does not
+    return source.getScale() <= target.getScale()
+        && source.getPrecision() - Math.max(source.getScale(), 0)
+            <= target.getPrecision() - Math.max(target.getScale(), 0);
   }
 
   /**
-   * Returns whether two types are comparable. They need to be scalar types of the same family, a
-   * numeric is also comparable with a boolean. The result is the same whatever the order of the
-   * types.
+   * Returns whether two types are comparable. They need to be scalar types of the same family. The
+   * result is the same whatever the order of the types.
    *
    * @param type1 First type
    * @param type2 Second type
@@ -435,13 +438,8 @@ public final class Types {
       return false;
     }
 
-    if (family1 == family2) {
-      return true;
-    }
-
-    // A numeric is comparable with a boolean, like 1 = TRUE
-    return (family1 == TypeFamily.NUMERIC && family2 == TypeFamily.BOOLEAN)
-        || (family1 == TypeFamily.BOOLEAN && family2 == TypeFamily.NUMERIC);
+    // A numeric is not comparable with a boolean, an explicit CAST is required
+    return family1 == family2;
 
     // If one of the arguments is of type 'NULL', return true.
     // if (family1 == TypeFamily.NULL
@@ -488,22 +486,6 @@ public final class Types {
 
   public static boolean isBoolean(Type type) {
     return type.isName(TypeName.BOOLEAN);
-  }
-
-  /**
-   * Returns whether one of the operands of a call is a boolean. The arithmetic operators don't
-   * coerce a boolean to a number, like PostgreSQL.
-   *
-   * @param call the call
-   * @return true if one of the operands is a boolean
-   */
-  public static boolean hasBooleanOperand(Call call) {
-    for (IExpression operand : call.getOperands()) {
-      if (isBoolean(operand.getType())) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public static boolean isNumeric(Type type) {

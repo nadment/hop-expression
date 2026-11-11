@@ -117,10 +117,11 @@ public class IdentifierTest extends ExpressionTest {
     // From boolean value meta
     evalEquals("Upper(FIELD_BOOLEAN_TRUE)", "TRUE");
     evalEquals("Upper(FIELD_BOOLEAN_FALSE)", "FALSE");
-    evalEquals("ABS(FIELD_BOOLEAN_TRUE)", 1L);
-    evalEquals("ABS(FIELD_BOOLEAN_FALSE)", 0L);
-    evalEquals("LEFT('ABC',FIELD_BOOLEAN_TRUE)", "A");
-    evalEquals("LEFT('ABC',FIELD_BOOLEAN_FALSE)", "");
+    // A boolean is not coerced to a number, an explicit cast is required
+    evalFails("ABS(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("LEFT('ABC',FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals("ABS(CAST(FIELD_BOOLEAN_TRUE AS INTEGER))", 1L);
+    evalEquals("LEFT('ABC',CAST(FIELD_BOOLEAN_FALSE AS INTEGER))", "");
   }
 
   @Test

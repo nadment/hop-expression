@@ -84,11 +84,11 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("INTERVAL 1 YEARS <> INTERVAL 12 MONTHS");
       evalTrue("INTERVAL 3 YEARS <> INTERVAL 3 MONTHS");
 
-      // Compare numeric with implicit coercion from BOOLEAN
-      evalFalse("TRUE<>1");
-      evalFalse("1<>TRUE");
-      evalTrue("TRUE<>1.1");
-      evalTrue("TRUE<>0");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("TRUE<>1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1<>TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE<>1.1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFalse("CAST(TRUE AS INTEGER)<>1");
 
       // Compare numeric with implicit coercion from INTEGER and NUMBER
       evalTrue("2 <> 2.1");
@@ -196,23 +196,23 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testNullHandling() throws Exception {
-      evalNull("NULL_BOOLEAN > 0");
+      evalNull("NULL_INTEGER > 0");
       // A comparison with an untyped NULL
       evalFails("FIELD_INTEGER > NULL", ErrorCode.COMPARISON_WITH_NULL);
       evalNull("NULL_INTEGER > 0");
       evalNull("NULL_NUMBER > NULL_INTEGER");
-      evalNull("1 > NULL_BOOLEAN");
+      evalNull("1 > NULL_INTEGER");
       evalNull("FIELD_STRING > NULL_STRING");
       evalNull("NULL_STRING > FIELD_STRING");
     }
 
     @Test
     void testCoercion() throws Exception {
-      // Compare numeric with implicit coercion from BOOLEAN
-      evalFalse("TRUE>1");
-      evalFalse("1>TRUE");
-      evalFalse("TRUE>1.1");
-      evalTrue("TRUE>0.5");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("TRUE>1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1>TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE>1.1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(TRUE AS INTEGER)>0.5");
 
       // Compare numeric with implicit coercion from INTEGER and NUMBER
       evalTrue("2 > 1.5");
@@ -296,22 +296,22 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testNullHandling() throws Exception {
-      evalNull("NULL_BOOLEAN >= 0");
+      evalNull("NULL_INTEGER >= 0");
       // A comparison with an untyped NULL
       evalFails("NULL >= FIELD_INTEGER", ErrorCode.COMPARISON_WITH_NULL);
-      evalNull("1 >= NULL_BOOLEAN");
-      evalNull("NULL_BOOLEAN >= NULL_INTEGER");
+      evalNull("1 >= NULL_INTEGER");
+      evalNull("NULL_NUMBER >= NULL_INTEGER");
       evalNull("FIELD_STRING >= NULL_STRING");
       evalNull("NULL_STRING >= FIELD_STRING");
     }
 
     @Test
     void testCoercion() throws Exception {
-      // Compare numeric with implicit coercion from BOOLEAN
-      evalTrue("TRUE>=1");
-      evalTrue("1>=TRUE");
-      evalFalse("TRUE>=1.1");
-      evalTrue("TRUE>=0.5");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("TRUE>=1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1>=TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE>=1.1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(TRUE AS INTEGER)>=1");
 
       // Compare numeric with implicit coercion from INTEGER and NUMBER
       evalTrue("2 >= 1.5");
@@ -407,11 +407,11 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testCoercion() throws Exception {
-      // Compare numeric with implicit coercion from BOOLEAN
-      evalFalse("TRUE<1");
-      evalFalse("1<TRUE");
-      evalTrue("TRUE<1.1");
-      evalFalse("TRUE<0.5");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("TRUE<1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1<TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE<1.1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(TRUE AS INTEGER)<1.1");
 
       // Compare numeric with implicit coercion from INTEGER and NUMBER
       evalFalse("2 < 1.5");
@@ -506,11 +506,11 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testCoercion() throws Exception {
-      // Compare numeric with implicit coercion from BOOLEAN
-      evalTrue("TRUE<=1");
-      evalTrue("1<=TRUE");
-      evalTrue("TRUE<=1.1");
-      evalFalse("TRUE<=0.5");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("TRUE<=1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1<=TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE<=1.1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(TRUE AS INTEGER)<=1");
 
       // Compare numeric with implicit coercion from INTEGER and NUMBER
       evalFalse("2 <= 1.5");
@@ -636,8 +636,9 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("FIELD_INTEGER NOT IN ('40','2')");
       evalFails("FIELD_INTEGER IN ('A','2')", ErrorCode.CONVERSION_ERROR);
 
-      // A number is comparable with a boolean
-      evalTrue("FIELD_BOOLEAN_TRUE IN (1,2)");
+      // A number is not comparable with a boolean, an explicit cast is required
+      evalFails("FIELD_BOOLEAN_TRUE IN (1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(FIELD_BOOLEAN_TRUE AS INTEGER) IN (1,2)");
     }
 
     @Test
@@ -1872,8 +1873,10 @@ public class OperatorTest extends ExpressionTest {
       evalEquals("CASE FIELD_INTEGER WHEN NULL_INTEGER, 20 THEN 'A' ELSE 'B' END", "B");
       evalEquals("CASE NULL_INTEGER WHEN 10, 40 THEN 'A' ELSE 'B' END", "B");
 
-      // A boolean is comparable with a number, like the equal operator
-      evalEquals("CASE FIELD_BOOLEAN_TRUE WHEN 0, 1 THEN 'A' ELSE 'B' END", "A");
+      // A boolean is not comparable with a number, like the equal operator
+      evalFails(
+          "CASE FIELD_BOOLEAN_TRUE WHEN 0, 1 THEN 'A' ELSE 'B' END",
+          ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
       // A string literal is converted to the type of the value
       evalEquals("CASE FIELD_INTEGER WHEN '10', '40' THEN 'A' ELSE 'B' END", "A");
@@ -3022,11 +3025,11 @@ public class OperatorTest extends ExpressionTest {
   class EqualTo {
     @Test
     void testCoercion() throws Exception {
-      // Compare numeric with implicit coercion from BOOLEAN
-      evalTrue("TRUE=1");
-      evalTrue("1=TRUE");
-      evalFalse("TRUE=1.1");
-      evalFalse("TRUE=0");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("TRUE=1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("1=TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRUE=1.1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(TRUE AS INTEGER)=1");
 
       // Compare numeric with implicit coercion from integer and number
       evalTrue("2 = 2.0");
@@ -3327,9 +3330,10 @@ public class OperatorTest extends ExpressionTest {
 
     @Test
     void testCoercion() throws Exception {
-      // Integer with boolean coercion
-      evalTrue("FIELD_BOOLEAN_TRUE between -1 and 1");
-      evalFalse("FIELD_INTEGER between FALSE and TRUE");
+      // A boolean is not comparable with a number, an explicit cast is required
+      evalFails("FIELD_BOOLEAN_TRUE between -1 and 1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("FIELD_INTEGER between FALSE and TRUE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalTrue("CAST(FIELD_BOOLEAN_TRUE AS INTEGER) between -1 and 1");
 
       // Integer with number coercion
       evalTrue("FIELD_INTEGER not between 10.5 and 20");
@@ -3764,6 +3768,21 @@ public class OperatorTest extends ExpressionTest {
       evalFails(
           "CAST(CAST(FIELD_INTEGER AS NUMBER(3,2)) AS NUMBER(2))",
           ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+
+      // Don't remove an outer cast with fewer digits in its integer part, it is not lossless
+      optimize(
+          "CAST(CAST(FIELD_INTEGER AS NUMBER(5,0)) AS NUMBER(5,2))",
+          "CAST(CAST(FIELD_INTEGER AS NUMBER(5)) AS NUMBER(5,2))");
+      evalFails(
+          "CAST(CAST(FIELD_INTEGER*300 AS NUMBER(5,0)) AS NUMBER(5,2))",
+          ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      evalFails(
+          "CAST(CAST(FIELD_BIGNUMBER AS NUMBER(12,0)) AS NUMBER(12,8)) IS NULL",
+          ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+      // Remove an outer cast that keeps the digits of the integer part and the decimals
+      optimize(
+          "CAST(CAST(FIELD_BIGNUMBER AS NUMBER(9,3)) AS NUMBER(12,5))",
+          "CAST(FIELD_BIGNUMBER AS NUMBER(9,3))");
     }
 
     @Test

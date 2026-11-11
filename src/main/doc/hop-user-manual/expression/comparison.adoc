@@ -19,7 +19,7 @@ under the License.
 
 * Both expressions must be of the same data type family, the comparison is the same whatever the order of the expressions:
 ** Numbers: an Integer is compared with a Number by value, for example `2 = 2.000` returns TRUE.
-** Booleans: FALSE is less than TRUE. A number is also comparable with a boolean, TRUE is converted to 1 and FALSE to 0, for example `TRUE = 1` returns TRUE.
+** Booleans: FALSE is less than TRUE. A boolean is not comparable with a number, use an explicit cast if needed, for example `CAST(TRUE AS INTEGER) = 1` returns TRUE.
 ** Strings: the comparison is case-sensitive and uses the Unicode code point of the characters, trailing spaces are significant, for example `'a' = 'a '` returns FALSE.
 ** Dates: two timestamps are compared as instants on the time line, for example `TIMESTAMP '2022-03-01 8:00:00 -8:00' = TIMESTAMP '2022-03-01 11:00:00 -5:00'` returns TRUE.
 ** Intervals: a day is 24 hours and a month is 30 days, for example `INTERVAL 1 MONTH = INTERVAL 30 DAYS` returns TRUE.

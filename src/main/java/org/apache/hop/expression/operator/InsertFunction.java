@@ -44,7 +44,7 @@ public class InsertFunction extends Function {
   public InsertFunction() {
     super(
         "INSERT",
-        ReturnTypes.ARG0
+        ReturnTypes.ARG0_OR_STRING
             .andThen(TypeTransforms.TO_MAX_PRECISION)
             .andThen(TypeTransforms.TO_NULLABLE),
         OperandTypes.STRING_INTEGER_INTEGER_STRING.or(OperandTypes.BINARY_INTEGER_INTEGER_BINARY),

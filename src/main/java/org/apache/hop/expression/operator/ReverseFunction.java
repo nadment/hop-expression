@@ -40,7 +40,7 @@ public class ReverseFunction extends Function {
   public ReverseFunction() {
     super(
         "REVERSE",
-        ReturnTypes.ARG0,
+        ReturnTypes.ARG0_OR_STRING,
         OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING,
         "/docs/hop-user-manual/expression/reverse.html");

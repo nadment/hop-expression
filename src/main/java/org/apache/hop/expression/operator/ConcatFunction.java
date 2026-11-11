@@ -75,6 +75,17 @@ public class ConcatFunction extends Function {
   }
 
   @Override
+  protected boolean checkOperandTypes(Call call) {
+    // If an argument is an array, the other arguments are added as elements to the array
+    for (IExpression operand : call.getOperands()) {
+      if (operand.getType().isName(TypeName.ARRAY)) {
+        return true;
+      }
+    }
+    return super.checkOperandTypes(call);
+  }
+
+  @Override
   public boolean coerceOperandsType(Call call) {
 
     Type type = call.getType();

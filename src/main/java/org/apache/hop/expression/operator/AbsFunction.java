@@ -70,8 +70,7 @@ public class AbsFunction extends Function {
       return new Call(IntervalAbsFunction.INSTANCE, call.getOperands());
     }
 
-    // A boolean returns an integer, like the return type
-    if (Types.isInteger(type) || Types.isBoolean(type)) {
+    if (Types.isInteger(type)) {
       return new Call(IntegerAbsFunction.INSTANCE, call.getOperands());
     }
 

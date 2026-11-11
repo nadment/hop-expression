@@ -300,7 +300,8 @@ public enum TypeName {
     if (name == null) return false;
     if (ANY == this || name == ANY || this.equals(name)) return true;
     return switch (this) {
-      case BOOLEAN -> name.is(INTEGER, NUMBER, STRING);
+        // A BOOLEAN is not coerced to an INTEGER or a NUMBER, an explicit CAST is required
+      case BOOLEAN -> name.is(STRING);
       case INTEGER -> name.is(NUMBER, BOOLEAN, STRING);
         // A NUMBER is not coerced to an INTEGER, the conversion could lose the decimal part or
         // overflow: an explicit CAST is required, like LEFT(s, CAST(n AS INTEGER))

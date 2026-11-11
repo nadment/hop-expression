@@ -211,6 +211,7 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalEquals("ZeroIfNull(1)", 1L);
     evalEquals("ZeroIfNull(1.1)", 1.1D);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
+
     // The NULL literal has no numeric type to infer the type of the result
     evalFails("ZeroIfNull(NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals("ZeroIfNull(NULL::INTEGER)", 0L)
@@ -223,7 +224,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("ZeroIfNull()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("ZeroIfNull(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("ZeroIfNull('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ZeroIfNull(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("ZeroIfNull(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("ZEROIFNULL(FIELD_INTEGER)");
     optimize("ZEROIFNULL(NULL::INTEGER)", "0");
@@ -250,7 +252,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     // Check operands
     evalFails("NullIfZero()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("NullIfZero(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
-    evalFails("NullIfZero('test')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("NullIfZero(FIELD_STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("NullIfZero(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     optimize("NULLIFZERO(0.1)", "0.1");
     optimizeNull("NULLIFZERO(0)");

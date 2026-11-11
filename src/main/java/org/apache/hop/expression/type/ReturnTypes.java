@@ -130,6 +130,20 @@ public final class ReturnTypes {
   /** Type-inference strategy whereby the result type of the call is the type of the operand #0. */
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);
 
+  /**
+   * Type-inference strategy of a string function that also accepts a binary: the result type of the
+   * call is the type of the operand #0 if it is a STRING or a BINARY, otherwise STRING with the
+   * nullability of the operand #0, as any other operand is coerced to a string.
+   */
+  public static final IReturnTypeInference ARG0_OR_STRING =
+      call -> {
+        Type type = call.getOperand(0).getType();
+        if (Types.isString(type) || Types.isBinary(type)) {
+          return type;
+        }
+        return StringType.STRING.withNullability(type.isNullable());
+      };
+
   /** Type-inference strategy whereby the result type of the call is the type of the operand #1. */
   public static final IReturnTypeInference ARG1 = new OrdinalReturnTypeInference(1);
 
@@ -238,8 +252,8 @@ public final class ReturnTypes {
       };
 
   /**
-   * Type-inference strategy for ABS function: INTEGER, NUMBER and INTERVAL are preserved, BOOLEAN
-   * gives INTEGER and any other type NUMBER, with the nullability of the operand #0.
+   * Type-inference strategy for ABS function: INTEGER, NUMBER and INTERVAL are preserved, any other
+   * type gives NUMBER, with the nullability of the operand #0.
    */
   public static final IReturnTypeInference ABS_FUNCTION =
       call -> {
@@ -249,10 +263,6 @@ public final class ReturnTypes {
         if (type.isName(TypeName.INTEGER)
             || type.isName(TypeName.NUMBER)
             || type.isName(TypeName.INTERVAL)) return type;
-
-        // If boolean return integer
-        if (type.isName(TypeName.BOOLEAN))
-          return IntegerType.INTEGER.withNullability(type.isNullable());
 
         // By default, coerce to Number
         return NumberType.NUMBER.withNullability(type.isNullable());

@@ -60,12 +60,6 @@ public class SubtractOperator extends BinaryOperator {
   }
 
   @Override
-  protected boolean checkOperandTypes(Call call) {
-    // A boolean is not implicitly coerced to a number
-    return super.checkOperandTypes(call) && !Types.hasBooleanOperand(call);
-  }
-
-  @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer, 0, getLeftPrecedence());
     writer.append('-');

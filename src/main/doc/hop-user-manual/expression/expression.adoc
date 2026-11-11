@@ -407,7 +407,7 @@ When there is no ambiguity about the data type of an expression value, it is imp
 |From / To|Binary|Boolean|Date|Timestamp|Integer|Number|String|Json|Inet|Interval
 |Function|xref:to_binary.adoc["TO_BINARY",role=fun]|xref:to_boolean.adoc["TO_BOOLEAN",role=fun]|xref:to_date.adoc["TO_DATE",role=fun]|xref:to_timestamp.adoc["TO_TIMESTAMP",role=fun]||xref:to_number.adoc["TO_NUMBER",role=fun]|xref:to_char.adoc["TO_CHAR",role=fun]|xref:to_json.adoc["TO_JSON",role=fun]||xref:to_interval.adoc["TO_INTERVAL",role=fun]
 |Binary|-|❌|❌|❌|❌|❌|✅|❌|❌|❌
-|Boolean|❌|-|❌|❌|✅|✅|✅|❌|❌|❌
+|Boolean|❌|-|❌|❌|☑️|☑️|✅|❌|❌|❌
 |Date|❌|❌|-|✅|☑️|☑️|✅|❌|❌|❌
 |Timestamp|❌|❌|✅|-|☑️|☑️|✅|❌|❌|❌
 |Integer|❌|✅|☑️|☑️|-|✅|✅|❌|❌|❌

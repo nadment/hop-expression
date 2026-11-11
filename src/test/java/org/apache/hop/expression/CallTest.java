@@ -116,16 +116,16 @@ class CallTest extends ExpressionTest {
 
   @Test
   void testImplicitCoercionToInteger() throws Exception {
-    evalEquals("Abs(FIELD_BOOLEAN_TRUE)", 1L).returnType(IntegerType.INTEGER);
-
-    // The arithmetic operators don't coerce a boolean to a number, like PostgreSQL
+    // A boolean is not coerced to a number, an explicit cast is required
+    evalFails("Abs(FIELD_BOOLEAN_TRUE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals("Abs(CAST(FIELD_BOOLEAN_TRUE AS INTEGER))", 1L).returnType(IntegerType.INTEGER);
     evalFails("1+FALSE", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("TRUE+1", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 
   @Test
   void testImplicitCoercionToNumber() throws Exception {
-    evalEquals("Cos(FIELD_BOOLEAN_FALSE)", BigDecimal.ONE).returnType(NumberType.NUMBER);
+    evalFails("Cos(FIELD_BOOLEAN_FALSE)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalEquals("Cos(FIELD_INTEGER)", new BigDecimal("-0.6669380616522618443840927819337"))
         .returnType(NumberType.NUMBER);
   }
