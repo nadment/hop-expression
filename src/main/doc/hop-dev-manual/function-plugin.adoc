@@ -108,7 +108,8 @@ The optional `names` of `@FunctionPlugin` are aliases of the function.
 |INTEGER |`Long`
 |NUMBER |`BigDecimal`
 |STRING |`String`
-|DATE |`ZonedDateTime`
+|DATE |`LocalDateTime`, a date-time without time zone
+|TIMESTAMP |`ZonedDateTime`, a date-time with a time zone
 |INTERVAL |`org.apache.hop.expression.Interval`
 |BINARY |`byte[]`
 |JSON |`com.fasterxml.jackson.databind.JsonNode`
@@ -117,6 +118,8 @@ The optional `names` of `@FunctionPlugin` are aliases of the function.
 |===
 
 The result must be one of these classes, of the type given by the return type inference, or `null`.
+
+A DATE and a TIMESTAMP can be read with both classes: a DATE read as a `ZonedDateTime` is in the system time zone, a TIMESTAMP read as a `LocalDateTime` keeps its local date and time.
 
 By convention, a function returns `null` when an argument is `null`, read each argument and return `null` before computing the result.
 
