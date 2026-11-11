@@ -535,6 +535,20 @@ class ArrayFunctionTest extends ExpressionTest {
         "ARRAY_TO_STRING(TRANSFORM([1,2],x->ARRAY_TO_STRING(TRANSFORM([10,20],y->x+y),'+')),',')",
         "11+21,12+22");
 
+    // The body can be an array, its elements are evaluated for each element
+    optimize("TRANSFORM([1,2],x->[x])", "[[1],[2]]");
+    optimize("TRANSFORM([1,2],x->[x,x*2])", "[[1,2],[2,4]]");
+    optimize("TRANSFORM([1,2],x->[[x],[x+1]])", "[[[1],[2]],[[2],[3]]]");
+    optimize("TRANSFORM([1,2],x->ARRAY_APPEND([0],x))", "[[0,1],[0,2]]");
+    evalTrue("TRANSFORM([FIELD_INTEGER,2],x->[x]) = [[40],[2]]");
+    evalTrue("TRANSFORM([FIELD_INTEGER,2],x->[x,FIELD_NUMBER]) = [[40,-5.12],[2,-5.12]]");
+    evalTrue("TRANSFORM([FIELD_INTEGER,2],x->ARRAY_APPEND([0],x)) = [[0,40],[0,2]]");
+    evalTrue("TRANSFORM([FIELD_INTEGER,2],x->ARRAY_PREPEND(x,[0])) = [[40,0],[2,0]]");
+    evalTrue("TRANSFORM([FIELD_INTEGER,2],x->ARRAY_CONCAT([x],[x+1])) = [[40,41],[2,3]]");
+    evalTrue(
+        "TRANSFORM([[FIELD_INTEGER,2],[3,4]],x->TRANSFORM(x,y->[y])) = [[[40],[2]],[[3],[4]]]");
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([FIELD_INTEGER,2],x->[x,x+1])[2],',')", "2,3");
+
     // A NULL element is passed to the lambda
     evalEquals("ARRAY_TO_STRING(TRANSFORM([1,NULL_INTEGER,3],x->COALESCE(x,0)),',')", "1,0,3");
     optimize("TRANSFORM([1,NULL,3], x -> COALESCE(x,0))", "[1,0,3]");
@@ -675,6 +689,13 @@ class ArrayFunctionTest extends ExpressionTest {
     // The body can reference the fields of the row
     evalEquals("REDUCE([1,2],(acc,x)->acc+x,FIELD_INTEGER)", 43L);
     evalEquals("REDUCE([1,2],(acc,x)->acc+x*FIELD_INTEGER,0)", 120L);
+
+    // The accumulator can be an array, its elements are evaluated for each element
+    optimize("REDUCE([[1],[2],[3]],(acc,x)->ARRAY_CONCAT(acc,x))", "[1,2,3]");
+    evalTrue("REDUCE([[FIELD_INTEGER],[2],[3]],(acc,x)->ARRAY_CONCAT(acc,x)) = [40,2,3]");
+    evalTrue("REDUCE([[FIELD_INTEGER],[2],[3]],(acc,x)->[acc[1]+x[1]]) = [45]");
+    evalTrue("REDUCE([FIELD_INTEGER,2,3],(acc,x)->ARRAY_APPEND(acc,x),[0]) = [0,40,2,3]");
+    evalTrue("REDUCE([FIELD_INTEGER,2,3],(acc,x)->ARRAY_PREPEND(x,acc),[0]) = [3,2,40,0]");
 
     // A NULL element is passed to the lambda
     evalNull("REDUCE([1,NULL_INTEGER,3],(acc,x)->acc+x)");
