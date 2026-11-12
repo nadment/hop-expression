@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.hop.expression.Call;
@@ -34,7 +36,9 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionParser;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.Token;
 import org.apache.hop.expression.Token.Id;
@@ -54,6 +58,23 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin(names = "DATE_PART")
 @NullMarked
 public class ExtractFunction extends Function {
+
+  /** The time units that are a part of an interval, the only ones extracted from an interval. */
+  public static final Set<TimeUnit> INTERVAL_TIME_UNITS =
+      Collections.unmodifiableSet(
+          EnumSet.of(
+              TimeUnit.MILLENNIUM,
+              TimeUnit.CENTURY,
+              TimeUnit.DECADE,
+              TimeUnit.YEAR,
+              TimeUnit.MONTH,
+              TimeUnit.DAY,
+              TimeUnit.HOUR,
+              TimeUnit.MINUTE,
+              TimeUnit.SECOND,
+              TimeUnit.MILLISECOND,
+              TimeUnit.MICROSECOND,
+              TimeUnit.NANOSECOND));
 
   public ExtractFunction() {
     super(
@@ -102,6 +123,30 @@ public class ExtractFunction extends Function {
     parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     return new Call(token.start(), this, operands);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A time unit that is not a part of an interval, like EPOCH or WEEK, is rejected when the call
+   * is validated, not when a row is evaluated.
+   *
+   * @throws ExpressionException with {@link ErrorCode#INVALID_ARGUMENT} if the time unit is not a
+   *     part of the interval
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+
+    if (call.getOperandCount() == 2
+        && Types.isInterval(call.getOperand(1).getType())
+        && call.getOperand(0) instanceof Literal literal
+        && literal.getValue() instanceof TimeUnit unit
+        && !INTERVAL_TIME_UNITS.contains(unit)) {
+      // Give the position of the call, the editor marks the error in the source
+      throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_ARGUMENT, unit);
+    }
   }
 
   @Override

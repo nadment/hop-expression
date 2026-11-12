@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
@@ -28,6 +29,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import org.apache.hop.core.row.IRowMeta;
@@ -36,10 +38,16 @@ import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.ExpressionLexer;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.ExpressionTest;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.IntervalType;
@@ -1216,7 +1224,30 @@ class DateFunctionTest extends ExpressionTest {
     evalEquals("Extract(MICROSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654L);
     evalEquals("Extract(NANOSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654321L);
 
-    // TODO: detect unsupported time unit at compile time
+    // A time unit that is not a part of an interval is detected when validated, without row
+    for (String unit : List.of("EPOCH", "WEEK", "QUARTER", "ISOYEAR", "DAYOFWEEK")) {
+      String source = "1+Extract(" + unit + " from TO_INTERVAL(FIELD_STRING))";
+      IExpression expression = new ExpressionParser(new ExpressionLexer(source)).parse();
+      ParseExpressionException exception =
+          assertThrows(
+              ParseExpressionException.class, () -> expression.validate(createExpressionContext()));
+      assertEquals(ErrorCode.INVALID_ARGUMENT, exception.getErrorCode());
+      // The position of the call is given to mark the error in the editor
+      assertEquals(2, exception.getPosition());
+    }
+    optimize("EXTRACT(DAY FROM TO_INTERVAL(FIELD_STRING))");
+
+    // The time units accepted for an interval are the ones that extract a part of an interval
+    for (TimeUnit unit : TimeUnit.values()) {
+      boolean extracted;
+      try {
+        unit.extract(new Interval());
+        extracted = true;
+      } catch (ExpressionException e) {
+        extracted = false;
+      }
+      assertEquals(extracted, ExtractFunction.INTERVAL_TIME_UNITS.contains(unit), unit.name());
+    }
     evalFails("Extract(EPOCH from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
     evalFails("Extract(ISOYEAR from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
     evalFails("Extract(ISOWEEK from INTERVAL -45 DAYS)", ErrorCode.INVALID_ARGUMENT);
