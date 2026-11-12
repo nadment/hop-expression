@@ -345,9 +345,13 @@ class ArrayFunctionTest extends ExpressionTest {
     evalNull("ARRAY_POSITION([1,2,NULL_INTEGER,3],NULL_INTEGER)");
     evalNull("ARRAY_POSITION([1,2,3],2,NULL_INTEGER)");
 
-    // TODO: The position of a sub-array in a multi-dimensional array
-    // evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6]], [4,5,6])",
-    // 2L).returnType(IntegerType.INTEGER);
+    // The position of a sub-array in a multi-dimensional array
+    evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6]], [4,5,6])", 2L)
+        .returnType(IntegerType.INTEGER_NOT_NULL);
+    evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6]], [4,5,7])", 0L);
+    evalEquals("ARRAY_POSITION([[1,2,3], [4,5,6], [1,2,3]], [1,2,3], 2)", 3L);
+    evalEquals("ARRAY_POSITION([[FIELD_INTEGER,2], [4,5]], [40,2])", 1L);
+    evalFails("ARRAY_POSITION([[1,2,3], [4,5,6]], 4)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Check operands
     evalFails("ARRAY_POSITION()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
