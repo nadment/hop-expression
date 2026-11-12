@@ -115,6 +115,33 @@ public final class Types {
     return type;
   }
 
+  /**
+   * Returns whether an integer operand is not yet cast to the number type of the other operand of
+   * an arithmetic operator, like {@code FIELD_INTEGER} in {@code FIELD_INTEGER*1.0}. A
+   * simplification that keeps only the integer operand would change the type of the result, it must
+   * wait for the operand to be cast.
+   *
+   * @param number the operand removed by the simplification, like the literal {@code 1.0}
+   * @param operand the operand kept by the simplification
+   * @return {@code true} if the first operand is a number and the second an integer
+   */
+  public static boolean isIntegerWithNumber(IExpression number, IExpression operand) {
+    return isNumber(number.getType()) && isInteger(operand.getType());
+  }
+
+  /**
+   * Returns whether two types are coercible to their most general type, like INTEGER and NUMBER in
+   * any order, so a number can be searched in an array of integers.
+   *
+   * @param type1 the first type
+   * @param type2 the second type
+   * @return {@code true} if the values of the two types can be converted to the same type
+   */
+  public static boolean hasCommonType(Type type1, Type type2) {
+    Type type = getLeastRestrictive(type1, type2);
+    return type1.isCoercible(type) && type2.isCoercible(type);
+  }
+
   private static Type getLeastRestrictiveIgnoringNullability(Type type1, Type type2) {
 
     // Two arrays give an array of the most general type of their elements

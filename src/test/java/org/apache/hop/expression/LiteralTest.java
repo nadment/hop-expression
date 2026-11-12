@@ -326,9 +326,16 @@ public class LiteralTest extends ExpressionTest {
     evalFails("+_123", ErrorCode.UNRESOLVED_IDENTIFIER);
 
     // Integer exponent
-    evalEquals("2.3E2", 230L).returnType(IntegerType.of(3, false));
-    evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3, false));
-    evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4, false));
+    evalEquals("23E1", 230L).returnType(IntegerType.of(3, false));
+    evalEquals("23E+1", 230L).returnType(IntegerType.of(3, false));
+
+    // A literal with a decimal point is a number, even with an integer value
+    evalEquals("2.3E2", new BigDecimal("230")).returnType(NumberType.of(3, 0, false));
+    evalEquals("2.3E+2", new BigDecimal("230")).returnType(NumberType.of(3, 0, false));
+    evalEquals("2_0.3_1E+2", new BigDecimal("2031")).returnType(NumberType.of(4, 0, false));
+    evalEquals("40.0", new BigDecimal("40")).returnType(NumberType.of(3, 1, false));
+    evalEquals("0.0", BigDecimal.ZERO).returnType(NumberType.of(2, 1, false));
+    evalEquals("40", 40L).returnType(IntegerType.of(2, false));
 
     // Exponent beyond the range of an integer
     evalEquals("1E19", new BigDecimal("1E19")).returnType(NumberType.of(20, 0, false));

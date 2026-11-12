@@ -88,12 +88,12 @@ public class SubtractOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A-0 → A
-    if (Literal.ZERO.equals(right)) {
+    if (Literal.isZero(right) && !Types.isIntegerWithNumber(right, left)) {
       return left;
     }
 
     // Simplify arithmetic 0-A → -A
-    if (Literal.ZERO.equals(left)) {
+    if (Literal.isZero(left) && !Types.isIntegerWithNumber(left, right)) {
       return new Call(NegativeOperator.INSTANCE, right);
     }
 

@@ -131,6 +131,7 @@ The maximum supported precision is 38.
 NOTE:
 * In addition, scientific notation can be used.
 * The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
+* A literal written with a decimal point is a number, even with an integer value: `40.0` and `2.3e2` are numbers, `40` and `3e2` are integers.
 * Can have embedded underscore `_` characters to improve readability (Leading, trailing and double underscores will produce an error).
 * There is no literal representation of NaN or infinity.
 

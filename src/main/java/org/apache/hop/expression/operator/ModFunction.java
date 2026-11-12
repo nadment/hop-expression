@@ -80,7 +80,7 @@ public class ModFunction extends Function {
     }
 
     // Simplify arithmetic A % 1 → 0 (if A is not nullable)
-    if (Literal.ONE.equals(right) && !left.getType().isNullable()) {
+    if (Literal.isOne(right) && !left.getType().isNullable()) {
       return Literal.ZERO;
     }
 

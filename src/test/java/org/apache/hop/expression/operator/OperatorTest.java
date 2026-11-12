@@ -908,7 +908,9 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify arithmetic A / 1 → A
       optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
-      optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
+      // The result of a division by a number is a number
+      optimize("FIELD_INTEGER/1.0", "CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("FIELD_NUMBER/1.0", "FIELD_NUMBER");
 
       // Simplify arithmetic (-A) / (-B) → A / B
       optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))");
@@ -2472,6 +2474,9 @@ public class OperatorTest extends ExpressionTest {
       optimize("3+1*2", "5");
       optimize("(3+1)*2", "8");
       optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
+      // The result of an addition with a number is a number
+      optimize("FIELD_INTEGER+0.0", "CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("FIELD_NUMBER+0.0", "FIELD_NUMBER");
       optimize("4+FIELD_INTEGER+1", "5+FIELD_INTEGER");
       optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
       optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
@@ -2639,6 +2644,9 @@ public class OperatorTest extends ExpressionTest {
 
       optimize("10-FIELD_INTEGER");
       optimize("FIELD_INTEGER-0", "FIELD_INTEGER");
+      // The result of a subtraction with a number is a number
+      optimize("FIELD_INTEGER-0.0", "CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("FIELD_NUMBER-0.0", "FIELD_NUMBER");
       optimize("0-FIELD_INTEGER", "-FIELD_INTEGER");
       // A-A → 0 if A is not nullable
       optimize("ZEROIFNULL(FIELD_INTEGER)-ZEROIFNULL(FIELD_INTEGER)", "0");
@@ -2775,7 +2783,7 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify arithmetic A % 1 → 0 (if A is not nullable)
       optimize("FIELD_INTEGER%1", "FIELD_INTEGER%1");
-      optimize("FIELD_INTEGER%1.0", "FIELD_INTEGER%1");
+      optimize("FIELD_INTEGER%1.0", "CAST(FIELD_INTEGER AS NUMBER(12))%1");
       optimize("Random()%1", "0");
       optimize("Random()%1.0", "0");
     }
@@ -2871,7 +2879,9 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify arithmetic 1 * A → A
       optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
-      optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
+      // The result of a multiplication by a number is a number
+      optimize("1.0*FIELD_INTEGER", "CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("1.0*FIELD_NUMBER", "FIELD_NUMBER");
 
       // Simplify arithmetic (-A) * (-B) → A*B
       optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_NUMBER*CAST(FIELD_INTEGER AS NUMBER(12))");

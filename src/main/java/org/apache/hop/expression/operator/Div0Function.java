@@ -66,12 +66,12 @@ public class Div0Function extends Function {
     }
 
     // Simplify arithmetic DIV0(A,0) → 0 if x is not nullable, keeping the number type of the call
-    if (Literal.ZERO.equals(right) && !left.getType().isNullable()) {
+    if (Literal.isZero(right) && !left.getType().isNullable()) {
       return new Literal(BigDecimal.ZERO, call.getType());
     }
 
     // Simplify arithmetic DIV0(A,1) → A
-    if (Literal.ONE.equals(right)) {
+    if (Literal.isOne(right) && !Types.isIntegerWithNumber(right, left)) {
       return call.getOperand(0);
     }
 

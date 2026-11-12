@@ -52,8 +52,9 @@ public class ArrayContainsFunction extends Function {
       Type arrayType = call.getOperand(0).getType().getElementType();
       Type elementType = call.getOperand(1).getType();
 
-      // Check if the element is coercible to the array element type
-      success = arrayType != null && elementType.isCoercible(arrayType);
+      // Check if the element and the elements of the array are coercible to their most general
+      // type, like ARRAY_CONTAINS([1,2],2.5)
+      success = arrayType != null && Types.hasCommonType(arrayType, elementType);
     }
 
     return success;

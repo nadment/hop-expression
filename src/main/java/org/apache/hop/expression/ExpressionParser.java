@@ -752,6 +752,10 @@ public class ExpressionParser implements IExpressionParser {
 
   private IExpression parseLiteralNumericDecimal(Token token) throws ExpressionException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
+    // A number written with a decimal point is a NUMBER, even with an integer value like 40.0
+    if (token.text().indexOf('.') >= 0) {
+      return new Literal(number, NumberType.from(number).withNullability(false));
+    }
     try {
       return Literal.of(number.longValueExact());
     } catch (ArithmeticException e) {

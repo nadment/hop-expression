@@ -68,7 +68,7 @@ public class DivOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic A / 1 → A
-    if (Literal.ONE.equals(right)) {
+    if (Literal.isOne(right) && !Types.isIntegerWithNumber(right, left)) {
       return call.getOperand(0);
     }
 

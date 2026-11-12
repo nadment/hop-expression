@@ -93,10 +93,10 @@ public class MultiplyOperator extends BinaryOperator {
       if (operand.isNull()) {
         return Literal.NULL;
       }
-      if (Literal.ZERO.equals(operand)) {
+      if (Literal.isZero(operand)) {
         zeroTerms.add(operand);
       }
-      if (Literal.ONE.equals(operand)) {
+      if (Literal.isOne(operand)) {
         oneTerms.add(operand);
       }
       if (operand.isConstant()) {
@@ -121,7 +121,11 @@ public class MultiplyOperator extends BinaryOperator {
     // Simplify arithmetic 1 * A → A
     if (!oneTerms.isEmpty()) {
       for (IExpression term : oneTerms) {
-        if (operands.size() > 1) {
+        // A number like 1.0 is kept until the other operands are cast to a number
+        boolean typeKept =
+            operands.stream()
+                .anyMatch(operand -> operand != term && !Types.isIntegerWithNumber(term, operand));
+        if (operands.size() > 1 && typeKept) {
           operands.remove(term);
         }
       }
@@ -152,7 +156,7 @@ public class MultiplyOperator extends BinaryOperator {
 
     // Simplify arithmetic A * (1 / B) → A / B
     for (Call term : divideTerms) {
-      if (Literal.ONE.equals(term.getOperand(0))) {
+      if (Literal.isOne(term.getOperand(0))) {
         operands.remove(term);
         operands.add(term.getOperand(1));
       }

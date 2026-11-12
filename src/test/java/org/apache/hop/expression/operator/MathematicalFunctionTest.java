@@ -605,8 +605,9 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Random(FIELD_INTEGER)", ErrorCode.INVALID_NUMBER);
     // A number is not coerced to an integer
     evalFails("Random(1.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
-    // A literal with an integer value is an integer
-    evalEquals("Random(180.0)", new Random(180).nextDouble());
+    // A literal with a decimal point is a number, even with an integer value
+    evalFails("Random(180.0)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalEquals("Random(180)", new Random(180).nextDouble());
     evalEquals("Random(-1)", new Random(-1).nextDouble());
     evalFails("Random(1,2)", ErrorCode.TOO_MANY_ARGUMENTS);
 

@@ -750,6 +750,8 @@ class ArrayFunctionTest extends ExpressionTest {
     evalEquals("REDUCE([1,2,3],(acc,x)->acc+x*0.5,0.5)", new BigDecimal("3.5"))
         .returnType(NumberType.NUMBER);
     evalEquals("REDUCE([1,2,3],(acc,x)->acc+x*0.5,CAST(0 AS NUMBER))", new BigDecimal("3.0"));
+    // A literal with a decimal point is a number
+    evalEquals("REDUCE([1,2,3],(acc,x)->acc+x*0.5,0.0)", new BigDecimal("3.0"));
     evalEquals("REDUCE(['a','bb','ccc'],(acc,s)->acc+LENGTH(s),0)", 6L);
 
     // The body can reference the fields of the row

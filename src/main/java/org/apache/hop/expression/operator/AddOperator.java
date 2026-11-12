@@ -119,7 +119,7 @@ public class AddOperator extends BinaryOperator {
     }
 
     // Simplify arithmetic 0+A → A
-    if (Literal.ZERO.equals(left)) {
+    if (Literal.isZero(left) && !Types.isIntegerWithNumber(left, right)) {
       return right;
     }
 

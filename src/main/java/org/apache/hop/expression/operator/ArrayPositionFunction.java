@@ -69,8 +69,9 @@ public class ArrayPositionFunction extends Function {
       return false;
     }
 
-    // Array elements and searched value should be coercible
-    return elementType.isCoercible(arrayType);
+    // Array elements and searched value should be coercible to their most general type, like
+    // ARRAY_POSITION([1,2],2.5)
+    return Types.hasCommonType(arrayType, elementType);
   }
 
   @Override

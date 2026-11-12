@@ -94,6 +94,38 @@ public final class Literal implements IExpression {
   /** Literal 1 value with integer data type */
   public static final Literal ONE = new Literal(1L, IntegerType.of(1, false));
 
+  /**
+   * Returns whether an expression is a literal zero, an integer or a number like 0 or 0.0.
+   *
+   * @param expression the expression to check
+   * @return {@code true} if the expression is a numeric literal equal to zero
+   */
+  public static boolean isZero(IExpression expression) {
+    return isNumber(expression, 0L);
+  }
+
+  /**
+   * Returns whether an expression is a literal one, an integer or a number like 1 or 1.0.
+   *
+   * @param expression the expression to check
+   * @return {@code true} if the expression is a numeric literal equal to one
+   */
+  public static boolean isOne(IExpression expression) {
+    return isNumber(expression, 1L);
+  }
+
+  private static boolean isNumber(IExpression expression, long number) {
+    if (expression instanceof Literal literal) {
+      if (literal.value instanceof Long integer) {
+        return integer == number;
+      }
+      if (literal.value instanceof BigDecimal decimal) {
+        return decimal.compareTo(BigDecimal.valueOf(number)) == 0;
+      }
+    }
+    return false;
+  }
+
   /** The data type of this literal. */
   private final Type type;
 
