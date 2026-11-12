@@ -146,15 +146,15 @@ public class CastFunction extends Function {
   }
 
   /**
-   * Checks the cast to an array type: only an array is cast to an array type, with the same number
-   * of dimensions.
+   * Checks the cast of an array or to an array type: only an array is cast to an array type, with
+   * the same number of dimensions, and an array is not cast to another type.
    *
    * @param call the call to CAST
-   * @return {@code false} if the type of the cast is an array type and the value can't be cast
+   * @return {@code false} if an array is cast to a type that is not an array type, or a value that
+   *     is not an array to an array type
    */
   static boolean isArrayCastable(Call call) {
-    Type type = call.getOperand(1).getType();
-    return !(type instanceof ArrayType) || isArrayCastable(call.getOperand(0).getType(), type);
+    return isArrayCastable(call.getOperand(0).getType(), call.getOperand(1).getType());
   }
 
   private static boolean isArrayCastable(Type source, Type target) {

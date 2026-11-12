@@ -4290,6 +4290,13 @@ public class OperatorTest extends ExpressionTest {
       evalFails("CAST([1,2] AS STRING[][])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
       evalFails("CAST([[1,2],[3]] AS STRING[])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
+      // An array is not cast to a type that is not an array type
+      evalFails("CAST([1,2] AS STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("[1,2]::INTEGER", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("TRY_CAST([1,2] AS STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails(
+          "CAST(STRING_TO_ARRAY(FIELD_STRING,',') AS STRING)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
       // Syntax
       evalFails("CAST([1,2] AS INTEGER[)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
       evalFails("CAST([1,2] AS INTEGER[1])", ErrorCode.MISSING_RIGHT_PARENTHESIS);

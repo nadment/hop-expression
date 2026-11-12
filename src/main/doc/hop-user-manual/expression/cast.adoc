@@ -90,6 +90,7 @@ The data type of the returned value is the type specified in the `AS` clause.
 * Array:
 ** Each element of the array is converted to the data type of the elements, with the optional format, for example `CAST([1,2] AS STRING[])` returns ['1','2']. A NULL element stays NULL.
 ** Only an array is converted to an array type, with the same number of dimensions: `CAST(1 AS INTEGER[])` and `CAST([1,2] AS INTEGER[][])` raise an error.
+** An array is not converted to a data type that is not an array: `CAST([1,2] AS STRING)` raises an error, use xref:array_to_string.adoc["ARRAY_TO_STRING",role=fun] to join the elements in a string.
 ** An empty array has no element to give its type, it must be cast to an array type, for example `CAST([] AS INTEGER[])`.
 ** If an element can't be converted, `CAST` raises an error and `TRY_CAST` returns NULL.
 
