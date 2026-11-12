@@ -17,6 +17,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
@@ -46,16 +47,16 @@ public class UserDefinedFunctionReturnTypeInference implements IReturnTypeInfere
   /**
    * {@inheritDoc}
    *
-   * <p>The type is ANY if the source of the function is invalid or returns an untyped NULL, the
-   * error is reported when the call is compiled.
+   * @throws ExpressionException with {@link ErrorCode#UDF_COMPILATION_ERROR} if the source of the
+   *     function is invalid
    */
   @Override
   public Type inferReturnType(Call call) {
     try {
-      Type type = UserDefinedFunction.parseSource(meta).getType();
-      return type.isName(TypeName.UNKNOWN) ? AnyType.ANY : type;
+      return UserDefinedFunction.parseSource(meta).getType();
     } catch (ExpressionException e) {
-      return AnyType.ANY;
+      throw new ExpressionException(
+          ErrorCode.UDF_COMPILATION_ERROR, meta.getName(), e.getMessage());
     }
   }
 }

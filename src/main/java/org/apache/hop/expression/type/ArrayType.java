@@ -76,10 +76,7 @@ public final class ArrayType extends Type {
 
   @Override
   public TypeComparability getComparability() {
-    // An array without element, like [], is comparable with any array
-    if (elementType.isName(TypeName.ANY)) {
-      return TypeComparability.ALL;
-    }
+    // An array is compared element by element
     return elementType.getComparability();
   }
 
@@ -167,7 +164,7 @@ public final class ArrayType extends Type {
    */
   private @Nullable Object getElement(Array array, int index) {
     IExpression element = array.get(index);
-    if (elementType.isName(TypeName.ANY) || elementType.isName(TypeName.UNKNOWN)) {
+    if (elementType.isName(TypeName.UNKNOWN)) {
       return element.getValue();
     }
     return element.getValue(elementType.getName().getJavaClass());

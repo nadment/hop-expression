@@ -30,7 +30,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeComparability;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.Pair;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -67,11 +66,8 @@ public class ArraySortFunction extends ArrayLambdaFunction {
       return false;
     }
 
-    // Array elements should be ordered
-    Type elementType = call.getOperand(0).getType().getElementType();
-    return elementType != null
-        && (elementType.isName(TypeName.ANY)
-            || elementType.getComparability() == TypeComparability.ALL);
+    // Array elements should be ordered, the comparability of an array is the one of its elements
+    return call.getOperand(0).getType().getComparability() == TypeComparability.ALL;
   }
 
   @Override

@@ -214,9 +214,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   /** Returns whether the type of the elements is known, an empty array constructor has none. */
   private boolean hasElementType() {
     Type elementType = type.getElementType();
-    return elementType != null
-        && !elementType.isName(TypeName.UNKNOWN)
-        && !elementType.isName(TypeName.ANY);
+    return elementType != null && !elementType.isName(TypeName.UNKNOWN);
   }
 
   /**
@@ -291,7 +289,6 @@ public final class Array implements IExpression, Iterable<IExpression> {
     }
 
     if (elementType == null
-        || elementType.isName(TypeName.ANY)
         || elementType.isName(TypeName.UNKNOWN)
         || elementType.isName(TypeName.ARRAY)
         || element.getType().isName(TypeName.ARRAY)

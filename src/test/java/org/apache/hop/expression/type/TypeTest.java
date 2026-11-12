@@ -79,11 +79,6 @@ public class TypeTest extends ExpressionTest {
     assertEquals(
         IntegerType.of(1),
         Types.getLeastRestrictive(IntegerType.of(1, false), UnknownType.UNKNOWN));
-    // An empty array has no element, so no NULL element
-    assertEquals(
-        ArrayType.of(IntegerType.of(1, false)),
-        Types.getLeastRestrictive(
-            ArrayType.of(IntegerType.of(1, false)), ArrayType.of(AnyType.ANY)));
   }
 
   @Test

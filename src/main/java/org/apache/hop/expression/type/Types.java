@@ -68,13 +68,16 @@ public final class Types {
    * its elements.
    *
    * @param expression the expression
-   * @return the type, an array without element is of type ANY
+   * @return the type, an array without element has the element type of its array type
    */
   public static Type getLeastRestrictive(IExpression expression) {
 
     if (expression instanceof Array array) {
       Type result = getLeastRestrictiveElement(array);
-      return result == null ? AnyType.ANY : result;
+      if (result == null) {
+        result = array.getType().getElementType();
+      }
+      return result == null ? UnknownType.UNKNOWN : result;
     }
 
     return expression.getType();
@@ -106,15 +109,10 @@ public final class Types {
 
     // A nullable type is less restrictive: INTEGER NOT NULL and NULL give a nullable INTEGER
     Type type = getLeastRestrictiveIgnoringNullability(type1, type2);
-    if (!type.isNullable() && (isNullableValue(type1) || isNullableValue(type2))) {
+    if (!type.isNullable() && (type1.isNullable() || type2.isNullable())) {
       return type.withNullability(true);
     }
     return type;
-  }
-
-  /** ANY is the element type of an empty array, it has no value so no NULL value. */
-  private static boolean isNullableValue(Type type) {
-    return type.isNullable() && !type.isName(TypeName.ANY);
   }
 
   private static Type getLeastRestrictiveIgnoringNullability(Type type1, Type type2) {

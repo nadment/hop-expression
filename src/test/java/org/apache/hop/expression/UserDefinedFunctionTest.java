@@ -91,6 +91,20 @@ public class UserDefinedFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void testUntypedNull() {
+    UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+    meta.setName("NULL_UDF");
+    meta.setSource("NULL");
+    meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
+    FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
+
+    // The source of the function gives no type to the call
+    evalFails("NULL_UDF(1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    FunctionRegistry.unregister(meta.getName());
+  }
+
+  @Test
   void testNameIgnoreCase() throws Exception {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("add_one");

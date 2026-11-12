@@ -28,7 +28,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeComparability;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -65,9 +64,8 @@ public class ArrayPositionFunction extends Function {
     }
 
     // Array elements and searched value should be comparable
-    if (!arrayType.isName(TypeName.ANY)
-        && (arrayType.getComparability() == TypeComparability.NONE
-            || elementType.getComparability() == TypeComparability.NONE)) {
+    if (arrayType.getComparability() == TypeComparability.NONE
+        || elementType.getComparability() == TypeComparability.NONE) {
       return false;
     }
 
