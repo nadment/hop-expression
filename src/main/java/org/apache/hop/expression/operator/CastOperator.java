@@ -53,6 +53,23 @@ public class CastOperator extends Operator {
         "/docs/hop-user-manual/expression/cast.html");
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>An empty array has no element to give its type, it takes the array type of the cast.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    CastFunction.typeEmptyArray(call);
+    super.validateOperands(context, call);
+  }
+
+  @Override
+  protected boolean checkOperandTypes(Call call) {
+    return super.checkOperandTypes(call) && CastFunction.isArrayCastable(call);
+  }
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Use CAST function to simplify casting

@@ -62,6 +62,7 @@ import org.apache.hop.expression.operator.NotSimilarToOperator;
 import org.apache.hop.expression.operator.PositiveOperator;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -1061,6 +1062,18 @@ public class ExpressionParser implements IExpressionParser {
               throw new ParseExpressionException(
                   token.start(), ErrorCode.INVALID_DATA_TYPE, token.text());
         };
+
+    // Each pair of brackets is an array of the type, like INTEGER[] or STRING(10)[][]. A bracket
+    // followed by an index selects an element of the cast value, like x::STRING[1].
+    while (lexer.isNext(Id.LBRACKET)) {
+      int mark = lexer.mark();
+      lexer.next();
+      if (!lexer.accept(Id.RBRACKET)) {
+        lexer.reset(mark);
+        break;
+      }
+      type = ArrayType.of(type);
+    }
 
     return Literal.of(type);
   }

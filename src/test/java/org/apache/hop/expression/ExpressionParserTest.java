@@ -143,10 +143,17 @@ public class ExpressionParserTest extends ExpressionTest {
 
   @Test
   void array() throws Exception {
-    // Empty array
-    optimize("[]");
-    optimize("[[]]");
-    optimize("[[1],[]]", "[[1],[]]");
+    // An empty array has no type, it must be cast to an array type
+    evalFails("[]", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+    evalFails("[[]]", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+    evalFails("[[1],[]]", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+    evalFails("CAST([] AS INTEGER)", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+    optimize("CAST([] AS INTEGER[])").returnType(arrayOf(IntegerType.INTEGER));
+    optimize("[]::INTEGER[]", "CAST([] AS INTEGER[])");
+    optimize("[]::STRING(10)[]", "CAST([] AS STRING(10)[])");
+    optimize("CAST([] AS NUMBER(10,2)[][])")
+        .returnType(arrayOf(ArrayType.of(NumberType.of(10, 2))));
+    optimize("[CAST([] AS INTEGER[])]");
 
     // Simple array values
     optimize("[1]");
@@ -156,7 +163,8 @@ public class ExpressionParserTest extends ExpressionTest {
     optimize("[[1,2],[3,4]]");
     optimize("[[1,2,3],[1]]").returnType(arrayOf(arrayOf(IntegerType.of(1, false))));
     optimize("[[1,22],[3.5]]").returnType(arrayOf(arrayOf(NumberType.of(3, 1, false))));
-    optimize("[[1],[]]").returnType(arrayOf(arrayOf(IntegerType.of(1, false))));
+    optimize("[[1],[]::INTEGER[]]", "[[1],CAST([] AS INTEGER[])]")
+        .returnType(arrayOf(arrayOf(IntegerType.INTEGER)));
     optimize("[[[1]]]").returnType(arrayOf(arrayOf(arrayOf(IntegerType.of(1, false)))));
 
     // The elements of the nested arrays are converted to the element type

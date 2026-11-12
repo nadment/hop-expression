@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -42,6 +43,23 @@ public class ArrayFunction extends Function {
         OperandTypes.SAME_VARIADIC,
         OperatorCategory.ARRAY,
         "/docs/hop-user-manual/expression/array.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>An array without element has no type, it must be cast: {@code CAST([] AS INTEGER[])}.
+   *
+   * @throws ExpressionException with {@link ErrorCode#EMPTY_ARRAY_NOT_TYPED} if the call has no
+   *     operand
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    if (call.getOperandCount() == 0) {
+      throw new ExpressionException(ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+    }
+    super.validateOperands(context, call);
   }
 
   @Override

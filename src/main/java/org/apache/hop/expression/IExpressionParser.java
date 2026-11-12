@@ -91,6 +91,9 @@ public interface IExpressionParser {
   /** Parses a time unit literal from the token, like YEAR. */
   IExpression parseLiteralTimeUnit(Token token) throws ExpressionException;
 
-  /** Parses a data type literal from the token, with its optional precision and scale. */
+  /**
+   * Parses a data type literal from the token, with its optional precision and scale. A type
+   * followed by brackets is an array type, like {@code INTEGER[]} or {@code STRING(10)[][]}.
+   */
   IExpression parseDataType(Token token) throws ExpressionException;
 }

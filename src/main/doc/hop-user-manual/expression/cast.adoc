@@ -45,6 +45,7 @@ type:: The data type to convert the value to. Date, Timestamp and Interval accep
 * String
 * Json
 * Timestamp
+* Array of one of these data types, written with the data type of the elements followed by square brackets, for example `INTEGER[]`, `STRING(10)[]` or `NUMBER(10,2)[][]` for an array of arrays
 
 format:: The optional format used for the conversion:
 * a xref:numberformat.adoc[number format] to convert a string to a number or an integer, or a number or an integer to a string,
@@ -86,6 +87,11 @@ The data type of the returned value is the type specified in the `AS` clause.
 ** A string converts to its UTF-8 encoding. To decode a hexadecimal or Base64 string, use xref:to_binary.adoc["TO_BINARY",role=fun].
 ** With a maximum length, like `BINARY(2)`, the result is truncated to this number of bytes without error, for example `CAST('ABC' AS BINARY(2))` returns the bytes of 'AB'.
 * Inet: an empty string raises an error.
+* Array:
+** Each element of the array is converted to the data type of the elements, with the optional format, for example `CAST([1,2] AS STRING[])` returns ['1','2']. A NULL element stays NULL.
+** Only an array is converted to an array type, with the same number of dimensions: `CAST(1 AS INTEGER[])` and `CAST([1,2] AS INTEGER[][])` raise an error.
+** An empty array has no element to give its type, it must be cast to an array type, for example `CAST([] AS INTEGER[])`.
+** If an element can't be converted, `CAST` raises an error and `TRY_CAST` returns NULL.
 
 == Examples
 
@@ -104,6 +110,10 @@ CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH24:MI:SS') returns DATE 
 CAST(TIMESTAMP '2020-05-25 20:48:00.123456' AS TIMESTAMP(3)) returns TIMESTAMP '2020-05-25 20:48:00.123'
 TRY_CAST(MAKE_DATE(2020,5,24) AS STRING FORMAT 'yyyy-q') returns '2020-2'
 CAST(INTERVAL 5 YEAR AS STRING) returns '+5-0 0 00:00:00.000000000'
+CAST([1,2] AS STRING[]) returns ['1','2']
+['2020-01-01','2021-06-15']::DATE[] returns [DATE '2020-01-01',DATE '2021-06-15']
+CAST([[1,2],[3]] AS STRING[][]) returns [['1','2'],['3']]
+CAST([] AS INTEGER[]) returns an empty array of integers
 ----
 
 == See also

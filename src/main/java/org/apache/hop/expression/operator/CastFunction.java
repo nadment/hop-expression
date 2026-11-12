@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -34,6 +35,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.Token;
 import org.apache.hop.expression.Token.Id;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
@@ -108,6 +110,63 @@ public class CastFunction extends Function {
     parser.expect(Id.RPARENTHESIS, ErrorCode.MISSING_RIGHT_PARENTHESIS);
 
     return new Call(token.start(), this, operands);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>An empty array has no element to give its type, it takes the array type of the cast.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    typeEmptyArray(call);
+    super.validateOperands(context, call);
+  }
+
+  @Override
+  protected boolean checkOperandTypes(Call call) {
+    return super.checkOperandTypes(call) && isArrayCastable(call);
+  }
+
+  /**
+   * Gives the array type of the cast to an empty array constructor, which has no type before it is
+   * cast: {@code CAST([] AS INTEGER[])}.
+   *
+   * @param call the call to CAST, not validated
+   */
+  static void typeEmptyArray(Call call) {
+    if (call.getOperandCount() >= 2
+        && call.getOperand(0) instanceof Array array
+        && array.isEmpty()
+        && call.getOperand(1).getType() instanceof ArrayType type) {
+      // An array constructor is never NULL
+      call.setOperand(0, new Array(type.withNullability(false)));
+    }
+  }
+
+  /**
+   * Checks the cast to an array type: only an array is cast to an array type, with the same number
+   * of dimensions.
+   *
+   * @param call the call to CAST
+   * @return {@code false} if the type of the cast is an array type and the value can't be cast
+   */
+  static boolean isArrayCastable(Call call) {
+    Type type = call.getOperand(1).getType();
+    return !(type instanceof ArrayType) || isArrayCastable(call.getOperand(0).getType(), type);
+  }
+
+  private static boolean isArrayCastable(Type source, Type target) {
+    // A NULL has no type and is cast to any type
+    if (source.isName(TypeName.UNKNOWN)) {
+      return true;
+    }
+    if (target instanceof ArrayType targetArray) {
+      return source instanceof ArrayType sourceArray
+          && isArrayCastable(sourceArray.getElementType(), targetArray.getElementType());
+    }
+    return !(source instanceof ArrayType);
   }
 
   @Override
@@ -282,6 +341,11 @@ public class CastFunction extends Function {
    * @throws ExpressionException if the conversion does not use a format or the format is invalid
    */
   static void checkFormat(final Type from, final Type to, final IExpression operand) {
+    // The format of the cast of an array converts its elements
+    if (from instanceof ArrayType fromArray && to instanceof ArrayType toArray) {
+      checkFormat(fromArray.getElementType(), toArray.getElementType(), operand);
+      return;
+    }
     String format = operand.getValue(String.class);
     if (Types.isString(from) && Types.isNumeric(to)
         || Types.isNumeric(from) && Types.isString(to)) {

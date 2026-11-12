@@ -155,18 +155,21 @@ public class TypeTest extends ExpressionTest {
     assertEquals(BinaryType.BINARY_NOT_NULL, BinaryType.of(-1, false));
     assertEquals("BINARY NOT NULL", String.valueOf(BinaryType.of(-1, false)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
-    assertEquals("ARRAY<INTEGER(10)>", String.valueOf(ArrayType.of(IntegerType.of(10))));
-    // The nullability of the array is written after the type of its elements
+    // An array type is its element type followed by brackets
+    assertEquals("INTEGER(10)[]", String.valueOf(ArrayType.of(IntegerType.of(10))));
+    assertEquals("STRING[][]", String.valueOf(ArrayType.of(ArrayType.of(StringType.STRING))));
+    // The nullability of the array is written after the brackets
+    assertEquals("INTEGER(10)[] NOT NULL", String.valueOf(ArrayType.of(IntegerType.of(10), false)));
+    assertEquals("INTEGER(10) NOT NULL[]", String.valueOf(ArrayType.of(IntegerType.of(10, false))));
     assertEquals(
-        "ARRAY<INTEGER(10)> NOT NULL", String.valueOf(ArrayType.of(IntegerType.of(10), false)));
-    assertEquals(
-        "ARRAY<INTEGER(10) NOT NULL>", String.valueOf(ArrayType.of(IntegerType.of(10, false))));
-    assertEquals(
-        "ARRAY<INTEGER(10) NOT NULL> NOT NULL",
+        "INTEGER(10) NOT NULL[] NOT NULL",
         String.valueOf(ArrayType.of(IntegerType.of(10, false), false)));
     assertEquals(
-        "ARRAY<ARRAY<INTEGER(10)> NOT NULL>",
+        "INTEGER(10)[] NOT NULL[]",
         String.valueOf(ArrayType.of(ArrayType.of(IntegerType.of(10), false))));
+    // The literal of a type has no nullability
+    assertEquals("INTEGER(10)[]", ArrayType.of(IntegerType.of(10, false), false).getLiteral());
+    assertEquals("NUMBER(10,2)[][]", ArrayType.of(ArrayType.of(NumberType.of(10, 2))).getLiteral());
   }
 
   @Test

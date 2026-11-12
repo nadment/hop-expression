@@ -19,7 +19,9 @@ package org.apache.hop.expression.type;
 
 import java.util.Objects;
 import org.apache.hop.expression.Array;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Literal;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -171,11 +173,59 @@ public final class ArrayType extends Type {
     return element.getValue(elementType.getName().getJavaClass());
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Each element of the array is converted to the element type of this type, so {@code
+   * CAST([1,2] AS STRING[])} is {@code ['1','2']}. The elements of a nested array are converted to
+   * the element type of the nested array type.
+   */
+  @Override
+  public @Nullable Object cast(final @Nullable Object value, final @Nullable String pattern)
+      throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Array array) {
+      IExpression[] elements = new IExpression[array.size()];
+      for (int i = 0; i < elements.length; i++) {
+        IExpression element = array.get(i);
+        Type type = element.getType();
+        // Without format, a date or an interval converted to a string writes its fractional
+        // seconds with the digits of the precision of its type, known by the element and not by
+        // the value
+        Object elementValue =
+            (pattern == null
+                    && Types.isString(elementType)
+                    && (Types.isTemporal(type) || Types.isInterval(type)))
+                ? element.getValue(String.class)
+                : element.getValue();
+        Object result = elementType.cast(elementValue, pattern);
+        // A nested array is an expression, not a literal value
+        elements[i] = result instanceof Array nested ? nested : new Literal(result, elementType);
+      }
+      // An array value is never NULL
+      return new Array(withNullability(false), elements);
+    }
+    return super.cast(value, pattern);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The literal of an array type is the literal of its element type followed by brackets, like
+   * {@code INTEGER[]} or {@code STRING(10)[][]}.
+   */
+  @Override
+  public String getLiteral() {
+    return elementType.getLiteral() + "[]";
+  }
+
   @Override
   protected String generateSignature() {
     // The nullability of the array follows the nullability of its elements, like
-    // ARRAY<INTEGER NOT NULL> NOT NULL
-    String signature = "ARRAY<" + elementType.getSignature() + ">";
+    // INTEGER NOT NULL[] NOT NULL
+    String signature = elementType.getSignature() + "[]";
     return isNullable() ? signature : signature + NOT_NULL_SUFFIX;
   }
 }

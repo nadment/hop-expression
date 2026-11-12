@@ -277,6 +277,12 @@ Array values can be constructed using square brackets `[<value> [, <value> , ...
 [1,5,9]
 ----
 
+The data type of an array is the data type of its elements followed by square brackets, like `INTEGER[]`, `STRING(10)[]` or `NUMBER(10,2)[][]` for an array of arrays.
+
+* The elements of an array are converted to the most general type of the elements.
+* An empty array `[]` has no element to give its type and raises an error, it must be cast to an array type: `CAST([] AS INTEGER[])` or `[]::INTEGER[]`.
+* A xref:cast.adoc["CAST",role=fun] to an array type converts each element of the array: `CAST([1,2] AS STRING[])` returns ['1','2'].
+
 === Json
 
 Literal json.

@@ -334,6 +334,13 @@ public enum ErrorCode {
    */
   ARRAY_ELEMENT_TYPE_MISMATCH,
   /**
+   * An empty array has no element to give its type, it must be cast to an array type like {@code
+   * CAST([] AS INTEGER[])}.
+   *
+   * <p>Message: <code>An empty array has no type, use CAST([] AS type[])</code>
+   */
+  EMPTY_ARRAY_NOT_TYPED,
+  /**
    * The index used to access an array element is outside the bounds of the array.
    *
    * <p>Message: <code>The index {0} is out of bounds</code>

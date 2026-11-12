@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
-import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
@@ -33,7 +32,6 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class Array implements IExpression, Iterable<IExpression> {
 
-  public static final Array EMPTY = new Array();
   private final IExpression[] values;
   private Type type;
 
@@ -201,9 +199,24 @@ public final class Array implements IExpression, Iterable<IExpression> {
 
   @Override
   public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+    // An empty array is written with its type, it has no element to give its type when parsed
+    if (values.length == 0 && hasElementType()) {
+      writer.append("CAST([] AS ");
+      writer.append(type.getLiteral());
+      writer.append(')');
+      return;
+    }
     writer.append('[');
     this.unparseValues(writer);
     writer.append(']');
+  }
+
+  /** Returns whether the type of the elements is known, an empty array constructor has none. */
+  private boolean hasElementType() {
+    Type elementType = type.getElementType();
+    return elementType != null
+        && !elementType.isName(TypeName.UNKNOWN)
+        && !elementType.isName(TypeName.ANY);
   }
 
   /**
@@ -225,9 +238,12 @@ public final class Array implements IExpression, Iterable<IExpression> {
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
 
-    // Empty array
+    // An empty array has no element to give its type, it is typed by a cast or by the function
+    // that returns it
     if (values.length == 0) {
-      type = ArrayType.of(AnyType.ANY, false);
+      if (!hasElementType()) {
+        throw new ExpressionException(ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+      }
       return;
     }
 

@@ -56,14 +56,14 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY('sun','mon','tue')", "['sun','mon','tue']");
 
     // Construct an empty array
-    optimize("ARRAY()", "[]");
+    evalFails("ARRAY()", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
   }
 
   @Test
   void Array_Prepend() throws Exception {
     optimize("ARRAY_PREPEND(0,[1,2,3])", "[0,1,2,3]");
     optimize("ARRAY_PREPEND('sun',['mon','tue'])", "['sun','mon','tue']");
-    optimize("ARRAY_PREPEND(0,[])", "[0]");
+    optimize("ARRAY_PREPEND(0,[]::INTEGER[])", "[0]");
     optimize("ARRAY_PREPEND(FIELD_STRING,['A','B','C'])", "[FIELD_STRING,'A','B','C']");
     optimize(
         "ARRAY_PREPEND('A',STRING_TO_ARRAY(FIELD_STRING,','))",
@@ -120,7 +120,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_CONCAT([1,2,3],[4,5])", "[1,2,3,4,5]");
     optimize("ARRAY_CONCAT(['sun','mon'],['tue'],['wed'])", "['sun','mon','tue','wed']");
     optimize("ARRAY_CONCAT([1,2,3])", "[1,2,3]");
-    optimize("ARRAY_CONCAT([],[1])", "[1]");
+    optimize("ARRAY_CONCAT([]::INTEGER[],[1])", "[1]");
     optimize("ARRAY_CONCAT([[1]],[[2]])", "[[1],[2]]");
     evalEquals("CARDINALITY(ARRAY_CONCAT([1,2,3],[4,5]))", 5L);
 
@@ -210,7 +210,7 @@ class ArrayFunctionTest extends ExpressionTest {
   void Array_Append() throws Exception {
     optimize("ARRAY_APPEND([1,2,3],4)", "[1,2,3,4]");
     optimize("ARRAY_APPEND(['sun','mon'],'tue')", "['sun','mon','tue']");
-    optimize("ARRAY_APPEND([],0)", "[0]");
+    optimize("ARRAY_APPEND([]::INTEGER[],0)", "[0]");
     optimize("ARRAY_APPEND(['A','B','C'],FIELD_STRING)", "['A','B','C',FIELD_STRING]");
     optimize(
         "ARRAY_APPEND(STRING_TO_ARRAY(FIELD_STRING,','),'A')",
@@ -295,7 +295,7 @@ class ArrayFunctionTest extends ExpressionTest {
     evalTrue("ARRAY_CONTAINS([1.5,2],2)");
     evalFalse("ARRAY_CONTAINS([1.5,2],3)");
     evalTrue("ARRAY_CONTAINS([FIELD_NUMBER,40.0],FIELD_INTEGER)");
-    evalFalse("ARRAY_CONTAINS([],1)");
+    evalFalse("ARRAY_CONTAINS([]::INTEGER[],1)");
 
     // A null element never matches
     evalTrue("ARRAY_CONTAINS(['A',NULL_STRING],'A')");
@@ -330,7 +330,7 @@ class ArrayFunctionTest extends ExpressionTest {
     evalEquals("ARRAY_POSITION([1,2,3],4)", 0L);
     // A null element never matches
     evalEquals("ARRAY_POSITION([1,NULL_INTEGER,FIELD_INTEGER],40)", 3L);
-    evalEquals("ARRAY_POSITION([],4)", 0L);
+    evalEquals("ARRAY_POSITION([]::INTEGER[],4)", 0L);
     evalEquals("ARRAY_POSITION([1,2,3],2,10)", 0L);
 
     // Start position, the first position in the array is 1
@@ -365,8 +365,8 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SLICE([1,2,3,4,5,6],0,-2)", "[1,2,3,4]");
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -5, -3)", "[2,3]");
 
-    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], 10, 12)", "[]");
-    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -10, -12)", "[]");
+    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], 10, 12)", "CAST([] AS INTEGER(1)[])");
+    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -10, -12)", "CAST([] AS INTEGER(1)[])");
 
     // A slice partially out of the array keeps the elements inside
     optimize("ARRAY_SLICE([1,2,3], 1, 10)", "[2,3]");
@@ -374,7 +374,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SLICE([1,2,3], -10, 10)", "[1,2,3]");
 
     // A position out of the int range must not wrap
-    optimize("ARRAY_SLICE([1,2,3], 4294967296, 4294967298)", "[]");
+    optimize("ARRAY_SLICE([1,2,3], 4294967296, 4294967298)", "CAST([] AS INTEGER(1)[])");
     optimize("ARRAY_SLICE([1,2,3], 0, 4294967298)", "[1,2,3]");
     optimize("ARRAY_SLICE([1,2,3], -4294967296, 2)", "[1,2]");
 
@@ -405,7 +405,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_DISTINCT(['b','a','b'])", "['b','a']");
     optimize("ARRAY_DISTINCT([1,2.5,1.0])", "[1,2.5]");
     optimize("ARRAY_DISTINCT([[1,2],[3],[1,2]])", "[[1,2],[3]]");
-    optimize("ARRAY_DISTINCT([])", "[]");
+    optimize("ARRAY_DISTINCT([]::INTEGER[])", "CAST([] AS INTEGER[])");
 
     // Elements are compared by value
     evalEquals("ARRAY_TO_STRING(ARRAY_DISTINCT([40,FIELD_INTEGER,2]),',')", "40,2");
@@ -434,7 +434,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SORT(['mon','tue','fri'])", "['fri','mon','tue']");
     optimize("ARRAY_SORT([2.5,1,2])", "[1,2,2.5]");
     optimize("ARRAY_SORT([[2],[1,3],[1,2]])", "[[1,2],[1,3],[2]]");
-    optimize("ARRAY_SORT([])", "[]");
+    optimize("ARRAY_SORT([]::INTEGER[])", "CAST([] AS INTEGER[])");
 
     // Elements are compared by value
     evalEquals("ARRAY_TO_STRING(ARRAY_SORT([50,FIELD_INTEGER,2]),',')", "2,40,50");
@@ -473,7 +473,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SORT([3,1,2],(a,b)->a-b)", "[1,2,3]");
     optimize("ARRAY_SORT([3,1,2], (p1, p2) -> p2 - p1)", "[3,2,1]");
     optimize("ARRAY_SORT(['ccc','a','bb'],(a,b)->LENGTH(a)-LENGTH(b))", "['a','bb','ccc']");
-    optimize("ARRAY_SORT([],(a,b)->0)", "[]");
+    optimize("ARRAY_SORT([]::INTEGER[],(a,b)->a-b)", "CAST([] AS INTEGER[])");
     optimize("ARRAY_SORT(STRING_TO_ARRAY(FIELD_STRING,','),(a,b)->LENGTH(a)-LENGTH(b))");
 
     // Only the sign of a number matters, not its decimal part
@@ -517,8 +517,8 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_REMOVE([1,2,3],2.0)", "[1,3]");
     // An array element of a multi-dimensional array
     optimize("ARRAY_REMOVE([[1,2],[3],[1,2]],[1,2])", "[[3]]");
-    optimize("ARRAY_REMOVE([1,1],1)", "[]");
-    optimize("ARRAY_REMOVE([],1)", "[]");
+    optimize("ARRAY_REMOVE([1,1],1)", "CAST([] AS INTEGER(1)[])");
+    optimize("ARRAY_REMOVE([]::INTEGER[],1)", "CAST([] AS INTEGER[])");
 
     // Values of different numeric types
     optimize("ARRAY_REMOVE([1,2.5,3],2.5)", "[1,3]");
@@ -537,7 +537,7 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("ARRAY_REMOVE([1,2,3],NULL_INTEGER)");
-    evalNull("ARRAY_REMOVE([],NULL_INTEGER)");
+    evalNull("ARRAY_REMOVE([]::INTEGER[],NULL_INTEGER)");
     evalNull("ARRAY_REMOVE(STRING_TO_ARRAY(NULL_STRING,','),'a')");
 
     // The result is nullable if the array or the value to remove is nullable
@@ -560,7 +560,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("TRANSFORM([1,2,3],x->x*2)", "[2,4,6]");
     optimize("TRANSFORM([1,2,3], x -> x + 1)", "[2,3,4]");
     optimize("TRANSFORM(['a','b'],s->UPPER(s))", "['A','B']");
-    optimize("TRANSFORM([],x->x)", "[]");
+    optimize("TRANSFORM([]::INTEGER[],x->x+1)", "CAST([] AS INTEGER[])");
     optimize("TRANSFORM(STRING_TO_ARRAY(FIELD_STRING,','),x->LOWER(x))");
 
     // The type of the elements can change
@@ -646,7 +646,7 @@ class ArrayFunctionTest extends ExpressionTest {
   void Filter() throws Exception {
     optimize("FILTER([1,-2,3],x->x>0)", "[1,3]");
     optimize("FILTER(['a','bb','ccc'],s->LENGTH(s)>1)", "['bb','ccc']");
-    optimize("FILTER([1,2],x->x>5)", "[]");
+    optimize("FILTER([1,2],x->x>5)", "CAST([] AS INTEGER(1)[])");
     optimize("FILTER(STRING_TO_ARRAY(FIELD_STRING,','),x->x>'A')");
 
     // The body can reference the fields of the row

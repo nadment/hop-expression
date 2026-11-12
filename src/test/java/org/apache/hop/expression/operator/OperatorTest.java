@@ -34,6 +34,7 @@ import org.apache.hop.expression.ExpressionTest;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -128,8 +129,8 @@ public class OperatorTest extends ExpressionTest {
       // Arrays with a different number of elements are different
       evalTrue("[1,2] <> [1,2,3]");
       evalTrue("[1,2,3] <> [1,2]");
-      evalTrue("[] <> [1]");
-      evalFalse("[] <> []");
+      evalTrue("[]::INTEGER[] <> [1]");
+      evalFalse("[]::INTEGER[] <> []::INTEGER[]");
 
       // The elements are coerced to their most general type
       evalFalse("[1,2] <> [1.0,2.0]");
@@ -494,7 +495,7 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("[1,3] < [1,2]");
       evalFalse("[1,2] < [1,2]");
       evalTrue("[1,2] < [1,2,0]");
-      evalTrue("[] < [1]");
+      evalTrue("[]::INTEGER[] < [1]");
       evalTrue("[1,2,3] < [2]");
       evalTrue("[1,2.5] < [FIELD_INTEGER,1]");
       evalTrue("[[1,2],[3]] < [[1,2],[3.5]]");
@@ -3146,8 +3147,8 @@ public class OperatorTest extends ExpressionTest {
       // Arrays with a different number of elements are not equal
       evalFalse("[1,2] = [1,2,3]");
       evalFalse("[1,2,3] = [1,2]");
-      evalFalse("[] = [1]");
-      evalTrue("[] = []");
+      evalFalse("[]::INTEGER[] = [1]");
+      evalTrue("[]::INTEGER[] = []::INTEGER[]");
 
       // The elements are coerced to their most general type
       evalTrue("[1,2] = [1.0,2.0]");
@@ -4227,6 +4228,72 @@ public class OperatorTest extends ExpressionTest {
           "CAST('2020-05-25 20:48:00.123456' AS DATE(3) FORMAT 'YYYY-MM-DD HH24:MI:SS.FF6')",
           LocalDateTime.of(2020, 5, 25, 20, 48, 0, 123_000_000));
       optimize("'2021-02-08'::DATE", "DATE '2021-02-08'");
+    }
+
+    @Test
+    void castToArray() throws Exception {
+      // Each element is converted to the element type
+      optimize("CAST([1,2] AS STRING[])", "['1','2']")
+          .returnType(ArrayType.of(StringType.STRING, false));
+      optimize("[1,2]::STRING[]", "['1','2']");
+      optimize("CAST(['1','2'] AS INTEGER[])", "[1,2]");
+      optimize("CAST([1.5,2] AS INTEGER[])", "[2,2]");
+      optimize(
+          "CAST(['2020-01-01','2021-06-15'] AS DATE[])", "[DATE '2020-01-01',DATE '2021-06-15']");
+      optimize("CAST(STRING_TO_ARRAY('1,2',',') AS INTEGER[])", "[1,2]");
+      evalTrue("CAST([FIELD_INTEGER,2] AS STRING[]) = ['40','2']");
+      evalTrue("CAST(STRING_TO_ARRAY(FIELD_STRING,',') AS STRING(2)[]) = ['TE']");
+      evalEquals("CAST([FIELD_INTEGER,2] AS STRING[])[1]", "40");
+
+      // A NULL element stays NULL
+      evalTrue("CAST([FIELD_INTEGER,NULL_INTEGER] AS STRING[]) = ['40',NULL_STRING]");
+
+      // Multi-dimensional array
+      optimize("CAST([[1,2],[3]] AS STRING[][])", "[['1','2'],['3']]")
+          .returnType(ArrayType.of(ArrayType.of(StringType.STRING), false));
+
+      // With a format
+      optimize("CAST([DATE '2020-01-01'] AS STRING[] FORMAT 'YYYY')", "['2020']");
+      optimize("CAST(['2020'] AS DATE[] FORMAT 'YYYY')", "[DATE '2020-01-01']");
+      evalFails("CAST([1,2] AS STRING[] FORMAT 'YYYY')", ErrorCode.INVALID_NUMBER_FORMAT);
+
+      // An empty array takes the type of the cast
+      optimize("CAST([] AS INTEGER[])").returnType(ArrayType.of(IntegerType.INTEGER, false));
+      optimize("[]::STRING(10)[]", "CAST([] AS STRING(10)[])");
+      evalEquals("CARDINALITY(CAST([] AS INTEGER[]))", 0L);
+      evalTrue("ARRAY_APPEND([]::INTEGER[],FIELD_INTEGER) = [40]");
+      evalTrue("REDUCE([FIELD_INTEGER,2],(acc,x)->ARRAY_APPEND(acc,x),[]::INTEGER[]) = [40,2]");
+      evalFails("[]", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+      evalFails("CARDINALITY([])", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+      evalFails("CAST([] AS INTEGER)", ErrorCode.EMPTY_ARRAY_NOT_TYPED);
+
+      // A cast without effect is removed
+      optimize("CAST([1,2] AS INTEGER[])", "[1,2]");
+      optimize("CAST([FIELD_INTEGER,2] AS INTEGER[])", "[FIELD_INTEGER,2]");
+      optimize("CAST([FIELD_INTEGER,2] AS INTEGER(5)[])");
+
+      // The cast is followed by the selection of an element
+      evalEquals("[1,2]::STRING[][1]", "1");
+
+      // Null handling
+      evalNull("CAST(NULL AS INTEGER[])").returnType(ArrayType.of(IntegerType.INTEGER));
+      evalNull("CAST(STRING_TO_ARRAY(NULL_STRING,',') AS INTEGER[])");
+
+      // An element can't be converted
+      evalFails("CAST(['1','x'] AS INTEGER[])", ErrorCode.CONVERSION_ERROR);
+      evalNull("TRY_CAST(['1','x'] AS INTEGER[])");
+
+      // Only an array is cast to an array type, with the same number of dimensions
+      evalFails("CAST(1 AS INTEGER[])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CAST('1,2' AS INTEGER[])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CAST(FIELD_STRING AS STRING[])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CAST([1,2] AS STRING[][])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+      evalFails("CAST([[1,2],[3]] AS STRING[])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+      // Syntax
+      evalFails("CAST([1,2] AS INTEGER[)", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+      evalFails("CAST([1,2] AS INTEGER[1])", ErrorCode.MISSING_RIGHT_PARENTHESIS);
+      evalFails("CAST([1,2] AS ARRAY)", ErrorCode.INVALID_DATA_TYPE);
     }
 
     @Test

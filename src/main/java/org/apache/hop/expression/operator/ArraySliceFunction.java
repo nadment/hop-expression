@@ -68,7 +68,8 @@ public class ArraySliceFunction extends Function {
     from = Math.clamp(from, 0, size);
     to = Math.clamp(to, 0, size);
 
-    if (to <= from) return Array.EMPTY;
+    // An empty slice keeps the type of the array
+    if (to <= from) return new Array(array.getType());
 
     return array.slice((int) from, (int) to);
   }

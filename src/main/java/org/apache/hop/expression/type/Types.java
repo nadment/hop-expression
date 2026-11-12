@@ -422,6 +422,11 @@ public final class Types {
    */
   public static boolean isLosslessCast(Type source, Type target) {
 
+    // The cast of an array is the cast of its elements
+    if (source instanceof ArrayType sourceArray && target instanceof ArrayType targetArray) {
+      return isLosslessCast(sourceArray.getElementType(), targetArray.getElementType());
+    }
+
     if (source.getName() != target.getName() || source.getPrecision() > target.getPrecision()) {
       return false;
     }
