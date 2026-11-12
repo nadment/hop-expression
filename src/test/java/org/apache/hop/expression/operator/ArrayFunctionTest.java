@@ -495,6 +495,9 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("ARRAY_SORT(STRING_TO_ARRAY(NULL_STRING,','),(a,b)->LENGTH(a)-LENGTH(b))");
+    // A NULL literal has no type to give to the parameters, it must be cast to an array type
+    evalNull("ARRAY_SORT(CAST(NULL AS INTEGER[]),(a,b)->a-b)");
+    evalFails("ARRAY_SORT(NULL,(a,b)->a-b)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // A comparator returning a nullable number does not make the result nullable
     optimize("ARRAY_SORT([FIELD_INTEGER,2],(a,b)->a-b)").returnType(arrayOf(IntegerType.of(12)));
@@ -605,6 +608,9 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("TRANSFORM(STRING_TO_ARRAY(NULL_STRING,','),x->x)");
+    // A NULL literal has no type to give to the parameter, it must be cast to an array type
+    evalNull("TRANSFORM(CAST(NULL AS INTEGER[]),x->x+1)");
+    evalFails("TRANSFORM(NULL,x->x)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Check operands
     evalFails("TRANSFORM()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -674,6 +680,9 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("FILTER(STRING_TO_ARRAY(NULL_STRING,','),x->x='a')");
+    // A NULL literal has no type to give to the parameter, it must be cast to an array type
+    evalNull("FILTER(CAST(NULL AS INTEGER[]),x->x>1)");
+    evalFails("FILTER(NULL,x->x>1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Check operands
     evalFails("FILTER([1,2])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -708,6 +717,9 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("EXISTS(STRING_TO_ARRAY(NULL_STRING,','),x->x='a')");
+    // A NULL literal has no type to give to the parameter, it must be cast to an array type
+    evalNull("EXISTS(CAST(NULL AS INTEGER[]),x->x>1)");
+    evalFails("EXISTS(NULL,x->x>1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Check operands
     evalFails("EXISTS([1,2])", ErrorCode.NOT_ENOUGH_ARGUMENTS);
@@ -766,6 +778,9 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // Null handling
     evalNull("REDUCE(STRING_TO_ARRAY(NULL_STRING,','),(acc,x)->acc||x)");
+    // A NULL literal has no type to give to the parameters, it must be cast to an array type
+    evalNull("REDUCE(CAST(NULL AS INTEGER[]),(acc,x)->acc+x)");
+    evalFails("REDUCE(NULL,(acc,x)->acc+x)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // The lambda must return a value of the type of the accumulator
     evalFails("REDUCE([1,2,3],(acc,x)->acc+x*0.5)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);

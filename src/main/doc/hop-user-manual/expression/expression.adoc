@@ -339,6 +339,7 @@ REDUCE([1,2,3], (acc, x) -> acc + x) <5>
 <5> Reduces the array to a single value, the sum of its elements, and returns `6`.
 
 * The function gives the data type of each parameter, the data type of the elements of the array for xref:transform.adoc["TRANSFORM",role=fun] and xref:filter.adoc["FILTER",role=fun].
+* A NULL literal has no data type to give to the parameters and raises an error, it must be cast to an array type: `TRANSFORM(CAST(NULL AS INTEGER[]), x -> x + 1)` returns NULL.
 * The parameters of a lambda must have distinct names.
 * A parameter is only visible in the expression of the lambda, it hides a field or a parameter of an enclosing lambda with the same name.
 * A lambda is only allowed as the argument of a function that accepts one.

@@ -84,9 +84,8 @@ public abstract class ArrayLambdaFunction extends Function {
    * its parameters. An operand that is not a lambda is validated as usual, before the lambda: the
    * type of a parameter can depend on an operand that follows the lambda.
    *
-   * <p>A lambda that follows an operand that is not an array is not validated: the operand type
-   * checker rejects the call, see {@link
-   * org.apache.hop.expression.type.OperandTypes#ARRAY_LAMBDA_ANY}.
+   * <p>A lambda that follows an operand that is not an array, or a NULL literal, is not validated:
+   * the call is rejected by {@link #checkOperandTypes(Call)}.
    *
    * @throws ExpressionException with {@link ErrorCode#ILLEGAL_LAMBDA_PARAMETER_COUNT} if the lambda
    *     has not the number of parameters expected
@@ -115,6 +114,23 @@ public abstract class ArrayLambdaFunction extends Function {
         lambda.validate(context, lambdaParameterTypes(call, arrayType));
       }
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A lambda is only accepted with an array: the elements give the type of its parameters. A
+   * NULL literal has no type, it must be cast to an array type like {@code CAST(NULL AS
+   * INTEGER[])}.
+   */
+  @Override
+  protected boolean checkOperandTypes(Call call) {
+    if (call.getOperandCount() > 1
+        && call.getOperand(1) instanceof Lambda
+        && !(call.getOperand(0).getType() instanceof ArrayType)) {
+      return false;
+    }
+    return super.checkOperandTypes(call);
   }
 
   /**
