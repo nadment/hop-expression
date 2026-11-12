@@ -42,7 +42,7 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
       max = call.getOperandCount();
     }
 
-    TypeFamily firstFamily = null;
+    Type firstType = null;
     for (int i = start; i < max; i++) {
       IExpression operand = call.getOperand(i);
 
@@ -53,16 +53,40 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
 
       // Ignore a value of any type, like ERROR(), it matches every family whatever its position
       if (type.getFamily() == TypeFamily.ANY) continue;
-      if (firstFamily != null) {
-        if (!type.isFamily(firstFamily)) {
+      if (firstType != null) {
+        if (!type.isFamily(firstType.getFamily()) || !isSameArray(firstType, type)) {
           return false;
         }
       } else {
-        firstFamily = type.getFamily();
+        firstType = type;
       }
     }
 
     return true;
+  }
+
+  /**
+   * Checks that two arrays have the same number of dimensions and elements of the same family, so
+   * {@code [1]} is not the same as {@code [[2]]} or {@code ['a']}.
+   *
+   * @param type1 the first type, of the same family as the second type
+   * @param type2 the second type
+   * @return {@code true} if the types are not arrays or are arrays of the same kind
+   */
+  private static boolean isSameArray(Type type1, Type type2) {
+    if (type1 instanceof ArrayType array1 && type2 instanceof ArrayType array2) {
+      Type elementType1 = array1.getElementType();
+      Type elementType2 = array2.getElementType();
+      // The elements of an array of NULL have no type
+      if (elementType1.isName(TypeName.UNKNOWN) || elementType2.isName(TypeName.UNKNOWN)) {
+        return true;
+      }
+      if (elementType1 instanceof ArrayType || elementType2 instanceof ArrayType) {
+        return isSameArray(elementType1, elementType2);
+      }
+      return elementType1.isFamily(elementType2.getFamily());
+    }
+    return !(type1 instanceof ArrayType) && !(type2 instanceof ArrayType);
   }
 
   @Override

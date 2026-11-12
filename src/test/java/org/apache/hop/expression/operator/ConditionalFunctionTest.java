@@ -80,6 +80,15 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("If()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("If(true)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("If(true,2,'2')", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // Arrays must have the same number of dimensions and elements of the same family
+    evalTrue("IF(FIELD_INTEGER=40,[1],[2.5]) = [1]");
+    evalTrue("IF(FIELD_INTEGER=40,[[1]],[[2.5]]) = [[1]]");
+    evalTrue("IF(FIELD_INTEGER=41,[1],[NULL_INTEGER]) = [NULL_INTEGER]");
+    evalFails("IF(FIELD_INTEGER=40,[1],[[2]])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IF(FIELD_INTEGER=40,[[1]],[2])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IF(FIELD_INTEGER=40,[1],['a'])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IF(FIELD_INTEGER=40,[1],2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     // The type of the result can't be inferred from untyped NULL, like a CASE
     evalFails("If(FIELD_BOOLEAN_TRUE,NULL,NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("If(Date '2023-01-01',1,2)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -147,6 +156,8 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("IfNull()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("IfNull(1)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("IfNull(1,2,3)", ErrorCode.TOO_MANY_ARGUMENTS);
+    evalFails("IFNULL([1],[[2]])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("IFNULL([1],['a'])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // Simplify IfNull(NULL,x) → x
     optimize("IFNULL(NULL::STRING,FIELD_STRING)", "FIELD_STRING");
@@ -461,6 +472,8 @@ class ConditionalFunctionTest extends ExpressionTest {
 
     // The type of the result can't be inferred from an untyped NULL
     evalFails("COALESCE(NULL)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("COALESCE([1],[[2]])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("COALESCE([1],['a'])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     optimize("COALESCE(NULL::INTEGER)", "NULL");
     optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
 
@@ -534,5 +547,7 @@ class ConditionalFunctionTest extends ExpressionTest {
     evalFails("Nvl2()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Nvl2(true)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
     evalFails("Nvl2(true,2)", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("NVL2(FIELD_INTEGER,[1],[[2]])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("NVL2(FIELD_INTEGER,[1],['a'])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
   }
 }

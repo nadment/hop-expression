@@ -220,7 +220,7 @@ public final class Array implements IExpression, Iterable<IExpression> {
   /**
    * Format values with a comma separator <code>value1,value2,...</code>
    *
-   * @param writer
+   * @param writer the writer to which the values are written
    */
   public void unparseValues(StringWriter writer) {
     boolean first = true;
@@ -328,31 +328,6 @@ public final class Array implements IExpression, Iterable<IExpression> {
   public boolean isDeterministic() {
     for (IExpression expression : values) {
       if (!expression.isDeterministic()) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /** Returns {@code true} if this array contains the specified elements. */
-  public boolean contains(IExpression element) {
-    for (IExpression expression : values) {
-      if (element.equals(expression)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Returns {@code true} if this array contains all the elements of the specified collection.
-   *
-   * @param collection to be checked for containment in this array
-   * @return {@code true} if this array contains all the elements of the specified collection
-   */
-  public boolean containsAll(Collection<IExpression> collection) {
-    for (IExpression expression : collection) {
-      if (!contains(expression)) {
         return false;
       }
     }
