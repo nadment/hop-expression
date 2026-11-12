@@ -134,8 +134,8 @@ class MathematicalFunctionTest extends ExpressionTest {
     optimize("DIV0(FIELD_INTEGER,4)");
 
     // Simplify arithmetic DIV0(A,0) → 0 when A is not nullable
-    optimize("DIV0(0,0)", "0");
-    optimize("DIV0(PI(),0)", "0");
+    optimize("DIV0(0,0)", "0.0");
+    optimize("DIV0(PI(),0)", "0.0");
 
     // Simplify arithmetic with NULL
     optimizeNull("DIV0(NULL::INTEGER,FIELD_INTEGER)");
@@ -254,7 +254,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     evalFails("Gamma(1000000)", ErrorCode.ARITHMETIC_OVERFLOW);
     evalFails("Gamma(1e-40)", ErrorCode.ARITHMETIC_OVERFLOW);
 
-    optimize("GAMMA(5)", "24");
+    optimize("GAMMA(5)", "24.0");
   }
 
   @Test
@@ -299,7 +299,7 @@ class MathematicalFunctionTest extends ExpressionTest {
     // Alias
     evalEquals("Pow(3,2)", 9D);
 
-    optimize("POWER(FIELD_NUMBER,1)", "POWER(FIELD_NUMBER,1)");
+    optimize("POWER(FIELD_NUMBER,1)", "POWER(FIELD_NUMBER,1.0)");
     optimize("POWER(RANDOM(),1)", "RANDOM()");
   }
 

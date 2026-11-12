@@ -157,19 +157,20 @@ public class ExpressionParserTest extends ExpressionTest {
 
     // Simple array values
     optimize("[1]");
-    optimize("[1,2.5,3+2]", "[1,2.5,5]");
+    optimize("[1,2.5,3+2]", "[1.0,2.5,5.0]");
 
     // Multi-dimensional array values
     optimize("[[1,2],[3,4]]");
     optimize("[[1,2,3],[1]]").returnType(arrayOf(arrayOf(IntegerType.of(1, false))));
-    optimize("[[1,22],[3.5]]").returnType(arrayOf(arrayOf(NumberType.of(3, 1, false))));
+    optimize("[[1,22],[3.5]]", "[[1.0,22.0],[3.5]]")
+        .returnType(arrayOf(arrayOf(NumberType.of(3, 1, false))));
     optimize("[[1],[]::INTEGER[]]", "[[1],CAST([] AS INTEGER[])]")
         .returnType(arrayOf(arrayOf(IntegerType.INTEGER)));
     optimize("[[[1]]]").returnType(arrayOf(arrayOf(arrayOf(IntegerType.of(1, false)))));
 
     // The elements of the nested arrays are converted to the element type
-    optimize("[[1,22],[3.5]]", "[[1,22],[3.5]]");
-    optimize("[[1,FIELD_INTEGER],[3.5]]", "[[1,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
+    optimize("[[1,22],[3.5]]", "[[1.0,22.0],[3.5]]");
+    optimize("[[1,FIELD_INTEGER],[3.5]]", "[[1.0,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
         .returnType(arrayOf(arrayOf(NumberType.of(13, 1))));
     optimize("[[FIELD_INTEGER],[FIELD_NUMBER]]", "[[CAST(FIELD_INTEGER AS NUMBER)],[FIELD_NUMBER]]")
         .returnType(arrayOf(arrayOf(NumberType.NUMBER)));
@@ -369,7 +370,7 @@ public class ExpressionParserTest extends ExpressionTest {
   void unparse() throws Exception {
     optimize("(2+FIELD_INTEGER)*4", "4*(2+FIELD_INTEGER)");
     optimize("4*(2+FIELD_INTEGER)", "4*(2+FIELD_INTEGER)");
-    optimize("4/2+FIELD_INTEGER", "2+CAST(FIELD_INTEGER AS NUMBER(12))");
+    optimize("4/2+FIELD_INTEGER", "2.0+CAST(FIELD_INTEGER AS NUMBER(12))");
     optimize("4/(2+FIELD_INTEGER)", "4/(2+FIELD_INTEGER)");
     optimize("-FIELD_INTEGER::NUMBER", "-CAST(FIELD_INTEGER AS NUMBER)");
     optimize(

@@ -70,14 +70,14 @@ class ArrayFunctionTest extends ExpressionTest {
         "ARRAY_PREPEND('A',STRING_TO_ARRAY(FIELD_STRING,','))");
 
     // The elements of the array are converted to the type of the prepended element
-    optimize("ARRAY_PREPEND(2.5,[1,2])", "[2.5,1,2]");
+    optimize("ARRAY_PREPEND(2.5,[1,2])", "[2.5,1.0,2.0]");
     optimize(
             "ARRAY_PREPEND(FIELD_NUMBER,[FIELD_INTEGER,2])",
-            "[FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER),2]")
+            "[FIELD_NUMBER,CAST(FIELD_INTEGER AS NUMBER),2.0]")
         .returnType(arrayOf(NumberType.NUMBER));
 
     // An INTEGER prepended to an array of NUMBER is coerced to NUMBER
-    optimize("ARRAY_PREPEND(3,[1.5,2.5])", "[3,1.5,2.5]")
+    optimize("ARRAY_PREPEND(3,[1.5,2.5])", "[3.0,1.5,2.5]")
         .returnType(arrayOf(NumberType.of(2, 1, false)));
     optimize(
             "ARRAY_PREPEND(FIELD_INTEGER,[1.5,FIELD_NUMBER])",
@@ -109,7 +109,7 @@ class ArrayFunctionTest extends ExpressionTest {
     // coerced
     optimize(
             "ARRAY_PREPEND([FIELD_NUMBER],[[1,FIELD_INTEGER]])",
-            "[[FIELD_NUMBER],[1,CAST(FIELD_INTEGER AS NUMBER)]]")
+            "[[FIELD_NUMBER],[1.0,CAST(FIELD_INTEGER AS NUMBER)]]")
         .returnType(arrayOf(arrayOf(NumberType.NUMBER)));
     evalFails("ARRAY_PREPEND(3,[[1,2]])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_PREPEND([DATE '2020-01-01'],[[1,2]])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -126,18 +126,18 @@ class ArrayFunctionTest extends ExpressionTest {
 
     // The result is an array of the most general type of the elements
     optimize("ARRAY_CONCAT([1,2],[40])", "[1,2,40]").returnType(arrayOf(IntegerType.of(2, false)));
-    optimize("ARRAY_CONCAT([1,2],[2.5])", "[1,2,2.5]");
+    optimize("ARRAY_CONCAT([1,2],[2.5])", "[1.0,2.0,2.5]");
     optimize("ARRAY_CONCAT([FIELD_INTEGER],[1])", "[FIELD_INTEGER,1]");
     // The elements are converted to the most general type of the elements
     optimize(
-        "ARRAY_CONCAT([1,FIELD_INTEGER],[2.5])", "[1,CAST(FIELD_INTEGER AS NUMBER(13,1)),2.5]");
+        "ARRAY_CONCAT([1,FIELD_INTEGER],[2.5])", "[1.0,CAST(FIELD_INTEGER AS NUMBER(13,1)),2.5]");
 
     // An array of INTEGER with an array of NUMBER, the integers are coerced to NUMBER
-    optimize("ARRAY_CONCAT([1,2],[1.5,2.5])", "[1,2,1.5,2.5]")
+    optimize("ARRAY_CONCAT([1,2],[1.5,2.5])", "[1.0,2.0,1.5,2.5]")
         .returnType(arrayOf(NumberType.of(2, 1, false)));
     optimize(
             "ARRAY_CONCAT([1,FIELD_INTEGER],[1.5,FIELD_NUMBER])",
-            "[1,CAST(FIELD_INTEGER AS NUMBER),1.5,FIELD_NUMBER]")
+            "[1.0,CAST(FIELD_INTEGER AS NUMBER),1.5,FIELD_NUMBER]")
         .returnType(arrayOf(NumberType.NUMBER));
     optimize(
             "ARRAY_CONCAT([FIELD_NUMBER],[FIELD_INTEGER])",
@@ -151,7 +151,7 @@ class ArrayFunctionTest extends ExpressionTest {
     // returned by a function when the arrays are joined
     optimize(
             "ARRAY_CONCAT(TRANSFORM([FIELD_NUMBER],x->x),[1,FIELD_INTEGER])",
-            "ARRAY_CONCAT(TRANSFORM([FIELD_NUMBER],x->x),[1,CAST(FIELD_INTEGER AS NUMBER)])")
+            "ARRAY_CONCAT(TRANSFORM([FIELD_NUMBER],x->x),[1.0,CAST(FIELD_INTEGER AS NUMBER)])")
         .returnType(arrayOf(NumberType.NUMBER));
     optimize(
             "ARRAY_CONCAT(TRANSFORM([FIELD_INTEGER],x->x),[1.5,FIELD_NUMBER])",
@@ -161,11 +161,11 @@ class ArrayFunctionTest extends ExpressionTest {
     evalTrue("ARRAY_APPEND(TRANSFORM([1,FIELD_INTEGER],x->x*2),2.5)[2] = 80");
 
     // Multi-dimensional arrays, the elements of the nested arrays are coerced
-    optimize("ARRAY_CONCAT([[1,2]],[[3.5]])", "[[1,2],[3.5]]")
+    optimize("ARRAY_CONCAT([[1,2]],[[3.5]])", "[[1.0,2.0],[3.5]]")
         .returnType(arrayOf(arrayOf(NumberType.of(2, 1, false))));
     optimize(
             "ARRAY_CONCAT([[1,FIELD_INTEGER]],[[3.5]])",
-            "[[1,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
+            "[[1.0,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
         .returnType(arrayOf(arrayOf(NumberType.of(13, 1))));
     optimize(
             "ARRAY_CONCAT([[FIELD_INTEGER]],[[FIELD_NUMBER]])",
@@ -217,14 +217,14 @@ class ArrayFunctionTest extends ExpressionTest {
         "ARRAY_APPEND(STRING_TO_ARRAY(FIELD_STRING,','),'A')");
 
     // The elements of the array are converted to the type of the appended element
-    optimize("ARRAY_APPEND([1,2],2.5)", "[1,2,2.5]");
+    optimize("ARRAY_APPEND([1,2],2.5)", "[1.0,2.0,2.5]");
     optimize(
             "ARRAY_APPEND([FIELD_INTEGER,2],FIELD_NUMBER)",
-            "[CAST(FIELD_INTEGER AS NUMBER),2,FIELD_NUMBER]")
+            "[CAST(FIELD_INTEGER AS NUMBER),2.0,FIELD_NUMBER]")
         .returnType(arrayOf(NumberType.NUMBER));
 
     // An INTEGER appended to an array of NUMBER is coerced to NUMBER
-    optimize("ARRAY_APPEND([1.5,2.5],3)", "[1.5,2.5,3]")
+    optimize("ARRAY_APPEND([1.5,2.5],3)", "[1.5,2.5,3.0]")
         .returnType(arrayOf(NumberType.of(2, 1, false)));
     optimize(
             "ARRAY_APPEND([1.5,2.5],FIELD_INTEGER)",
@@ -257,11 +257,11 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("ARRAY_APPEND([DATE '2020-01-01'],1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
 
     // An array appended to a multi-dimensional array, the elements of the nested arrays are coerced
-    optimize("ARRAY_APPEND([[1,2]],[3.5])", "[[1,2],[3.5]]")
+    optimize("ARRAY_APPEND([[1,2]],[3.5])", "[[1.0,2.0],[3.5]]")
         .returnType(arrayOf(arrayOf(NumberType.of(2, 1, false))));
     optimize(
             "ARRAY_APPEND([[1,FIELD_INTEGER]],[3.5])",
-            "[[1,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
+            "[[1.0,CAST(FIELD_INTEGER AS NUMBER(13,1))],[3.5]]")
         .returnType(arrayOf(arrayOf(NumberType.of(13, 1))));
     evalFails("ARRAY_APPEND([[1,2]],3)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("ARRAY_APPEND([[1,2]],[DATE '2020-01-01'])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
@@ -403,7 +403,7 @@ class ArrayFunctionTest extends ExpressionTest {
   void Array_Distinct() throws Exception {
     optimize("ARRAY_DISTINCT([1,2,1,3,2])", "[1,2,3]");
     optimize("ARRAY_DISTINCT(['b','a','b'])", "['b','a']");
-    optimize("ARRAY_DISTINCT([1,2.5,1.0])", "[1,2.5]");
+    optimize("ARRAY_DISTINCT([1,2.5,1.0])", "[1.0,2.5]");
     optimize("ARRAY_DISTINCT([[1,2],[3],[1,2]])", "[[1,2],[3]]");
     optimize("ARRAY_DISTINCT([]::INTEGER[])", "CAST([] AS INTEGER[])");
 
@@ -432,7 +432,7 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_SORT([3,1,2])", "[1,2,3]");
     optimize("ARRAY_SORT([3,1,2],FALSE)", "[3,2,1]");
     optimize("ARRAY_SORT(['mon','tue','fri'])", "['fri','mon','tue']");
-    optimize("ARRAY_SORT([2.5,1,2])", "[1,2,2.5]");
+    optimize("ARRAY_SORT([2.5,1,2])", "[1.0,2.0,2.5]");
     optimize("ARRAY_SORT([[2],[1,3],[1,2]])", "[[1,2],[1,3],[2]]");
     optimize("ARRAY_SORT([]::INTEGER[])", "CAST([] AS INTEGER[])");
 
@@ -524,8 +524,8 @@ class ArrayFunctionTest extends ExpressionTest {
     optimize("ARRAY_REMOVE([]::INTEGER[],1)", "CAST([] AS INTEGER[])");
 
     // Values of different numeric types
-    optimize("ARRAY_REMOVE([1,2.5,3],2.5)", "[1,3]");
-    optimize("ARRAY_REMOVE([1.5,2,3],2)", "[1.5,3]");
+    optimize("ARRAY_REMOVE([1,2.5,3],2.5)", "[1.0,3.0]");
+    optimize("ARRAY_REMOVE([1.5,2,3],2)", "[1.5,3.0]");
 
     // Elements are compared by value
     evalEquals("ARRAY_TO_STRING(ARRAY_REMOVE([40,FIELD_INTEGER,2],40),',')", "2");

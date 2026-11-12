@@ -315,7 +315,7 @@ public final class Literal implements IExpression {
           writer.append(StringConversion.convert((Long) value));
           break;
         case NUMBER:
-          writer.append(StringConversion.convert((BigDecimal) value));
+          unparseNumber(writer, (BigDecimal) value);
           break;
         case BINARY:
           unparseBinary(writer, (byte[]) value);
@@ -346,6 +346,25 @@ public final class Literal implements IExpression {
   }
 
   /** Unparses a string literal, a single quote is doubled. */
+  /**
+   * Writes a number with a decimal point, so it is parsed again as a NUMBER and not as an INTEGER:
+   * {@code 40.0} or {@code 1.0E+30}.
+   */
+  private static void unparseNumber(final StringWriter writer, final BigDecimal number) {
+    String str = StringConversion.convert(number);
+    if (str.indexOf('.') >= 0) {
+      writer.append(str);
+      return;
+    }
+    // The decimal point is written before the exponent
+    int exponent = str.indexOf('E');
+    if (exponent < 0) {
+      writer.append(str).append(".0");
+    } else {
+      writer.append(str, 0, exponent).append(".0").append(str, exponent, str.length());
+    }
+  }
+
   private static void unparseString(final StringWriter writer, final String str) {
     writer.append('\'');
     for (int i = 0; i < str.length(); i++) {

@@ -726,8 +726,9 @@ public class OperatorTest extends ExpressionTest {
 
       // The common type has enough integer digits to hold the values of FIELD_INTEGER
       optimize(
-          "FIELD_INTEGER in (1,2,1,2,3,4.1)", "CAST(FIELD_INTEGER AS NUMBER(13,1)) IN (1,2,3,4.1)");
-      optimize("FIELD_NUMBER in (1,2,1,2,3,4.1)", "FIELD_NUMBER IN (1,2,3,4.1)");
+          "FIELD_INTEGER in (1,2,1,2,3,4.1)",
+          "CAST(FIELD_INTEGER AS NUMBER(13,1)) IN (1.0,2.0,3.0,4.1)");
+      optimize("FIELD_NUMBER in (1,2,1,2,3,4.1)", "FIELD_NUMBER IN (1.0,2.0,3.0,4.1)");
       optimize("FIELD_STRING in ('1','2','1')", "FIELD_STRING IN ('1','2')");
 
       // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
@@ -742,7 +743,7 @@ public class OperatorTest extends ExpressionTest {
       evalTrue("FIELD_INTEGER NOT IN (1)");
       optimizeFalse("2 NOT IN (1,2,3)");
 
-      optimize("(0 / 0) in (2, 2)", "2=0/0");
+      optimize("(0 / 0) in (2, 2)", "2.0=0/0");
 
       // Value in the expression list
       // optimize("FIELD_INTEGER in (1,2,FIELD_INTEGER)", "NULL OR FIELD_INTEGER IS NOT NULL");
@@ -918,14 +919,15 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/CAST(-FIELD_INTEGER AS NUMBER(12))");
 
       // Simplify arithmetic (A * B) / C → (A / C) * B (if A and C are constants)
-      optimize("(4*FIELD_NUMBER)/2", "2*FIELD_NUMBER");
+      optimize("(4*FIELD_NUMBER)/2", "2.0*FIELD_NUMBER");
       // optimize("((FIELD_NUMBER*4)*FIELD_INTEGER)/2", "2*FIELD_NUMBER*FIELD_INTEGER");
       // optimize("(FIELD_NUMBER*(FIELD_INTEGER*4))/2", "2*FIELD_NUMBER*FIELD_INTEGER");
 
       // Simplify arithmetic (A / B) / C → A / (B * C) (if B and C are constants)
-      optimize("(FIELD_NUMBER/4)/2", "FIELD_NUMBER/8");
+      optimize("(FIELD_NUMBER/4)/2", "FIELD_NUMBER/8.0");
       optimize(
-          "((FIELD_NUMBER/4)/FIELD_INTEGER)/2", "FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))/8");
+          "((FIELD_NUMBER/4)/FIELD_INTEGER)/2",
+          "FIELD_NUMBER/CAST(FIELD_INTEGER AS NUMBER(12))/8.0");
     }
   }
 
@@ -1300,7 +1302,7 @@ public class OperatorTest extends ExpressionTest {
       // Not with a list of values that is not constant
       optimize(
           "FIELD_INTEGER IN (FIELD_NUMBER,2) OR FIELD_INTEGER=1",
-          "FIELD_INTEGER=1 OR CAST(FIELD_INTEGER AS NUMBER) IN (2,FIELD_NUMBER)");
+          "FIELD_INTEGER=1 OR CAST(FIELD_INTEGER AS NUMBER) IN (2.0,FIELD_NUMBER)");
 
       // Simplify intersection != and NOT IN
       optimize("FIELD_INTEGER!=2 OR FIELD_INTEGER NOT IN (1,2,3,4)", "FIELD_INTEGER!=2");
@@ -1600,7 +1602,7 @@ public class OperatorTest extends ExpressionTest {
       optimize(
           "FIELD_INTEGER>=1 AND FIELD_INTEGER<=5 AND FIELD_INTEGER>2 AND FIELD_INTEGER<10",
           "FIELD_INTEGER<=5 AND FIELD_INTEGER>2");
-      optimize("FIELD_NUMBER>5 AND FIELD_NUMBER>1.5", "FIELD_NUMBER>5");
+      optimize("FIELD_NUMBER>5 AND FIELD_NUMBER>1.5", "FIELD_NUMBER>5.0");
       // No value is in the range
       optimize("FIELD_INTEGER<1 AND FIELD_INTEGER>5", "NVL2(FIELD_INTEGER,FALSE,NULL)");
       optimize("FIELD_INTEGER>5 AND FIELD_INTEGER<=5", "NVL2(FIELD_INTEGER,FALSE,NULL)");
@@ -1838,7 +1840,7 @@ public class OperatorTest extends ExpressionTest {
       // Flatten search case
       optimize(
           "CASE WHEN FIELD_INTEGER=1 THEN 1 ELSE CASE WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END END",
-          "CASE WHEN FIELD_INTEGER=1 THEN 1 WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END");
+          "CASE WHEN FIELD_INTEGER=1 THEN 1 WHEN FIELD_NUMBER=2.0 THEN 2 ELSE 3 END");
 
       // "CASE WHEN x IS NULL THEN y ELSE x END" to "IFNULL(x, y)"
       optimize(
@@ -2783,7 +2785,7 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify arithmetic A % 1 → 0 (if A is not nullable)
       optimize("FIELD_INTEGER%1", "FIELD_INTEGER%1");
-      optimize("FIELD_INTEGER%1.0", "CAST(FIELD_INTEGER AS NUMBER(12))%1");
+      optimize("FIELD_INTEGER%1.0", "CAST(FIELD_INTEGER AS NUMBER(12))%1.0");
       optimize("Random()%1", "0");
       optimize("Random()%1.0", "0");
     }
@@ -2860,7 +2862,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER*4", "4*FIELD_INTEGER");
       optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
       optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
-      optimize("4*FIELD_INTEGER*0.5", "2*CAST(FIELD_INTEGER AS NUMBER(12))");
+      optimize("4*FIELD_INTEGER*0.5", "2.0*CAST(FIELD_INTEGER AS NUMBER(12))");
 
       // Normalize
       optimize("0*FIELD_INTEGER");
@@ -3539,7 +3541,7 @@ public class OperatorTest extends ExpressionTest {
 
       // By default, BETWEEN is ASYMMETRIC
       optimize(
-          "FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER<=50 AND FIELD_NUMBER>=20");
+          "FIELD_NUMBER BETWEEN ASYMMETRIC 20 AND 50", "FIELD_NUMBER<=50.0 AND FIELD_NUMBER>=20.0");
       // No value is between bounds in the reverse order
       optimize("FIELD_NUMBER BETWEEN ASYMMETRIC 50 AND 20", "NVL2(FIELD_NUMBER,FALSE,NULL)");
       optimize("FIELD_INTEGER BETWEEN 5 AND 3", "NVL2(FIELD_INTEGER,FALSE,NULL)");
@@ -3558,8 +3560,10 @@ public class OperatorTest extends ExpressionTest {
           "FIELD_NUMBER<=RANDOM() AND FIELD_NUMBER>=RANDOM()");
 
       // Remove SYMMETRIC if operands are constant, and swap bound if necessary
-      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER<=50 AND FIELD_NUMBER>=20");
-      optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER<=50 AND FIELD_NUMBER>=20");
+      optimize(
+          "FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER<=50.0 AND FIELD_NUMBER>=20.0");
+      optimize(
+          "FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER<=50.0 AND FIELD_NUMBER>=20.0");
       // Not with bounds that are not constant
       optimize("FIELD_INTEGER BETWEEN SYMMETRIC FIELD_INTEGER_ZERO AND 5");
 
@@ -4054,7 +4058,7 @@ public class OperatorTest extends ExpressionTest {
       optimize("FIELD_INTEGER::NUMBER", "CAST(FIELD_INTEGER AS NUMBER)");
 
       // Chained cast
-      optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS NUMBER)", "123456");
+      optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS NUMBER)", "123456.0");
     }
 
     @Test
