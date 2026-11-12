@@ -102,6 +102,10 @@ public class NotEqualOperator extends BinaryOperator {
       return Literal.NULL_BOOLEAN;
     }
 
+    // Simplify if not nullable x!=x → FALSE
+    if (left.isSameExpression(right) && !left.getType().isNullable()) {
+      return Literal.FALSE;
+    }
     // Simplify x!=x → NULL AND x IS NULL
     if (left.isSameExpression(right)) {
       return new Call(

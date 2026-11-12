@@ -199,6 +199,9 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify comparison with the same term
       optimize("FIELD_STRING!=FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
+      // The result is FALSE if the operand can't be NULL, like an array constructor
+      optimize("[FIELD_INTEGER,2]<>[FIELD_INTEGER,2]", "FALSE");
+      evalFalse("[1,2] <> [1,2]").returnType(BooleanType.BOOLEAN_NOT_NULL);
 
       // Simplify comparison when operands is of boolean type
       optimize("FIELD_BOOLEAN_TRUE<>FALSE", "FIELD_BOOLEAN_TRUE");
@@ -311,6 +314,9 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify comparison with the same term
       optimize("FIELD_STRING>FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
+      // The result is FALSE if the operand can't be NULL, like an array constructor
+      optimize("[FIELD_INTEGER,2]>[FIELD_INTEGER,2]", "FALSE");
+      evalFalse("[1,2] > [1,2]").returnType(BooleanType.BOOLEAN_NOT_NULL);
     }
   }
 
@@ -526,6 +532,9 @@ public class OperatorTest extends ExpressionTest {
 
       // Simplify comparison with the same term
       optimize("FIELD_STRING<FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
+      // The result is FALSE if the operand can't be NULL, like an array constructor
+      optimize("[FIELD_INTEGER,2]<[FIELD_INTEGER,2]", "FALSE");
+      evalFalse("[1,2] < [1,2]").returnType(BooleanType.BOOLEAN_NOT_NULL);
     }
   }
 
