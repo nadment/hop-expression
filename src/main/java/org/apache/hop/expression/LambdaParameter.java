@@ -76,9 +76,10 @@ public final class LambdaParameter extends Identifier {
 
   /**
    * Compares by name like an identifier, so the same lambda parsed twice is equal. The bound value
-   * is an evaluation state, not compared. Two parameters with the same name are never confused: in
+   * is an evaluation state, not compared. Two parameters with the same name are not confused: in
    * the body of an inner lambda, the name always refers to the inner parameter, which hides the
-   * outer one.
+   * outer one. When the source of a user-defined function replaces a call, a parameter of the
+   * source with the name of an identifier of the operands is renamed to keep this rule.
    */
   @Override
   public boolean equals(@Nullable Object other) {

@@ -113,7 +113,7 @@ public class UserDefinedFunction extends Function {
       IExpression expression = parseSource(meta);
 
       // Replace function arguments with real operands
-      expression = expression.accept(new UserDefinedFunctionArgumentReplacer(call.getOperands()));
+      expression = UserDefinedFunctionArgumentReplacer.replace(expression, call.getOperands());
       expression.validate(context);
 
       // Compile

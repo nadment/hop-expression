@@ -136,6 +136,53 @@ public class UserDefinedFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void testLambdaParameterWithNameOfOperand() throws Exception {
+    UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+    meta.setName("ADD_EACH");
+    meta.setSource("TRANSFORM([1,2],x->x+v0)");
+    meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
+    FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
+
+    UserDefinedFunctionMeta reduce = new UserDefinedFunctionMeta();
+    reduce.setName("SUM_EACH");
+    reduce.setSource("REDUCE([1,2],(acc,x)->acc+x+v0)");
+    reduce.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
+    FunctionRegistry.register(reduce.getName(), new UserDefinedFunction(reduce));
+
+    // The parameter of the source with the name of the operand is renamed
+    optimize(
+        "TRANSFORM([10,FIELD_INTEGER],x->ADD_EACH(x))",
+        "TRANSFORM([10,FIELD_INTEGER],x->TRANSFORM([1,2],x_1->x+x_1))");
+    evalTrue("TRANSFORM([10,FIELD_INTEGER],x->ADD_EACH(x)) = [[11,12],[41,42]]");
+    evalTrue("TRANSFORM([10,FIELD_INTEGER],x->ADD_EACH(x)[1]) = [11,41]");
+
+    // Only the parameter with the name of the operand is renamed
+    optimize(
+        "TRANSFORM([10,FIELD_INTEGER],acc->SUM_EACH(acc))",
+        "TRANSFORM([10,FIELD_INTEGER],acc->REDUCE([1,2],(acc_1,x)->acc+acc_1+x))");
+    evalTrue("TRANSFORM([10,FIELD_INTEGER],acc->SUM_EACH(acc)) = [13,43]");
+    evalTrue("TRANSFORM([10,FIELD_INTEGER],x->SUM_EACH(x)) = [13,43]");
+
+    // The operand has a lambda with a parameter of the same name
+    evalTrue("ADD_EACH(TRANSFORM([FIELD_INTEGER],x->x)[1]) = [41,42]");
+
+    // Nested calls, each parameter has its own name
+    optimize(
+        "TRANSFORM([10,FIELD_INTEGER],x->ADD_EACH(ADD_EACH(x)[1]))",
+        "TRANSFORM([10,FIELD_INTEGER],x->TRANSFORM([1,2],x_2->x_2+TRANSFORM([1,2],x_1->x+x_1)[1]))");
+    evalTrue("TRANSFORM([10,FIELD_INTEGER],x->ADD_EACH(ADD_EACH(x)[1])) = [[12,13],[42,43]]");
+
+    // Without operand of the same name, the parameter keeps its name
+    optimize(
+        "TRANSFORM([10,FIELD_INTEGER],y->ADD_EACH(y))",
+        "TRANSFORM([10,FIELD_INTEGER],y->TRANSFORM([1,2],x->x+y))");
+    optimize("ADD_EACH(FIELD_INTEGER)", "TRANSFORM([1,2],x->FIELD_INTEGER+x)");
+
+    FunctionRegistry.unregister(meta.getName());
+    FunctionRegistry.unregister(reduce.getName());
+  }
+
+  @Test
   void testArray() throws Exception {
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     meta.setName("ADD_ALL");
