@@ -579,9 +579,15 @@ class ArrayFunctionTest extends ExpressionTest {
     // The parameter hides a field with the same name
     evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],FIELD_INTEGER->FIELD_INTEGER*10),',')", "10,20");
 
-    // The name of the parameter is case-sensitive
-    evalFails("TRANSFORM([1,2],Val->VAL*10)", ErrorCode.UNRESOLVED_IDENTIFIER);
-    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],x->TRANSFORM([10],X->x+X)[1]),',')", "11,12");
+    // The name of the parameter is not case-sensitive, like the name of a field
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],field_integer->FIELD_INTEGER*10),',')", "10,20");
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],Val->VAL*10+val),',')", "11,22");
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],\"x\"->x+1),',')", "2,3");
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],x->\"x\"+1),',')", "2,3");
+    // The parameter of the inner lambda hides the parameter of the outer lambda
+    evalEquals("ARRAY_TO_STRING(TRANSFORM([1,2],x->TRANSFORM([10],X->x+X)[1]),',')", "20,20");
+    optimize(
+        "TRANSFORM([FIELD_INTEGER,2],Val->VAL*10)", "TRANSFORM([FIELD_INTEGER,2],Val->10*Val)");
 
     // Nested lambdas
     evalEquals(
@@ -636,6 +642,7 @@ class ArrayFunctionTest extends ExpressionTest {
     evalFails("TRANSFORM('test',x->z)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
     evalFails("TRANSFORM([1,2],(x,x)->x)", ErrorCode.DUPLICATE_LAMBDA_PARAMETER);
     evalFails("TRANSFORM([1,2],(x,y,x)->x)", ErrorCode.DUPLICATE_LAMBDA_PARAMETER);
+    evalFails("REDUCE([1,2],(a,A)->a+A)", ErrorCode.DUPLICATE_LAMBDA_PARAMETER);
     evalFails("TRANSFORM([1,2],(x,y)->)", ErrorCode.MISSING_LAMBDA_EXPRESSION);
     evalFails("TRANSFORM([1,2],()->1)", ErrorCode.SYNTAX_ERROR);
 

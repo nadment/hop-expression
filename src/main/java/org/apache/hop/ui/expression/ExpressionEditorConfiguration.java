@@ -16,9 +16,9 @@
 package org.apache.hop.ui.expression;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
@@ -100,7 +100,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public void setRowMeta(@Nullable IRowMeta rowMeta) {
     this.rowMeta = rowMeta;
 
-    Set<String> names = new HashSet<>();
+    // The name of a field is not case-sensitive
+    Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     if (rowMeta != null) {
       for (IValueMeta valueMeta : rowMeta.getValueMetaList()) {
         if (valueMeta != null && !Utils.isEmpty(valueMeta.getName())) {
@@ -226,7 +227,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // Add rule for operator
     rules.add(new OperatorRule(keyword));
 
-    // Add case-sensitive rule for identifier without double quote, the fields are checked when
+    // Add case-insensitive rule for identifier without double quote, the fields are checked when
     // the text is scanned because they are known after the editor is created
     rules.add(
         new NameRule(new IdentifierDetector(), name -> fieldNames.contains(name), identifier));

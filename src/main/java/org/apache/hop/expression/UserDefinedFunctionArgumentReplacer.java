@@ -17,11 +17,11 @@
 package org.apache.hop.expression;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -41,11 +41,14 @@ final class UserDefinedFunctionArgumentReplacer implements IExpressionVisitor<IE
 
   private final IExpression[] operands;
 
-  /** The names of the identifiers of the operands, a lambda parameter must not hide them. */
-  private final Set<String> operandNames = new HashSet<>();
+  /**
+   * The names of the identifiers of the operands, a lambda parameter must not hide them. The name
+   * of an identifier is not case-sensitive.
+   */
+  private final Set<String> operandNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
   /** The names of the identifiers of the operands and of the source, not free for a renaming. */
-  private final Set<String> usedNames = new HashSet<>();
+  private final Set<String> usedNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
   /** The renamed lambda parameters of the source, by identity. */
   private final Map<LambdaParameter, LambdaParameter> renamedParameters = new IdentityHashMap<>();

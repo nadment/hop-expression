@@ -593,9 +593,10 @@ public class ExpressionParser implements IExpressionParser {
       return parseLambda(token, List.of(token));
     }
 
-    // The parameter of a lambda hides a field with the same name, the innermost lambda first
+    // The parameter of a lambda hides a field with the same name, the innermost lambda first. The
+    // name is not case-sensitive, like the name of a field.
     for (LambdaParameter parameter : lambdaParameters) {
-      if (parameter.getName().equals(token.text())) {
+      if (parameter.getName().equalsIgnoreCase(token.text())) {
         return parameter;
       }
     }
@@ -635,14 +636,14 @@ public class ExpressionParser implements IExpressionParser {
    * @param token the first token of the lambda, used as its position
    * @param tokens the tokens of the parameters
    * @throws ExpressionException with {@link ErrorCode#DUPLICATE_LAMBDA_PARAMETER} if two parameters
-   *     have the same name, or {@link ErrorCode#MISSING_LAMBDA_EXPRESSION} if the expression is
-   *     missing
+   *     have the same name ignoring the case, or {@link ErrorCode#MISSING_LAMBDA_EXPRESSION} if the
+   *     expression is missing
    */
   private IExpression parseLambda(Token token, List<Token> tokens) throws ExpressionException {
     List<LambdaParameter> parameters = new ArrayList<>(tokens.size());
     for (Token parameterToken : tokens) {
       for (LambdaParameter parameter : parameters) {
-        if (parameter.getName().equals(parameterToken.text())) {
+        if (parameter.getName().equalsIgnoreCase(parameterToken.text())) {
           throw new ParseExpressionException(
               parameterToken.start(), ErrorCode.DUPLICATE_LAMBDA_PARAMETER, parameterToken.text());
         }

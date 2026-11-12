@@ -19,7 +19,7 @@ under the License.
 An expression is a combination of one or more literal values, resolvable identifiers, operators and functions that evaluate to a value.
 
 - Can be parenthesized to control the precedence order.
-- Are not case-sensitive, excepted for identifier.
+- Are not case-sensitive.
 - Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance.
 
 The xref:editor.adoc[expression editor] helps to write an expression.
@@ -310,7 +310,7 @@ An empty expression returns a NULL of type STRING.
 
 == Identifier
 
-Identifiers are the names of fields and is case-sensitive.
+Identifiers are the names of fields and of the parameters of a lambda, they are not case-sensitive: `Amount`, `AMOUNT` and `amount` are the same field.
 
 The field name can be enclosed in double quotes `"` such as `"Employee Name"`, this would allow identifiers to contain spaces, other punctuation, and to be keywords.
 

@@ -172,6 +172,12 @@ public class UserDefinedFunctionTest extends ExpressionTest {
         "TRANSFORM([10,FIELD_INTEGER],x->TRANSFORM([1,2],x_2->x_2+TRANSFORM([1,2],x_1->x+x_1)[1]))");
     evalTrue("TRANSFORM([10,FIELD_INTEGER],x->ADD_EACH(ADD_EACH(x)[1])) = [[12,13],[42,43]]");
 
+    // The name of an identifier is not case-sensitive, the parameter is renamed
+    optimize(
+        "TRANSFORM([10,FIELD_INTEGER],X->ADD_EACH(X))",
+        "TRANSFORM([10,FIELD_INTEGER],X->TRANSFORM([1,2],x_1->X+x_1))");
+    evalTrue("TRANSFORM([10,FIELD_INTEGER],X->ADD_EACH(X)) = [[11,12],[41,42]]");
+
     // Without operand of the same name, the parameter keeps its name
     optimize(
         "TRANSFORM([10,FIELD_INTEGER],y->ADD_EACH(y))",
