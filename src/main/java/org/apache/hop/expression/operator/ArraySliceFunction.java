@@ -26,7 +26,14 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/** Returns an array constructed from a specified subset of elements of the input array. */
+/**
+ * Returns an array constructed from a specified subset of elements of the input array, from a
+ * position to another position included.
+ *
+ * <p>The positions are the indexes of {@link ArrayElementAtOperator}: the first element has
+ * position 1 and a negative position is counted from the end, so {@code
+ * ARRAY_SLICE([10,20,30,40],2,-1)} returns {@code [20,30,40]}.
+ */
 @FunctionPlugin
 @NullMarked
 public class ArraySliceFunction extends Function {
@@ -53,15 +60,21 @@ public class ArraySliceFunction extends Function {
 
     int size = array.size();
 
+    // The first element has position 1, a negative position is counted from the end of the array
+    // and -1 is the last element, like the index of an element
     long from = fromLong;
     if (from < 0) {
-      from = size + from;
+      from = size + from + 1;
     }
 
     long to = toLong;
     if (to < 0) {
-      to = size + to;
+      to = size + to + 1;
     }
+
+    // The element at the position from is the first of the slice and the element at the position
+    // to the last one, so the slice is the range of indexes [from-1, to[
+    from = from - 1;
 
     // Clamp to the bounds of the array on long values, the conversion to int would wrap a value
     // out of the int range, so a slice partially out of the array keeps its elements inside

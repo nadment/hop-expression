@@ -358,29 +358,46 @@ class ArrayFunctionTest extends ExpressionTest {
 
   @Test
   void Array_Slice() throws Exception {
-    optimize("ARRAY_SLICE([1,2,3,4,5,6],0,2)", "[1,2]");
+    optimize("ARRAY_SLICE([1,2,3,4,5,6],1,2)", "[1,2]");
+    optimize("ARRAY_SLICE([10,20,30,40],2,3)", "[20,30]");
+    optimize("ARRAY_SLICE([10,20,30,40],3,3)", "[30]");
 
-    optimize("ARRAY_SLICE(['FOO','APACHE','HOP','BAR'], 1, 3)", "['APACHE','HOP']");
+    optimize("ARRAY_SLICE(['FOO','APACHE','HOP','BAR'], 2, 3)", "['APACHE','HOP']");
 
-    optimize("ARRAY_SLICE([1,2,3,4,5,6],0,-2)", "[1,2,3,4]");
-    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -5, -3)", "[2,3]");
+    // The positions are the ones of an element, the first element has position 1
+    evalTrue("ARRAY_SLICE([10,20,30,40],2,3)[1] = [10,20,30,40][2]");
+    evalTrue("ARRAY_SLICE([10,20,30,40],ARRAY_POSITION([10,20,30,40],30),4) = [30,40]");
+
+    // A negative position is counted from the end of the array, -1 is the last element
+    optimize("ARRAY_SLICE([10,20,30,40],2,-1)", "[20,30,40]");
+    optimize("ARRAY_SLICE([10,20,30,40],-2,-1)", "[30,40]");
+    optimize("ARRAY_SLICE([10,20,30,40],-1,-1)", "[40]");
+
+    optimize("ARRAY_SLICE([1,2,3,4,5,6],1,-2)", "[1,2,3,4,5]");
+    optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -5, -3)", "[2,3,4]");
+
+    // The position to before the position from gives an empty array
+    optimize("ARRAY_SLICE([10,20,30,40],3,2)", "CAST([] AS INTEGER(2)[])");
+    optimize("ARRAY_SLICE([10,20,30,40],-1,-2)", "CAST([] AS INTEGER(2)[])");
 
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], 10, 12)", "CAST([] AS INTEGER(1)[])");
     optimize("ARRAY_SLICE([0,1,2,3,4,5,6], -10, -12)", "CAST([] AS INTEGER(1)[])");
 
     // A slice partially out of the array keeps the elements inside
-    optimize("ARRAY_SLICE([1,2,3], 1, 10)", "[2,3]");
+    optimize("ARRAY_SLICE([1,2,3], 2, 10)", "[2,3]");
+    optimize("ARRAY_SLICE([1,2,3], 0, 2)", "[1,2]");
+    optimize("ARRAY_SLICE([1,2,3], 1, 0)", "CAST([] AS INTEGER(1)[])");
     optimize("ARRAY_SLICE([1,2,3], -10, 2)", "[1,2]");
     optimize("ARRAY_SLICE([1,2,3], -10, 10)", "[1,2,3]");
 
     // A position out of the int range must not wrap
     optimize("ARRAY_SLICE([1,2,3], 4294967296, 4294967298)", "CAST([] AS INTEGER(1)[])");
-    optimize("ARRAY_SLICE([1,2,3], 0, 4294967298)", "[1,2,3]");
+    optimize("ARRAY_SLICE([1,2,3], 1, 4294967298)", "[1,2,3]");
     optimize("ARRAY_SLICE([1,2,3], -4294967296, 2)", "[1,2]");
 
     // The result is an array of the type of the source array
-    optimize("ARRAY_SLICE([1,2,3],0,2)", "[1,2]").returnType(arrayOf(IntegerType.of(1, false)));
-    evalEquals("ARRAY_TO_STRING(TRANSFORM(ARRAY_SLICE([1,2,3],0,2),x->x+1),',')", "2,3");
+    optimize("ARRAY_SLICE([1,2,3],1,2)", "[1,2]").returnType(arrayOf(IntegerType.of(1, false)));
+    evalEquals("ARRAY_TO_STRING(TRANSFORM(ARRAY_SLICE([1,2,3],1,2),x->x+1),',')", "2,3");
 
     // Null handling
     evalNull("ARRAY_SLICE(NULL, 2, 3)");
