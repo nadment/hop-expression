@@ -90,6 +90,14 @@ class ExpressionCompletionProcessorTest {
     assertNotNull(processor.computeCompletionProposals(viewer("1+$NV"), 5));
   }
 
+  @Test
+  void onlyVariablesInStringOrComment() {
+    // A word in a string or a comment is not completed with a function or a reserved word
+    ExpressionCompletionProcessor processor = new ExpressionCompletionProcessor(new Variables());
+    assertEquals(0, processor.computeCompletionProposals(viewer("'abs"), 4).length);
+    assertEquals(0, processor.computeCompletionProposals(viewer("-- cas"), 6).length);
+  }
+
   /** Returns the text inserted for a function with a | at the caret. */
   private static String complete(String name, boolean hasParenthesis) {
     Function function = FunctionRegistry.getFunction(name);

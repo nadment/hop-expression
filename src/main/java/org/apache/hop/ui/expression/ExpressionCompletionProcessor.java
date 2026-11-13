@@ -65,6 +65,12 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   private final ExpressionMode mode;
   private @Nullable String message;
 
+  /**
+   * Creates the processor of the proposals of a string or a comment, where only the variables are
+   * proposed.
+   *
+   * @param variables the variables to propose
+   */
   public ExpressionCompletionProcessor(@Nullable IVariables variables) {
     this(variables, null, ExpressionMode.NONE);
   }
@@ -75,7 +81,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
    * @param variables the variables to propose
    * @param rowMeta the supplier of the fields or the arguments to propose, which returns null while
    *     they are not known. It is called in the UI thread, it must not wait for the fields. Null to
-   *     propose no field.
+   *     propose only the variables.
    * @param mode the mode of the expression
    */
   public ExpressionCompletionProcessor(
@@ -166,10 +172,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           }
 
           computeVariableProposals(proposals, prefix, start, end);
-        } else {
-          if (rowMeta != null) {
-            computeIdentifierProposals(proposals, prefix, start, end, quoted);
-          }
+        } else if (rowMeta != null) {
+          // In a string or a comment, a word is not a field, a reserved word or a function
+          computeIdentifierProposals(proposals, prefix, start, end, quoted);
           // A function name already followed by its parenthesis is replaced without parentheses
           boolean hasParenthesis = end < document.getLength() && document.getChar(end) == '(';
           computeReservedWordProposals(proposals, prefix, start, end, hasParenthesis);
