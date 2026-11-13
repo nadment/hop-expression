@@ -77,6 +77,20 @@ class OperatorFinderTest {
   }
 
   @Test
+  void symbolNextToUnaryMinus() {
+    assertSame(LessThanOperator.INSTANCE, find("A<-1", 1));
+    assertSame(SubtractOperator.INSTANCE, find("A<-1", 3));
+    assertSame(AddOperator.INSTANCE, find("A+-1", 1));
+
+    // The caret between two symbols, the symbol after the caret wins
+    assertSame(SubtractOperator.INSTANCE, find("A<-1", 2));
+    assertSame(SubtractOperator.INSTANCE, find("A+-1", 2));
+
+    // The start of a line comment is not an operator
+    assertNull(find("1 -- comment", 2));
+  }
+
+  @Test
   void keyword() {
     assertSame(BetweenAsymmetricOperator.INSTANCE, find("A BETWEEN 1 AND 2", 4));
     assertSame(BetweenAsymmetricOperator.INSTANCE, find("A between 1 AND 2", 9));

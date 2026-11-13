@@ -44,9 +44,6 @@ final class OperatorFinder {
   /** A character of a word, a keyword next to it is a part of a longer word. */
   private static final String WORD = "[\\p{L}\\p{N}_]";
 
-  /** A character of a symbol, a symbol next to it is a part of another symbol like {@code ->}. */
-  private static final String SYMBOL = "[+\\-*/%|=!<>:]";
-
   /** The other keywords of an operator, by the name of the operator. */
   private static final Map<String, List<String>> KEYWORDS =
       Map.of("CASE", List.of("WHEN", "THEN", "ELSE", "END"));
@@ -86,7 +83,7 @@ final class OperatorFinder {
     }
 
     Operator found = null;
-    int length = 0;
+    int best = 0;
     for (Operator operator : operators) {
       List<String> names = new ArrayList<>();
       names.add(operator.getName());
@@ -94,11 +91,14 @@ final class OperatorFinder {
       for (String name : names) {
         Matcher matcher = pattern(name).matcher(text);
         while (matcher.find()) {
-          if (matcher.start() <= offset
-              && offset <= matcher.end()
-              && matcher.end() - matcher.start() > length) {
-            found = operator;
-            length = matcher.end() - matcher.start();
+          if (matcher.start() <= offset && offset <= matcher.end()) {
+            // The longest name wins, then the name that covers the offset rather than the name
+            // that ends at the offset, like - rather than = for the caret between them in =-
+            int score = 2 * (matcher.end() - matcher.start()) + (offset < matcher.end() ? 1 : 0);
+            if (score > best) {
+              found = operator;
+              best = score;
+            }
           }
         }
       }
@@ -116,6 +116,15 @@ final class OperatorFinder {
       return Pattern.compile(
           "(?<!" + WORD + ")" + words + "(?!" + WORD + ")", Pattern.CASE_INSENSITIVE);
     }
-    return Pattern.compile("(?<!" + SYMBOL + ")" + Pattern.quote(name) + "(?!" + SYMBOL + ")");
+    // A symbol next to another operator is found, like = and - in x=-1, the longest name wins for
+    // the symbols of one operator like <=. Only the symbols of another token are excluded.
+    String before = name.startsWith(">") ? "(?<!-)" : "";
+    String after =
+        switch (name) {
+          case "-" -> "(?![->])";
+          case "/" -> "(?![/*])";
+          default -> "";
+        };
+    return Pattern.compile(before + Pattern.quote(name) + after);
   }
 }

@@ -894,7 +894,10 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
         TreeItem item = new TreeItem(variableFolder, SWT.NULL);
         item.setImage(GuiResource.getInstance().getImageVariable());
         item.setText(name);
-        item.setGrayed(isDeprecated);
+        // A deprecated variable is written in gray
+        if (isDeprecated) {
+          item.setForeground(GuiResource.getInstance().getColorGray());
+        }
         item.setData(variable);
       }
     }
