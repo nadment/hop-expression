@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
+import org.eclipse.swt.SWT;
 import org.junit.jupiter.api.Test;
 
 class ExpressionEditorTest {
@@ -82,6 +83,17 @@ class ExpressionEditorTest {
 
     // Between two variables, the source is underlined from the first one to the last one
     assertEquals(new Position(0, 9), ExpressionEditor.findSourcePosition("${A}+${B}", "1+abc", 1));
+  }
+
+  @Test
+  void shortcutModifier() {
+    assertTrue(ExpressionEditor.isShortcutModifier(SWT.MOD1));
+    assertTrue(ExpressionEditor.isShortcutModifier(SWT.MOD1 | SWT.SHIFT));
+    assertFalse(ExpressionEditor.isShortcutModifier(0));
+    assertFalse(ExpressionEditor.isShortcutModifier(SWT.SHIFT));
+    // AltGr is Ctrl+Alt on Windows, it types a character
+    assertFalse(ExpressionEditor.isShortcutModifier(SWT.CTRL | SWT.ALT));
+    assertFalse(ExpressionEditor.isShortcutModifier(SWT.MOD1 | SWT.ALT));
   }
 
   @Test

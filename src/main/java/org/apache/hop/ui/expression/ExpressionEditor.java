@@ -432,7 +432,7 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
             event.doit = false;
             return;
           }
-          if ((event.stateMask & SWT.MOD1) == 0) {
+          if (!isShortcutModifier(event.stateMask)) {
             return;
           }
           // The text widget has no undo, the shortcuts are handled here
@@ -591,6 +591,18 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
    */
   static boolean isAlternateContentAssistShortcut() {
     return "zh".equals(System.getProperty("user.language"));
+  }
+
+  /**
+   * Checks if the modifier keys are the ones of a shortcut of the editor, like Ctrl+Z: Ctrl, or Cmd
+   * on macOS, without Alt. On Windows, AltGr is Ctrl+Alt and types a character on some keyboards,
+   * like AltGr+A on a Polish keyboard, which is not a shortcut.
+   *
+   * @param stateMask the state of the modifier keys of a key event
+   * @return true if the key can be a shortcut
+   */
+  static boolean isShortcutModifier(int stateMask) {
+    return (stateMask & SWT.MOD1) != 0 && (stateMask & SWT.ALT) == 0;
   }
 
   protected void createTree(final Composite parent) {
