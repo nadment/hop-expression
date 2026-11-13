@@ -1501,7 +1501,8 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
       separator = true)
   public void evaluate() {
 
-    String source = wViewer.getTextWidget().getText();
+    // The variables are resolved before the expression is compiled, like when it is executed
+    String source = resolveVariables(wViewer.getTextWidget().getText());
 
     MessageBox dialog;
     try {
@@ -1652,11 +1653,17 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
 
     IDocument document = wViewer.getDocument();
     String expression = document.get();
+    // The variables are resolved before the expression is compiled, like when it is executed
+    String resolved = resolveVariables(expression);
     try {
-      IExpression.of(createExpressionContext(), expression);
+      IExpression.of(createExpressionContext(), resolved);
     } catch (ParseExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
-      annotationModel.addAnnotation(annotation, findErrorPosition(document, e.getPosition()));
+      Position position = findSourcePosition(expression, resolved, e.getPosition());
+      if (position.getLength() == 0) {
+        position = findErrorPosition(document, position.getOffset());
+      }
+      annotationModel.addAnnotation(annotation, position);
     } catch (RuntimeException e) {
       // An ExpressionException, or an unexpected error, must not break the editing.
       // Without position, the whole expression is underlined.
@@ -1664,6 +1671,47 @@ public class ExpressionEditor extends Composite implements IFindReplaceTarget, I
           new Annotation(ANNOTATION_ERROR_TYPE, false, String.valueOf(e.getMessage()));
       annotationModel.addAnnotation(annotation, new Position(0, expression.length()));
     }
+  }
+
+  /** Resolves the variables of the expression, like {@code ${NAME}}, if the variables are known. */
+  private String resolveVariables(String expression) {
+    return (variables == null) ? expression : variables.resolve(expression);
+  }
+
+  /**
+   * Finds in the source the position of an error of the expression with its variables resolved. The
+   * text before the first variable and after the last one is the same in both: a position in it is
+   * moved, a position in between covers the source from the first variable to the last one.
+   *
+   * <pre>{@code
+   * // The error is in the value of the variable, the variable is underlined
+   * findSourcePosition("1+${V}+2", "1+abc+2", 3); // offset 2, length 4
+   * }</pre>
+   *
+   * @param source the source of the expression
+   * @param resolved the source with its variables resolved
+   * @param position the position of the error in the resolved source
+   * @return the position in the source, with a length of 0 if it is a single offset
+   */
+  static Position findSourcePosition(String source, String resolved, int position) {
+    int max = Math.min(source.length(), resolved.length());
+    int prefix = 0;
+    while (prefix < max && source.charAt(prefix) == resolved.charAt(prefix)) {
+      prefix++;
+    }
+    int suffix = 0;
+    while (suffix < max - prefix
+        && source.charAt(source.length() - 1 - suffix)
+            == resolved.charAt(resolved.length() - 1 - suffix)) {
+      suffix++;
+    }
+    if (position < prefix) {
+      return new Position(Math.max(position, 0), 0);
+    }
+    if (position >= resolved.length() - suffix) {
+      return new Position(position - resolved.length() + source.length(), 0);
+    }
+    return new Position(prefix, source.length() - suffix - prefix);
   }
 
   /**

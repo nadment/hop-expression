@@ -100,11 +100,16 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       // Find significant characters entered by the user to restrict the number of
       // proposals
       int start = offset;
+      // The character before the prefix, 0 at the start of the document
       char ch = 0;
       while (start > 0) {
-        ch = document.getChar(start - 1);
-        if (Character.isJavaIdentifierPart(ch) || ch == '.') start--;
-        else break;
+        char c = document.getChar(start - 1);
+        if (Character.isJavaIdentifierPart(c) || c == '.') {
+          start--;
+        } else {
+          ch = c;
+          break;
+        }
       }
 
       boolean quoted = false;

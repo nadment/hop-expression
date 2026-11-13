@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
 import org.junit.jupiter.api.Test;
 
 class ExpressionEditorTest {
@@ -56,6 +57,31 @@ class ExpressionEditorTest {
 
     // A selection that ends at the start of a line does not include this line
     assertEquals("// 1\n2", toggle("1\n2", 0, 2));
+  }
+
+  @Test
+  void sourcePositionWithoutVariable() {
+    // Without variable resolved, the position is the same
+    assertEquals(new Position(2, 0), ExpressionEditor.findSourcePosition("1+x", "1+x", 2));
+    // An error at the end of the expression
+    assertEquals(new Position(3, 0), ExpressionEditor.findSourcePosition("1+x", "1+x", 3));
+  }
+
+  @Test
+  void sourcePositionWithVariable() {
+    String source = "1+${V}+2";
+    String resolved = "1+abc+2";
+    // Before the variable, the position is the same
+    assertEquals(new Position(1, 0), ExpressionEditor.findSourcePosition(source, resolved, 1));
+    // In the value of the variable, the variable is underlined
+    assertEquals(new Position(2, 4), ExpressionEditor.findSourcePosition(source, resolved, 2));
+    assertEquals(new Position(2, 4), ExpressionEditor.findSourcePosition(source, resolved, 4));
+    // After the variable, the position is moved
+    assertEquals(new Position(7, 0), ExpressionEditor.findSourcePosition(source, resolved, 6));
+    assertEquals(new Position(8, 0), ExpressionEditor.findSourcePosition(source, resolved, 7));
+
+    // Between two variables, the source is underlined from the first one to the last one
+    assertEquals(new Position(0, 9), ExpressionEditor.findSourcePosition("${A}+${B}", "1+abc", 1));
   }
 
   @Test

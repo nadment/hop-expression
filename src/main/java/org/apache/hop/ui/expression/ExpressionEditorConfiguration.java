@@ -292,6 +292,11 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
             name -> FunctionRegistry.getFunction(name) != null,
             function));
 
+    // Add rule for any other word, like a lambda parameter or an unknown field. The whole word is
+    // read, otherwise the scanner would color a reserved word or a number at the end of the word,
+    // like DAY in MYDAY or 1 in ITEM1.
+    rules.add(new WordRule(new IdentifierDetector(), undefined));
+
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules.toArray(new IRule[0]));
     scanner.setDefaultReturnToken(undefined);

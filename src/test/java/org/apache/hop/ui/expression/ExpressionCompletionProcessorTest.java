@@ -19,8 +19,10 @@ package org.apache.hop.ui.expression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,6 +34,7 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.util.DocumentationUtil;
 import org.apache.hop.junit.rules.RestoreHopEnvironmentExtension;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.junit.jupiter.api.Test;
@@ -65,6 +68,26 @@ class ExpressionCompletionProcessorTest {
     processor.computeIdentifierProposals(new ArrayList<>(), "A", 0, 1, false);
     processor.computeIdentifierProposals(new ArrayList<>(), "A", 0, 1, false);
     assertEquals(2, reads.get());
+  }
+
+  /** Returns a viewer of a text, only its document is read by the processor. */
+  private static ITextViewer viewer(String text) {
+    Document document = new Document(text);
+    return (ITextViewer)
+        Proxy.newProxyInstance(
+            ExpressionCompletionProcessorTest.class.getClassLoader(),
+            new Class<?>[] {ITextViewer.class},
+            (proxy, method, args) -> "getDocument".equals(method.getName()) ? document : null);
+  }
+
+  @Test
+  void variableAtStartOfExpression() {
+    // No variable is defined, the proposals are empty but they are computed without error
+    ExpressionCompletionProcessor processor = new ExpressionCompletionProcessor(new Variables());
+    assertNotNull(processor.computeCompletionProposals(viewer("$"), 1));
+    assertNotNull(processor.computeCompletionProposals(viewer("$NV"), 3));
+    assertNotNull(processor.computeCompletionProposals(viewer("${NV"), 4));
+    assertNotNull(processor.computeCompletionProposals(viewer("1+$NV"), 5));
   }
 
   /** Returns the text inserted for a function with a | at the caret. */
