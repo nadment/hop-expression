@@ -21,12 +21,16 @@ import java.time.DayOfWeek;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -44,6 +48,38 @@ public class NextDayFunction extends Function {
         OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/next_day.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A constant that is not the name of a day of the week is rejected when the call is validated,
+   * not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    validateDayOfWeek(call);
+  }
+
+  /**
+   * Checks that the constant day of the week of a call to NEXT_DAY or PREVIOUS_DAY is the name of a
+   * day. The error gives the position of the call, the editor marks it in the source.
+   *
+   * @param call the call to validate, with its operands already validated
+   * @throws ExpressionException if the constant is not the name of a day of the week
+   */
+  static void validateDayOfWeek(Call call) throws ExpressionException {
+    if (call.getOperandCount() == 2
+        && call.getOperand(1) instanceof Literal literal
+        && literal.getValue() instanceof String dow) {
+      try {
+        DayOfWeek.valueOf(dow.toUpperCase(Locale.ROOT));
+      } catch (IllegalArgumentException e) {
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_ARGUMENT, dow);
+      }
+    }
   }
 
   @Override

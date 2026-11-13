@@ -36,9 +36,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionParser;
 import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.Token;
 import org.apache.hop.expression.Token.Id;
@@ -46,6 +44,7 @@ import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -75,6 +74,12 @@ public class ExtractFunction extends Function {
               TimeUnit.MILLISECOND,
               TimeUnit.MICROSECOND,
               TimeUnit.NANOSECOND));
+
+  /** The time units extracted from a date without time zone, all but the time zone parts. */
+  private static final Set<TimeUnit> DATE_TIME_UNITS =
+      Collections.unmodifiableSet(
+          EnumSet.complementOf(
+              EnumSet.of(TimeUnit.TIMEZONE_HOUR, TimeUnit.TIMEZONE_MINUTE, TimeUnit.TIMEZONE)));
 
   public ExtractFunction() {
     super(
@@ -128,24 +133,25 @@ public class ExtractFunction extends Function {
   /**
    * {@inheritDoc}
    *
-   * <p>A time unit that is not a part of an interval, like EPOCH or WEEK, is rejected when the call
-   * is validated, not when a row is evaluated.
+   * <p>A time unit that is not a part of an interval, like EPOCH or WEEK, or a time zone part of a
+   * date without time zone, is rejected when the call is validated, not when a row is evaluated.
    *
    * @throws ExpressionException with {@link ErrorCode#INVALID_ARGUMENT} if the time unit is not a
-   *     part of the interval
+   *     part of the interval or of the date
    */
   @Override
   protected void validateOperands(IExpressionContext context, Call call)
       throws ExpressionException {
     super.validateOperands(context, call);
 
-    if (call.getOperandCount() == 2
-        && Types.isInterval(call.getOperand(1).getType())
-        && call.getOperand(0) instanceof Literal literal
-        && literal.getValue() instanceof TimeUnit unit
-        && !INTERVAL_TIME_UNITS.contains(unit)) {
-      // Give the position of the call, the editor marks the error in the source
-      throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_ARGUMENT, unit);
+    if (call.getOperandCount() == 2) {
+      Type type = call.getOperand(1).getType();
+      if (Types.isInterval(type)) {
+        validateTimeUnit(call, 0, INTERVAL_TIME_UNITS, ErrorCode.INVALID_ARGUMENT);
+      } else if (type.isName(TypeName.DATE)) {
+        // A date without time zone has no time zone part
+        validateTimeUnit(call, 0, DATE_TIME_UNITS, ErrorCode.INVALID_ARGUMENT);
+      }
     }
   }
 

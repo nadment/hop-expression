@@ -75,19 +75,16 @@ public class LastDayFunction extends Function {
         "/docs/hop-user-manual/expression/last_day.html");
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A time unit that is not supported, like DAY, is rejected with the position of the call.
+   */
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
-    // Validate time unit
-    if (call.getOperandCount() == 2) {
-      TimeUnit unit = call.getOperand(1).getValue(TimeUnit.class);
-
-      if (!SUPPORTED_TIME_UNITS.contains(unit)) {
-        throw new ExpressionException(ErrorCode.UNSUPPORTED_TIME_UNIT, unit);
-      }
-    }
-
-    return call;
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    validateTimeUnit(call, 1, SUPPORTED_TIME_UNITS, ErrorCode.UNSUPPORTED_TIME_UNIT);
   }
 
   @Override

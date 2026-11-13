@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.util.EnumSet;
+import java.util.Set;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -46,6 +48,18 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class DateAddFunction extends Function {
 
+  private static final Set<TimeUnit> SUPPORTED_TIME_UNITS =
+      EnumSet.of(
+          TimeUnit.YEAR,
+          TimeUnit.QUARTER,
+          TimeUnit.MONTH,
+          TimeUnit.WEEK,
+          TimeUnit.DAY,
+          TimeUnit.HOUR,
+          TimeUnit.MINUTE,
+          TimeUnit.SECOND,
+          TimeUnit.NANOSECOND);
+
   public DateAddFunction() {
     super(
         "DATE_ADD",
@@ -53,6 +67,18 @@ public class DateAddFunction extends Function {
         OperandTypes.TIMEUNIT_INTEGER_DATE,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/date_add.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A time unit that is not supported, like DECADE, is rejected with the position of the call.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    validateTimeUnit(call, 0, SUPPORTED_TIME_UNITS, ErrorCode.INVALID_ARGUMENT);
   }
 
   @Override

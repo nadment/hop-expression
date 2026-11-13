@@ -24,11 +24,15 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
+import java.util.EnumSet;
+import java.util.Set;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
@@ -41,6 +45,23 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class DateTruncFunction extends Function {
 
+  private static final Set<TimeUnit> SUPPORTED_TIME_UNITS =
+      EnumSet.of(
+          TimeUnit.MILLENNIUM,
+          TimeUnit.CENTURY,
+          TimeUnit.DECADE,
+          TimeUnit.YEAR,
+          TimeUnit.QUARTER,
+          TimeUnit.MONTH,
+          TimeUnit.WEEK,
+          TimeUnit.DAY,
+          TimeUnit.HOUR,
+          TimeUnit.MINUTE,
+          TimeUnit.SECOND,
+          TimeUnit.MILLISECOND,
+          TimeUnit.MICROSECOND,
+          TimeUnit.NANOSECOND);
+
   public DateTruncFunction() {
     super(
         "DATE_TRUNC",
@@ -48,6 +69,19 @@ public class DateTruncFunction extends Function {
         OperandTypes.TIMEUNIT_DATE,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/date_trunc.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A time unit that is not supported, like ISOWEEK, is rejected when the call is validated, not
+   * when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    validateTimeUnit(call, 0, SUPPORTED_TIME_UNITS, ErrorCode.INVALID_ARGUMENT);
   }
 
   @Override

@@ -1722,6 +1722,46 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Previous_Day(MAKE_DATE(-999999999,1,1), 'monday')", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
+  /** Checks that a source is rejected when validated, without row, at the position of the call. */
+  private void validateFails(String source, ErrorCode error) throws Exception {
+    IExpression expression = new ExpressionParser(new ExpressionLexer("1+" + source)).parse();
+    ParseExpressionException exception =
+        assertThrows(
+            ParseExpressionException.class,
+            () -> expression.validate(createExpressionContext()),
+            source);
+    assertEquals(error, exception.getErrorCode(), source);
+    // The position of the call is given to mark the error in the editor
+    assertEquals(2, exception.getPosition(), source);
+  }
+
+  @Test
+  void invalidTimeUnitDetectedWhenValidated() throws Exception {
+    validateFails("DATE_DIFF(ISOWEEK, FIELD_DATE, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_DIFF(DAYOFWEEK, FIELD_DATE, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_TRUNC(ISOWEEK, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_TRUNC(EPOCH, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_ADD(DECADE, 1, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_ADD(MILLISECOND, 1, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("FIRST_DAY(FIELD_DATE, DAY)", ErrorCode.UNSUPPORTED_TIME_UNIT);
+    validateFails("LAST_DAY(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
+
+    // A date without time zone has no time zone part, a timestamp has one
+    validateFails("EXTRACT(TIMEZONE_HOUR FROM FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("EXTRACT(TIMEZONE_MINUTE FROM FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("EXTRACT(TIMEZONE FROM FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    optimize("EXTRACT(TIMEZONE_HOUR FROM FIELD_TIMESTAMP)");
+  }
+
+  @Test
+  void invalidDayOfWeekDetectedWhenValidated() throws Exception {
+    validateFails("NEXT_DAY(FIELD_DATE, 'xyz')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("PREVIOUS_DAY(FIELD_DATE, 'mon')", ErrorCode.INVALID_ARGUMENT);
+
+    // A day of the week that is not a constant is checked when a row is evaluated
+    optimize("NEXT_DAY(FIELD_DATE,FIELD_STRING)");
+  }
+
   /**
    * The name of the day of the week does not depend on the default locale. Isolated because the
    * default locale is shared by the tests running in parallel.

@@ -21,11 +21,13 @@ import java.time.DayOfWeek;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -44,6 +46,19 @@ public class PreviousDayFunction extends Function {
         OperandTypes.DATE_STRING,
         OperatorCategory.DATE,
         "/docs/hop-user-manual/expression/previous_day.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A constant that is not the name of a day of the week is rejected when the call is validated,
+   * not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    NextDayFunction.validateDayOfWeek(call);
   }
 
   @Override

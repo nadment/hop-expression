@@ -141,6 +141,31 @@ public abstract class Function extends Operator {
   }
 
   /**
+   * Checks that the time unit of a call is supported by the function, when the call is validated
+   * rather than when a row is evaluated. The error gives the position of the call, the editor marks
+   * it in the source.
+   *
+   * <pre>{@code
+   * validateTimeUnit(call, 0, SUPPORTED_TIME_UNITS, ErrorCode.INVALID_ARGUMENT);
+   * }</pre>
+   *
+   * @param call the call to validate, with its operands already validated
+   * @param index the index of the time unit operand, ignored if the call has fewer operands
+   * @param units the time units supported by the function
+   * @param error the error code if the time unit is not supported
+   * @throws ExpressionException if the time unit is not supported
+   */
+  protected static void validateTimeUnit(Call call, int index, Set<TimeUnit> units, ErrorCode error)
+      throws ExpressionException {
+    if (index < call.getOperandCount()
+        && call.getOperand(index) instanceof Literal literal
+        && literal.getValue() instanceof TimeUnit unit
+        && !units.contains(unit)) {
+      throw new ParseExpressionException(call.getPosition(), error, unit);
+    }
+  }
+
+  /**
    * {@inheritDoc}
    *
    * <p>By default, the function is written with the conventional function-call syntax <code>
