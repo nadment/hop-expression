@@ -21,7 +21,6 @@ import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
-import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.jspecify.annotations.NullMarked;
 
@@ -41,10 +40,10 @@ public class ExpressionPartitionScanner extends RuleBasedPartitionScanner {
           new EndOfLineRule("//", comment),
           // Add partition rule for single comment
           new EndOfLineRule("--", comment),
-          // Add partition rule for comment
-          new MultiLineRule("/*", "*/", comment),
-          // Add partition rule for strings
-          new SingleLineRule("'", "'", string, (char) 0, true)
+          // Add partition rule for comment, which can be nested
+          new NestedCommentRule(comment),
+          // Add partition rule for strings, which can continue on the next lines
+          new MultiLineRule("'", "'", string, (char) 0, true)
         });
   }
 }

@@ -83,9 +83,20 @@ class DoubleClickStrategyTest {
 
   @Test
   void selectIdentifier() {
-    assertEquals("[FIELD 1]", doubleClick("1 + [FIELD 1]", 6));
+    // A quoted identifier is selected with its quotes
+    assertEquals("\"FIELD 1\"", doubleClick("1 + \"FIELD 1\"", 6));
+    assertEquals("\"FIELD 1\"", doubleClick("1 + \"FIELD 1\"", 4));
+
+    // Between two quoted identifiers, the word is selected
+    assertEquals("AND", doubleClick("\"A 1\" AND \"B 2\"", 7));
 
     // An identifier does not continue on the next line
-    assertEquals("FIELD", doubleClick("[\nFIELD]", 3));
+    assertEquals("FIELD", doubleClick("\"\nFIELD\"", 3));
+  }
+
+  @Test
+  void selectWordInArray() {
+    // The brackets are an array, not an identifier
+    assertEquals("FIELD", doubleClick("[FIELD, 2]", 3));
   }
 }

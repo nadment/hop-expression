@@ -16,6 +16,7 @@ package org.apache.hop.ui.expression;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextViewer;
 import org.jspecify.annotations.NullMarked;
@@ -70,27 +71,11 @@ public class DoubleClickStrategy implements ITextDoubleClickStrategy {
     IDocument document = viewer.getDocument();
 
     try {
-      int start = position;
-      while (start >= 0) {
-        char c = document.getChar(start);
-        if (isLineBreak(c) || c == ']') return false;
-        if (c == '[') break;
-        start--;
-      }
+      // A quoted identifier like "FIELD 1" is selected with its quotes
+      IRegion region = ExpressionTextHover.findEnclosedRegion(document, position, "\"", '"');
+      if (region == null) return false;
 
-      if (start < 0) return false;
-
-      int end = position;
-      int length = document.getLength();
-      while (end < length) {
-        char c = document.getChar(end);
-        if (isLineBreak(c) || c == '[') return false;
-        if (c == ']') break;
-        end++;
-      }
-      if (document.getChar(end) != ']') return false;
-
-      viewer.setSelectedRange(start, end - start + 1);
+      viewer.setSelectedRange(region.getOffset(), region.getLength());
     } catch (BadLocationException x) {
       return false;
     }
