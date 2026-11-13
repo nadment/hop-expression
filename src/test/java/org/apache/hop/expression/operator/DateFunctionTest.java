@@ -920,6 +920,34 @@ class DateFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Date_Add_UnitWithoutOwnFunction() throws Exception {
+    evalEquals("DATE_ADD(MILLENNIUM,1,DATE '2019-01-15')", LocalDate.of(3019, Month.JANUARY, 15));
+    evalEquals("DATE_ADD(CENTURY,-1,DATE '2019-01-15')", LocalDate.of(1919, Month.JANUARY, 15));
+    evalEquals("DATE_ADD(DECADE,2,DATE '2020-02-29')", LocalDate.of(2040, Month.FEBRUARY, 29));
+    evalEquals("DATE_ADD(DECADE,1,DATE '2020-02-29')", LocalDate.of(2030, Month.FEBRUARY, 28));
+    evalEquals(
+        "DATE_ADD(MILLISECOND,1500,DATE '2019-01-15')",
+        LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 1, 500_000_000));
+    evalEquals(
+        "DATE_ADD(MICROSECOND,-1,DATE '2019-01-15')",
+        LocalDateTime.of(2019, Month.JANUARY, 14, 23, 59, 59, 999_999_000));
+
+    // The time zone of a timestamp is kept
+    evalEquals(
+            "DATE_ADD(DECADE,1,TIMESTAMP '2019-01-15 10:00:00 +02:00')",
+            ZonedDateTime.of(2029, 1, 15, 10, 0, 0, 0, ZoneOffset.ofHours(2)))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+
+    evalNull("DATE_ADD(DECADE, NULL_INTEGER, DATE '2019-01-15')");
+    evalNull("DATE_ADD(MILLISECOND, 1, NULL_DATE)");
+    evalFails("DATE_ADD(MILLENNIUM,1000000000,FIELD_DATE)", ErrorCode.TEMPORAL_OVERFLOW);
+
+    // Simplify
+    optimize("DATE_ADD(DECADE,0,FIELD_DATE)", "FIELD_DATE");
+    optimize("DATE_ADD(MILLISECOND,1,FIELD_DATE)");
+  }
+
+  @Test
   void Date_Add() throws Exception {
     evalEquals("DATE_ADD(DAY, 5, DATE '2023-02-01')", LocalDate.of(2023, Month.FEBRUARY, 6));
     evalEquals(
@@ -928,7 +956,7 @@ class DateFunctionTest extends ExpressionTest {
     evalNull("DATE_ADD(DAY, NULL_INTEGER, DATE '2019-01-15')");
     evalNull("DATE_ADD(DAY, 1, NULL_DATE)");
     // Any other unit raises an error
-    evalFails("DATE_ADD(MILLISECOND, 1, DATE '2019-01-15')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("DATE_ADD(ISOWEEK, 1, DATE '2019-01-15')", ErrorCode.INVALID_ARGUMENT);
     evalEquals("DATE_ADD(YEAR,1,DATE '2020-02-29')", LocalDate.of(2021, Month.FEBRUARY, 28));
     evalEquals("DATE_ADD(QUARTER,1,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
     evalEquals("DATE_ADD(MONTH,3,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
@@ -1741,8 +1769,8 @@ class DateFunctionTest extends ExpressionTest {
     validateFails("DATE_DIFF(DAYOFWEEK, FIELD_DATE, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
     validateFails("DATE_TRUNC(ISOWEEK, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
     validateFails("DATE_TRUNC(EPOCH, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
-    validateFails("DATE_ADD(DECADE, 1, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
-    validateFails("DATE_ADD(MILLISECOND, 1, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_ADD(ISOWEEK, 1, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
+    validateFails("DATE_ADD(EPOCH, 1, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);
     validateFails("FIRST_DAY(FIELD_DATE, DAY)", ErrorCode.UNSUPPORTED_TIME_UNIT);
     validateFails("LAST_DAY(FIELD_DATE, HOUR)", ErrorCode.UNSUPPORTED_TIME_UNIT);
 
