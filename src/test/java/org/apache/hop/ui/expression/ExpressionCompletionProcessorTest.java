@@ -18,6 +18,7 @@ package org.apache.hop.ui.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -28,8 +29,11 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionExtension;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.util.DocumentationUtil;
 import org.apache.hop.junit.rules.RestoreHopEnvironmentExtension;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -81,6 +85,37 @@ class ExpressionCompletionProcessorTest {
     // A function already followed by its parenthesis is inserted without parentheses
     assertEquals("LEFT|", complete("LEFT", true));
     assertEquals("PI|", complete("PI", true));
+  }
+
+  @Test
+  void functionLabel() {
+    Function function = FunctionRegistry.getFunction("ABS");
+    // The name is followed by the arguments, if the documentation is generated
+    String label = ExpressionCompletionProcessor.getFunctionLabel("ABS", function).getString();
+    String syntax = DocumentationUtil.findDocumentationSyntax(function.getDocumentation(), "ABS");
+    String arguments = syntax.isEmpty() ? "" : syntax.substring("ABS".length());
+    assertEquals("ABS" + arguments, label);
+  }
+
+  @Test
+  void proposalWithColoredLabel() {
+    ExpressionCompletionProcessor processor =
+        new ExpressionCompletionProcessor(new Variables(), () -> null, ExpressionMode.ROW);
+    List<ICompletionProposal> proposals = new ArrayList<>();
+    processor.computeTypeAndTimeUnitProposals(proposals, "INTE", 0, 4);
+
+    ICompletionProposal proposal =
+        proposals.stream().filter(p -> "INTEGER".equals(p.getDisplayString())).findFirst().get();
+    // The label is drawn with its styles when the colored labels are enabled
+    ICompletionProposalExtension6 extension =
+        assertInstanceOf(ICompletionProposalExtension6.class, proposal);
+    assertEquals("INTEGER", extension.getStyledDisplayString().getString());
+
+    // The proposal replaces the prefix and puts the caret after the word
+    Document document = new Document("INTE+1");
+    proposal.apply(document);
+    assertEquals("INTEGER+1", document.get());
+    assertEquals(7, proposal.getSelection(document).x);
   }
 
   /** Returns the data types and the time units proposed for a prefix. */

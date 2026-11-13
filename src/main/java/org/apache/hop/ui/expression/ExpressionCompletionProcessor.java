@@ -39,15 +39,16 @@ import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.util.DocumentationUtil;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ContextInformationValidator;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -215,18 +216,27 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           additionalInfo = variable.getDescription();
         }
 
-        CompletionProposal proposal =
-            new CompletionProposal(
+        // A variable has its color in the editor, a deprecated variable is also struck out
+        StyledString label =
+            new StyledString(
+                variableName,
+                isDeprecated
+                    ? ExpressionCompletionProposal.DEPRECATED_STYLER
+                    : ExpressionCompletionProposal.VARIABLE_STYLER);
+        if (isDeprecated) {
+          label.append(Const.getDeprecatedPrefix(), ExpressionCompletionProposal.DETAIL_STYLER);
+        }
+
+        proposals.add(
+            new ExpressionCompletionProposal(
                 content,
                 start,
                 end - start,
                 content.length(),
                 image,
                 displayName,
-                null,
-                additionalInfo);
-
-        proposals.add(proposal);
+                label,
+                additionalInfo));
       }
     }
   }
@@ -289,9 +299,35 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   private static void addWordProposal(
       List<ICompletionProposal> proposals, String word, String prefix, int start, int end) {
     if (!Keyword.is(word) && startsWithIgnoreCase(word, prefix)) {
-      proposals.add(
-          new CompletionProposal(word, start, end - start, word.length(), null, word, null, null));
+      // A data type or a time unit has the color of a reserved literal in the editor
+      proposals.add(newWordProposal(word, start, end, ExpressionCompletionProposal.LITERAL_STYLER));
     }
+  }
+
+  /** Creates the proposal of a word with its color in the editor, without image or details. */
+  private static ICompletionProposal newWordProposal(
+      String word, int start, int end, StyledString.Styler styler) {
+    return new ExpressionCompletionProposal(
+        word, start, end - start, word.length(), null, word, new StyledString(word, styler), null);
+  }
+
+  /**
+   * Returns the colored label of a function: its name, its arguments from the syntax of its
+   * documentation, like {@code ABS( value )}.
+   *
+   * @param name the name of the function, which can be an alias
+   * @param function the function
+   * @return the label
+   */
+  static StyledString getFunctionLabel(String name, Function function) {
+    // The name has the color of a function in the editor
+    StyledString label = new StyledString(name, ExpressionCompletionProposal.FUNCTION_STYLER);
+    // The syntax starts with the name, only the arguments are appended
+    String syntax = DocumentationUtil.findDocumentationSyntax(function.getDocumentation(), name);
+    if (syntax.length() > name.length()) {
+      label.append(syntax.substring(name.length()), ExpressionCompletionProposal.DETAIL_STYLER);
+    }
+    return label;
   }
 
   /**
@@ -317,9 +353,15 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     // Keywords
     for (String word : Keyword.get()) {
       if (startsWithIgnoreCase(word, prefix)) {
-        CompletionProposal proposal =
-            new CompletionProposal(word, start, end - start, word.length(), null, word, null, null);
-        proposals.add(proposal);
+        // A reserved word has its color in the editor, the one of a literal for NULL, TRUE, FALSE
+        proposals.add(
+            newWordProposal(
+                word,
+                start,
+                end,
+                Keyword.isLiteral(word)
+                    ? ExpressionCompletionProposal.LITERAL_STYLER
+                    : ExpressionCompletionProposal.KEYWORD_STYLER));
       }
     }
 
@@ -343,19 +385,16 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
         String replacement = getFunctionReplacement(name, hasParenthesis);
         int cursorPosition = getFunctionCursorPosition(name, function, hasParenthesis);
-        // TODO: show the arguments of the function in the proposal, like ABS(number)
-        String displayName = name;
-        CompletionProposal proposal =
-            new CompletionProposal(
+        proposals.add(
+            new ExpressionCompletionProposal(
                 replacement,
                 start,
                 end - start,
                 cursorPosition,
                 image,
-                displayName,
-                null,
-                function.getDescription());
-        proposals.add(proposal);
+                name,
+                getFunctionLabel(name, function),
+                function.getDescription()));
       }
     }
   }
@@ -386,10 +425,13 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
                 + "<br><b>Comment:</b> "
                 + StringUtils.defaultString(valueMeta.getComments());
 
-        CompletionProposal proposal =
-            new CompletionProposal(
-                content, start, end - start, content.length(), image, name, null, description);
-        proposals.add(proposal);
+        // The type of the field follows its name
+        StyledString label = new StyledString(name, ExpressionCompletionProposal.FIELD_STYLER);
+        label.append(" : " + valueMeta.getTypeDesc(), ExpressionCompletionProposal.DETAIL_STYLER);
+
+        proposals.add(
+            new ExpressionCompletionProposal(
+                content, start, end - start, content.length(), image, name, label, description));
       }
     }
   }

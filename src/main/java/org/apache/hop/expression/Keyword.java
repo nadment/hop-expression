@@ -73,6 +73,9 @@ public final class Keyword {
           "XOR",
           "ZONE");
 
+  /** The core words that are a literal value. */
+  private static final Set<String> LITERAL_WORDS = Set.of("NULL", "TRUE", "FALSE");
+
   /**
    * The words registered by the functions. Concurrent because the functions are registered while
    * expressions are compiled in other threads.
@@ -119,6 +122,18 @@ public final class Keyword {
   public static boolean isCore(@Nullable String name) {
     if (name == null) return false;
     return CORE_WORDS.contains(name.toUpperCase(Locale.ROOT));
+  }
+
+  /**
+   * Checks whether the specified name is a reserved word that is a literal value: NULL, TRUE or
+   * FALSE. The comparison is case-insensitive.
+   *
+   * @param name the name to check, may be null
+   * @return true if the name is a reserved literal
+   */
+  public static boolean isLiteral(@Nullable String name) {
+    if (name == null) return false;
+    return LITERAL_WORDS.contains(name.toUpperCase(Locale.ROOT));
   }
 
   /**

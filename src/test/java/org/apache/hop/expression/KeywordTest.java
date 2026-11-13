@@ -70,6 +70,17 @@ class KeywordTest {
   }
 
   @Test
+  void isLiteral() {
+    assertTrue(Keyword.isLiteral("NULL"));
+    assertTrue(Keyword.isLiteral("TRUE"));
+    assertTrue(Keyword.isLiteral("false"));
+    // A reserved word that is not a literal value
+    assertFalse(Keyword.isLiteral("AND"));
+    assertFalse(Keyword.isLiteral("XXX"));
+    assertFalse(Keyword.isLiteral(null));
+  }
+
+  @Test
   void registerInvalidWord() {
     assertThrows(IllegalArgumentException.class, () -> Keyword.register(null));
     assertThrows(IllegalArgumentException.class, () -> Keyword.register(""));
@@ -92,7 +103,8 @@ class KeywordTest {
     assertEquals(Token.Id.FROM, tokens.get(2).id());
     // A registered word followed by a parenthesis is still a function
     assertEquals(
-        Token.Id.FUNCTION, new ExpressionLexer("KEYWORD_TEST_LEXER(1)").getTokens().get(0).id());
+        Token.Id.FUNCTION,
+        new ExpressionLexer("KEYWORD_TEST_LEXER(1)").getTokens().getFirst().id());
   }
 
   @Test

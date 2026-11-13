@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.jspecify.annotations.NullMarked;
@@ -75,6 +76,42 @@ public final class DocumentationUtil {
       int endIndex = documentation.indexOf("</p>", beginIndex);
       if (endIndex > 0) {
         return documentation.substring(beginIndex + 3, endIndex);
+      }
+    }
+
+    return "";
+  }
+
+  /**
+   * Extracts the syntax of a function from the section "Syntax" of its documentation, like {@code
+   * ABS( value )}. A documentation can give several syntaxes, for the forms or the aliases of a
+   * function: the first syntax starting with the name is returned.
+   *
+   * @param documentation the documentation content, may be {@code null}
+   * @param name the name of the function
+   * @return the syntax, or an empty string if it could not be found
+   */
+  public static String findDocumentationSyntax(@Nullable String documentation, String name) {
+    if (documentation == null) {
+      return "";
+    }
+
+    int beginIndex = documentation.indexOf("id=\"_syntax\"");
+    if (beginIndex < 0) {
+      return "";
+    }
+    beginIndex = documentation.indexOf("<pre>", beginIndex);
+    int endIndex = documentation.indexOf("</pre>", beginIndex);
+    if (beginIndex < 0 || endIndex < 0) {
+      return "";
+    }
+
+    String prefix = name + "(";
+    for (String line : documentation.substring(beginIndex + 5, endIndex).split("\n")) {
+      String syntax = line.strip();
+      if (syntax.regionMatches(true, 0, prefix, 0, prefix.length())) {
+        // The documentation is HTML, a character like '>' is escaped
+        return StringEscapeUtils.unescapeHtml4(syntax);
       }
     }
 

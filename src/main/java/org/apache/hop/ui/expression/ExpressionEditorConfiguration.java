@@ -70,7 +70,6 @@ import org.jspecify.annotations.Nullable;
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private static final Class<?> PKG = ExpressionEditor.class;
-  private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
   private static final int MAX_UNDO_LEVEL = 25;
 
   private final @Nullable IVariables variables;
@@ -145,8 +144,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     assistant.enablePrefixCompletion(true);
     assistant.enableAutoInsert(true);
     assistant.enableAutoActivation(true);
-    // TODO implements colored labels
-    assistant.enableColoredLabels(false);
+    assistant.enableColoredLabels(true);
 
     assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_REMOVE);
     assistant.setProposalSelectorForeground(GuiResource.getInstance().getColorBlack());
@@ -192,21 +190,55 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     return reconciler;
   }
 
+  /**
+   * Returns the color of a reserved word and of an operator, in the editor and in the proposals.
+   *
+   * @return the color
+   */
+  static Color getKeywordColor() {
+    return GuiResource.getInstance().getColor(30, 144, 255);
+  }
+
+  /**
+   * Returns the color of the name of a function, in the editor and in the proposals.
+   *
+   * @return the color
+   */
+  static Color getFunctionColor() {
+    GuiResource resource = GuiResource.getInstance();
+    // The dark violet is not readable on a dark background, use the lighter violet of the SQL
+    // editor of Hop in dark mode
+    return PropsUi.getInstance().isDarkMode()
+        ? resource.getColor(177, 102, 218)
+        : resource.getColor(148, 0, 211);
+  }
+
+  /**
+   * Returns the color of a reserved literal like NULL, of a data type and of a time unit, in the
+   * editor and in the proposals.
+   *
+   * @return the color
+   */
+  static Color getLiteralColor() {
+    return GuiResource.getInstance().getColor(255, 0, 255);
+  }
+
+  /**
+   * Returns the color of the name of a field, in the editor and in the proposals.
+   *
+   * @return the color
+   */
+  static Color getFieldColor() {
+    return GuiResource.getInstance().getColor(255, 127, 80);
+  }
+
   protected RuleBasedScanner createSourceScanner() {
     GuiResource resource = GuiResource.getInstance();
-    Token identifier =
-        new Token(new TextAttribute(resource.getColor(255, 127, 80), null, SWT.BOLD));
-    Token keyword = new Token(new TextAttribute(resource.getColor(30, 144, 255)));
-    // The dark violet is not readable on a dark background, use the lighter violet of the SQL
-    // editor
-    // of Hop in dark mode
-    Color functionColor =
-        PropsUi.getInstance().isDarkMode()
-            ? resource.getColor(177, 102, 218)
-            : resource.getColor(148, 0, 211);
-    Token function = new Token(new TextAttribute(functionColor));
+    Token identifier = new Token(new TextAttribute(getFieldColor(), null, SWT.BOLD));
+    Token keyword = new Token(new TextAttribute(getKeywordColor()));
+    Token function = new Token(new TextAttribute(getFunctionColor()));
     Token number = new Token(new TextAttribute(resource.getColorOrange()));
-    Token extra = new Token(new TextAttribute(resource.getColor(255, 0, 255)));
+    Token extra = new Token(new TextAttribute(getLiteralColor()));
     Token variable = new Token(new TextAttribute(resource.getColorBlack(), null, SWT.BOLD));
     Token undefined = new Token(new TextAttribute(resource.getColorBlack()));
 
@@ -235,7 +267,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // Add case-insensitive rule for reserved world, data type and time unit
     WordRule rule = new WordRule(new IdentifierDetector(), Token.UNDEFINED, true);
     for (String word : Keyword.get()) {
-      if (RESERVED_LITERALS.contains(word)) rule.addWord(word, extra);
+      // A reserved literal like NULL or TRUE is colored as a data type
+      if (Keyword.isLiteral(word)) rule.addWord(word, extra);
       else rule.addWord(word, keyword);
     }
     for (TypeName type : TypeName.values()) {
