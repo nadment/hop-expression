@@ -550,6 +550,31 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
+  void TimestampWithTimeZoneFollowedByAtTimeZone() throws Exception {
+    // A literal has a time zone offset or a time zone region, not both
+    evalFails(
+        "TIMESTAMP '2024-10-27 01:30:00 +00:00' AT TIME ZONE 'Europe/Paris'",
+        ErrorCode.TIMESTAMP_TIMEZONE_CONFLICT);
+    evalFails(
+        "TIMESTAMP '2024-10-27 01:30:00 -05:00' AT TIME ZONE 'UTC'",
+        ErrorCode.TIMESTAMP_TIMEZONE_CONFLICT);
+    evalFails(
+        "TIMESTAMP '2024-10-27 01:30:00Z' AT TIME ZONE 'Europe/Paris'",
+        ErrorCode.TIMESTAMP_TIMEZONE_CONFLICT);
+    evalFails(
+        "TIMESTAMP '2024-10-27 01:30:00 +00:00' AT TIME ZONE FIELD_STRING",
+        ErrorCode.TIMESTAMP_TIMEZONE_CONFLICT);
+
+    // A literal without time zone keeps its local date and time
+    evalEquals(
+        "TIMESTAMP '2024-10-27 01:30:00' AT TIME ZONE 'UTC'",
+        ZonedDateTime.of(2024, 10, 27, 1, 30, 0, 0, ZoneId.of("UTC")));
+    evalEquals(
+        "DATE '2024-10-27 01:30:00' AT TIME ZONE 'UTC'",
+        ZonedDateTime.of(2024, 10, 27, 1, 30, 0, 0, ZoneId.of("UTC")));
+  }
+
+  @Test
   void TimestampWithYearOutOfFourDigits() throws Exception {
     // A minus sign before the year 0
     evalEquals("TIMESTAMP '-0099-01-01 10:20:30'", LocalDateTime.of(-99, 1, 1, 10, 20, 30))

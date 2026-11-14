@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -515,17 +516,33 @@ public class ExpressionParser implements IExpressionParser {
    */
   @Override
   public IExpression parsePrimary() throws ExpressionException {
+    int start = lexer.getPosition();
     IExpression expression = this.parsePostfix();
 
     //  <term> AT TIMEZONE <timezone>
     if (lexer.acceptAndNotEnd(Id.AT)) {
       if (lexer.acceptAndNotEnd(Id.TIME) && lexer.acceptAndNotEnd(Id.ZONE)) {
+        // The time zone would replace the offset of the literal and change its instant
+        if (isTimestampLiteralWithTimeZone(expression)) {
+          throw new ParseExpressionException(start, ErrorCode.TIMESTAMP_TIMEZONE_CONFLICT);
+        }
         return new Call(
             lexer.getPosition(), AtTimeZoneOperator.INSTANCE, expression, this.parsePostfix());
       }
       throw new ParseExpressionException(lexer.getPosition(), ErrorCode.SYNTAX_ERROR, Id.AT);
     }
     return expression;
+  }
+
+  /**
+   * Returns whether an expression is a timestamp literal written with a time zone, like {@code
+   * TIMESTAMP '2024-10-27 01:30:00 +00:00'}. A literal without time zone is in the system time
+   * zone.
+   */
+  private static boolean isTimestampLiteralWithTimeZone(IExpression expression) {
+    return expression instanceof Literal literal
+        && literal.getValue() instanceof ZonedDateTime datetime
+        && !datetime.getZone().equals(ZoneId.systemDefault());
   }
 
   /**

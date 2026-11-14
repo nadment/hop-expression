@@ -37,6 +37,7 @@ Timestamp
 
 * Time zone names are case-sensitive and must be enclosed in single quotes (e.g. `'UTC'`).
 * An unknown time zone name raises an error.
+* A timestamp literal written with a time zone, like `TIMESTAMP '2020-05-25 20:48:00 +02:00'`, is rejected: the time zone would replace its offset and change its instant. Use xref:convert_timezone.adoc["CONVERT_TIMEZONE",role=fun] to convert a timestamp to another time zone.
 * Returns NULL if the timestamp or the time zone is NULL.
 
 == Examples

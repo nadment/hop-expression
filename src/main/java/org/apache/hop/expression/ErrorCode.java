@@ -393,6 +393,12 @@ public enum ErrorCode {
    */
   INVALID_TIMEZONE,
   /**
+   * A {@code TIMESTAMP} literal written with a time zone is followed by {@code AT TIME ZONE}.
+   *
+   * <p>Message: <code>A timestamp with a time zone cannot be followed by AT TIME ZONE</code>
+   */
+  TIMESTAMP_TIMEZONE_CONFLICT,
+  /**
    * The text is not a valid interval.
    *
    * <p>Message: <code>Interval value “{0}” is not recognized</code>
