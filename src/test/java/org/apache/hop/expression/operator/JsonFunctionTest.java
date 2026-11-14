@@ -325,6 +325,38 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Object_ValueExpression() throws Exception {
+    // The value is an expression, not only a term
+    evalTrue("Json_Object(KEY 'a' VALUE 1+1) = JSON '{\"a\":2}'");
+    evalEquals(
+        "Json_Object(KEY 'a' VALUE 'x'||'y', KEY 'b' VALUE 2*3 > 5)",
+        JsonConversion.convert("{\"a\":\"xy\",\"b\":true}"));
+    evalEquals(
+        "Json_Object(KEY 'a' VALUE Upper(FIELD_STRING)||'!')",
+        JsonConversion.convert("{\"a\":\"TEST!\"}"));
+
+    optimize("JSON_OBJECT(KEY 'a' VALUE 1+FIELD_INTEGER)");
+  }
+
+  @Test
+  void Json_Object_KeyExpression() throws Exception {
+    // The key is a string expression
+    evalTrue("Json_Object(KEY 'a'||'b' VALUE 1) = JSON '{\"ab\":1}'");
+    evalTrue("Json_Object(KEY FIELD_STRING VALUE 1) = JSON '{\"TEST\":1}'");
+    evalTrue("Json_Object(Lower(FIELD_STRING) VALUE 1) = JSON '{\"test\":1}'");
+
+    // A key that is not a string is rejected, it was taken as the text of the key
+    evalFails("Json_Object(KEY 1 VALUE 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Json_Object(KEY FIELD_INTEGER VALUE 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Json_Object(KEY NULL VALUE 1)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+
+    // A key cannot be NULL
+    evalFails("Json_Object(KEY NULL_STRING VALUE 1)", ErrorCode.NULL_JSON_KEY);
+
+    optimize("JSON_OBJECT(KEY FIELD_STRING VALUE 1)");
+  }
+
+  @Test
   void Json_Keys() throws Exception {
     // No JSON path
     evalEquals(

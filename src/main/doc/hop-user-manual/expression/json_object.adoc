@@ -24,6 +24,11 @@ Generates a JSON object from the specified key-value pairs.
 JSON_OBJECT( [ KEY ] key1 VALUE value1 [, [ KEY ] key2 VALUE value2... ] )
 ----
 
+== Arguments
+
+key:: A string expression that gives the name of the key.
+value:: An expression that gives the value of the key: a string, a boolean, an integer or a number.
+
 == Returns
 
 Json
@@ -33,12 +38,16 @@ Json
 * The returned JSON object contains all the key-value pairs.
 * The keyword `KEY` is optional and is provided for semantic clarity.
 * If several pairs have the same key, the last one is retained in the returned object.
+* If a value is NULL, the key is added with a JSON null.
+* Raises an error if a key is NULL.
 
 == Examples
 
 ----
 JSON_OBJECT(KEY 'first' VALUE 'John', KEY 'last' VALUE 'Doe')
 JSON_OBJECT(KEY 'name' VALUE 'Smith') returns {"name":"Smith"}
+JSON_OBJECT(KEY 'total' VALUE 2*3) returns {"total":6}
+JSON_OBJECT(KEY FIELD_NAME VALUE FIELD_VALUE)
 ----
 
 == See also

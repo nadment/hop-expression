@@ -449,6 +449,12 @@ public enum ErrorCode {
    */
   INVALID_JSON_PATH,
   /**
+   * The key of a pair of a JSON object is {@code NULL}.
+   *
+   * <p>Message: <code>The key of a JSON object cannot be NULL</code>
+   */
+  NULL_JSON_KEY,
+  /**
    * A regular expression pattern is malformed.
    *
    * <p>Message: <code>Invalid regular expression “{0}”</code>

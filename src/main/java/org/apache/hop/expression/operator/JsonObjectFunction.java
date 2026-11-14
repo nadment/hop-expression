@@ -91,15 +91,15 @@ public class JsonObjectFunction extends Function {
       // KEY is optional
       parser.acceptKeyword("KEY");
 
-      if (parser.hasNext()) {
-        operands.add(parser.parseLiteralString(parser.next()));
-      } else {
+      // The key is an expression, its type is checked later
+      if (!parser.hasNext() || parser.isNextKeyword("VALUE") || parser.isNext(Id.RPARENTHESIS)) {
         throw new ParseExpressionException(
             token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, this.getName());
       }
+      operands.add(parser.parseExpression());
 
       if (parser.acceptKeyword("VALUE")) {
-        operands.add(parser.parsePrimary());
+        operands.add(parser.parseExpression());
       } else {
         throw new ParseExpressionException(
             token.start(), ErrorCode.SYNTAX_ERROR_FUNCTION, this.getName());
@@ -134,6 +134,9 @@ public class JsonObjectFunction extends Function {
 
     for (int i = 0; i < operands.length; i += 2) {
       String key = operands[i].getValue(String.class);
+      if (key == null) {
+        throw new ExpressionException(ErrorCode.NULL_JSON_KEY);
+      }
       Object value = operands[i + 1].getValue();
       if (value == null) {
         node.putNull(key);
