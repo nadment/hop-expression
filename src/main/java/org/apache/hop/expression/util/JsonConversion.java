@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.hop.expression.Call;
@@ -36,10 +37,14 @@ public final class JsonConversion {
 
   // JsonMapper is thread-safe after its configuration.
   // Content after the JSON value is rejected, otherwise it would be silently ignored.
+  // A decimal number is read as a decimal, a double would lose the digits beyond its precision
+  // and would be infinite beyond its range. Its trailing zeros are kept, 5.0 is not written 5.
   private static final JsonMapper JSON_READER =
       JsonMapper.builder()
           .enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
           .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+          .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
+          .disable(JsonNodeFeature.STRIP_TRAILING_BIGDECIMAL_ZEROES)
           .build();
 
   private JsonConversion() {

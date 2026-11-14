@@ -131,7 +131,7 @@ class JsonFunctionTest extends ExpressionTest {
   void Json_Value_Returning() throws Exception {
     // A string is the text of the scalar
     evalEquals("JSON_VALUE('{\"a\":true}','$.a')", "true");
-    evalEquals("JSON_VALUE('{\"a\":1.50}','$.a')", "1.5");
+    evalEquals("JSON_VALUE('{\"a\":1.50}','$.a')", "1.50");
     evalEquals("JSON_VALUE('[1,2,3]','$.sum()')", "6.0");
 
     // The scalar is converted to the returning type like a cast
@@ -175,6 +175,45 @@ class JsonFunctionTest extends ExpressionTest {
     evalEquals(
         "JSON_QUERY('{\"a\":1,\"b\":2}','$.keys()')", JsonConversion.convert("[\"a\",\"b\"]"));
     evalEquals("CAST(JSON_QUERY('[1,2,3]','$.length()') AS STRING)", "3");
+  }
+
+  @Test
+  void Json_DecimalNumber() throws Exception {
+    // A decimal number is read as a decimal, not as a double which would lose digits
+    evalEquals(
+        "CAST(TO_JSON('{\"a\":12345678901234567890.123456789}') AS STRING)",
+        "{\"a\":12345678901234567890.123456789}");
+    evalEquals(
+        "JSON_VALUE('{\"a\":12345678901234567890.123456789}','$.a' RETURNING NUMBER)",
+        new BigDecimal("12345678901234567890.123456789"));
+    evalEquals("CAST(JSON '{\"a\":0.1}' AS STRING)", "{\"a\":0.1}");
+
+    // The trailing zeros are kept
+    evalEquals("CAST(JSON '{\"a\":1.10}' AS STRING)", "{\"a\":1.10}");
+    evalEquals("CAST(JSON '{\"a\":5.0}' AS STRING)", "{\"a\":5.0}");
+
+    // A number with an exponent, also beyond the range of a double
+    evalEquals("JSON_VALUE('{\"a\":1E2}','$.a' RETURNING NUMBER)", new BigDecimal("100"));
+    evalEquals("CAST(TO_JSON('1e400') AS STRING)", "1E+400");
+    evalEquals("JSON_VALUE('{\"a\":1e400}','$.a')", "1E+400");
+    // Beyond the precision of a NUMBER
+    evalFails(
+        "JSON_VALUE('{\"a\":1e400}','$.a' RETURNING NUMBER)", ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+  }
+
+  @Test
+  void Json_NumberEquality() throws Exception {
+    // The numbers are compared as decimals, a double cannot hold exactly a large integer
+    evalFalse("JSON '9007199254740993' = JSON '9007199254740992'");
+    evalFalse("JSON '12345678901234567890' = JSON '12345678901234567891'");
+    evalTrue("JSON '12345678901234567890' = JSON '12345678901234567890.0'");
+    evalFalse("JSON '0.1' = JSON '0.10000000000000000001'");
+
+    // An integer and a decimal with the same value are equal
+    evalTrue("JSON '{\"a\":1}' = JSON '{\"a\":1.0}'");
+    evalTrue("JSON '0.1' = JSON '0.10'");
+    evalTrue("JSON '1e2' = JSON '100'");
+    evalTrue("JSON '[1,2.50]' = JSON '[1.0,2.5]'");
   }
 
   @Test

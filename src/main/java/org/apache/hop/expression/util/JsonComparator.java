@@ -40,7 +40,13 @@ public class JsonComparator implements Comparator<JsonNode>, Serializable {
       return 0;
     }
     if ((o1 instanceof NumericNode n1) && (o2 instanceof NumericNode n2)) {
-      return Double.compare(n1.asDouble(), n2.asDouble());
+      // Compared as decimals, a double cannot hold exactly an integer beyond 2^53
+      try {
+        return n1.decimalValue().compareTo(n2.decimalValue());
+      } catch (NumberFormatException e) {
+        // A double that is not a number or is infinite has no decimal value
+        return Double.compare(n1.asDouble(), n2.asDouble());
+      }
     }
     return 1;
   }
