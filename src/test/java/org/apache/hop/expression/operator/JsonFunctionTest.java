@@ -108,6 +108,76 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Value_NotScalar() throws Exception {
+    // An object or an array is not a value, it is returned by JSON_QUERY
+    evalNull("JSON_VALUE('{\"a\":{\"b\":1}}','$.a')");
+    evalNull("JSON_VALUE('{\"a\":[1,2]}','$.a')");
+    evalNull("JSON_VALUE('{\"a\":{\"b\":1}}','$.a' RETURNING INTEGER)");
+    evalNull("JSON_VALUE('{\"a\":[1]}','$.a' RETURNING BOOLEAN)");
+    evalNull("JSON_VALUE('{\"a\":1}','$')");
+
+    // A path with several results gives an array, even with a single result
+    evalNull("JSON_VALUE('[{\"a\":1},{\"a\":2}]','$..a')");
+    evalNull("JSON_VALUE('[{\"a\":1},{\"a\":2}]','$[*].a')");
+    evalNull("JSON_VALUE('[{\"a\":1},{\"a\":2}]','$[?(@.a>1)].a')");
+    evalNull("JSON_VALUE('{\"a\":1,\"b\":2}','$.keys()')");
+
+    // An element of an array or a root scalar is a value
+    evalEquals("JSON_VALUE('{\"a\":[1,2]}','$.a[1]')", "2");
+    evalEquals("JSON_VALUE('\"x\"','$')", "x");
+  }
+
+  @Test
+  void Json_Value_Returning() throws Exception {
+    // A string is the text of the scalar
+    evalEquals("JSON_VALUE('{\"a\":true}','$.a')", "true");
+    evalEquals("JSON_VALUE('{\"a\":1.50}','$.a')", "1.5");
+    evalEquals("JSON_VALUE('[1,2,3]','$.sum()')", "6.0");
+
+    // The scalar is converted to the returning type like a cast
+    evalEquals("JSON_VALUE('{\"a\":\"12.5\"}','$.a' RETURNING NUMBER)", new BigDecimal("12.5"));
+    evalEquals("JSON_VALUE('{\"a\":true}','$.a' RETURNING NUMBER)", BigDecimal.ONE);
+    evalEquals("JSON_VALUE('{\"a\":\"12\"}','$.a' RETURNING INTEGER)", 12L);
+    evalEquals("JSON_VALUE('{\"a\":true}','$.a' RETURNING INTEGER)", 1L);
+    evalEquals("JSON_VALUE('{\"a\":1.9}','$.a' RETURNING INTEGER)", 2L);
+    evalEquals("JSON_VALUE('{\"a\":-1.9}','$.a' RETURNING INTEGER)", -2L);
+    evalEquals(
+        "JSON_VALUE('{\"a\":12345678901234567890}','$.a' RETURNING NUMBER)",
+        new BigDecimal("12345678901234567890"));
+    evalTrue("JSON_VALUE('{\"a\":\"true\"}','$.a' RETURNING BOOLEAN)");
+    evalTrue("JSON_VALUE('{\"a\":\"yes\"}','$.a' RETURNING BOOLEAN)");
+    evalTrue("JSON_VALUE('{\"a\":1}','$.a' RETURNING BOOLEAN)");
+    evalFalse("JSON_VALUE('{\"a\":0}','$.a' RETURNING BOOLEAN)");
+    evalNull("JSON_VALUE('{\"a\":null}','$.a' RETURNING INTEGER)");
+
+    // An impossible conversion raises an error
+    evalFails("JSON_VALUE('{\"a\":\"abc\"}','$.a' RETURNING NUMBER)", ErrorCode.CONVERSION_ERROR);
+    evalFails("JSON_VALUE('{\"a\":\"abc\"}','$.a' RETURNING INTEGER)", ErrorCode.CONVERSION_ERROR);
+    evalFails("JSON_VALUE('{\"a\":\"abc\"}','$.a' RETURNING BOOLEAN)", ErrorCode.CONVERSION_ERROR);
+    evalFails(
+        "JSON_VALUE('{\"a\":12345678901234567890}','$.a' RETURNING INTEGER)",
+        ErrorCode.INTEGER_CONVERSION_OVERFLOW);
+
+    // The precision and the scale of the returning type are applied
+    evalEquals("JSON_VALUE('{\"a\":\"xyz\"}','$.a' RETURNING STRING(1))", "x");
+    evalEquals(
+        "JSON_VALUE('{\"a\":123.456}','$.a' RETURNING NUMBER(5,1))", new BigDecimal("123.5"));
+    evalFails(
+        "JSON_VALUE('{\"a\":123456.7}','$.a' RETURNING NUMBER(5,1))",
+        ErrorCode.NUMBER_CONVERSION_OVERFLOW);
+  }
+
+  @Test
+  void Json_Query_PathFunction() throws Exception {
+    // A JsonPath function returns a value which is not a JSON node
+    evalEquals("JSON_QUERY('[1,2,3]','$.length()')", JsonConversion.convert("3"));
+    evalEquals("JSON_QUERY('[1,2,3]','$.sum()')", JsonConversion.convert("6.0"));
+    evalEquals(
+        "JSON_QUERY('{\"a\":1,\"b\":2}','$.keys()')", JsonConversion.convert("[\"a\",\"b\"]"));
+    evalEquals("CAST(JSON_QUERY('[1,2,3]','$.length()') AS STRING)", "3");
+  }
+
+  @Test
   void Json_Query() throws Exception {
     // No JSON path
     evalEquals(

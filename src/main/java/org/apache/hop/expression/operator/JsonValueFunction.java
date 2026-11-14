@@ -19,9 +19,6 @@ package org.apache.hop.expression.operator;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
@@ -150,56 +147,49 @@ public class JsonValueFunction extends Function {
     // Return NULL if the JSON path is null
     if (path == null) return null;
 
-    Object value = null;
+    JsonNode result;
     try {
       JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
-      value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-
       // A JsonPath function returns a Java value, convert it to a JSON node to apply the
       // returning type
-      if (value instanceof Integer integer) {
-        value = IntNode.valueOf(integer);
-      } else if (value instanceof Double number) {
-        value = DoubleNode.valueOf(number);
-      } else if (value instanceof String string) {
-        value = TextNode.valueOf(string);
-      }
-
-      if (value instanceof JsonNode result) {
-        if (result.isNull()) return null;
-        Type type = operands[2].getType();
-        if (type.isName(TypeName.STRING)) {
-          return result.asText();
-        }
-        if (type.isName(TypeName.BOOLEAN)) {
-          return result.asBoolean();
-        }
-        if (type.isName(TypeName.INTEGER)) {
-          return result.asLong();
-        }
-        if (type.isName(TypeName.NUMBER)) {
-          return result.decimalValue();
-        }
-        if (type.isName(TypeName.BINARY)) {
-          try {
-            return result.binaryValue();
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        }
-
-        return result;
-      }
-
-      return value;
+      result = JsonConversion.toJson(jsonPath.read(jsonNode, JSONPATH_CONFIGURATION));
     } catch (PathNotFoundException e) {
       // Returns NULL if the path does not locate an object
       return null;
-    } catch (ClassCastException e) {
-      throw new ExpressionException(
-          ErrorCode.CONVERSION_ERROR, TypeName.fromValue(value), TypeName.ANY, value);
     } catch (InvalidPathException e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
+
+    // Only a scalar is a value, an object or an array is returned by JSON_QUERY. A path with
+    // several results, like a filter, gives an array
+    if (result == null || !result.isValueNode() || result.isNull()) return null;
+
+    Type type = operands[2].getType();
+    if (type.isName(TypeName.BINARY)) {
+      try {
+        return result.binaryValue();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    // The scalar is converted to the returning type like a cast, with its precision and scale, an
+    // impossible conversion raises an error
+    return type.cast(type.isName(TypeName.STRING) ? result.asText() : toValue(result));
+  }
+
+  /** Returns the value of a JSON scalar: a string, a boolean, an integer or a number. */
+  private static Object toValue(final JsonNode node) {
+    if (node.isBoolean()) {
+      return node.booleanValue();
+    }
+    if (node.isIntegralNumber()) {
+      // An integer out of the range of a long is a number
+      return node.canConvertToLong() ? (Object) node.longValue() : node.decimalValue();
+    }
+    if (node.isNumber()) {
+      return node.decimalValue();
+    }
+    return node.asText();
   }
 }

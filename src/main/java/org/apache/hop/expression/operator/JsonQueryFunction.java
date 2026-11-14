@@ -99,7 +99,8 @@ public class JsonQueryFunction extends Function {
 
     try {
       JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
-      return jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+      // A JsonPath function like length() returns a Java value, convert it to a JSON node
+      return JsonConversion.toJson(jsonPath.read(jsonNode, JSONPATH_CONFIGURATION));
     } catch (PathNotFoundException e) {
       // Returns NULL if the path does not locate an object
       return null;

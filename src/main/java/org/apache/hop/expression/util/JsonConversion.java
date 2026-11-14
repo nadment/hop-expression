@@ -66,6 +66,19 @@ public final class JsonConversion {
   }
 
   /**
+   * Converts the result of a JSON path to a JSON node. A JsonPath function like {@code length()} or
+   * {@code sum()} returns a Java value, not a node.
+   *
+   * @param value the result of a JSON path
+   * @return the JSON node, or {@code null} if the value is {@code null}
+   */
+  public static @Nullable JsonNode toJson(final @Nullable Object value) {
+    if (value == null) return null;
+    if (value instanceof JsonNode node) return node;
+    return JSON_READER.valueToTree(value);
+  }
+
+  /**
    * Compiles the JSON path of a call ahead of evaluation when it is constant, so it is not compiled
    * again for each row. A compiled {@link JsonPath} is immutable and can be shared between threads.
    *
