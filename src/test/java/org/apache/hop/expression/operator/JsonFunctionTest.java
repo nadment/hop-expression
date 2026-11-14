@@ -108,6 +108,16 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Value_Unparse() throws Exception {
+    // The returning type is written with its clause, so the text can be parsed again
+    optimize("JSON_VALUE(FIELD_JSON,'$.a')", "JSON_VALUE(FIELD_JSON,'$.a' RETURNING STRING)");
+    optimize("JSON_VALUE(FIELD_JSON,'$.a' RETURNING STRING)");
+    optimize("JSON_VALUE(FIELD_JSON,'$.a' RETURNING INTEGER)");
+    optimize("JSON_VALUE(FIELD_JSON,'$.a' RETURNING NUMBER(10,2))");
+    optimize("JSON_VALUE(FIELD_JSON,FIELD_STRING RETURNING BOOLEAN)");
+  }
+
+  @Test
   void Json_Value_NotScalar() throws Exception {
     // An object or an array is not a value, it is returned by JSON_QUERY
     evalNull("JSON_VALUE('{\"a\":{\"b\":1}}','$.a')");

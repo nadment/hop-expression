@@ -26,6 +26,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -136,6 +137,23 @@ public class JsonValueFunction extends Function {
     }
 
     return call;
+  }
+
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append(this.getName());
+    writer.append('(');
+    operands[0].unparse(writer, 0, 0);
+    if (operands.length > 1) {
+      writer.append(',');
+      operands[1].unparse(writer, 0, 0);
+    }
+    // The returning type is written with its clause, as it is parsed
+    if (operands.length > 2) {
+      writer.append(" RETURNING ");
+      writer.append(operands[2].getType().getLiteral());
+    }
+    writer.append(')');
   }
 
   @Override
