@@ -147,7 +147,7 @@ BINARY '4b657276656E'
 
 === Date
 
-Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a `YYYY-MM-DD` format.
+Date literals consist of the word DATE followed by a string literal enclosed in apostrophes in a `YYYY-MM-DD` format.
 
 The following examples illustrate some date values:
 ----
@@ -178,6 +178,8 @@ TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'US/Pacific'
 In some of the timestamp formats, the letter T is used as a separator between the date and time.
 
 A date or a timestamp without time zone is in the time zone of the system, like the dates read from the fields. The letter Z after the time is the UTC time zone, like `TIMESTAMP '2020-05-18 23:48:59Z'`.
+
+The year of a date or a timestamp is written with more than 4 digits beyond the year 9999, and with a minus sign before the year 0, like `DATE '10000-01-06'` or `TIMESTAMP '-0099-01-01 10:20:30'`.
 
 The data type `TIMESTAMP` is a date and time that keeps its time zone, an offset or a region. A timestamp literal is a `TIMESTAMP`, in the time zone of the system if it has none. It is also the result of xref:attimezone.adoc["AT TIME ZONE",role=op] and xref:convert_timezone.adoc["CONVERT_TIMEZONE",role=fun], and a value is converted to it with xref:cast.adoc["CAST",role=fun], for example `CAST('2020-05-18 23:48:59 +05:00' AS TIMESTAMP)`. It is accepted where a date is expected, and two values are equal if they are the same instant. A field of type Date is a `DATE`, and a field of type Timestamp is a `TIMESTAMP` in the time zone of the system.
 

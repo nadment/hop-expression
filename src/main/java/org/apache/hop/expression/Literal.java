@@ -410,9 +410,11 @@ public final class Literal implements IExpression {
         && datetime.getMinute() == 0
         && datetime.getSecond() == 0) {
       writer.append("DATE '");
+      unparseYearSign(writer, zoned);
       writer.append(DateTimeFormat.of("YYYY-MM-DD").format(zoned));
     } else {
       writer.append("TIMESTAMP '");
+      unparseYearSign(writer, zoned);
       writer.append(DateTimeFormat.of(timestampPattern(nano)).format(zoned));
     }
     writer.append('\'');
@@ -427,6 +429,7 @@ public final class Literal implements IExpression {
    */
   private static void unparseTimestamp(final StringWriter writer, final ZonedDateTime datetime) {
     writer.append("TIMESTAMP '");
+    unparseYearSign(writer, datetime);
     writer.append(DateTimeFormat.of(timestampPattern(datetime.getNano())).format(datetime));
     // A timestamp literal without time zone is in the system time zone, another time zone is
     // written
@@ -441,6 +444,13 @@ public final class Literal implements IExpression {
       }
     }
     writer.append('\'');
+  }
+
+  /** Writes the minus sign of a year before year 0, the pattern YYYY writes the year unsigned. */
+  private static void unparseYearSign(final StringWriter writer, final ZonedDateTime datetime) {
+    if (datetime.getYear() < 0) {
+      writer.append('-');
+    }
   }
 
   /** Returns the pattern of a timestamp, with the fewest fractional digits for its nanoseconds. */

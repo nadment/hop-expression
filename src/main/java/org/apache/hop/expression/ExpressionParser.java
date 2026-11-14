@@ -16,12 +16,16 @@ package org.apache.hop.expression;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.ArrayElementAtOperator;
@@ -143,6 +147,10 @@ import org.jspecify.annotations.Nullable;
  */
 @NullMarked
 public class ExpressionParser implements IExpressionParser {
+
+  /** A date literal ISO 8601, with a signed year of 4 digits or more. */
+  private static final Pattern LITERAL_DATE_PATTERN =
+      Pattern.compile("(-?\\d{4,9})-(\\d{2})-(\\d{2})");
 
   private final ExpressionLexer lexer;
 
@@ -815,16 +823,26 @@ public class ExpressionParser implements IExpressionParser {
   /**
    * Parses a date literal. The parsing is strict and requires months to be between 1 and 12, days
    * to be less than 31, etc.
+   *
+   * <p>The year has at least 4 digits, more beyond the year 9999, and a minus sign before the year
+   * 0, like {@code DATE '-0099-01-01'} or {@code DATE '10000-01-06'}.
    */
   private IExpression parseLiteralDate(Token token) throws ExpressionException {
+    // Literal date use exact mode ISO 8601
+    Matcher matcher = LITERAL_DATE_PATTERN.matcher(token.text());
+    if (!matcher.matches()) {
+      throw new ParseExpressionException(token.start(), ErrorCode.INVALID_DATE, token.text());
+    }
     try {
-      // Literal date use exact mode ISO 8601
-      DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
-      ZonedDateTime datetime = format.parse(token.text());
+      LocalDate date =
+          LocalDate.of(
+              Integer.parseInt(matcher.group(1)),
+              Integer.parseInt(matcher.group(2)),
+              Integer.parseInt(matcher.group(3)));
 
       // A date without time zone
-      return Literal.of(datetime.toLocalDateTime());
-    } catch (Exception e) {
+      return Literal.of(date.atStartOfDay());
+    } catch (DateTimeException e) {
       throw new ParseExpressionException(token.start(), ErrorCode.INVALID_DATE, token.text());
     }
   }

@@ -31,6 +31,8 @@ import org.jspecify.annotations.NullMarked;
  * </ul>
  *
  * <ul>
+ *   <li>The year of the first format has more than 4 digits beyond the year 9999, and a minus sign
+ *       before the year 0.
  *   <li>The leading zero for mm and dd may be omitted.
  *   <li>The separator between date part and time part can be one space or 'T'.
  *   <li>The fractional seconds may be omitted or can separated by comma(,) or dot(.).
@@ -60,11 +62,18 @@ public class AutoDateTimeFormat extends DateTimeFormat {
     parser.skipSpace();
 
     // Extended format
-    int separator = parser.charAt(parser.index + 4);
-    if (separator == '-') {
+    int yearLength = extendedYearLength(parser);
+    if (yearLength > 0) {
 
-      // Year (need 4 digits)
-      parser.year = parser.parseExactInt(4);
+      // Year (need 4 digits or more), with a minus sign before the year 0
+      boolean negative = parser.isChar('-');
+      if (negative) {
+        parser.index++;
+      }
+      parser.year = parser.parseExactInt(yearLength);
+      if (negative) {
+        parser.year = -parser.year;
+      }
 
       if (parser.isChar('-')) {
         parser.index++;
@@ -157,6 +166,37 @@ public class AutoDateTimeFormat extends DateTimeFormat {
 
     // Build the date
     return parser.build();
+  }
+
+  /**
+   * Returns the number of digits of the year of an extended format, with an optional minus sign
+   * before the year, like {@code 2024-01-31}, {@code -0099-01-01} or {@code 10000-01-06}.
+   *
+   * @param parser the parser at the start of the date
+   * @return the number of digits of the year, or 0 if the format is not extended
+   */
+  private static int extendedYearLength(final DateTimeParser parser) {
+    int start = parser.isChar('-') ? parser.index + 1 : parser.index;
+    int end = start;
+    while (Characters.isDigit(parser.charAt(end))) {
+      end++;
+    }
+    int length = end - start;
+    if (length < 4 || length > 9 || parser.charAt(end) != '-') {
+      return 0;
+    }
+    if (length == 4) {
+      return length;
+    }
+
+    // Beyond 4 digits, a month and a second separator follow the year of an extended format, a
+    // short format is followed by a time zone offset like 20240131-0200
+    int month = end + 1;
+    while (Characters.isDigit(parser.charAt(month))) {
+      month++;
+    }
+    int monthLength = month - end - 1;
+    return (monthLength == 1 || monthLength == 2) && parser.charAt(month) == '-' ? length : 0;
   }
 
   @Override

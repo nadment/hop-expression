@@ -498,6 +498,54 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
+  void DateWithYearOutOfFourDigits() throws Exception {
+    // A minus sign before the year 0
+    evalEquals("DATE '-0099-01-01'", LocalDate.of(-99, 1, 1)).returnType(DateType.DATE_NOT_NULL);
+    evalEquals("DATE '0000-01-06'", LocalDate.of(0, 1, 6));
+    // More than 4 digits beyond the year 9999
+    evalEquals("DATE '10000-01-06'", LocalDate.of(10000, 1, 6));
+
+    evalFails("DATE '-099-01-01'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '--0099-01-01'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '+2021-02-25'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '10000-1-06'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '1234567890-01-06'", ErrorCode.INVALID_DATE);
+
+    // The text of the literal is parsed again to the same date
+    optimize("DATE '-0099-01-01'");
+    optimize("DATE '10000-01-06'");
+    optimize("MAKE_DATE(-99,1,1)", "DATE '-0099-01-01'");
+    optimize("ADD_WEEKS(DATE '9999-12-30',1)", "DATE '10000-01-06'");
+  }
+
+  @Test
+  void TimestampWithYearOutOfFourDigits() throws Exception {
+    // A minus sign before the year 0
+    evalEquals("TIMESTAMP '-0099-01-01 10:20:30'", LocalDateTime.of(-99, 1, 1, 10, 20, 30))
+        .returnType(TimestampType.TIMESTAMP_NOT_NULL);
+    evalEquals("TIMESTAMP '-0099-1-5'", LocalDateTime.of(-99, 1, 5, 0, 0, 0));
+    // More than 4 digits beyond the year 9999
+    evalEquals("TIMESTAMP '10000-01-06 10:20:30'", LocalDateTime.of(10000, 1, 6, 10, 20, 30));
+    evalEquals(
+        "TIMESTAMP '12345-01-06 10:20:30.5 +02:00'",
+        ZonedDateTime.of(12345, 1, 6, 10, 20, 30, 500_000_000, ZoneOffset.ofHours(2)));
+
+    // The short format keeps a year of 4 digits, followed by a time zone offset
+    evalEquals(
+        "TIMESTAMP '20240131102030-0200'",
+        ZonedDateTime.of(2024, 1, 31, 10, 20, 30, 0, ZoneOffset.ofHours(-2)));
+    evalFails("TIMESTAMP '-20240131102030'", ErrorCode.INVALID_TIMESTAMP);
+    evalFails("TIMESTAMP '-099-01-01 10:20:30'", ErrorCode.INVALID_TIMESTAMP);
+
+    // The text of the literal is parsed again to the same timestamp
+    optimize("TIMESTAMP '-0099-01-01 10:20:30'");
+    optimize("TIMESTAMP '10000-01-06 10:20:30'");
+    optimize("TIMESTAMP '12345-01-06 10:20:30.500 +02:00'");
+    optimize("TIMESTAMP '-0976-01-01 10:00:00' AT TIME ZONE 'America/New_York'");
+    optimize("MAKE_TIMESTAMP(-99,1,1,10,20,30)", "TIMESTAMP '-0099-01-01 10:20:30'");
+  }
+
+  @Test
   void Timestamp() throws Exception {
 
     // Timestamp
