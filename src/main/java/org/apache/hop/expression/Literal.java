@@ -41,7 +41,6 @@ import org.apache.hop.expression.util.BaseFormat;
 import org.apache.hop.expression.util.DateConversion;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.StringConversion;
-import org.apache.hop.expression.util.TimestampConversion;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -395,26 +394,25 @@ public final class Literal implements IExpression {
   }
 
   /**
-   * Unparses a date literal, or a timestamp literal if the date has a time. A date has no time
-   * zone.
+   * Unparses a date literal, with its time if the date is not at midnight, like {@code DATE
+   * '2024-01-31 01:00:00'}. A date has no time zone.
    *
    * @param writer the writer
    * @param datetime the date without time zone
    */
   private static void unparseDate(final StringWriter writer, final LocalDateTime datetime) {
-    // The format of a date-time is in the system time zone, like a date without time zone
-    ZonedDateTime zoned = TimestampConversion.toZoned(datetime);
+    // The local date and time are written as is, a time zone could shift a time that does not
+    // exist when the clocks change
+    ZonedDateTime zoned = datetime.atZone(ZoneOffset.UTC);
     int nano = datetime.getNano();
+    writer.append("DATE '");
+    unparseYearSign(writer, zoned);
     if (nano == 0
         && datetime.getHour() == 0
         && datetime.getMinute() == 0
         && datetime.getSecond() == 0) {
-      writer.append("DATE '");
-      unparseYearSign(writer, zoned);
       writer.append(DateTimeFormat.of("YYYY-MM-DD").format(zoned));
     } else {
-      writer.append("TIMESTAMP '");
-      unparseYearSign(writer, zoned);
       writer.append(DateTimeFormat.of(timestampPattern(nano)).format(zoned));
     }
     writer.append('\'');

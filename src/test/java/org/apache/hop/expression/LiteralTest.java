@@ -498,6 +498,37 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
+  void DateWithTime() throws Exception {
+    evalEquals("DATE '2024-01-31 01:02:03'", LocalDateTime.of(2024, 1, 31, 1, 2, 3))
+        .returnType(DateType.DATE_NOT_NULL);
+    evalEquals(
+        "DATE '2024-01-31 23:59:59.5'", LocalDateTime.of(2024, 1, 31, 23, 59, 59, 500_000_000));
+    evalEquals(
+        "DATE '2024-01-31 23:59:59.123456789'",
+        LocalDateTime.of(2024, 1, 31, 23, 59, 59, 123_456_789));
+    evalEquals("DATE '-0099-01-01 10:20:30'", LocalDateTime.of(-99, 1, 1, 10, 20, 30));
+
+    // The time is strict and a date has no time zone
+    evalFails("DATE '2024-01-31 01:02'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2024-01-31 1:02:03'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2024-01-31T01:02:03'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2024-01-31 24:00:00'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2024-01-31 01:02:03.'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2024-01-31 01:02:03 +02:00'", ErrorCode.INVALID_DATE);
+    evalFails("DATE '2024-01-31 01:02:03Z'", ErrorCode.INVALID_DATE);
+
+    // A date with a time is written as a date, and parsed again to the same date
+    optimize("DATE '2024-01-31 01:02:03'");
+    optimize("DATE '2024-01-31 01:02:03.5'", "DATE '2024-01-31 01:02:03.500'");
+    optimize("DATE '2024-01-31 00:00:00'", "DATE '2024-01-31'");
+    optimize("DATE_ADD(HOUR,1,DATE '2024-01-31')", "DATE '2024-01-31 01:00:00'")
+        .returnType(DateType.DATE_NOT_NULL);
+
+    // A time that does not exist in the system time zone when the clocks change is kept
+    optimize("DATE '2024-03-31 02:30:00'");
+  }
+
+  @Test
   void DateWithYearOutOfFourDigits() throws Exception {
     // A minus sign before the year 0
     evalEquals("DATE '-0099-01-01'", LocalDate.of(-99, 1, 1)).returnType(DateType.DATE_NOT_NULL);

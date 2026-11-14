@@ -148,9 +148,13 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class ExpressionParser implements IExpressionParser {
 
-  /** A date literal ISO 8601, with a signed year of 4 digits or more. */
+  /**
+   * A date literal ISO 8601, with a signed year of 4 digits or more, and an optional time with
+   * optional fractional seconds.
+   */
   private static final Pattern LITERAL_DATE_PATTERN =
-      Pattern.compile("(-?\\d{4,9})-(\\d{2})-(\\d{2})");
+      Pattern.compile(
+          "(-?\\d{4,9})-(\\d{2})-(\\d{2})(?: (\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,9}))?)?");
 
   private final ExpressionLexer lexer;
 
@@ -826,6 +830,9 @@ public class ExpressionParser implements IExpressionParser {
    *
    * <p>The year has at least 4 digits, more beyond the year 9999, and a minus sign before the year
    * 0, like {@code DATE '-0099-01-01'} or {@code DATE '10000-01-06'}.
+   *
+   * <p>A date can have a time, without time zone, like {@code DATE '2024-01-31 01:00:00'} or {@code
+   * DATE '2024-01-31 01:00:00.5'}.
    */
   private IExpression parseLiteralDate(Token token) throws ExpressionException {
     // Literal date use exact mode ISO 8601
@@ -841,7 +848,19 @@ public class ExpressionParser implements IExpressionParser {
               Integer.parseInt(matcher.group(3)));
 
       // A date without time zone
-      return Literal.of(date.atStartOfDay());
+      if (matcher.group(4) == null) {
+        return Literal.of(date.atStartOfDay());
+      }
+
+      // The fractional seconds are completed to nanoseconds
+      String fraction = matcher.group(7);
+      int nano = (fraction == null) ? 0 : Integer.parseInt((fraction + "00000000").substring(0, 9));
+      return Literal.of(
+          date.atTime(
+              Integer.parseInt(matcher.group(4)),
+              Integer.parseInt(matcher.group(5)),
+              Integer.parseInt(matcher.group(6)),
+              nano));
     } catch (DateTimeException e) {
       throw new ParseExpressionException(token.start(), ErrorCode.INVALID_DATE, token.text());
     }
