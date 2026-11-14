@@ -108,6 +108,20 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Path_Validation() throws Exception {
+    // A literal path that is not valid is rejected when validated, not when a row is evaluated
+    validateFails("JSON_VALUE(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
+    validateFails(
+        "JSON_VALUE(FIELD_JSON,'$$.invalid' RETURNING INTEGER)", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_VALUE(FIELD_JSON,'')", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_QUERY(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_KEYS(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);
+
+    // The position of the call
+    validateFails("1 = JSON_VALUE(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH, 4);
+  }
+
+  @Test
   void Json_Value_Unparse() throws Exception {
     // The returning type is written with its clause, so the text can be parsed again
     optimize("JSON_VALUE(FIELD_JSON,'$.a')", "JSON_VALUE(FIELD_JSON,'$.a' RETURNING STRING)");

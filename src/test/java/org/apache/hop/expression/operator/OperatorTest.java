@@ -3583,6 +3583,19 @@ public class OperatorTest extends ExpressionTest {
   @Nested
   class Cast {
     @Test
+    void castUnsupportedWhenValidated() throws Exception {
+      // A cast that is never supported is rejected when validated, not when a row is evaluated
+      validateFails("CAST(FIELD_INTEGER AS JSON)", ErrorCode.UNSUPPORTED_CONVERSION);
+      validateFails("CAST(JSON '1' AS INTEGER)", ErrorCode.UNSUPPORTED_CONVERSION);
+      validateFails("CAST(FIELD_DATE AS BOOLEAN)", ErrorCode.UNSUPPORTED_CONVERSION);
+      validateFails("TRY_CAST(FIELD_JSON AS NUMBER)", ErrorCode.UNSUPPORTED_CONVERSION);
+      validateFails("FIELD_INTEGER::JSON", ErrorCode.UNSUPPORTED_CONVERSION, 13);
+
+      // The elements of an array
+      validateFails("CAST([1,2] AS JSON[])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    }
+
+    @Test
     void cast() throws Exception {
       evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L)
           .returnType(IntegerType.INTEGER_NOT_NULL);

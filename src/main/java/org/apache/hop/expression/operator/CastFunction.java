@@ -122,6 +122,7 @@ public class CastFunction extends Function {
       throws ExpressionException {
     typeEmptyArray(call);
     super.validateOperands(context, call);
+    validateCastable(call);
   }
 
   @Override
@@ -146,8 +147,33 @@ public class CastFunction extends Function {
   }
 
   /**
+   * Checks that the cast is supported whatever the value, when the call is validated rather than
+   * when a row is evaluated: a JSON is never cast to an integer. The error gives the position of
+   * the call, the editor marks it in the source.
+   *
+   * @param call the call to CAST, with its operands already validated
+   * @throws ExpressionException if the type of the value is never cast to the type
+   */
+  static void validateCastable(Call call) throws ExpressionException {
+    Type source = call.getOperand(0).getType();
+    Type target = call.getOperand(1).getType();
+    // The cast of an array is checked with the operand types
+    if (!(source instanceof ArrayType)
+        && !(target instanceof ArrayType)
+        && !source.getName().isCastable(target.getName())) {
+      throw new ParseExpressionException(
+          call.getPosition(),
+          ErrorCode.UNSUPPORTED_CONVERSION,
+          call.getOperand(0),
+          source.getName(),
+          target);
+    }
+  }
+
+  /**
    * Checks the cast of an array or to an array type: only an array is cast to an array type, with
-   * the same number of dimensions, and an array is not cast to another type.
+   * the same number of dimensions and elements that can be cast, and an array is not cast to
+   * another type.
    *
    * @param call the call to CAST
    * @return {@code false} if an array is cast to a type that is not an array type, or a value that
@@ -157,6 +183,11 @@ public class CastFunction extends Function {
     return isArrayCastable(call.getOperand(0).getType(), call.getOperand(1).getType());
   }
 
+  /** Returns whether an element that is not an array can be cast to the element type. */
+  private static boolean isElementCastable(Type source, Type target) {
+    return source instanceof ArrayType || source.getName().isCastable(target.getName());
+  }
+
   private static boolean isArrayCastable(Type source, Type target) {
     // A NULL has no type and is cast to any type
     if (source.isName(TypeName.UNKNOWN)) {
@@ -164,7 +195,8 @@ public class CastFunction extends Function {
     }
     if (target instanceof ArrayType targetArray) {
       return source instanceof ArrayType sourceArray
-          && isArrayCastable(sourceArray.getElementType(), targetArray.getElementType());
+          && isArrayCastable(sourceArray.getElementType(), targetArray.getElementType())
+          && isElementCastable(sourceArray.getElementType(), targetArray.getElementType());
     }
     return !(source instanceof ArrayType);
   }

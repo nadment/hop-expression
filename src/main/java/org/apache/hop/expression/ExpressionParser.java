@@ -553,10 +553,13 @@ public class ExpressionParser implements IExpressionParser {
     IExpression expression = this.parseTerm();
 
     while (true) {
+      // The position of the operator, before its operand is read
+      int position = lexer.getPosition();
+
       // Cast operator '::'
       if (lexer.acceptAndNotEnd(Id.CAST)) {
         IExpression type = parseDataType(lexer.next());
-        expression = new Call(lexer.getPosition(), CastOperator.INSTANCE, expression, type);
+        expression = new Call(position, CastOperator.INSTANCE, expression, type);
       }
       // Array element at ARRAY[index]
       else if (lexer.accept(Id.LBRACKET)) {

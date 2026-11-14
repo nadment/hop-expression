@@ -63,6 +63,7 @@ public class CastOperator extends Operator {
       throws ExpressionException {
     CastFunction.typeEmptyArray(call);
     super.validateOperands(context, call);
+    CastFunction.validateCastable(call);
   }
 
   @Override

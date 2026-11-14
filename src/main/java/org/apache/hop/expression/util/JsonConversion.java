@@ -23,11 +23,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -81,6 +84,32 @@ public final class JsonConversion {
     if (value == null) return null;
     if (value instanceof JsonNode node) return node;
     return JSON_READER.valueToTree(value);
+  }
+
+  /**
+   * Checks the literal JSON path of a call to a JSON function, when the call is validated rather
+   * than when a row is evaluated. The error gives the position of the call, the editor marks it in
+   * the source.
+   *
+   * <pre>{@code
+   * JsonConversion.validateLiteralPath(call, 1);
+   * }</pre>
+   *
+   * @param call the call to validate, with its operands already validated
+   * @param index the index of the path operand
+   * @throws ExpressionException if the path is not a valid JSON path
+   */
+  public static void validateLiteralPath(final Call call, int index) throws ExpressionException {
+    if (call.getOperandCount() > index
+        && call.getOperand(index) instanceof Literal literal
+        && literal.getValue() instanceof String path) {
+      try {
+        JsonPath.compile(path);
+      } catch (InvalidPathException | IllegalArgumentException e) {
+        // An empty path is an illegal argument for the library
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_JSON_PATH, path);
+      }
+    }
   }
 
   /**

@@ -111,6 +111,19 @@ public class JsonValueFunction extends Function {
     return new Call(token.start(), this, operands);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A literal path that is not a valid JSON path is rejected when the expression is validated,
+   * with the position of the call, not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    JsonConversion.validateLiteralPath(call, 1);
+  }
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
