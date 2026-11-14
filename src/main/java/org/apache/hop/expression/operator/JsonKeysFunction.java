@@ -16,15 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
-import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import java.util.Arrays;
 import java.util.Iterator;
 import org.apache.hop.expression.Array;
@@ -53,14 +48,6 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class JsonKeysFunction extends Function {
-
-  public static final Configuration JSONPATH_CONFIGURATION =
-      Configuration.builder()
-          .mappingProvider(
-              new JacksonMappingProvider(
-                  JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
-          .jsonProvider(new JacksonJsonNodeJsonProvider())
-          .build();
 
   /** The JSON path compiled ahead of evaluation when it is constant, otherwise {@code null}. */
   private final @Nullable JsonPath compiledPath;
@@ -115,8 +102,9 @@ public class JsonKeysFunction extends Function {
       String path = operands[1].getValue(String.class);
       if (path == null) return null;
       try {
-        JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
-        Object value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+        JsonPath jsonPath =
+            (compiledPath != null) ? compiledPath : JsonConversion.compilePath(path);
+        Object value = jsonPath.read(jsonNode, JsonConversion.JSONPATH_CONFIGURATION);
         // Returns NULL if the path does not locate a JSON node, like the result of a function
         if (!(value instanceof JsonNode node)) return null;
         jsonNode = node;

@@ -16,14 +16,20 @@
  */
 package org.apache.hop.expression.operator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -35,11 +41,14 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.Token;
 import org.apache.hop.expression.Token.Id;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.Types;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -56,7 +65,11 @@ public class JsonObjectFunction extends Function {
 
   private static final EnumSet<TypeFamily> VALUE_TYPES =
       EnumSet.of(
-          TypeFamily.STRING, TypeFamily.BOOLEAN, TypeFamily.NUMERIC); // TODO: TypeFamily.TEMPORAL);
+          TypeFamily.STRING,
+          TypeFamily.BOOLEAN,
+          TypeFamily.NUMERIC,
+          TypeFamily.TEMPORAL,
+          TypeFamily.JSON);
 
   public JsonObjectFunction() {
     super(
@@ -137,29 +150,50 @@ public class JsonObjectFunction extends Function {
       if (key == null) {
         throw new ExpressionException(ErrorCode.NULL_JSON_KEY);
       }
-      Object value = operands[i + 1].getValue();
-      if (value == null) {
-        node.putNull(key);
-      } else if (value instanceof String str) {
-        node.put(key, str);
-      } else if (value instanceof Boolean bool) {
-        node.put(key, bool);
-      } else if (value instanceof Long integer) {
-        node.put(key, integer);
-      } else if (value instanceof BigDecimal number) {
-        node.put(key, number);
-      }
-      // TODO: Support Json Date
-      // else if (value instanceof ZonedDateTime date) {
-      //  node.put(key, date.toEpochSecond());
-      // }
-
-      else {
-        throw new ExpressionException(ErrorCode.UNSUPPORTED_JSON_TYPE);
-      }
+      node.set(key, toJson(operands[i + 1].getValue()));
     }
 
     return node;
+  }
+
+  /**
+   * Converts a value to a JSON node. A date is written as a string in the ISO 8601 format, an array
+   * as a JSON array of its elements.
+   */
+  private static JsonNode toJson(final @Nullable Object value) {
+    JsonNodeFactory factory = JsonNodeFactory.instance;
+    return switch (value) {
+      case null -> factory.nullNode();
+      case String str -> factory.textNode(str);
+      case Boolean bool -> factory.booleanNode(bool);
+      case Long integer -> factory.numberNode(integer);
+      case BigDecimal number -> factory.numberNode(number);
+      case JsonNode json -> json;
+      case LocalDateTime date ->
+          factory.textNode(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date));
+      case ZonedDateTime date ->
+          factory.textNode(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date));
+      case Array array -> {
+        int size = array.size();
+        ArrayNode elements = factory.arrayNode(size);
+        for (int i = 0; i < size; i++) {
+          elements.add(toJson(array.get(i).getValue()));
+        }
+        yield elements;
+      }
+      default ->
+          throw new ExpressionException(ErrorCode.UNSUPPORTED_JSON_TYPE, TypeName.fromValue(value));
+    };
+  }
+
+  /** Returns whether a value of the type, or the elements of an array, can be written in JSON. */
+  private static boolean isValueType(final Type type) {
+    if (type instanceof ArrayType arrayType) {
+      // A NULL element has no type
+      Type elementType = arrayType.getElementType();
+      return elementType.isName(TypeName.UNKNOWN) || isValueType(elementType);
+    }
+    return VALUE_TYPES.contains(type.getFamily());
   }
 
   public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {
@@ -179,7 +213,7 @@ public class JsonObjectFunction extends Function {
 
         IExpression value = call.getOperand(i++);
         if (value.isNull()) continue;
-        if (!VALUE_TYPES.contains(value.getType().getFamily())) {
+        if (!isValueType(value.getType())) {
           return false;
         }
       }

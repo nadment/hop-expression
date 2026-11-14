@@ -37,6 +37,7 @@ Json
 
 * The path must begin with a dollar sign `$`, which represents the root.
 * If the path does not match a value, NULL is returned.
+* An index out of an array does not match a value.
 * The result of a function of the path, like `$.length()`, is returned as a JSON value.
 * Returns NULL if one of the arguments is NULL.
 

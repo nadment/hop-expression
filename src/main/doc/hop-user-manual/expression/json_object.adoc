@@ -27,7 +27,7 @@ JSON_OBJECT( [ KEY ] key1 VALUE value1 [, [ KEY ] key2 VALUE value2... ] )
 == Arguments
 
 key:: A string expression that gives the name of the key.
-value:: An expression that gives the value of the key: a string, a boolean, an integer or a number.
+value:: An expression that gives the value of the key: a string, a boolean, an integer, a number, a date, a JSON value or an array of these.
 
 == Returns
 
@@ -39,6 +39,8 @@ Json
 * The keyword `KEY` is optional and is provided for semantic clarity.
 * If several pairs have the same key, the last one is retained in the returned object.
 * If a value is NULL, the key is added with a JSON null.
+* A JSON value is nested in the object, an array is written as a JSON array.
+* A date is written as a string in the ISO 8601 format, like `"2024-02-28T22:11:01"`, with its offset for a date with a time zone, like `"2024-02-28T22:11:01+02:00"`.
 * Raises an error if a key is NULL.
 
 == Examples
@@ -48,6 +50,7 @@ JSON_OBJECT(KEY 'first' VALUE 'John', KEY 'last' VALUE 'Doe')
 JSON_OBJECT(KEY 'name' VALUE 'Smith') returns {"name":"Smith"}
 JSON_OBJECT(KEY 'total' VALUE 2*3) returns {"total":6}
 JSON_OBJECT(KEY FIELD_NAME VALUE FIELD_VALUE)
+JSON_OBJECT(KEY 'tags' VALUE ['a','b'], KEY 'address' VALUE JSON_OBJECT(KEY 'zip' VALUE '12345')) returns {"tags":["a","b"],"address":{"zip":"12345"}}
 ----
 
 == See also

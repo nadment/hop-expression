@@ -108,6 +108,66 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Path_IndexOutOfArray() throws Exception {
+    // An index out of the array locates no element, like a key that is not in the object
+    evalNull("JSON_QUERY('[1,2,3]','$[5]')");
+    evalNull("JSON_QUERY('[1,2,3]','$[-5]')");
+    evalNull("JSON_QUERY('{\"a\":[1,2,3]}','$.a[5]')");
+    evalNull("JSON_VALUE('[1,2,3]','$[5]')");
+    evalNull("JSON_KEYS('[{\"a\":1}]','$[5]')");
+    evalTrue("JSON_QUERY('[1,2,3]','$[0,5]') = JSON '[1]'");
+
+    // An element in the array, a null element is a JSON null
+    evalTrue("JSON_QUERY('[1,2,3]','$[2]') = JSON '3'");
+    evalTrue("JSON_QUERY('[1,2,3]','$[-1]') = JSON '3'");
+    evalTrue("JSON_QUERY('[1,null]','$[1]') = JSON 'null'");
+  }
+
+  @Test
+  void Json_Path_Root() throws Exception {
+    // The path must begin with the root
+    validateFails("JSON_VALUE(FIELD_JSON,'store')", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_VALUE(FIELD_JSON,'.store')", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_VALUE(FIELD_JSON,'@.store')", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_QUERY(FIELD_JSON,'store')", ErrorCode.INVALID_JSON_PATH);
+    validateFails("JSON_KEYS(FIELD_JSON,'store')", ErrorCode.INVALID_JSON_PATH);
+
+    // A path that is not a literal raises the same error when a row is evaluated
+    evalFails("JSON_VALUE(FIELD_JSON,NVL(NULL_STRING,'store'))", ErrorCode.INVALID_JSON_PATH);
+    evalFails("JSON_QUERY(FIELD_JSON,NVL(NULL_STRING,'store'))", ErrorCode.INVALID_JSON_PATH);
+    evalFails("JSON_KEYS(FIELD_JSON,NVL(NULL_STRING,'store'))", ErrorCode.INVALID_JSON_PATH);
+  }
+
+  @Test
+  void Json_Object_ValueType() throws Exception {
+    // A JSON value is nested
+    evalTrue("Json_Object(KEY 'a' VALUE JSON '{\"b\":[1,2]}') = JSON '{\"a\":{\"b\":[1,2]}}'");
+    evalTrue("Json_Object(KEY 'a' VALUE Json_Object(KEY 'b' VALUE 1)) = JSON '{\"a\":{\"b\":1}}'");
+
+    // An array is a JSON array
+    evalTrue("Json_Object(KEY 'a' VALUE [1,2,3]) = JSON '{\"a\":[1,2,3]}'");
+    evalTrue("Json_Object(KEY 'a' VALUE ['x',NULL]) = JSON '{\"a\":[\"x\",null]}'");
+    evalTrue("Json_Object(KEY 'a' VALUE [[1,2],[3]]) = JSON '{\"a\":[[1,2],[3]]}'");
+    evalTrue("Json_Object(KEY 'a' VALUE [FIELD_INTEGER]) = JSON '{\"a\":[40]}'");
+
+    // A date is a string in the ISO 8601 format
+    evalTrue(
+        "Json_Object(KEY 'a' VALUE DATE '2024-02-28') = JSON '{\"a\":\"2024-02-28T00:00:00\"}'");
+    evalTrue(
+        "Json_Object(KEY 'a' VALUE DATE '2024-02-28 22:11:01.5')"
+            + " = JSON '{\"a\":\"2024-02-28T22:11:01.5\"}'");
+    evalTrue(
+        "Json_Object(KEY 'a' VALUE TIMESTAMP '2024-02-28 22:11:01 +02:00')"
+            + " = JSON '{\"a\":\"2024-02-28T22:11:01+02:00\"}'");
+
+    // Other types are not written in JSON
+    evalFails("Json_Object(KEY 'a' VALUE FIELD_BINARY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Json_Object(KEY 'a' VALUE FIELD_INET)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Json_Object(KEY 'a' VALUE INTERVAL 1 DAY)", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+    evalFails("Json_Object(KEY 'a' VALUE [FIELD_BINARY])", ErrorCode.ILLEGAL_ARGUMENT_TYPE);
+  }
+
+  @Test
   void Json_Path_Empty() throws Exception {
     // An empty path that is not a literal is an invalid path when a row is evaluated
     evalFails("JSON_VALUE(FIELD_JSON,NVL(NULL_STRING,''))", ErrorCode.INVALID_JSON_PATH);

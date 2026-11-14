@@ -23,8 +23,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
@@ -49,6 +52,32 @@ public final class JsonConversion {
           .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
           .disable(JsonNodeFeature.STRIP_TRAILING_BIGDECIMAL_ZEROES)
           .build();
+
+  /**
+   * The configuration to read a JSON path in a JSON node, it is immutable and can be shared between
+   * threads.
+   */
+  public static final Configuration JSONPATH_CONFIGURATION =
+      Configuration.builder()
+          .mappingProvider(
+              new JacksonMappingProvider(
+                  JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
+          .jsonProvider(new JsonNodeProvider())
+          .build();
+
+  /**
+   * An index out of the array locates no element, like a key that is not in an object: the default
+   * provider would give a JSON null, which is not distinguished from a null element.
+   */
+  private static final class JsonNodeProvider extends JacksonJsonNodeJsonProvider {
+    @Override
+    public Object getArrayIndex(Object obj, int idx) {
+      if (idx < 0 || idx >= length(obj)) {
+        throw new IndexOutOfBoundsException(idx);
+      }
+      return super.getArrayIndex(obj, idx);
+    }
+  }
 
   private JsonConversion() {
     // Utility class
@@ -87,6 +116,25 @@ public final class JsonConversion {
   }
 
   /**
+   * Compiles a JSON path. The path must begin with the root {@code $}, the library would add it to
+   * a path like {@code name}.
+   *
+   * @param path the JSON path
+   * @return the compiled path
+   * @throws ExpressionException if the path is not a valid JSON path
+   */
+  public static JsonPath compilePath(final String path) throws ExpressionException {
+    if (!path.startsWith("$")) {
+      throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
+    }
+    try {
+      return JsonPath.compile(path);
+    } catch (InvalidPathException | IllegalArgumentException e) {
+      throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
+    }
+  }
+
+  /**
    * Checks the literal JSON path of a call to a JSON function, when the call is validated rather
    * than when a row is evaluated. The error gives the position of the call, the editor marks it in
    * the source.
@@ -104,10 +152,9 @@ public final class JsonConversion {
         && call.getOperand(index) instanceof Literal literal
         && literal.getValue() instanceof String path) {
       try {
-        JsonPath.compile(path);
-      } catch (InvalidPathException | IllegalArgumentException e) {
-        // An empty path is an illegal argument for the library
-        throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_JSON_PATH, path);
+        compilePath(path);
+      } catch (ExpressionException e) {
+        throw new ParseExpressionException(call.getPosition(), e);
       }
     }
   }
@@ -136,7 +183,7 @@ public final class JsonConversion {
       if (path == null) {
         return null;
       }
-      return JsonPath.compile(path);
+      return compilePath(path);
     } catch (RuntimeException e) {
       return null;
     }

@@ -16,15 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
-import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -56,13 +51,6 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class JsonValueFunction extends Function {
 
-  public static final Configuration JSONPATH_CONFIGURATION =
-      Configuration.builder()
-          .mappingProvider(
-              new JacksonMappingProvider(
-                  JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
-          .jsonProvider(new JacksonJsonNodeJsonProvider())
-          .build();
   private static final Set<TypeName> SUPPORTED_TYPES =
       Set.of(TypeName.STRING, TypeName.BOOLEAN, TypeName.INTEGER, TypeName.NUMBER, TypeName.BINARY);
 
@@ -180,10 +168,11 @@ public class JsonValueFunction extends Function {
 
     JsonNode result;
     try {
-      JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonPath.compile(path);
+      JsonPath jsonPath = (compiledPath != null) ? compiledPath : JsonConversion.compilePath(path);
       // A JsonPath function returns a Java value, convert it to a JSON node to apply the
       // returning type
-      result = JsonConversion.toJson(jsonPath.read(jsonNode, JSONPATH_CONFIGURATION));
+      result =
+          JsonConversion.toJson(jsonPath.read(jsonNode, JsonConversion.JSONPATH_CONFIGURATION));
     } catch (PathNotFoundException e) {
       // Returns NULL if the path does not locate an object
       return null;
