@@ -183,4 +183,15 @@ class ExpressionCompletionProcessorTest {
     assertTrue(ExpressionCompletionProcessor.startsWithIgnoreCase("ABS", ""));
     assertFalse(ExpressionCompletionProcessor.startsWithIgnoreCase("AB", "ABS"));
   }
+
+  @Test
+  void functionDescriptionWithExamples() {
+    Function function = FunctionRegistry.getFunction("ABS");
+    String description = ExpressionCompletionProcessor.getFunctionDescription(function);
+    String examples = DocumentationUtil.findDocumentationExamples(function.getDocumentation());
+
+    // The description of the documentation, followed by its examples when they are found
+    assertTrue(description.startsWith(function.getDescription()));
+    assertEquals(!examples.isEmpty(), description.endsWith("<pre>" + examples + "</pre>"));
+  }
 }

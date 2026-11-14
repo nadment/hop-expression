@@ -168,7 +168,14 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
-    return parent -> new DefaultInformationControl(parent, new HTMLTextPresenter());
+    return parent -> {
+      DefaultInformationControl control =
+          new DefaultInformationControl(parent, new HTMLTextPresenter());
+      // The colors of the list of proposals, the default colors are not adapted to the dark mode
+      control.setForegroundColor(GuiResource.getInstance().getColorBlack());
+      control.setBackgroundColor(GuiResource.getInstance().getColorBackground());
+      return control;
+    };
   }
 
   @Override

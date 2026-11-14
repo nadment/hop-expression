@@ -76,7 +76,7 @@ class ExpressionTextHoverTest {
 
   private String fieldInfo(String name) {
     IValueMeta valueMeta = rowMeta.searchValueMeta(name);
-    String info = valueMeta.getName() + ": " + Types.createType(valueMeta);
+    String info = "Type: " + Types.createType(valueMeta);
     return (valueMeta.getOrigin() == null) ? info : info + "\nOrigin: " + valueMeta.getOrigin();
   }
 
@@ -84,7 +84,7 @@ class ExpressionTextHoverTest {
   void field() {
     assertEquals(fieldInfo("NAME"), hover("NAME || 'x'", 1, false));
     // The type of the field in an expression
-    assertEquals("NAME: STRING(50)\nOrigin: Input", hover("NAME || 'x'", 3, false));
+    assertEquals("Type: STRING(50)\nOrigin: Input", hover("NAME || 'x'", 3, false));
     // A quoted identifier, the mouse on a quote or inside
     assertEquals(fieldInfo("MY FIELD"), hover("\"MY FIELD\" + 1", 0, false));
     assertEquals(fieldInfo("MY FIELD"), hover("\"MY FIELD\" + 1", 4, false));

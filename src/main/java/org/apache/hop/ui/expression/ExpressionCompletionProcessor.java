@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
@@ -322,6 +323,22 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   }
 
   /**
+   * Returns the description of a function displayed beside the proposals: the description of its
+   * documentation, followed by its examples.
+   *
+   * @param function the function
+   * @return the description as HTML
+   */
+  static @Nullable String getFunctionDescription(Function function) {
+    String description = function.getDescription();
+    String examples = DocumentationUtil.findDocumentationExamples(function.getDocumentation());
+    if (examples.isEmpty()) {
+      return description;
+    }
+    return description + "<br><br><b>Examples</b><br><br><pre>" + examples + "</pre>";
+  }
+
+  /**
    * Returns the colored label of a function: its name, its arguments from the syntax of its
    * documentation, like {@code ABS( value )}.
    *
@@ -404,7 +421,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
                 image,
                 name,
                 getFunctionLabel(name, function),
-                function.getDescription()));
+                getFunctionDescription(function)));
       }
     }
   }
@@ -427,17 +444,19 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         String content = quoted ? '\"' + name + '\"' : Identifier.quoteIfNeeded(name);
 
         Image image = GuiResource.getInstance().getImage(valueMeta);
+        // The description is the comment of the field, displayed as HTML
+        String comment = valueMeta.getComments();
         String description =
-            "<b>Type:</b> "
-                + valueMeta.getTypeDesc()
-                + "<br><b>Transform origin:</b> "
-                + valueMeta.getOrigin()
-                + "<br><b>Comment:</b> "
-                + StringUtils.defaultString(valueMeta.getComments());
+            StringUtils.isEmpty(comment)
+                ? null
+                : StringEscapeUtils.escapeHtml4(comment).replace("\n", "<br>");
 
-        // The type of the field follows its name
+        // The type of the field follows its name, then the transform of its origin
         StyledString label = new StyledString(name, ExpressionCompletionProposal.FIELD_STYLER);
         label.append(" : " + valueMeta.getTypeDesc(), ExpressionCompletionProposal.DETAIL_STYLER);
+        if (StringUtils.isNotEmpty(valueMeta.getOrigin())) {
+          label.append(" - " + valueMeta.getOrigin(), ExpressionCompletionProposal.DETAIL_STYLER);
+        }
 
         proposals.add(
             new ExpressionCompletionProposal(

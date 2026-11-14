@@ -117,4 +117,35 @@ public final class DocumentationUtil {
 
     return "";
   }
+
+  /**
+   * Extracts the examples from the section "Examples" of an operator documentation.
+   *
+   * @param documentation the documentation content, may be {@code null}
+   * @return the lines of the examples as HTML, with a character like {@code >} escaped, or an empty
+   *     string if they could not be found
+   */
+  public static String findDocumentationExamples(@Nullable String documentation) {
+    if (documentation == null) {
+      return "";
+    }
+
+    int sectionIndex = documentation.indexOf("id=\"_examples\"");
+    if (sectionIndex < 0) {
+      return "";
+    }
+    int beginIndex = documentation.indexOf("<pre>", sectionIndex);
+    int endIndex = documentation.indexOf("</pre>", beginIndex);
+    if (beginIndex < 0 || endIndex < 0) {
+      return "";
+    }
+
+    // The listing must be in the section of the examples, not in a following section
+    int nextSectionIndex = documentation.indexOf("<h2", sectionIndex);
+    if (nextSectionIndex >= 0 && nextSectionIndex < beginIndex) {
+      return "";
+    }
+
+    return documentation.substring(beginIndex + 5, endIndex).strip();
+  }
 }

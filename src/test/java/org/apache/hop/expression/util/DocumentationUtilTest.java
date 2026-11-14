@@ -83,4 +83,26 @@ class DocumentationUtilTest {
     assertEquals(
         "", DocumentationUtil.findDocumentationSyntax("<h2 id=\"_syntax\"></h2><pre>ABS(", "ABS"));
   }
+
+  @Test
+  void findDocumentationExamples() {
+    assertEquals("", DocumentationUtil.findDocumentationExamples(null));
+    assertEquals("", DocumentationUtil.findDocumentationExamples("<html></html>"));
+
+    // The lines of the first listing of the section, the characters stay escaped in HTML
+    assertEquals(
+        "ABS(-1) returns 1\nIF(A&gt;1,2,3)",
+        DocumentationUtil.findDocumentationExamples(
+            "<pre>ABS( value )</pre><h2 id=\"_examples\">Examples</h2><div><pre>ABS(-1) returns 1\n"
+                + "IF(A&gt;1,2,3)\n</pre></div><h2 id=\"_see_also\">See also</h2><pre>other</pre>"));
+
+    // Section without listing, listing of a following section, or listing not closed
+    assertEquals("", DocumentationUtil.findDocumentationExamples("<h2 id=\"_examples\"></h2>"));
+    assertEquals(
+        "",
+        DocumentationUtil.findDocumentationExamples(
+            "<h2 id=\"_examples\"></h2><h2 id=\"_see_also\"></h2><pre>other</pre>"));
+    assertEquals(
+        "", DocumentationUtil.findDocumentationExamples("<h2 id=\"_examples\"></h2><pre>ABS("));
+  }
 }

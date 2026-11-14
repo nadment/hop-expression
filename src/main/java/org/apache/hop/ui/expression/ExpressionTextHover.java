@@ -128,8 +128,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
     StringBuilder info = new StringBuilder("${").append(name).append('}');
     info.append((value == null) ? " is not defined" : " = " + value);
     // The registry of the described variables is created with the environment of Hop
-    VariableRegistry registry = VariableRegistry.getInstance();
-    DescribedVariable variable = (registry == null) ? null : registry.findDescribedVariable(name);
+    DescribedVariable variable = VariableRegistry.getInstance().findDescribedVariable(name);
     if (variable != null && !Utils.isEmpty(variable.getDescription())) {
       info.append('\n').append(variable.getDescription());
     }
@@ -152,7 +151,7 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
     if (valueMeta == null) {
       return null;
     }
-    StringBuilder info = new StringBuilder(valueMeta.getName()).append(": ");
+    StringBuilder info = new StringBuilder().append("Type: ");
     try {
       info.append(Types.createType(valueMeta));
     } catch (ExpressionException e) {
@@ -161,6 +160,9 @@ public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
     }
     if (!Utils.isEmpty(valueMeta.getOrigin())) {
       info.append("\nOrigin: ").append(valueMeta.getOrigin());
+    }
+    if (!Utils.isEmpty(valueMeta.getComments())) {
+      info.append("\n\n").append(valueMeta.getComments());
     }
     return info.toString();
   }

@@ -39,6 +39,7 @@ image::../images/editor.png[Expression editor with syntax highlighting and compl
 == Completion
 
 * kbd:[Ctrl+Space] completes a field, a function, a reserved word, a data type like `NUMBER` or a time unit like `YEAR`; a function is inserted with its parentheses, like `LEFT()`.
+* A field is proposed with its type and the transform of its origin, like `PRICE : Number(10, 2) - Table input`.
 * `$` opens the list of the variables, also in a string or a comment.
 * A single matching proposal is inserted without opening the list.
 
