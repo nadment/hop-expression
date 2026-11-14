@@ -49,11 +49,16 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals(
         "PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','FILE')", "/path?id=1&lang=fr");
     // A constant part that is not a part of a URL is rejected when validated
-    evalFails("PARSE_URL('https://hop.apache.org/path','XXX')", ErrorCode.INVALID_ARGUMENT);
-    evalFails("PARSE_URL(FIELD_STRING,'HOSTNAME')", ErrorCode.INVALID_ARGUMENT);
-    evalFails("PARSE_URL(FIELD_STRING,'HOSTNAME','id')", ErrorCode.INVALID_ARGUMENT);
-    // A part that is not a constant, or an invalid URL, returns NULL
-    evalNull("PARSE_URL('https://hop.apache.org/path',FIELD_STRING)");
+    validateFails("PARSE_URL('https://hop.apache.org/path','XXX')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("PARSE_URL(FIELD_STRING,'HOSTNAME')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("PARSE_URL(FIELD_STRING,'HOSTNAME','id')", ErrorCode.INVALID_ARGUMENT);
+    // A part that is not a constant raises the same error when evaluated, also with an invalid URL
+    evalFails("PARSE_URL('https://hop.apache.org/path',FIELD_STRING)", ErrorCode.INVALID_ARGUMENT);
+    evalFails(
+        "PARSE_URL('https://hop.apache.org/path?id=1',FIELD_STRING,'id')",
+        ErrorCode.INVALID_ARGUMENT);
+    evalFails("PARSE_URL('https://hop apache.org/path',FIELD_STRING)", ErrorCode.INVALID_ARGUMENT);
+    // A NULL part or an invalid URL returns NULL
     evalNull("PARSE_URL('https://hop.apache.org/path',NULL_STRING)");
     evalNull("PARSE_URL('https://hop apache.org/path','HOST')");
     // The part is not case-sensitive
@@ -118,6 +123,10 @@ public class StringFunctionTest extends ExpressionTest {
     evalNull("Parse_Url('https://hop.apache.org/path','QUERY')");
     evalNull("Parse_Url('https://hop.apache.org/path?query=1','QUERY','xxx')");
     evalNull("Parse_Url('https://hop.apache.org/path?query=1','QUERY',NULL_STRING)");
+
+    // Check operands
+    evalFails("PARSE_URL()", ErrorCode.NOT_ENOUGH_ARGUMENTS);
+    evalFails("PARSE_URL('https://hop.apache.org')", ErrorCode.NOT_ENOUGH_ARGUMENTS);
   }
 
   @Test
@@ -483,6 +492,41 @@ public class StringFunctionTest extends ExpressionTest {
     optimize("LOWER(INITCAP(FIELD_STRING))", "LOWER(INITCAP(FIELD_STRING))");
     evalEquals("LOWER(UPPER(FIELD_STRING||CHR(223)))", "testss");
     evalEquals("LOWER(INITCAP(FIELD_STRING||' '||CHR(383)))", "test s");
+  }
+
+  @Test
+  void invalidLiteralPatternDetectedWhenValidated() throws Exception {
+    // Regular expression
+    validateFails("REGEXP_LIKE(FIELD_STRING,'[')", ErrorCode.INVALID_REGEXP_PATTERN);
+    validateFails("REGEXP_LIKE(FIELD_STRING,'a','x')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("REGEXP_COUNT(FIELD_STRING,'[')", ErrorCode.INVALID_REGEXP_PATTERN);
+    validateFails("REGEXP_COUNT(FIELD_STRING,'a',1,'x')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("REGEXP_SUBSTR(FIELD_STRING,'(a')", ErrorCode.INVALID_REGEXP_PATTERN);
+    validateFails("REGEXP_SUBSTR(FIELD_STRING,'a',1,1,'x')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("REGEXP_INSTR(FIELD_STRING,'a**')", ErrorCode.INVALID_REGEXP_PATTERN);
+    validateFails("REGEXP_INSTR(FIELD_STRING,'a',1,1,0,'x')", ErrorCode.INVALID_ARGUMENT);
+    validateFails("REGEXP_REPLACE(FIELD_STRING,'[')", ErrorCode.INVALID_REGEXP_PATTERN);
+    validateFails("REGEXP_REPLACE(FIELD_STRING,'a','b',1,0,'x')", ErrorCode.INVALID_ARGUMENT);
+
+    // LIKE, ILIKE and SIMILAR TO
+    validateFails("FIELD_STRING LIKE 'abc|' ESCAPE '|'", ErrorCode.INVALID_REGEXP_ESCAPE, 13);
+    validateFails("FIELD_STRING LIKE 'abc\\'", ErrorCode.INVALID_REGEXP_ESCAPE, 13);
+    validateFails("FIELD_STRING LIKE 'abc' ESCAPE 'ab'", ErrorCode.INVALID_ARGUMENT, 13);
+    validateFails("FIELD_STRING NOT LIKE 'abc|' ESCAPE '|'", ErrorCode.INVALID_REGEXP_ESCAPE, 17);
+    validateFails("FIELD_STRING ILIKE 'abc|' ESCAPE '|'", ErrorCode.INVALID_REGEXP_ESCAPE, 13);
+    validateFails("FIELD_STRING SIMILAR TO '[a'", ErrorCode.INVALID_REGEXP_PATTERN, 13);
+    validateFails("FIELD_STRING SIMILAR TO '['", ErrorCode.INVALID_REGEXP_PATTERN, 13);
+    validateFails("FIELD_STRING SIMILAR TO 'a\\+c'", ErrorCode.INVALID_REGEXP_ESCAPE, 13);
+    validateFails("FIELD_STRING NOT SIMILAR TO 'a('", ErrorCode.INVALID_REGEXP_PATTERN, 17);
+
+    // Normalization form
+    validateFails("NORMALIZE(FIELD_STRING,'XXX')", ErrorCode.INVALID_ARGUMENT);
+
+    // A pattern that is not a literal is checked when a row is evaluated
+    optimize("REGEXP_COUNT(FIELD_STRING,FIELD_STRING)");
+    optimize("FIELD_STRING SIMILAR TO FIELD_STRING");
+    optimize("NORMALIZE(FIELD_STRING,FIELD_STRING)");
+    evalFails("REGEXP_COUNT('abc',FIELD_STRING||'[')", ErrorCode.INVALID_REGEXP_PATTERN);
   }
 
   /**
@@ -1066,8 +1110,12 @@ public class StringFunctionTest extends ExpressionTest {
   @Test
   void HexDecode() throws Exception {
     // An odd number of characters or a non hexadecimal character raises an error
-    evalFails("HEX_DECODE('ABC')", ErrorCode.CALL_FUNCTION_ERROR);
-    evalFails("HEX_DECODE('zz')", ErrorCode.CALL_FUNCTION_ERROR);
+    evalFails("HEX_DECODE('ABC')", ErrorCode.TRUNCATED_DECODING_SEQUENCE);
+    evalFails("HEX_DECODE('zz')", ErrorCode.INVALID_DECODING_SYMBOL);
+    assertDecodingSymbolMessage("HEX_DECODE('4G')", "G", "hexadecimal");
+    assertDecodingSymbolMessage("HEX_DECODE('41 42')", " ", "hexadecimal");
+    assertDecodingMessage(
+        "HEX_DECODE('417')", ErrorCode.TRUNCATED_DECODING_SEQUENCE.message("hexadecimal"));
     evalEquals("HEX_DECODE('')", "");
     evalEquals("HEX_DECODE('41706163686520486f70')", "Apache Hop");
     // The bytes are decoded as UTF-8, whatever the default charset

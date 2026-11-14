@@ -26,6 +26,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.LikeMatcher;
@@ -84,10 +85,51 @@ public class LikeOperator extends Operator {
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * <p>A literal pattern or a literal escape character that is not valid is rejected when the
+   * expression is validated, with the position of the call, not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    validateLiteralPattern(call);
+  }
+
+  /**
+   * Checks the literal pattern of a LIKE or ILIKE call with its literal escape character. The error
+   * gives the position of the call, the editor marks it in the source.
+   *
+   * @param call the call to validate, with its operands already validated
+   * @throws ExpressionException if the pattern or the escape character is not valid
+   */
+  static void validateLiteralPattern(Call call) throws ExpressionException {
+    if (!(call.getOperand(1) instanceof Literal literal
+        && literal.getValue() instanceof String pattern)) {
+      return;
+    }
+    String escape = DEFAULT_ESCAPE;
+    if (call.getOperandCount() == 3) {
+      if (!(call.getOperand(2) instanceof Literal escapeLiteral
+          && escapeLiteral.getValue() instanceof String escapeString)) {
+        return;
+      }
+      escape = escapeString;
+    }
+    try {
+      LikeMatcher.compile(pattern, escape, false);
+    } catch (ExpressionException e) {
+      throw new ParseExpressionException(call.getPosition(), e);
+    }
+  }
+
+  /**
    * Compiles the pattern of a LIKE or ILIKE call ahead of evaluation, when the pattern and the
    * escape character are constant.
    *
-   * <p>An invalid pattern is not reported here, the error is raised at evaluation.
+   * <p>An invalid pattern is not reported here, the error of a literal is raised when the call is
+   * validated, another error at evaluation.
    *
    * @param call the call of a LIKE or ILIKE operator
    * @param ignoreCase whether the case is ignored, for ILIKE

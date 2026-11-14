@@ -1750,19 +1750,6 @@ class DateFunctionTest extends ExpressionTest {
     evalFails("Previous_Day(MAKE_DATE(-999999999,1,1), 'monday')", ErrorCode.TEMPORAL_OVERFLOW);
   }
 
-  /** Checks that a source is rejected when validated, without row, at the position of the call. */
-  private void validateFails(String source, ErrorCode error) throws Exception {
-    IExpression expression = new ExpressionParser(new ExpressionLexer("1+" + source)).parse();
-    ParseExpressionException exception =
-        assertThrows(
-            ParseExpressionException.class,
-            () -> expression.validate(createExpressionContext()),
-            source);
-    assertEquals(error, exception.getErrorCode(), source);
-    // The position of the call is given to mark the error in the editor
-    assertEquals(2, exception.getPosition(), source);
-  }
-
   @Test
   void invalidTimeUnitDetectedWhenValidated() throws Exception {
     validateFails("DATE_DIFF(ISOWEEK, FIELD_DATE, FIELD_DATE)", ErrorCode.INVALID_ARGUMENT);

@@ -17,10 +17,13 @@ package org.apache.hop.expression.util;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.ParseExpressionException;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -61,10 +64,53 @@ public final class Regexp {
   }
 
   /**
+   * Checks the literal pattern and the literal flags of a call to a regular expression function,
+   * when the call is validated rather than when a row is evaluated. The error gives the position of
+   * the call, the editor marks it in the source.
+   *
+   * <pre>{@code
+   * Regexp.validateLiteralPattern(call, 1, 3);
+   * }</pre>
+   *
+   * @param call the call to validate, with its operands already validated
+   * @param patternIndex the index of the pattern operand
+   * @param flagsIndex the index of the optional flags operand
+   * @throws ExpressionException if the pattern is not a valid regular expression or if a letter of
+   *     the flags is unknown
+   */
+  public static void validateLiteralPattern(final Call call, int patternIndex, int flagsIndex)
+      throws ExpressionException {
+    try {
+      if (call.getOperandCount() > flagsIndex
+          && call.getOperand(flagsIndex) instanceof Literal literal
+          && literal.getValue() instanceof String flags) {
+        parseFlags(flags);
+      }
+      if (call.getOperandCount() > patternIndex
+          && call.getOperand(patternIndex) instanceof Literal literal
+          && literal.getValue() instanceof String pattern) {
+        compile(pattern);
+      }
+    } catch (ExpressionException e) {
+      throw new ParseExpressionException(call.getPosition(), e);
+    }
+  }
+
+  /** Compiles a pattern to check its syntax, which does not depend on the flags. */
+  private static void compile(final String pattern) {
+    try {
+      Pattern.compile(pattern);
+    } catch (PatternSyntaxException e) {
+      throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);
+    }
+  }
+
+  /**
    * Compiles the regular expression of a call ahead of evaluation, when the pattern and the flags
    * are constant.
    *
-   * <p>An invalid pattern or flags are not reported here, the error is raised at evaluation.
+   * <p>An invalid pattern or flags are not reported here, the error of a literal is raised when the
+   * call is validated, another error at evaluation.
    *
    * @param call the call of a regular expression function
    * @param patternIndex the index of the pattern operand
@@ -149,8 +195,9 @@ public final class Regexp {
       } else if (c == '%') {
         javaPattern.append("(?s:.*)");
       } else if (c == '[') {
+        // A bracket expression is not closed
         if (i == (len - 1)) {
-          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, i);
         }
         char nextChar = pattern.charAt(i + 1);
         if (nextChar == ':') {

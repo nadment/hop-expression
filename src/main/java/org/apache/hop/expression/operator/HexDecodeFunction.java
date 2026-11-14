@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,6 +33,9 @@ import org.jspecify.annotations.Nullable;
 @FunctionPlugin
 @NullMarked
 public class HexDecodeFunction extends Function {
+
+  /** The name of the encoding in the error messages. */
+  private static final String ENCODING = "hexadecimal";
 
   public HexDecodeFunction() {
     super(
@@ -48,6 +53,18 @@ public class HexDecodeFunction extends Function {
       return null;
     }
 
-    return Characters.decodeUtf8(Hex.decode(value), "hexadecimal");
+    // Checked here to report the invalid symbol or the truncated value like the other decoding
+    // functions
+    for (int i = 0; i < value.length(); i++) {
+      if (!Characters.isHexDigit(value.charAt(i))) {
+        throw new ExpressionException(
+            ErrorCode.INVALID_DECODING_SYMBOL, Character.toString(value.codePointAt(i)), ENCODING);
+      }
+    }
+    if (value.length() % 2 != 0) {
+      throw new ExpressionException(ErrorCode.TRUNCATED_DECODING_SEQUENCE, ENCODING);
+    }
+
+    return Characters.decodeUtf8(Hex.decode(value), ENCODING);
   }
 }

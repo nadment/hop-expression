@@ -43,4 +43,17 @@ public class ParseExpressionException extends ExpressionException {
 
     this.position = position;
   }
+
+  /**
+   * Construct a new expression exception with the error of an exception raised without position,
+   * like the error of an invalid constant pattern found when a call is validated.
+   *
+   * @param position the position of the error in the source
+   * @param exception the exception to locate
+   */
+  public ParseExpressionException(int position, ExpressionException exception) {
+    super(true, exception);
+
+    this.position = position;
+  }
 }

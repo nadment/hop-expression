@@ -18,12 +18,16 @@ package org.apache.hop.expression.operator;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -46,6 +50,27 @@ public class NormalizeFunction extends Function {
         OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         OperatorCategory.STRING,
         "/docs/hop-user-manual/expression/normalize.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A literal form that is not a normalization form is rejected when the expression is
+   * validated, with the position of the call, not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    if (call.getOperandCount() == 2
+        && call.getOperand(1) instanceof Literal literal
+        && literal.getValue() instanceof String name) {
+      try {
+        Form.valueOf(name);
+      } catch (IllegalArgumentException e) {
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_ARGUMENT, name);
+      }
+    }
   }
 
   @Override

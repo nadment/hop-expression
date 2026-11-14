@@ -64,8 +64,9 @@ public class ExpressionLexer {
    * @return the start of the next token, or the length of the source if all the tokens are read
    */
   public int getPosition() {
-    if (index >= 0 && index < tokens.size()) return tokens.get(index).start();
-    return source.length();
+    // The next token is created from the source if needed, it is not yet after a token is read
+    Token token = peek();
+    return (token == null) ? source.length() : token.start();
   }
 
   /** Gets the next token without reading it, the token is created from the source if needed. */

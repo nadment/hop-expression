@@ -53,14 +53,15 @@ public class ParseUrlFunction extends Function {
    * {@inheritDoc}
    *
    * <p>A constant part that is not a part of a URL is rejected when the expression is validated,
-   * with the position of the call. A part that is not a constant returns NULL when a row is
-   * evaluated.
+   * with the position of the call. A part that is not a constant raises the same error when a row
+   * is evaluated.
    */
   @Override
   protected void validateOperands(IExpressionContext context, Call call)
       throws ExpressionException {
     super.validateOperands(context, call);
-    if (call.getOperand(1) instanceof Literal literal
+    if (call.getOperandCount() > 1
+        && call.getOperand(1) instanceof Literal literal
         && literal.getValue() instanceof String part) {
       try {
         UrlPart.valueOf(part.toUpperCase(Locale.ROOT));
@@ -91,19 +92,19 @@ public class ParseUrlFunction extends Function {
   }
 
   public @Nullable String parseUrl(String url, String partStr) {
+    // Checked before the URL, a part that is not a part of a URL always raises an error
     UrlPart part;
+    try {
+      // The part is not case-sensitive
+      part = UrlPart.valueOf(partStr.toUpperCase(Locale.ROOT));
+    } catch (IllegalArgumentException e) {
+      throw new ExpressionException(ErrorCode.INVALID_ARGUMENT, partStr);
+    }
 
     URI uri;
     try {
       uri = new URI(url);
     } catch (URISyntaxException e) {
-      return null;
-    }
-
-    try {
-      // The part is not case-sensitive
-      part = UrlPart.valueOf(partStr.toUpperCase(Locale.ROOT));
-    } catch (IllegalArgumentException e) {
       return null;
     }
 
@@ -172,11 +173,10 @@ public class ParseUrlFunction extends Function {
   }
 
   public @Nullable String parseUrl(String url, String part, String keyToExtract) {
-    if (part.equalsIgnoreCase("QUERY")) {
-      String query = parseUrl(url, part);
-      if (query != null) {
-        return extractValue(query, keyToExtract);
-      }
+    // The part is checked, also when it is not the query
+    String value = parseUrl(url, part);
+    if (value != null && part.equalsIgnoreCase("QUERY")) {
+      return extractValue(value, keyToExtract);
     }
     return null;
   }

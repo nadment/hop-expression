@@ -68,6 +68,19 @@ public class RegexpReplaceFunction extends Function {
     this.compiledPattern = compiledPattern;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A literal pattern or literal parameters that are not valid are rejected when the expression
+   * is validated, with the position of the call, not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    Regexp.validateLiteralPattern(call, 1, 5);
+  }
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     if (compiledPattern == null) {

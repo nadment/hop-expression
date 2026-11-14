@@ -18,12 +18,16 @@ package org.apache.hop.expression.operator;
 
 import java.io.StringWriter;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -66,13 +70,49 @@ public class SimilarToOperator extends BinaryOperator {
    * @return the compiled pattern
    */
   static Pattern createPattern(String pattern) {
-    return Pattern.compile(Regexp.toSimilarTo(pattern, '\\'), Pattern.UNICODE_CASE);
+    try {
+      return Pattern.compile(Regexp.toSimilarTo(pattern, '\\'), Pattern.UNICODE_CASE);
+    } catch (PatternSyntaxException e) {
+      throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A literal pattern that is not valid is rejected when the expression is validated, with the
+   * position of the call, not when a row is evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    validateLiteralPattern(call);
+  }
+
+  /**
+   * Checks the literal pattern of a SIMILAR TO or NOT SIMILAR TO call. The error gives the position
+   * of the call, the editor marks it in the source.
+   *
+   * @param call the call to validate, with its operands already validated
+   * @throws ExpressionException if the pattern is not valid
+   */
+  static void validateLiteralPattern(Call call) throws ExpressionException {
+    if (call.getOperand(1) instanceof Literal literal
+        && literal.getValue() instanceof String pattern) {
+      try {
+        createPattern(pattern);
+      } catch (ExpressionException e) {
+        throw new ParseExpressionException(call.getPosition(), e);
+      }
+    }
   }
 
   /**
    * Compiles the pattern of a call ahead of evaluation, when it is constant.
    *
-   * <p>An invalid pattern is not reported here, the error is raised at evaluation.
+   * <p>An invalid pattern is not reported here, the error of a literal is raised when the call is
+   * validated, another error at evaluation.
    *
    * @param call the call of a SIMILAR TO operator
    * @return the compiled pattern, or {@code null} if it must be compiled at evaluation

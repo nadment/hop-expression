@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
@@ -372,6 +373,48 @@ public class ExpressionTest {
     throw assertionFailure()
         .reason("Expected ExpressionException to be thrown, but nothing was thrown.")
         .build();
+  }
+
+  /**
+   * Checks that an expression is rejected when it is validated, without evaluating a row, like an
+   * invalid constant operand of a function. The call is at the start of the source.
+   *
+   * <pre>{@code
+   * validateFails("NEXT_DAY(FIELD_DATE, 'xyz')", ErrorCode.INVALID_ARGUMENT);
+   * }</pre>
+   *
+   * @param source the source of the expression
+   * @param error the expected error
+   */
+  protected void validateFails(String source, ErrorCode error) throws Exception {
+    validateFails(source, error, 0);
+  }
+
+  /**
+   * Checks that an expression is rejected when it is validated, without evaluating a row, with the
+   * position of the call in the source: the start of a function, or the operator.
+   *
+   * <pre>{@code
+   * validateFails("FIELD_STRING LIKE 'abc|' ESCAPE '|'", ErrorCode.INVALID_REGEXP_ESCAPE, 13);
+   * }</pre>
+   *
+   * @param source the source of the expression
+   * @param error the expected error
+   * @param position the expected position of the error in the source
+   */
+  protected void validateFails(String source, ErrorCode error, int position) throws Exception {
+    // The source is validated after a prefix, so the position of a call at the start of the source
+    // differs from the position 0 of an error without position
+    String prefix = "TRUE AND ";
+    IExpression expression = new ExpressionParser(new ExpressionLexer(prefix + source)).parse();
+    ParseExpressionException exception =
+        assertThrows(
+            ParseExpressionException.class,
+            () -> expression.validate(createExpressionContext()),
+            source);
+    assertEquals(error, exception.getErrorCode(), source);
+    // The position of the call is given to mark the error in the editor
+    assertEquals(prefix.length() + position, exception.getPosition(), source);
   }
 
   protected Evaluator optimize(String source) throws Exception {

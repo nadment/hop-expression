@@ -100,6 +100,18 @@ public class ExpressionException extends RuntimeException {
     this.values = values;
   }
 
+  /**
+   * Construct a new expression exception with the error and the message of another exception.
+   *
+   * @param writableStackTrace whether the stack trace is captured
+   * @param exception the exception to copy
+   */
+  protected ExpressionException(boolean writableStackTrace, ExpressionException exception) {
+    super(null, null, true, writableStackTrace);
+    this.error = exception.getErrorCode();
+    this.message = exception.getMessage();
+  }
+
   public ErrorCode getErrorCode() {
     return error;
   }

@@ -27,7 +27,7 @@ PARSE_URL( url, part [, key ] )
 == Arguments
 
 url:: The URL to parse.
-part:: The part of the URL to return, not case-sensitive.
+part:: The part of the URL to return.
 * `HOST`
 * `PORT`
 * `PATH`
@@ -37,7 +37,7 @@ part:: The part of the URL to return, not case-sensitive.
 * `AUTHORITY`
 * `FILE`
 * `USERINFO`
-key:: The key of the query parameter whose value is returned (case-sensitive). It can only be used with the `QUERY` part: with another part, the function returns NULL.
+key:: The key of the query parameter whose value is returned, only with the `QUERY` part.
 
 == Returns
 
@@ -45,12 +45,15 @@ String
 
 == Usage
 
-* If the requested part or key is not found, the function returns NULL.
-* Raises an error if part is a constant that is not one of the allowed values, like `PARSE_URL(url,'HOSTNAME')`. A part that is not a constant, like a field, returns NULL if it is not one of the allowed values.
-* If url is not a valid URI reference (for example if it contains a space), the function returns NULL.
 * The part is not case-sensitive: `PARSE_URL(url,'host')` is the same as `PARSE_URL(url,'HOST')`.
+* Raises an error if part is not one of the allowed values, like `PARSE_URL(url,'HOSTNAME')`.
+* Returns NULL if the URL does not have the requested part, for example the port of `'https://hop.apache.org/path'`.
+* Returns NULL if url is not a valid URI reference, for example if it contains a space.
 * A relative reference without protocol is accepted: `PARSE_URL('abc','PATH')` returns 'abc'.
-* If a key appears several times in the query, the first value is returned.
+* The `FILE` part is the path followed by the query.
+* The values are returned as they are written in the URL, the percent-encoded characters are not decoded: use xref:url_decode.adoc["URL_DECODE",role=fun] to decode them.
+* With a key, the function returns the value of this parameter of the query. The key is case-sensitive, and if it appears several times in the query, the first value is returned.
+* Returns NULL if the key is not found in the query, or if the key is used with another part than `QUERY`.
 * Returns NULL if one of the arguments is NULL.
 
 == Examples
