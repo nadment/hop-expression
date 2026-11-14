@@ -94,10 +94,10 @@ public class BitXorFunction extends Function {
       IExpression right = call.getOperand(1);
 
       // Simplify 0 ^ A → A (even if A is nullable)
-      if (Literal.ZERO.equals(left)) {
+      if (Literal.isZero(left)) {
         return right;
       }
-      if (Literal.ZERO.equals(right)) {
+      if (Literal.isZero(right)) {
         return left;
       }
 

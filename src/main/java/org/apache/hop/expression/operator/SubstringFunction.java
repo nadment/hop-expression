@@ -52,7 +52,7 @@ public class SubstringFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // SUBSTRING(x,1) → x, only a string, another value is converted to a string
     if (call.getOperandCount() == 2
-        && Literal.ONE.equals(call.getOperand(1))
+        && Literal.isOne(call.getOperand(1))
         && Types.isString(call.getOperand(0).getType())) {
       return call.getOperand(0);
     }

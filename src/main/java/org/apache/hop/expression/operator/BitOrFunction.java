@@ -107,7 +107,7 @@ public class BitOrFunction extends Function {
       IExpression right = call.getOperand(1);
 
       // Simplify 0 | A → A (even if A is null)
-      if (Literal.ZERO.equals(left)) {
+      if (Literal.isZero(left)) {
         return right;
       }
 

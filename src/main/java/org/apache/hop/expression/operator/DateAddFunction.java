@@ -117,7 +117,7 @@ public class DateAddFunction extends Function {
         // Units without their own function, evaluated by this function
       case MILLENNIUM, CENTURY, DECADE, MILLISECOND, MICROSECOND ->
           // Simplify arithmetic DATE_ADD(DECADE,0,A) → A
-          Literal.ZERO.equals(call.getOperand(1)) ? call.getOperand(2) : call;
+          Literal.isZero(call.getOperand(1)) ? call.getOperand(2) : call;
       case YEAR -> new Call(AddYearsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case QUARTER ->
           new Call(AddQuartersFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
@@ -135,13 +135,13 @@ public class DateAddFunction extends Function {
 
   @Override
   public @Nullable Object eval(final IExpression[] operands) {
-    TimeUnit unit = operands[0].getValue(TimeUnit.class);
     Long value = operands[1].getValue(Long.class);
     if (value == null) return null;
     Temporal temporal = operands[2].getValue(Temporal.class);
     if (temporal == null) return null;
 
     // The other units are compiled to their own function, like ADD_YEARS
+    TimeUnit unit = operands[0].getValue(TimeUnit.class);
     ChronoUnit chronoUnit =
         switch (unit) {
           case MILLENNIUM -> ChronoUnit.MILLENNIA;

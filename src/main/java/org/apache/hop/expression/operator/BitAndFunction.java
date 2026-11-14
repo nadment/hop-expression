@@ -99,7 +99,7 @@ public class BitAndFunction extends Function {
       IExpression right = call.getOperand(1);
 
       // Simplify 0 & A -> 0 (if A not nullable)
-      if (Literal.ZERO.equals(left) && !right.getType().isNullable()) {
+      if (Literal.isZero(left) && !right.getType().isNullable()) {
         return Literal.ZERO;
       }
 

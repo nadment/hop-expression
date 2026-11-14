@@ -52,7 +52,7 @@ public class AddSecondsFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Simplify arithmetic ADD_SECONDS(A,0) → A
-    if (Literal.ZERO.equals(call.getOperand(1))) {
+    if (Literal.isZero(call.getOperand(1))) {
       return call.getOperand(0);
     }
 
