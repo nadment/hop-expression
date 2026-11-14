@@ -104,6 +104,10 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
                   field.getName(), ValueMetaFactory.getIdForValueMeta(field.getType()));
           vm.setOrigin(transformName);
           vm.setLength(field.getLength(), field.getPrecision());
+          // A documentation comment at the beginning of the expression describes the field,
+          // its variables are resolved
+          String comment = extractComment(field.getExpression());
+          vm.setComments(variables == null ? comment : variables.resolve(comment));
 
           // field already exists
           int index = unalteredInputRowMeta.indexOfValue(field.getName());
@@ -118,6 +122,44 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
     } catch (Exception e) {
       throw new HopTransformException(e);
     }
+  }
+
+  /**
+   * Extracts the documentation comment at the beginning of an expression source, for example <code>
+   * &#47;** Total with taxes *&#47; PRICE * 1.2</code> gives <code>Total with taxes</code>.
+   *
+   * @param source the expression source, may be null
+   * @return the text of the comment without the asterisk at the beginning of its lines, or null if
+   *     the source does not begin with a documentation comment or if the comment is empty
+   */
+  static String extractComment(String source) {
+    if (source == null) {
+      return null;
+    }
+    String text = source.stripLeading();
+    // The block comment /**/ is empty and is not a documentation comment
+    if (!text.startsWith("/**") || text.startsWith("/**/")) {
+      return null;
+    }
+    int end = text.indexOf("*/", 3);
+    if (end < 0) {
+      return null;
+    }
+
+    StringBuilder comment = new StringBuilder();
+    for (String line : text.substring(3, end).split("\n")) {
+      line = line.strip();
+      if (line.startsWith("*")) {
+        line = line.substring(1).strip();
+      }
+      if (!line.isEmpty()) {
+        if (!comment.isEmpty()) {
+          comment.append('\n');
+        }
+        comment.append(line);
+      }
+    }
+    return comment.isEmpty() ? null : comment.toString();
   }
 
   @Override

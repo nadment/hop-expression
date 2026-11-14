@@ -19,11 +19,14 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hop.core.ICheckResult;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.pipeline.transform.TransformSerializationTestUtil;
 import org.junit.jupiter.api.Test;
@@ -56,6 +59,52 @@ public class ExpressionMetaTest {
     // Only the warning about the missing input fields, the expression is valid
     assertEquals(1, remarks.size());
     assertEquals(ICheckResult.TYPE_RESULT_WARNING, remarks.getFirst().getType());
+  }
+
+  @Test
+  public void testExtractComment() {
+    assertEquals("Total", ExpressionMeta.extractComment("/** Total */ PRICE * 1.2"));
+    assertEquals("Total", ExpressionMeta.extractComment("  \n/**Total*/PRICE"));
+    assertEquals(
+        "Total\nwith taxes",
+        ExpressionMeta.extractComment("/**\r\n * Total\r\n *\r\n * with taxes\r\n */\r\nPRICE"));
+
+    // Only a documentation comment at the beginning of the expression
+    assertNull(ExpressionMeta.extractComment(null));
+    assertNull(ExpressionMeta.extractComment("PRICE * 1.2"));
+    assertNull(ExpressionMeta.extractComment("/* Total */ PRICE"));
+    assertNull(ExpressionMeta.extractComment("// Total\nPRICE"));
+    assertNull(ExpressionMeta.extractComment("PRICE /** Total */"));
+
+    // Empty or not ended comment
+    assertNull(ExpressionMeta.extractComment("/**/ PRICE /* Total */"));
+    assertNull(ExpressionMeta.extractComment("/***/ PRICE"));
+    assertNull(ExpressionMeta.extractComment("/** */ PRICE"));
+    assertNull(ExpressionMeta.extractComment("/** Total"));
+  }
+
+  @Test
+  public void testGetFieldsWithComment() throws Exception {
+    ExpressionMeta meta = new ExpressionMeta();
+    meta.setDefault();
+    for (String expression :
+        new String[] {"/** Total price */ 1+2", "1+2", "/** Price in ${CURRENCY} */ 1+2"}) {
+      ExpressionField field = new ExpressionField();
+      field.setName("F" + meta.getFields().size());
+      field.setType("Integer");
+      field.setExpression(expression);
+      meta.getFields().add(field);
+    }
+
+    IRowMeta rowMeta = new RowMeta();
+    Variables variables = new Variables();
+    variables.setVariable("CURRENCY", "EUR");
+    meta.getFields(rowMeta, "expression", null, null, variables, null);
+
+    assertEquals("Total price", rowMeta.getValueMeta(0).getComments());
+    assertNull(rowMeta.getValueMeta(1).getComments());
+    // The variables of the comment are resolved
+    assertEquals("Price in EUR", rowMeta.getValueMeta(2).getComments());
   }
 
   @Test

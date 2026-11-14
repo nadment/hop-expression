@@ -35,6 +35,18 @@ Add a line for each field to calculate, with the name of the field, its expressi
 Click the button of the expression column to open the xref:../../expression/editor.adoc[expression editor].
 The editor lists the input fields, the operators, the functions and the variables, highlights the syntax, completes the names with kbd:[Ctrl+Space], comments or uncomments the lines with kbd:[Ctrl+/] and underlines the errors of the expression.
 
+=== Field comment
+
+If an expression begins with a documentation comment `/** */`, the text of this comment becomes the comment of the output field.
+
+The variables of the comment are resolved.
+For example, with the variable `CURRENCY` set to `EUR`, the comment of the output field is `Total price in EUR`:
+
+----
+/** Total price in ${CURRENCY} */
+PRICE * QUANTITY
+----
+
 === Input fields only
 
 The expressions only read the input fields, with their input type:
