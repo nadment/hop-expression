@@ -40,6 +40,7 @@ The data type of the returned value is the one given by the `RETURNING` clause, 
 * If the path does not match a value, NULL is returned.
 * If the path matches an object or an array, NULL is returned: use xref:json_query.adoc["JSON_QUERY",role=fun] to get it. A path that can match several values, like a filter or `$..name`, gives an array.
 * The value is converted to the returning type like with xref:cast.adoc["CAST",role=fun], with its precision and scale: `JSON_VALUE('{"a":"12.5"}','$.a' RETURNING NUMBER)` returns 12.5.
+* With the returning type `BINARY`, the string is decoded as Base64.
 * Raises an error if the value cannot be converted to the returning type, like `'abc'` to a number.
 * Returns NULL if json or path is NULL.
 

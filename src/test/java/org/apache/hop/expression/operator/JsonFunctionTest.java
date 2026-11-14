@@ -108,6 +108,24 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Path_Empty() throws Exception {
+    // An empty path that is not a literal is an invalid path when a row is evaluated
+    evalFails("JSON_VALUE(FIELD_JSON,NVL(NULL_STRING,''))", ErrorCode.INVALID_JSON_PATH);
+    evalFails("JSON_QUERY(FIELD_JSON,NVL(NULL_STRING,''))", ErrorCode.INVALID_JSON_PATH);
+    evalFails("JSON_KEYS(FIELD_JSON,NVL(NULL_STRING,''))", ErrorCode.INVALID_JSON_PATH);
+  }
+
+  @Test
+  void Json_Value_ReturningBinary() throws Exception {
+    // The string is decoded as Base64
+    evalEquals(
+        "JSON_VALUE('{\"a\":\"SGVsbG8=\"}','$.a' RETURNING BINARY)",
+        "Hello".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    evalFails(
+        "JSON_VALUE('{\"a\":\"not base64!\"}','$.a' RETURNING BINARY)", ErrorCode.CONVERSION_ERROR);
+  }
+
+  @Test
   void Json_Path_Validation() throws Exception {
     // A literal path that is not valid is rejected when validated, not when a row is evaluated
     validateFails("JSON_VALUE(FIELD_JSON,'$$.invalid')", ErrorCode.INVALID_JSON_PATH);

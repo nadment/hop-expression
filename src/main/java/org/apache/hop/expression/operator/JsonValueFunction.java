@@ -187,7 +187,8 @@ public class JsonValueFunction extends Function {
     } catch (PathNotFoundException e) {
       // Returns NULL if the path does not locate an object
       return null;
-    } catch (InvalidPathException e) {
+    } catch (InvalidPathException | IllegalArgumentException e) {
+      // An empty path is an illegal argument for the library
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
 
@@ -200,7 +201,9 @@ public class JsonValueFunction extends Function {
       try {
         return result.binaryValue();
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        // The string is not a valid Base64
+        throw new ExpressionException(
+            ErrorCode.CONVERSION_ERROR, TypeName.STRING, TypeName.BINARY, result.asText());
       }
     }
 

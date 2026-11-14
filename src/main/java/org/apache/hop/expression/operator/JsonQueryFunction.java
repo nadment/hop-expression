@@ -117,7 +117,8 @@ public class JsonQueryFunction extends Function {
     } catch (PathNotFoundException e) {
       // Returns NULL if the path does not locate an object
       return null;
-    } catch (InvalidPathException e) {
+    } catch (InvalidPathException | IllegalArgumentException e) {
+      // An empty path is an illegal argument for the library
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
   }
