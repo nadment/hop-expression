@@ -34,6 +34,7 @@ String
 
 == Usage
 
+* A binary value is encoded as is, any other value is encoded as a string in UTF-8.
 * Returns NULL if the argument is NULL.
 
 == Examples

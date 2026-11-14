@@ -1973,6 +1973,12 @@ public class StringFunctionTest extends ExpressionTest {
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base64_Encode('Apache Hop'::Binary)", "QXBhY2hlIEhvcA==")
         .returnType(StringType.STRING_NOT_NULL);
+    // Binary encoded as is
+    evalEquals("BASE64_ENCODE(FIELD_BINARY)", "VEVTVA==");
+    // Other values are encoded as string
+    evalEquals("BASE64_ENCODE(123)", "MTIz");
+    evalEquals("BASE64_ENCODE(FIELD_INTEGER)", "NDA=");
+    evalEquals("BASE64_ENCODE(TRUE)", "VFJVRQ==");
 
     // Null handling
     evalNull("Base64_Encode(NULL_STRING)").returnType(StringType.STRING);
@@ -2034,6 +2040,11 @@ public class StringFunctionTest extends ExpressionTest {
         .returnType(StringType.STRING_NOT_NULL);
     evalEquals("Base32_Encode('Apache Hop'::Binary)", "IFYGCY3IMUQEQ33Q")
         .returnType(StringType.STRING_NOT_NULL);
+    // Binary encoded as is
+    evalEquals("BASE32_ENCODE(FIELD_BINARY)", "KRCVGVA=");
+    // Other values are encoded as string
+    evalEquals("BASE32_ENCODE(123)", "GEZDG===");
+    evalEquals("BASE32_ENCODE(FIELD_INTEGER)", "GQYA====");
 
     // Null handling
     evalNull("Base32_Encode(NULL_STRING)").returnType(StringType.STRING);

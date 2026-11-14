@@ -3360,6 +3360,12 @@ public class OperatorTest extends ExpressionTest {
       evalFalse("'abc' SIMILAR TO '_B_'");
       evalFalse("'abc' SIMILAR TO '_a_'");
 
+      // The wildcards match a line terminator too
+      evalTrue("'a'||CHR(10)||'c' SIMILAR TO 'a_c'");
+      evalTrue("'a'||CHR(13)||CHR(10)||'c' SIMILAR TO 'a__c'");
+      evalTrue("'a'||CHR(10)||'c' SIMILAR TO 'a%c'");
+      evalFalse("'a'||CHR(10)||'c' SIMILAR TO 'ac'");
+
       evalTrue("'12345TEST' SIMILAR TO '123[:ALNUM:]*'");
       evalTrue("'TEST' SIMILAR TO '[:UPPER:]*'");
       evalFalse("'Test' SIMILAR TO '[:UPPER:]*'");

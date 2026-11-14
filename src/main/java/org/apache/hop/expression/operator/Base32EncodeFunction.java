@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeName;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -47,9 +49,17 @@ public class Base32EncodeFunction extends Function {
 
   @Override
   public @Nullable Object eval(IExpression[] operands) {
-    byte[] value = operands[0].getValue(byte[].class);
+    // A binary is encoded as is, any other value is encoded as a string in UTF-8
+    if (operands[0].getType().isName(TypeName.BINARY)) {
+      byte[] value = operands[0].getValue(byte[].class);
+      if (value == null) return null;
+
+      return BASE32.encodeToString(value);
+    }
+
+    String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    return BASE32.encodeToString(value);
+    return BASE32.encodeToString(value.getBytes(StandardCharsets.UTF_8));
   }
 }

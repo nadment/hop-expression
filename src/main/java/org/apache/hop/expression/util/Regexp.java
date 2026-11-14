@@ -144,7 +144,8 @@ public final class Regexp {
           throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
         }
       } else if (c == '_') {
-        javaPattern.append('.');
+        // Any single character, a line terminator too
+        javaPattern.append("(?s:.)");
       } else if (c == '%') {
         javaPattern.append("(?s:.*)");
       } else if (c == '[') {
