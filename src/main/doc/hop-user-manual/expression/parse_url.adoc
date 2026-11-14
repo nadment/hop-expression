@@ -27,7 +27,7 @@ PARSE_URL( url, part [, key ] )
 == Arguments
 
 url:: The URL to parse.
-part:: The part of the URL to return, in upper case.
+part:: The part of the URL to return, not case-sensitive.
 * `HOST`
 * `PORT`
 * `PATH`
@@ -46,7 +46,9 @@ String
 == Usage
 
 * If the requested part or key is not found, the function returns NULL.
-* If part is not one of the allowed values, or if url is not a valid URI reference (for example if it contains a space), the function returns NULL. The part is case-sensitive and must be in upper case.
+* Raises an error if part is a constant that is not one of the allowed values, like `PARSE_URL(url,'HOSTNAME')`. A part that is not a constant, like a field, returns NULL if it is not one of the allowed values.
+* If url is not a valid URI reference (for example if it contains a space), the function returns NULL.
+* The part is not case-sensitive: `PARSE_URL(url,'host')` is the same as `PARSE_URL(url,'HOST')`.
 * A relative reference without protocol is accepted: `PARSE_URL('abc','PATH')` returns 'abc'.
 * If a key appears several times in the query, the first value is returned.
 * Returns NULL if one of the arguments is NULL.

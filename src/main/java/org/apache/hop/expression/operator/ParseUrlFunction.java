@@ -19,10 +19,17 @@ package org.apache.hop.expression.operator;
 import com.jayway.jsonpath.internal.Utils;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ErrorCode;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.ParseExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.jspecify.annotations.NullMarked;
@@ -40,6 +47,27 @@ public class ParseUrlFunction extends Function {
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         OperatorCategory.STRING,
         "/docs/hop-user-manual/expression/parse_url.html");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A constant part that is not a part of a URL is rejected when the expression is validated,
+   * with the position of the call. A part that is not a constant returns NULL when a row is
+   * evaluated.
+   */
+  @Override
+  protected void validateOperands(IExpressionContext context, Call call)
+      throws ExpressionException {
+    super.validateOperands(context, call);
+    if (call.getOperand(1) instanceof Literal literal
+        && literal.getValue() instanceof String part) {
+      try {
+        UrlPart.valueOf(part.toUpperCase(Locale.ROOT));
+      } catch (IllegalArgumentException e) {
+        throw new ParseExpressionException(call.getPosition(), ErrorCode.INVALID_ARGUMENT, part);
+      }
+    }
   }
 
   @Override
@@ -73,15 +101,23 @@ public class ParseUrlFunction extends Function {
     }
 
     try {
-      part = UrlPart.valueOf(partStr);
+      // The part is not case-sensitive
+      part = UrlPart.valueOf(partStr.toUpperCase(Locale.ROOT));
     } catch (IllegalArgumentException e) {
       return null;
     }
 
+    // The authority of a host with an underscore, like my_host:8080, is not parsed by the URI
+    String authority = uri.getRawAuthority();
+    boolean unparsedAuthority = uri.getHost() == null && authority != null;
+
     switch (part) {
       case HOST:
-        return uri.getHost();
+        return unparsedAuthority ? parseAuthority(authority, part) : uri.getHost();
       case PORT:
+        if (unparsedAuthority) {
+          return parseAuthority(authority, part);
+        }
         return (uri.getPort() < 0) ? null : String.valueOf(uri.getPort());
       case PATH:
         String path = uri.getRawPath();
@@ -99,16 +135,44 @@ public class ParseUrlFunction extends Function {
           return uri.getRawPath();
         }
       case AUTHORITY:
-        return uri.getRawAuthority();
+        return authority;
       case USERINFO:
-        return uri.getRawUserInfo();
+        return unparsedAuthority ? parseAuthority(authority, part) : uri.getRawUserInfo();
       default:
         return null;
     }
   }
 
+  /**
+   * Returns the user information, the host or the port of an authority {@code
+   * [userinfo@]host[:port]} that the URI does not parse, like a host with an underscore.
+   *
+   * @param authority the authority of the URL
+   * @param part the part to return, {@code USERINFO}, {@code HOST} or {@code PORT}
+   * @return the part, or {@code null} if the authority does not have it or if its port is not a
+   *     number
+   */
+  private static @Nullable String parseAuthority(String authority, UrlPart part) {
+    int at = authority.lastIndexOf('@');
+    if (part == UrlPart.USERINFO) {
+      return (at < 0) ? null : authority.substring(0, at);
+    }
+
+    String hostAndPort = authority.substring(at + 1);
+    int colon = hostAndPort.lastIndexOf(':');
+    String host = (colon < 0) ? hostAndPort : hostAndPort.substring(0, colon);
+    String port = (colon < 0) ? "" : hostAndPort.substring(colon + 1);
+    if (host.isEmpty() || !port.chars().allMatch(ch -> ch >= '0' && ch <= '9')) {
+      return null;
+    }
+    if (part == UrlPart.HOST) {
+      return host;
+    }
+    return port.isEmpty() ? null : port;
+  }
+
   public @Nullable String parseUrl(String url, String part, String keyToExtract) {
-    if (part.equals("QUERY")) {
+    if (part.equalsIgnoreCase("QUERY")) {
       String query = parseUrl(url, part);
       if (query != null) {
         return extractValue(query, keyToExtract);

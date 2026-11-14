@@ -48,10 +48,18 @@ public class StringFunctionTest extends ExpressionTest {
     // Documentation example
     evalEquals(
         "PARSE_URL('https://hop.apache.org:80/path?id=1&lang=fr','FILE')", "/path?id=1&lang=fr");
-    // An invalid or lower case part, or an invalid URL, returns NULL
-    evalNull("PARSE_URL('https://hop.apache.org/path','XXX')");
-    evalNull("PARSE_URL('https://hop.apache.org/path','host')");
+    // A constant part that is not a part of a URL is rejected when validated
+    evalFails("PARSE_URL('https://hop.apache.org/path','XXX')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("PARSE_URL(FIELD_STRING,'HOSTNAME')", ErrorCode.INVALID_ARGUMENT);
+    evalFails("PARSE_URL(FIELD_STRING,'HOSTNAME','id')", ErrorCode.INVALID_ARGUMENT);
+    // A part that is not a constant, or an invalid URL, returns NULL
+    evalNull("PARSE_URL('https://hop.apache.org/path',FIELD_STRING)");
+    evalNull("PARSE_URL('https://hop.apache.org/path',NULL_STRING)");
     evalNull("PARSE_URL('https://hop apache.org/path','HOST')");
+    // The part is not case-sensitive
+    evalEquals("PARSE_URL('https://hop.apache.org/path','host')", "hop.apache.org");
+    evalEquals("PARSE_URL('https://hop.apache.org/path','Path')", "/path");
+    evalEquals("PARSE_URL('https://hop.apache.org/path?id=1','query','id')", "1");
     // The key is case-sensitive and only used with the QUERY part
     evalNull("PARSE_URL('https://hop.apache.org/path?id=1','QUERY','ID')");
     evalNull("PARSE_URL('https://hop.apache.org/path?id=1','HOST','id')");
@@ -65,6 +73,23 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals(
         "Parse_Url('https://user:password@hop.apache.org:80/path?query=1','AUTHORITY')",
         "user:password@hop.apache.org:80");
+
+    // A host with an underscore
+    evalEquals("PARSE_URL('http://my_host:8080/path','HOST')", "my_host");
+    evalEquals("PARSE_URL('http://my_host:8080/path','PORT')", "8080");
+    evalEquals("PARSE_URL('http://my_host/path','HOST')", "my_host");
+    evalNull("PARSE_URL('http://my_host/path','PORT')");
+    evalNull("PARSE_URL('http://my_host/path','USERINFO')");
+    evalEquals("PARSE_URL('http://user:password@my_host:8080/path','HOST')", "my_host");
+    evalEquals("PARSE_URL('http://user:password@my_host:8080/path','PORT')", "8080");
+    evalEquals("PARSE_URL('http://user:password@my_host:8080/path','USERINFO')", "user:password");
+    evalEquals(
+        "PARSE_URL('http://user:password@my_host:8080/path','AUTHORITY')",
+        "user:password@my_host:8080");
+    evalEquals("PARSE_URL('http://my_host:8080/path','PATH')", "/path");
+    // The port is a number
+    evalNull("PARSE_URL('http://my_host:port/path','HOST')");
+    evalNull("PARSE_URL('http://my_host:port/path','PORT')");
 
     evalEquals("Parse_Url('https://hop.apache.org:80/path?query=1','PATH')", "/path");
     evalEquals(
