@@ -55,4 +55,23 @@ class CharactersTest {
     assertSame(str, Characters.transliterate(str));
     assertEquals("", Characters.transliterate(""));
   }
+
+  @Test
+  void indexOfHalfSurrogatePair() {
+    // A half of a surrogate pair is not found in the pair, an expression cannot build this string
+    String emoji = Character.toString(128512);
+    String high = String.valueOf(emoji.charAt(0));
+    String low = String.valueOf(emoji.charAt(1));
+
+    assertEquals(-1, Characters.indexOf(emoji, low, 0));
+    assertEquals(-1, Characters.indexOf(emoji, high, 0));
+    assertEquals(2, Characters.indexOf(emoji + low, low, 0));
+    assertEquals(-1, Characters.lastIndexOf(emoji, low, emoji.length()));
+    assertEquals(-1, Characters.lastIndexOf(emoji, high, emoji.length()));
+    assertEquals(2, Characters.lastIndexOf(emoji + low, low, emoji.length() + 1));
+
+    // The whole pair is found
+    assertEquals(1, Characters.indexOf("a" + emoji, emoji, 0));
+    assertEquals(1, Characters.lastIndexOf("a" + emoji, emoji, 3));
+  }
 }

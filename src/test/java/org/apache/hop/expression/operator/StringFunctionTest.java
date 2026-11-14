@@ -1926,9 +1926,12 @@ public class StringFunctionTest extends ExpressionTest {
 
     // Encode 16 bit unicode
     evalEquals("String_Encode('€')", "\\u20AC");
-    // A control character, a backslash, a surrogate pair, the single quote and 0x7F are kept
+    // A control character, a backslash and a surrogate pair are encoded, the single quote is kept
     evalEquals("String_Encode(CHR(1)||'\\'||CHR(128512))", "\\u0001\\\\\\uD83D\\uDE00");
-    evalEquals("String_Encode('it''s /'||CHR(127))", "it's /" + (char) 127);
+    evalEquals("String_Encode('it''s /')", "it's /");
+    // The character 0x7F, delete, is a control character
+    evalEquals("String_Encode('a'||CHR(127)||'~')", "a\\u007F~");
+    evalEquals("String_Decode(String_Encode('a'||CHR(127)))", "a" + (char) 127);
     evalEquals("String_Encode('abc')", "abc");
     // STRING_DECODE is the inverse function
     evalEquals(
@@ -1962,6 +1965,10 @@ public class StringFunctionTest extends ExpressionTest {
     assertDecodingSymbolMessage("String_Decode('abc\\')", "\\", "Java string");
     assertDecodingSymbolMessage("String_Decode('\\u12')", "\\u12", "Java string");
     assertDecodingSymbolMessage("String_Decode('\\u12xy')", "\\u12xy", "Java string");
+    // A surrogate that is not part of a surrogate pair is not a character
+    assertDecodingSymbolMessage("String_Decode('a\\uD800')", "\\uD800", "Java string");
+    assertDecodingSymbolMessage("String_Decode('\\uDE00\\uD83D')", "\\uDE00", "Java string");
+    assertDecodingSymbolMessage("String_Decode('\\uD83Dx\\uDE00')", "\\uD83D", "Java string");
 
     // Null handling
     evalNull("String_Decode(NULL_STRING)").returnType(StringType.STRING);
@@ -1989,8 +1996,19 @@ public class StringFunctionTest extends ExpressionTest {
     // A numeric entity above U+10FFFF is not a character
     assertDecodingSymbolMessage("Html_Decode('a &#1114112; b')", "&#1114112;", "HTML");
     assertDecodingSymbolMessage("Html_Decode('&#65; &#x110000;')", "&#x110000;", "HTML");
-    // A number too large to be parsed is left unchanged
-    evalEquals("Html_Decode('&#99999999999;')", "&#99999999999;");
+    // A number too large to be parsed is not a character either
+    assertDecodingSymbolMessage("Html_Decode('&#99999999999;')", "&#99999999999;", "HTML");
+    assertDecodingSymbolMessage("Html_Decode('&#xFFFFFFFFF;')", "&#xFFFFFFFFF;", "HTML");
+    // A surrogate is only the half of a surrogate pair, also followed by the other half
+    assertDecodingSymbolMessage("Html_Decode('a&#55296;')", "&#55296;", "HTML");
+    assertDecodingSymbolMessage("Html_Decode('&#xDFFF;')", "&#xDFFF;", "HTML");
+    assertDecodingSymbolMessage("Html_Decode('&#55357;&#56832;')", "&#55357;", "HTML");
+    evalEquals("Html_Decode('&#55295;&#57344;')", Character.toString(55295) + (char) 57344);
+
+    // The apostrophe entity of XML and HTML 5
+    evalEquals("Html_Decode('it&apos;s &#39;')", "it's '");
+    // An escaped ampersand is not the start of an entity
+    evalEquals("Html_Decode('&amp;apos; &amp;lt;')", "&apos; &lt;");
 
     // Null handling
     evalNull("Html_Decode(NULL_STRING)");
@@ -2233,13 +2251,6 @@ public class StringFunctionTest extends ExpressionTest {
     evalEquals("Position('def', 'abcdefgh')", 4L).returnType(IntegerType.INTEGER_NOT_NULL);
     // The operands are complete expressions
     evalEquals("Position('b' || 'c', 'abc')", 2L);
-    // A half of a surrogate pair is not found in the pair
-    evalEquals("Position(String_Decode('\\uDE00'), CHR(128512))", 0L);
-    evalEquals("Position(String_Decode('\\uD83D'), CHR(128512))", 0L);
-    evalEquals("Position(String_Decode('\\uDE00'), CHR(128512)||String_Decode('\\uDE00'))", 2L);
-    evalEquals("Instr(CHR(128512),String_Decode('\\uDE00'))", 0L);
-    evalEquals("Instr(CHR(128512),String_Decode('\\uDE00'),-1)", 0L);
-    evalEquals("Instr(CHR(128512),String_Decode('\\uD83D'),-1)", 0L);
 
     // Null handling
     evalNull("Position(NULL_STRING, 'abcdefgh')").returnType(IntegerType.INTEGER);

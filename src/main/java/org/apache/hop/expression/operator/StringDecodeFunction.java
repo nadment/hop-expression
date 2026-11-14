@@ -109,7 +109,26 @@ public class StringDecodeFunction extends Function {
         default -> throw invalidSequence("\\" + Character.toString(value.codePointAt(index - 1)));
       }
     }
+    checkSurrogatePairs(builder);
     return builder.toString();
+  }
+
+  /**
+   * Checks that a surrogate is part of a surrogate pair, like the two escape sequences of a
+   * character outside the Basic Multilingual Plane. A single surrogate is not a character.
+   */
+  private static void checkSurrogatePairs(final CharSequence decoded) {
+    int length = decoded.length();
+    for (int i = 0; i < length; i++) {
+      char ch = decoded.charAt(i);
+      if (Character.isHighSurrogate(ch)
+          && i + 1 < length
+          && Character.isLowSurrogate(decoded.charAt(i + 1))) {
+        i++;
+      } else if (Character.isSurrogate(ch)) {
+        throw invalidSequence("\\u" + String.format("%04X", (int) ch));
+      }
+    }
   }
 
   private static boolean isOctalDigit(char ch) {

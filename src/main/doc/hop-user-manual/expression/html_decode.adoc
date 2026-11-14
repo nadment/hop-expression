@@ -30,7 +30,9 @@ String
 
 == Usage
 
+* The named entities of HTML 4 are decoded.
 * Raises an error naming the entity if a numeric entity is above the last Unicode code point U+10FFFF, such as `&#1114112;`.
+* Raises an error naming the entity if a numeric entity is a surrogate, such as `&#55296;`: a surrogate is only the half of a surrogate pair. A character outside the Basic Multilingual Plane is written with its code point, such as `&#128512;`.
 * Returns NULL if the argument is NULL.
 
 == Examples

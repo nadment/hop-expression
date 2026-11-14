@@ -88,6 +88,7 @@ public class StringEncodeFunction extends Function {
 
   /** Returns whether the character is encoded, a control, a non-ASCII character, '"' or '\'. */
   private static boolean isEscaped(char ch) {
-    return ch < 32 || ch > 0x7F || ch == '"' || ch == '\\';
+    // The character 0x7F, delete, is a control character
+    return ch < 32 || ch >= 0x7F || ch == '"' || ch == '\\';
   }
 }

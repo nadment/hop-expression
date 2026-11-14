@@ -56,32 +56,40 @@ public class HtmlDecodeFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null) return null;
 
-    try {
-      return StringEscapeUtils.unescapeHtml4(value);
-    } catch (IllegalArgumentException e) {
-      // A numeric entity above U+10FFFF is not a character, report the first one
+    // A numeric entity above U+10FFFF is not a character, report the first one. Checked before
+    // the decoder, which leaves unchanged a number that does not fit in an int
+    if (value.contains("&#")) {
       Matcher matcher = NUMERIC_ENTITY.matcher(value);
       while (matcher.find()) {
         if (!isValidCodePoint(matcher.group(1))) {
           throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, matcher.group(), "HTML");
         }
       }
+    }
+
+    try {
+      // The entity &apos; of XML and HTML 5 is not known by the decoder of HTML 4, it is decoded
+      // as its numeric entity
+      return StringEscapeUtils.unescapeHtml4(value.replace("&apos;", "&#39;"));
+    } catch (IllegalArgumentException e) {
       throw new ExpressionException(ErrorCode.INVALID_DECODING_SYMBOL, value, "HTML");
     }
   }
 
   /**
-   * Returns whether the number of a numeric entity is a valid code point. A number that does not
-   * fit in an int is left unchanged by the decoder, so it is considered valid.
+   * Returns whether the number of a numeric entity is the code point of a character. A number that
+   * does not fit in an int is not a code point, and a surrogate is only the half of a surrogate
+   * pair, not a character.
    */
   private static boolean isValidCodePoint(String number) {
     try {
       boolean hex = number.charAt(0) == 'x' || number.charAt(0) == 'X';
       int codePoint =
           hex ? Integer.parseInt(number, 1, number.length(), 16) : Integer.parseInt(number);
-      return Character.isValidCodePoint(codePoint);
+      return Character.isValidCodePoint(codePoint)
+          && (codePoint < Character.MIN_SURROGATE || codePoint > Character.MAX_SURROGATE);
     } catch (NumberFormatException e) {
-      return true;
+      return false;
     }
   }
 }
