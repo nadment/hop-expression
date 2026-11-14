@@ -25,9 +25,8 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Set;
 import org.apache.hop.expression.Array;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
@@ -119,9 +118,19 @@ public class JsonKeysFunction extends Function {
     // Returns NULL if the JSON value is not an object
     if (!jsonNode.isObject()) return null;
 
-    Set<IExpression> keys = new HashSet<>();
+    // The keys of a JSON object are already unique, they are sorted to be returned in
+    // alphabetical order, whatever their order in the object
+    String[] names = new String[jsonNode.size()];
     Iterator<String> iterator = jsonNode.fieldNames();
-    iterator.forEachRemaining(key -> keys.add(Literal.of(key)));
+    for (int i = 0; i < names.length; i++) {
+      names[i] = iterator.next();
+    }
+    Arrays.sort(names);
+
+    IExpression[] keys = new IExpression[names.length];
+    for (int i = 0; i < names.length; i++) {
+      keys[i] = Literal.of(names[i]);
+    }
 
     return new Array(ArrayType.of(StringType.STRING), keys);
   }

@@ -385,6 +385,22 @@ class JsonFunctionTest extends ExpressionTest {
   }
 
   @Test
+  void Json_Keys_AlphabeticalOrder() throws Exception {
+    // The order does not depend on the order of the keys in the object, an upper case letter
+    // comes before a lower case letter
+    evalEquals(
+        "Json_Keys(JSON '{\"zebra\":1,\"apple\":2,\"Mango\":3,\"key10\":4,\"key2\":5,\"banana\":6}')",
+        new Array(
+            ArrayType.of(StringType.STRING),
+            Literal.of("Mango"),
+            Literal.of("apple"),
+            Literal.of("banana"),
+            Literal.of("key10"),
+            Literal.of("key2"),
+            Literal.of("zebra")));
+  }
+
+  @Test
   void debug() throws Exception {
     // evalEquals("Json_Object(KEY 'updated' VALUE 362180698)",
     // JsonConversion.convert("{\"updated\":362180698}"));
